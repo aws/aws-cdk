@@ -1,0 +1,108 @@
+{
+  "name": "@aws-cdk/custom-resources",
+  "version": "0.39.0",
+  "description": "Constructs for implementing CDK custom resources",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.customresources",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-customresources",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.CustomResources",
+        "packageId": "Amazon.CDK.AWS.CustomResources",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
+      },
+      "python": {
+        "distName": "aws-cdk.custom-resources",
+        "module": "aws_cdk.custom_resources"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/custom-resources"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
+  },
+  "cdk-build": {
+    "pre": [
+      "cp -f node_modules/aws-sdk/apis/metadata.json lib/sdk-api-metadata.json"
+    ]
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "cloudformation",
+    "custom-resources",
+    "customresources"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.39.0",
+    "@aws-cdk/aws-events": "^0.39.0",
+    "@aws-cdk/aws-ssm": "^0.39.0",
+    "@types/aws-lambda": "^8.10.27",
+    "@types/nock": "^10.0.3",
+    "@types/sinon": "^7.0.13",
+    "aws-sdk": "^2.437.0",
+    "aws-sdk-mock": "^4.4.0",
+    "cdk-build-tools": "^0.39.0",
+    "cdk-integ-tools": "^0.39.0",
+    "cfn2ts": "^0.39.0",
+    "nock": "^10.0.6",
+    "pkglint": "^0.39.0",
+    "sinon": "^7.3.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudformation": "^0.39.0",
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/aws-lambda": "^0.39.0",
+    "@aws-cdk/aws-sns": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-cloudformation": "^0.39.0",
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/aws-lambda": "^0.39.0",
+    "@aws-cdk/aws-sns": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  },
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
+    ]
+  }
+}

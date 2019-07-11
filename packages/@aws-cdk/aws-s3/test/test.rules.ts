@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Duration, Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Bucket, StorageClass } from '../lib';
 
@@ -83,7 +83,7 @@ export = {
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
         transitions: [{
-          storageClass: StorageClass.Glacier,
+          storageClass: StorageClass.GLACIER,
           transitionAfter: Duration.days(30)
         }]
       }]

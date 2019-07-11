@@ -72,6 +72,25 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
+                    "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
                     "BuildProjectRoleAA92C755",
                     "Arn"
                   ]
@@ -83,7 +102,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "MyPipelineArtifactsBucket727923DD": {
       "Type": "AWS::S3::Bucket",
@@ -104,7 +124,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
@@ -188,31 +209,21 @@
               }
             },
             {
-              "Action": [
-                "codecommit:GetBranch",
-                "codecommit:GetCommit",
-                "codecommit:UploadArchive",
-                "codecommit:GetUploadArchiveStatus",
-                "codecommit:CancelUploadArchive"
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "CodeCommitRepoDC6A41F9",
+                  "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F",
                   "Arn"
                 ]
               }
             },
             {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "BuildProject097C5DB7",
+                  "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7",
                   "Arn"
                 ]
               }
@@ -264,6 +275,12 @@
                     "Name": "Source"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -294,6 +311,12 @@
                     "Name": "Artifact_Build_CodeBuildAction"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -320,6 +343,119 @@
         "MyPipelineRoleDefaultPolicy34F09EFA",
         "MyPipelineRoleC0D47CA4"
       ]
+    },
+    "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineSourceCodeCommitSourceCodePipelineActionRoleDefaultPolicyE6664925": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucket727923DD",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyPipelineArtifactsBucket727923DD",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "codecommit:GetBranch",
+                "codecommit:GetCommit",
+                "codecommit:UploadArchive",
+                "codecommit:GetUploadArchiveStatus",
+                "codecommit:CancelUploadArchive"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CodeCommitRepoDC6A41F9",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineSourceCodeCommitSourceCodePipelineActionRoleDefaultPolicyE6664925",
+        "Roles": [
+          {
+            "Ref": "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F"
+          }
+        ]
+      }
     },
     "MyPipelineSourceCodeCommitSourceOnActionStateChangeDCAF781A": {
       "Type": "AWS::Events::Rule",
@@ -431,13 +567,72 @@
         ]
       }
     },
+    "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineBuildCodeBuildActionCodePipelineActionRoleDefaultPolicy96378DF6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "BuildProject097C5DB7",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineBuildCodeBuildActionCodePipelineActionRoleDefaultPolicy96378DF6",
+        "Roles": [
+          {
+            "Ref": "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7"
+          }
+        ]
+      }
+    },
     "MyPipelineOnPipelineStateChangeA017E4B1": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "detail-type": [
-            "CodePipeline Pipeline Execution State Change"
-          ],
           "source": [
             "aws.codepipeline"
           ],
@@ -465,6 +660,9 @@
                 ]
               ]
             }
+          ],
+          "detail-type": [
+            "CodePipeline Pipeline Execution State Change"
           ]
         },
         "State": "ENABLED",

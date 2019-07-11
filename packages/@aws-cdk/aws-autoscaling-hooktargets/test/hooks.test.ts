@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import hooks = require('../lib');
 
 describe('given an AutoScalingGroup', () => {
@@ -57,7 +57,7 @@ describe('given an AutoScalingGroup', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.inline('foo'),
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.index',
     });
 

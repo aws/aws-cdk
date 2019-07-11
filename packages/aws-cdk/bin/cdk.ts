@@ -2,6 +2,7 @@
 import 'source-map-support/register';
 
 import colors = require('colors/safe');
+import path = require('path');
 import yargs = require('yargs');
 
 import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
@@ -33,7 +34,7 @@ async function parseCommandLineArguments() {
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
-    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML', default: false })
+    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false })
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
@@ -58,7 +59,7 @@ async function parseCommandLineArguments() {
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only diff requested stacks, don\'t include dependencies' })
@@ -243,7 +244,7 @@ async function initCommandLine() {
 
     const app = configuration.settings.get(['app']);
 
-    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
+    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs, aws) : environmentsFromDescriptors(environmentGlobs);
 
     // Bucket name can be passed using --toolkit-bucket-name or set in cdk.json
     const bucketName = configuration.settings.get(['toolkitBucketName']) || toolkitBucketName;
@@ -281,6 +282,8 @@ async function initCommandLine() {
       defaultBehavior: DefaultSelection.AllStacks
     });
 
+    appStacks.processMetadata(stacks);
+
     // if we have a single stack, print it to STDOUT
     if (stacks.length === 1) {
       return stacks[0].template;
@@ -298,7 +301,10 @@ async function initCommandLine() {
       return stacks.map(s => s.template);
     }
 
-    // no output to stdout
+    // not outputting template to stdout, let's explain things to the user a little bit...
+    success(`Successfully synthesized to ${colors.blue(path.resolve(appStacks.assembly!.directory))}`);
+    print(`Supply a stack name (${stacks.map(s => colors.green(s.name)).join(', ')}) to display its template.`);
+
     return undefined;
   }
 

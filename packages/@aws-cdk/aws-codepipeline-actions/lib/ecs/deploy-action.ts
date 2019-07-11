@@ -1,12 +1,14 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
+import { Construct } from '@aws-cdk/core';
+import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
 /**
  * Construction properties of {@link EcsDeployAction}.
  */
-export interface EcsDeployActionProps extends codepipeline.CommonActionProps {
+export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The input artifact that contains the JSON image definitions file to use for deployments.
    * The JSON file is a list of objects,
@@ -43,7 +45,9 @@ export interface EcsDeployActionProps extends codepipeline.CommonActionProps {
 /**
  * CodePipeline Action to deploy an ECS Service.
  */
-export class EcsDeployAction extends codepipeline.Action {
+export class EcsDeployAction extends Action {
+  private readonly props: EcsDeployActionProps;
+
   constructor(props: EcsDeployActionProps) {
     super({
       ...props,
@@ -51,18 +55,17 @@ export class EcsDeployAction extends codepipeline.Action {
       provider: 'ECS',
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
-      configuration: {
-        ClusterName: props.service.cluster.clusterName,
-        ServiceName: props.service.serviceName,
-        FileName: props.imageFile && props.imageFile.fileName,
-      },
+      resource: props.service
     });
+
+    this.props = props;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
-    info.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPolicy(new iam.PolicyStatement({
       actions: [
         'ecs:DescribeServices',
         'ecs:DescribeTaskDefinition',
@@ -74,7 +77,7 @@ export class EcsDeployAction extends codepipeline.Action {
       resources: ['*']
     }));
 
-    info.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['iam:PassRole'],
       resources: ['*'],
       conditions: {
@@ -86,6 +89,16 @@ export class EcsDeployAction extends codepipeline.Action {
         }
       }
     }));
+
+    options.bucket.grantRead(options.role);
+
+    return {
+      configuration: {
+        ClusterName: this.props.service.cluster.clusterName,
+        ServiceName: this.props.service.serviceName,
+        FileName: this.props.imageFile && this.props.imageFile.fileName,
+      },
+    };
   }
 }
 

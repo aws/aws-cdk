@@ -74,12 +74,13 @@
     },
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
       "Properties": {
         "VersioningConfiguration": {
           "Status": "Enabled"
         }
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -147,6 +148,16 @@
               ]
             },
             {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineRoleD68726F7",
+                  "Arn"
+                ]
+              }
+            },
+            {
               "Action": [
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
@@ -167,6 +178,36 @@
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -253,6 +294,12 @@
                     "Name": "Artifact_Source_Source1"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineRoleD68726F7",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               },
               {
@@ -275,6 +322,12 @@
                     "Name": "Artifact_Source_Source2"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineRoleD68726F7",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -312,6 +365,12 @@
                     "Name": "Artifact_Build_Build1_2"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineRoleD68726F7",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               },
               {
@@ -341,6 +400,12 @@
                     "Name": "CustomOutput2"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineRoleD68726F7",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],

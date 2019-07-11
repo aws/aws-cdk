@@ -1,7 +1,7 @@
 import { Property } from 'jsii-reflect';
 import { Linter } from '../linter';
 
-const DURATION_FQN = '@aws-cdk/cdk.Duration';
+const DURATION_FQN = '@aws-cdk/core.Duration';
 const DURATION_SUFFIX = /(Days|Milli(?:(?:S|s)econd)?s?|Sec(?:ond)?s?)$/;
 
 export const durationsLinter = new Linter(assm => {

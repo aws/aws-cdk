@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -50,6 +50,7 @@ export = testCase({
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -112,6 +113,7 @@ export = testCase({
         "Custom1D319B237": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [
@@ -124,6 +126,7 @@ export = testCase({
         "Custom2DD5FB44D": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [
@@ -202,7 +205,7 @@ class TestCustomResource extends cdk.Construct {
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.Python27,
+      runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });

@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 import path = require('path');
@@ -12,7 +12,7 @@ class EventStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
 
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {

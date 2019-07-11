@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import rds = require('../lib');
 
 const app = new cdk.App();
@@ -12,7 +12,7 @@ class DatabaseInstanceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'VPC', { maxAZs: 2 });
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
 
     /// !show
     // Set open cursors with parameter group
@@ -25,7 +25,7 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.OracleSE1,
+      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       majorEngineVersion: '11.2',
       configurations: [
         {
@@ -44,7 +44,7 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.OracleSE1,
+      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
@@ -85,7 +85,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.inline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });

@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { Stack, Tag } from '@aws-cdk/cdk';
+import { Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, SubnetType, Vpc } from '../lib';
 
@@ -137,7 +137,7 @@ export = {
             subnetType: SubnetType.ISOLATED,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       expect(stack).to(countResources("AWS::EC2::Subnet", 6));
       test.done();
@@ -164,7 +164,7 @@ export = {
             subnetType: SubnetType.PRIVATE,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       for (let i = 0; i < 3; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
@@ -205,7 +205,7 @@ export = {
             subnetType: SubnetType.ISOLATED,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
       expect(stack).to(countResources("AWS::EC2::NatGateway", zones));
@@ -244,7 +244,7 @@ export = {
             subnetType: SubnetType.ISOLATED,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
       expect(stack).to(countResources("AWS::EC2::NatGateway", 2));
@@ -272,7 +272,7 @@ export = {
     "with public subnets MapPublicIpOnLaunch is true"(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
-        maxAZs: 1,
+        maxAzs: 1,
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -309,7 +309,7 @@ export = {
 
     "with maxAZs set to 2"(test: Test) {
       const stack = getTestStack();
-      new Vpc(stack, 'VPC', { maxAZs: 2 });
+      new Vpc(stack, 'VPC', { maxAzs: 2 });
       expect(stack).to(countResources("AWS::EC2::Subnet", 4));
       expect(stack).to(countResources("AWS::EC2::Route", 4));
       for (let i = 0; i < 4; i++) {
@@ -564,7 +564,7 @@ export = {
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.cfnResourceTypeName]}));
+      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME]}));
       vpc.node.applyAspect(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
@@ -687,7 +687,7 @@ export = {
       // GIVEN
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VpcNetwork', {
-        maxAZs: 1,
+        maxAzs: 1,
         subnetConfiguration: [
           {name: 'app', subnetType: SubnetType.PRIVATE },
           {name: 'db', subnetType: SubnetType.PRIVATE },

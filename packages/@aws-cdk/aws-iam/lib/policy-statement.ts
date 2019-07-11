@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts } from './principals';
 import { mergePrincipal } from './util';
@@ -19,7 +19,7 @@ export class PolicyStatement {
   private condition: { [key: string]: any } = { };
 
   constructor(props: PolicyStatementProps = {}) {
-    this.effect = Effect.ALLOW;
+    this.effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
     this.addPrincipals(...props.principals || []);
@@ -249,6 +249,13 @@ export interface PolicyStatementProps {
    * @default - no condition
    */
   readonly conditions?: {[key: string]: any};
+
+  /**
+   * Whether to allow or deny the actions in this statement
+   *
+   * @default - allow
+   */
+  readonly effect?: Effect;
 }
 
 function noUndef(x: any): any {

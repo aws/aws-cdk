@@ -1,10 +1,10 @@
 import logs = require('@aws-cdk/aws-logs');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
 
 /**
- * Properties for defining a new AWS Log Driver
+ * Specifies the awslogs log driver configuration options.
  */
 export interface AwsLogDriverProps {
   /**
@@ -60,16 +60,21 @@ export interface AwsLogDriverProps {
 }
 
 /**
- * A log driver that will log to an AWS Log Group
+ * A log driver that sends log information to CloudWatch Logs.
  */
 export class AwsLogDriver extends LogDriver {
   /**
-   * The log group that the logs will be sent to
+   * The log group to send log streams to.
    *
    * Only available after the LogDriver has been bound to a ContainerDefinition.
    */
   public logGroup?: logs.ILogGroup;
 
+  /**
+   * Constructs a new instance of the AwsLogDriver class.
+   *
+   * @param props the awslogs log driver configuration options.
+   */
   constructor(private readonly props: AwsLogDriverProps) {
     super();
 

@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 
@@ -158,7 +158,8 @@ export = {
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyStream5C050E93": {
           "Type": "AWS::Kinesis::Stream",
@@ -241,7 +242,8 @@ export = {
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyStream5C050E93": {
           "Type": "AWS::Kinesis::Stream",
@@ -336,7 +338,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
@@ -476,7 +479,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
@@ -621,7 +625,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",

@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { App, ConstructNode, Stack } from '@aws-cdk/cdk';
+import { App, ConstructNode, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
 import {
@@ -73,7 +73,7 @@ export = {
     const connections = new Connections({ securityGroups: [sg1] });
 
     // WHEN
-    connections.allowFromAnyIPv4(Port.tcp(88));
+    connections.allowFromAnyIpv4(Port.tcp(88));
     connections.addSecurityGroup(sg2);
 
     // THEN

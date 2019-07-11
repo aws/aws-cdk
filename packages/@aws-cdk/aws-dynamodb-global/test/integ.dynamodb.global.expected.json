@@ -24,7 +24,9 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     }
   },
@@ -53,7 +55,9 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     }
   },
@@ -82,7 +86,9 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     }
   },
@@ -233,7 +239,8 @@
           "ResourceType": "Custom::DynamoGlobalTableCoordinator",
           "TableName": "integrationtest"
         },
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     },
     "Parameters": {

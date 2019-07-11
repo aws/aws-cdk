@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
 
@@ -14,7 +14,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -78,7 +78,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
     const alias = new lambda.Alias(stack, 'alias', {
       aliasName: 'my-alias',
@@ -145,7 +145,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -184,13 +184,18 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
       options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') }
-    }), /Cannot specify \"options\.defaultIntegration\" since Lambda integration is automatically defined/);
+    }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+
+    test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      defaultIntegration: new apigw.HttpIntegration('https://foo/bar')
+    }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
     test.done();
   },

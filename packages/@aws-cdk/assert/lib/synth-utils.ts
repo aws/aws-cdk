@@ -1,4 +1,4 @@
-import { ConstructNode, Stack, SynthesisOptions } from '@aws-cdk/cdk';
+import { ConstructNode, Stack, SynthesisOptions } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 
 export class SynthUtils {

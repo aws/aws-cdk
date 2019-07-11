@@ -3,20 +3,20 @@ from aws_cdk import (
     aws_sqs as sqs,
     aws_sns as sns,
     aws_sns_subscriptions as subs,
-    cdk
+    core
 )
 
 from hello_construct import HelloConstruct
 
 
-class MyStack(cdk.Stack):
+class MyStack(core.Stack):
 
-    def __init__(self, app: cdk.App, id: str, **kwargs) -> None:
-        super().__init__(app, id, **kwargs)
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
 
         queue = sqs.Queue(
             self, "MyFirstQueue",
-            visibility_timeout_sec=300,
+            visibility_timeout=core.Duration.seconds(300),
         )
 
         topic = sns.Topic(

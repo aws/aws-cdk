@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-stepfunctions",
-  "version": "0.35.0",
+  "version": "0.39.0",
   "description": "The CDK Construct Library for AWS::StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.stepfunctions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "stepfunctions"
+          "artifactId": "stepfunctions",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.StepFunctions",
         "packageId": "Amazon.CDK.AWS.StepFunctions",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-stepfunctions",
@@ -63,24 +65,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cdk-integ-tools": "^0.35.0",
-    "cfn2ts": "^0.35.0",
-    "pkglint": "^0.35.0"
+    "@aws-cdk/assert": "^0.39.0",
+    "cdk-build-tools": "^0.39.0",
+    "cdk-integ-tools": "^0.39.0",
+    "cfn2ts": "^0.39.0",
+    "pkglint": "^0.39.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.35.0",
-    "@aws-cdk/aws-events": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-cloudwatch": "^0.39.0",
+    "@aws-cdk/aws-events": "^0.39.0",
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.35.0",
-    "@aws-cdk/aws-events": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-cloudwatch": "^0.39.0",
+    "@aws-cdk/aws-events": "^0.39.0",
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -90,7 +92,7 @@
       "import-props-interface:@aws-cdk/aws-stepfunctions.ActivityImportProps",
       "export:@aws-cdk/aws-stepfunctions.IActivity",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.WaitProps.duration",
-      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.Timeout"
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT"
     ]
   },
   "stability": "experimental"

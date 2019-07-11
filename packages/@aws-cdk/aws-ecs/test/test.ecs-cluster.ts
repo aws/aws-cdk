@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
@@ -37,7 +37,7 @@ export = {
 
       expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
         ImageId: {
-          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         InstanceType: "t2.micro",
         IamInstanceProfile: {
@@ -151,6 +151,22 @@ export = {
           Version: "2012-10-17"
         }
       }));
+
+      test.done();
+    },
+
+    "multiple clusters with default capacity"(test: Test) {
+      // GIVEN
+      const stack =  new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      // WHEN
+      for (let i = 0; i < 2; i++) {
+        const cluster = new ecs.Cluster(stack, `EcsCluster${i}`, { vpc, });
+        cluster.addCapacity('MyCapacity', {
+          instanceType: new ec2.InstanceType('m3.medium'),
+        });
+      }
 
       test.done();
     },
@@ -321,13 +337,15 @@ export = {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: "foo.com",
-      type: ecs.NamespaceType.PUBLIC_DNS
+      type: cloudmap.NamespaceType.DNS_PUBLIC
     });
 
     // THEN
     expect(stack).to(haveResource("AWS::ServiceDiscovery::PublicDnsNamespace", {
        Name: 'foo.com',
     }));
+
+    test.equal(cluster.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PUBLIC);
 
     test.done();
   },
@@ -372,7 +390,7 @@ export = {
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'Cluster', {
       vpc: vpc1,
       securityGroups: cluster1.connections.securityGroups,
-      defaultNamespace: cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack2, 'ns', {
+      defaultCloudMapNamespace: cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack2, 'ns', {
         namespaceId: 'import-namespace-id',
         namespaceArn: 'import-namespace-arn',
         namespaceName: 'import-namespace-name',
@@ -381,8 +399,8 @@ export = {
     });
 
     // THEN
-    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
-    test.deepEqual(stack2.resolve(cluster2.defaultNamespace!.namespaceId), 'import-namespace-id');
+    test.equal(cluster2.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
+    test.deepEqual(stack2.resolve(cluster2.defaultCloudMapNamespace!.namespaceId), 'import-namespace-id');
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();

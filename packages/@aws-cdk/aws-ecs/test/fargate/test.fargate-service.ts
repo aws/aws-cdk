@@ -2,10 +2,11 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { ContainerImage, NamespaceType } from '../../lib';
+import { ContainerImage } from '../../lib';
+import { LaunchType } from '../../lib/base/base-service';
 
 export = {
   "When creating a Fargate Service": {
@@ -22,7 +23,7 @@ export = {
 
       new ecs.FargateService(stack, "FargateService", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       // THEN
@@ -38,7 +39,7 @@ export = {
           MinimumHealthyPercent: 50
         },
         DesiredCount: 1,
-        LaunchType: "FARGATE",
+        LaunchType: LaunchType.FARGATE,
         LoadBalancers: [],
         NetworkConfiguration: {
           AwsvpcConfiguration: {
@@ -142,7 +143,7 @@ export = {
       new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
-        minimumHealthyPercent: 0,
+        minHealthyPercent: 0,
       });
 
       // THEN
@@ -194,7 +195,7 @@ export = {
         image: ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition});
 
       const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
       const listener = lb.addListener("listener", { port: 80 });
@@ -273,8 +274,7 @@ export = {
 
       const service = new ecs.FargateService(stack, 'Service', {
         cluster,
-        taskDefinition,
-        longArnEnabled: true
+        taskDefinition
       });
 
       const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
@@ -305,16 +305,9 @@ export = {
               },
               "/",
               {
-                "Fn::Select": [
-                  2,
-                  {
-                    "Fn::Split": [
-                      "/",
-                      {
-                        Ref: "ServiceD69D759B"
-                      }
-                    ]
-                  }
+                "Fn::GetAtt": [
+                  "ServiceD69D759B",
+                  "Name"
                 ]
               }
             ]
@@ -367,7 +360,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -427,7 +420,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {

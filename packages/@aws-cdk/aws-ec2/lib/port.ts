@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/cdk';
+import { Token } from '@aws-cdk/core';
 
 /**
  * Protocol for use in Connection Rules
@@ -183,7 +183,7 @@ export class Port {
   /**
    * Produce the ingress/egress rule JSON for the given connection
    */
-  public toRuleJSON(): any {
+  public toRuleJson(): any {
     return {
       ipProtocol: this.props.protocol,
       fromPort: this.props.fromPort,

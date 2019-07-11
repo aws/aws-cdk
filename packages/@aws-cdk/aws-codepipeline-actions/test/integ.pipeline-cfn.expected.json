@@ -1,8 +1,7 @@
 {
   "Resources": {
-    "PipelineArtifactsBucketEncryptionKey01D58D69" : {
+    "PipelineArtifactsBucketEncryptionKey01D58D69": {
       "Type": "AWS::KMS::Key",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "KeyPolicy": {
           "Statement": [
@@ -60,15 +59,66 @@
                 }
               },
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceAdditionalSourceCodePipelineActionRole0897461A",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "PipelineCFNDeployCFNCodePipelineActionRole444CF5DD",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -85,7 +135,9 @@
             }
           ]
         }
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -169,76 +221,32 @@
               }
             },
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineBucketB967BD35",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineBucketB967BD35",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "iam:PassRole",
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "CfnChangeSetRole6F05F6FC",
+                  "PipelineSourceCodePipelineActionRoleC6F9E7F5",
                   "Arn"
                 ]
               }
             },
             {
-              "Action": [
-                "cloudformation:CreateChangeSet",
-                "cloudformation:DeleteChangeSet",
-                "cloudformation:DescribeChangeSet",
-                "cloudformation:DescribeStacks"
-              ],
-              "Condition": {
-                "StringEqualsIfExists": {
-                  "cloudformation:ChangeSetName": "ChangeSetIntegTest"
-                }
-              },
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":cloudformation:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":stack/IntegTest-TestActionStack/*"
-                  ]
+                "Fn::GetAtt": [
+                  "PipelineSourceAdditionalSourceCodePipelineActionRole0897461A",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineCFNDeployCFNCodePipelineActionRole444CF5DD",
+                  "Arn"
                 ]
               }
             }
@@ -285,6 +293,12 @@
                     "Name": "SourceArtifact"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               },
               {
@@ -307,6 +321,12 @@
                     "Name": "AdditionalArtifact"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceAdditionalSourceCodePipelineActionRole0897461A",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -323,16 +343,16 @@
                 },
                 "Configuration": {
                   "StackName": "IntegTest-TestActionStack",
-                  "ActionMode": "CHANGE_SET_REPLACE",
-                  "ChangeSetName": "ChangeSetIntegTest",
-                  "TemplatePath": "SourceArtifact::test.yaml",
                   "RoleArn": {
                     "Fn::GetAtt": [
                       "CfnChangeSetRole6F05F6FC",
                       "Arn"
                     ]
                   },
-                  "ParameterOverrides": "{\"BucketName\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"BucketName\"]},\"ObjectKey\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"ObjectKey\"]},\"Url\":{\"Fn::GetArtifactAtt\":[\"AdditionalArtifact\",\"URL\"]},\"OtherParam\":{\"Fn::GetParam\":[\"SourceArtifact\",\"params.json\",\"OtherParam\"]}}"
+                  "ParameterOverrides": "{\"BucketName\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"BucketName\"]},\"ObjectKey\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"ObjectKey\"]},\"Url\":{\"Fn::GetArtifactAtt\":[\"AdditionalArtifact\",\"URL\"]},\"OtherParam\":{\"Fn::GetParam\":[\"SourceArtifact\",\"params.json\",\"OtherParam\"]}}",
+                  "ActionMode": "CHANGE_SET_REPLACE",
+                  "ChangeSetName": "ChangeSetIntegTest",
+                  "TemplatePath": "SourceArtifact::test.yaml"
                 },
                 "InputArtifacts": [
                   {
@@ -344,6 +364,12 @@
                 ],
                 "Name": "DeployCFN",
                 "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineCFNDeployCFNCodePipelineActionRole444CF5DD",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -351,10 +377,6 @@
           }
         ],
         "ArtifactStore": {
-          "Location": {
-            "Ref": "PipelineArtifactsBucket22248F97"
-          },
-          "Type": "S3",
           "EncryptionKey": {
             "Id": {
               "Fn::GetAtt": [
@@ -363,7 +385,11 @@
               ]
             },
             "Type": "KMS"
-          }
+          },
+          "Location": {
+            "Ref": "PipelineArtifactsBucket22248F97"
+          },
+          "Type": "S3"
         }
       },
       "DependsOn": [
@@ -371,14 +397,394 @@
         "PipelineRoleD68726F7"
       ]
     },
+    "PipelineSourceCodePipelineActionRoleC6F9E7F5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBucketB967BD35",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineBucketB967BD35",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925",
+        "Roles": [
+          {
+            "Ref": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
+          }
+        ]
+      }
+    },
+    "PipelineSourceAdditionalSourceCodePipelineActionRole0897461A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineSourceAdditionalSourceCodePipelineActionRoleDefaultPolicy9B326CCB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBucketB967BD35",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineBucketB967BD35",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineSourceAdditionalSourceCodePipelineActionRoleDefaultPolicy9B326CCB",
+        "Roles": [
+          {
+            "Ref": "PipelineSourceAdditionalSourceCodePipelineActionRole0897461A"
+          }
+        ]
+      }
+    },
+    "PipelineCFNDeployCFNCodePipelineActionRole444CF5DD": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineCFNDeployCFNCodePipelineActionRoleDefaultPolicy9C068517": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CfnChangeSetRole6F05F6FC",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks"
+              ],
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "cloudformation:ChangeSetName": "ChangeSetIntegTest"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/IntegTest-TestActionStack/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineCFNDeployCFNCodePipelineActionRoleDefaultPolicy9C068517",
+        "Roles": [
+          {
+            "Ref": "PipelineCFNDeployCFNCodePipelineActionRole444CF5DD"
+          }
+        ]
+      }
+    },
     "PipelineBucketB967BD35": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
       "Properties": {
         "VersioningConfiguration": {
           "Status": "Enabled"
         }
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "CfnChangeSetRole6F05F6FC": {
       "Type": "AWS::IAM::Role",

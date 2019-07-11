@@ -134,7 +134,9 @@
         "StreamSpecification": {
           "StreamViewType": "NEW_IMAGE"
         }
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     }
   }
 }

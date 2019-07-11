@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import rds = require('../lib');
 
 const app = new cdk.App();
@@ -9,7 +9,7 @@ const vpc = new ec2.Vpc(stack, 'VPC');
 
 /// !show
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.Aurora,
+  engine: rds.DatabaseClusterEngine.AURORA,
   masterUser: {
     username: 'admin'
   },

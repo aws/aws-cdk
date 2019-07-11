@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';

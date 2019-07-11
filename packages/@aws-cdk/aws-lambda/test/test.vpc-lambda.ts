@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { ICallbackFunction, Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -21,7 +21,7 @@ export = {
       this.lambda = new lambda.Function(this.stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         vpc: this.vpc,
         allowAllOutbound: false
       });
@@ -128,12 +128,12 @@ export = {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
     test.throws(() => {
-      lambdaFn.connections.allowToAnyIPv4(ec2.Port.allTcp(), 'Reach for the world Lambda!');
+      lambdaFn.connections.allowToAnyIpv4(ec2.Port.allTcp(), 'Reach for the world Lambda!');
     });
 
     test.done();
@@ -149,7 +149,7 @@ export = {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
       });

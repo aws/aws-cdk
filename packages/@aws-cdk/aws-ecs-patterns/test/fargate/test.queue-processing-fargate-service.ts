@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecsPatterns = require('../../lib');
 
@@ -70,7 +70,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
     const queue = new sqs.Queue(stack, 'fargate-test-queue', {
-      queueName: cdk.PhysicalName.of('fargate-test-sqs-queue'),
+      queueName: 'fargate-test-sqs-queue',
     });
 
     // WHEN

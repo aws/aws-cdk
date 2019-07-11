@@ -97,7 +97,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
@@ -249,9 +249,7 @@
               "Action": [
                 "ecs:ListContainerInstances",
                 "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
+                "ecs:SubmitTaskStateChange"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -260,6 +258,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "FargateCluster7CCD5F93",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -306,22 +322,7 @@
         "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
       ]
     },
-    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionE74B772A": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicA1F1F9E9": {
+    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468C75B1F21": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -334,6 +335,21 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+        }
+      }
+    },
+    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
+            "Arn"
+          ]
         }
       }
     },
@@ -598,7 +614,13 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "TaskDefTheContainerLogGroupD94C8EF5": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -686,10 +708,6 @@
           }
         ]
       }
-    },
-    "TaskDefTheContainerLogGroupD94C8EF5": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",
@@ -957,9 +975,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     },
     "TaskDefTheContainerAssetImageImageName92ECAC22": {
       "Type": "String",

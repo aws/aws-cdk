@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import glue = require('../lib');
 
@@ -15,7 +15,8 @@ export = {
       Resources: {
         DatabaseBucket318AF64F: {
           Type: 'AWS::S3::Bucket',
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
         },
         DatabaseB269D8BB: {
           Type: 'AWS::Glue::Database',

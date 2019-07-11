@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -237,7 +237,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
+  public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6ProcessedBytes', {
       statistic: 'Sum',
       ...props
@@ -249,7 +249,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
+  public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props

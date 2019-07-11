@@ -2,10 +2,11 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
+import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
+import { LaunchType } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -25,7 +26,7 @@ export = {
 
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       // THEN
@@ -41,7 +42,7 @@ export = {
           MinimumHealthyPercent: 50
         },
         DesiredCount: 1,
-        LaunchType: "EC2",
+        LaunchType: LaunchType.EC2,
         LoadBalancers: [],
         SchedulingStrategy: "REPLICA"
       }));
@@ -92,7 +93,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          maximumPercent: 300
+          maxHealthyPercent: 300
         });
       }, /Maximum percent must be 100 for daemon mode./);
 
@@ -117,7 +118,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          minimumHealthyPercent: 50
+          minHealthyPercent: 50
         });
       }, /Minimum healthy percent must be 0 for daemon mode./);
 
@@ -145,7 +146,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::Service', (service: any) => {
-        return service.LaunchType === 'EC2' && service.DesiredCount === undefined;
+        return service.LaunchType === LaunchType.EC2 && service.DesiredCount === undefined;
       }));
 
       test.done();
@@ -278,7 +279,7 @@ export = {
 
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // THEN
@@ -381,7 +382,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
@@ -412,10 +413,10 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
-      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -449,7 +450,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
       });
 
       test.done();
@@ -470,7 +471,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.randomly());
@@ -527,7 +528,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
@@ -584,7 +585,7 @@ export = {
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
+      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition});
 
       // WHEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
@@ -690,7 +691,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -767,7 +768,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -878,7 +879,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -953,7 +954,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {

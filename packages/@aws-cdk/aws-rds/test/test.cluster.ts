@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
@@ -14,7 +14,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
@@ -52,7 +52,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
@@ -86,7 +86,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
@@ -125,7 +125,7 @@ export = {
       }
     });
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
@@ -152,7 +152,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
@@ -209,7 +209,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
@@ -246,7 +246,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
       },
@@ -274,7 +274,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       engineVersion: "5.7.mysql_aurora.2.04.4",
       masterUser: {
         username: 'admin'
@@ -301,7 +301,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraPostgresql,
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       engineVersion: "10.7",
       masterUser: {
         username: 'admin'
@@ -328,7 +328,7 @@ export = {
 
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
       },

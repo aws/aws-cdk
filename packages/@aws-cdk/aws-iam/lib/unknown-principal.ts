@@ -1,4 +1,4 @@
-import { IConstruct, Stack } from '@aws-cdk/cdk';
+import { IConstruct, Stack } from '@aws-cdk/core';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 

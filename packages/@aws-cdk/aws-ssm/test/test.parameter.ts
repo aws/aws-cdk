@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { App, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import ssm = require('../lib');
 
@@ -13,7 +13,7 @@ export = {
     new ssm.StringParameter(stack, 'Parameter', {
       allowedPattern: '.*',
       description: 'The value Foo',
-      parameterName: cdk.PhysicalName.of('FooParameter'),
+      parameterName: 'FooParameter',
       stringValue: 'Foo',
     });
 
@@ -60,7 +60,7 @@ export = {
     new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '(Foo|Bar)',
       description: 'The values Foo and Bar',
-      parameterName: cdk.PhysicalName.of('FooParameter'),
+      parameterName: 'FooParameter',
       stringListValue: ['Foo', 'Bar'],
     });
 
@@ -281,7 +281,17 @@ export = {
         }
       });
       test.done();
-    }
+    },
 
+    'can query actual SSM Parameter Names, multiple times'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      ssm.StringParameter.valueForStringParameter(stack, '/my/param/name');
+      ssm.StringParameter.valueForStringParameter(stack, '/my/param/name');
+
+      test.done();
+    },
   }
 };

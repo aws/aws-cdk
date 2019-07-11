@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/a
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
 import { LambdaDeploymentConfig } from '../../lib';
@@ -11,7 +11,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.inline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.Nodejs810
+    runtime: lambda.Runtime.NODEJS_8_10
   });
 }
 function mockAlias(stack: cdk.Stack) {
@@ -32,7 +32,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -118,8 +118,8 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
-        deploymentGroupName: cdk.PhysicalName.of('test'),
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE,
+        deploymentGroupName: 'test',
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
@@ -139,7 +139,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE,
         role: serviceRole
       });
 
@@ -177,7 +177,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: LambdaDeploymentConfig.Linear10PercentEvery1Minute
+        deploymentConfig: LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -212,7 +212,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: codedeploy.LambdaDeploymentConfig.AllAtOnce,
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
           comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
@@ -247,7 +247,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         alias,
         preHook: mockFunction(stack, 'PreHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE
       });
       test.throws(() => group.addPreHook(mockFunction(stack, 'PreHook2')));
       test.done();
@@ -258,7 +258,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE
       });
       test.throws(() => group.addPostHook(mockFunction(stack, 'PostHook2')));
       test.done();
@@ -271,7 +271,7 @@ export = {
         application,
         alias,
         preHook: mockFunction(stack, 'PreHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE
       });
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
@@ -319,7 +319,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE
       });
       group.addPreHook(mockFunction(stack, 'PreHook'));
 
@@ -369,7 +369,7 @@ export = {
         application,
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE
       });
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
@@ -417,7 +417,7 @@ export = {
       const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE
       });
       group.addPostHook(mockFunction(stack, 'PostHook'));
 
@@ -467,7 +467,7 @@ export = {
         application,
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE,
         ignorePollAlarmsFailure: true,
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
@@ -499,7 +499,7 @@ export = {
         application,
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE,
         autoRollback: {
           failedDeployment: false
         }
@@ -532,7 +532,7 @@ export = {
         application,
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE,
         autoRollback: {
           stoppedDeployment: true
         }
@@ -558,7 +558,7 @@ export = {
         application,
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE,
         autoRollback: {
           deploymentInAlarm: false
         },
@@ -581,5 +581,21 @@ export = {
 
       test.done();
     },
-  }
+
+    'imported with fromLambdaDeploymentGroupAttributes': {
+      'defaults the Deployment Config to Canary10Percent5Minutes'(test: Test) {
+        const stack = new cdk.Stack();
+
+        const lambdaApp = codedeploy.LambdaApplication.fromLambdaApplicationName(stack, 'LA', 'LambdaApplication');
+        const importedGroup = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGroupAttributes(stack, 'LDG', {
+          application: lambdaApp,
+          deploymentGroupName: 'LambdaDeploymentGroup',
+        });
+
+        test.equal(importedGroup.deploymentConfig, LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+
+        test.done();
+      },
+    },
+  },
 };

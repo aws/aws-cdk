@@ -71,7 +71,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "pipelinePipeline22F2A91DArtifactsBucketC1799DCD": {
       "Type": "AWS::S3::Bucket",
@@ -92,7 +93,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "pipelinePipeline22F2A91DRole58B7B05E": {
       "Type": "AWS::IAM::Role",
@@ -174,6 +176,26 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -221,6 +243,12 @@
                     "Name": "Src"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -238,6 +266,12 @@
                 "InputArtifacts": [],
                 "Name": "Hello",
                 "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -264,6 +298,70 @@
         "pipelinePipeline22F2A91DRoleDefaultPolicyCDEE9D19",
         "pipelinePipeline22F2A91DRole58B7B05E"
       ]
+    },
+    "pipelinePipeline22F2A91DSourceCodeCommitCodePipelineActionRoleE54633E5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
     },
     "pipelinePipeline22F2A91DEventsRole048D7F59": {
       "Type": "AWS::IAM::Role",

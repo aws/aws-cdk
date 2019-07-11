@@ -24,27 +24,27 @@ export enum RuntimeFamily {
  */
 export class Runtime {
   /** A list of all known `Runtime`'s. */
-  public static readonly All = new Array<Runtime>();
+  public static readonly ALL = new Array<Runtime>();
 
   /** @deprecated Use `Nodejs810` or `Nodejs10x` */
-  public static readonly Nodejs =       new Runtime('nodejs',         RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS =       new Runtime('nodejs',         RuntimeFamily.NODEJS, { supportsInlineCode: true });
   /** @deprecated Use `Nodejs810` or `Nodejs10x` */
-  public static readonly Nodejs43 =     new Runtime('nodejs4.3',      RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_4_3 =     new Runtime('nodejs4.3',      RuntimeFamily.NODEJS, { supportsInlineCode: true });
   /** @deprecated Use `Nodejs810` or `Nodejs10x` */
-  public static readonly Nodejs610 =    new Runtime('nodejs6.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
-  public static readonly Nodejs810 =    new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
-  public static readonly Nodejs10x =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: false });
-  public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
-  public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
-  public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
-  public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.JAVA);
-  public static readonly DotNetCore1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DOTNET_CORE);
+  public static readonly NODEJS_6_10 =    new Runtime('nodejs6.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_8_10 =    new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_10_X =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: false });
+  public static readonly PYTHON_2_7 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_3_6 =     new Runtime('python3.6',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_3_7 =     new Runtime('python3.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly JAVA_8 =        new Runtime('java8',          RuntimeFamily.JAVA);
+  public static readonly DOTNET_CORE_1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DOTNET_CORE);
   /** @deprecated Use `DotNetCore21` */
-  public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
-  public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
-  public static readonly Go1x =         new Runtime('go1.x',          RuntimeFamily.GO);
-  public static readonly Ruby25 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
-  public static readonly Provided =     new Runtime('provided',       RuntimeFamily.OTHER);
+  public static readonly DOTNET_CORE_2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
+  public static readonly GO_1_X =         new Runtime('go1.x',          RuntimeFamily.GO);
+  public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
+  public static readonly PROVIDED =     new Runtime('provided',       RuntimeFamily.OTHER);
 
   /**
    * The name of this runtime, as expected by the Lambda resource.
@@ -67,7 +67,7 @@ export class Runtime {
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
 
-    Runtime.All.push(this);
+    Runtime.ALL.push(this);
   }
 
   public toString(): string {

@@ -3,8 +3,8 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
@@ -32,7 +32,6 @@ export interface IServerDeploymentGroup extends cdk.IResource {
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
  *
  * @see ServerDeploymentGroup#import
- * @see IServerDeploymentGroup#export
  */
 export interface ServerDeploymentGroupAttributes {
   /**
@@ -75,7 +74,7 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
 
   constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
     super(scope, id, props);
-    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
+    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
   }
 }
 
@@ -153,7 +152,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: PhysicalName;
+  readonly deploymentGroupName?: string;
 
   /**
    * The EC2/on-premise Deployment Configuration to use for this Deployment Group.
@@ -240,8 +239,8 @@ export interface ServerDeploymentGroupProps {
  */
 export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   /**
-   * Import an EC2/on-premise Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an EC2/on-premise Deployment Group defined either outside the CDK app,
+   * or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -305,18 +304,13 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: arnForDeploymentGroup(this.application.applicationName, resource.ref),
-      name: resource.ref,
-      arnComponents: {
-        service: 'codedeploy',
-        resource: 'deploymentgroup',
-        resourceName: `${this.application.applicationName}/${this.physicalName}`,
-        sep: ':',
-      },
+    this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
+    this.deploymentGroupArn = this.getResourceArnAttribute(arnForDeploymentGroup(this.application.applicationName, resource.ref), {
+      service: 'codedeploy',
+      resource: 'deploymentgroup',
+      resourceName: `${this.application.applicationName}/${this.physicalName}`,
+      sep: ':',
     });
-    this.deploymentGroupName = resourceIdentifiers.name;
-    this.deploymentGroupArn = resourceIdentifiers.arn;
   }
 
   /**

@@ -1,5 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
@@ -58,8 +58,8 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
 
     // Create a Task Definition for the container to start
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
-      memoryLimitMiB: props.memoryLimitMiB,
-      cpu: props.cpu,
+      memoryLimitMiB: props.memoryLimitMiB || 512,
+      cpu: props.cpu || 256,
     });
     taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,

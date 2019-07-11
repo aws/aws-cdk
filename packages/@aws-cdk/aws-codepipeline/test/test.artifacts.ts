@@ -1,6 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { ConstructNode } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { ConstructNode } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 import { FakeBuildAction } from './fake-build-action';

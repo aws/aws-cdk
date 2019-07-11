@@ -1,6 +1,6 @@
 import { expect } from '@aws-cdk/assert';
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { CloudFrontWebDistribution, ViewerProtocolPolicy } from '../lib';
 
@@ -119,6 +119,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -194,6 +195,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -272,6 +274,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",

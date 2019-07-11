@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceProps, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, ResourceProps, Stack } from '@aws-cdk/core';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
@@ -76,7 +76,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       new CfnSecurityGroupIngress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleConfig(),
-        ...connection.toRuleJSON(),
+        ...connection.toRuleJson(),
         description
       });
     }
@@ -94,7 +94,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       new CfnSecurityGroupEgress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleConfig(),
-        ...connection.toRuleJSON(),
+        ...connection.toRuleJson(),
         description
       });
     }
@@ -189,7 +189,7 @@ export interface SecurityGroupProps {
    * @default If you don't specify a GroupName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly securityGroupName?: PhysicalName;
+  readonly securityGroupName?: string;
 
   /**
    * A description of the security group.
@@ -298,7 +298,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.addDirectIngressRule({
       ...peer.toIngressRuleConfig(),
-      ...connection.toRuleJSON(),
+      ...connection.toRuleJson(),
       description
     });
   }
@@ -327,7 +327,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     const rule = {
       ...peer.toEgressRuleConfig(),
-      ...connection.toRuleJSON(),
+      ...connection.toRuleJson(),
       description
     };
 

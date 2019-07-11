@@ -1,5 +1,5 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 
@@ -99,7 +99,8 @@ export = {
           Ref: "apiC8550315"
           }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain"
         }
       }
     });
