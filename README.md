@@ -19,10 +19,8 @@ The following languages are currently supported:
 
 * JavaScript, TypeScript
 * Python
-* Java
-* .NET
-
-The CDK is currently in developer preview and we look forward to community feedback and collaboration!
+* Java (Developer Preview)
+* .NET (Developer Preview)
 
 [Developer Guide] |
 [Tutorial] |
