@@ -234,7 +234,7 @@ export class ConstructNode {
         ret.push(node);
       }
 
-      for (const child of node.node.children) {
+      for (const child of node.children) {
         visit(child);
       }
 
