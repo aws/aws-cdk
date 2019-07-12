@@ -20,7 +20,9 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
-    const bucket2 = new s3.Bucket(this, 'Destination2');
+    const bucket2 = new s3.Bucket(this, 'Destination2', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY
+    });
 
     new s3deploy.BucketDeployment(this, 'DeployWithPrefix', {
       source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
@@ -29,7 +31,9 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
-    const bucket3 = new s3.Bucket(this, 'Destination3');
+    const bucket3 = new s3.Bucket(this, 'Destination3', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY
+    });
     const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
       originConfigs: [
         {
@@ -43,9 +47,10 @@ class TestBucketDeployment extends cdk.Stack {
 
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
       source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
-      destinationBucket: bucket2,
+      destinationBucket: bucket3,
       distribution,
-      distributionPaths: ['/images/*.png']
+      distributionPaths: ['/images/*.png'],
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
   }

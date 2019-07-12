@@ -7,8 +7,8 @@
           "IndexDocument": "index.html"
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DestinationPolicy7982387E": {
       "Type": "AWS::S3::BucketPolicy",
@@ -92,8 +92,8 @@
         },
         "RetainOnDelete": false
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
       "Type": "AWS::IAM::Role",
@@ -329,6 +329,47 @@
                   ]
                 }
               ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Destination3E3DC043D",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Destination3E3DC043D",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "cloudfront:GetInvalidation",
+                "cloudfront:CreateInvalidation"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -399,8 +440,8 @@
     },
     "Destination281A09BDF": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DeployWithPrefixCustomResource9CF7C694": {
       "Type": "Custom::CDKBucketDeployment",
@@ -453,11 +494,13 @@
         "DestinationBucketKeyPrefix": "deploy/here/",
         "RetainOnDelete": false
       },
+      "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
     "Destination3E3DC043D": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DistributionCFDistribution882A7313": {
       "Type": "AWS::CloudFront::Distribution",
@@ -551,8 +594,9 @@
           ]
         },
         "DestinationBucketName": {
-          "Ref": "Destination281A09BDF"
+          "Ref": "Destination3E3DC043D"
         },
+        "RetainOnDelete": false,
         "DistributionId": {
           "Ref": "DistributionCFDistribution882A7313"
         },
@@ -560,8 +604,8 @@
           "/images/*.png"
         ]
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
