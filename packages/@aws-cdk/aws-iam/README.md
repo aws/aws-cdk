@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -45,7 +43,7 @@ const table = new dynamodb.Table(...);
 table.grant(fn, 'dynamodb:PutItem');
 ```
 
-The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principles resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
+The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principlal resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
 
 You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
