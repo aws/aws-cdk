@@ -1,6 +1,6 @@
 # AWS ECS - L3 Construct for Autoscaling ECS/Fargate Service that Processes Items in a SQS Queue
 
-To address issue [#2396](https://github.com/awslabs/aws-cdk/issues/2396), the AWS ECS CDK construct library should provide a way for customers to create a queue processing service (an AWS ECS/Fargate service that processes items from an sqs queue). This would mean adding new ECS CDK constructs `QueueProcessingEc2Service` and `QueueProcessingFargateService`, that would take in the necessary properties required to create a task definition, an SQS queue as well as an ECS/Fargate service and enable autoscaling for the service based on cpu usage and the SQS queue's approximateNumberOfMessagesVisible metric.
+To address issue [#2396](https://github.com/aws/aws-cdk/issues/2396), the AWS ECS CDK construct library should provide a way for customers to create a queue processing service (an AWS ECS/Fargate service that processes items from an sqs queue). This would mean adding new ECS CDK constructs `QueueProcessingEc2Service` and `QueueProcessingFargateService`, that would take in the necessary properties required to create a task definition, an SQS queue as well as an ECS/Fargate service and enable autoscaling for the service based on cpu usage and the SQS queue's approximateNumberOfMessagesVisible metric.
 
 ## General approach
 

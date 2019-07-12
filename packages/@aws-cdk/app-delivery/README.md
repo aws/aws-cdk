@@ -17,7 +17,7 @@
 
 This library includes a *CodePipeline* composite Action for deploying AWS CDK Applications.
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ### Limitations
 The construct library in it's current form has the following limitations:
@@ -78,7 +78,7 @@ pipeline.addStage({
 });
 
 const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
-  /** 
+  /**
   * Choose an environment configuration that meets your use case.
   * For NodeJS, this might be:
   *
@@ -115,12 +115,12 @@ const deployServiceAAction = new cicd.PipelineDeployStackAction({
   stack: serviceStackA,
   input: synthesizedApp,
   // See the note below for details about this option.
-  adminPermissions: false, 
+  adminPermissions: false,
 });
 deployStage.addAction(deployServiceAAction);
 // Add the necessary permissions for you service deploy action. This role is
 // is passed to CloudFormation and needs the permissions necessary to deploy
-// stack. Alternatively you can enable [Administrator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) permissions above, 
+// stack. Alternatively you can enable [Administrator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) permissions above,
 // users should understand the privileged nature of this role.
 deployServiceAAction.addToRolePolicy(new iam.PolicyStatement({
     actions: ['service:SomeAction'],
@@ -165,7 +165,7 @@ artifacts:
   files: '**/*'
 ```
 
-The `PipelineDeployStackAction` expects it's `input` to contain the result of 
+The `PipelineDeployStackAction` expects it's `input` to contain the result of
 synthesizing a CDK App using the `cdk synth -o <directory>`.
 
 

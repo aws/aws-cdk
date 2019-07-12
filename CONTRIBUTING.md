@@ -159,7 +159,7 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
-  commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.  
+  commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
 
 
@@ -176,7 +176,7 @@ The CDK is a big project, and, at the moment, all of the CDK modules are mastere
 to maintain integrity in the early stage of the project where things constantly change across the stack. In the future
 we believe many of these modules will be extracted to their own repositories.
 
-Another complexity is that the CDK is packaged using [jsii](https://github.com/awslabs/jsii) to multiple programming
+Another complexity is that the CDK is packaged using [jsii](https://github.com/aws/jsii) to multiple programming
 languages. This means that when a full build is complete, there will be a version of each module for each supported
 language.
 
@@ -317,7 +317,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com/awslabs/aws-cdk
+$ git clone git@github.com/aws/aws-cdk
 $ cd aws-cdk
 ```
 
@@ -341,7 +341,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com/awslabs/aws-cdk
+$ git clone git@github.com/aws/aws-cdk
 $ cd aws-cdk
 ```
 
@@ -545,5 +545,5 @@ $ CDK_TEST_BUILD=false lr test
 * [Samples](https://github.com/aws-samples/aws-cdk-examples): includes sample code in multiple languages
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
-* [jsii](https://github.com/awslabs/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
+* [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
 

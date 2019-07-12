@@ -9,7 +9,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
+This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
 AWS Construct Library.
 
 See the [AWS CDK Developer
