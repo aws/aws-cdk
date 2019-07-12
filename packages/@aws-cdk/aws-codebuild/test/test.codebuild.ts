@@ -312,7 +312,8 @@ export = {
         "Resources": {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyProjectRole9BBE5233": {
           "Type": "AWS::IAM::Role",
@@ -926,6 +927,36 @@ export = {
           {
             "ArtifactIdentifier": "artifact1",
             "Type": "S3",
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'disabledEncryption is set'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondaryArtifact(codebuild.Artifacts.s3({
+        bucket,
+        path: 'another/path',
+        name: 'name',
+        identifier: 'artifact1',
+        encryption: false,
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondaryArtifacts": [
+          {
+            "ArtifactIdentifier": "artifact1",
+            "EncryptionDisabled": true,
           },
         ],
       }));

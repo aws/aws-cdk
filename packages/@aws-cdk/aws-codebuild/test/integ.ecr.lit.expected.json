@@ -2,36 +2,9 @@
   "Resources": {
     "MyRepoF4F48043": {
       "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
       "Type": "AWS::ECR::Repository",
-      "Properties": {
-        "RepositoryPolicyText": {
-          "Statement": [
-            {
-              "Action": [
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "ecr:BatchCheckLayerAvailability"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codebuild.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              },
-              "Sid": "CodeBuild"
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
+      "DeletionPolicy": "Retain"
     },
     "MyProjectRole9BBE5233": {
       "Type": "AWS::IAM::Role",
@@ -65,6 +38,25 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyRepoF4F48043",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
             {
               "Action": [
                 "logs:CreateLogGroup",
@@ -186,6 +178,7 @@
               ]
             ]
           },
+          "ImagePullCredentialsType": "SERVICE_ROLE",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },

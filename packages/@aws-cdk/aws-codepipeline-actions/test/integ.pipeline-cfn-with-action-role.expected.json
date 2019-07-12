@@ -7,7 +7,8 @@
           "Status": "Enabled"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "ActionRole60B0EDF7": {
       "Type": "AWS::IAM::Role",
