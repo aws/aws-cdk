@@ -9,7 +9,7 @@ labels: needs-triage
   - [ ] :beetle: bug report
   - [ ] :rocket: feature request
   - [ ] :books: construct library gap
-  - [ ] :phone: security issue or vulnerability => Please see [policy](https://github.com/awslabs/aws-cdk/security/policy)
+  - [ ] :phone: security issue or vulnerability => Please see [policy](https://github.com/aws/aws-cdk/security/policy)
   - [ ] :question: support request => Please see note at the top of this template.
 
 
@@ -27,7 +27,7 @@ labels: needs-triage
 
 
 * **Please tell us about your environment:**
-  
+
   - CDK CLI Version: xx.xx.xx
   - Module Version: xx.xx.xx
   - OS: [all | Windows 10 | OSX Mojave | Ubuntu | etc... ]

@@ -154,7 +154,7 @@ export class AssetCode extends Code {
    */
   public _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty {
     if (resource) {
-      // https://github.com/awslabs/aws-cdk/issues/1432
+      // https://github.com/aws/aws-cdk/issues/1432
       this.asset!.addResourceMetadata(resource, 'Code');
     }
 

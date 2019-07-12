@@ -86,8 +86,8 @@ If you happen to have stumbled upon incorrect data built into this library, it
 is always a good idea to report your findings in a [GitHub issue], so we can fix
 it for everyone else!
 
-[GitHub issue]: https://github.com/awslabs/aws-cdk/issues
+[GitHub issue]: https://github.com/aws/aws-cdk/issues
 
 ---
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

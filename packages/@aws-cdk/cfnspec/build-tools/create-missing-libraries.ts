@@ -131,9 +131,9 @@ async function main() {
       },
       repository: {
         type: "git",
-        url: "https://github.com/awslabs/aws-cdk.git"
+        url: "https://github.com/aws/aws-cdk.git"
       },
-      homepage: "https://github.com/awslabs/aws-cdk",
+      homepage: "https://github.com/aws/aws-cdk",
       scripts: {
         build: "cdk-build",
         integ: "cdk-integ",
@@ -235,7 +235,7 @@ async function main() {
     await write('README.md', [
       `## ${namespace} Construct Library`,
       '',
-      'This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.',
+      'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
       '',
       '```ts',
       `import ${lowcaseModuleName} = require('${packageName}');`,
