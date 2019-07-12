@@ -27,7 +27,7 @@ export class SpecName {
   constructor(readonly module: string, readonly resourceName: string) {
   }
 
-  public get fqn() {
+  public get fqn(): string {
     return this.module + '::' + this.resourceName;
   }
 
@@ -65,7 +65,7 @@ export class PropertyAttributeName extends SpecName {
     super(module, resourceName);
   }
 
-  public get fqn() {
+  public get fqn(): string {
     return joinIf(super.fqn, '.',  this.propAttrName);
   }
 }

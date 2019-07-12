@@ -65,7 +65,7 @@ export default class CodeGenerator {
     return false;
   }
 
-  public emitCode() {
+  public emitCode(): void {
     for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
       const resourceType = this.spec.ResourceTypes[name];
 
@@ -81,7 +81,7 @@ export default class CodeGenerator {
   /**
    * Saves the generated file.
    */
-  public async save(dir: string) {
+  public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
     return await this.code.save(dir);
   }
@@ -89,7 +89,7 @@ export default class CodeGenerator {
   /**
    * Emits classes for all property types
    */
-  private emitPropertyTypes(resourceName: string, resourceClass: genspec.CodeName) {
+  private emitPropertyTypes(resourceName: string, resourceClass: genspec.CodeName): void {
     const prefix = `${resourceName}.`;
     for (const name of Object.keys(this.spec.PropertyTypes).sort()) {
       if (!name.startsWith(prefix)) { continue; }
@@ -102,7 +102,7 @@ export default class CodeGenerator {
     }
   }
 
-  private openClass(name: genspec.CodeName, superClasses?: string) {
+  private openClass(name: genspec.CodeName, superClasses?: string): string {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
     this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
     return name.className;
@@ -321,7 +321,7 @@ export default class CodeGenerator {
    *
    * Since resolve() deep-resolves, we only need to do this once.
    */
-  private emitCloudFormationProperties(propsType: genspec.CodeName, propMap: Dictionary<string>, taggable: boolean) {
+  private emitCloudFormationProperties(propsType: genspec.CodeName, propMap: Dictionary<string>, taggable: boolean): void {
     this.code.openBlock('protected get cfnProperties(): { [key: string]: any } ');
     this.code.indent('return {');
     for (const prop of Object.values(propMap)) {
@@ -447,7 +447,7 @@ export default class CodeGenerator {
   private emitValidator(resource: genspec.CodeName,
                         typeName: genspec.CodeName,
                         propSpecs: { [name: string]: schema.Property },
-                        nameConversionTable: Dictionary<string>) {
+                        nameConversionTable: Dictionary<string>): void {
     const validatorName = genspec.validatorName(typeName);
 
     this.code.line('/**');
@@ -546,7 +546,7 @@ export default class CodeGenerator {
 
   }
 
-  private beginNamespace(type: genspec.CodeName) {
+  private beginNamespace(type: genspec.CodeName): void {
     if (type.namespace) {
       const parts = type.namespace.split('.');
       for (const part of parts) {
@@ -555,7 +555,7 @@ export default class CodeGenerator {
     }
   }
 
-  private endNamespace(type: genspec.CodeName) {
+  private endNamespace(type: genspec.CodeName): void {
     if (type.namespace) {
       const parts = type.namespace.split('.');
       for (const _ of parts) {
@@ -564,7 +564,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitPropertyType(resourceContext: genspec.CodeName, typeName: genspec.CodeName, propTypeSpec: schema.PropertyBag) {
+  private emitPropertyType(resourceContext: genspec.CodeName, typeName: genspec.CodeName, propTypeSpec: schema.PropertyBag): void {
     this.code.line();
     this.beginNamespace(typeName);
 
@@ -661,11 +661,11 @@ export default class CodeGenerator {
     return this.findNativeType(context, specType);
   }
 
-  private renderTypeUnion(context: genspec.CodeName, types: genspec.CodeName[]) {
+  private renderTypeUnion(context: genspec.CodeName, types: genspec.CodeName[]): string {
     return types.map(t => this.renderCodeName(context, t)).join(' | ');
   }
 
-  private docLink(link: string | undefined, ...before: string[]) {
+  private docLink(link: string | undefined, ...before: string[]): void {
     if (!link && before.length === 0) { return; }
     this.code.line('/**');
     before.forEach(line => this.code.line(` * ${line}`.trimRight()));
@@ -689,7 +689,7 @@ function quoteCode(code: string): string {
   return '`' + code + '`';
 }
 
-function tokenizableType(alternatives: string[]) {
+function tokenizableType(alternatives: string[]): boolean {
   if (alternatives.length > 1) {
     return false;
   }
