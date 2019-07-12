@@ -1,7 +1,8 @@
 # AWS Cloud Development Kit (AWS CDK)
 
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRUlEQk1UWVhQRDduSy9iWWtpa012bmJSU0t2aXpCeEtTT2VpWDhlVmxldVU0ZXBoSzRpdTk1cGNNTThUaUtYVU5BMVZnd1ZhT2FTMWZjNkZ0RE5hSlpNPSIsIml2UGFyYW1ldGVyU3BlYyI6IllIUjJNUEZKY3NqYnR6S3EiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
-[![Build Status](https://travis-ci.org/awslabs/aws-cdk.svg?branch=master)](https://travis-ci.org/awslabs/aws-cdk)
+[![Build Status](https://travis-ci.org/aws/aws-cdk.svg?branch=master)](https://travis-ci.org/aws/aws-cdk)
+[![Version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/awslabs/aws-cdk)
 [![NPM version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
 [![PyPI version](https://badge.fury.io/py/aws-cdk.core.svg)](https://badge.fury.io/py/aws-cdk.core)
@@ -20,8 +21,8 @@ The CDK is available in the following languages:
 
 * JavaScript, TypeScript ([Node.js ≥ 8.11.x](https://nodejs.org/en/download))
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
-* Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
-* .NET ([.NET Core ≥ 2.0](https://dotnet.microsoft.com/download))
+* Java (Developer Preview, [Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
+* .NET (Developer Preview, [.NET Core ≥ 2.0](https://dotnet.microsoft.com/download))
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 

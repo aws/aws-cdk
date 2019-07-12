@@ -10,7 +10,7 @@ import { arnForApplication } from '../utils';
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link #import} method.
+ * use the {@link #fromServerApplicationName} method.
  */
 export interface IServerApplication extends IResource {
   /** @attribute */
@@ -39,8 +39,7 @@ export interface ServerApplicationProps {
  */
 export class ServerApplication extends Resource implements IServerApplication {
   /**
-   * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an Application defined either outside the CDK app, or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct

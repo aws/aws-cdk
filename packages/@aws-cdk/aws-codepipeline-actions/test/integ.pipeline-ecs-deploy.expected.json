@@ -195,7 +195,8 @@
     },
     "EcrRepoBB83A592": {
       "Type": "AWS::ECR::Repository",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
@@ -316,7 +317,8 @@
           "Status": "Enabled"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "EcsProjectRoleE2F0E9D2": {
       "Type": "AWS::IAM::Role",
