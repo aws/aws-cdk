@@ -53,7 +53,7 @@ export interface ArtifactsProps {
  * Artifacts definition for a CodeBuild Project.
  */
 export abstract class Artifacts implements IArtifacts {
-  public static s3(props: S3ArtifactsProps): Artifacts {
+  public static s3(props: S3ArtifactsProps): IArtifacts {
     return new S3Artifacts(props);
   }
 
@@ -113,6 +113,14 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    * @default true - files will be archived
    */
   readonly packageZip?: boolean;
+
+  /**
+   * If this is false, build output will not be encrypted.
+   * This is useful if the artifact to publish a static website or sharing content with others
+   *
+   * @default true - output will be encrypted
+   */
+  readonly encryption?: boolean;
 }
 
 /**
@@ -136,6 +144,7 @@ class S3Artifacts extends Artifacts {
         namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
         name: this.props.name,
         packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
+        encryptionDisabled: this.props.encryption === false ? true : undefined,
       }
     };
   }

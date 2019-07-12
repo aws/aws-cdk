@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -164,7 +162,7 @@ listener.addTargets('AppFleet', {
     targets: [asg],
     healthCheck: {
         path: '/ping',
-        intervalSecs: 60,
+        interval: cdk.Duration.minutes(1),
     }
 });
 ```
@@ -186,7 +184,7 @@ listener.addTargets('AppFleet', {
     }
 });
 
-listener.connections.allowFrom(lb, new TcpPort(8088));
+listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
 
 ### Protocol for Load Balancer Targets

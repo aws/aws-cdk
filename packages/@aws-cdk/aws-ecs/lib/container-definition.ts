@@ -11,16 +11,17 @@ import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
  */
 export interface ContainerDefinitionOptions {
   /**
-   * The image to use for a container.
+   * The image used to start a container.
    *
-   * You can use images in the Docker Hub registry or specify other
-   * repositories (repository-url/image:tag).
+   * This string is passed directly to the Docker daemon.
+   * Images in the Docker Hub registry are available by default.
+   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
    * TODO: Update these to specify using classes of IContainerImage
    */
   readonly image: ContainerImage;
 
   /**
-   * The CMD value to pass to the container.
+   * The command that is passed to the container.
    *
    * If you provide a shell command as a single string, you have to quote command-line arguments.
    *
@@ -36,35 +37,37 @@ export interface ContainerDefinitionOptions {
   readonly cpu?: number;
 
   /**
-   * Indicates whether networking is disabled within the container.
+   * Specifies whether networking is disabled within the container.
+   *
+   * When this parameter is true, networking is disabled within the container.
    *
    * @default false
    */
   readonly disableNetworking?: boolean;
 
   /**
-   * A list of DNS search domains that are provided to the container.
+   * A list of DNS search domains that are presented to the container.
    *
    * @default - No search domains.
    */
   readonly dnsSearchDomains?: string[];
 
   /**
-   * A list of DNS servers that Amazon ECS provides to the container.
+   * A list of DNS servers that are presented to the container.
    *
    * @default - Default DNS servers.
    */
   readonly dnsServers?: string[];
 
   /**
-   * A key-value map of labels for the container.
+   * A key/value map of labels to add to the container.
    *
    * @default - No labels.
    */
   readonly dockerLabels?: { [key: string]: string };
 
   /**
-   * A list of custom labels for SELinux and AppArmor multi-level security systems.
+   * A list of strings to provide custom labels for SELinux and AppArmor multi-level security systems.
    *
    * @default - No security labels.
    */
@@ -87,12 +90,12 @@ export interface ContainerDefinitionOptions {
   readonly environment?: { [key: string]: string };
 
   /**
-   * Specifies whether the container will be marked essential.
+   * Specifies whether the container is marked essential.
    *
    * If the essential parameter of a container is marked as true, and that container fails
    * or stops for any reason, all other containers that are part of the task are stopped.
    * If the essential parameter of a container is marked as false, then its failure does not
-   * affect the rest of the containers in a task.
+   * affect the rest of the containers in a task. All tasks must have at least one essential container.
    *
    * If this parameter is omitted, a container is assumed to be essential.
    *
@@ -108,21 +111,21 @@ export interface ContainerDefinitionOptions {
   readonly extraHosts?: { [name: string]: string };
 
   /**
-   * Container health check.
+   * The health check command and associated configuration parameters for the container.
    *
    * @default - Health check configuration from container.
    */
   readonly healthCheck?: HealthCheck;
 
   /**
-   * The name that Docker uses for the container hostname.
+   * The hostname to use for your container.
    *
    * @default - Automatic hostname.
    */
   readonly hostname?: string;
 
   /**
-   * The hard limit (in MiB) of memory to present to the container.
+   * The amount (in MiB) of memory to present to the container.
    *
    * If your container attempts to exceed the allocated memory, the container
    * is terminated.
@@ -136,10 +139,11 @@ export interface ContainerDefinitionOptions {
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
    *
-   * When system memory is under contention, Docker attempts to keep the
-   * container memory within the limit. If the container requires more memory,
-   * it can consume up to the value specified by the Memory property or all of
-   * the available memory on the container instance—whichever comes first.
+   * When system memory is under heavy contention, Docker attempts to keep the
+   * container memory to this soft limit. However, your container can consume more
+   * memory when it needs to, up to either the hard limit specified with the memory
+   * parameter (if applicable), or all of the available memory on the container
+   * instance, whichever comes first.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
    *
@@ -148,14 +152,15 @@ export interface ContainerDefinitionOptions {
   readonly memoryReservationMiB?: number;
 
   /**
-   * Indicates whether the container is given full access to the host container instance.
+   * Specifies whether the container is marked as privileged.
+   * When this parameter is true, the container is given elevated privileges on the host container instance (similar to the root user).
    *
    * @default false
    */
   readonly privileged?: boolean;
 
   /**
-   * Indicates whether the container's root file system is mounted as read only.
+   * When this parameter is true, the container is given read-only access to its root file system.
    *
    * @default false
    */
@@ -169,21 +174,22 @@ export interface ContainerDefinitionOptions {
   readonly user?: string;
 
   /**
-   * The working directory in the container to run commands in.
+   * The working directory in which to run commands inside the container.
    *
    * @default /
    */
   readonly workingDirectory?: string;
 
   /**
-   * Configures a custom log driver for the container.
+   * The log configuration specification for the container.
    *
    * @default - Containers use the same logging driver that the Docker daemon uses.
    */
   readonly logging?: LogDriver;
 
   /**
-   * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
+   * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
+   * For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
    *
    * @default - No Linux paramters.
    */
@@ -191,7 +197,7 @@ export interface ContainerDefinitionOptions {
 }
 
 /**
- * Properties of a container definition
+ * The properties in a container definition.
  */
 export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
   /**
@@ -443,18 +449,20 @@ export class ContainerDefinition extends cdk.Construct {
 }
 
 /**
- * Container health check configuration
+ * The health check command and associated configuration parameters for the container.
  */
 export interface HealthCheck {
   /**
-   * Command to run, as the binary path and arguments.
+   * A string array representing the command that the container runs to determine if it is healthy.
+   * The string array must start with CMD to execute the command arguments directly, or
+   * CMD-SHELL to run the command with the container's default shell.
    *
-   * If you provide a shell command as a single string, you have to quote command-line arguments.
+   * For example: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ]
    */
   readonly command: string[];
 
   /**
-   * Time period in seconds between each health check execution.
+   * The time period in seconds between each health check execution.
    *
    * You may specify between 5 and 300 seconds.
    *
@@ -463,7 +471,7 @@ export interface HealthCheck {
   readonly interval?: cdk.Duration;
 
   /**
-   * Number of times to retry a failed health check before the container is considered unhealthy.
+   * The number of times to retry a failed health check before the container is considered unhealthy.
    *
    * You may specify between 1 and 10 retries.
    *
@@ -472,7 +480,8 @@ export interface HealthCheck {
   readonly retries?: number;
 
   /**
-   * Grace period after startup before failed health checks count.
+   * The optional grace period within which to provide containers time to bootstrap before
+   * failed health checks count towards the maximum number of retries.
    *
    * You may specify between 0 and 300 seconds.
    *
@@ -529,25 +538,25 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
 }
 
 /**
- * A list of ulimits to set in the container.
- *
- * Correspond to ulimits options on docker run.
+ * The ulimit settings to pass to the container.
  *
  * NOTE: Does not work for Windows containers.
  */
 export interface Ulimit {
   /**
-   * What resource to enforce a limit on
+   * The type of the ulimit.
+   *
+   * For more information, see [UlimitName](https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName).
    */
   readonly name: UlimitName,
 
   /**
-   * Soft limit of the resource
+   * The soft limit for the ulimit type.
    */
   readonly softLimit: number,
 
   /**
-   * Hard limit of the resource
+   * The hard limit for the ulimit type.
    */
   readonly hardLimit: number,
 }
@@ -582,27 +591,37 @@ function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
 }
 
 /**
- * Map a host port to a container port
+ * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
  */
 export interface PortMapping {
   /**
-   * The port the container will listen on.
+   * The port number on the container that is bound to the user-specified or automatically assigned host port.
+   *
+   * If you are using containers in a task with the awsvpc or host network mode, exposed ports should be specified using containerPort.
+   * If you are using containers in a task with the bridge network mode and you specify a container port and not a host port,
+   * your container automatically receives a host port in the ephemeral port range.
+   *
+   * For more information, see hostPort.
+   * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    */
   readonly containerPort: number;
 
   /**
-   * Port on the host
+   * The port number on the container instance to reserve for your container.
    *
-   * In AwsVpc or Host networking mode, leave this out or set it to the
-   * same value as containerPort.
+   * If you are using containers in a task with the awsvpc or host network mode,
+   * the hostPort can either be left blank or set to the same value as the containerPort.
    *
-   * In Bridge networking mode, leave this out or set it to non-reserved
-   * non-ephemeral port.
+   * If you are using containers in a task with the bridge network mode,
+   * you can specify a non-reserved host port for your container port mapping, or
+   * you can omit the hostPort (or set it to 0) while specifying a containerPort and
+   * your container automatically receives a port in the ephemeral port range for
+   * your container instance operating system and Docker version.
    */
   readonly hostPort?: number;
 
   /**
-   * Protocol
+   * The protocol used for the port mapping. Valid values are Protocol.TCP and Protocol.UDP.
    *
    * @default TCP
    */
@@ -632,16 +651,48 @@ function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProper
   };
 }
 
+/**
+ * The temporary disk space mounted to the container.
+ */
 export interface ScratchSpace {
+  /**
+   * The path on the container to mount the scratch volume at.
+   */
   readonly containerPath: string,
+  /**
+   * Specifies whether to give the container read-only access to the scratch volume.
+   *
+   * If this value is true, the container has read-only access to the scratch volume.
+   * If this value is false, then the container can write to the scratch volume.
+   */
   readonly readOnly: boolean,
-  readonly sourcePath: string
+  readonly sourcePath: string,
+  /**
+   * The name of the scratch volume to mount. Must be a volume name referenced in the name parameter of task definition volume.
+   */
   readonly name: string,
 }
 
+/**
+ * The details of data volume mount points for a container.
+ */
 export interface MountPoint {
+  /**
+   * The path on the container to mount the host volume at.
+   */
   readonly containerPath: string,
+  /**
+   * Specifies whether to give the container read-only access to the volume.
+   *
+   * If this value is true, the container has read-only access to the volume.
+   * If this value is false, then the container can write to the volume.
+   */
   readonly readOnly: boolean,
+  /**
+   * The name of the volume to mount.
+   *
+   * Must be a volume name referenced in the name parameter of task definition volume.
+   */
   readonly sourceVolume: string,
 }
 
@@ -654,16 +705,19 @@ function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty 
 }
 
 /**
- * A volume from another container
+ * The details on a data volume from another container in the same task definition.
  */
 export interface VolumeFrom {
   /**
-   * Name of the source container
+   * The name of another container within the same task definition from which to mount volumes.
    */
   readonly sourceContainer: string,
 
   /**
-   * Whether the volume is read only
+   * Specifies whether the container has read-only access to the volume.
+   *
+   * If this value is true, the container has read-only access to the volume.
+   * If this value is false, then the container can write to the volume.
    */
   readonly readOnly: boolean,
 }

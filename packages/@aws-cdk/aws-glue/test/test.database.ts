@@ -15,7 +15,8 @@ export = {
       Resources: {
         DatabaseBucket318AF64F: {
           Type: 'AWS::S3::Bucket',
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
         },
         DatabaseB269D8BB: {
           Type: 'AWS::Glue::Database',

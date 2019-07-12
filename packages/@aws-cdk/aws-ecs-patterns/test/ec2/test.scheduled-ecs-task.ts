@@ -10,7 +10,7 @@ export = {
   "Can create a scheduled Ec2 Task - with only required props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -73,7 +73,7 @@ export = {
   "Can create a scheduled Ec2 Task - with optional props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -150,7 +150,7 @@ export = {
   "Scheduled Ec2 Task - with MemoryReservation defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -198,7 +198,7 @@ export = {
   "Scheduled Ec2 Task - with Command defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')

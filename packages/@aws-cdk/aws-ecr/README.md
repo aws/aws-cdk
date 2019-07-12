@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -32,5 +30,5 @@ is important here):
 
 ```ts
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
-repository.addLifecycleRule({ maxImageAgeDays: 30 });
+repository.addLifecycleRule({ maxImageAgeDays: cdk.Duration.days(30) });
 ```

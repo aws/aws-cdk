@@ -231,16 +231,19 @@ export class Cluster extends Resource implements ICluster {
   }
 }
 
+/**
+ * The properties that define which ECS-optimized AMI is used.
+ */
 export interface EcsOptimizedAmiProps {
   /**
-   * What generation of Amazon Linux to use
+   * The Amazon Linux generation to use.
    *
    * @default AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
 
   /**
-   * What ECS Optimized AMI type to use
+   * The ECS-optimized AMI variant to use.
    *
    * @default AmiHardwareType.Standard
    */
@@ -294,38 +297,38 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 }
 
 /**
- * An ECS cluster
+ * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export interface ICluster extends IResource {
   /**
-   * Name of the cluster
+   * The name of the cluster.
    * @attribute
    */
   readonly clusterName: string;
 
   /**
-   * The ARN of this cluster
+   * The Amazon Resource Name (ARN) that identifies the cluster.
    * @attribute
    */
   readonly clusterArn: string;
 
   /**
-   * VPC that the cluster instances are running in
+   * The VPC associated with the cluster.
    */
   readonly vpc: ec2.IVpc;
 
   /**
-   * Connections manager of the cluster instances
+   * Manage the allowed network connections for the cluster with Security Groups.
    */
   readonly connections: ec2.Connections;
 
   /**
-   * Whether the cluster has EC2 capacity associated with it
+   * Specifies whether the cluster has EC2 instance capacity.
    */
   readonly hasEc2Capacity: boolean;
 
   /**
-   * Getter for Cloudmap namespace created in the cluster
+   * The AWS Cloud Map namespace to associate with the cluster.
    */
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 }
@@ -468,8 +471,8 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   readonly instanceType: ec2.InstanceType;
 
   /**
-   * The ECS-optimized AMI variant to use. For more information, see Amazon ECS-optimized AMIs:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html]
+   * The ECS-optimized AMI variant to use. For more information, see
+   * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
    *
    * @default - Amazon Linux 2
    */
@@ -501,8 +504,8 @@ export interface CloudMapNamespaceOptions {
 }
 
 /**
- * The ECS-optimized AMI variant to use. For more information, see Amazon ECS-optimized AMIs:
- * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html].
+ * The ECS-optimized AMI variant to use. For more information, see
+ * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
  */
 export enum AmiHardwareType {
 

@@ -84,6 +84,7 @@
     },
     "B08E7C7AF": {
       "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "BNotificationsEB8DA980": {
