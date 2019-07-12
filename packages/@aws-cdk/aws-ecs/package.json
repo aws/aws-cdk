@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-ecs"
   },
   "scripts": {
@@ -98,7 +98,7 @@
     "@aws-cdk/core": "^1.0.0",
     "@aws-cdk/cx-api": "^1.0.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-applicationautoscaling": "^1.0.0",
     "@aws-cdk/aws-autoscaling": "^1.0.0",
