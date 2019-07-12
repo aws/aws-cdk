@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -26,7 +24,7 @@ adds capacity to it,
 and instantiates the Amazon ECS Service with an automatic load balancer.
 
 ```ts
-import ecs_patterns = require('@aws-cdk/aws-ecs-patterns');
+import ecs = require('@aws-cdk/aws-ecs');
 
 // Create an ECS cluster
 const cluster = new ecs.Cluster(this, 'Cluster', {
@@ -39,8 +37,8 @@ cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   desiredCapacity: 3,
 });
 
-// Instantiate Amazon ECS Service with an automatic load balancer
-const ecsService = new ecs_patterns.LoadBalancedEc2Service(this, 'Service', {
+// Instantiate an Amazon ECS Service
+const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
@@ -240,7 +238,7 @@ const target = listener.addTargets('ECS', {
 });
 ```
 
-There are two higher-level constructs available which include a load balancer for you:
+There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
 
 * `LoadBalancedFargateService`
 * `LoadBalancedEc2Service`

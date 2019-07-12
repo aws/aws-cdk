@@ -2,13 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/awslabs/aws-cdk/compare/v0.39.0...v1.0.0) (2019-07-09)
+
+
+### General Availability of the AWS Cloud Development Kit!! 🎉🎉🥂🥂🍾🍾
+
+We are excited to announce the 1.0.0 release of the AWS CDK –
+including GA support for TypeScript, JavaScript, and Python!
+
+We want to thank all of our early customers, and the hundreds of contributors,
+for all the help and support in making this release a reality.
+Thank you for the patience to deal with the many, many breaking changes that happened along the way.
+This product would not be what it is today if it weren't for all the feedback,
+diligent issue reporting (bugs, missing features, unclear documentation, etc.),
+and code contributions from the community.
+
+Special thanks go out to a few of our most prolific contributors who went above and beyond to help improve the CDK:
+
+* [Mike Cowgill](https://github.com/moofish32)
+* [Jonathan Goldwasser](https://github.com/jogold)
+* [Breland Miley](https://github.com/mindstorms6)
+* [Piradeep Kandasamy](https://github.com/pkandasamy91)
+* [Hsing-Hui Hsu](https://github.com/SoManyHs)
+* [Simon-Pierre Gingras](https://github.com/spg)
+* [Jungseok Lee](https://github.com/jungseoklee)
+* [Clare Liguori](https://github.com/clareliguori)
+* [Yenlin Chen](https://github.com/hencrice)
+* [Lee Packham](https://github.com/leepa)
+
+1.0.0 is a huge milestone for us, but it's still only the beginning!
+We are excited to continue evolving the CDK, to introduce support for new languages and capabilities,
+and to continue working closely with the open-source community.
+
+
+### Bug Fixes
+
+* **cli:** output message when successfully synthesizing multiple stacks ([#3259](https://github.com/awslabs/aws-cdk/issues/3259)) ([0c30f12](https://github.com/awslabs/aws-cdk/commit/0c30f12))
+* **python:** Make sure stack name in the init template does not contain illegal characters ([#3261](https://github.com/awslabs/aws-cdk/issues/3261)) ([7d22b2c](https://github.com/awslabs/aws-cdk/commit/7d22b2c))
+
+
 ## [0.39.0](https://github.com/awslabs/aws-cdk/compare/v0.38.0...v0.39.0) (2019-07-08)
 
 
 ### Bug Fixes
 
 * **codepipeline:** mark crossRegionReplicationBuckets and crossRegionSupport as experimental. ([#3226](https://github.com/awslabs/aws-cdk/issues/3226)) ([f8256e7](https://github.com/awslabs/aws-cdk/commit/f8256e7))
-* **assets:**: packages `assets`, `aws-ecr-assets` and `aws-s3-assets` are now experimental instead of stable
+* **assets:** packages `assets`, `aws-ecr-assets` and `aws-s3-assets` are now experimental instead of stable
 
 
 ### BREAKING CHANGES
@@ -16,9 +55,9 @@ All notable changes to this project will be documented in this file. See [standa
 * **codepipeline:** Pipeline.crossRegionReplicationBuckets is now experimental
 * **codepipeline:** Pipeline.crossRegionSupport is now experimental
 * **codepipeline:** CrossRegionSupport is now experimental
-* **assets:**: package `assets`is now experimental instead of stable
-* **aws-ecr-assets:**: package `aws-ecr-assets`is now experimental instead of stable
-* **aws-s3-assets:**: package `aws-s3-assets`is now experimental instead of stable
+* **assets:** package `assets`is now experimental instead of stable
+* **aws-ecr-assets:** package `aws-ecr-assets`is now experimental instead of stable
+* **aws-s3-assets:** package `aws-s3-assets`is now experimental instead of stable
 
 
 ## [0.38.0](https://github.com/awslabs/aws-cdk/compare/v0.37.0...v0.38.0) (2019-07-08)
