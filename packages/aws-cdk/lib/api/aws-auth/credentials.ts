@@ -5,6 +5,9 @@ export enum Mode {
   ForWriting
 }
 
+/**
+ * @experimental
+ */
 export interface CredentialProviderSource {
   name: string;
 

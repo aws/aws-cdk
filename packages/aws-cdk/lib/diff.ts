@@ -22,7 +22,7 @@ export function printStackDiff(
       stream?: FormatStream): number {
 
   if (newTemplate.assets.length > 0) {
-    const issue = 'https://github.com/awslabs/aws-cdk/issues/395';
+    const issue = 'https://github.com/aws/aws-cdk/issues/395';
     warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
   }
 

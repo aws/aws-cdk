@@ -7,7 +7,7 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "git://github.com/aws/aws-cdk"
   },
   "pkglint": {
     "ignore": true

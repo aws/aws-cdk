@@ -8,7 +8,7 @@ The CDK is also distributed as a single zip file which contains:
 3. Java Framework and AWS Constructs
 
 You can download the zip file from the
-[Releases](http://github.com/awslabs/aws-cdk/releases) page on GitHub.
+[Releases](http://github.com/aws/aws-cdk/releases) page on GitHub.
 
 The zip file comes with a signature so the integrity of the download
 can be verified (see below).

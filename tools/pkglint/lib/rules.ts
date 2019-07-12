@@ -53,7 +53,7 @@ export class RepositoryCorrect extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     expectJSON(this.name, pkg, 'repository.type', 'git');
-    expectJSON(this.name, pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
+    expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
     const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
     expectJSON(this.name, pkg, 'repository.directory', pkgDir);
   }
@@ -66,7 +66,7 @@ export class HomepageCorrect extends ValidationRule {
   public readonly name = 'package-info/homepage';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'homepage', 'https://github.com/awslabs/aws-cdk');
+    expectJSON(this.name, pkg, 'homepage', 'https://github.com/aws/aws-cdk');
   }
 }
 
@@ -142,7 +142,7 @@ export class ReadmeFile extends ValidationRule {
           readmeFile,
           [
             `## ${headline || pkg.json.description}`,
-            'This module is part of the[AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.'
+            'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.'
           ].join('\n')
         )
       });

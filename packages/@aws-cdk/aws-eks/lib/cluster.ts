@@ -313,7 +313,7 @@ export class Cluster extends Resource implements ICluster {
       `/etc/eks/bootstrap.sh ${this.clusterName} --use-max-pods ${options.maxPods}`,
     );
     // FIXME: Add a cfn-signal call once we've sorted out UserData and can write reliable
-    // signaling scripts: https://github.com/awslabs/aws-cdk/issues/623
+    // signaling scripts: https://github.com/aws/aws-cdk/issues/623
 
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));

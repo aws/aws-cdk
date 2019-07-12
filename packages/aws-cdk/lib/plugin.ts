@@ -16,6 +16,8 @@ import { error } from './logging';
  *     host.registerCredentialProviderSource(new CustomCredentialProviderSource());
  *     }
  *   }
+ *
+ * @experimental
  */
 export interface Plugin {
   /**
@@ -35,6 +37,8 @@ export interface Plugin {
 
 /**
  * A utility to manage plug-ins.
+ *
+ * @experimental
  */
 export class PluginHost {
   public static instance = new PluginHost();

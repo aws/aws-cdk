@@ -75,7 +75,7 @@
     ]
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
     "directory": "packages/@aws-cdk/region-info"
   },
@@ -83,7 +83,7 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
   },

@@ -11,6 +11,7 @@ import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 import { AccountAccessKeyCache } from './account-cache';
 import { SharedIniFile } from './sdk_ini_file';
 
+/** @experimental */
 export interface SDKOptions {
   /**
    * Profile name to use
@@ -44,6 +45,8 @@ export interface SDKOptions {
  *
  * If those don't suffice, a list of CredentialProviderSources is interrogated for access
  * to the requested account.
+ *
+ * @experimental
  */
 export class SDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;

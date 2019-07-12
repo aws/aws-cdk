@@ -52,4 +52,4 @@ secret.addRotationSchedule('RotationSchedule', {
 ```
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
 
-For RDS credentials rotation, see [aws-rds](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md).
+For RDS credentials rotation, see [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md).

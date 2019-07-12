@@ -6,7 +6,7 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     const source = codebuild.Source.gitHub({
-      owner: 'awslabs',
+      owner: 'aws',
       repo: 'aws-cdk',
       reportBuildStatus: false,
     });

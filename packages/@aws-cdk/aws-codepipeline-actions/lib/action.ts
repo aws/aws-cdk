@@ -6,7 +6,7 @@ import { Construct } from '@aws-cdk/core';
  * Low-level class for generic CodePipeline Actions.
  *
  * WARNING: this class should not be externally exposed, but is currently visible
- * because of a limitation of jsii (https://github.com/awslabs/jsii/issues/524).
+ * because of a limitation of jsii (https://github.com/aws/jsii/issues/524).
  *
  * This class will disappear in a future release and should not be used.
  *

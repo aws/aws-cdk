@@ -2,7 +2,7 @@
     "ResourceTypes": {
         "AWS::EC2::NetworkAclEntry": {
             "patch": {
-                "description": "https://github.com/awslabs/aws-cdk/issues/1517",
+                "description": "https://github.com/aws/aws-cdk/issues/1517",
                 "operations": [
                     {
                         "op": "add",

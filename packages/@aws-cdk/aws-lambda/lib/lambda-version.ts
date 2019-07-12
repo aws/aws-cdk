@@ -124,7 +124,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         FunctionName: this.lambda.functionName,
         // construct the ARN from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
-        // see: https://github.com/awslabs/aws-cdk/issues/2231
+        // see: https://github.com/aws/aws-cdk/issues/2231
         Resource: `${this.lambda.functionArn}:${this.version}`
       },
       ...props

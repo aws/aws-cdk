@@ -116,7 +116,7 @@ for tracking bugs and feature requests.
 * Come join the AWS CDK community on [Gitter](https://gitter.im/awslabs/aws-cdk)
 * Open a support ticket with [AWS Support](https://console.aws.amazon.com/support/home#/)
 * If it turns out that you may have found a bug,
-  please open an [issue](https://github.com/awslabs/aws-cdk/issues/new)
+  please open an [issue](https://github.com/aws/aws-cdk/issues/new)
 
 ## Contributing
 
