@@ -9,63 +9,66 @@ import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
 /**
- * Properties to define an ECS cluster
+ * The properties used to define an ECS cluster.
  */
 export interface ClusterProps {
   /**
-   * A name for the cluster.
+   * The name for the cluster.
    *
    * @default CloudFormation-generated name
    */
   readonly clusterName?: string;
 
   /**
-   * The VPC where your ECS instances will be running or your ENIs will be deployed
+   * The VPC to associate with the cluster.
    */
   readonly vpc: ec2.IVpc;
 }
 
 /**
- * A container cluster that runs on your EC2 instances
+ * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
   /**
-   * Import an existing cluster
+   * This method adds attributes from a specified cluster to this cluster.
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
   }
 
   /**
-   * Connections manager for the EC2 cluster
+   * Manage the allowed network connections for the cluster with Security Groups.
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
 
   /**
-   * The VPC this cluster was created in.
+   * The VPC associated with the cluster.
    */
   public readonly vpc: ec2.IVpc;
 
   /**
-   * The ARN of this cluster
+   * The Amazon Resource Name (ARN) that identifies the cluster.
    */
   public readonly clusterArn: string;
 
   /**
-   * The name of this cluster
+   * The name of the cluster.
    */
   public readonly clusterName: string;
 
   /**
-   * The service discovery namespace created in this cluster
+   * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
-   * Whether the cluster has EC2 capacity associated with it
+   * Specifies whether the cluster has EC2 instance capacity.
    */
   private _hasEc2Capacity: boolean = false;
 
+  /**
+   * Constructs a new instance of the Cluster class.
+   */
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id, {
       physicalName: props.clusterName,
@@ -121,7 +124,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Add a default-configured AutoScalingGroup running the ECS-optimized AMI to this Cluster
+   * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
@@ -140,7 +143,8 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Add compute capacity to this ECS cluster in the form of an AutoScalingGroup
+   * This method adds compute capacity to a cluster using the specified AutoScalingGroup.
+   *
    * @param autoScalingGroup the ASG to add to this cluster.
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
@@ -197,7 +201,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Metric for cluster CPU reservation
+   * This method returns the CloudWatch metric for this clusters CPU reservation.
    *
    * @default average over 5 minutes
    */
@@ -206,7 +210,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Metric for cluster Memory reservation
+   * This method returns the CloudWatch metric for this clusters memory reservation.
    *
    * @default average over 5 minutes
    */
@@ -215,7 +219,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Return the given named metric for this Cluster
+   * This method returns the specifed CloudWatch metric for this cluster.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -227,16 +231,19 @@ export class Cluster extends Resource implements ICluster {
   }
 }
 
+/**
+ * The properties that define which ECS-optimized AMI is used.
+ */
 export interface EcsOptimizedAmiProps {
   /**
-   * What generation of Amazon Linux to use
+   * The Amazon Linux generation to use.
    *
    * @default AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
 
   /**
-   * What ECS Optimized AMI type to use
+   * The ECS-optimized AMI variant to use.
    *
    * @default AmiHardwareType.Standard
    */
@@ -252,6 +259,9 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
   private readonly amiParameterName: string;
 
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
   constructor(props?: EcsOptimizedAmiProps) {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) {      // generation defined in the props object
@@ -287,77 +297,77 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 }
 
 /**
- * An ECS cluster
+ * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export interface ICluster extends IResource {
   /**
-   * Name of the cluster
+   * The name of the cluster.
    * @attribute
    */
   readonly clusterName: string;
 
   /**
-   * The ARN of this cluster
+   * The Amazon Resource Name (ARN) that identifies the cluster.
    * @attribute
    */
   readonly clusterArn: string;
 
   /**
-   * VPC that the cluster instances are running in
+   * The VPC associated with the cluster.
    */
   readonly vpc: ec2.IVpc;
 
   /**
-   * Connections manager of the cluster instances
+   * Manage the allowed network connections for the cluster with Security Groups.
    */
   readonly connections: ec2.Connections;
 
   /**
-   * Whether the cluster has EC2 capacity associated with it
+   * Specifies whether the cluster has EC2 instance capacity.
    */
   readonly hasEc2Capacity: boolean;
 
   /**
-   * Getter for Cloudmap namespace created in the cluster
+   * The AWS Cloud Map namespace to associate with the cluster.
    */
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 }
 
 /**
- * Properties to import an ECS cluster
+ * The properties to import from the ECS cluster.
  */
 export interface ClusterAttributes {
   /**
-   * Name of the cluster
+   * The name of the cluster.
    */
   readonly clusterName: string;
 
   /**
-   * ARN of the cluster
+   * The Amazon Resource Name (ARN) that identifies the cluster.
    *
    * @default Derived from clusterName
    */
   readonly clusterArn?: string;
 
   /**
-   * VPC that the cluster instances are running in
+   * The VPC associated with the cluster.
    */
   readonly vpc: ec2.IVpc;
 
   /**
-   * Security group of the cluster instances
+   * The security groups associated with the container instances registered to the cluster.
    */
   readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
-   * Whether the given cluster has EC2 capacity
+   * Specifies whether the cluster has EC2 instance capacity.
    *
    * @default true
    */
   readonly hasEc2Capacity?: boolean;
 
   /**
-   * Default namespace properties
+   * The AWS Cloud Map namespace to associate with the cluster.
    *
    * @default - No default namespace
    */
@@ -398,6 +408,9 @@ class ImportedCluster extends Resource implements ICluster {
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
+  /**
+   * Constructs a new instance of the ImportedCluster class.
+   */
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
@@ -424,22 +437,22 @@ class ImportedCluster extends Resource implements ICluster {
 }
 
 /**
- * Properties for adding an autoScalingGroup
+ * The properties for adding an AutoScalingGroup.
  */
 export interface AddAutoScalingGroupCapacityOptions {
   /**
-   * Whether or not the containers can access the instance role
+   * Specifies whether the containers can access the container instance role.
    *
    * @default false
    */
   readonly canContainersAccessInstanceRole?: boolean;
 
   /**
-   * Give tasks this many seconds to complete when instances are being scaled in.
+   * The time period to wait before force terminating an instance that is draining.
    *
-   * Task draining adds a Lambda and a Lifecycle hook to your AutoScalingGroup
-   * that will delay instance termination until all ECS tasks have drained from
-   * the instance.
+   * This creates a Lambda function that is used by a lifecycle hook for the
+   * AutoScalingGroup that will delay instance termination until all ECS tasks
+   * have drained from the instance. Set to 0 to disable task draining.
    *
    * Set to 0 to disable task draining.
    *
@@ -449,37 +462,41 @@ export interface AddAutoScalingGroupCapacityOptions {
 }
 
 /**
- * Properties for adding autoScalingGroup
+ * The properties for adding instance capacity to an AutoScalingGroup.
  */
 export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, autoscaling.CommonAutoScalingGroupProps {
   /**
-   * The type of EC2 instance to launch into your Autoscaling Group
+   * The EC2 instance type to use when launching instances into the AutoScalingGroup.
    */
   readonly instanceType: ec2.InstanceType;
 
   /**
-   * The machine image for the ECS instances
+   * The ECS-optimized AMI variant to use. For more information, see
+   * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
    *
-   * @default - Amazon Linux 1
+   * @default - Amazon Linux 2
    */
   readonly machineImage?: ec2.IMachineImage;
 }
 
+/**
+ * The options for creating an AWS Cloud Map namespace.
+ */
 export interface CloudMapNamespaceOptions {
   /**
-   * The domain name for the namespace, such as foo.com
+   * The name of the namespace, such as example.com.
    */
   readonly name: string;
 
   /**
-   * The type of CloudMap Namespace to create in your cluster
+   * The type of CloudMap Namespace to create.
    *
    * @default PrivateDns
    */
   readonly type?: cloudmap.NamespaceType;
 
   /**
-   * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
+   * The VPC to associate the namespace with. This property is required for private DNS namespaces.
    *
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
@@ -487,22 +504,23 @@ export interface CloudMapNamespaceOptions {
 }
 
 /**
- * The type of HW for the ECS Optimized AMI
+ * The ECS-optimized AMI variant to use. For more information, see
+ * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
  */
 export enum AmiHardwareType {
 
   /**
-   * Create a standard AMI
+   * Use the Amazon ECS-optimized Amazon Linux 2 AMI.
    */
   STANDARD = 'Standard',
 
   /**
-   * Create a GPU optimized AMI
+   * Use the Amazon ECS GPU-optimized AMI.
    */
   GPU = 'GPU',
 
   /**
-   * Create a ARM64 optimized AMI
+   * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
    */
   ARM = 'ARM64',
 }

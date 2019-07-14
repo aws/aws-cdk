@@ -29,6 +29,11 @@ export interface ILambdaDeploymentGroup extends cdk.IResource {
    * @attribute
    */
   readonly deploymentGroupArn: string;
+
+  /**
+   * The Deployment Configuration this Group uses.
+   */
+  readonly deploymentConfig: ILambdaDeploymentConfig;
 }
 
 /**
@@ -52,7 +57,7 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The Deployment Configuration this Deployment Group uses.
    *
-   * @default LambdaDeploymentConfig#AllAtOnce
+   * @default LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
    */
   readonly deploymentConfig?: ILambdaDeploymentConfig;
 
@@ -117,8 +122,7 @@ export interface LambdaDeploymentGroupProps {
  */
 export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploymentGroup {
   /**
-   * Import an Lambda Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an Lambda Deployment Group defined either outside the CDK app, or in a different AWS region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -135,6 +139,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
   public readonly application: ILambdaApplication;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
+  public readonly deploymentConfig: ILambdaDeploymentConfig;
   public readonly role: iam.IRole;
 
   private readonly alarms: cloudwatch.IAlarm[];
@@ -154,12 +159,13 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     });
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambda'));
+    this.deploymentConfig = props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES;
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
       serviceRoleArn: this.role.roleArn,
       deploymentGroupName: this.physicalName,
-      deploymentConfigName: (props.deploymentConfig || LambdaDeploymentConfig.ALL_AT_ONCE).deploymentConfigName,
+      deploymentConfigName: this.deploymentConfig.deploymentConfigName,
       deploymentStyle: {
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL'
@@ -247,8 +253,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
 /**
  * Properties of a reference to a CodeDeploy Lambda Deployment Group.
  *
- * @see LambdaDeploymentGroup#import
- * @see ILambdaDeploymentGroup#export
+ * @see LambdaDeploymentGroup#fromLambdaDeploymentGroupAttributes
  */
 export interface LambdaDeploymentGroupAttributes {
   /**
@@ -262,17 +267,26 @@ export interface LambdaDeploymentGroupAttributes {
    * that we are referencing.
    */
   readonly deploymentGroupName: string;
+
+  /**
+   * The Deployment Configuration this Deployment Group uses.
+   *
+   * @default LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
+   */
+  readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
 
 class ImportedLambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploymentGroup {
   public readonly application: ILambdaApplication;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
+  public readonly deploymentConfig: ILambdaDeploymentConfig;
 
   constructor(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
+    this.deploymentConfig = props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES;
   }
 }

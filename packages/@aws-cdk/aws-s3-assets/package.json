@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3-assets",
-  "version": "0.36.0",
+  "version": "1.0.0",
   "description": "Deploy local files and directories to S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.s3.assets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-assets"
+          "artifactId": "s3-assets",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3.Assets",
         "packageId": "Amazon.CDK.AWS.S3.Assets",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-s3-assets",
@@ -28,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-s3-assets"
   },
   "scripts": {
@@ -57,29 +59,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.0",
+    "@aws-cdk/assert": "^1.0.0",
     "@types/sinon": "^7.0.13",
-    "aws-cdk": "^0.36.0",
-    "cdk-build-tools": "^0.36.0",
-    "cdk-integ-tools": "^0.36.0",
-    "pkglint": "^0.36.0",
+    "aws-cdk": "^1.0.0",
+    "cdk-build-tools": "^1.0.0",
+    "cdk-integ-tools": "^1.0.0",
+    "pkglint": "^1.0.0",
     "sinon": "^7.3.2",
     "ts-mock-imports": "^1.2.3"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-s3": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0",
-    "@aws-cdk/cx-api": "^0.36.0"
+    "@aws-cdk/assets": "^1.0.0",
+    "@aws-cdk/aws-iam": "^1.0.0",
+    "@aws-cdk/aws-s3": "^1.0.0",
+    "@aws-cdk/core": "^1.0.0",
+    "@aws-cdk/cx-api": "^1.0.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-s3": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0",
-    "@aws-cdk/cx-api": "^0.36.0"
+    "@aws-cdk/assets": "^1.0.0",
+    "@aws-cdk/aws-iam": "^1.0.0",
+    "@aws-cdk/aws-s3": "^1.0.0",
+    "@aws-cdk/core": "^1.0.0",
+    "@aws-cdk/cx-api": "^1.0.0"
   },
   "engines": {
     "node": ">= 8.10.0"

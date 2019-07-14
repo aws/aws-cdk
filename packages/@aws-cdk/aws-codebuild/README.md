@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -114,6 +108,13 @@ aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONA
 
 This source type can be used to build code from a BitBucket repository.
 
+```ts
+const bbSource = codebuild.Source.bitBucket({
+  owner: 'owner',
+  repo: 'repo',
+});
+```
+
 ## CodePipeline
 
 To add a CodeBuild Project as an Action to CodePipeline,
@@ -151,7 +152,9 @@ new codebuild.Project(this, 'Project', {
 
 ### Local Caching
 
-With local caching, the cache is stored on the codebuild instance itself. CodeBuild cannot guarantee a reuse of instance. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported:
+With local caching, the cache is stored on the codebuild instance itself. This is simple,
+cheap and fast, but CodeBuild cannot guarantee a reuse of instance and hence cannot
+guarantee cache hits. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported, which can be turned on individually.
 
 * `LocalCacheMode.Source` caches Git metadata for primary and secondary sources.
 * `LocalCacheMode.DockerLayer` caches existing Docker layers.
@@ -162,6 +165,8 @@ new codebuild.Project(this, 'Project', {
   source: codebuild.Source.gitHubEnterprise({
     httpsCloneUrl: 'https://my-github-enterprise.com/owner/repo',
   }),
+
+  // Enable Docker AND custom caching
   cache: codebuild.Cache.local(LocalCacheMode.DockerLayer, LocalCacheMode.Custom)
 });
 ```
@@ -190,8 +195,7 @@ of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
 
-* Use `.fromDockerHub(image)` to reference an image publicly available in Docker
-  Hub.
+* Use `.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
 * Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
 * Use `.fromAsset(directory)` to use an image created from a
@@ -204,6 +208,10 @@ The following example shows how to define an image from a Docker asset:
 The following example shows how to define an image from an ECR repository:
 
 [ECR example](./test/integ.ecr.lit.ts)
+
+The following example shows how to define an image from a private docker registry:
+
+[Docker Registry example](./test/integ.docker-registry.lit.ts)
 
 ## Events
 
@@ -228,8 +236,9 @@ To define Amazon CloudWatch event rules for build projects, use one of the `onXx
 methods:
 
 ```ts
-const rule = project.onStateChange('BuildStateChange');
-rule.addTarget(lambdaFunction);
+const rule = project.onStateChange('BuildStateChange', {
+  target: new targets.LambdaFunction(fn)
+});
 ```
 
 ## Secondary sources and artifacts
@@ -321,28 +330,21 @@ Your builds can access any resource that's hosted in your VPC.
 
 **Enable Amazon VPC Access in your CodeBuild Projects**
 
-Include these settings in your VPC configuration:
-
-* For VPC ID, choose the VPC that CodeBuild uses.
-* For Subnets, choose a private subnet SubnetSelection with NAT translation that includes or has routes to the resources used CodeBuild.
-* For Security Groups, choose the security groups that CodeBuild uses to allow access to resources in the VPCs.
+Pass the VPC when defining your Project, then make sure to
+give the CodeBuild's security group the right permissions
+to access the resources that it needs by using the
+`connections` object.
 
 For example:
 
 ```ts
-const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
-const vpc = new ec2.Vpc(stack, 'MyVPC');
-const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-    allowAllOutbound: true,
-    description: 'Example',
-    securityGroupName: 'MySecurityGroup',
+const vpc = new ec2.Vpc(this, 'MyVPC');
+const project = new codebuild.Project(this, 'MyProject', {
     vpc: vpc,
-});
-new codebuild.Project(stack, 'MyProject', {
     buildSpec: codebuild.BuildSpec.fromObject({
       // ...
     }),
-    securityGroups: [securityGroup],
-    vpc: vpc
 });
+
+project.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
 ```

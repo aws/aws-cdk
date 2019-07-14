@@ -1,28 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Test } from 'nodeunit';
+import { Test, testCase } from 'nodeunit';
 import { SDK } from '../../lib';
 import { AppStacks, DefaultSelection } from '../../lib/api/cxapp/stacks';
 import { Configuration } from '../../lib/settings';
 import { testAssembly } from '../util';
 
-const FIXED_RESULT = testAssembly({
-  stackName: 'withouterrors',
-  template: { resource: 'noerrorresource' },
-},
-{
-  stackName: 'witherrors',
-  template: { resource: 'errorresource' },
-  metadata: {
-    '/resource': [
-      {
-        type: cxapi.ERROR_METADATA_KEY,
-        data: 'this is an error'
-      }
-    ]
-  },
-});
-
-export = {
+export = testCase({
   async 'do not throw when selecting stack without errors'(test: Test) {
     // GIVEN
     const stacks = testStacks();
@@ -31,6 +14,7 @@ export = {
     const selected = await stacks.selectStacks(['withouterrors'], {
       defaultBehavior: DefaultSelection.AllStacks
     });
+    stacks.processMetadata(selected);
 
     // THEN
     test.equal(selected[0].template.resource, 'noerrorresource');
@@ -44,9 +28,10 @@ export = {
 
     // WHEN
     try {
-      await stacks.selectStacks(['witherrors'], {
+      const selected = await stacks.selectStacks(['witherrors'], {
         defaultBehavior: DefaultSelection.AllStacks
       });
+      stacks.processMetadata(selected);
 
       test.ok(false, 'Did not get exception');
     } catch (e) {
@@ -95,14 +80,75 @@ export = {
     // THEN
     test.ok(thrown && thrown.includes('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)'));
     test.done();
-  }
+  },
 
-};
+  'AWS::CDK::Metadata': {
+    async 'is generated for relocatable stacks'(test: Test) {
+      const stacks = testStacks({ env: `aws://${cxapi.UNKNOWN_ACCOUNT}/${cxapi.UNKNOWN_REGION}`, versionReporting: true });
 
-function testStacks() {
+      const result = await stacks.synthesizeStack('withouterrors');
+      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+      test.deepEqual(metadata, {
+        Type: 'AWS::CDK::Metadata',
+        Properties: {
+          Modules: `${require('../../package.json').name}=${require('../../package.json').version}`
+        }
+      });
+
+      test.done();
+    },
+
+    async 'is generated for stacks in supported regions'(test: Test) {
+      const stacks = testStacks({ env: 'aws://012345678912/us-east-1', versionReporting: true });
+
+      const result = await stacks.synthesizeStack('withouterrors');
+      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+      test.deepEqual(metadata, {
+        Type: 'AWS::CDK::Metadata',
+        Properties: {
+          Modules: `${require('../../package.json').name}=${require('../../package.json').version}`
+        }
+      });
+
+      test.done();
+    },
+
+    async 'is not generated for stacks in unsupported regions'(test: Test) {
+      const stacks = testStacks({ env: 'aws://012345678912/bermuda-triangle-1337', versionReporting: true });
+
+      const result = await stacks.synthesizeStack('withouterrors');
+      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+      test.equal(metadata, undefined);
+
+      test.done();
+    }
+  },
+});
+
+function testStacks({ env, versionReporting = true }: { env?: string, versionReporting?: boolean } = {}) {
+  const configuration = new Configuration();
+  configuration.settings.set(['versionReporting'], versionReporting);
+
   return new AppStacks({
-    configuration: new Configuration(),
+    configuration,
     aws: new SDK(),
-    synthesizer: async () => FIXED_RESULT,
+    synthesizer: async () => testAssembly({
+      stackName: 'withouterrors',
+      env,
+      template: { resource: 'noerrorresource' },
+    },
+    {
+      stackName: 'witherrors',
+      env,
+      template: { resource: 'errorresource' },
+      metadata: {
+        '/resource': [
+          {
+            type: cxapi.ERROR_METADATA_KEY,
+            data: 'this is an error'
+          }
+        ]
+      },
+    }),
   });
 }

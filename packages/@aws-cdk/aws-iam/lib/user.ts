@@ -24,12 +24,13 @@ export interface UserProps {
   readonly groups?: IGroup[];
 
   /**
-   * A list of ARNs for managed policies attacherd to this user.
-   * You can use `addManagedPolicy(arn)` to attach a managed policy to this user.
+   * A list managed policies associated with this role.
+   *
+   * You can add managed policies later using `attachManagedPolicy(policy)`.
    *
    * @default - No managed policies.
    */
-  readonly managedPolicyArns?: any[];
+  readonly managedPolicies?: IManagedPolicy[];
 
   /**
    * The path for the user name. For more information about paths, see IAM
@@ -62,7 +63,8 @@ export interface UserProps {
    * AWS Management Console.
    *
    * You can use `SecretValue.plainText` to specify a password in plain text or
-   * use `secretsmanager.Secret.import` to reference a secret in Secrets Manager.
+   * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
+   * Secrets Manager.
    *
    * @default User won't be able to access the management console without a password.
    */
@@ -106,6 +108,8 @@ export class User extends Resource implements IIdentity {
     super(scope, id, {
       physicalName: props.userName,
     });
+
+    this.managedPolicies.push(...props.managedPolicies || []);
 
     const user = new CfnUser(this, 'Resource', {
       userName: this.physicalName,

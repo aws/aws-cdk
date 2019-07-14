@@ -2,6 +2,9 @@ import { Construct } from './construct';
 import { Stack } from './stack';
 import { Token } from './token';
 
+/**
+ * @experimental
+ */
 export interface GetContextKeyOptions {
   /**
    * The context provider to query.
@@ -14,6 +17,9 @@ export interface GetContextKeyOptions {
   readonly props?: { [key: string]: any };
 }
 
+/**
+ * @experimental
+ */
 export interface GetContextValueOptions extends GetContextKeyOptions {
   /**
    * The value to return if the context value was not found and a missing
@@ -23,11 +29,17 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
   readonly dummyValue: any;
 }
 
+/**
+ * @experimental
+ */
 export interface GetContextKeyResult {
   readonly key: string;
   readonly props: { [key: string]: any };
 }
 
+/**
+ * @experimental
+ */
 export interface GetContextValueResult {
   readonly value?: any;
 }
@@ -40,6 +52,8 @@ export interface GetContextValueResult {
  * more context variables (output).
  *
  * ContextProvider needs access to a Construct to hook into the context mechanism.
+ *
+ * @experimental
  */
 export class ContextProvider {
   /**

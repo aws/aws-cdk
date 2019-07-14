@@ -7,7 +7,7 @@
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
+>
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -86,8 +86,8 @@ If you happen to have stumbled upon incorrect data built into this library, it
 is always a good idea to report your findings in a [GitHub issue], so we can fix
 it for everyone else!
 
-[GitHub issue]: https://github.com/awslabs/aws-cdk/issues
+[GitHub issue]: https://github.com/aws/aws-cdk/issues
 
 ---
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

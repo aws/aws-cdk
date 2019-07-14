@@ -3,18 +3,26 @@ import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from "../container-definition";
 import { ContainerImage, ContainerImageConfig } from "../container-image";
 
+/**
+ * The properties for an image hosted in a public or private repository.
+ */
 export interface RepositoryImageProps {
   /**
-   * Optional secret that houses credentials for the image registry
+   * The secret to expose to the container that contains the credentials for the image repository.
+   * The supported value is the full ARN of an AWS Secrets Manager secret.
    */
   readonly credentials?: secretsmanager.ISecret;
 }
 
 /**
- * A container image hosted on DockerHub or another online registry
+ * An image hosted in a public or private repository. For images hosted in Amazon ECR, see
+ * [EcrImage](https://docs.aws.amazon.com/AmazonECR/latest/userguide/images.html).
  */
 export class RepositoryImage extends ContainerImage {
 
+  /**
+   * Constructs a new instance of the RepositoryImage class.
+   */
   constructor(private readonly imageName: string, private readonly props: RepositoryImageProps = {}) {
     super();
   }

@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -41,7 +35,7 @@ const zone = new route53.PrivateHostedZone(this, 'HostedZone', {
 });
 ```
 
-Additional VPCs can be added with `zone.addVPC()`.
+Additional VPCs can be added with `zone.addVpc()`.
 
 ### Adding Records
 
@@ -59,7 +53,7 @@ new route53.TxtRecord(this, 'TXTRecord', {
     'Bar!',
     'Baz?'
   ],
-  ttl: 90,             // Optional - default is 1800
+  ttl: Duration.minutes(90),       // Optional - default is 30 minutes
 });
 ```
 
@@ -70,7 +64,7 @@ import route53 = require('@aws-cdk/aws-route53');
 new route53.ARecord(this, 'ARecord', {
   zone: myZone,
   target: route53.AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
-})
+});
 ```
 
 To add a AAAA record pointing to a CloudFront distribution:
@@ -81,7 +75,7 @@ import targets = require('@aws-cdk/aws-route53-targets');
 new route53.AaaaRecord(this, 'Alias', {
   zone: myZone,
   target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
-})
+});
 ```
 
 Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.

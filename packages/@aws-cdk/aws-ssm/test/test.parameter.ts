@@ -281,7 +281,17 @@ export = {
         }
       });
       test.done();
-    }
+    },
 
+    'can query actual SSM Parameter Names, multiple times'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      ssm.StringParameter.valueForStringParameter(stack, '/my/param/name');
+      ssm.StringParameter.valueForStringParameter(stack, '/my/param/name');
+
+      test.done();
+    },
   }
 };

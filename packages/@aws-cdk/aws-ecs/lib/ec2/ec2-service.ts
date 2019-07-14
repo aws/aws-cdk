@@ -1,83 +1,94 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceProps, IService } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
- * Properties to define an ECS service
+ * The properties for defining a service using the EC2 launch type.
  */
-export interface Ec2ServiceProps extends BaseServiceProps {
+export interface Ec2ServiceProps extends BaseServiceOptions {
   /**
-   * Task Definition used for running tasks in the service
+   * The task definition to use for tasks in the service.
    *
    * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
 
   /**
-   * Assign public IP addresses to each task
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   * If true, each task will receive a public IP address.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
    *
    * @default - Use subnet default.
    */
   readonly assignPublicIp?: boolean;
 
   /**
-   * In what subnets to place the task's ENIs
+   * The subnets to associate with the service.
    *
-   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   * This property is only used for tasks that use the awsvpc network mode.
    *
    * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Existing security group to use for the task's ENIs
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
-   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   * This property is only used for tasks that use the awsvpc network mode.
    *
    * @default - A new security group is created.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Placement constraints
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    *
    * @default - No constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
-   * Placement strategies
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
    */
   readonly placementStrategies?: PlacementStrategy[];
 
   /**
-   * Deploy exactly one task on each instance in your cluster.
+   * Specifies whether the service will use the daemon scheduling strategy.
+   * If true, the service scheduler deploys exactly one task on each container instance in your cluster.
    *
-   * When using this strategy, do not specify a desired number of tasks or any
-   * task placement strategies.
+   * When you are using this strategy, do not specify a desired number of tasks orany task placement strategies.
    *
    * @default false
    */
   readonly daemon?: boolean;
 }
 
+/**
+ * The interface for a service using the EC2 launch type on an ECS cluster.
+ */
 export interface IEc2Service extends IService {
 
 }
 
 /**
- * Start a service on an ECS cluster
+ * This creates a service using the EC2 launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
  */
 export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
 
+  /**
+   * Imports from the specified service ARN.
+   */
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
@@ -89,6 +100,9 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
 
+  /**
+   * Constructs a new instance of the Ec2Service class.
+   */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
@@ -112,11 +126,11 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
+      launchType: LaunchType.EC2,
     },
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'EC2',
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
@@ -143,7 +157,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Add one or more placement strategies
+   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
   public addPlacementStrategies(...strategies: PlacementStrategy[]) {
     if (strategies.length > 0 && this.daemon) {
@@ -156,7 +171,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Add one or more placement strategies
+   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
     for (const constraint of constraints) {
@@ -165,7 +181,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Register this service as the target of a Classic Load Balancer
+   * Registers the service as a target of a Classic Load Balancer (CLB).
    *
    * Don't call this. Call `loadBalancer.addTarget()` instead.
    */
@@ -185,7 +201,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Validate this Ec2Service
+   * Validates this Ec2Service.
    */
   protected validate(): string[] {
     const ret = super.validate();
@@ -206,31 +222,31 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
 }
 
 /**
- * Built-in container instance attributes
+ * The built-in container instance attributes
  */
 export class BuiltInAttributes {
   /**
-   * The Instance ID of the instance
+   * The id of the instance.
    */
   public static readonly INSTANCE_ID = 'instanceId';
 
   /**
-   * The AZ where the instance is running
+   * The AvailabilityZone where the instance is running in.
    */
   public static readonly AVAILABILITY_ZONE = 'attribute:ecs.availability-zone';
 
   /**
-   * The AMI ID of the instance
+   * The AMI id the instance is using.
    */
   public static readonly AMI_ID = 'attribute:ecs.ami-id';
 
   /**
-   * The instance type
+   * The EC2 instance type.
    */
   public static readonly INSTANCE_TYPE = 'attribute:ecs.instance-type';
 
   /**
-   * The OS type
+   * The operating system of the instance.
    *
    * Either 'linux' or 'windows'.
    */

@@ -2,18 +2,18 @@ import cdk = require('@aws-cdk/core');
 import { CfnTaskDefinition } from './ecs.generated';
 
 /**
- * Properties for defining Linux Parameters
+ * The properties for defining Linux-specific options that are applied to the container.
  */
 export interface LinuxParametersProps {
   /**
-   * Whether the init process is enabled
+   * Specifies whether to run an init process inside the container that forwards signals and reaps processes.
    *
    * @default false
    */
   readonly initProcessEnabled?: boolean;
 
   /**
-   * The shared memory size
+   * The value for the size (in MiB) of the /dev/shm volume.
    *
    * @default No shared memory.
    */
@@ -21,7 +21,7 @@ export interface LinuxParametersProps {
 }
 
 /**
- * Linux Parameters for an ECS container
+ * Linux-specific options that are applied to the container.
  */
 export class LinuxParameters extends cdk.Construct {
   /**
@@ -54,6 +54,9 @@ export class LinuxParameters extends cdk.Construct {
    */
   private readonly tmpfs = new Array<Tmpfs>();
 
+  /**
+   * Constructs a new instance of the LinuxParameters class.
+   */
   constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 
@@ -62,7 +65,7 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Add one or more capabilities
+   * Adds one or more Linux capabilities to the Docker configuration of a container.
    *
    * Only works with EC2 launch type.
    */
@@ -71,7 +74,7 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Drop one or more capabilities
+   * Removes one or more Linux capabilities to the Docker configuration of a container.
    *
    * Only works with EC2 launch type.
    */
@@ -80,14 +83,14 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Add one or more devices
+   * Adds one or more host devices to a container.
    */
   public addDevices(...device: Device[]) {
     this.devices.push(...device);
   }
 
   /**
-   * Add one or more tmpfs mounts
+   * Specifies the container path, mount options, and size (in MiB) of the tmpfs mount for a container.
    *
    * Only works with EC2 launch type.
    */
@@ -96,7 +99,7 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Render the Linux parameters to a CloudFormation object
+   * Renders the Linux parameters to a CloudFormation object.
    */
   public renderLinuxParameters(): CfnTaskDefinition.LinuxParametersProperty {
     return {
@@ -113,23 +116,24 @@ export class LinuxParameters extends cdk.Construct {
 }
 
 /**
- * A host device
+ * A container instance host device.
  */
 export interface Device {
   /**
-   * Path in the container
+   * The path inside the container at which to expose the host device.
    *
    * @default Same path as the host
    */
   readonly containerPath?: string,
 
   /**
-   * Path on the host
+   * The path for the device on the host container instance.
    */
   readonly hostPath: string,
 
   /**
-   * Permissions
+   * The explicit permissions to provide to the container for the device.
+   * By default, the container has permissions for read, write, and mknod for the device.
    *
    * @default Readonly
    */
@@ -145,21 +149,22 @@ function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
 }
 
 /**
- * A tmpfs mount
+ * The details of a tmpfs mount for a container.
  */
 export interface Tmpfs {
   /**
-   * Path in the container to mount
+   * The absolute file path where the tmpfs volume is to be mounted.
    */
   readonly containerPath: string,
 
   /**
-   * Size of the volume
+   * The size (in MiB) of the tmpfs volume.
    */
   readonly size: number,
 
   /**
-   * Mount options
+   * The list of tmpfs volume mount options. For more information, see
+   * [TmpfsMountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
    */
   readonly mountOptions?: TmpfsMountOption[],
 }
@@ -237,7 +242,7 @@ export enum DevicePermission {
 }
 
 /**
- * Options for a tmpfs mount
+ * The supported options for a tmpfs mount for a container.
  */
 export enum TmpfsMountOption {
   DEFAULTS = "defaults",

@@ -53,7 +53,7 @@ export class RepositoryCorrect extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     expectJSON(this.name, pkg, 'repository.type', 'git');
-    expectJSON(this.name, pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
+    expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
     const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
     expectJSON(this.name, pkg, 'repository.directory', pkgDir);
   }
@@ -66,7 +66,7 @@ export class HomepageCorrect extends ValidationRule {
   public readonly name = 'package-info/homepage';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'homepage', 'https://github.com/awslabs/aws-cdk');
+    expectJSON(this.name, pkg, 'homepage', 'https://github.com/aws/aws-cdk');
   }
 }
 
@@ -142,7 +142,7 @@ export class ReadmeFile extends ValidationRule {
           readmeFile,
           [
             `## ${headline || pkg.json.description}`,
-            'This module is part of the[AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.'
+            'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.'
           ].join('\n')
         )
       });
@@ -242,12 +242,6 @@ export class StabilitySetting extends ValidationRule {
       case 'stable':
         return _div(
           { label: 'Stable', color: 'success' },
-          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-          'future breaking changes.**',
-          // Commenting out the below because of developer preview in effect (it sends mixed messages)
-          // '',
-          // 'This API is subject to the Semantic Versioning model. It will not be subject to',
-          // 'non-backward compatible changes or removal in a subsequent patch or feature release.'
         );
       default:
         return undefined;
@@ -261,7 +255,7 @@ export class StabilitySetting extends ValidationRule {
         '',
         `![Stability: ${badge.label}](https://img.shields.io/badge/stability-${badge.label}-${badge.color}.svg?style=for-the-badge)`,
         '',
-        ...messages.map(message => `> ${message}`),
+        ...messages.map(message => `> ${message}`.trimRight()),
         '',
         '---',
         '<!--END STABILITY BANNER-->',
@@ -303,6 +297,17 @@ export class CDKKeywords extends ValidationRule {
         fix: () => { pkg.json.keywords.splice(0, 0, 'aws'); }
       });
     }
+  }
+}
+
+export class DeveloperPreviewVersionLabels extends ValidationRule {
+  public readonly name = 'jsii/developer-preview-version-label';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    expectJSON(this.name, pkg, 'jsii.targets.java.maven.versionSuffix', '.DEVPREVIEW');
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.versionSuffix', '-devpreview');
   }
 }
 

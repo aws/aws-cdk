@@ -3,19 +3,13 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 This package contains constructs for working with **AWS Cloud Map**
 
@@ -26,11 +20,15 @@ depend on.
 For further information on AWS Cloud Map,
 see the [AWS Cloud Map documentation](https://docs.aws.amazon.com/cloud-map)
 
+### HTTP Namespace Example
+
 The following example creates an AWS Cloud Map namespace that
 supports API calls, creates a service in that namespace, and
 registers an instance to it:
 
 [Creating a Cloud Map service within an HTTP namespace](test/integ.service-with-http-namespace.lit.ts)
+
+### Private DNS Namespace Example
 
 The following example creates an AWS Cloud Map namespace that
 supports both API calls and DNS queries within a vpc, creates a
@@ -38,6 +36,8 @@ service in that namespace, and registers a loadbalancer as an
 instance:
 
 [Creating a Cloud Map service within a Private DNS namespace](test/integ.service-with-private-dns-namespace.lit.ts)
+
+### Public DNS Namespace Example
 
 The following example creates an AWS Cloud Map namespace that
 supports both API calls and public DNS queries, creates a service in

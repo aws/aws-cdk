@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-apigateway",
-  "version": "0.36.0",
+  "version": "1.0.0",
   "description": "The CDK Construct Library for AWS::ApiGateway",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.apigateway",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "apigateway"
+          "artifactId": "apigateway",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGateway",
         "packageId": "Amazon.CDK.AWS.APIGateway",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-apigateway",
@@ -31,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-apigateway"
   },
   "scripts": {
@@ -66,27 +68,27 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.0",
-    "@aws-cdk/aws-ec2": "^0.36.0",
-    "cdk-build-tools": "^0.36.0",
-    "cdk-integ-tools": "^0.36.0",
-    "cfn2ts": "^0.36.0",
-    "pkglint": "^0.36.0"
+    "@aws-cdk/assert": "^1.0.0",
+    "@aws-cdk/aws-ec2": "^1.0.0",
+    "cdk-build-tools": "^1.0.0",
+    "cdk-integ-tools": "^1.0.0",
+    "cfn2ts": "^1.0.0",
+    "pkglint": "^1.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-lambda": "^0.36.0",
-    "@aws-cdk/aws-certificatemanager": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-certificatemanager": "^1.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.0.0",
+    "@aws-cdk/aws-iam": "^1.0.0",
+    "@aws-cdk/aws-lambda": "^1.0.0",
+    "@aws-cdk/core": "^1.0.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-certificatemanager": "^0.36.0",
-    "@aws-cdk/aws-lambda": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-certificatemanager": "^1.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.0.0",
+    "@aws-cdk/aws-iam": "^1.0.0",
+    "@aws-cdk/aws-lambda": "^1.0.0",
+    "@aws-cdk/core": "^1.0.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -109,5 +111,5 @@
       "resource-interface-extends-resource:@aws-cdk/aws-apigateway.IModel"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "0.36.0",
+  "version": "1.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -46,16 +46,16 @@
     "@types/uuid": "^3.4.4",
     "@types/yaml": "^1.0.2",
     "@types/yargs": "^13.0.0",
-    "cdk-build-tools": "^0.36.0",
+    "cdk-build-tools": "^1.0.0",
     "jszip": "^3.2.1",
     "mockery": "^2.1.0",
-    "pkglint": "^0.36.0",
+    "pkglint": "^1.0.0",
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^0.36.0",
-    "@aws-cdk/cx-api": "^0.36.0",
-    "@aws-cdk/region-info": "^0.36.0",
+    "@aws-cdk/cloudformation-diff": "^1.0.0",
+    "@aws-cdk/cx-api": "^1.0.0",
+    "@aws-cdk/region-info": "^1.0.0",
     "archiver": "^3.0.0",
     "aws-sdk": "^2.438.0",
     "camelcase": "^5.3.1",
@@ -75,7 +75,7 @@
     "yargs": "^13.2.4"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
     "directory": "packages/aws-cdk"
   },
@@ -83,9 +83,9 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

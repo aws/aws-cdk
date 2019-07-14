@@ -2,6 +2,7 @@
   "Resources": {
     "Bucket83908E77": {
       "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
@@ -72,7 +73,8 @@
     },
     "AnAmazingWebsiteProbably2LoggingBucket222F7CE9": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "AnAmazingWebsiteProbably2CFDistribution7C1CCD12": {
       "Type": "AWS::CloudFront::Distribution",

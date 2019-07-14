@@ -1,63 +1,72 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/core');
 import { Construct, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceProps, IService } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
- * Properties to define a Fargate service
+ * The properties for defining a service using the Fargate launch type.
  */
-export interface FargateServiceProps extends BaseServiceProps {
+export interface FargateServiceProps extends BaseServiceOptions {
   /**
-   * Task Definition used for running tasks in the service
+   * The task definition to use for tasks in the service.
    *
    * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
 
   /**
-   * Assign public IP addresses to each task
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   *
+   * If true, each task will receive a public IP address.
    *
    * @default - Use subnet default.
    */
   readonly assignPublicIp?: boolean;
 
   /**
-   * In what subnets to place the task's ENIs
+   * The subnets to associate with the service.
    *
    * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Existing security group to use for the tasks
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
    * @default - A new security group is created.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Fargate platform version to run this service on
+   * The platform version on which to run your service.
    *
-   * Unless you have specific compatibility requirements, you don't need to
-   * specify this.
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
    *
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
 }
 
+/**
+ * The interface for a service using the Fargate launch type on an ECS cluster.
+ */
 export interface IFargateService extends IService {
 
 }
 
 /**
- * Start a service on an ECS cluster
+ * This creates a service using the Fargate launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
  */
 export class FargateService extends BaseService implements IFargateService {
 
+  /**
+   * Import a task definition from the specified task definition ARN.
+   */
   public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
@@ -65,6 +74,9 @@ export class FargateService extends BaseService implements IFargateService {
     return new Import(scope, id);
   }
 
+  /**
+   * Constructs a new instance of the FargateService class.
+   */
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
@@ -73,10 +85,10 @@ export class FargateService extends BaseService implements IFargateService {
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
+      launchType: LaunchType.FARGATE,
     }, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'FARGATE',
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
 
@@ -89,7 +101,7 @@ export class FargateService extends BaseService implements IFargateService {
 }
 
 /**
- * Fargate platform version
+ * The platform version on which to run your service.
  *
  * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
  */

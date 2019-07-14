@@ -39,6 +39,10 @@ export interface InstanceDrainHookProps {
  * A hook to drain instances from ECS traffic before they're terminated
  */
 export class InstanceDrainHook extends cdk.Construct {
+
+  /**
+   * Constructs a new instance of the InstanceDrainHook class.
+   */
   constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
     super(scope, id);
 
@@ -93,11 +97,21 @@ export class InstanceDrainHook extends cdk.Construct {
       actions: [
         'ecs:ListContainerInstances',
         'ecs:SubmitContainerStateChange',
-        'ecs:SubmitTaskStateChange',
-        'ecs:UpdateContainerInstancesState',
-        'ecs:ListTasks'
+        'ecs:SubmitTaskStateChange'
       ],
       resources: [props.cluster.clusterArn]
     }));
+
+    // Restrict the container-instance operations to the ECS Cluster
+    fn.addToRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'ecs:UpdateContainerInstancesState',
+          'ecs:ListTasks'
+        ],
+        conditions: {
+            ArnEquals: {'ecs:cluster': props.cluster.clusterArn}
+        },
+        resources: ['*']
+      }));
   }
 }
