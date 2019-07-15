@@ -4,28 +4,34 @@ import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/core');
 
 /**
- * Properties to define a queue processing service
+ * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
  */
 export interface QueueProcessingServiceBaseProps {
   /**
-   * Cluster where service will be deployed
+   * The name of the cluster that hosts the service.
    */
   readonly cluster: ecs.ICluster;
 
   /**
-   * The image to start.
+   * The image used to start a container.
+   *
+   * This string is passed directly to the Docker daemon.
+   * Images in the Docker Hub registry are available by default.
+   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
    */
   readonly image: ecs.ContainerImage;
 
   /**
-   * The CMD value to pass to the container. A string with commands delimited by commas.
+   * The command that is passed to the container.
    *
-   * @default none
+   * If you provide a shell command as a single string, you have to quote command-line arguments.
+   *
+   * @default - CMD value built into container image.
    */
   readonly command?: string[];
 
   /**
-   * Number of desired copies of running tasks
+   * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
@@ -125,6 +131,9 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
    */
   public readonly logDriver?: ecs.LogDriver;
 
+  /**
+   * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services7.
+   */
   constructor(scope: cdk.Construct, id: string, props: QueueProcessingServiceBaseProps) {
     super(scope, id);
 

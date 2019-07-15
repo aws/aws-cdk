@@ -1,8 +1,9 @@
-import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
+import iam = require('@aws-cdk/aws-iam');
+import route53 = require('@aws-cdk/aws-route53');
 import route53targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/core');
 
@@ -70,7 +71,7 @@ export interface LoadBalancedServiceBaseProps {
    *
    * @default - No certificate associated with the load balancer.
    */
-  readonly certificate?: ICertificate;
+  readonly certificate?: certificatemanager.ICertificate;
 
   /**
    * Environment variables to pass to the container
@@ -112,13 +113,45 @@ export interface LoadBalancedServiceBaseProps {
    *
    * @default - No Route53 hosted domain zone.
    */
-  readonly domainZone?: IHostedZone;
+  readonly domainZone?: route53.IHostedZone;
+
+  /**
+   * Override for the Fargate Task Definition execution role
+   *
+   * @default - No value
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * Override for the Fargate Task Definition task role
+   *
+   * @default - No value
+   */
+  readonly taskRole?: iam.IRole;
+
+  /**
+   * Override value for the container name
+   *
+   * @default - No value
+   */
+  readonly containerName?: string;
+
+  /**
+   * Override value for the service name
+   *
+   * @default CloudFormation-generated name
+   */
+  readonly serviceName?: string;
 }
 
 /**
- * Base class for load-balanced Fargate and ECS services
+ * The base class for LoadBalancedEc2Service and LoadBalancedFargateService services.
  */
 export abstract class LoadBalancedServiceBase extends cdk.Construct {
+  public readonly assignPublicIp: boolean;
+
+  public readonly desiredCount: number;
+
   public readonly loadBalancerType: LoadBalancerType;
 
   public readonly loadBalancer: elbv2.BaseLoadBalancer;
@@ -142,6 +175,10 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
     this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
+
+    this.assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
+    // Determine the desired number of tasks to run.
+    this.desiredCount = props.desiredCount || 1;
 
     // Load balancer
     this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.APPLICATION;
@@ -192,10 +229,10 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new ARecord(this, "DNS", {
+      new route53.ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: AddressRecordTarget.fromAlias(new route53targets.LoadBalancerTarget(this.loadBalancer)),
+        target: route53.AddressRecordTarget.fromAlias(new route53targets.LoadBalancerTarget(this.loadBalancer)),
       });
     }
 

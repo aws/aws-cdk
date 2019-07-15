@@ -24,18 +24,17 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
    * If your container attempts to exceed the allocated memory, the container
    * is terminated.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
-   *
    * @default 512
    */
   readonly memoryLimitMiB?: number;
-
 }
 
 /**
  * A scheduled Fargate task that will be initiated off of cloudwatch events.
  */
 export class ScheduledFargateTask extends ScheduledTaskBase {
+  private readonly taskDefinition: ecs.TaskDefinition;
+
   constructor(scope: cdk.Construct, id: string, props: ScheduledFargateTaskProps) {
     super(scope, id, props);
 
@@ -53,5 +52,12 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     });
 
     this.addTaskDefinitionToEventTarget(taskDefinition);
+  }
+
+  /**
+   * Add an additional non-essential container to the service.
+   */
+  public addAdditionalContainer(id: string, props: ecs.ContainerDefinitionOptions) {
+    return this.taskDefinition.addContainer(id, props);
   }
 }

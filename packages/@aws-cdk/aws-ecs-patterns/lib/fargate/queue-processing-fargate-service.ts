@@ -78,4 +78,11 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     });
     this.configureAutoscalingForService(this.service);
   }
+
+  /**
+   * Add an additional non-essential container to the service.
+   */
+  public addAdditionalContainer(id: string, props: ecs.ContainerDefinitionOptions) {
+    return this.service.taskDefinition.addContainer(id, props);
+  }
 }

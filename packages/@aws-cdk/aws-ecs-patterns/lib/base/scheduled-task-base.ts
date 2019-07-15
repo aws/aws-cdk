@@ -1,17 +1,23 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import { ICluster } from '@aws-cdk/aws-ecs';
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
 import cdk = require('@aws-cdk/core');
 
+/**
+ * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
+ */
 export interface ScheduledTaskBaseProps {
   /**
-   * The cluster where your service will be deployed.
+   * The name of the cluster that hosts the service.
    */
   readonly cluster: ecs.ICluster;
 
   /**
-   * The image to start.
+   * The image used to start a container.
+   *
+   * This string is passed directly to the Docker daemon.
+   * Images in the Docker Hub registry are available by default.
+   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
    */
   readonly image: ecs.ContainerImage;
 
@@ -25,14 +31,16 @@ export interface ScheduledTaskBaseProps {
   readonly schedule: events.Schedule;
 
   /**
-   * The CMD value to pass to the container. A string with commands delimited by commas.
+   * The command that is passed to the container.
    *
-   * @default none
+   * If you provide a shell command as a single string, you have to quote command-line arguments.
+   *
+   * @default - CMD value built into container image.
    */
   readonly command?: string[];
 
   /**
-   * Number of desired copies of running tasks.
+   * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
@@ -54,17 +62,27 @@ export interface ScheduledTaskBaseProps {
 }
 
 /**
- * A scheduled task base that will be initiated off of cloudwatch events.
+ * The base class for ScheduledEc2Task and ScheduledFargateTask tasks.
  */
 export abstract class ScheduledTaskBase extends cdk.Construct {
-  public readonly cluster: ICluster;
+  /**
+   * The name of the cluster that hosts the service.
+   */
+  public readonly cluster: ecs.ICluster;
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   */
   public readonly desiredTaskCount: number;
   public readonly eventRule: events.Rule;
 
+  /**
+   * Constructs a new instance of the ScheduledTaskBase class.
+   */
   constructor(scope: cdk.Construct, id: string, props: ScheduledTaskBaseProps) {
     super(scope, id);
 
     this.cluster = props.cluster;
+    // Determine the desired number of tasks to run
     this.desiredTaskCount = props.desiredTaskCount || 1;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
@@ -74,7 +92,7 @@ export abstract class ScheduledTaskBase extends cdk.Construct {
   }
 
   /**
-   * Create an ecs task using the task definition provided and add it to the scheduled event rule
+   * Create an ecs task using the task definition provided and add it to the scheduled event rule.
    *
    * @param taskDefinition the TaskDefinition to add to the event rule
    */
