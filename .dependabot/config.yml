@@ -10,5 +10,5 @@ update_configs:
       - match:
           # Don't suggest upgrading @types/node to versions >= 9
           dependency_name: @types/node
-          version_requirements: '>= 9'
+          version_requirement: '>= 9'
     version_requirement_updates: increase_versions
