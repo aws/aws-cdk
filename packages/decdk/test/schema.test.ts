@@ -80,7 +80,7 @@ test('schemaForInterface: interface with primitives', async () => {
  */
 function spawn(command: string, options: SpawnOptions | undefined) {
   return new Promise((resolve, reject) => {
-    const cp = spawnAsync(command, { stdio: 'inherit', ...options });
+    const cp = spawnAsync(command, undefined, { stdio: 'inherit', ...options });
 
     cp.on('error', reject);
     cp.on('exit', (code) => {
