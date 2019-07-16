@@ -87,6 +87,14 @@ export class LambdaInvokeAction extends Action {
       resources: [this.props.lambda.functionArn]
     }));
 
+    // allow the Role access to the Bucket, if there are any inputs/outputs
+    if ((this.actionProperties.inputs || []).length > 0) {
+      options.bucket.grantRead(options.role);
+    }
+    if ((this.actionProperties.outputs || []).length > 0) {
+      options.bucket.grantWrite(options.role);
+    }
+
     // allow lambda to put job results for this pipeline
     // CodePipeline requires this to be granted to '*'
     // (the Pipeline ARN will not be enough)
