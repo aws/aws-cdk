@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "git://github.com/aws/aws-cdk"
   },
   "license": "Apache-2.0",
   "author": {
