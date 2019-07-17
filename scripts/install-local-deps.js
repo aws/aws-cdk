@@ -136,7 +136,7 @@ function pathExistsSync(path) {
     lstatSync(path);
     // lstat would throw if the file does not exist, and return if it does.
     return true;
-  } catch {
+  } catch (e) {
     return false;
   }
 }
