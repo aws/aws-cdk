@@ -73,11 +73,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/lodash": "^4.14.134",
-    "cdk-build-tools": "^1.0.0",
-    "cfn2ts": "^1.0.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
     "fast-check": "^1.15.1",
     "lodash": "^4.17.11",
-    "pkglint": "^1.0.0"
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
     "@aws-cdk/cx-api": "^1.0.0"
