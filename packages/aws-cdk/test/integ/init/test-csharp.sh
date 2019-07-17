@@ -4,7 +4,7 @@
 #------------------------------------------------------------------
 set -e
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/common/util.bash
+source ${scriptdir}/../common/util.bash
 header C#
 prepare_toolkit
 prepare_nuget_packages

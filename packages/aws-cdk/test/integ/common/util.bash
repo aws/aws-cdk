@@ -12,7 +12,7 @@ function header() {
 }
 
 # This is where build artifacts reside
-dist=$PWD
+dist=$(cd ${CDK_DIST:-$PWD} && pwd)
 
 # NPM Workspace. Will have CDK CLI and verdaccio installed into it.
 npmws=$(mktemp -d)
