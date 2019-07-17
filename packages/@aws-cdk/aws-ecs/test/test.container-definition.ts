@@ -554,6 +554,40 @@ export = {
       test.done();
     },
 
+    'can specify secrets'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+      const mySecretArn = 'arn:aws:secretsmanager:region:1234567890:secret:MyRepoSecret-6f8hj3';
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        secrets: [ {
+          name: 'MyRepoSecret',
+          valueFrom: mySecretArn,
+        }],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            Secrets: [
+              {
+                Name : 'MyRepoSecret',
+                ValueFrom : mySecretArn
+              }
+            ],
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
     'after calling addContainer'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

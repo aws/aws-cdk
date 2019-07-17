@@ -194,6 +194,15 @@ export interface ContainerDefinitionOptions {
    * @default - No Linux paramters.
    */
   readonly linuxParameters?: LinuxParameters;
+
+  /**
+   * The Secret property specifies an object representing the secret to expose to the container
+   * For more information, see [Specifying Sensitive Data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default - No secrets.
+   */
+  readonly secrets?: CfnTaskDefinition.SecretProperty[];
 }
 
 /**
@@ -444,6 +453,7 @@ export class ContainerDefinition extends cdk.Construct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
+      secrets: this.props.secrets
     };
   }
 }
