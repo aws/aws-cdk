@@ -52,9 +52,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^7.0.0",
-    "cdk-build-tools": "^1.0.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "fs-extra": "^8.0.1",
-    "pkglint": "^1.0.0"
+    "pkglint": "file:../../../tools/pkglint"
   },
   "jest": {
     "coverageReporters": [

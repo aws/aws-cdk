@@ -80,12 +80,12 @@ test('schemaForInterface: interface with primitives', async () => {
  */
 function spawn(command: string, options: SpawnOptions | undefined) {
   return new Promise((resolve, reject) => {
-    const cp = spawnAsync(command, { stdio: 'inherit', ...options });
+    const cp = spawnAsync(command, [], { stdio: 'inherit', ...options });
 
     cp.on('error', reject);
-    cp.on('exit', (code) => {
+    cp.on('exit', (code, signal) => {
       if (code === 0) { resolve(); }
-      reject(new Error(`Subprocess exited with ${code}`));
+      reject(new Error(`Subprocess exited with ${code || signal}`));
     });
   });
 }

@@ -31,8 +31,8 @@
   "devDependencies": {
     "@types/fs-extra": "^7.0.0",
     "@types/yargs": "^13.0.0",
-    "cdk-build-tools": "^1.0.0",
-    "pkglint": "^1.0.0"
+    "cdk-build-tools": "file:../cdk-build-tools",
+    "pkglint": "file:../pkglint"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "^1.0.0",

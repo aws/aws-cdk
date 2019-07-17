@@ -1,5 +1,5 @@
 {
-  "lerna": "2.5.1",
+  "lerna": "3.15.0",
   "packages": [
     "packages/*",
     "packages/@aws-cdk/*",
