@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { EnvironmentUtils } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import path = require('path');
-import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
+import { Construct, ConstructNode, IConstruct, ISynthesisSession, OutgoingReference } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -483,11 +483,16 @@ export class Stack extends Construct implements ITaggable {
    * Find all dependencies as well and add the appropriate DependsOn fields.
    */
   protected prepare() {
-    // References
+    // References (originating from this stack)
     for (const ref of this.node.references) {
-      if (CfnReference.isCfnReference(ref.reference)) {
-        ref.reference.consumeFromStack(this, ref.source);
+
+      // skip any references originating from a construct that belongs to nested stacks.
+      // or if this is a reference between constructs within the same stack
+      if (Stack.of(ref.source) !== this || Stack.of(ref.reference.target) === this) {
+        continue;
       }
+
+      this.prepareCrossReference(ref);
     }
 
     // Resource dependencies
@@ -515,7 +520,7 @@ export class Stack extends Construct implements ITaggable {
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, template);
-    fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
+    fs.writeFileSync(outPath, JSON.stringify(this.toCloudFormation(), undefined, 2));
 
     const deps = this.dependencies.map(s => s.stackName);
     const meta = this.collectMetadata();
@@ -541,10 +546,8 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Returns the CloudFormation template for this stack by traversing
    * the tree and invoking _toCloudFormation() on all Entity objects.
-   *
-   * @internal
    */
-  protected _toCloudFormation() {
+  protected toCloudFormation() {
     const template: any = {
       Description: this.templateOptions.description,
       Transform: this.templateOptions.transform,
@@ -566,6 +569,73 @@ export class Stack extends Construct implements ITaggable {
     this._logicalIds.assertAllRenamesApplied();
 
     return ret;
+  }
+
+  /**
+   * Register a stack this references is being consumed from.
+   */
+  protected prepareCrossReference(ref: OutgoingReference) {
+    const reference = ref.reference;
+
+    if (!CfnReference.isCfnReference(reference)) {
+      return;
+    }
+
+    // for readability
+    const producingStack = Stack.of(reference.target);
+    const consumingStack = this;
+    const consumingConstruct = ref.source;
+
+    if (consumingStack.node.root !== producingStack.node.root) {
+      throw new Error(
+        `Cannot reference across apps. ` +
+        `Consuming and producing stacks must be defined within the same CDK app.`);
+    }
+
+    if (producingStack.environment !== consumingStack.environment) {
+      throw new Error(`Can only reference cross stacks in the same region and account: ${reference}`);
+    }
+
+    if (producingStack !== consumingStack && !reference.hasValueForStack(consumingStack)) {
+      this.addDependency(producingStack, `${consumingConstruct.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+      reference.assignValueForStack(consumingStack, producingStack.exportValue(reference));
+    }
+  }
+
+  /**
+   * Exports a resolvable value for use in another stack.
+   *
+   * @returns a token that can be used to reference the value from the producing stack.
+   */
+  private exportValue(value: any): IResolvable {
+    // Ensure a singleton "Exports" scoping Construct
+    // This mostly exists to trigger LogicalID munging, which would be
+    // disabled if we parented constructs directly under Stack.
+    // Also it nicely prevents likely construct name clashes
+    const exportsScope = this.getCreateExportsScope();
+
+    // Ensure a singleton CfnOutput for this value
+    const resolved = this.resolve(value);
+    const id = 'Output' + JSON.stringify(resolved);
+    const exportName = this.generateExportName(exportsScope, id);
+    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
+    if (!output) {
+      new CfnOutput(exportsScope, id, { value: Token.asString(value), exportName });
+    }
+
+    // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
+    // so construct one in-place.
+    return new Intrinsic({ 'Fn::ImportValue': exportName });
+  }
+
+  private getCreateExportsScope() {
+    const exportsName = 'Exports';
+    let stackExports = this.node.tryFindChild(exportsName) as Construct;
+    if (stackExports === undefined) {
+      stackExports = new Construct(this, exportsName);
+    }
+
+    return stackExports;
   }
 
   /**
@@ -651,6 +721,14 @@ export class Stack extends Construct implements ITaggable {
 
     return makeUniqueId(ids);
   }
+
+  private generateExportName(stackExports: Construct, id: string) {
+    const stack = Stack.of(stackExports);
+    const components = [...stackExports.node.scopes.slice(2).map(c => c.node.id), id];
+    const prefix = stack.stackName ? stack.stackName + ':' : '';
+    const exportName = prefix + makeUniqueId(components);
+    return exportName;
+  }
 }
 
 function merge(template: any, part: any) {
@@ -725,9 +803,12 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
+import { CfnOutput } from './cfn-output';
 import { Aws, ScopedAws } from './cfn-pseudo';
+import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
-import { CfnReference } from './private/cfn-reference';
+import { Intrinsic } from './private/intrinsic';
+import { IResolvable } from './resolvable';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 

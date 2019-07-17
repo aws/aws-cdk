@@ -179,6 +179,6 @@ function notTooLong(x: string) {
   return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
-import { CfnReference } from "./private/cfn-reference";
+import { CfnReference } from "./cfn-reference";
 import { findTokens } from "./private/resolve";
 import { Stack } from './stack';

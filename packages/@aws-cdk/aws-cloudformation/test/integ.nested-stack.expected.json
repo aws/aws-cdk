@@ -1,0 +1,138 @@
+{
+  "Parameters": {
+    "NestedStack1NestedStackAssetS3Bucket5FED0F84": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
+    },
+    "NestedStack1NestedStackAssetS3VersionKeyD7FDFFF0": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
+    },
+    "NestedStack1NestedStackAssetArtifactHash1F5040A3": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
+    },
+    "NestedStack2NestedStackAssetS3BucketF8C8921A": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
+    },
+    "NestedStack2NestedStackAssetS3VersionKey0C402EEC": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
+    },
+    "NestedStack2NestedStackAssetArtifactHash4D4982F5": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
+    }
+  },
+  "Resources": {
+    "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "NestedStack1NestedStackAssetS3Bucket5FED0F84"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedStack1NestedStackAssetS3VersionKeyD7FDFFF0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedStack1NestedStackAssetS3VersionKeyD7FDFFF0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        "Parameters": {
+          "TopicNamePrefix": "Prefix1"
+        }
+      }
+    },
+    "NestedStack2NestedStackNestedStack2NestedStackResourceFDF82E43": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "NestedStack2NestedStackAssetS3BucketF8C8921A"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedStack2NestedStackAssetS3VersionKey0C402EEC"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedStack2NestedStackAssetS3VersionKey0C402EEC"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        "Parameters": {
+          "TopicNamePrefix": "Prefix2"
+        }
+      }
+    }
+  }
+}

@@ -78,7 +78,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack._toCloudFormation(), { Resources:
+    test.deepEqual(stack.toCloudFormation(), { Resources:
       { myResource:
          { Type: 'AWS::MyResource',
          Properties:
@@ -459,8 +459,8 @@ class StackWithPostProcessor extends Stack {
 
   // ...
 
-  public _toCloudFormation() {
-    const template = super._toCloudFormation();
+  public toCloudFormation() {
+    const template = super.toCloudFormation();
 
     // manipulate template (e.g. rename "Key" to "key")
     template.Resources.myResource.Properties.Environment.key =
