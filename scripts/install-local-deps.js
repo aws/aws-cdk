@@ -2,8 +2,10 @@
  * Installs repo-local dependencies manually, as lerna ignores those...
  */
 const { exec, execSync } = require('child_process');
-const { removeSync, mkdirpSync, pathExistsSync, symlinkSync, writeJsonSync } = require('fs-extra');
+const { lstatSync, mkdirpSync, readJsonSync, removeSync, symlinkSync, writeJsonSync } = require('fs-extra');
 const { dirname, join, relative, resolve } = require('path');
+
+const LOCAL_PACKAGE_REGEX = /^file:(.+)$/;
 
 exec('lerna ls --json --all', { shell: true }, (error, stdout) => {
   if (error) {
@@ -32,20 +34,22 @@ function installDeps(location, ...depLists) {
   const linked = new Set();
   const paths = [];
   for (const { depList, dev } of depLists) {
-    Object.entries(depList || {})
-      .forEach(([name, version]) => {
-        if (linked.has(name)) { return; }
-        const matched = version.match(/^file:(.+)$/);
-        if (!matched) { return; }
-        const path = matched[1];
-        const modulePath = resolve(location, path);
-        const requires = installDependency(nodeModules, modulePath);
-        linked.add(name);
-        paths.push(path);
-        if (locks) {
-          locks.dependencies[name] = { version, dev, requires };
-        }
-      });
+    for (const [name, version] of Object.entries(depList || {})) {
+      if (linked.has(name)) { continue; }
+      const matched = version.match(LOCAL_PACKAGE_REGEX);
+      if (!matched) { continue; }
+
+      const path = matched[1];
+      const modulePath = resolve(location, path);
+      const requires = installDependency(nodeModules, modulePath);
+
+      linked.add(name);
+      paths.push(path);
+
+      if (locks) {
+        locks.dependencies[name] = { version, dev, requires: rewriteLocalPaths(requires, modulePath, location) };
+      }
+    }
   }
   if (process.env.VERBOSE) {
     console.log(`Fixing up package-lock.json in ${location}`);
@@ -67,7 +71,7 @@ function installDeps(location, ...depLists) {
  * @param {string} localPath   the path of the "installed" module
  */
 function installDependency(nodeModules, localPath) {
-  const packageInfo = require(`${localPath}/package.json`);
+  const packageInfo = readJsonSync(`${localPath}/package.json`);
 
   const linkLocation = join(nodeModules, packageInfo.name);
 
@@ -80,7 +84,7 @@ function installDependency(nodeModules, localPath) {
     removeSync(linkLocation);
   }
 
-  symlinkSync(localPath, linkLocation);
+  symlinkSync(relative(dirname(linkLocation), localPath), linkLocation);
 
   if (packageInfo.bin) {
     const bin = join(nodeModules, '.bin');
@@ -110,4 +114,29 @@ function sortKeys(object) {
     sorted[key] = object[key];
   }
   return sorted;
+}
+
+function rewriteLocalPaths(dependencies, moduleRoot, newRoot) {
+  if (!dependencies) {
+    return dependencies;
+  }
+  for (const [name, version] of Object.entries(dependencies)) {
+    const matched = version.match(LOCAL_PACKAGE_REGEX);
+    if (!matched) { continue; }
+    const path = matched[1];
+    const absolutePath = resolve(moduleRoot, path);
+    const localRelativePath = relative(newRoot, absolutePath);
+    dependencies[name] = `file:${localRelativePath}`;
+  }
+  return dependencies;
+}
+
+function pathExistsSync(path) {
+  try {
+    lstatSync(path);
+    // lstat would throw if the file does not exist, and return if it does.
+    return true;
+  } catch {
+    return false;
+  }
 }
