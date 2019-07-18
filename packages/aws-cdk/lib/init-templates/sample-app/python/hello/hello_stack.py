@@ -6,7 +6,7 @@ from aws_cdk import (
     core
 )
 
-from hello_construct import HelloConstruct
+from .hello_construct import HelloConstruct
 
 
 class MyStack(core.Stack):
