@@ -111,3 +111,42 @@ export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBal
     };
   }
 }
+
+export class LambdaTarget implements IApplicationLoadBalancerTarget {
+  /**
+   * Create a new Lambda target
+   *
+   * TODO...
+   *
+   * @param functionArn The Lambda Function ARN to load balance to
+   */
+  constructor(private readonly functionArn: string) {
+  }
+
+  /**
+   * Register this instance target with a load balancer
+   *
+   * Don't call this, it is called automatically when you add the target to a
+   * load balancer.
+   */
+  public attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps {
+    return this.attach(targetGroup);
+  }
+
+  /**
+   * Register this instance target with a load balancer
+   *
+   * Don't call this, it is called automatically when you add the target to a
+   * load balancer.
+   */
+  public attachToNetworkTargetGroup(targetGroup: NetworkTargetGroup): LoadBalancerTargetProps {
+    return this.attach(targetGroup);
+  }
+
+  private attach(_targetGroup: ITargetGroup): LoadBalancerTargetProps {
+    return {
+      targetType: TargetType.LAMBDA,
+      targetJson: { id: this.functionArn }
+    };
+  }
+}

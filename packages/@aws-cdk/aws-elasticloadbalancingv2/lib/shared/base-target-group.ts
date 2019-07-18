@@ -21,8 +21,12 @@ export interface BaseTargetGroupProps {
 
   /**
    * The virtual private cloud (VPC).
+   *
+   * only if `TargetType` is `Ip` or `InstanceId`
+   *
+   * @default - undefined
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -192,6 +196,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   private readonly targetsJson = new Array<any>();
 
   /**
+   * The target group VPC if TargetType is not `Lambda`
+   */
+  private vpc?: ec2.IVpc;
+
+  /**
    * The types of the directly registered members of this target group
    */
   private targetType?: TargetType;
@@ -209,6 +218,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
@@ -216,7 +226,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
       targetType: cdk.Lazy.stringValue({ produce: () => this.targetType }),
       targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson }),
-      vpcId: baseProps.vpc.vpcId,
+      vpcId: cdk.Lazy.stringValue({ produce: () => this.vpc && this.vpc.vpcId }),
 
       // HEALTH CHECK
       healthCheckIntervalSeconds: cdk.Lazy.numberValue({
