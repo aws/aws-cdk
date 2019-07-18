@@ -41,13 +41,20 @@ function installDeps(location, ...depLists) {
 
       const path = matched[1];
       const modulePath = resolve(location, path);
-      const requires = installDependency(nodeModules, modulePath);
+      const { requires, dependencies } = installDependency(nodeModules, modulePath);
 
       linked.add(name);
       paths.push(path);
 
       if (locks) {
-        locks.dependencies[name] = { version, dev, requires: rewriteLocalPaths(requires, modulePath, location) };
+        fixupDependencies(dependencies, dev);
+
+        locks.dependencies[name] = {
+          version,
+          dev,
+          requires: removeLocalPackages(requires),
+          dependencies,
+        };
       }
     }
   }
@@ -71,7 +78,7 @@ function installDeps(location, ...depLists) {
  * @param {string} localPath   the path of the "installed" module
  */
 function installDependency(nodeModules, localPath) {
-  const packageInfo = readJsonSync(`${localPath}/package.json`);
+  const packageInfo = readJsonSync(join(localPath, 'package.json'));
 
   const linkLocation = join(nodeModules, packageInfo.name);
 
@@ -102,7 +109,15 @@ function installDependency(nodeModules, localPath) {
     }
   }
 
-  return packageInfo.dependencies;
+  const lockFilePath = join(localPath, 'package-lock.json');
+  const lockFile = pathExistsSync(lockFilePath)
+    ? readJsonSync(lockFilePath)
+    : undefined;
+
+  return {
+    requires: packageInfo.dependencies,
+    dependencies: lockFile && lockFile.dependencies,
+  };
 }
 
 function sortKeys(object) {
@@ -116,17 +131,14 @@ function sortKeys(object) {
   return sorted;
 }
 
-function rewriteLocalPaths(dependencies, moduleRoot, newRoot) {
+function removeLocalPackages(dependencies) {
   if (!dependencies) {
     return dependencies;
   }
   for (const [name, version] of Object.entries(dependencies)) {
     const matched = version.match(LOCAL_PACKAGE_REGEX);
     if (!matched) { continue; }
-    const path = matched[1];
-    const absolutePath = resolve(moduleRoot, path);
-    const localRelativePath = relative(newRoot, absolutePath);
-    dependencies[name] = `file:${localRelativePath}`;
+    delete dependencies[name];
   }
   return dependencies;
 }
@@ -138,5 +150,25 @@ function pathExistsSync(path) {
     return true;
   } catch (e) {
     return false;
+  }
+}
+
+function fixupDependencies(deps, dev) {
+  if (!deps) {
+    return deps;
+  }
+  for (const [name, dep] of Object.entries(deps)) {
+    if (!dev && dep.dev) {
+      delete deps[name];
+      continue;
+    }
+    if (dev) { dep.dev = true; }
+    const matched = dep.version.match(LOCAL_PACKAGE_REGEX);
+    if (matched) {
+      delete deps[name];
+      continue;
+    }
+    dep.requires = removeLocalPackages(dep.requires);
+    fixupDependencies(dep.dependencies, dev);
   }
 }
