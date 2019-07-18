@@ -397,8 +397,8 @@ export class Stack extends Construct implements ITaggable {
     const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
     if (agnostic) {
       return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
-        Fn.select(0, Fn.getAZs()),
-        Fn.select(1, Fn.getAZs())
+        Fn.select(0, Fn.getAzs()),
+        Fn.select(1, Fn.getAzs())
       ];
     }
 

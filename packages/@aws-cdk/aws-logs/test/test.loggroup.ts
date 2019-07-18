@@ -43,6 +43,32 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
+      retention: RetentionDays.INFINITE,
+    });
+
+    // THEN
+    expect(stack).to(matchTemplate({
+      Resources: {
+        LogGroupF5B46931: {
+          Type: "AWS::Logs::LogGroup",
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
+        }
+      }
+    }));
+
+    test.done();
+  },
+
+  'infinite retention via legacy method'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      // Don't know why TypeScript doesn't complain about passing Infinity to
+      // something where an enum is expected, but better keep this behavior for
+      // existing clients.
       retention: Infinity
     });
 
@@ -51,7 +77,8 @@ export = {
       Resources: {
         LogGroupF5B46931: {
           Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
         }
       }
     }));
@@ -74,7 +101,8 @@ export = {
       Resources: {
         LogGroupF5B46931: {
           Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Delete"
+          DeletionPolicy: "Delete",
+          UpdateReplacePolicy: "Delete"
         }
       }
     }));

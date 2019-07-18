@@ -85,6 +85,7 @@ export class Certificate extends Resource implements ICertificate {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: allDomainNames.map(domainValidationOption),
+      validationMethod: 'EMAIL',
     });
 
     this.certificateArn = cert.ref;

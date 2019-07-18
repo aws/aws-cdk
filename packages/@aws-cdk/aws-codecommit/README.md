@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -42,9 +40,13 @@ and invoke targets as a result:
 
 ```ts
 // starts a CodeBuild project when a commit is pushed to the "master" branch of the repo
-repo.onCommit('CommitToMaster', project, 'master');
+repo.onCommit('CommitToMaster', {
+    target: new targets.CodeBuildProject(project),
+    branches: ['master'],
+});
 
 // publishes a message to an Amazon SNS topic when a comment is made on a pull request
-const rule = repo.onCommentOnPullRequest('CommentOnPullRequest');
-rule.addTarget(myTopic);
+const rule = repo.onCommentOnPullRequest('CommentOnPullRequest', {
+    target: new targets.SnsTopic(myTopic),
+});
 ```

@@ -718,7 +718,8 @@
     },
     "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "ScheduledEc2TaskScheduledTaskDefExecutionRole65A8CC6F": {
       "Type": "AWS::IAM::Role",
