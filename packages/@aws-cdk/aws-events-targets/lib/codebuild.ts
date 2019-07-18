@@ -13,8 +13,9 @@ export class CodeBuildProject implements events.IRuleTarget {
   /**
    * Allows using build projects as event rule targets.
    */
-  public bind(_rule: events.IRule, _id: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     return {
+      id: '',
       arn: this.project.projectArn,
       role: singletonEventRole(this.project, [new iam.PolicyStatement({
         actions: ['codebuild:StartBuild'],

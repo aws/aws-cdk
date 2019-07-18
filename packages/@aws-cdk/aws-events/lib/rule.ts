@@ -136,7 +136,7 @@ export class Rule extends Resource implements IRule {
     const roleArn = targetProps.role ? targetProps.role.roleArn : undefined;
 
     this.targets.push({
-      id,
+      id: targetProps.id || id,
       arn: targetProps.arn,
       roleArn,
       ecsParameters: targetProps.ecsParameters,

@@ -14,13 +14,22 @@ export interface IRuleTarget {
    * @param rule The CloudWatch Event Rule that would trigger this target.
    * @param id The id of the target that wil be attached to the rule.
    */
-  bind(rule: IRule, id: string): RuleTargetConfig;
+  bind(rule: IRule, id?: string): RuleTargetConfig;
 }
 
 /**
  * Properties for an event rule target
  */
 export interface RuleTargetConfig {
+  /**
+   * A unique, user-defined identifier for the target. Acceptable values
+   * include alphanumeric characters, periods (.), hyphens (-), and
+   * underscores (_).
+   *
+   * @deprecated prefer auto-generated id by specifying an empty string
+   */
+  readonly id: string;
+
   /**
    * The Amazon Resource Name (ARN) of the target.
    */

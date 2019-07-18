@@ -158,6 +158,7 @@ export = {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
       bind: () => ({
+        id: '',
         arn: 'ARN1',
         kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
       })
@@ -165,6 +166,7 @@ export = {
 
     const t2: IRuleTarget = {
       bind: () => ({
+        id: '',
         arn: 'ARN2',
         input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla')}`),
       })
@@ -220,7 +222,7 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"')
+        id: '', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"')
       })
     });
 
@@ -228,6 +230,7 @@ export = {
     // expect it to be wrapped in double quotes automatically for us.
     rule.addTarget({
       bind: () => ({
+        id: '',
         arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
         input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
       })
@@ -236,6 +239,7 @@ export = {
     // jsonTemplate can be used to format JSON documents with replacements
     rule.addTarget({
       bind: () => ({
+        id: '',
         arn: 'ARN3',
         input: RuleTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }),
       })
@@ -244,6 +248,7 @@ export = {
     // tokens can also used for JSON templates.
     rule.addTarget({
       bind: () => ({
+        id: '',
         arn: 'ARN4',
         input: RuleTargetInput.fromText(cdk.Fn.join(' ', ['hello', '"world"']).toString()),
       })
@@ -309,6 +314,7 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
+        id: '',
         arn: 'ARN2',
         role,
       })
@@ -340,6 +346,7 @@ export = {
         receivedRuleId = eventRule.node.uniqueId;
 
         return {
+          id: '',
           arn: 'ARN1',
           kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
         };
@@ -421,6 +428,7 @@ export = {
 class SomeTarget implements IRuleTarget {
   public bind() {
     return {
+      id: '',
       arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
     };
   }

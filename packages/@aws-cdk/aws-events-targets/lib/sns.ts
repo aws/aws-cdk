@@ -34,11 +34,12 @@ export class SnsTopic implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
    */
-  public bind(_rule: events.IRule, _id: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // deduplicated automatically
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 
     return {
+      id: '',
       arn: this.topic.topicArn,
       input: this.props.message,
     };
