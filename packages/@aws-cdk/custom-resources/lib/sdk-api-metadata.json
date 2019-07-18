@@ -55,8 +55,7 @@
       "2016-11-25*",
       "2017-03-25*",
       "2017-10-30*",
-      "2018-06-18*",
-      "2018-11-05*"
+      "2018-06-18*"
     ],
     "cors": true
   },
@@ -714,34 +713,5 @@
   "ioteventsdata": {
     "prefix": "iotevents-data",
     "name": "IoTEventsData"
-  },
-  "personalize": {
-    "name": "Personalize",
-    "cors": true
-  },
-  "personalizeevents": {
-    "prefix": "personalize-events",
-    "name": "PersonalizeEvents",
-    "cors": true
-  },
-  "personalizeruntime": {
-    "prefix": "personalize-runtime",
-    "name": "PersonalizeRuntime",
-    "cors": true
-  },
-  "applicationinsights": {
-    "prefix": "application-insights",
-    "name": "ApplicationInsights"
-  },
-  "servicequotas": {
-    "prefix": "service-quotas",
-    "name": "ServiceQuotas"
-  },
-  "ec2instanceconnect": {
-    "prefix": "ec2-instance-connect",
-    "name": "EC2InstanceConnect"
-  },
-  "eventbridge": {
-    "name": "EventBridge"
   }
 }
