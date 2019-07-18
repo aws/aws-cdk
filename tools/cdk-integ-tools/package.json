@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "tools/cdk-integ-tools"
   },
   "bin": {
@@ -31,8 +31,8 @@
   "devDependencies": {
     "@types/fs-extra": "^7.0.0",
     "@types/yargs": "^13.0.0",
-    "cdk-build-tools": "^1.0.0",
-    "pkglint": "^1.0.0"
+    "cdk-build-tools": "file:../cdk-build-tools",
+    "pkglint": "file:../pkglint"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "^1.0.0",
@@ -45,7 +45,7 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
   }

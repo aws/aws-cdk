@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Build a global dynamodb table",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-dynamodb-global"
   },
   "author": {
@@ -54,10 +54,10 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "^1.0.0",
-    "cdk-build-tools": "^1.0.0",
-    "cdk-integ-tools": "^1.0.0",
-    "cfn2ts": "^1.0.0",
-    "pkglint": "^1.0.0"
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "peerDependencies": {
     "@aws-cdk/aws-cloudformation": "^1.0.0",

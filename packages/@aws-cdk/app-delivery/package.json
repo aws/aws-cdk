@@ -52,17 +52,17 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.0.0",
     "@aws-cdk/aws-s3": "^1.0.0",
-    "cdk-build-tools": "^1.0.0",
-    "cdk-integ-tools": "^1.0.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "fast-check": "^1.15.1",
-    "pkglint": "^1.0.0"
+    "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/app-delivery"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",

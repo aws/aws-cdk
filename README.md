@@ -19,16 +19,15 @@ infrastructure definition and share it without worrying about boilerplate logic.
 
 The CDK is available in the following languages:
 
-* JavaScript, TypeScript ([Node.js ≥ 8.11.x](https://nodejs.org/en/download))
-* Python ([Python ≥ 3.6](https://www.python.org/downloads/))
+* JavaScript, TypeScript (GA, [Node.js ≥ 8.11.x](https://nodejs.org/en/download))
+* Python (GA, [Python ≥ 3.6](https://www.python.org/downloads/))
 * Java (Developer Preview, [Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
 * .NET (Developer Preview, [.NET Core ≥ 2.0](https://dotnet.microsoft.com/download))
-
-The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 
 -------
 
 [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide) |
+[CDK Workshop](https://cdkworkshop.com/) |
 [Getting Started](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) |
 [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
@@ -116,7 +115,7 @@ for tracking bugs and feature requests.
 * Come join the AWS CDK community on [Gitter](https://gitter.im/awslabs/aws-cdk)
 * Open a support ticket with [AWS Support](https://console.aws.amazon.com/support/home#/)
 * If it turns out that you may have found a bug,
-  please open an [issue](https://github.com/awslabs/aws-cdk/issues/new)
+  please open an [issue](https://github.com/aws/aws-cdk/issues/new)
 
 ## Contributing
 

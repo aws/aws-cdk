@@ -38,12 +38,12 @@
   "devDependencies": {
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.5",
-    "cdk-build-tools": "^1.0.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "fast-check": "^1.15.1",
-    "pkglint": "^1.0.0"
+    "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
     "directory": "packages/@aws-cdk/cloudformation-diff"
   },
@@ -51,7 +51,7 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
   },

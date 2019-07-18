@@ -62,12 +62,12 @@
   "devDependencies": {
     "@types/jest": "^24.0.15",
     "@types/semver": "^6.0.0",
-    "cdk-build-tools": "^1.0.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "jest": "^24.8.0",
-    "pkglint": "^1.0.0"
+    "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
     "directory": "packages/@aws-cdk/cx-api"
   },
@@ -75,7 +75,7 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "bundledDependencies": [
     "semver"
   ],

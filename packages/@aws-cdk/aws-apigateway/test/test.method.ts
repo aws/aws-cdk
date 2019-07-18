@@ -383,7 +383,7 @@ export = {
     test.done();
   },
 
-  'multiple integration responses can be used'(test: Test) { // @see https://github.com/awslabs/aws-cdk/issues/1608
+  'multiple integration responses can be used'(test: Test) { // @see https://github.com/aws/aws-cdk/issues/1608
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
