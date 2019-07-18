@@ -156,7 +156,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
    * "aws:cdk:enable-asset-metadata" context key defined, which is the default
    * behavior when synthesizing via the CDK Toolkit.
    *
-   * @see https://github.com/awslabs/aws-cdk/issues/1432
+   * @see https://github.com/aws/aws-cdk/issues/1432
    *
    * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
    * @param resourceProperty The property name where this asset is referenced

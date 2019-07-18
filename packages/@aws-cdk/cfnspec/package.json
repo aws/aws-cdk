@@ -24,18 +24,18 @@
   "devDependencies": {
     "@types/fs-extra": "^7.0.0",
     "@types/md5": "^2.1.33",
-    "cdk-build-tools": "^1.0.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "fast-json-patch": "^2.1.0",
     "fs-extra": "^8.0.1",
     "json-diff": "^0.5.4",
-    "pkglint": "^1.0.0",
+    "pkglint": "file:../../../tools/pkglint",
     "sort-json": "^2.0.0"
   },
   "dependencies": {
     "md5": "^2.2.1"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git"
   },
   "license": "Apache-2.0",
@@ -48,5 +48,5 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk"
 }

@@ -36,9 +36,11 @@
   "devDependencies": {
     "@types/archiver": "^3.0.0",
     "@types/fs-extra": "^7.0.0",
+    "@types/glob": "^7.1.1",
     "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
+    "@types/node": "^8.10.50",
     "@types/request": "^2.48.1",
     "@types/semver": "^6.0.0",
     "@types/sinon": "^7.0.13",
@@ -46,10 +48,10 @@
     "@types/uuid": "^3.4.4",
     "@types/yaml": "^1.0.2",
     "@types/yargs": "^13.0.0",
-    "cdk-build-tools": "^1.0.0",
+    "cdk-build-tools": "file:../../tools/cdk-build-tools",
     "jszip": "^3.2.1",
     "mockery": "^2.1.0",
-    "pkglint": "^1.0.0",
+    "pkglint": "file:../../tools/pkglint",
     "sinon": "^7.3.2"
   },
   "dependencies": {
@@ -75,7 +77,7 @@
     "yargs": "^13.2.4"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
     "directory": "packages/aws-cdk"
   },
@@ -83,9 +85,9 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }
