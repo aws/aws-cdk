@@ -2,7 +2,8 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, SslPolicy, TargetType } from '../shared/enums';
+import { LambdaTarget } from '../shared/load-balancer-targets';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
 import { ApplicationListenerRule, FixedResponse, validateFixedResponse } from './application-listener-rule';
@@ -189,6 +190,15 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
     }
 
+    function hasLambdaTargets(targets: IApplicationLoadBalancerTarget[]): boolean {
+      if (targets.length > 0) {
+        return targets.map(target => target instanceof LambdaTarget).reduceRight((previous, current) => previous || current);
+      } else {
+        return false;
+      }
+    }
+    const targetType: TargetType | undefined = hasLambdaTargets(props.targets || []) ? TargetType.LAMBDA : undefined;
+
     const group = new ApplicationTargetGroup(this, id + 'Group', {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
@@ -198,6 +208,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       stickinessCookieDuration: props.stickinessCookieDuration,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
+      targetType,
       vpc: this.loadBalancer.vpc,
     });
 
