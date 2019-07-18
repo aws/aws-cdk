@@ -15,7 +15,9 @@
     "test": "cdk-test",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "integ-cli": "CDK_REPO=$PWD/../.. test/integ/cli/test.sh",
+    "integ-init": "CDK_DIST=$PWD/../../dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
     "pre": [
