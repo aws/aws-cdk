@@ -37,7 +37,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "Target0"
           }
         ]
       }
