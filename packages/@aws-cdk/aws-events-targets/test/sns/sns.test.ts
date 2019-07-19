@@ -38,7 +38,7 @@ test('sns topic as an event rule target', () => {
     Targets: [
       {
         Arn: { Ref: "MyTopic86869434" },
-        Id: "MyTopic"
+        Id: "Target0"
       }
     ]
   }));

@@ -29,7 +29,7 @@ export = {
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
-          Id: "ScheduledFargateTaskScheduledTaskDef4D131A6E",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
         }
@@ -91,7 +91,7 @@ export = {
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
-          Id: "ScheduledFargateTaskScheduledTaskDef4D131A6E",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
         }

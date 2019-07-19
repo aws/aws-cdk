@@ -200,8 +200,8 @@ export = {
     trail.onCloudTrailEvent('DoEvents', {
       target: {
         bind: () => ({
+          id: '',
           arn: 'arn',
-          id: 'myid'
         })
       }
     });
@@ -217,7 +217,7 @@ export = {
       Targets: [
         {
           Arn: "arn",
-          Id: "myid"
+          Id: "Target0"
         }
       ]
     }));

@@ -312,7 +312,7 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: 'ID' })
+        bind: () => ({ arn: 'ARN', id: '' })
       }
     });
 
@@ -354,7 +354,7 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: 'ID' })
+        bind: () => ({ arn: 'ARN', id: '' })
       },
       paths: ['my/path.zip']
     });

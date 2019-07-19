@@ -25,7 +25,7 @@ test('use codebuild project as an eventrule target', () => {
             "Arn"
           ]
         },
-        Id: "MyProject",
+        Id: "Target0",
         RoleArn: {
           "Fn::GetAtt": [
             "MyProjectEventsRole5B7D93F5",

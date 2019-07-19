@@ -212,7 +212,7 @@
                 "Ref": "ScheduledFargateTaskScheduledTaskDef521FA675"
               }
             },
-            "Id": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+            "Id": "Target0",
             "Input": "{}",
             "RoleArn": {
               "Fn::GetAtt": [
@@ -685,7 +685,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "ScheduledFargateTaskScheduledTaskDef521FA675"
@@ -762,7 +762,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "ScheduledFargateTaskScheduledTaskDef521FA675"

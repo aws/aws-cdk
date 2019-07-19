@@ -51,7 +51,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
           InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
         },
         RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
-        Id: taskDefinition.node.uniqueId
+        Id: "Target0"
       }
     ]
   });
@@ -124,7 +124,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
                 "Arn"
               ]
             },
-            Id: taskDefinition.node.uniqueId,
+            Id: "Target0",
             EcsParameters: {
               TaskDefinitionArn: {
                 Ref: "TaskDef54694570"
@@ -180,7 +180,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
           InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
         },
         RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
-        Id: taskDefinition.node.uniqueId
+        Id: "Target0"
       }
     ]
   });

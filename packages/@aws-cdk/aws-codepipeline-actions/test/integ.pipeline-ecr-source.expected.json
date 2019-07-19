@@ -423,7 +423,7 @@
                 ]
               ]
             },
-            "Id": "awscdkcodepipelineecrsourceMyPipeline63CF3194",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyPipelineEventsRoleFAB99F32",

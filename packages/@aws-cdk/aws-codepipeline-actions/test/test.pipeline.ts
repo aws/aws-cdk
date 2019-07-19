@@ -365,7 +365,7 @@ export = {
         "Arn": {
           "Ref": "TopicBFC7AF6E"
         },
-        "Id": "Topic"
+        "Id": "Target0"
         }
       ]
     }));

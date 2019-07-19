@@ -12,8 +12,9 @@ export interface IRuleTarget {
    * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
    *
    * @param rule The CloudWatch Event Rule that would trigger this target.
+   * @param id The id of the target that will be attached to the rule.
    */
-  bind(rule: IRule): RuleTargetConfig;
+  bind(rule: IRule, id?: string): RuleTargetConfig;
 }
 
 /**
@@ -24,6 +25,8 @@ export interface RuleTargetConfig {
    * A unique, user-defined identifier for the target. Acceptable values
    * include alphanumeric characters, periods (.), hyphens (-), and
    * underscores (_).
+   *
+   * @deprecated prefer auto-generated id by specifying an empty string
    */
   readonly id: string;
 

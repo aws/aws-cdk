@@ -77,7 +77,7 @@ export class EcsTask implements events.IRuleTarget {
   /**
    * Allows using tasks as target of CloudWatch events
    */
-  public bind(rule: events.IRule): events.RuleTargetConfig {
+  public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
     const policyStatements = [new iam.PolicyStatement({
       actions: ['ecs:RunTask'],
       resources: [this.taskDefinition.taskDefinitionArn],
@@ -103,7 +103,6 @@ export class EcsTask implements events.IRuleTarget {
       }));
     }
 
-    const id = this.taskDefinition.node.uniqueId;
     const arn = this.cluster.clusterArn;
     const role = singletonEventRole(this.taskDefinition, policyStatements);
     const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
@@ -148,7 +147,7 @@ export class EcsTask implements events.IRuleTarget {
               }
             ]
           },
-          physicalResourceId: id,
+          physicalResourceId: this.taskDefinition.node.uniqueId,
         },
         policyStatements: [ // Cannot use automatic policy statements because we need iam:PassRole
           new iam.PolicyStatement({
@@ -164,7 +163,7 @@ export class EcsTask implements events.IRuleTarget {
     }
 
     return {
-      id,
+      id: '',
       arn,
       role,
       ecsParameters: {

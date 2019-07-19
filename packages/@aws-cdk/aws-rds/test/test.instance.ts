@@ -353,7 +353,7 @@ export = {
               'Arn'
             ],
           },
-          Id: 'Function'
+          Id: 'Target0'
         }
       ]
     }));

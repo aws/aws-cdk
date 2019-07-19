@@ -61,7 +61,7 @@ test('sns topic as an event rule target', () => {
             "Arn"
           ]
         },
-        Id: "MyQueue"
+        Id: "Target0"
       }
     ]
   }));
