@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-amplify",
         "module": "aws_cdk.aws_amplify"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Amplify"
     }
   },
   "repository": {

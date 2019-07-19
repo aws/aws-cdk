@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-ecr",
         "module": "aws_cdk.aws_ecr"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon ECR"
     }
   },
   "repository": {

@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-codebuild",
         "module": "aws_cdk.aws_codebuild"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS CodeBuild"
     }
   },
   "repository": {

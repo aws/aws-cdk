@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-neptune",
         "module": "aws_cdk.aws_neptune"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Neptune"
     }
   },
   "repository": {
