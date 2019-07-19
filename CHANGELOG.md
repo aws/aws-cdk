@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/aws/aws-cdk/compare/v1.0.0...v1.1.0) (2019-07-18)
+
+
+### Bug Fixes
+
+* **codepipeline:** invoked Lambda doesn't have permissions to the pipeline bucket ([#3303](https://github.com/aws/aws-cdk/issues/3303)) ([50c7319](https://github.com/aws/aws-cdk/commit/50c7319)), closes [#3274](https://github.com/aws/aws-cdk/issues/3274)
+* **logs:** fix infinite retention for jsii users ([#3250](https://github.com/aws/aws-cdk/issues/3250)) ([0b1ea76](https://github.com/aws/aws-cdk/commit/0b1ea76))
+
+
+### Features
+
+* **acm:** add support for validationMethod ([#3252](https://github.com/aws/aws-cdk/issues/3252)) ([ceb857d](https://github.com/aws/aws-cdk/commit/ceb857d))
+* **codebuild:** make artifact encryption configurable ([#3230](https://github.com/aws/aws-cdk/issues/3230)) ([792a260](https://github.com/aws/aws-cdk/commit/792a260))
+* **ec2:** add new EC2 instance types [#3308](https://github.com/aws/aws-cdk/issues/3308) ([#3309](https://github.com/aws/aws-cdk/issues/3309)) ([184b93f](https://github.com/aws/aws-cdk/commit/184b93f))
+* **eks:** update Kubernetes AMIs and latest version ([#3331](https://github.com/aws/aws-cdk/issues/3331)) ([3fcdb45](https://github.com/aws/aws-cdk/commit/3fcdb45))
+
+
+
 ## [1.0.0](https://github.com/aws/aws-cdk/compare/v0.39.0...v1.0.0) (2019-07-09)
 
 
