@@ -29,10 +29,7 @@
     },
     "excludeTypescript": [
       "examples"
-    ],
-    "metadata": {
-      "awsdocs:title": "Amazon Simple Notification Service"
-    }
+    ]
   },
   "repository": {
     "type": "git",

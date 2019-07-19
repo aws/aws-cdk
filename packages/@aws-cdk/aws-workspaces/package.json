@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-workspaces",
         "module": "aws_cdk.aws_workspaces"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon WorkSpaces"
     }
   },
   "repository": {

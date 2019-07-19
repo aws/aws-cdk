@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-dynamodb",
         "module": "aws_cdk.aws_dynamodb"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon DynamoDB"
     }
   },
   "repository": {

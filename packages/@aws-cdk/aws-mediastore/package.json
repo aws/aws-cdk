@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-mediastore",
         "module": "aws_cdk.aws_mediastore"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Elemental MediaStore"
     }
   },
   "repository": {

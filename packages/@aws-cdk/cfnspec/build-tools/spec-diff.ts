@@ -19,11 +19,20 @@ async function main() {
 
   const out = jsonDiff(oldSpec, newSpec);
 
+  // Here's the magic output format of this thing
+  // If a key ends in __added, it got added, and the value
+  //   is the new value.
+  // If a key ends in __deleted, it got deleted, and the value
+  //   is the old value.
+  // If a value got changed, the value object will look like:
+  //   { __old: ..., __new: ... }
+
   if (!out) {
     return; // no diff
   }
 
   const resourceTypeAdditions = new Set<string>();
+  const resourceTypeDeletions = new Set<string>();
   const attributeChanges = new Array<string>();
   const propertyChanges = new Array<string>();
   const propertyTypeChanges = new Array<string>();
@@ -43,6 +52,13 @@ async function main() {
   line();
   resourceTypeAdditions.forEach(type => line(`* ${type}`));
   line();
+
+  if (resourceTypeDeletions.size > 0) {
+    line('## Removed Resource Types');
+    line();
+    resourceTypeDeletions.forEach(type => line(`* ${type}`));
+    line();
+  }
 
   line('## Attribute Changes');
   line();
@@ -67,7 +83,8 @@ async function main() {
 
     const deleted = isDeleted(resourceType);
     if (deleted) {
-      throw new Error('Something really bad happened. Resource types should never be deleted: ' + deleted);
+      resourceTypeDeletions.add(deleted);
+      return;
     }
 
     pushDownFirstAdditions(update);
@@ -102,6 +119,17 @@ async function main() {
       }
 
       propertyTypeChanges.push(`* ${added} (__added__)`);
+      return;
+    }
+
+    const deleted = isDeleted(propertyType);
+    if (deleted) {
+      const resourceType = deleted.split('.')[0];
+      if (resourceTypeDeletions.has(resourceType)) {
+        return; // skipping property for added resource types
+      }
+
+      propertyTypeChanges.push(`* ${deleted} (__removed__)`);
       return;
     }
 

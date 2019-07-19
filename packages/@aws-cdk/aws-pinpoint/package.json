@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-pinpoint",
         "module": "aws_cdk.aws_pinpoint"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Pinpoint"
     }
   },
   "repository": {

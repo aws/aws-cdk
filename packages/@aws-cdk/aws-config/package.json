@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-config",
         "module": "aws_cdk.aws_config"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Config"
     }
   },
   "repository": {

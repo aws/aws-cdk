@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-kinesisfirehose",
         "module": "aws_cdk.aws_kinesisfirehose"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Kinesis Data Firehose"
     }
   },
   "repository": {

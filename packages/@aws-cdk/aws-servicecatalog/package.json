@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-servicecatalog",
         "module": "aws_cdk.aws_servicecatalog"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Service Catalog"
     }
   },
   "repository": {

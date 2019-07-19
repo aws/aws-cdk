@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-route53resolver",
         "module": "aws_cdk.aws_route53resolver"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Route53 Resolver"
     }
   },
   "repository": {

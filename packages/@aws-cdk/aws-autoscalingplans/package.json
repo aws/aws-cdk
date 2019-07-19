@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-autoscalingplans",
         "module": "aws_cdk.aws_autoscalingplans"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Auto Scaling Plans"
     }
   },
   "repository": {

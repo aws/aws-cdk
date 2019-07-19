@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-greengrass",
         "module": "aws_cdk.aws_greengrass"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS IoT Greengrass"
     }
   },
   "repository": {

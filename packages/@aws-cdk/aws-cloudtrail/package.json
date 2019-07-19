@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-cloudtrail",
         "module": "aws_cdk.aws_cloudtrail"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS CloudTrail"
     }
   },
   "repository": {

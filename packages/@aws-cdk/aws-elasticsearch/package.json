@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-elasticsearch",
         "module": "aws_cdk.aws_elasticsearch"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Elasticsearch Service"
     }
   },
   "repository": {

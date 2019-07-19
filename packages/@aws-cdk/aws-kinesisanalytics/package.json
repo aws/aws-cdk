@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-kinesisanalytics",
         "module": "aws_cdk.aws_kinesisanalytics"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Kinesis Data Analytics"
     }
   },
   "repository": {

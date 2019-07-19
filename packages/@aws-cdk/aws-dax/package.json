@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-dax",
         "module": "aws_cdk.aws_dax"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon DynamoDB Accelerator"
     }
   },
   "repository": {

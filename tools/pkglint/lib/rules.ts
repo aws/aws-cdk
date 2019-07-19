@@ -354,30 +354,6 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
-export class AWSDocsMetadata extends ValidationRule {
-  public readonly name = 'jsii/awsdocs';
-
-  public validate(pkg: PackageJson): void {
-    const scopes = pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
-    if (!scopes) {
-      return;
-    }
-    const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
-    const serviceName = AWS_SERVICE_NAMES[scope];
-    const title = deepGet(pkg.json, ['jsii', 'metadata', 'awsdocs:title']);
-    if (!title || (serviceName && serviceName !== title)) {
-      pkg.report({
-        ruleName: this.name,
-        message: [
-          `JSII packages bound to a CloudFormation scope must have the awsdocs:title JSII metadata entry.`,
-          `Service names are recorded in ${require.resolve('./aws-service-official-names.json')}`,
-        ].join('\n'),
-        fix: serviceName ? () => deepSet(pkg.json, ['jsii', 'metadata', 'awsdocs:title'], serviceName) : undefined
-      });
-    }
-  }
-}
-
 export class CDKPackage extends ValidationRule {
   public readonly name = 'package-info/scripts/package';
 

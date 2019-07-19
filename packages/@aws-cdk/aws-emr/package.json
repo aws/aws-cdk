@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-emr",
         "module": "aws_cdk.aws_emr"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon EMR"
     }
   },
   "repository": {

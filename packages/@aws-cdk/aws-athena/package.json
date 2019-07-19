@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-athena",
         "module": "aws_cdk.aws_athena"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Athena"
     }
   },
   "cdk-build": {

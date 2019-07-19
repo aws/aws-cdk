@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-transfer",
         "module": "aws_cdk.aws_transfer"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Transfer for SFTP"
     }
   },
   "repository": {

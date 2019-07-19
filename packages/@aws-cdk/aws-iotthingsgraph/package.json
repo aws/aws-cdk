@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-iotthingsgraph",
         "module": "aws_cdk.aws_iotthingsgraph"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS IoT Things Graph"
     }
   },
   "repository": {

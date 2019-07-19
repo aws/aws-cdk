@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-ses",
         "module": "aws_cdk.aws_ses"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Simple Email Service"
     }
   },
   "repository": {

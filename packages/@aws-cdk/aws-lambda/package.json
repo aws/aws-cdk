@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-lambda",
         "module": "aws_cdk.aws_lambda"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Lambda"
     }
   },
   "repository": {

@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-msk",
         "module": "aws_cdk.aws_msk"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Managed Streaming for Apache Kafka"
     }
   },
   "repository": {

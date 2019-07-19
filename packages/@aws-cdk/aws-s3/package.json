@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-s3",
         "module": "aws_cdk.aws_s3"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon S3"
     }
   },
   "repository": {

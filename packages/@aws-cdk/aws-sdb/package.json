@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-sdb",
         "module": "aws_cdk.aws_sdb"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon SimpleDB"
     }
   },
   "repository": {
