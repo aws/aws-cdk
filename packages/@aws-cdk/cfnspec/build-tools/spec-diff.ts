@@ -186,7 +186,7 @@ async function main() {
     }
 
     if (typeof(update) !== 'object') {
-      throw new Error(`Unexpected poopie for ${namespace}.${prefix} ${JSON.stringify(update)}`);
+      throw new Error(`Unexpected change for ${namespace}.${prefix} ${JSON.stringify(update)}`);
     }
 
     if ('__old' in update && '__new' in update) {
