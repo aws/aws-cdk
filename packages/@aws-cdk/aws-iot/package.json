@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-iot",
         "module": "aws_cdk.aws_iot"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS IoT"
     }
   },
   "repository": {

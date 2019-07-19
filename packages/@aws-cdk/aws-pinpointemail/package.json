@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-pinpointemail",
         "module": "aws_cdk.aws_pinpointemail"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Pinpoint Email"
     }
   },
   "repository": {

@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-robomaker",
         "module": "aws_cdk.aws_robomaker"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS RoboMaker"
     }
   },
   "repository": {

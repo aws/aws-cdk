@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-elasticache",
         "module": "aws_cdk.aws_elasticache"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon ElastiCache"
     }
   },
   "repository": {

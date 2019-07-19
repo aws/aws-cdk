@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-fsx",
         "module": "aws_cdk.aws_fsx"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon FSx"
     }
   },
   "repository": {
