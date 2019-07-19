@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-events",
         "module": "aws_cdk.aws_events"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon CloudWatch Events"
     }
   },
   "repository": {

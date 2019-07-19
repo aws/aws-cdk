@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-wafregional",
         "module": "aws_cdk.aws_wafregional"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS WAF Regional"
     }
   },
   "repository": {

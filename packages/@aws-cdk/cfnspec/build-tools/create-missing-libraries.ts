@@ -127,6 +127,9 @@ async function main() {
             distName: pythonDistName,
             module: pythonModuleName
           }
+        },
+        metadata: {
+          "awsdocs:title": namespace.replace('::', ' ')
         }
       },
       repository: {

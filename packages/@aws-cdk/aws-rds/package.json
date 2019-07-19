@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-rds",
         "module": "aws_cdk.aws_rds"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Relational Database Service"
     }
   },
   "repository": {

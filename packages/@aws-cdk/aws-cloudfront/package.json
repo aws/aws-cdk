@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-cloudfront",
         "module": "aws_cdk.aws_cloudfront"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon CloudFront"
     }
   },
   "repository": {
