@@ -1,4 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
@@ -88,6 +90,13 @@ export interface ContainerDefinitionOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * The secrets to pass to the container.
+   *
+   * @default - No secret variables.
+   */
+  readonly secret?: { [key: string]: secretsmanager.ISecret | ssm.IStringParameter };
 
   /**
    * Specifies whether the container is marked essential.
@@ -440,6 +449,7 @@ export class ContainerDefinition extends cdk.Construct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      secrets: this.props.secret && renderKV(mapSecretArn(this.props.secret), 'name', 'valueFrom'),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
@@ -535,6 +545,28 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   }
 
   return hcCommand.concat(cmd);
+}
+
+function isSecretsManagerSecret(secret: secretsmanager.ISecret | ssm.IStringParameter): secret is secretsmanager.ISecret {
+  return secret.hasOwnProperty('secretArn');
+}
+
+function isSSMParameter(secret: secretsmanager.ISecret | ssm.IStringParameter): secret is ssm.IStringParameter {
+  return secret.hasOwnProperty('parameterArn');
+}
+
+function mapSecretArn(secrets: { [key: string]: secretsmanager.ISecret | ssm.IStringParameter }) : {[key: string]: string} {
+  return Object.keys(secrets).reduce<{[key: string]: string}>((_secretArnMap, secretKey) => {
+    const secret = secrets[secretKey];
+
+    if (isSecretsManagerSecret(secret)) {
+      _secretArnMap[secretKey] = secret.secretArn;
+    } else if (isSSMParameter(secret)) {
+      _secretArnMap[secretKey] = secret.parameterArn;
+    }
+
+    return _secretArnMap;
+  }, {});
 }
 
 /**

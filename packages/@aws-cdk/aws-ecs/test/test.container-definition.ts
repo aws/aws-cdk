@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -277,6 +278,57 @@ export = {
             Name: "TEST_ENVIRONMENT_VARIABLE",
             Value: "test environment variable value"
           }]
+        }
+      ]
+    }));
+
+    test.done();
+
+  },
+
+  'can add secret variables to the container definition'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretArn: 'arn::of::a::secret'
+    });
+    const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
+      parameterName: 'SecureParameterName',
+      version: 1
+    });
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      secret: {
+        TEST_SECRET_PARAMETER: secret,
+        TEST_SSM_PARAMETER: parameter
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Secrets: [
+            {
+              Name: 'TEST_SECRET_PARAMETER',
+              ValueFrom: 'arn::of::a::secret'
+            },
+            {
+              Name: 'TEST_SSM_PARAMETER',
+              ValueFrom: { 'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ssm:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':parameterSecureParameterName' ] ] }
+            }
+          ]
         }
       ]
     }));
