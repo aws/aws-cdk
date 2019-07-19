@@ -235,7 +235,10 @@ export = {
         name: "scratch",
         dockerVolumeConfiguration: {
           driver: "local",
-          scope: ecs.Scope.TASK
+          scope: ecs.Scope.TASK,
+          driverOpts: {
+            key1: "value"
+          }
         }
       };
 
@@ -255,7 +258,10 @@ export = {
           Name: "scratch",
           DockerVolumeConfiguration: {
             Driver: "local",
-            Scope: 'task'
+            Scope: 'task',
+            DriverOpts: {
+              key1: "value"
+            }
           }
         }]
       }));
