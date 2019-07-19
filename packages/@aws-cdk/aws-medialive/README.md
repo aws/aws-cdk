@@ -1,4 +1,4 @@
-## AWS::MediaLive Construct Library
+## AWS Elemental MediaLive Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
