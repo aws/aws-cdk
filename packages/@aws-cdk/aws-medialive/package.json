@@ -27,7 +27,7 @@
         "module": "aws_cdk.aws_medialive"
       },
       "metadata": {
-          "awsdocs:title": "AW MediaLive"
+        "awsdocs:title": "AW MediaLive"
       }
     }
   },

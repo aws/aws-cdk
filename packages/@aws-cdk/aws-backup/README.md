@@ -1,4 +1,4 @@
-## AWS::Backup Construct Library
+## AWS Backup Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-waf",
         "module": "aws_cdk.aws_waf"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Web Application Firewall"
     }
   },
   "repository": {

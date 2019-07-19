@@ -9,6 +9,7 @@
   "AWS::Athena": "Amazon Athena",
   "AWS::AutoScaling": "Amazon EC2 Auto Scaling",
   "AWS::AutoScalingPlans": "AWS Auto Scaling Plans",
+  "AWS::Backup": "AWS Backup",
   "AWS::Batch": "AWS Batch",
   "AWS::Budgets": "AWS Budgets",
   "AWS::CertificateManager": "Amazon Certificate Manager",

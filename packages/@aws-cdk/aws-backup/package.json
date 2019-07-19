@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-backup",
         "module": "aws_cdk.aws_backup"
       }
-    },
-    "metadata": {
-        "awsdocs:title": "AWS Backup"
     }
   },
   "repository": {
