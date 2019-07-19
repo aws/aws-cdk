@@ -555,7 +555,7 @@ function isSSMParameter(secret: secretsmanager.ISecret | ssm.IStringParameter): 
   return secret.hasOwnProperty('parameterArn');
 }
 
-function mapSecretArn(secrets: { [key: string]: secretsmanager.ISecret | ssm.IStringParameter }) : {[key: string]: string} {
+function mapSecretArn(secrets: { [key: string]: secretsmanager.ISecret | ssm.IStringParameter }): {[key: string]: string} {
   return Object.keys(secrets).reduce<{[key: string]: string}>((_secretArnMap, secretKey) => {
     const secret = secrets[secretKey];
 
