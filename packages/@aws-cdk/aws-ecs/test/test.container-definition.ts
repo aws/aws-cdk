@@ -302,6 +302,7 @@ export = {
     // WHEN
     taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
       secret: {
         TEST_SECRET_PARAMETER: secret,
         TEST_SSM_PARAMETER: parameter
