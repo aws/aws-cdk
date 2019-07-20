@@ -62,7 +62,7 @@ export class App extends Resource implements IApp {
 
   private readonly environmentVariablesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
 
-  private readonly customRulesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
+  private readonly customRulesResolver: CustomRulesResolver = new CustomRulesResolver();
 
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id, {
@@ -77,6 +77,20 @@ export class App extends Resource implements IApp {
       this.environmentVariablesResolver.addEnvironmentVariables(...props.environmentVariables);
     }
 
+    let roleArn: string | undefined;
+
+    if (props.serviceRole) {
+      roleArn = props.serviceRole.roleArn;
+    }
+
+    if (props.buildSpec && !props.serviceRole) {
+      const role = new LazyRole(scope, 'lazy-role', {
+        assumedBy: new ServicePrincipal('amplify.amazonaws.com')
+      });
+
+      roleArn = role.roleArn;
+    }
+
     const resource = new CfnApp(this, 'App', {
       accessToken: props.accessToken,
       basicAuthConfig: this.basicAuthResolver,
@@ -84,24 +98,12 @@ export class App extends Resource implements IApp {
       customRules: this.customRulesResolver,
       description: props.description,
       environmentVariables: this.environmentVariablesResolver,
+      iamServiceRole: roleArn,
       name: props.appName,
       oauthToken: (props.oauthToken && props.oauthToken.toString()) ? props.oauthToken.toString() : undefined,
       repository: props.repository,
       tags: props.tags
     });
-
-    if (props.serviceRole) {
-      resource.iamServiceRole = props.serviceRole.roleArn;
-    }
-
-    if (props.buildSpec && !props.serviceRole) {
-      // create lazy role
-      const role = new LazyRole(scope, 'lazy-role', {
-        assumedBy: new ServicePrincipal('amplify.amazonaws.com')
-      });
-
-      resource.iamServiceRole = role.roleArn;
-    }
 
     this.appArn = resource.attrArn,
     this.appDefaultDomain = resource.attrDefaultDomain;
@@ -144,14 +146,8 @@ export class App extends Resource implements IApp {
     this.environmentVariablesResolver.addEnvironmentVariable(name, value);
   }
 
-  protected validate(): string[] {
-    const errors: string[] = [];
-
-    if (this.resource.buildSpec && !this.resource.iamServiceRole) {
-      errors.push(`You need to specify a service role when using buildspecs`);
-    }
-
-    return errors;
+  public addCustomRule(source: string, target: string, status?: string, condition?: string) {
+    this.customRulesResolver.addCustomRule(source, target, status, condition);
   }
 }
 
@@ -298,5 +294,14 @@ export class CustomRulesResolver implements IResolvable {
 
   public count(): number {
     return this.customRules.length;
+  }
+
+  public addCustomRule(source: string, target: string, status?: string, condition?: string) {
+    this.customRules.push({
+      source,
+      target,
+      status,
+      condition
+    });
   }
 }

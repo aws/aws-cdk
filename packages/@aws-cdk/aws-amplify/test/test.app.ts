@@ -10,9 +10,7 @@ export = {
     const stack = new Stack();
     const app = App.fromAppId(stack, 'AmpApp', appId);
 
-    if (app.appId !== appId) {
-      test.ok(false, `App IDs don't match`);
-    }
+    test.equals(appId, app.appId, 'AppIds to match');
 
     test.done();
   },
@@ -24,12 +22,15 @@ export = {
         repository: 'https://github.com/awslabs/aws-cdk'
     });
 
-    expect(stack).to(haveResource('AWS::Amplify::App'));
+    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
+      Name: 'foo',
+      Repository: 'https://github.com/awslabs/aws-cdk'
+    }));
 
     test.done();
   },
 
-  'Test Multiple App Resource'(test: Test) {
+  'Test Multiple App Resources'(test: Test) {
     const stack = new Stack();
     new App(stack, 'OtherAmpApp', {
         appName: 'foo',
@@ -51,7 +52,7 @@ export = {
     new App(stack, 'AmpApp', {
       appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk',
-      buildSpec: BuildSpec.fromString('foo')
+      buildSpec: BuildSpec.fromObject({version: 0.2})
     });
 
     expect(stack).to(haveResource('AWS::IAM::Role'));
@@ -64,14 +65,65 @@ export = {
     const app = new App(stack, 'AmpApp', {
       appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk',
-      buildSpec: BuildSpec.fromString('foo')
+      buildSpec: BuildSpec.fromObject({version: 0.2})
     });
 
-    app.addServiceRole(new Role(stack, 'role', {
+    const role = new Role(stack, 'role', {
       assumedBy: new ServicePrincipal('amplify.amazonaws.com')
-    }));
+    });
+
+    app.addServiceRole(role);
 
     expect(stack).to(haveResource('AWS::IAM::Role'));
+    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
+      IAMServiceRole: {
+        'Fn::GetAtt': [ 'roleC7B7E775', 'Arn' ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'Test Custom Rules'(test: Test) {
+    const stack = new Stack();
+    const app = new App(stack, 'AmpApp', {
+      appName: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk'
+    });
+
+    app.addCustomRule('/foo', '/', '200');
+
+    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
+      CustomRules: [
+        {
+          Source: '/foo',
+          Target: '/',
+          Status: '200'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Test Init Environment Variables'(test: Test) {
+    const stack = new Stack();
+    new App(stack, 'AmpApp', {
+      appName: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk',
+      environmentVariables: [
+        {
+          name: 'foo',
+          value: 'foo'
+        }
+      ]
+    });
+
+    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
+      EnvironmentVariables: [
+        { Name: 'foo', Value: 'foo' }
+      ]
+    }));
 
     test.done();
   },
@@ -89,6 +141,29 @@ export = {
       EnvironmentVariables: [
         { Name: 'foo', Value: 'foo' }
       ]
+    }));
+
+    test.done();
+  },
+
+  'Test Init Basic Auth for App'(test: Test) {
+    const stack = new Stack();
+    new App(stack, 'AmpApp', {
+      appName: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk',
+      basicAuthConfig: {
+        enableBasicAuth: true,
+        password: 'foo',
+        username: 'foo'
+      }
+    });
+
+    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
+      BasicAuthConfig: {
+        EnableBasicAuth: true,
+        Password: 'foo',
+        Username: 'foo'
+      }
     }));
 
     test.done();
