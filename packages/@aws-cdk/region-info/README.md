@@ -29,7 +29,7 @@ the regional information database:
 import { RegionInfo } from '@aws-cdk/region-info';
 
 // Get the information for "eu-west-1":
-const region = RegionInfo.get('eu-west-1');
+const region = RegionInfo.RegionInfo.get('eu-west-1');
 
 // Access attributes:
 region.s3StaticWebsiteEndpoint; // s3-website.eu-west-1.amazonaws.com
