@@ -1,15 +1,11 @@
 import { IResolveContext, Lazy, Stack } from '@aws-cdk/core';
 
 /**
- * BuildSpec for Amplify
+ * BuildSpec for CodeBuild projects
  */
 export abstract class BuildSpec {
   public static fromObject(value: {[key: string]: any}): BuildSpec {
     return new ObjectBuildSpec(value);
-  }
-
-  public static fromString(value: string): BuildSpec {
-    return new StringBuildSpec(value);
   }
 
   /**
@@ -70,25 +66,6 @@ class ObjectBuildSpec extends BuildSpec {
     return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
       Stack.of(ctx.scope).toJsonString(this.spec, 2)
     });
-  }
-}
-
-/**
- * BuildSpec that understands about structure
- */
-class StringBuildSpec extends BuildSpec {
-  public readonly isImmediate: boolean = true;
-
-  constructor(public readonly spec: string) {
-      super();
-  }
-
-  public toBuildSpec(): string {
-      // We have to pretty-print the buildspec, otherwise
-      // CodeBuild will not recognize it as an inline buildspec.
-      return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
-      Stack.of(ctx.scope).toJsonString(this.spec, 2)
-      });
   }
 }
 
