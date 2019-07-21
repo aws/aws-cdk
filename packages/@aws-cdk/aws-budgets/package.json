@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-budgets",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "The CDK Construct Library for AWS::Budgets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-budgets",
         "module": "aws_cdk.aws_budgets"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Budgets"
     }
   },
   "repository": {
@@ -65,17 +62,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.0.0",
-    "cdk-build-tools": "^1.0.0",
-    "cfn2ts": "^1.0.0",
-    "pkglint": "^1.0.0"
+    "@aws-cdk/assert": "^1.1.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.0.0"
+    "@aws-cdk/core": "^1.1.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "^1.0.0"
+    "@aws-cdk/core": "^1.1.0"
   },
   "engines": {
     "node": ">= 8.10.0"

@@ -119,7 +119,7 @@ export default class CodeGenerator {
     this.docLink(spec.Documentation,
       `Properties for defining a \`${resourceContext.specName!.fqn}\``,
       '',
-      '@stable');
+      '@stability external');
     this.code.openBlock(`export interface ${name.className}`);
 
     const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties, Container.Interface);
@@ -196,7 +196,7 @@ export default class CodeGenerator {
       `A CloudFormation \`${cfnName}\``,
       '',
       `@cloudformationResource ${cfnName}`,
-      '@stable');
+      '@stability external');
     this.openClass(resourceName, RESOURCE_BASE_CLASS);
 
     //
@@ -568,7 +568,7 @@ export default class CodeGenerator {
     this.code.line();
     this.beginNamespace(typeName);
 
-    this.docLink(propTypeSpec.Documentation, '@stable');
+    this.docLink(propTypeSpec.Documentation, '@stability external');
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
       this.code.line(`// tslint:disable-next-line:no-empty-interface | A genuine empty-object type`);
     }
