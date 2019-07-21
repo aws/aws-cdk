@@ -287,35 +287,55 @@ export = {
     test.done();
   },
 
-  // 'references to a resource in the nested stack in the parent is translated into a cfn output'(test: Test) {
-  //   class MyNestedStack extends NestedStack {
-  //     public readonly resourceFromChild: CfnResource;
+  'references to a resource in the nested stack in the parent is translated into a cfn output'(test: Test) {
+    class MyNestedStack extends NestedStack {
+      public readonly resourceFromChild: CfnResource;
 
-  //     constructor(scope: Construct, id: string) {
-  //       super(scope, id);
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
 
-  //       this.resourceFromChild = new CfnResource(this, 'resource', {
-  //         type: 'AWS::Child::Resource',
-  //       });
-  //     }
-  //   }
+        this.resourceFromChild = new CfnResource(this, 'resource', {
+          type: 'AWS::Child::Resource',
+        });
+      }
+    }
 
-  //   const app = new App();
-  //   const parent = new Stack(app, 'parent');
+    const app = new App();
+    const parentStack = new Stack(app, 'parent');
 
-  //   const nested = new MyNestedStack(parent, 'nested');
+    const nested = new MyNestedStack(parentStack, 'nested');
 
-  //   new CfnResource(parent, 'another-parent-resource', {
-  //     type: 'AWS::Parent::Resource',
-  //     properties: {
-  //       RefToResourceInNestedStack: nested.resourceFromChild.ref
-  //     }
-  //   });
+    new CfnResource(parentStack, 'another-parent-resource', {
+      type: 'AWS::Parent::Resource',
+      properties: {
+        RefToResourceInNestedStack: nested.resourceFromChild.ref
+      }
+    });
 
-  //   // references are added during "prepare"
-  //   const assembly = app.synth();
+    // references are added during "prepare"
+    const assembly = app.synth();
+    const nestedTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, nested.templateFile)).toString('utf-8'));
 
-  //   test.done();
-  // }
+    // nested template should use a parameter to reference the resource from the parent stack
+    test.deepEqual(nestedTemplate, {
+      Resources: {
+        resource: { Type: 'AWS::Child::Resource' } },
+      Outputs: {
+        referencetoparentnestedresource4D680677Ref: { Value: { Ref: 'resource' } }
+      }
+    });
+
+    // parent template should pass in the value through the parameter
+    expect(parentStack).to(haveResource('AWS::Parent::Resource', {
+      RefToResourceInNestedStack: {
+        "Fn::GetAtt": [
+          "nestedNestedStacknestedNestedStackResource3DD143BF",
+          "referencetoparentnestedresource4D680677Ref"
+        ]
+      }
+    }));
+
+    test.done();
+  }
 
 };

@@ -1,6 +1,6 @@
 import s3_assets = require('@aws-cdk/aws-s3-assets');
 import sns = require('@aws-cdk/aws-sns');
-import { CfnParameter, Construct, Duration, ISynthesisSession, Lazy, OutgoingReference, Stack, Token } from '@aws-cdk/core';
+import { CfnOutput, CfnParameter, CfnReference, Construct, Duration, IConstruct, ISynthesisSession, Lazy, Stack, Token } from '@aws-cdk/core';
 import fs = require('fs');
 import path = require('path');
 import { CfnStack } from './cloudformation.generated';
@@ -67,6 +67,7 @@ export class NestedStack extends Stack {
   public readonly parentStack: Stack;
 
   private readonly parameters: { [name: string]: string } = { };
+  private readonly resource: CfnStack;
 
   constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
     super(scope, id);
@@ -86,7 +87,7 @@ export class NestedStack extends Stack {
       sourceHash: this.node.uniqueId
     });
 
-    new CfnStack(parentScope, `${id}.NestedStackResource`, {
+    this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       templateUrl: asset.s3Url,
       parameters: Lazy.anyValue({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notifications ? props.notifications.map(n => n.topicArn) : undefined,
@@ -98,25 +99,39 @@ export class NestedStack extends Stack {
     this.parameters[name] = value;
   }
 
-  protected prepareCrossReference(ref: OutgoingReference) {
-    const producingStack = Stack.of(ref.reference.target);
-    const consumingStack = Stack.of(ref.source);
+  protected onCrossReferenceProduced(_source: IConstruct, reference: CfnReference, consumingStack: Stack) {
+    // only parent stack can consume a reference from this nested stack
+    if (consumingStack !== this.parentStack) {
+      throw new Error(`Resources in nested stack can only be referenced from the parent stack`);
+    }
 
-    console.error(`Nested stack "${consumingStack.node.path}" references a resource in stack "${producingStack.node.path}"`);
+    // output the value from the nested stack
+    const outputId = `reference-to-${reference.target.node.uniqueId}-${reference.displayName}`;
+    let output = this.node.tryFindChild(outputId) as CfnOutput;
+    if (!output) {
+      output = new CfnOutput(this, outputId, { value: Token.asString(reference) });
+    }
 
+    // morph the reference to use "Fn::GetAtt" on the nested stack with the new output
+    if (!reference.hasValueForStack(consumingStack)) {
+      reference.assignValueForStack(consumingStack, this.resource.getAtt(output.logicalId));
+    }
+  }
+
+  protected onCrossReferenceConsumed(_source: IConstruct, reference: CfnReference, producingStack: Stack) {
     // can only reference resources in my own parent stack.
     if (producingStack !== this.parentStack) {
-      throw new Error(`Resources in nested stacks can only reference resources in their parent stack`);
+      throw new Error(`Resources in nested stacks can only reference resources from the parent stack`);
     }
 
     // wire the reference through a parameter
-    const paramId = `reference-to-${ref.reference.target.node.uniqueId}.${ref.reference.displayName}`;
+    const paramId = `reference-to-${reference.target.node.uniqueId}.${reference.displayName}`;
     if (!this.node.tryFindChild(paramId)) {
       const param = new CfnParameter(this, paramId, { type: 'String' });
-      if (!ref.reference.hasValueForStack(consumingStack)) {
-        ref.reference.assignValueForStack(consumingStack, param.value);
+      if (!reference.hasValueForStack(this)) {
+        reference.assignValueForStack(this, param.value);
 
-        this.addParameter(param.logicalId, Token.asString(ref.reference));
+        this.addParameter(param.logicalId, Token.asString(reference));
       }
     }
   }

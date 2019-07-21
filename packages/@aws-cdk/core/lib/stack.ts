@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { EnvironmentUtils } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import path = require('path');
-import { Construct, ConstructNode, IConstruct, ISynthesisSession, OutgoingReference } from './construct';
+import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -485,14 +485,30 @@ export class Stack extends Construct implements ITaggable {
   protected prepare() {
     // References (originating from this stack)
     for (const ref of this.node.references) {
+      // skip if this is not a CfnReference
+      if (!CfnReference.isCfnReference(ref.reference)) { continue; }
 
-      // skip any references originating from a construct that belongs to nested stacks.
-      // or if this is a reference between constructs within the same stack
-      if (Stack.of(ref.source) !== this || Stack.of(ref.reference.target) === this) {
-        continue;
+      const producingStack = Stack.of(ref.reference.target);
+      const consumingStack = Stack.of(ref.source);
+
+      // skip if this reference is consumed by a different stack (node.reference
+      // will return all references that originate within the stack's scope,
+      // which can include references that originated from child stacks.
+      if (consumingStack !== this) { continue; }
+
+      // skip if this is an internal reference.
+      if (producingStack === this) { continue; }
+
+      if (consumingStack.node.root !== producingStack.node.root) {
+        throw new Error(
+          `Cannot reference across apps. ` +
+          `Consuming and producing stacks must be defined within the same CDK app.`);
       }
 
-      this.prepareCrossReference(ref);
+      // tell producing stack to process the cross reference and then tell the consuming
+      // stack to process the cross reference.
+      producingStack.onCrossReferenceProduced(ref.source, ref.reference, consumingStack);
+      consumingStack.onCrossReferenceConsumed(ref.source, ref.reference, producingStack);
     }
 
     // Resource dependencies
@@ -571,34 +587,24 @@ export class Stack extends Construct implements ITaggable {
     return ret;
   }
 
+  protected onCrossReferenceProduced(_source: IConstruct, _reference: CfnReference, _consumingStack: Stack) {
+    return;
+  }
+
   /**
    * Register a stack this references is being consumed from.
    */
-  protected prepareCrossReference(ref: OutgoingReference) {
-    const reference = ref.reference;
-
-    if (!CfnReference.isCfnReference(reference)) {
-      return;
-    }
-
-    // for readability
-    const producingStack = Stack.of(reference.target);
-    const consumingStack = this;
-    const consumingConstruct = ref.source;
-
-    if (consumingStack.node.root !== producingStack.node.root) {
-      throw new Error(
-        `Cannot reference across apps. ` +
-        `Consuming and producing stacks must be defined within the same CDK app.`);
-    }
-
-    if (producingStack.environment !== consumingStack.environment) {
+  protected onCrossReferenceConsumed(source: IConstruct, reference: CfnReference, producingStack: Stack) {
+    if (producingStack.environment !== this.environment) {
       throw new Error(`Can only reference cross stacks in the same region and account: ${reference}`);
     }
 
-    if (producingStack !== consumingStack && !reference.hasValueForStack(consumingStack)) {
-      this.addDependency(producingStack, `${consumingConstruct.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
-      reference.assignValueForStack(consumingStack, producingStack.exportValue(reference));
+    if (!reference.hasValueForStack(this)) {
+      const importValue = producingStack.exportValue(reference);
+      reference.assignValueForStack(this, importValue);
+
+      // add a dependency on the producing stack - it has to be deployed before this stack can consume the exported value
+      this.addDependency(producingStack, `${source.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
     }
   }
 
