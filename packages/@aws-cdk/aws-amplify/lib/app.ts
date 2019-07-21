@@ -1,7 +1,9 @@
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResolvable, IResolveContext, IResource, Resource, SecretValue, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
+import { Branch, BranchBaseProps } from './branch';
 import { BuildSpec } from './buildspec';
+import { Domain, DomainBaseProps } from './domain';
 import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
 /**
@@ -146,8 +148,46 @@ export class App extends Resource implements IApp {
     this.environmentVariablesResolver.addEnvironmentVariable(name, value);
   }
 
+  /**
+   * Add custom rule to app
+   *
+   * @param source
+   * @param target
+   * @param status
+   * @param condition
+   */
   public addCustomRule(source: string, target: string, status?: string, condition?: string) {
     this.customRulesResolver.addCustomRule(source, target, status, condition);
+  }
+
+  /**
+   * Add domain to app
+   *
+   * @param id
+   * @param props
+   */
+  public addDomain(id: string, props: DomainBaseProps): Domain {
+    const domainProps = {
+      app: this,
+      ...props
+    };
+
+    return new Domain(this, id, domainProps);
+  }
+
+  /**
+   * Add branch to app
+   *
+   * @param id
+   * @param props
+   */
+  public addBranch(id: string, props: BranchBaseProps): Branch {
+    const branchProps = {
+      app: this,
+      ...props
+    };
+
+    return new Branch(this, id, branchProps);
   }
 }
 
