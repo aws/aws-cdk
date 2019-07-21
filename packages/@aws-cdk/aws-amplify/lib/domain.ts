@@ -87,12 +87,17 @@ export class Domain extends Resource implements IDomain {
 /**
  * Domain Properties
  */
-export interface DomainProps {
+export interface DomainProps extends DomainBaseProps {
   /**
    * Amplify App
    */
   readonly app: IApp;
+}
 
+/**
+ * Domain Properties
+ */
+export interface DomainBaseProps {
   /**
    * Domain name for the Domain Association.
    */

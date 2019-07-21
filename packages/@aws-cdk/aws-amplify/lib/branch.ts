@@ -97,12 +97,17 @@ export interface IBranch extends IResource {
 /**
  * Branch Properties
  */
-export interface BranchProps {
+export interface BranchProps extends BranchBaseProps {
   /**
    * Amplify App
    */
   readonly app: IApp;
+}
 
+/**
+ * Branch Base Properties
+ */
+export interface BranchBaseProps {
   /**
    * Name for the branch.
    */
