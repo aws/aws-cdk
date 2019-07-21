@@ -52,7 +52,7 @@ import regionInfo = require('@aws-cdk/region-info');
 const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com
 
-const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName.s3StaticWebsiteEndpoint);
+const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName.S3_STATIC_WEBSITE_ENDPOINT);
 // => s3-website-ap-northeast-1.amazonaws.com
 ```
 
