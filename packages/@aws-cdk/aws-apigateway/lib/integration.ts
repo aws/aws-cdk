@@ -31,7 +31,7 @@ export interface IntegrationOptions {
    *
    * @default A role is not assumed
    */
-  readonly credentialsRole?: iam.Role;
+  readonly credentialsRole?: iam.IRole;
 
   /**
    * Requires that the caller's identity be passed through from the request.
