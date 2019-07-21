@@ -33,6 +33,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Adding Dependencies](#adding-dependencies)
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
+  - [Running CLI integration tests](#running-cli-integration-tests)
 - [Troubleshooting](#troubleshooting)
 - [Related Repositories](#related-repositories)
 
@@ -471,6 +472,13 @@ To update all dependencies (without bumping major versions):
 2. Run `./install.sh`
 3. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
 4. Submit a Pull Request.
+
+### Running CLI integration tests
+
+The CLI package (`packages/aws-cdk`) has some integration tests that aren't
+run as part of the regular build, since they have some particular requirements.
+See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
+more information on running those tests.
 
 ## Troubleshooting
 
