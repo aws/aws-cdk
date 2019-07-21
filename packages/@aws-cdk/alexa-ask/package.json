@@ -26,9 +26,6 @@
         "distName": "aws-cdk.alexa-ask",
         "module": "aws_cdk.alexa_ask"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Alexa Skills Kit"
     }
   },
   "repository": {

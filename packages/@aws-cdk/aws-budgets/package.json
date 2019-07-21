@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-budgets",
         "module": "aws_cdk.aws_budgets"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Budgets"
     }
   },
   "repository": {

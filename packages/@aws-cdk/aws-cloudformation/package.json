@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-cloudformation",
         "module": "aws_cdk.aws_cloudformation"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS CloudFormation"
     }
   },
   "repository": {

@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-guardduty",
         "module": "aws_cdk.aws_guardduty"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon GuardDuty"
     }
   },
   "repository": {
