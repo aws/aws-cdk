@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-kinesis",
         "module": "aws_cdk.aws_kinesis"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Kinesis"
     }
   },
   "repository": {

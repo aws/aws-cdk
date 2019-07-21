@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-elasticloadbalancingv2",
         "module": "aws_cdk.aws_elasticloadbalancingv2"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Elastic Load Balancing V2"
     }
   },
   "repository": {
