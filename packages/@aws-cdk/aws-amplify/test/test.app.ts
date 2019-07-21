@@ -187,5 +187,41 @@ export = {
     }));
 
     test.done();
+  },
+
+  'Test Add Domain to App'(test: Test) {
+    const stack = new Stack();
+    const app = new App(stack, 'AmpApp', {
+      appName: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk'
+    });
+
+    app.addDomain('AmpDomain', {
+      domainName: 'example.com',
+      subdomainSettings: [{
+        branchName: 'master',
+        prefix: '/'
+      }]
+    });
+
+    expect(stack).to(haveResource('AWS::Amplify::Domain'));
+
+    test.done();
+  },
+
+  'Test Add Branch to App'(test: Test) {
+    const stack = new Stack();
+    const app = new App(stack, 'AmpApp', {
+      appName: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk'
+    });
+
+    app.addBranch('AmpBranch', {
+      branchName: 'master'
+    });
+
+    expect(stack).to(haveResource('AWS::Amplify::Branch'));
+
+    test.done();
   }
 };
