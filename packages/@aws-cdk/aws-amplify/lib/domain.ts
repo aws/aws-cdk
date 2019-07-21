@@ -133,7 +133,7 @@ export interface IDomain extends IResource {
   readonly arn: string;
 }
 
-class SubdomainSettingsResolver implements IResolvable {
+export class SubdomainSettingsResolver implements IResolvable {
   public readonly creationStack: string[];
   private readonly subdomainSettings: SubdomainSettings[] = new Array<SubdomainSettings>();
 
