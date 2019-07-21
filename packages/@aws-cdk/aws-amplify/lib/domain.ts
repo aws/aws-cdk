@@ -106,7 +106,7 @@ export interface DomainBaseProps {
   /**
    * Setting structure for the Subdomain.
    *
-   * @default Empty
+   * @default - No subdomain settings
    */
   readonly subdomainSettings?: SubdomainSettings[];
 }

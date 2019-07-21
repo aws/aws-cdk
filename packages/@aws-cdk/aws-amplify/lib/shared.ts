@@ -7,7 +7,7 @@ export interface BasicAuthConfig {
   /**
    * Enables Basic Authorization for branches for the Amplify App.
    *
-   * @default false
+   * @default - Not enabled
    */
   readonly enableBasicAuth?: boolean;
 

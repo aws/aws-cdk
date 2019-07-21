@@ -116,35 +116,35 @@ export interface BranchBaseProps {
   /**
    * Basic Authorization credentials for a branch, part of an Amplify App.
    *
-   * @default Empty
+   * @default - No basic auth config
    */
   readonly basicAuthConfig?: BasicAuthConfig;
 
   /**
    * BuildSpec for the branch.
    *
-   * @default Empty
+   * @default - No build spec
    */
   readonly buildSpec?: string;
 
   /**
    * Description for the branch.
    *
-   * @default Empty
+   * @default - No description
    */
   readonly description?: string;
 
   /**
    * Environment Variables for the branch.
    *
-   * @default Empty
+   * @default - No environment variables
    */
   readonly environmentVariables?: EnvironmentVariable[];
 
   /**
    * Stage for the branch.
    *
-   * @default Empty
+   * @default - No stage for the branch
    */
   readonly stage?: string;
 

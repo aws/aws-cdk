@@ -211,49 +211,49 @@ export interface AppProps {
    * Personal Access token for 3rd party source control system for an Amplify App, used to create webhook
    * and read-only deploy key. Token is not stored.
    *
-   * @default
+   * @default - No access token
    */
   readonly accessToken?: string;
 
   /**
    * Credentials for Basic Authorization for an Amplify App.
    *
-   * @default
+   * @default - No basic auth config
    */
   readonly basicAuthConfig?: BasicAuthConfig;
 
   /**
    * BuildSpec for an Amplify App.
    *
-   * @default
+   * @default - No build spec
    */
   readonly buildSpec?: BuildSpec;
 
   /**
    * Custom rewrite / redirect rules for an Amplify App.
    *
-   * @default
+   * @default - No custom rules
    */
   readonly customRules?: CustomRule[];
 
   /**
    * Description for an Amplify App.
    *
-   * @default
+   * @default - No description
    */
   readonly description?: string;
 
   /**
    * Environment variables map for an Amplify App.
    *
-   * @default
+   * @default - No environment variables
    */
   readonly environmentVariables?: EnvironmentVariable[];
 
   /**
    * IAM Service Role
    *
-   * @default
+   * @default - No service role
    */
   readonly serviceRole?: IRole;
 
@@ -266,7 +266,7 @@ export interface AppProps {
    * OAuth token for 3rd party source control system for an Amplify App, used to create webhook and read-only
    * deploy key. OAuth token is not stored.
    *
-   * @default
+   * @default - No oauth token
    */
   readonly oauthToken?: SecretValue;
 
@@ -294,7 +294,7 @@ export interface CustomRule {
   /**
    * The condition for a URL rewrite or redirect rule, e.g. country code.
    *
-   * @default Empty
+   * @default - No condition
    */
   readonly condition?: string;
 
@@ -306,7 +306,7 @@ export interface CustomRule {
   /**
    * The status code for a URL rewrite or redirect rule.
    *
-   * @default Empty
+   * @default - No status
    */
   readonly status?: string;
 
