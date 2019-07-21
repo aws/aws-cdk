@@ -69,7 +69,7 @@ export class EnvironmentVariablesResolver implements IResolvable {
   }
 
   public isEmpty(): boolean {
-    return (this.environmentVariables.length !== 0);
+    return (this.environmentVariables.length === 0);
   }
 
   public count(): number {
