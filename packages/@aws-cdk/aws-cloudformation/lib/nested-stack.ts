@@ -99,25 +99,45 @@ export class NestedStack extends Stack {
     this.parameters[name] = value;
   }
 
+  /**
+   * Called when a CloudFormation reference ("Ref" or "Fn::GetAtt") is used in a
+   * template synthesized by some stack. If this is our parent stack, we can
+   * automatically morph this reference into a CFN output produced by the nested
+   * stack and a Fn::GetAtt in the parent stack.
+   *
+   * @param _source the construct that used this reference
+   * @param reference the reference token
+   * @param consumingStack the stack consuming this reference
+   */
   protected onCrossReferenceProduced(_source: IConstruct, reference: CfnReference, consumingStack: Stack) {
     // only parent stack can consume a reference from this nested stack
     if (consumingStack !== this.parentStack) {
       throw new Error(`Resources in nested stack can only be referenced from the parent stack`);
     }
 
-    // output the value from the nested stack
+    // get/create a cloudformation output for this value
     const outputId = `reference-to-${reference.target.node.uniqueId}-${reference.displayName}`;
     let output = this.node.tryFindChild(outputId) as CfnOutput;
     if (!output) {
       output = new CfnOutput(this, outputId, { value: Token.asString(reference) });
     }
 
-    // morph the reference to use "Fn::GetAtt" on the nested stack with the new output
+    // morph the reference to use "Fn::GetAtt" to obtain the output value from the nested stack
     if (!reference.hasValueForStack(consumingStack)) {
       reference.assignValueForStack(consumingStack, this.resource.getAtt(output.logicalId));
     }
   }
 
+  /**
+   * Called for each CloudFormation reference used in the template synthesized
+   * from this stack. If the references are for resources in the parent stack,
+   * we morph them into a CFN parameter that will automatically be passed into
+   * the nested stack by the parent.
+   *
+   * @param _source the construct the used this reference
+   * @param reference the reference token
+   * @param producingStack the stack that produced this reference
+   */
   protected onCrossReferenceConsumed(_source: IConstruct, reference: CfnReference, producingStack: Stack) {
     // can only reference resources in my own parent stack.
     if (producingStack !== this.parentStack) {

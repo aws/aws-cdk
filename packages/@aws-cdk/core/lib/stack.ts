@@ -506,7 +506,7 @@ export class Stack extends Construct implements ITaggable {
       }
 
       // tell producing stack to process the cross reference and then tell the consuming
-      // stack to process the cross reference.
+      // stack to process the cross reference. the producing stack gets the priority
       producingStack.onCrossReferenceProduced(ref.source, ref.reference, consumingStack);
       consumingStack.onCrossReferenceConsumed(ref.source, ref.reference, producingStack);
     }
@@ -587,12 +587,34 @@ export class Stack extends Construct implements ITaggable {
     return ret;
   }
 
-  protected onCrossReferenceProduced(_source: IConstruct, _reference: CfnReference, _consumingStack: Stack) {
-    return;
+  /**
+   * Automatically called during "prepare" for each reference produced by this
+   * stack, giving it an opportunity to morph the reference to support various
+   * cross-stack references.
+   *
+   * This callback is called _before_ `onCrossReferenceConsumed` in order to
+   * allow the producer of the reference to determine the behavior.
+   *
+   * @param source
+   * @param reference
+   * @param consumingStack
+   *
+   * @experimental
+   */
+  protected onCrossReferenceProduced(source: IConstruct, reference: CfnReference, consumingStack: Stack) {
+    ignore(source);
+    ignore(reference);
+    ignore(consumingStack);
   }
 
   /**
-   * Register a stack this references is being consumed from.
+   * Automatically called during "prepare" for each reference produced by this
+   * stack, giving it an opportunity to morph the reference to support various
+   * cross-stack references.
+   *
+   * This callback is called _after_ `onCrossReferenceProduced`.
+   *
+   * @experimental
    */
   protected onCrossReferenceConsumed(source: IConstruct, reference: CfnReference, producingStack: Stack) {
     if (producingStack.environment !== this.environment) {
@@ -832,4 +854,8 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
 interface StackDependency {
   stack: Stack;
   reason: string;
+}
+
+function ignore(_x: any): void {
+  return;
 }
