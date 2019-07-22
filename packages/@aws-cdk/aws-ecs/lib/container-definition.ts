@@ -9,41 +9,33 @@ import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 /**
- * Properties for a Secret
- */
-export interface SecretProps {
-  /**
-   * A SSM parameter that will be retrieved at container startup.
-   */
-  readonly parameter?: ssm.IParameter;
-
-  /**
-   * An AWS Secrets Manager secret that will be retrieved at container startup.
-   */
-  readonly secret?: secretsmanager.ISecret
-}
-
-/**
  * A secret environment variable.
  */
-export class Secret {
+export abstract class Secret {
   /**
    * Creates an environment variable value from a parameter stored in AWS
    * Systems Manager Parameter Store.
    */
-  public static fromSsmParameter(parameter: ssm.IParameter) {
-    return new Secret({ parameter });
+  public static fromSsmParameter(parameter: ssm.IParameter): Secret {
+    return {
+      arn: parameter.parameterArn,
+      grantRead: grantee => parameter.grantRead(grantee),
+    };
   }
 
   /**
    * Creates a environment variable value from a secret stored in AWS Secrets
    * Manager.
    */
-  public static fromSecretsManager(secret: secretsmanager.ISecret) {
-    return new Secret({ secret });
+  public static fromSecretsManager(secret: secretsmanager.ISecret): Secret {
+    return {
+      arn: secret.secretArn,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
   }
 
-  constructor(public readonly props: SecretProps) {}
+  public abstract readonly arn: string;
+  public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
 /*
@@ -463,21 +455,6 @@ export class ContainerDefinition extends cdk.Construct {
    * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
    */
   public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
-    const secrets = [];
-    for (const [k, v] of Object.entries(this.props.secrets || {})) {
-      if (v.props.parameter) {
-        secrets.push({ name: k, valueFrom: v.props.parameter.parameterArn });
-        if (taskDefinition) {
-          v.props.parameter.grantRead(taskDefinition.obtainExecutionRole());
-        }
-      } else if (v.props.secret) {
-        secrets.push({ name: k, valueFrom: v.props.secret.secretArn });
-        if (taskDefinition) {
-          v.props.secret.grantRead(taskDefinition.obtainExecutionRole());
-        }
-      }
-    }
-
     return {
       command: this.props.command,
       cpu: this.props.cpu,
@@ -504,7 +481,16 @@ export class ContainerDefinition extends cdk.Construct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      secrets: secrets.length !== 0 ? secrets : undefined,
+      secrets: this.props.secrets && Object.entries(this.props.secrets)
+        .map(([k, v]) => {
+          if (taskDefinition) {
+            v.grantRead(taskDefinition.obtainExecutionRole());
+          }
+          return {
+            name: k,
+            valueFrom: v.arn
+          };
+        }),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
