@@ -460,17 +460,21 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Render this container definition to a CloudFormation object
    *
-   * @param taskDefinition [disable-awslint:ref-via-interface]
+   * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
    */
-  public renderContainerDefinition(taskDefinition: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     const secrets = [];
     for (const [k, v] of Object.entries(this.props.secrets || {})) {
       if (v.props.parameter) {
         secrets.push({ name: k, valueFrom: v.props.parameter.parameterArn });
-        v.props.parameter.grantRead(taskDefinition.obtainExecutionRole());
+        if (taskDefinition) {
+          v.props.parameter.grantRead(taskDefinition.obtainExecutionRole());
+        }
       } else if (v.props.secret) {
         secrets.push({ name: k, valueFrom: v.props.secret.secretArn });
-        v.props.secret.grantRead(taskDefinition.obtainExecutionRole());
+        if (taskDefinition) {
+          v.props.secret.grantRead(taskDefinition.obtainExecutionRole());
+        }
       }
     }
 
