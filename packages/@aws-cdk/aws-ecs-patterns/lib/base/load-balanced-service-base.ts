@@ -4,6 +4,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import route53targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/core');
+import { BaseProps } from './props';
 
 export enum LoadBalancerType {
   APPLICATION,
@@ -13,17 +14,7 @@ export enum LoadBalancerType {
 /**
  * Base properties for load-balanced Fargate and ECS services
  */
-export interface LoadBalancedServiceBaseProps {
-  /**
-   * The cluster where your service will be deployed
-   */
-  readonly cluster: ecs.ICluster;
-
-  /**
-   * The image to start.
-   */
-  readonly image: ecs.ContainerImage;
-
+export interface LoadBalancedServiceBaseProps extends BaseProps {
   /**
    * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
    *
@@ -59,20 +50,6 @@ export interface LoadBalancedServiceBaseProps {
    * @default - No certificate associated with the load balancer.
    */
   readonly certificate?: ICertificate;
-
-  /**
-   * Environment variables to pass to the container
-   *
-   * @default - No environment variables.
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
-   * Secret environment variables to pass to the container
-   *
-   * @default - No secret environment variables.
-   */
-  readonly secrets?: { [key: string]: ecs.Secret };
 
   /**
    * Whether to create an AWS log driver

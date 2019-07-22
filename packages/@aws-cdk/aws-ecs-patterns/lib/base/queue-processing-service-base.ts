@@ -2,21 +2,12 @@ import autoscaling = require('@aws-cdk/aws-applicationautoscaling');
 import ecs = require('@aws-cdk/aws-ecs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/core');
+import { BaseProps } from './props';
 
 /**
  * Properties to define a queue processing service
  */
-export interface QueueProcessingServiceBaseProps {
-  /**
-   * Cluster where service will be deployed
-   */
-  readonly cluster: ecs.ICluster;
-
-  /**
-   * The image to start.
-   */
-  readonly image: ecs.ContainerImage;
-
+export interface QueueProcessingServiceBaseProps extends BaseProps {
   /**
    * The CMD value to pass to the container. A string with commands delimited by commas.
    *
@@ -37,20 +28,6 @@ export interface QueueProcessingServiceBaseProps {
    * @default true
    */
   readonly enableLogging?: boolean;
-
-  /**
-   * The environment variables to pass to the container.
-   *
-   * @default 'QUEUE_NAME: queue.queueName'
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
-   * Secret environment variables to pass to the container
-   *
-   * @default - No secret environment variables.
-   */
-  readonly secrets?: { [key: string]: ecs.Secret };
 
   /**
    * A queue for which to process items from.

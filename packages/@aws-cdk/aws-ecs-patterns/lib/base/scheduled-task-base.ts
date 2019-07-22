@@ -3,18 +3,9 @@ import { ICluster } from '@aws-cdk/aws-ecs';
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
 import cdk = require('@aws-cdk/core');
+import { BaseProps } from './props';
 
-export interface ScheduledTaskBaseProps {
-  /**
-   * The cluster where your service will be deployed.
-   */
-  readonly cluster: ecs.ICluster;
-
-  /**
-   * The image to start.
-   */
-  readonly image: ecs.ContainerImage;
-
+export interface ScheduledTaskBaseProps extends BaseProps {
   /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
    * runs the rule. For more information, see Schedule Expression Syntax for
@@ -37,20 +28,6 @@ export interface ScheduledTaskBaseProps {
    * @default 1
    */
   readonly desiredTaskCount?: number;
-
-  /**
-   * The environment variables to pass to the container.
-   *
-   * @default none
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
-   * Secret environment variables to pass to the container
-   *
-   * @default - No secret environment variables.
-   */
-  readonly secrets?: { [key: string]: ecs.Secret };
 }
 
 /**

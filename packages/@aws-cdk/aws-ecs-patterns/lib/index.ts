@@ -1,3 +1,5 @@
+export * from './base/props';
+
 export * from './ecs/queue-processing-ecs-service';
 export * from './fargate/queue-processing-fargate-service';
 export * from './base/queue-processing-service-base';
