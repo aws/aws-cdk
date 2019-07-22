@@ -165,7 +165,7 @@ export = {
     };
 
     // THEN
-    test.throws(() => toThrow());
+    test.throws(() => toThrow(), /field dashboardName contains invalid characters/);
 
     test.done();
   }
