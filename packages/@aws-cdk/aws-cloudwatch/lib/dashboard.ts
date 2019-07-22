@@ -11,9 +11,10 @@ export enum PeriodOverride {
 export interface DashboardProps {
   /**
    * Name of the dashboard.
+   *
    * If set, must only contain alphanumerics, dash (-) and underscore (_)
    *
-   * @default Automatically generated name
+   * @default - automatically generated name
    */
   readonly dashboardName?: string;
 
