@@ -266,7 +266,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE: ecs.EnvironmentValue.fromString("test environment variable value")
+        TEST_ENVIRONMENT_VARIABLE: "test environment variable value"
       }
     });
 
@@ -301,9 +301,9 @@ export = {
     taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
-      environment: {
-        SECRET: ecs.EnvironmentValue.fromSecretsManager(secret),
-        PARAMETER: ecs.EnvironmentValue.fromSsmParameter(parameter),
+      secrets: {
+        SECRET: ecs.Secret.fromSecretsManager(secret),
+        PARAMETER: ecs.Secret.fromSsmParameter(parameter),
       }
     });
 

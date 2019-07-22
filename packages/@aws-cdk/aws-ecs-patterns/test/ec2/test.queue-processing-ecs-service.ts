@@ -84,8 +84,8 @@ export = {
       enableLogging: false,
       desiredTaskCount: 2,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE1: ecs.EnvironmentValue.fromString("test environment variable 1 value"),
-        TEST_ENVIRONMENT_VARIABLE2: ecs.EnvironmentValue.fromString("test environment variable 2 value")
+        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
       },
       queue,
       maxScalingCapacity: 5

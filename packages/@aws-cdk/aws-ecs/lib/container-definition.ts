@@ -11,12 +11,7 @@ import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 /**
  * Properties for an EnvironmentValue
  */
-export interface EnvironmentValueProps {
-  /**
-   * A string in clear text.
-   */
-  readonly value?: string;
-
+export interface SecretProps {
   /**
    * A SSM parameter that will be retrieved at container startup.
    */
@@ -29,22 +24,15 @@ export interface EnvironmentValueProps {
 }
 
 /**
- * An environment variable value.
+ * A secret environment variable.
  */
-export class EnvironmentValue {
-  /**
-   * Creates an environment variable value from a string.
-   */
-  public static fromString(value: string) {
-    return new EnvironmentValue({ value });
-  }
-
+export class Secret {
   /**
    * Creates an environment variable value from a parameter stored in AWS
    * Systems Manager Parameter Store.
    */
   public static fromSsmParameter(parameter: ssm.IParameter) {
-    return new EnvironmentValue({ parameter });
+    return new Secret({ parameter });
   }
 
   /**
@@ -52,10 +40,10 @@ export class EnvironmentValue {
    * Manager.
    */
   public static fromSecretsManager(secret: secretsmanager.ISecret) {
-    return new EnvironmentValue({ secret });
+    return new Secret({ secret });
   }
 
-  constructor(public readonly props: EnvironmentValueProps) {}
+  constructor(public readonly props: SecretProps) {}
 }
 
 /*
@@ -139,7 +127,14 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: EnvironmentValue };
+  readonly environment?: { [key: string]: string };
+
+  /**
+   * The secret environment variables to pass to the container.
+   *
+   * @default - No secret environment variables.
+   */
+  readonly secrets?: { [key: string]: Secret };
 
   /**
    * Specifies whether the container is marked essential.
@@ -468,12 +463,9 @@ export class ContainerDefinition extends cdk.Construct {
    * @param taskDefinition [disable-awslint:ref-via-interface]
    */
   public renderContainerDefinition(taskDefinition: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
-    const environment = [];
     const secrets = [];
-    for (const [k, v] of Object.entries(this.props.environment || {})) {
-      if (v.props.value) {
-        environment.push({ name: k, value: v.props.value });
-      } else if (v.props.parameter) {
+    for (const [k, v] of Object.entries(this.props.secrets || {})) {
+      if (v.props.parameter) {
         secrets.push({ name: k, valueFrom: v.props.parameter.parameterArn });
         v.props.parameter.grantRead(taskDefinition.obtainExecutionRole());
       } else if (v.props.secret) {
@@ -507,7 +499,8 @@ export class ContainerDefinition extends cdk.Construct {
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: environment.length !== 0 ? environment : undefined,
+      environment: this.props.environment && Object.entries(this.props.environment)
+        .map(([k, v]) => ({ name: k, value: v })),
       secrets: secrets.length !== 0 ? secrets : undefined,
       extraHosts: this.props.extraHosts && Object.entries(this.props.extraHosts)
         .map(([k, v]) => ({ hostname: k, ipAddress: v })),
