@@ -269,7 +269,7 @@ export = {
     somethingConnectable.connections.allowTo(securityGroup, Port.allTcp(), 'Connect there', false);
 
     // THEN: rule to generated security group to connect to imported
-    expect(stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
+    expect(stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
       GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
       IpProtocol: "tcp",
       Description: "Connect there",
@@ -279,7 +279,7 @@ export = {
     }));
 
     // THEN: rule to imported security group to allow connections from generated
-    expect(stack).notTo(haveResource("AWS::EC2::SecurityGroupEgress", {
+    expect(stack).notTo(haveResource("AWS::EC2::SecurityGroupIngress", {
       IpProtocol: "tcp",
       Description: "Connect there",
       FromPort: 0,
