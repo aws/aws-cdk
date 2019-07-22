@@ -283,6 +283,103 @@ export = {
     test.done();
   },
 
+  'Stacks can be children of other stacks (substack) and they will be synthesized separately'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const parentStack = new Stack(app, 'parent');
+    const childStack = new Stack(parentStack, 'child');
+    new CfnResource(parentStack, 'MyParentResource', { type: 'Resource::Parent' });
+    new CfnResource(childStack, 'MyChildResource', { type: 'Resource::Child' });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(assembly.getStack(parentStack.stackName).template, { Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
+    test.deepEqual(assembly.getStack(childStack.stackName).template, { Resources: { MyChildResource: { Type: 'Resource::Child' } } });
+    test.done();
+  },
+
+  'cross-stack reference (substack references parent stack)'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parentStack = new Stack(app, 'parent');
+    const childStack = new Stack(parentStack, 'child');
+
+    // WHEN (a resource from the child stack references a resource from the parent stack)
+    const parentResource = new CfnResource(parentStack, 'MyParentResource', { type: 'Resource::Parent' });
+    new CfnResource(childStack, 'MyChildResource', {
+      type: 'Resource::Child',
+      properties: {
+        ChildProp: parentResource.getAtt('AttOfParentResource')
+      }
+    });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+      Resources: { MyParentResource: { Type: 'Resource::Parent' } },
+      Outputs: { ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
+        Value: { 'Fn::GetAtt': [ 'MyParentResource', 'AttOfParentResource' ] },
+        Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' } }
+      }
+    });
+    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+      Resources: {
+        MyChildResource: {
+          Type: 'Resource::Child',
+          Properties: {
+            ChildProp: {
+              'Fn::ImportValue': 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E'
+            }
+          }
+        }
+      }
+    });
+    test.done();
+  },
+
+  'cross-stack reference (parent stack references substack)'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parentStack = new Stack(app, 'parent');
+    const childStack = new Stack(parentStack, 'child');
+
+    // WHEN (a resource from the child stack references a resource from the parent stack)
+    const childResource = new CfnResource(childStack, 'MyChildResource', { type: 'Resource::Child' });
+    new CfnResource(parentStack, 'MyParentResource', {
+      type: 'Resource::Parent',
+      properties: {
+        ParentProp: childResource.getAtt('AttributeOfChildResource')
+      }
+    });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+      Resources: {
+        MyParentResource: {
+          Type: 'Resource::Parent',
+          Properties: {
+            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' }
+          }
+        }
+      }
+    });
+
+    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+      Resources: {
+        MyChildResource: { Type: 'Resource::Child' } },
+      Outputs: {
+        ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
+          Value: { 'Fn::GetAtt': [ 'MyChildResource', 'AttributeOfChildResource' ] },
+          Export: { Name: 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' }
+        }
+      }
+    });
+    test.done();
+  },
+
   'cannot create cyclic reference between stacks'(test: Test) {
     // GIVEN
     const app = new App();
@@ -435,6 +532,26 @@ export = {
     const root = new Construct(undefined as any, 'Root');
     const construct = new Construct(root, 'Construct');
     test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
+    test.done();
+  },
+
+  'Stack.of() works for substacks'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const parentStack = new Stack(app, 'ParentStack');
+    const parentResource = new CfnResource(parentStack, 'ParentResource', { type: 'parent::resource' });
+
+    // we will define a substack under the /resource/... just for giggles.
+    const childStack = new Stack(parentResource, 'ChildStack');
+    const childResource = new CfnResource(childStack, 'ChildResource', { type: 'child::resource' });
+
+    // THEN
+    test.same(Stack.of(parentStack), parentStack);
+    test.same(Stack.of(parentResource), parentStack);
+    test.same(Stack.of(childStack), childStack);
+    test.same(Stack.of(childResource), childStack);
     test.done();
   },
 
