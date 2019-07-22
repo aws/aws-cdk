@@ -69,7 +69,10 @@ export class Dashboard extends Resource {
     });
 
     if (props.dashboardName && !props.dashboardName.match(/^[\w-]+$/)) {
-      throw new Error(`The value ${props.dashboardName} for field dashboardName contains invalid characters. It can only contain alphanumerics, dash (-) and underscore (_).`);
+      throw new Error([
+        `The value ${props.dashboardName} for field dashboardName contains invalid characters.`,
+        'It can only contain alphanumerics, dash (-) and underscore (_).'
+      ].join(' ');
     }
 
     new CfnDashboard(this, 'Resource', {
