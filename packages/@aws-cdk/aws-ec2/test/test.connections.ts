@@ -255,6 +255,74 @@ export = {
     }));
 
     test.done();
+  },
+  '(imported) SecurityGroup can be used as target of .allowTo() with unidirectional rule'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+    const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
+
+    const securityGroup = SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-12345');
+
+    // WHEN
+    somethingConnectable.connections.allowTo(securityGroup, Port.allTcp(), 'Connect there', false);
+
+    // THEN: rule to generated security group to connect to imported
+    expect(stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
+      GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+      IpProtocol: "tcp",
+      Description: "Connect there",
+      DestinationSecurityGroupId: "sg-12345",
+      FromPort: 0,
+      ToPort: 65535
+    }));
+
+    // THEN: rule to imported security group to allow connections from generated
+    expect(stack).notTo(haveResource("AWS::EC2::SecurityGroupEgress", {
+      IpProtocol: "tcp",
+      Description: "Connect there",
+      FromPort: 0,
+      GroupId: "sg-12345",
+      SourceSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+      ToPort: 65535
+    }));
+
+    test.done();
+  },
+  '(imported) SecurityGroup can be used as target of .allowFrom() with unidirectional rule'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+    const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
+
+    const securityGroup = SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-12345');
+
+    // WHEN
+    somethingConnectable.connections.allowFrom(securityGroup, Port.allTcp(), 'Connect there', false);
+
+    // THEN: rule to generated security group to connect to imported
+    expect(stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
+      GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+      IpProtocol: "tcp",
+      Description: "Connect there",
+      SourceSecurityGroupId: "sg-12345",
+      FromPort: 0,
+      ToPort: 65535
+    }));
+
+    // THEN: rule to imported security group to allow connections from generated
+    expect(stack).notTo(haveResource("AWS::EC2::SecurityGroupEgress", {
+      IpProtocol: "tcp",
+      Description: "Connect there",
+      FromPort: 0,
+      GroupId: "sg-12345",
+      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+      ToPort: 65535
+    }));
+
+    test.done();
   }
 };
 
