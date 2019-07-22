@@ -274,7 +274,51 @@ export = {
           hardwareType: ecs.AmiHardwareType.GPU,
         }),
       });
+    }, /Amazon Linux does not support special hardware type/);
+
+    test.done();
+  },
+
+  "allows specifying windows image"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('WindowsAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ecs.EcsOptimizedAmi({
+        windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+      }),
     });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      ImageId: {
+        Ref: "SsmParameterValueawsserviceecsoptimizedamirecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      }
+    }));
+
+    test.done();
+  },
+
+  "errors if windows given with special HW type"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // THEN
+    test.throws(() => {
+      cluster.addCapacity('WindowsGpuAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ecs.EcsOptimizedAmi({
+          windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+          hardwareType: ecs.AmiHardwareType.GPU,
+        }),
+      });
+    }, /Windows Server does not support special hardware type/);
 
     test.done();
   },

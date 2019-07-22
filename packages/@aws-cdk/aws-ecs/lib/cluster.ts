@@ -231,6 +231,11 @@ export class Cluster extends Resource implements ICluster {
   }
 }
 
+export enum WindowsOptimizedVersion {
+  SERVER_2019 = '2019',
+  SERVER_2016 = '2016',
+}
+
 /**
  * The properties that define which ECS-optimized AMI is used.
  */
@@ -243,6 +248,13 @@ export interface EcsOptimizedAmiProps {
   readonly generation?: ec2.AmazonLinuxGeneration;
 
   /**
+   * The Windows Server version to use.
+   *
+   * @default none, uses Linux generation
+   */
+  readonly windowsVersion?: WindowsOptimizedVersion;
+
+  /**
    * The ECS-optimized AMI variant to use.
    *
    * @default AmiHardwareType.Standard
@@ -251,10 +263,11 @@ export interface EcsOptimizedAmiProps {
 }
 
 /**
- * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
+ * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
  */
 export class EcsOptimizedAmi implements ec2.IMachineImage {
-  private readonly generation: ec2.AmazonLinuxGeneration;
+  private readonly generation?: ec2.AmazonLinuxGeneration;
+  private readonly windowsVersion?: WindowsOptimizedVersion;
   private readonly hwType: AmiHardwareType;
 
   private readonly amiParameterName: string;
@@ -270,6 +283,10 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       } else {
         this.generation = props.generation;
       }
+    } else if (props && props.windowsVersion) {
+      if (this.hwType !== AmiHardwareType.STANDARD) {
+        throw new Error('Windows Server does not support special hardware type. Use Amazon Linux 2 instead');
+      }
     } else {                              // generation not defined in props object
       // always default to Amazon Linux v2 regardless of HW
       this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
@@ -279,6 +296,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
                           + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "" )
                           + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
+                          + ( this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "" )
                           + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
                           + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
                           + "recommended/image_id";
@@ -291,7 +309,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX
+      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
     };
   }
 }
@@ -510,7 +528,7 @@ export interface CloudMapNamespaceOptions {
 export enum AmiHardwareType {
 
   /**
-   * Use the Amazon ECS-optimized Amazon Linux 2 AMI.
+   * Use the standard Amazon ECS-optimized AMI.
    */
   STANDARD = 'Standard',
 
