@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource, Stack } from "@aws-cdk/core";
+import { Construct, Lazy, Resource, Stack, Token } from "@aws-cdk/core";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -68,11 +68,14 @@ export class Dashboard extends Resource {
       physicalName: props.dashboardName,
     });
 
-    if (props.dashboardName && !props.dashboardName.match(/^[\w-]+$/)) {
-      throw new Error([
-        `The value ${props.dashboardName} for field dashboardName contains invalid characters.`,
-        'It can only contain alphanumerics, dash (-) and underscore (_).'
-      ].join(' '));
+    {
+      const {dashboardName} = props;
+      if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
+        throw new Error([
+          `The value ${dashboardName} for field dashboardName contains invalid characters.`,
+          'It can only contain alphanumerics, dash (-) and underscore (_).'
+        ].join(' '));
+      }
     }
 
     new CfnDashboard(this, 'Resource', {
