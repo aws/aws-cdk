@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-opsworks",
         "module": "aws_cdk.aws_opsworks"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS OpsWorks"
     }
   },
   "repository": {

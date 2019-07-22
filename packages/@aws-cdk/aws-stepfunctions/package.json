@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-stepfunctions",
         "module": "aws_cdk.aws_stepfunctions"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Step Functions"
     }
   },
   "repository": {

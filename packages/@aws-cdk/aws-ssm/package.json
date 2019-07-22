@@ -26,9 +26,6 @@
         "distName": "aws-cdk.aws-ssm",
         "module": "aws_cdk.aws_ssm"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Systems Manager"
     }
   },
   "repository": {

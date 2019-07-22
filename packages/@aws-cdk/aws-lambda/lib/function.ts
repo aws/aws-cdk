@@ -234,7 +234,6 @@ export interface FunctionProps {
  * library.
  */
 export class Function extends FunctionBase {
-
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
@@ -259,6 +258,7 @@ export class Function extends FunctionBase {
       public readonly functionArn = functionArn;
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly role = role;
+      public readonly permissionsNode = this.node;
 
       protected readonly canCreatePermissions = false;
 
@@ -374,6 +374,8 @@ export class Function extends FunctionBase {
    * The principal this Lambda Function is running as
    */
   public readonly grantPrincipal: iam.IPrincipal;
+
+  public readonly permissionsNode = this.node;
 
   protected readonly canCreatePermissions = true;
 
