@@ -48,7 +48,7 @@ export interface ScheduledTaskBaseProps {
   /**
    * Secret environment variables to pass to the container
    *
-   * @default - No environment variables.
+   * @default - No secret environment variables.
    */
   readonly secrets?: { [key: string]: ecs.Secret };
 }

@@ -9,7 +9,7 @@ import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 /**
- * Properties for an EnvironmentValue
+ * Properties for a Secret
  */
 export interface SecretProps {
   /**
