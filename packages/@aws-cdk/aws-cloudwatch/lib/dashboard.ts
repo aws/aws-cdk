@@ -10,7 +10,8 @@ export enum PeriodOverride {
 
 export interface DashboardProps {
   /**
-   * Name of the dashboard
+   * Name of the dashboard.
+   * If set, must only contain alphanumerics, dash (-) and underscore (_)
    *
    * @default Automatically generated name
    */
@@ -66,6 +67,10 @@ export class Dashboard extends Resource {
     super(scope, id, {
       physicalName: props.dashboardName,
     });
+
+    if (props.dashboardName && !props.dashboardName.match(/^[\w-]+$/)) {
+      throw new Error(`The value ${props.dashboardName} for field dashboardName contains invalid characters. It can only contain alphanumerics, dash (-) and underscore (_).`);
+    }
 
     new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
