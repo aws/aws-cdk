@@ -503,11 +503,9 @@ export class ContainerDefinition extends cdk.Construct {
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && Object.entries(this.props.environment)
-        .map(([k, v]) => ({ name: k, value: v })),
+      environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
       secrets: secrets.length !== 0 ? secrets : undefined,
-      extraHosts: this.props.extraHosts && Object.entries(this.props.extraHosts)
-        .map(([k, v]) => ({ hostname: k, ipAddress: v })),
+      extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
@@ -564,6 +562,14 @@ export interface HealthCheck {
    * @default Duration.seconds(5)
    */
   readonly timeout?: cdk.Duration;
+}
+
+function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
+  const ret = [];
+  for (const [key, value] of Object.entries(env)) {
+    ret.push({ [keyName]: key, [valueName]: value });
+  }
+  return ret;
 }
 
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
