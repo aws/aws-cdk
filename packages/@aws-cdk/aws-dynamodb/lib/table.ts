@@ -103,7 +103,8 @@ export interface TableOptions {
 
   /**
    * When an item in the table is modified, StreamViewType determines what information
-   * is written to the stream for this table. Valid values for StreamViewType are:
+   * is written to the stream for this table.
+   *
    * @default undefined, streams are disabled
    */
   readonly stream?: StreamViewType;
@@ -693,9 +694,9 @@ export enum ProjectionType {
 
 /**
  * When an item in the table is modified, StreamViewType determines what information
- * is written to the stream for this table. Valid values for StreamViewType are:
- * @link https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_StreamSpecification.html
- * @enum {string}
+ * is written to the stream for this table.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_StreamSpecification.html
  */
 export enum StreamViewType {
   /** The entire item, as it appears after it was modified, is written to the stream. */

@@ -449,9 +449,7 @@
               "Action": [
                 "ecs:ListContainerInstances",
                 "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
+                "ecs:SubmitTaskStateChange"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -460,6 +458,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -698,7 +714,8 @@
     },
     "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "ScheduledEc2TaskScheduledTaskDefExecutionRole65A8CC6F": {
       "Type": "AWS::IAM::Role",
@@ -845,7 +862,7 @@
                 "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
               }
             },
-            "Id": "awsecsintegecsScheduledEc2TaskScheduledTaskDef18FB4348",
+            "Id": "Target0",
             "Input": "{}",
             "RoleArn": {
               "Fn::GetAtt": [

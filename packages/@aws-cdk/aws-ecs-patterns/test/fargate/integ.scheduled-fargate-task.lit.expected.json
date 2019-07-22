@@ -212,7 +212,7 @@
                 "Ref": "ScheduledFargateTaskScheduledTaskDef521FA675"
               }
             },
-            "Id": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+            "Id": "Target0",
             "Input": "{}",
             "RoleArn": {
               "Fn::GetAtt": [
@@ -433,11 +433,13 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "ScheduledFargateTaskScheduledTaskDefExecutionRoleD37356D5": {
       "Type": "AWS::IAM::Role",
@@ -679,7 +681,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "ScheduledFargateTaskScheduledTaskDef521FA675"
@@ -756,7 +758,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "ScheduledFargateTaskScheduledTaskDef521FA675"
@@ -795,7 +797,8 @@
           "physicalResourceId": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",

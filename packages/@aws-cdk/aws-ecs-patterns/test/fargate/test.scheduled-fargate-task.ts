@@ -10,7 +10,7 @@ export = {
   "Can create a scheduled Fargate Task - with only required props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
@@ -29,7 +29,7 @@ export = {
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
-          Id: "ScheduledFargateTaskScheduledTaskDef4D131A6E",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
         }
@@ -69,7 +69,7 @@ export = {
   "Can create a scheduled Fargate Task - with optional props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
@@ -91,7 +91,7 @@ export = {
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
-          Id: "ScheduledFargateTaskScheduledTaskDef4D131A6E",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
         }
@@ -137,7 +137,7 @@ export = {
   "Scheduled Fargate Task - with MemoryReservation defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
@@ -180,7 +180,7 @@ export = {
   "Scheduled Fargate Task - with Command defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {

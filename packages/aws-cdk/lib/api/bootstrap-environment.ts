@@ -7,9 +7,12 @@ import { SDK } from './util/sdk';
 
 // tslint:disable:max-line-length
 
+/** @experimental */
 export const BUCKET_NAME_OUTPUT = 'BucketName';
+/** @experimental */
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 
+/** @experimental */
 export async function bootstrapEnvironment(environment: cxapi.Environment, aws: SDK, toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<DeployStackResult> {
 
   const template = {

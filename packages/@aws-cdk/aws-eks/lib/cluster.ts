@@ -304,16 +304,16 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.connections.allowTo(this, ec2.Port.tcp(443));
 
     // Allow all node outbound traffic
-    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allTcp());
-    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allUdp());
-    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allIcmp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allTcp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
     autoScalingGroup.addUserData(
       'set -o xtrace',
       `/etc/eks/bootstrap.sh ${this.clusterName} --use-max-pods ${options.maxPods}`,
     );
     // FIXME: Add a cfn-signal call once we've sorted out UserData and can write reliable
-    // signaling scripts: https://github.com/awslabs/aws-cdk/issues/623
+    // signaling scripts: https://github.com/aws/aws-cdk/issues/623
 
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));

@@ -61,7 +61,7 @@
                 ]
               ]
             },
-            "Id": "awscdkcodepipelinecodebuildmultipleinputsoutputsPipeline314D3A85",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",
@@ -79,7 +79,8 @@
           "Status": "Enabled"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
