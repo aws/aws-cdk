@@ -37,7 +37,7 @@ This library contains Route53 Alias Record targets for:
   ```ts
   new route53.ARecord(this, 'AliasRecord', {
     zone,
-    target: route53.RecordTarget.fromAlias(new alias.LoadBalancerTarget(elb)),
+    target: route53.RecordTarget.fromAlias(new alias.ClassicLoadBalancerTarget(elb)),
     // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
   });
   ```
