@@ -25,9 +25,6 @@
       "python": {
         "distName": "aws-cdk.aws-medialive",
         "module": "aws_cdk.aws_medialive"
-      },
-      "metadata": {
-        "awsdocs:title": "AW MediaLive"
       }
     }
   },
