@@ -30,6 +30,13 @@ export interface QueueProcessingServiceBaseProps extends BaseProps {
   readonly enableLogging?: boolean;
 
   /**
+   * The environment variables to pass to the container.
+   *
+   * @default 'QUEUE_NAME: queue.queueName'
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
    * A queue for which to process items from.
    *
    * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'.

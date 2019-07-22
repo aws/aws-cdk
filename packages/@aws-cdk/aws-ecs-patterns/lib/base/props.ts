@@ -15,13 +15,6 @@ export interface BaseProps {
   readonly image: ecs.ContainerImage;
 
   /**
-   * The environment variables to pass to the container.
-   *
-   * @default 'QUEUE_NAME: queue.queueName'
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
    * Secret environment variables to pass to the container
    *
    * @default - No secret environment variables.

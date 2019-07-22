@@ -28,6 +28,13 @@ export interface ScheduledTaskBaseProps extends BaseProps {
    * @default 1
    */
   readonly desiredTaskCount?: number;
+
+  /**
+   * The environment variables to pass to the container.
+   *
+   * @default none
+   */
+  readonly environment?: { [key: string]: string };
 }
 
 /**

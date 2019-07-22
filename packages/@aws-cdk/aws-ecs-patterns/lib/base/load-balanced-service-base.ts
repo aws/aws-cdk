@@ -52,6 +52,13 @@ export interface LoadBalancedServiceBaseProps extends BaseProps {
   readonly certificate?: ICertificate;
 
   /**
+   * Environment variables to pass to the container
+   *
+   * @default - No environment variables.
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
    * Whether to create an AWS log driver
    *
    * @default true
