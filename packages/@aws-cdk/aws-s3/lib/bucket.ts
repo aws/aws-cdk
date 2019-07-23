@@ -706,7 +706,7 @@ export enum RedirectProtocol {
 /**
  * Specifies a redirect behavior of all requests to a website endpoint of a bucket.
  */
-export interface RedirectAllRequestsTo {
+export interface RedirectTarget {
   /**
    * Name of the host where requests are redirected
    */
@@ -794,7 +794,7 @@ export interface BucketProps {
    *
    * @default - No redirection.
    */
-  readonly websiteRedirectAllRequestsTo?: RedirectAllRequestsTo;
+  readonly websiteRedirect?: RedirectTarget;
 
   /**
    * Grants public read access to all objects in the bucket.
@@ -1248,7 +1248,7 @@ export class Bucket extends BucketBase {
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
-    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirectAllRequestsTo) {
+    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect) {
       return undefined;
     }
 
@@ -1256,14 +1256,14 @@ export class Bucket extends BucketBase {
       throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
     }
 
-    if (props.websiteRedirectAllRequestsTo && (props.websiteErrorDocument || props.websiteIndexDocument)) {
+    if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument)) {
         throw new Error('No other "website*" property can be set if "websiteRedirectAllRequestsTo" is set');
     }
 
     return {
       indexDocument: props.websiteIndexDocument,
       errorDocument: props.websiteErrorDocument,
-      redirectAllRequestsTo: props.websiteRedirectAllRequestsTo,
+      redirectAllRequestsTo: props.websiteRedirect,
     };
   }
 }

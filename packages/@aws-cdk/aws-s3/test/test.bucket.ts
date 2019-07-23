@@ -1528,7 +1528,7 @@ export = {
     'adds RedirectAllRequestsTo property'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {
-        websiteRedirectAllRequestsTo: {
+        websiteRedirect: {
           hostName: 'www.example.com',
           protocol: s3.RedirectProtocol.HTTPS
         }
@@ -1549,7 +1549,7 @@ export = {
         new s3.Bucket(stack, 'Website', {
           websiteIndexDocument: 'index.html',
           websiteErrorDocument: 'error.html',
-          websiteRedirectAllRequestsTo: {
+          websiteRedirect: {
             hostName: 'www.example.com'
           }
         });
