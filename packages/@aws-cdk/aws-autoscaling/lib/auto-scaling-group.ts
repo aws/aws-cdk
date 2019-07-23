@@ -160,7 +160,7 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Configuration for health checks
    *
-   * @default - HealthCheckConfiguration with defaults.
+   * @default - HealthCheck.ec2 with no grace period
    */
   readonly healthCheck?: HealthCheck;
 }
