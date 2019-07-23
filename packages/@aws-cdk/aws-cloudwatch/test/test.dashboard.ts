@@ -150,6 +150,24 @@ export = {
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {}));
 
     test.done();
+  },
+
+  'throws if DashboardName is not valid'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const toThrow = () => {
+      new Dashboard(stack, 'MyDashboard', {
+        dashboardName: 'My Invalid Dashboard Name',
+      });
+    };
+
+    // THEN
+    test.throws(() => toThrow(), /field dashboardName contains invalid characters/);
+
+    test.done();
   }
 };
 
