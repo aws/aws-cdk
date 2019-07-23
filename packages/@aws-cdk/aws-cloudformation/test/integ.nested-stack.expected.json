@@ -15,7 +15,7 @@
                   "aws:SourceArn": {
                     "Fn::GetAtt": [
                       "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
-                      "Outputs.referencetonestedstackstestNestedStack1topic02C2D1254Ref"
+                      "Outputs.nestedstackstestNestedStack1topic02C2D1254Ref"
                     ]
                   }
                 }
@@ -38,7 +38,7 @@
                   "aws:SourceArn": {
                     "Fn::GetAtt": [
                       "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
-                      "Outputs.referencetonestedstackstestNestedStack1topic1474E5389Ref"
+                      "Outputs.nestedstackstestNestedStack1topic1474E5389Ref"
                     ]
                   }
                 }
@@ -61,7 +61,7 @@
                   "aws:SourceArn": {
                     "Fn::GetAtt": [
                       "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
-                      "Outputs.referencetonestedstackstestNestedStack1topic22C710DC4Ref"
+                      "Outputs.nestedstackstestNestedStack1topic22C710DC4Ref"
                     ]
                   }
                 }
@@ -94,7 +94,7 @@
         "TopicArn": {
           "Fn::GetAtt": [
             "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
-            "Outputs.referencetonestedstackstestNestedStack1topic02C2D1254Ref"
+            "Outputs.nestedstackstestNestedStack1topic02C2D1254Ref"
           ]
         },
         "Endpoint": {
@@ -112,7 +112,7 @@
         "TopicArn": {
           "Fn::GetAtt": [
             "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
-            "Outputs.referencetonestedstackstestNestedStack1topic1474E5389Ref"
+            "Outputs.nestedstackstestNestedStack1topic1474E5389Ref"
           ]
         },
         "Endpoint": {
@@ -130,7 +130,7 @@
         "TopicArn": {
           "Fn::GetAtt": [
             "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
-            "Outputs.referencetonestedstackstestNestedStack1topic22C710DC4Ref"
+            "Outputs.nestedstackstestNestedStack1topic22C710DC4Ref"
           ]
         },
         "Endpoint": {
