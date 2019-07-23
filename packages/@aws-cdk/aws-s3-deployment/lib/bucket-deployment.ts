@@ -1,6 +1,6 @@
 import cloudformation = require('@aws-cdk/aws-cloudformation');
 import cloudfront = require('@aws-cdk/aws-cloudfront');
-import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -79,8 +79,8 @@ export class BucketDeployment extends cdk.Construct {
     source.bucket.grantRead(handler);
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {
-      handler.addToRolePolicy(new PolicyStatement({
-        effect: Effect.ALLOW,
+      handler.addToRolePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
         actions: ['cloudfront:GetInvalidation', 'cloudfront:CreateInvalidation'],
         resources: ['*'],
       }));
