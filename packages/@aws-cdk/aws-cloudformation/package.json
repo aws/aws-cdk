@@ -65,6 +65,8 @@
     "@aws-cdk/assert": "^1.1.0",
     "@aws-cdk/aws-events": "^1.1.0",
     "@aws-cdk/aws-ssm": "^1.1.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.1.0",
+    "@aws-cdk/aws-sqs": "^1.1.0",
     "@types/aws-lambda": "^8.10.27",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",

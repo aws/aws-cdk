@@ -1,31 +1,146 @@
 {
-  "Parameters": {
-    "NestedStack1NestedStackAssetS3Bucket5FED0F84": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
-    },
-    "NestedStack1NestedStackAssetS3VersionKeyD7FDFFF0": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
-    },
-    "NestedStack1NestedStackAssetArtifactHash1F5040A3": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
-    },
-    "NestedStack2NestedStackAssetS3BucketF8C8921A": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
-    },
-    "NestedStack2NestedStackAssetS3VersionKey0C402EEC": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
-    },
-    "NestedStack2NestedStackAssetArtifactHash4D4982F5": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
-    }
-  },
   "Resources": {
+    "SubscriberQueueC193DC66": {
+      "Type": "AWS::SQS::Queue"
+    },
+    "SubscriberQueuePolicy25A0799E": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                      "Outputs.referencetonestedstackstestNestedStack1topic02C2D1254Ref"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sns.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SubscriberQueueC193DC66",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                      "Outputs.referencetonestedstackstestNestedStack1topic1474E5389Ref"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sns.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SubscriberQueueC193DC66",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                      "Outputs.referencetonestedstackstestNestedStack1topic22C710DC4Ref"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sns.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SubscriberQueueC193DC66",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "SubscriberQueueC193DC66"
+          }
+        ]
+      }
+    },
+    "SubscriberQueuenestedstackstestNestedStack1topic089C5EB1396F65087": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "sqs",
+        "TopicArn": {
+          "Fn::GetAtt": [
+            "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+            "Outputs.referencetonestedstackstestNestedStack1topic02C2D1254Ref"
+          ]
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "SubscriberQueueC193DC66",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "SubscriberQueuenestedstackstestNestedStack1topic1150E1A929A2C267E": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "sqs",
+        "TopicArn": {
+          "Fn::GetAtt": [
+            "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+            "Outputs.referencetonestedstackstestNestedStack1topic1474E5389Ref"
+          ]
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "SubscriberQueueC193DC66",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "SubscriberQueuenestedstackstestNestedStack1topic209B8719858511914": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "sqs",
+        "TopicArn": {
+          "Fn::GetAtt": [
+            "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+            "Outputs.referencetonestedstackstestNestedStack1topic22C710DC4Ref"
+          ]
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "SubscriberQueueC193DC66",
+            "Arn"
+          ]
+        }
+      }
+    },
     "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -76,7 +191,10 @@
           ]
         },
         "Parameters": {
-          "TopicNamePrefix": "Prefix1"
+          "TopicNamePrefix": "Prefix1",
+          "referencetonestedstackstestSubscriberQueue39409787Ref": {
+            "Ref": "SubscriberQueueC193DC66"
+          }
         }
       }
     },
@@ -133,6 +251,32 @@
           "TopicNamePrefix": "Prefix2"
         }
       }
+    }
+  },
+  "Parameters": {
+    "NestedStack1NestedStackAssetS3Bucket5FED0F84": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
+    },
+    "NestedStack1NestedStackAssetS3VersionKeyD7FDFFF0": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
+    },
+    "NestedStack1NestedStackAssetArtifactHash1F5040A3": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-test/NestedStack1.NestedStack/Asset\""
+    },
+    "NestedStack2NestedStackAssetS3BucketF8C8921A": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
+    },
+    "NestedStack2NestedStackAssetS3VersionKey0C402EEC": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
+    },
+    "NestedStack2NestedStackAssetArtifactHash4D4982F5": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-test/NestedStack2.NestedStack/Asset\""
     }
   }
 }

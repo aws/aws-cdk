@@ -1,8 +1,8 @@
 import s3_assets = require('@aws-cdk/aws-s3-assets');
 import sns = require('@aws-cdk/aws-sns');
-import { CfnOutput, CfnParameter, CfnReference, Construct, Duration, IConstruct, ISynthesisSession, Lazy, Stack, Token } from '@aws-cdk/core';
-import fs = require('fs');
-import path = require('path');
+import {
+  Aws, CfnOutput, CfnParameter, Construct, Duration, Fn, IConstruct,
+  IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -14,24 +14,31 @@ export interface NestedStackProps {
    * when this nested stack is created. Each parameter has a name corresponding
    * to a parameter defined in the embedded template and a value representing
    * the value that you want to set for the parameter.
+   *
+   * @default - no parameters are passed to the nested stack
    */
   readonly parameters?: { [key: string]: string };
 
   /**
    * The length of time that CloudFormation waits for the nested stack to reach
-   * the CREATE_COMPLETE state. The default is no timeout. When CloudFormation
-   * detects that the nested stack has reached the CREATE_COMPLETE state, it
-   * marks the nested stack resource as CREATE_COMPLETE in the parent stack and
-   * resumes creating the parent stack. If the timeout period expires before the
-   * nested stack reaches CREATE_COMPLETE, CloudFormation marks the nested stack
-   * as failed and rolls back both the nested stack and parent stack.
+   * the CREATE_COMPLETE state.
+   *
+   * When CloudFormation detects that the nested stack has reached the
+   * CREATE_COMPLETE state, it marks the nested stack resource as
+   * CREATE_COMPLETE in the parent stack and resumes creating the parent stack.
+   * If the timeout period expires before the nested stack reaches
+   * CREATE_COMPLETE, CloudFormation marks the nested stack as failed and rolls
+   * back both the nested stack and parent stack.
+   *
+   * @default - no timeout
    */
   readonly timeout?: Duration;
 
   /**
    * The Simple Notification Service (SNS) topics to publish stack related
-   * events. You can find your SNS topic ARNs using the SNS console or your
-   * Command Line Interface (CLI).
+   * events.
+   *
+   * @default - notifications are not sent for this stack.
    */
   readonly notifications?: sns.ITopic[];
 }
@@ -52,40 +59,61 @@ export interface NestedStackProps {
  * outputs.
  */
 export class NestedStack extends Stack {
+
+  /**
+   * Checks if `x` is an object of type `NestedStack`.
+   */
   public static isNestedStack(x: any): x is NestedStack {
     return x != null && typeof(x) === 'object' && NESTED_STACK_SYMBOL in x;
   }
 
-  /**
-   * The name of the synthesized JSON file as it will be emitted into the cloud assembly directory.
-   */
-  public readonly templateFile: string;
+  public readonly templateFileName: string;
 
   /**
    * The stack this stack is nested in.
    */
-  public readonly parentStack: Stack;
+  public readonly parentStack?: Stack;
 
-  private readonly parameters: { [name: string]: string } = { };
+  /**
+   * An attribute that represents the name of the nested stack.
+   *
+   * If this is referenced from the parent stack, it will return a token that parses the name from the stack ID.
+   * If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackName" }`
+   *
+   * @example mystack-mynestedstack-sggfrhxhum7w
+   * @attribute
+   */
+  public readonly stackName: string;
+
+  private readonly parameters: { [name: string]: string };
   private readonly resource: CfnStack;
 
   constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
-    super(scope, id);
+    const parentStack = findParentStack(scope);
 
-    this.parentStack = findParentStack(scope);
+    super(scope, id, {
+      env: {
+        account: parentStack.account,
+        region: parentStack.region
+      },
+    });
+
+    this.parentStack = parentStack;
 
     const parentScope = new Construct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
     // this is the file name of the synthesized template file within the cloud assembly
-    this.templateFile = `${this.node.uniqueId}.nested.template.json`;
+    this.templateFileName = `${this.node.uniqueId}.nested.template.json`;
 
     const asset = new s3_assets.SynthesizedAsset(parentScope, 'Asset', {
       packaging: s3_assets.AssetPackaging.FILE,
-      assemblyPath: this.templateFile,
+      assemblyPath: this.templateFileName,
       sourceHash: this.node.uniqueId
     });
+
+    this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       templateUrl: asset.s3Url,
@@ -93,72 +121,100 @@ export class NestedStack extends Stack {
       notificationArns: props.notifications ? props.notifications.map(n => n.topicArn) : undefined,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
-  }
 
-  public addParameter(name: string, value: string) {
-    this.parameters[name] = value;
+    this.stackName = Token.asString({
+      resolve: (context: IResolveContext) => {
+        const stack = Stack.of(context.scope);
+        if (stack === this) {
+          return Aws.STACK_NAME;
+        } else {
+          // resource.ref returns the stack ID, so we need to split by "/" and select the 2nd component, which is the stack name:
+          // arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786
+          return Fn.select(1, Fn.split('/', this.resource.ref));
+        }
+      }
+    });
   }
 
   /**
-   * Called when a CloudFormation reference ("Ref" or "Fn::GetAtt") is used in a
-   * template synthesized by some stack. If this is our parent stack, we can
-   * automatically morph this reference into a CFN output produced by the nested
-   * stack and a Fn::GetAtt in the parent stack.
+   * An attribute that represents the ID of the stack.
    *
-   * @param _source the construct that used this reference
-   * @param reference the reference token
-   * @param consumingStack the stack consuming this reference
+   * If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
+   *
+   * If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackId" }`
+   *
+   * @example arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786
+   * @attribute
    */
-  protected onCrossReferenceProduced(_source: IConstruct, reference: CfnReference, consumingStack: Stack) {
-    // only parent stack can consume a reference from this nested stack
-    if (consumingStack !== this.parentStack) {
-      throw new Error(`Resources in nested stack can only be referenced from the parent stack`);
+  public get stackId(): string {
+    return Token.asString({
+      resolve: (context: IResolveContext) => {
+        const stack = Stack.of(context.scope);
+        if (stack === this) {
+          return Aws.STACK_ID;
+        } else {
+          return this.resource.ref;
+        }
+      }
+    });
+  }
+
+  protected createCrossReference(source: IConstruct, reference: Reference): IResolvable {
+    const consumingStack = Stack.of(source);
+    const producingStack = Stack.of(reference.target);
+
+    // the nested stack references a resource from the parent stack:
+    // we pass it through a as a cloudformation parameter
+    if (producingStack === consumingStack.parentStack) {
+      const paramId = `reference-to-${reference.target.node.uniqueId}.${reference.displayName}`;
+      let param = this.node.tryFindChild(paramId) as CfnParameter;
+      if (!param) {
+        param = new CfnParameter(this, paramId, { type: 'String' });
+        this.parameters[param.logicalId] = Token.asString(reference);
+      }
+
+      return param.value;
     }
 
-    // get/create a cloudformation output for this value
-    const outputId = `reference-to-${reference.target.node.uniqueId}-${reference.displayName}`;
+    // parent stack references a resource from the nested stack:
+    // we output it from the nested stack and use "Fn::GetAtt" as the reference value
+    if (producingStack === this && producingStack.parentStack === consumingStack) {
+      return this.getCreateOutputForReference(reference);
+    }
+
+    // sibling nested stacks (same parent):
+    // output from one and pass as parameter to the other
+    if (producingStack.parentStack && producingStack.parentStack === consumingStack.parentStack) {
+      const outputValue = this.getCreateOutputForReference(reference);
+      return (consumingStack as any).createCrossReference(source, outputValue);
+    }
+
+    // nested stack references a value from some other non-nested stack:
+    // normal export/import, with dependency between the parents
+    if (consumingStack.parentStack && consumingStack.parentStack !== producingStack) {
+      return super.createCrossReference(source, reference);
+    }
+
+    // some non-nested stack (that is not the parent) references a resource inside the nested stack:
+    // we output the value and let our parent export it
+    if (!consumingStack.parentStack && producingStack.parentStack && producingStack.parentStack !== consumingStack) {
+      const outputValue = this.getCreateOutputForReference(reference);
+      return (producingStack.parentStack as any).createCrossReference(source, outputValue);
+    }
+
+    throw new Error('unexpected');
+
+    return super.createCrossReference(source, reference);
+  }
+
+  private getCreateOutputForReference(reference: Reference) {
+    const outputId = `${reference.target.node.uniqueId}${reference.displayName}`;
     let output = this.node.tryFindChild(outputId) as CfnOutput;
     if (!output) {
       output = new CfnOutput(this, outputId, { value: Token.asString(reference) });
     }
 
-    // morph the reference to use "Fn::GetAtt" to obtain the output value from the nested stack
-    if (!reference.hasValueForStack(consumingStack)) {
-      reference.assignValueForStack(consumingStack, this.resource.getAtt(output.logicalId));
-    }
-  }
-
-  /**
-   * Called for each CloudFormation reference used in the template synthesized
-   * from this stack. If the references are for resources in the parent stack,
-   * we morph them into a CFN parameter that will automatically be passed into
-   * the nested stack by the parent.
-   *
-   * @param _source the construct the used this reference
-   * @param reference the reference token
-   * @param producingStack the stack that produced this reference
-   */
-  protected onCrossReferenceConsumed(_source: IConstruct, reference: CfnReference, producingStack: Stack) {
-    // can only reference resources in my own parent stack.
-    if (producingStack !== this.parentStack) {
-      throw new Error(`Resources in nested stacks can only reference resources from the parent stack`);
-    }
-
-    // wire the reference through a parameter
-    const paramId = `reference-to-${reference.target.node.uniqueId}.${reference.displayName}`;
-    if (!this.node.tryFindChild(paramId)) {
-      const param = new CfnParameter(this, paramId, { type: 'String' });
-      if (!reference.hasValueForStack(this)) {
-        reference.assignValueForStack(this, param.value);
-
-        this.addParameter(param.logicalId, Token.asString(reference));
-      }
-    }
-  }
-
-  protected synthesize(session: ISynthesisSession) {
-    const filePath = path.join(session.assembly.outdir, this.templateFile);
-    fs.writeFileSync(filePath, JSON.stringify(this.toCloudFormation(), undefined, 2), 'utf-8');
+    return this.resource.getAtt(`Outputs.${outputId}`);
   }
 }
 

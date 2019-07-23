@@ -154,6 +154,21 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
+   * Returns the parent stack if this stack is nested.
+   *
+   * @experimental
+   */
+  public readonly parentStack?: Stack;
+
+  /**
+   * The filename of the CloudFormation template emitted into the cloud assembly
+   * directory during synthesis.
+   *
+   * @experimental
+   */
+  public readonly templateFileName: string;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -197,6 +212,8 @@ export class Stack extends Construct implements ITaggable {
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
+
+    this.templateFileName = `${this.stackName}.template.json`;
   }
 
   /**
@@ -263,6 +280,10 @@ export class Stack extends Construct implements ITaggable {
    * Add a dependency between this stack and another stack
    */
   public addDependency(stack: Stack, reason?: string) {
+    if (process.env.CDK_DEBUG_DEPS) {
+      // tslint:disable-next-line:no-console
+      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${stack.node.path}" because: ${reason}`);
+    }
     if (stack === this) { return; }  // Can ignore a dependency on self
 
     reason = reason || 'dependency added using stack.addDependency()';
@@ -507,15 +528,14 @@ export class Stack extends Construct implements ITaggable {
 
       // tell producing stack to process the cross reference and then tell the consuming
       // stack to process the cross reference. the producing stack gets the priority
-      producingStack.onCrossReferenceProduced(ref.source, ref.reference, consumingStack);
-      consumingStack.onCrossReferenceConsumed(ref.source, ref.reference, producingStack);
+      producingStack.prepareCrossReference(ref.source, ref.reference);
     }
 
     // Resource dependencies
     for (const dependency of this.node.dependencies) {
       const theirStack = Stack.of(dependency.target);
-      if (theirStack !== undefined && theirStack !== this) {
-        this.addDependency(theirStack);
+      if (theirStack !== undefined && theirStack !== this && Stack.of(dependency.source) === this) {
+        this.addDependency(theirStack, `"${dependency.source.node.path}" depends on "${dependency.target.node.path}"`);
       } else {
         for (const target of findResources([dependency.target])) {
           for (const source of findResources([dependency.source])) {
@@ -532,11 +552,16 @@ export class Stack extends Construct implements ITaggable {
 
   protected synthesize(session: ISynthesisSession): void {
     const builder = session.assembly;
-    const template = `${this.stackName}.template.json`;
+    const template = this.templateFileName;
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, template);
-    fs.writeFileSync(outPath, JSON.stringify(this.toCloudFormation(), undefined, 2));
+    fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
+
+    // if this is a nested stack, do not emit it as a cloud assembly artifact (it will be registered as an s3 asset instead)
+    if (this.parentStack) {
+      return;
+    }
 
     const deps = this.dependencies.map(s => s.stackName);
     const meta = this.collectMetadata();
@@ -562,8 +587,10 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Returns the CloudFormation template for this stack by traversing
    * the tree and invoking _toCloudFormation() on all Entity objects.
+   *
+   * @internal
    */
-  protected toCloudFormation() {
+  protected _toCloudFormation() {
     const template: any = {
       Description: this.templateOptions.description,
       Transform: this.templateOptions.transform,
@@ -588,6 +615,41 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Exports a resolvable value for use in another stack.
+   *
+   * @returns a token that can be used to reference the value from the producing stack.
+   */
+  protected createCrossReference(source: IConstruct, reference: Reference): IResolvable {
+    const producingStack = Stack.of(reference.target);
+    const consumingStack = Stack.of(source);
+
+    // Ensure a singleton "Exports" scoping Construct
+    // This mostly exists to trigger LogicalID munging, which would be
+    // disabled if we parented constructs directly under Stack.
+    // Also it nicely prevents likely construct name clashes
+    const exportsScope = producingStack.getCreateExportsScope();
+
+    // Ensure a singleton CfnOutput for this value
+    const resolved = producingStack.resolve(reference);
+    const id = 'Output' + JSON.stringify(resolved);
+    const exportName = producingStack.generateExportName(exportsScope, id);
+    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
+    if (!output) {
+      new CfnOutput(exportsScope, id, { value: Token.asString(reference), exportName });
+    }
+
+    // add a dependency on the producing stack - it has to be deployed before this stack can consume the exported value
+    // if the producing stack is a nested stack (i.e. has a parent), the dependency is taken on the parent.
+    const producerDependency = producingStack.parentStack ? producingStack.parentStack : producingStack;
+    const consumerDependency = consumingStack.parentStack ? consumingStack.parentStack : consumingStack;
+    consumerDependency.addDependency(producerDependency, `${source.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+
+    // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
+    // so construct one in-place.
+    return new Intrinsic({ 'Fn::ImportValue': exportName });
+  }
+
+  /**
    * Automatically called during "prepare" for each reference produced by this
    * stack, giving it an opportunity to morph the reference to support various
    * cross-stack references.
@@ -601,59 +663,35 @@ export class Stack extends Construct implements ITaggable {
    *
    * @experimental
    */
-  protected onCrossReferenceProduced(source: IConstruct, reference: CfnReference, consumingStack: Stack) {
-    ignore(source);
-    ignore(reference);
-    ignore(consumingStack);
-  }
+  private prepareCrossReference(source: IConstruct, reference: CfnReference) {
+    const consumingStack = Stack.of(source);
+    const producingStack = this;
 
-  /**
-   * Automatically called during "prepare" for each reference produced by this
-   * stack, giving it an opportunity to morph the reference to support various
-   * cross-stack references.
-   *
-   * This callback is called _after_ `onCrossReferenceProduced`.
-   *
-   * @experimental
-   */
-  protected onCrossReferenceConsumed(source: IConstruct, reference: CfnReference, producingStack: Stack) {
-    if (producingStack.environment !== this.environment) {
-      throw new Error(`Can only reference cross stacks in the same region and account: ${reference}`);
+    let creatingStack;
+
+    if (consumingStack.parentStack) {
+      creatingStack = consumingStack;
     }
 
-    if (!reference.hasValueForStack(this)) {
-      const importValue = producingStack.exportValue(reference);
-      reference.assignValueForStack(this, importValue);
-
-      // add a dependency on the producing stack - it has to be deployed before this stack can consume the exported value
-      this.addDependency(producingStack, `${source.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
-    }
-  }
-
-  /**
-   * Exports a resolvable value for use in another stack.
-   *
-   * @returns a token that can be used to reference the value from the producing stack.
-   */
-  private exportValue(value: any): IResolvable {
-    // Ensure a singleton "Exports" scoping Construct
-    // This mostly exists to trigger LogicalID munging, which would be
-    // disabled if we parented constructs directly under Stack.
-    // Also it nicely prevents likely construct name clashes
-    const exportsScope = this.getCreateExportsScope();
-
-    // Ensure a singleton CfnOutput for this value
-    const resolved = this.resolve(value);
-    const id = 'Output' + JSON.stringify(resolved);
-    const exportName = this.generateExportName(exportsScope, id);
-    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
-    if (!output) {
-      new CfnOutput(exportsScope, id, { value: Token.asString(value), exportName });
+    if (producingStack.parentStack) {
+      creatingStack = producingStack;
     }
 
-    // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
-    // so construct one in-place.
-    return new Intrinsic({ 'Fn::ImportValue': exportName });
+    if (!creatingStack && consumingStack.environment === producingStack.environment) {
+      creatingStack = producingStack;
+    }
+
+    if (!creatingStack) {
+      throw new Error(`Stack "${consumingStack.node.path}" cannot consume a cross reference from stack "${producingStack.node.path}". ` +
+      `Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack`);
+    }
+
+    const consumedValue = creatingStack.createCrossReference(source, reference);
+
+    // if the reference has already been assigned a value for the consuming stack, carry on.
+    if (!reference.hasValueForStack(consumingStack)) {
+      reference.assignValueForStack(consumingStack, consumedValue);
+    }
   }
 
   private getCreateExportsScope() {
@@ -827,6 +865,39 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
   return into;
 }
 
+// export enum AutomaticCrossReferences {
+//   /**
+//    * Cross references are completely disabled from/to this stack.
+//    */
+//   DISABLE,
+
+//   /**
+//    * This stack will not be allowed to reference a resource from another stack that is not a nested stack.
+//    */
+//   DISABLE_IMPORT,
+
+//   /**
+//    * Other non-nested stacks will not be allowed to reference resources from within this stack.
+//    */
+//   DISABLE_EXPORT,
+
+//   /**
+//    * Automatic synthesis of cross references is enabled.
+//    *
+//    * When a resource is referenced across stacks within the same environment, a
+//    * CloudFormation exported Output is synthesized in the producing stack and an
+//    * Fn::ImportValue is used in the consuming stack.
+//    */
+//   EXPORT_IMPORT,
+
+//   /**
+//    * Treat this as a nested stack when processing references.
+//    *
+//    * When a resource in a nested stack is referenced by a parent stack.
+//    */
+//   NESTED,
+// }
+
 // These imports have to be at the end to prevent circular imports
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
@@ -836,6 +907,7 @@ import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
 import { Intrinsic } from './private/intrinsic';
+import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
@@ -854,8 +926,4 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
 interface StackDependency {
   stack: Stack;
   reason: string;
-}
-
-function ignore(_x: any): void {
-  return;
 }

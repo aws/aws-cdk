@@ -78,7 +78,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack.toCloudFormation(), { Resources:
+    test.deepEqual(stack._toCloudFormation(), { Resources:
       { myResource:
          { Type: 'AWS::MyResource',
          Properties:
@@ -333,7 +333,7 @@ export = {
 
     test.throws(() => {
       ConstructNode.prepare(app.node);
-    }, /Can only reference cross stacks in the same region and account/);
+    }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();
   },
@@ -459,8 +459,8 @@ class StackWithPostProcessor extends Stack {
 
   // ...
 
-  public toCloudFormation() {
-    const template = super.toCloudFormation();
+  public _toCloudFormation() {
+    const template = super._toCloudFormation();
 
     // manipulate template (e.g. rename "Key" to "key")
     template.Resources.myResource.Properties.Environment.key =

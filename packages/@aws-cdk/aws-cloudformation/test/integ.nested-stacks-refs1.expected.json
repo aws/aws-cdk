@@ -1,0 +1,91 @@
+[
+  {
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic"
+      }
+    },
+    "Outputs": {
+      "ExportsOutputFnGetAttMyTopic86869434TopicNameFCC96FA2": {
+        "Value": {
+          "Fn::GetAtt": [
+            "MyTopic86869434",
+            "TopicName"
+          ]
+        },
+        "Export": {
+          "Name": "nest-stacks-refs1-producer:ExportsOutputFnGetAttMyTopic86869434TopicNameFCC96FA2"
+        }
+      }
+    }
+  },
+  {
+    "Parameters": {
+      "Nested1NestedStackAssetS3Bucket330ED98A": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"nested-stacks-refs1-parent-with-consumer/Nested1.NestedStack/Asset\""
+      },
+      "Nested1NestedStackAssetS3VersionKeyE52B2824": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"nested-stacks-refs1-parent-with-consumer/Nested1.NestedStack/Asset\""
+      },
+      "Nested1NestedStackAssetArtifactHashD180A344": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"nested-stacks-refs1-parent-with-consumer/Nested1.NestedStack/Asset\""
+      }
+    },
+    "Resources": {
+      "Nested1NestedStackNested1NestedStackResourceCD0AD36B": {
+        "Type": "AWS::CloudFormation::Stack",
+        "Properties": {
+          "TemplateURL": {
+            "Fn::Join": [
+              "",
+              [
+                "https://s3.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                },
+                "/",
+                {
+                  "Ref": "Nested1NestedStackAssetS3Bucket330ED98A"
+                },
+                "/",
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "Nested1NestedStackAssetS3VersionKeyE52B2824"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "Nested1NestedStackAssetS3VersionKeyE52B2824"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+      }
+    }
+  }
+]
