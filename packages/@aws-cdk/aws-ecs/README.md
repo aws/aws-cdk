@@ -330,5 +330,3 @@ rule.addTarget(new targets.EcsTask({
   }]
 }));
 ```
-
-> Note: it is currently not possible to start AWS Fargate tasks in this way.
