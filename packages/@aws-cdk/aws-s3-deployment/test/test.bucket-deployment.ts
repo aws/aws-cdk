@@ -152,6 +152,37 @@ export = {
     test.done();
   },
 
+  'invalidation can happen without distributionPaths provided'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+    const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: bucket
+          },
+          behaviors : [ {isDefaultBehavior: true}]
+        }
+      ]
+    });
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      source: s3deploy.Source.asset(path.join(__dirname, 'my-website.zip')),
+      destinationBucket: bucket,
+      distribution,
+    });
+
+    expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
+      DistributionId: {
+        "Ref": "DistributionCFDistribution882A7313"
+      },
+    }));
+
+    test.done();
+  },
+
   'fails if distribution paths provided but not distribution ID'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
