@@ -1,0 +1,140 @@
+{
+  "Parameters": {
+    "Nested1NestedStackAssetS3Bucket330ED98A": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-refs3-siblings/Nested1.NestedStack/Asset\""
+    },
+    "Nested1NestedStackAssetS3VersionKeyE52B2824": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-refs3-siblings/Nested1.NestedStack/Asset\""
+    },
+    "Nested1NestedStackAssetArtifactHashD180A344": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-refs3-siblings/Nested1.NestedStack/Asset\""
+    },
+    "Nested2NestedStackAssetS3BucketE2A8CC0B": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-refs3-siblings/Nested2.NestedStack/Asset\""
+    },
+    "Nested2NestedStackAssetS3VersionKey08AAB71C": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-refs3-siblings/Nested2.NestedStack/Asset\""
+    },
+    "Nested2NestedStackAssetArtifactHash850D4B8C": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-refs3-siblings/Nested2.NestedStack/Asset\""
+    }
+  },
+  "Resources": {
+    "Nested1NestedStackNested1NestedStackResourceCD0AD36B": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "Nested1NestedStackAssetS3Bucket330ED98A"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "Nested1NestedStackAssetS3VersionKeyE52B2824"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "Nested1NestedStackAssetS3VersionKeyE52B2824"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "Nested2NestedStackNested2NestedStackResource877A1112": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "Nested2NestedStackAssetS3BucketE2A8CC0B"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "Nested2NestedStackAssetS3VersionKey08AAB71C"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "Nested2NestedStackAssetS3VersionKey08AAB71C"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        "Parameters": {
+          "referencetonestedstacksrefs3siblingsNested1NestedStackNested1NestedStackResourceE58B6825Outputsnestedstacksrefs3siblingsNested1MyTopic12458558TopicName": {
+            "Fn::GetAtt": [
+              "Nested1NestedStackNested1NestedStackResourceCD0AD36B",
+              "Outputs.nestedstacksrefs3siblingsNested1MyTopic12458558TopicName"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
