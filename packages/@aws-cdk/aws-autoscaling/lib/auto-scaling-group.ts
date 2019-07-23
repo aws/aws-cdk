@@ -701,7 +701,7 @@ export interface ElbHealthCheckOptions {
   /**
    * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
    *
-   * @default -
+   * This option is required for ELB health checks.
    */
   readonly grace: Duration;
 }
