@@ -323,6 +323,27 @@ export = {
     test.done();
   },
 
+  "errors if windowsVersion and linux generation are set"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // THEN
+    test.throws(() => {
+      cluster.addCapacity('WindowsScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ecs.EcsOptimizedAmi({
+          windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+          generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX
+        }),
+      });
+    }, /"windowsVersion" and Linux image "generation" cannot be both set/);
+
+    test.done();
+  },
+
   "allows specifying spot fleet"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
