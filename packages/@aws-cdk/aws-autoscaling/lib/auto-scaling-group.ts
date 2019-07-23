@@ -453,7 +453,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       ],
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
-      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod,
+      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
@@ -716,7 +716,7 @@ export class HealthCheck {
    * @param options EC2 health check options
    */
   public static ec2(options: Ec2HealthCheckOptions = {}): HealthCheck {
-    return new HealthCheck(HealthCheckType.EC2, options.grace && options.grace.toSeconds());
+    return new HealthCheck(HealthCheckType.EC2, options.grace);
   }
 
   /**
@@ -726,10 +726,10 @@ export class HealthCheck {
    * @param options ELB health check options
    */
   public static elb(options: ElbHealthCheckOptions): HealthCheck {
-    return new HealthCheck(HealthCheckType.ELB, options.grace.toSeconds());
+    return new HealthCheck(HealthCheckType.ELB, options.grace);
   }
 
-  private constructor(public readonly type: string, public readonly gracePeriod?: number) { }
+  private constructor(public readonly type: string, public readonly gracePeriod?: Duration) { }
 }
 
 enum HealthCheckType {
