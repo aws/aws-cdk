@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -96,11 +94,11 @@ const zone = HostedZone.import(this, 'MyZone', {
 });
 ```
 
-If you don't know the ID of a Hosted Zone, you can use the `HostedZoneProvider`
+If you don't know the ID of a Hosted Zone, you can use the `HostedZone.fromLookup`
 to discover and import it:
 
 ```ts
-const zone = new HostedZoneProvider(this, {
+HostedZone.fromLookup(this, 'MyZone', {
   domainName: 'example.com'
-}).findAndImport(this, 'MyZone');
+});
 ```

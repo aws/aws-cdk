@@ -470,8 +470,8 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   readonly instanceType: ec2.InstanceType;
 
   /**
-   * The ECS-optimized AMI variant to use. For more information, see Amazon ECS-optimized AMIs:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html]
+   * The ECS-optimized AMI variant to use. For more information, see
+   * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
    *
    * @default - Amazon Linux 2
    */
@@ -503,8 +503,8 @@ export interface CloudMapNamespaceOptions {
 }
 
 /**
- * The ECS-optimized AMI variant to use. For more information, see Amazon ECS-optimized AMIs:
- * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html].
+ * The ECS-optimized AMI variant to use. For more information, see
+ * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
  */
 export enum AmiHardwareType {
 

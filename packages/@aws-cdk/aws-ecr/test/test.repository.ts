@@ -294,7 +294,7 @@ export = {
 
       repo.onCloudTrailImagePushed('EventRule', {
         target: {
-          bind: () => ({ arn: 'ARN', id: 'ID' })
+          bind: () => ({ arn: 'ARN', id: '' })
         }
       });
 

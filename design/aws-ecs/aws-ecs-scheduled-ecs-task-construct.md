@@ -1,6 +1,6 @@
 # AWS ECS - L3 Construct for Scheduling EC2 Tasks
 
-To address issue [#2352](https://github.com/awslabs/aws-cdk/issues/2352), the ECS CDK construct library should provide a way for customers to create a standalone scheduled task, without creating a service, for their container. The task will be initiated by a cloudwatch event that is scheduled based on [CW Scheduled Events](http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html).
+To address issue [#2352](https://github.com/aws/aws-cdk/issues/2352), the ECS CDK construct library should provide a way for customers to create a standalone scheduled task, without creating a service, for their container. The task will be initiated by a cloudwatch event that is scheduled based on [CW Scheduled Events](http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html).
 
 This would mean adding a new ECS CDK construct `ScheduledEc2Task`, that would take in the necessary properties required to create a Task Definition, an EventRuleTarget as well as an AWS EventRule.
 
