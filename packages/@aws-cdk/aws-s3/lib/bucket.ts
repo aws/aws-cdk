@@ -790,7 +790,7 @@ export interface BucketProps {
   /**
    * Specifies the redirect behavior of all requests to a website endpoint of a bucket.
    *
-   * If you specify this property, you can't specify any other website* property.
+   * If you specify this property, you can't specify "websiteIndexDocument" nor "websiteErrorDocument".
    *
    * @default - No redirection.
    */
@@ -1257,7 +1257,7 @@ export class Bucket extends BucketBase {
     }
 
     if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument)) {
-        throw new Error('No other "website*" property can be set if "websiteRedirectAllRequestsTo" is set');
+        throw new Error('"websiteIndexDocument" and "websiteErrorDocument" cannot be set if "websiteRedirect" is used');
     }
 
     return {

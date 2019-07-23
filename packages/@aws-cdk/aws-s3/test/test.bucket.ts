@@ -1543,7 +1543,7 @@ export = {
       }));
       test.done();
     },
-    'fails if websiteRedirectAllRequestsTo and another website property are specified'(test: Test) {
+    'fails if websiteRedirect and another website property are specified'(test: Test) {
       const stack = new cdk.Stack();
       test.throws(() => {
         new s3.Bucket(stack, 'Website', {
@@ -1553,7 +1553,7 @@ export = {
             hostName: 'www.example.com'
           }
         });
-      }, /No other "website\*" property can be set if "websiteRedirectAllRequestsTo" is set/);
+      }, /"websiteIndexDocument" and "websiteErrorDocument" cannot be set if "websiteRedirect" is used/);
       test.done();
     },
   },
