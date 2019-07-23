@@ -94,11 +94,11 @@ const zone = HostedZone.import(this, 'MyZone', {
 });
 ```
 
-If you don't know the ID of a Hosted Zone, you can use the `HostedZoneProvider`
+If you don't know the ID of a Hosted Zone, you can use the `HostedZone.fromLookup`
 to discover and import it:
 
 ```ts
-const zone = new HostedZoneProvider(this, {
+HostedZone.fromLookup(this, 'MyZone', {
   domainName: 'example.com'
-}).findAndImport(this, 'MyZone');
+});
 ```
