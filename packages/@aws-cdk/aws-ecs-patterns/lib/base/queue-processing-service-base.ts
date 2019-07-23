@@ -32,6 +32,9 @@ export interface QueueProcessingServiceBaseProps extends BaseProps {
   /**
    * The environment variables to pass to the container.
    *
+   * The variable `QUEUE_NAME` with value `queue.queueName` will
+   * always be passed.
+   *
    * @default 'QUEUE_NAME: queue.queueName'
    */
   readonly environment?: { [key: string]: string };
