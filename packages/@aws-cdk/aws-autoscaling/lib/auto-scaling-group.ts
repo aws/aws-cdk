@@ -156,6 +156,13 @@ export interface CommonAutoScalingGroupProps {
    * @default none
    */
   readonly spotPrice?: string;
+
+  /**
+   * Configuration for health checks
+   *
+   * @default - HealthCheckConfiguration with defaults.
+   */
+  readonly healthCheck?: HealthCheckConfiguration;
 }
 
 /**
@@ -424,6 +431,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
     }
 
+    if (props.healthCheck && props.healthCheck.type === HealthCheckType.ELB && !props.healthCheck.gracePeriod) {
+      throw new Error('The healthCheck.gracePeriod property must be set with healthCheck.type === HealthCheckType.ELB');
+    }
+
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
@@ -444,7 +455,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           ],
         }
       ],
-      vpcZoneIdentifier: subnetIds
+      vpcZoneIdentifier: subnetIds,
+      healthCheckType: props.healthCheck && props.healthCheck.type,
+      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod ? props.healthCheck.gracePeriod.toSeconds() : undefined,
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
@@ -671,6 +684,36 @@ export enum ScalingProcess {
   ALARM_NOTIFICATION = 'AlarmNotification',
   SCHEDULED_ACTIONS = 'ScheduledActions',
   ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
+}
+
+
+/**
+ * Health check settings
+ */
+export interface HealthCheckConfiguration {
+  /**
+   * Specifies the service to use for the health checks
+   *
+   * If you configure an Auto Scaling group to use ELB health checks, it considers the instance unhealthy
+   * if it fails either the EC2 status checks or the load balancer health checks.
+   *
+   * @default HealthCheckType.EC2
+   */
+  readonly type?: HealthCheckType;
+
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * This property required with ELB health check type.
+   *
+   * @default -
+   */
+  readonly gracePeriod?: Duration;
+}
+
+export enum HealthCheckType {
+  EC2 = 'EC2',
+  ELB = 'ELB',
 }
 
 /**

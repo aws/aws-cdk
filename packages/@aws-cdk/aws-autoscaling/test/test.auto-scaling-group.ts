@@ -397,6 +397,54 @@ export = {
     test.done();
   },
 
+  'can configure health check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthCheck: {
+        type: autoscaling.HealthCheckType.ELB,
+        gracePeriod: cdk.Duration.minutes(15)
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      HealthCheckType: 'ELB',
+      HealthCheckGracePeriod: 900
+    }));
+
+    test.done();
+  },
+
+  'throws when healthCheck.type is ELB without a gracePeriod'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const toThrow = () => {
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        healthCheck: {
+          type: autoscaling.HealthCheckType.ELB,
+        }
+      });
+    };
+
+    // THEN
+    test.throws(() => toThrow(), /gracePeriod property must be set/);
+
+    test.done();
+  },
+
   'can add Security Group to Fleet'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
