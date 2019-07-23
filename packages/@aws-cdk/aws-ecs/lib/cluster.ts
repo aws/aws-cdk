@@ -288,6 +288,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     } else if (props && props.windowsVersion) {
       if (this.hwType !== AmiHardwareType.STANDARD) {
         throw new Error('Windows Server does not support special hardware type');
+      } else {
+        this.windowsVersion = props.windowsVersion;
       }
     } else {                              // generation not defined in props object
       // always default to Amazon Linux v2 regardless of HW

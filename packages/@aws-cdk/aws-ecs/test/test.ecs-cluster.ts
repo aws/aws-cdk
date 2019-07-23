@@ -293,11 +293,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
-      ImageId: {
-        Ref: "SsmParameterValueawsserviceecsoptimizedamirecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+    expect(stack).toMatch({
+      "Parameters": {
+        "SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+          "Type": "AWS::SSM::Parameter::Value<String>",
+          "Default": "/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id"
+        }
       }
-    }));
+    });
 
     test.done();
   },
