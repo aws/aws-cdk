@@ -2,6 +2,8 @@ import ecs = require('@aws-cdk/aws-ecs');
 
 /**
  * Base properties for service and task.
+ *
+ * @internal
  */
 export interface BaseProps {
   /**
