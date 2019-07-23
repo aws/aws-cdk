@@ -14,11 +14,11 @@ export = {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
-    stack.templateOptions.transform = 'SAMy';
+    stack.templateOptions.transforms = ['SAMy'];
     test.deepEqual(toCloudFormation(stack), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
-      Transform: 'SAMy'
+      Transform: ['SAMy']
     });
     test.done();
   },
@@ -44,14 +44,15 @@ export = {
 
     stack.templateOptions.description = 'StackDescription';
     stack.templateOptions.templateFormatVersion = 'TemplateVersion';
-    stack.templateOptions.transform = 'Transform';
+    stack.templateOptions.transform = 'DeprecatedField';
+    stack.templateOptions.transforms = ['Transform'];
     stack.templateOptions.metadata = {
       MetadataKey: 'MetadataValue'
     };
 
     test.deepEqual(toCloudFormation(stack), {
       Description: 'StackDescription',
-      Transform: 'Transform',
+      Transform: ['DeprecatedField', 'Transform'],
       AWSTemplateFormatVersion: 'TemplateVersion',
       Metadata: { MetadataKey: 'MetadataValue' }
     });
