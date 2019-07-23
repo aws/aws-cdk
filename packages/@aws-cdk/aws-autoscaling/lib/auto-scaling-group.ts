@@ -732,7 +732,7 @@ export class HealthCheck {
   private constructor(public readonly type: string, public readonly gracePeriod?: number) { }
 }
 
-export enum HealthCheckType {
+enum HealthCheckType {
   EC2 = 'EC2',
   ELB = 'ELB',
 }
