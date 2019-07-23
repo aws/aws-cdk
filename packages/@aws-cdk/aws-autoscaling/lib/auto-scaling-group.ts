@@ -689,7 +689,7 @@ export interface Ec2HealthCheckOptions {
   /**
    * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
    *
-   * @default -
+   * @default Duration.seconds(0)
    */
   readonly grace?: Duration;
 }
