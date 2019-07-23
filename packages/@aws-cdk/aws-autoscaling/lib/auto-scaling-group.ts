@@ -686,7 +686,6 @@ export enum ScalingProcess {
   ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
 }
 
-
 /**
  * Health check settings
  */
