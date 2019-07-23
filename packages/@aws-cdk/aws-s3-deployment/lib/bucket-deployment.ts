@@ -45,14 +45,14 @@ export interface BucketDeploymentProps {
    * Files in the distribution's edge caches will be invalidated after
    * files are uploaded to the destination bucket.
    *
-   * @default No invalidation occurs
+   * @default - No invalidation occurs
    */
   readonly distribution?: cloudfront.IDistribution;
 
   /**
    * The file paths to invalidate in the CloudFront distribution.
    *
-   * @default All files under the destination bucket key prefix will be invalidated.
+   * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
 }

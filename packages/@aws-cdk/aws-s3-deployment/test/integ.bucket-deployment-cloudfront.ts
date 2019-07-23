@@ -1,3 +1,4 @@
+import cloudfront = require('@aws-cdk/aws-cloudfront');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import path = require('path');
@@ -7,26 +8,28 @@ class TestBucketDeployment extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const destinationBucket = new s3.Bucket(this, 'Destination', {
-      websiteIndexDocument: 'index.html',
-      publicReadAccess: true,
+    const bucket = new s3.Bucket(this, 'Destination3', {
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
+    const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: bucket
+          },
+          behaviors : [ {isDefaultBehavior: true}]
+        }
+      ]
+    });
 
-    new s3deploy.BucketDeployment(this, 'DeployMe', {
+    new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
       source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
-      destinationBucket,
+      destinationBucket: bucket,
+      distribution,
+      distributionPaths: ['/images/*.png'],
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
-    const bucket2 = new s3.Bucket(this, 'Destination2');
-
-    new s3deploy.BucketDeployment(this, 'DeployWithPrefix', {
-      source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
-      destinationBucket: bucket2,
-      destinationKeyPrefix: 'deploy/here/',
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
-    });
   }
 }
 
