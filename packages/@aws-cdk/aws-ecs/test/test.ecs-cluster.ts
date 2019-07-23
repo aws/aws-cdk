@@ -5,6 +5,7 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
+import { App } from '@aws-cdk/core';
 
 export = {
   "When creating an ECS Cluster": {
@@ -281,7 +282,8 @@ export = {
 
   "allows specifying windows image"(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new App();
+    const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -293,12 +295,12 @@ export = {
     });
 
     // THEN
-    expect(stack).toMatch({
-      "Parameters": {
-        "SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-          "Type": "AWS::SSM::Parameter::Value<String>",
-          "Default": "/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id"
-        }
+    const assembly = app.synth();
+    const template = assembly.getStack(stack.stackName).template;
+    test.deepEqual(template.Parameters, {
+      "SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+        "Type": "AWS::SSM::Parameter::Value<String>",
+        "Default": "/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id"
       }
     });
 
