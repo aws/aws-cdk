@@ -19,3 +19,7 @@ echo "==========================================================================
 echo "cleanup and start bootstrapping..."
 lerna clean --yes
 lerna bootstrap --reject-cycles --ci
+
+echo "============================================================================================="
+echo "installing local links..."
+node scripts/install-local-deps.js

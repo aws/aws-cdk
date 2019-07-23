@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -15,7 +15,9 @@
     "test": "cdk-test",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "integ-cli": "CDK_REPO=$PWD/../.. test/integ/cli/test.sh",
+    "integ-init": "CDK_DIST=$PWD/../../dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
     "pre": [
@@ -36,9 +38,11 @@
   "devDependencies": {
     "@types/archiver": "^3.0.0",
     "@types/fs-extra": "^7.0.0",
+    "@types/glob": "^7.1.1",
     "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
+    "@types/node": "^8.10.50",
     "@types/request": "^2.48.1",
     "@types/semver": "^6.0.0",
     "@types/sinon": "^7.0.13",
@@ -46,16 +50,16 @@
     "@types/uuid": "^3.4.4",
     "@types/yaml": "^1.0.2",
     "@types/yargs": "^13.0.0",
-    "cdk-build-tools": "^1.0.0",
+    "cdk-build-tools": "file:../../tools/cdk-build-tools",
     "jszip": "^3.2.1",
     "mockery": "^2.1.0",
-    "pkglint": "^1.0.0",
+    "pkglint": "file:../../tools/pkglint",
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^1.0.0",
-    "@aws-cdk/cx-api": "^1.0.0",
-    "@aws-cdk/region-info": "^1.0.0",
+    "@aws-cdk/cloudformation-diff": "^1.1.0",
+    "@aws-cdk/cx-api": "^1.1.0",
+    "@aws-cdk/region-info": "^1.1.0",
     "archiver": "^3.0.0",
     "aws-sdk": "^2.438.0",
     "camelcase": "^5.3.1",
@@ -75,7 +79,7 @@
     "yargs": "^13.2.4"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
     "directory": "packages/aws-cdk"
   },
@@ -83,9 +87,9 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

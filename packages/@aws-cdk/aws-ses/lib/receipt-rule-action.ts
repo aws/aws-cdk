@@ -276,7 +276,7 @@ export class ReceiptRuleLambdaAction implements IReceiptRuleAction {
     // Allow SES to invoke Lambda function
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-lambda
     const permissionId = 'AllowSes';
-    if (!this.props.function.node.tryFindChild(permissionId)) {
+    if (!this.props.function.permissionsNode.tryFindChild(permissionId)) {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),

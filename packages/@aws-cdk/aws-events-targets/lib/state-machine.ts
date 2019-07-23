@@ -27,9 +27,9 @@ export class SfnStateMachine implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
    */
-  public bind(_rule: events.IRule): events.RuleTargetConfig {
+  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     return {
-        id: this.machine.node.uniqueId,
+        id: '',
         arn: this.machine.stateMachineArn,
         role: singletonEventRole(this.machine, [new iam.PolicyStatement({
             actions: ['states:StartExecution'],
