@@ -397,7 +397,28 @@ export = {
     test.done();
   },
 
-  'can configure health check'(test: Test) {
+  'can configure EC2 health check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthCheck: autoscaling.HealthCheck.ec2()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      HealthCheckType: 'EC2',
+    }));
+
+    test.done();
+  },
+
+  'can configure EBS health check'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
