@@ -1524,7 +1524,38 @@ export = {
       });
       test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
-    }
+    },
+    'adds RedirectAllRequestsTo property'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteRedirectAllRequestsTo: {
+          hostName: 'www.example.com',
+          protocol: s3.RedirectProtocol.HTTPS
+        }
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          RedirectAllRequestsTo: {
+            HostName: 'www.example.com',
+            Protocol: 'https'
+          }
+        }
+      }));
+      test.done();
+    },
+    'fails if websiteRedirectAllRequestsTo and another website property are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteIndexDocument: 'index.html',
+          websiteErrorDocument: 'error.html',
+          websiteRedirectAllRequestsTo: {
+            hostName: 'www.example.com'
+          }
+        });
+      }, /No other "website\*" property can be set if "websiteRedirectAllRequestsTo" is set/);
+      test.done();
+    },
   },
 
   'Bucket.fromBucketArn'(test: Test) {

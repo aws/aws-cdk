@@ -695,6 +695,31 @@ export interface CorsRule {
   readonly exposedHeaders?: string[];
 }
 
+/**
+ * All http request methods
+ */
+export enum RedirectProtocol {
+  HTTP = 'http',
+  HTTPS = 'https',
+}
+
+/**
+ * Specifies a redirect behavior of all requests to a website endpoint of a bucket.
+ */
+export interface RedirectAllRequestsTo {
+  /**
+   * Name of the host where requests are redirected
+   */
+  readonly hostName: string;
+
+  /**
+   * Protocol to use when redirecting requests
+   *
+   * @default - The protocol used in the original request.
+   */
+  readonly protocol?: RedirectProtocol;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -761,6 +786,15 @@ export interface BucketProps {
    * @default - No error document.
    */
   readonly websiteErrorDocument?: string;
+
+  /**
+   * Specifies the redirect behavior of all requests to a website endpoint of a bucket.
+   *
+   * If you specify this property, you can't specify any other website* property.
+   *
+   * @default - No redirection.
+   */
+  readonly websiteRedirectAllRequestsTo?: RedirectAllRequestsTo;
 
   /**
    * Grants public read access to all objects in the bucket.
@@ -1214,7 +1248,7 @@ export class Bucket extends BucketBase {
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
-    if (!props.websiteErrorDocument && !props.websiteIndexDocument) {
+    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirectAllRequestsTo) {
       return undefined;
     }
 
@@ -1222,9 +1256,14 @@ export class Bucket extends BucketBase {
       throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
     }
 
+    if (props.websiteRedirectAllRequestsTo && (props.websiteErrorDocument || props.websiteIndexDocument)) {
+        throw new Error('No other "website*" property can be set if "websiteRedirectAllRequestsTo" is set');
+    }
+
     return {
       indexDocument: props.websiteIndexDocument,
-      errorDocument: props.websiteErrorDocument
+      errorDocument: props.websiteErrorDocument,
+      redirectAllRequestsTo: props.websiteRedirectAllRequestsTo,
     };
   }
 }
