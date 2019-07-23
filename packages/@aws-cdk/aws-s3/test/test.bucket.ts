@@ -432,6 +432,27 @@ export = {
     test.done();
   },
 
+  'bucket with custom canned access control'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "AccessControl": "LogDeliveryWrite"
+          },
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
   'permissions': {
 
     'addPermission creates a bucket policy'(test: Test) {
