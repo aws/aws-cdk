@@ -7,7 +7,7 @@ import { Domain, DomainBaseProps } from './domain';
 import { BasicAuth, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
 /**
- * App
+ * App resource creates Apps in the Amplify Console. An App is a collection of branches.
  */
 export class App extends Resource implements IApp {
   /**
@@ -289,6 +289,13 @@ export interface AppProps {
 /**
  * The CustomRule property type allows you to specify redirects, rewrites, and reverse proxies.
  * Redirects enable a web app to reroute navigation from one URL to another.
+ *
+ * @example Rewrite /foo to / and return a 200 status code
+ * {
+ *  source: '/foo',
+ *  target: '/',
+ *  status: 200
+ * }
  */
 export interface CustomRule {
   /**

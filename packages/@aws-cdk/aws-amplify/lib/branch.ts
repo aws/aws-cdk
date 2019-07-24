@@ -4,7 +4,7 @@ import { IApp } from './app';
 import { BasicAuth, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
 /**
- * Branch
+ * Branch resource creates a new branch within an app
  */
 export class Branch extends Resource implements IBranch {
   /**

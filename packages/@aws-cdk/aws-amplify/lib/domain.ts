@@ -4,7 +4,7 @@ import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 
 /**
- * Domain
+ * Domain resource allows you to connect a custom domain to your app.
  */
 export class Domain extends Resource implements IDomain {
   /**
