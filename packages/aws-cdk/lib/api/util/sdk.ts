@@ -11,6 +11,7 @@ import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 import { AccountAccessKeyCache } from './account-cache';
 import { SharedIniFile } from './sdk_ini_file';
 
+/** @experimental */
 export interface ISDK {
   cloudFormation(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.CloudFormation>;
 
@@ -62,6 +63,8 @@ export interface SDKOptions {
  *
  * If those don't suffice, a list of CredentialProviderSources is interrogated for access
  * to the requested account.
+ *
+ * @experimental
  */
 export class SDK implements ISDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
