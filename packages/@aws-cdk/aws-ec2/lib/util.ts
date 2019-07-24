@@ -43,6 +43,8 @@ export class ImportSubnetGroup {
   private readonly routeTableIds: string[];
   private readonly groups: number;
 
+  private readonly warning?: string;
+
   constructor(
       subnetIds: string[] | undefined,
       names: string[] | undefined,
@@ -62,14 +64,23 @@ export class ImportSubnetGroup {
       throw new Error(`Amount of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
     if (this.routeTableIds.length !== this.subnetIds.length) {
-      // tslint:disable-next-line: max-line-length
-      throw new Error(`Amount of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      if (routeTableIds == null) {
+        // Maintaining backwards-compatibility - this used to not be provided by the VPC Context Provider!
+        // tslint:disable-next-line: max-line-length
+        this.warning = `No routeTableIds were provided for subnets ${this.subnetIds.join(', ')}! Calling .routeTableId on these subnets will return undefined/null!`;
+      } else {
+        // tslint:disable-next-line: max-line-length
+        throw new Error(`Amount of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      }
     }
 
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
   }
 
   public import(scope: cdk.Construct): ISubnet[] {
+    if (this.warning && this.subnetIds.length > 0) {
+      scope.node.addWarning(this.warning);
+    }
     return range(this.subnetIds.length).map(i => {
       const k = Math.floor(i / this.availabilityZones.length);
       return Subnet.fromSubnetAttributes(scope, subnetId(this.names[k], i), {
