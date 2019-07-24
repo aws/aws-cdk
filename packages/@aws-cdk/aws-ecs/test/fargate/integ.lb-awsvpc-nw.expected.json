@@ -455,6 +455,8 @@
             ]
           }
         },
+        "PropagateTags": "SERVICE",
+        "EnableECSManagedTags": true,
         "ServiceRegistries": []
       },
       "DependsOn": [

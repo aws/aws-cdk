@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
-import { LaunchType } from '../../lib/base/base-service';
+import { LaunchType, PropagateTagsFromType } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -44,7 +44,9 @@ export = {
         DesiredCount: 1,
         LaunchType: LaunchType.EC2,
         LoadBalancers: [],
-        SchedulingStrategy: "REPLICA"
+        SchedulingStrategy: "REPLICA",
+        EnableECSManagedTags: true,
+        PropagateTags: PropagateTagsFromType.SERVICE
       }));
 
       test.done();
