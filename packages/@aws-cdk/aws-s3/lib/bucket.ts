@@ -1275,16 +1275,22 @@ export class Bucket extends BucketBase {
         throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
-    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>(({props: rule}) => ({
-      redirectRule: {
-        hostName: rule.hostName,
-        httpRedirectCode: rule.httpRedirectCode,
-        protocol: rule.protocol,
-        replaceKeyWith: isReplaceKeyWith(rule.replaceKey) ? rule.replaceKey.with : undefined,
-        replaceKeyPrefixWith: isReplaceKeyPrefixWith(rule.replaceKey) ? rule.replaceKey.prefixWith : undefined,
-      },
-      routingRuleCondition: rule.condition
-    })) : undefined;
+    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
+      if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
+        throw new Error('The condition property cannot be an empty object');
+      }
+
+      return {
+        redirectRule: {
+          hostName: rule.hostName,
+            httpRedirectCode: rule.httpRedirectCode,
+            protocol: rule.protocol,
+            replaceKeyWith: isReplaceKeyWith(rule.replaceKey) ? rule.replaceKey.with : undefined,
+            replaceKeyPrefixWith: isReplaceKeyPrefixWith(rule.replaceKey) ? rule.replaceKey.prefixWith : undefined,
+        },
+        routingRuleCondition: rule.condition
+      };
+    }) : undefined;
 
     return {
       indexDocument: props.websiteIndexDocument,
@@ -1550,7 +1556,12 @@ function isReplaceKeyPrefixWith(replaceKey?: ReplaceKeyWith | ReplaceKeyPrefixWi
   return replaceKey !== undefined && replaceKey.hasOwnProperty('prefixWith');
 }
 
-export interface RoutingRuleProps {
+/**
+ * Rule that define when a redirect is applied and the redirect behavior.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html
+ */
+export interface RoutingRule {
   /**
    * The host name to use in the redirect request
    *
@@ -1585,19 +1596,6 @@ export interface RoutingRuleProps {
    * @default - No condition
    */
   readonly condition?: RoutingRuleCondition;
-}
-
-/**
- * Rule that define when a redirect is applied and the redirect behavior.
- *
- * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html
- */
-export class RoutingRule {
-  public constructor(public readonly props: RoutingRuleProps) {
-    if (props.condition && !props.condition.httpErrorCodeReturnedEquals && !props.condition.keyPrefixEquals) {
-      throw new Error('The condition property cannot be an empty object');
-    }
-  }
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {

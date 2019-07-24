@@ -1592,7 +1592,7 @@ export = {
     'adds RedirectRules property'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {
-        websiteRoutingRules: [new s3.RoutingRule({
+        websiteRoutingRules: [{
           hostName: 'www.example.com',
           httpRedirectCode: '302',
           protocol: s3.RedirectProtocol.HTTPS,
@@ -1601,7 +1601,7 @@ export = {
             httpErrorCodeReturnedEquals: '200',
             keyPrefixEquals: 'prefix',
           }
-        })]
+        }]
       });
       expect(stack).to(haveResource('AWS::S3::Bucket', {
         WebsiteConfiguration: {
@@ -1625,10 +1625,10 @@ export = {
       const stack = new cdk.Stack();
       test.throws(() => {
         new s3.Bucket(stack, 'Website', {
-          websiteRoutingRules: [new s3.RoutingRule({
+          websiteRoutingRules: [{
             httpRedirectCode: '303',
             condition: {}
-          })]
+          }]
         });
       }, /The condition property cannot be an empty object/);
       test.done();
