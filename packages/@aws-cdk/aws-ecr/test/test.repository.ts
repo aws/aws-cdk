@@ -165,7 +165,9 @@ export = {
       { 'Fn::Select': [ 4, arnSplit ] },
       '.dkr.ecr.',
       { 'Fn::Select': [ 3, arnSplit ] },
-      '.amazonaws.com/',
+      '.',
+      { Ref: 'AWS::URLSuffix' },
+      '/',
       { Ref: 'Repo02AC86CF' }
     ]]});
 

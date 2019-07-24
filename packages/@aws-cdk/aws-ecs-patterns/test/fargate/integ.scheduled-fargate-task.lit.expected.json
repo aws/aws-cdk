@@ -344,7 +344,11 @@
                       }
                     ]
                   },
-                  ".amazonaws.com/",
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
                   {
                     "Fn::GetAtt": [
                       "ScheduledFargateTaskScheduledTaskDefScheduledContainerAssetImageAdoptRepository49B45957",
@@ -437,13 +441,13 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "ScheduledFargateTaskScheduledTaskDefExecutionRoleD37356D5": {
       "Type": "AWS::IAM::Role",
@@ -801,8 +805,8 @@
           "physicalResourceId": "awsfargateintegScheduledFargateTaskScheduledTaskDefB0AD4F70"
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",

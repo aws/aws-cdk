@@ -120,8 +120,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public repositoryUriForTag(tag?: string): string {
     const tagSuffix = tag ? `:${tag}` : '';
-    const parts = Stack.of(this).parseArn(this.repositoryArn);
-    return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
+    const parts = this.stack.parseArn(this.repositoryArn);
+    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}/${this.repositoryName}${tagSuffix}`;
   }
 
   /**

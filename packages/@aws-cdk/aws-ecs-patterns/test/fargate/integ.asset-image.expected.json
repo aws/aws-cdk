@@ -346,11 +346,6 @@
     "ClusterEB0386A7": {
       "Type": "AWS::ECS::Cluster"
     },
-    "FargateServiceTaskDefwebLogGroup71FAF541": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
-    },
     "FargateServiceLBB353E155": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
@@ -561,7 +556,11 @@
                       }
                     ]
                   },
-                  ".amazonaws.com/",
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
                   {
                     "Fn::GetAtt": [
                       "FargateServiceTaskDefwebAssetImageAdoptRepositoryCDAFD419",
@@ -659,8 +658,13 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "FargateServiceTaskDefwebLogGroup71FAF541": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "FargateServiceTaskDefExecutionRole9194820E": {
       "Type": "AWS::IAM::Role",
@@ -771,6 +775,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
           {
@@ -781,7 +786,6 @@
             }
           }
         ],
-        "HealthCheckGracePeriodSeconds": 60,
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "DISABLED",
