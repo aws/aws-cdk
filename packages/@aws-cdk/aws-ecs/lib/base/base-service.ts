@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -77,6 +77,23 @@ export interface BaseServiceOptions {
    * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly cloudMapOptions?: CloudMapOptions;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
+   *
+   * Valid values are: PropagateTagFromType.SERVICE or PropagateTagFromType.TASK_DEFINITION
+   *
+   * @default - do not propagate.
+   */
+  readonly propagateTags?: PropagateTagsFromType;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default true
+   */
+  readonly enableECSManagedTags?: boolean;
 }
 
 /**
@@ -91,6 +108,11 @@ export interface BaseServiceProps extends BaseServiceOptions {
    */
   readonly launchType: LaunchType;
 }
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * The base class for Ec2Service and FargateService services.
@@ -163,6 +185,8 @@ export abstract class BaseService extends Resource
       physicalName: props.serviceName,
     });
 
+    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
+
     this.taskDefinition = taskDefinition;
 
     this.resource = new CfnService(this, "Service", {
@@ -173,6 +197,8 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
+      propagateTags: props.propagateTags,
+      enableEcsManagedTags: props.enableECSManagedTags,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -495,4 +521,19 @@ export enum LaunchType {
    * The service will be launched using the FARGATE launch type
    */
   FARGATE = 'FARGATE'
+}
+
+/**
+ * Propagate tags from either services or task definitions
+ */
+export enum PropagateTagsFromType {
+  /**
+   * Propagate tags from services
+   */
+  SERVICE = 'SERVICE',
+
+  /**
+   * Propagate tags from task definitions
+   */
+  TASK_DEFINITION = 'TASK_DEFINITION'
 }

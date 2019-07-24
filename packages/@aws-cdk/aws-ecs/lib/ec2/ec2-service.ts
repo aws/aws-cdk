@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagateTagsFromType } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -70,6 +70,15 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default false
    */
   readonly daemon?: boolean;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * If no value is specified, the tags are not propagated.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default - propagate from services.
+   */
+  readonly propagateTaskTagsFrom?: PropagateTagsFromType;
 }
 
 /**
@@ -127,6 +136,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
       launchType: LaunchType.EC2,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagateTagsFromType.SERVICE : props.propagateTaskTagsFrom,
+      enableECSManagedTags: props.enableECSManagedTags === undefined ? true : props.enableECSManagedTags,
     },
     {
       cluster: props.cluster.clusterName,
