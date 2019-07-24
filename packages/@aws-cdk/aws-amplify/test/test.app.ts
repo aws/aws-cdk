@@ -151,7 +151,7 @@ export = {
     new App(stack, 'AmpApp', {
       appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk',
-      basicAuthConfig: {
+      basicAuth: {
         enableBasicAuth: true,
         password: 'foo',
         username: 'foo'

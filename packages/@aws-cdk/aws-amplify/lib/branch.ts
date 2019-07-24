@@ -1,7 +1,7 @@
 import { Construct, IResource, Resource, Tag } from '@aws-cdk/core';
 import { CfnBranch } from './amplify.generated';
 import { IApp } from './app';
-import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
+import { BasicAuth, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
 /**
  * Branch
@@ -30,11 +30,11 @@ export class Branch extends Resource implements IBranch {
       physicalName: props.branchName
     });
 
-    if (props.basicAuthConfig) {
-      this.basicAuthResolver.basicAuthConfig({
+    if (props.basicAuth) {
+      this.basicAuthResolver.basicAuth({
         enableBasicAuth: true,
-        password: props.basicAuthConfig.password,
-        username: props.basicAuthConfig.username
+        password: props.basicAuth.password,
+        username: props.basicAuth.username
       });
     }
 
@@ -64,7 +64,7 @@ export class Branch extends Resource implements IBranch {
    * @param password
    */
   public addBasicAuth(username: string, password: string) {
-    this.basicAuthResolver.basicAuthConfig({
+    this.basicAuthResolver.basicAuth({
       enableBasicAuth: true,
       password,
       username
@@ -116,9 +116,9 @@ export interface BranchBaseProps {
   /**
    * Basic Authorization credentials for a branch, part of an Amplify App.
    *
-   * @default - No basic auth config
+   * @default - No basic auth
    */
-  readonly basicAuthConfig?: BasicAuthConfig;
+  readonly basicAuth?: BasicAuth;
 
   /**
    * BuildSpec for the branch.

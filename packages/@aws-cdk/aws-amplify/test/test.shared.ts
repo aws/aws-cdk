@@ -43,7 +43,7 @@ export = {
     };
 
     const bar = new BasicAuthResolver();
-    bar.basicAuthConfig(bac);
+    bar.basicAuth(bac);
 
     test.equals(bar.resolve(context), bac, 'Auth set');
     test.done();

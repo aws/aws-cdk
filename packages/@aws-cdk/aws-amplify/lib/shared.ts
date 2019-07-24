@@ -1,9 +1,9 @@
 import { IResolvable, IResolveContext } from "@aws-cdk/core";
 
 /**
- * Use the BasicAuthConfig property type to set password protection at an app level to all your branches.
+ * Use the BasicAuth property type to set password protection at an app level to all your branches.
  */
-export interface BasicAuthConfig {
+export interface BasicAuth {
   /**
    * Enables Basic Authorization for branches for the Amplify App.
    *
@@ -29,13 +29,13 @@ export interface BasicAuthConfig {
 export class BasicAuthResolver implements IResolvable {
   public readonly creationStack: string[];
 
-  private bac: BasicAuthConfig;
+  private bac: BasicAuth;
 
   public resolve(_context: IResolveContext): any {
     return this.bac;
   }
 
-  public basicAuthConfig(bac: BasicAuthConfig) {
+  public basicAuth(bac: BasicAuth) {
     this.bac = bac;
   }
 }

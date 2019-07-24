@@ -4,7 +4,7 @@ import { CfnApp } from './amplify.generated';
 import { Branch, BranchBaseProps } from './branch';
 import { BuildSpec } from './buildspec';
 import { Domain, DomainBaseProps } from './domain';
-import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
+import { BasicAuth, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
 /**
  * App
@@ -71,8 +71,8 @@ export class App extends Resource implements IApp {
       physicalName: props.appName
     });
 
-    if (props.basicAuthConfig) {
-      this.addBasicAuth(props.basicAuthConfig.username, props.basicAuthConfig.password);
+    if (props.basicAuth) {
+      this.addBasicAuth(props.basicAuth.username, props.basicAuth.password);
     }
 
     if (props.environmentVariables && props.environmentVariables.length > 0) {
@@ -131,7 +131,7 @@ export class App extends Resource implements IApp {
    * @param password
    */
   public addBasicAuth(username: string, password: string) {
-    this.basicAuthResolver.basicAuthConfig({
+    this.basicAuthResolver.basicAuth({
       enableBasicAuth: true,
       password,
       username
@@ -220,7 +220,7 @@ export interface AppProps {
    *
    * @default - No basic auth config
    */
-  readonly basicAuthConfig?: BasicAuthConfig;
+  readonly basicAuth?: BasicAuth;
 
   /**
    * BuildSpec for an Amplify App.
