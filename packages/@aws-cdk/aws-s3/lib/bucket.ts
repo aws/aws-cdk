@@ -1598,6 +1598,13 @@ export interface RoutingRuleProps {
  */
 export class RoutingRule {
   public constructor(public readonly props: RoutingRuleProps) {
+    if (!props.httpRedirectCode && !props.replaceKey) {
+      throw new Error('At least one of these properties must be specified: httpRedirectCode, replaceKey');
+    }
+
+    if (props.condition && !props.condition.httpErrorCodeReturnedEquals && !props.condition.keyPrefixEquals) {
+      throw new Error('The condition property cannot be an empty object');
+    }
   }
 }
 

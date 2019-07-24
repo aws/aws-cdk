@@ -1621,6 +1621,29 @@ export = {
       }));
       test.done();
     },
+    'fails if routingRule has no redirect'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteRoutingRules: [new s3.RoutingRule({
+            hostName: 'www.example.com'
+          })]
+        });
+      }, /At least one of these properties must be specified/);
+      test.done();
+    },
+    'fails if routingRule condition object is empty'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteRoutingRules: [new s3.RoutingRule({
+            httpRedirectCode: '303',
+            condition: {}
+          })]
+        });
+      }, /The condition property cannot be an empty object/);
+      test.done();
+    },
   },
 
   'Bucket.fromBucketArn'(test: Test) {
