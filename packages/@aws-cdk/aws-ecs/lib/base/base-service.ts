@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
+import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -110,11 +110,6 @@ export interface BaseServiceProps extends BaseServiceOptions {
 }
 
 /**
- * Name tag constant
- */
-const NAME_TAG: string = 'Name';
-
-/**
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
@@ -184,8 +179,6 @@ export abstract class BaseService extends Resource
     super(scope, id, {
       physicalName: props.serviceName,
     });
-
-    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.taskDefinition = taskDefinition;
 
