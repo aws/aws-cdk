@@ -1275,15 +1275,15 @@ export class Bucket extends BucketBase {
         throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
-    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>(({props}) => ({
+    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>(({props: rule}) => ({
       redirectRule: {
-        hostName: props.hostName,
-        httpRedirectCode: props.httpRedirectCode,
-        protocol: props.protocol,
-        replaceKeyWith: isReplaceKeyWith(props.replaceKey) ? props.replaceKey.with : undefined,
-        replaceKeyPrefixWith: isReplaceKeyPrefixWith(props.replaceKey) ? props.replaceKey.prefixWith : undefined,
+        hostName: rule.hostName,
+        httpRedirectCode: rule.httpRedirectCode,
+        protocol: rule.protocol,
+        replaceKeyWith: isReplaceKeyWith(rule.replaceKey) ? rule.replaceKey.with : undefined,
+        replaceKeyPrefixWith: isReplaceKeyPrefixWith(rule.replaceKey) ? rule.replaceKey.prefixWith : undefined,
       },
-      routingRuleCondition: props.condition
+      routingRuleCondition: rule.condition
     })) : undefined;
 
     return {
