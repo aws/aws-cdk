@@ -290,6 +290,8 @@
             ]
           }
         },
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE",
         "ServiceRegistries": []
       }
     },
