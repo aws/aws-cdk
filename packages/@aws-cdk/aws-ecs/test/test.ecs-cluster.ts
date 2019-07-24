@@ -5,7 +5,6 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
-import { App } from '@aws-cdk/core';
 
 export = {
   "When creating an ECS Cluster": {
@@ -238,7 +237,7 @@ export = {
 
   "allows specifying special HW AMI Type"(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -292,7 +291,7 @@ export = {
 
   "allows specifying windows image"(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
