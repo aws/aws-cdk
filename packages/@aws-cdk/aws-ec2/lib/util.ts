@@ -61,7 +61,7 @@ export class ImportSubnetGroup {
 
     if (Math.floor(this.groups) !== this.groups) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Amount of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
+      throw new Error(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
     if (this.routeTableIds.length !== this.subnetIds.length) {
       if (routeTableIds == null) {
@@ -70,7 +70,7 @@ export class ImportSubnetGroup {
         this.warning = `No routeTableIds were provided for subnets ${this.subnetIds.join(', ')}! Calling .routeTableId on these subnets will return undefined/null!`;
       } else {
         // tslint:disable-next-line: max-line-length
-        throw new Error(`Amount of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+        throw new Error(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
       }
     }
 
@@ -78,7 +78,7 @@ export class ImportSubnetGroup {
   }
 
   public import(scope: cdk.Construct): ISubnet[] {
-    if (this.warning && this.subnetIds.length > 0) {
+    if (this.warning) {
       scope.node.addWarning(this.warning);
     }
     return range(this.subnetIds.length).map(i => {
