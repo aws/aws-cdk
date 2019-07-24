@@ -1510,8 +1510,7 @@ export interface RoutingRuleCondition {
    *
    * In the event of an error, if the error code equals this value, then the specified redirect is applied.
    *
-   * Required when parent element Condition is specified and sibling KeyPrefixEquals is not specified.
-   * If both are specified, then both must be true for the redirect to be applied.
+   * If both condition properties are specified, both must be true for the redirect to be applied.
    *
    * @default - The HTTP error code will not be verified
    */
@@ -1520,12 +1519,7 @@ export interface RoutingRuleCondition {
   /**
    * The object key name prefix when the redirect is applied
    *
-   * For example, to redirect requests for ExamplePage.html, the key prefix will be ExamplePage.html.
-   * To redirect request for all pages with the prefix docs/, the key prefix will be /docs,
-   * which identifies all objects in the docs/ folder.
-   *
-   * Required when the parent element Condition is specified and sibling HttpErrorCodeReturnedEquals is not specified.
-   * If both conditions are specified, both must be true for the redirect to be applied.
+   * If both condition properties are specified, both must be true for the redirect to be applied.
    *
    * @default - The object key name will not be verified
    */
@@ -1544,10 +1538,6 @@ export interface ReplaceKeyWith {
 export interface ReplaceKeyPrefixWith {
   /**
    * The object key prefix to use in the redirect request
-   *
-   * For example, to redirect requests for all pages with prefix docs/ (objects in the docs/ folder) to documents/,
-   * you can set a condition block with KeyPrefixEquals set to docs/
-   * and in the Redirect set ReplaceKeyPrefixWith to /documents.
    */
   readonly prefixWith: string;
 }
@@ -1596,10 +1586,6 @@ export interface RoutingRuleProps {
   /**
    * Specifies a condition that must be met for the specified redirect to apply.
    *
-   * For example:
-   * 1. If request is for pages in the /docs folder, redirect to the /documents folder.
-   * 2. If request results in HTTP error 4xx, redirect request to another host where you might process the error.
-   *
    * @default - No condition
    */
   readonly condition?: RoutingRuleCondition;
@@ -1607,6 +1593,8 @@ export interface RoutingRuleProps {
 
 /**
  * Rule that define when a redirect is applied and the redirect behavior.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html
  */
 export class RoutingRule {
   public constructor(public readonly props: RoutingRuleProps) {
