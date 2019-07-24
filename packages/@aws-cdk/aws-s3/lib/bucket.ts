@@ -790,11 +790,18 @@ export interface BucketProps {
   /**
    * Specifies the redirect behavior of all requests to a website endpoint of a bucket.
    *
-   * If you specify this property, you can't specify "websiteIndexDocument" nor "websiteErrorDocument".
+   * If you specify this property, you can't specify "websiteIndexDocument", "websiteErrorDocument" nor , "websiteRoutingRules".
    *
    * @default - No redirection.
    */
   readonly websiteRedirect?: RedirectTarget;
+
+  /**
+   * Rules that define when a redirect is applied and the redirect behavior
+   *
+   * @default - No redirection rules.
+   */
+  readonly websiteRoutingRules?: RoutingRule[];
 
   /**
    * Specifies a canned ACL that grants predefined permissions to the bucket.
@@ -1256,7 +1263,7 @@ export class Bucket extends BucketBase {
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
-    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect) {
+    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect && !props.websiteRoutingRules) {
       return undefined;
     }
 
@@ -1264,14 +1271,26 @@ export class Bucket extends BucketBase {
       throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
     }
 
-    if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument)) {
-        throw new Error('"websiteIndexDocument" and "websiteErrorDocument" cannot be set if "websiteRedirect" is used');
+    if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules)) {
+        throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
+
+    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>(({props}) => ({
+      redirectRule: {
+        hostName: props.hostName,
+        httpRedirectCode: props.httpRedirectCode,
+        protocol: props.protocol,
+        replaceKeyWith: isReplaceKeyWith(props.replaceKey) ? props.replaceKey.with : undefined,
+        replaceKeyPrefixWith: isReplaceKeyPrefixWith(props.replaceKey) ? props.replaceKey.prefixWith : undefined,
+      },
+      routingRuleCondition: props.condition
+    })) : undefined;
 
     return {
       indexDocument: props.websiteIndexDocument,
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
+      routingRules
     };
   }
 }
@@ -1483,6 +1502,117 @@ export enum BucketAccessControl {
    * Owner gets FULL_CONTROL. Amazon EC2 gets READ access to GET an Amazon Machine Image (AMI) bundle from Amazon S3.
    */
   AWS_EXEC_READ = 'AwsExecRead',
+}
+
+export interface RoutingRuleCondition {
+  /**
+   * The HTTP error code when the redirect is applied
+   *
+   * In the event of an error, if the error code equals this value, then the specified redirect is applied.
+   *
+   * Required when parent element Condition is specified and sibling KeyPrefixEquals is not specified.
+   * If both are specified, then both must be true for the redirect to be applied.
+   *
+   * @default - The HTTP error code will not be verified
+   */
+  readonly httpErrorCodeReturnedEquals?: string;
+
+  /**
+   * The object key name prefix when the redirect is applied
+   *
+   * For example, to redirect requests for ExamplePage.html, the key prefix will be ExamplePage.html.
+   * To redirect request for all pages with the prefix docs/, the key prefix will be /docs,
+   * which identifies all objects in the docs/ folder.
+   *
+   * Required when the parent element Condition is specified and sibling HttpErrorCodeReturnedEquals is not specified.
+   * If both conditions are specified, both must be true for the redirect to be applied.
+   *
+   * @default - The object key name will not be verified
+   */
+  readonly keyPrefixEquals?: string;
+}
+
+export interface ReplaceKeyWith {
+  /**
+   * The specific object key to use in the redirect request
+   *
+   * For example, redirect request to error.html
+   */
+  readonly with: string;
+}
+
+export interface ReplaceKeyPrefixWith {
+  /**
+   * The object key prefix to use in the redirect request
+   *
+   * For example, to redirect requests for all pages with prefix docs/ (objects in the docs/ folder) to documents/,
+   * you can set a condition block with KeyPrefixEquals set to docs/
+   * and in the Redirect set ReplaceKeyPrefixWith to /documents.
+   */
+  readonly prefixWith: string;
+}
+
+function isReplaceKeyWith(replaceKey?: ReplaceKeyWith | ReplaceKeyPrefixWith): replaceKey is ReplaceKeyWith {
+  return replaceKey !== undefined && replaceKey.hasOwnProperty('with');
+}
+
+function isReplaceKeyPrefixWith(replaceKey?: ReplaceKeyWith | ReplaceKeyPrefixWith): replaceKey is ReplaceKeyPrefixWith {
+  return replaceKey !== undefined && replaceKey.hasOwnProperty('prefixWith');
+}
+
+export interface RoutingRuleProps {
+  /**
+   * The host name to use in the redirect request
+   *
+   * // TODO verify
+   * @default - The host name used in the original request.
+   */
+  readonly hostName?: string;
+
+  /**
+   * The HTTP redirect code to use on the response
+   *
+   * Not required if one of the siblings is present.
+   *
+   * // TODO verify
+   * @default -
+   */
+  readonly httpRedirectCode?: string;
+
+  /**
+   * Protocol to use when redirecting requests
+   *
+   * @default - The protocol used in the original request.
+   */
+  readonly protocol?: RedirectProtocol;
+
+  /**
+   * Specifies the object key prefix to use in the redirect request
+   *
+   * Not required if one of the siblings is present.
+   *
+   * @default - The key will not be replaced
+   */
+  readonly replaceKey?: ReplaceKeyWith | ReplaceKeyPrefixWith;
+
+  /**
+   * Specifies a condition that must be met for the specified redirect to apply.
+   *
+   * For example:
+   * 1. If request is for pages in the /docs folder, redirect to the /documents folder.
+   * 2. If request results in HTTP error 4xx, redirect request to another host where you might process the error.
+   *
+   * @default - No condition
+   */
+  readonly condition?: RoutingRuleCondition;
+}
+
+/**
+ * Rule that define when a redirect is applied and the redirect behavior.
+ */
+export class RoutingRule {
+  public constructor(public readonly props: RoutingRuleProps) {
+  }
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
