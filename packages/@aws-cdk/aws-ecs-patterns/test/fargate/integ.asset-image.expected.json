@@ -807,6 +807,8 @@
             ]
           }
         },
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE",
         "ServiceRegistries": []
       },
       "DependsOn": [
