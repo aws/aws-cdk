@@ -1561,8 +1561,6 @@ export interface RoutingRuleProps {
   /**
    * The HTTP redirect code to use on the response
    *
-   * Not required if one of the siblings is present.
-   *
    * @default "301" - Moved Permanently
    */
   readonly httpRedirectCode?: string;
@@ -1576,8 +1574,6 @@ export interface RoutingRuleProps {
 
   /**
    * Specifies the object key prefix to use in the redirect request
-   *
-   * Not required if one of the siblings is present.
    *
    * @default - The key will not be replaced
    */
