@@ -557,7 +557,7 @@ export class Stack extends Construct implements ITaggable {
     }
     const template: any = {
       Description: this.templateOptions.description,
-      Transform: this.templateOptions.transforms,
+      Transform: extractSingleValue(this.templateOptions.transforms),
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
       Metadata: this.templateOptions.metadata
     };
@@ -762,4 +762,11 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
 interface StackDependency {
   stack: Stack;
   reason: string;
+}
+
+function extractSingleValue<T>(array: T[] | undefined): T[] | T | undefined {
+  if (array && array.length === 1) {
+    return array[0];
+  }
+  return array;
 }

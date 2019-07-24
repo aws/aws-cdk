@@ -14,11 +14,11 @@ export = {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
-    stack.templateOptions.transforms = ['SAMy'];
+    stack.templateOptions.transform = 'SAMy';
     test.deepEqual(toCloudFormation(stack), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
-      Transform: ['SAMy']
+      Transform: 'SAMy'
     });
     test.done();
   },
