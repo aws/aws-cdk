@@ -259,9 +259,9 @@ export = {
     }));
 
     test.deepEqual(template.Parameters, {
-      "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-        "Type": "AWS::SSM::Parameter::Value<String>",
-        "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id"
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: "AWS::SSM::Parameter::Value<String>",
+        Default: "/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id"
       }
     });
 
@@ -307,9 +307,9 @@ export = {
     const assembly = app.synth();
     const template = assembly.getStack(stack.stackName).template;
     test.deepEqual(template.Parameters, {
-      "SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-        "Type": "AWS::SSM::Parameter::Value<String>",
-        "Default": "/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id"
+      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: "AWS::SSM::Parameter::Value<String>",
+        Default: "/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id"
       }
     });
 
