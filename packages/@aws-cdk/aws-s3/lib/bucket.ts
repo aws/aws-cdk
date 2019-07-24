@@ -1285,8 +1285,8 @@ export class Bucket extends BucketBase {
           hostName: rule.hostName,
             httpRedirectCode: rule.httpRedirectCode,
             protocol: rule.protocol,
-            replaceKeyWith: isReplaceKeyWith(rule.replaceKey) ? rule.replaceKey.with : undefined,
-            replaceKeyPrefixWith: isReplaceKeyPrefixWith(rule.replaceKey) ? rule.replaceKey.prefixWith : undefined,
+            replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
+            replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
         },
         routingRuleCondition: rule.condition
       };
@@ -1532,28 +1532,23 @@ export interface RoutingRuleCondition {
   readonly keyPrefixEquals?: string;
 }
 
-export interface ReplaceKeyWith {
+export class ReplaceKey {
   /**
    * The specific object key to use in the redirect request
-   *
-   * For example, redirect request to error.html
    */
-  readonly with: string;
-}
+  public static with(keyReplacement: string) {
+    return new this(keyReplacement);
+  }
 
-export interface ReplaceKeyPrefixWith {
   /**
    * The object key prefix to use in the redirect request
    */
-  readonly prefixWith: string;
-}
+  public static prefixWith(keyReplacement: string) {
+    return new this(undefined, keyReplacement);
+  }
 
-function isReplaceKeyWith(replaceKey?: ReplaceKeyWith | ReplaceKeyPrefixWith): replaceKey is ReplaceKeyWith {
-  return replaceKey !== undefined && replaceKey.hasOwnProperty('with');
-}
-
-function isReplaceKeyPrefixWith(replaceKey?: ReplaceKeyWith | ReplaceKeyPrefixWith): replaceKey is ReplaceKeyPrefixWith {
-  return replaceKey !== undefined && replaceKey.hasOwnProperty('prefixWith');
+  private constructor(public readonly withKey?: string, public readonly prefixWithKey?: string) {
+  }
 }
 
 /**
@@ -1588,7 +1583,7 @@ export interface RoutingRule {
    *
    * @default - The key will not be replaced
    */
-  readonly replaceKey?: ReplaceKeyWith | ReplaceKeyPrefixWith;
+  readonly replaceKey?: ReplaceKey;
 
   /**
    * Specifies a condition that must be met for the specified redirect to apply.

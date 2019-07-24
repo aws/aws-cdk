@@ -1596,7 +1596,7 @@ export = {
           hostName: 'www.example.com',
           httpRedirectCode: '302',
           protocol: s3.RedirectProtocol.HTTPS,
-          replaceKey: {prefixWith: 'test/'},
+          replaceKey: s3.ReplaceKey.prefixWith('test/'),
           condition: {
             httpErrorCodeReturnedEquals: '200',
             keyPrefixEquals: 'prefix',
