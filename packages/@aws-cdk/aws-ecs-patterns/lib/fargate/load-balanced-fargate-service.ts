@@ -1,9 +1,9 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
- * Properties for a LoadBalancedFargateService
+ * The properties for the LoadBalancedFargateService service.
  */
 export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
   /**
@@ -52,15 +52,15 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
   /**
    * The Fargate service in this construct
    */
-  public readonly service: ecs.FargateService;
+  public readonly service: FargateService;
 
   /**
    * Constructs a new instance of the LoadBalancedFargateService class.
    */
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
+  constructor(scope: Construct, id: string, props: LoadBalancedFargateServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+    const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryLimitMiB: props.memoryLimitMiB,
       cpu: props.cpu,
       executionRole: props.executionRole,
@@ -78,7 +78,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       containerPort: props.containerPort || 80,
     });
 
-    this.service = new ecs.FargateService(this, "Service", {
+    this.service = new FargateService(this, "Service", {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition,
@@ -86,12 +86,5 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       serviceName: props.serviceName
     });
     this.addServiceAsTarget(this.service);
-  }
-
-  /**
-   * Add an additional non-essential container to the service.
-   */
-  public addAdditionalContainer(id: string, props: ecs.ContainerDefinitionOptions) {
-    return this.service.taskDefinition.addContainer(id, props);
   }
 }

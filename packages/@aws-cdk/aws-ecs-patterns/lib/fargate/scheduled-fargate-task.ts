@@ -1,7 +1,10 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { ScheduledTaskBase, ScheduledTaskBaseProps } from '../base/scheduled-task-base';
 
+/**
+ * The properties for the ScheduledFargateTask service.
+ */
 export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
   /**
    * The number of cpu units used by the task.
@@ -33,17 +36,23 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
  * A scheduled Fargate task that will be initiated off of cloudwatch events.
  */
 export class ScheduledFargateTask extends ScheduledTaskBase {
-  private readonly taskDefinition: ecs.TaskDefinition;
+  /**
+   * The ECS service in this construct
+   */
+  public readonly taskDefinition: FargateTaskDefinition;
 
-  constructor(scope: cdk.Construct, id: string, props: ScheduledFargateTaskProps) {
+  /**
+   * Constructs a new instance of the ScheduledFargateTask class.
+   */
+  constructor(scope: Construct, id: string, props: ScheduledFargateTaskProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start, also creates a log driver
-    const taskDefinition = new ecs.FargateTaskDefinition(this, 'ScheduledTaskDef', {
+    this. taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
     });
-    taskDefinition.addContainer('ScheduledContainer', {
+    this.taskDefinition.addContainer('ScheduledContainer', {
       image: props.image,
       command: props.command,
       environment: props.environment,
@@ -51,13 +60,6 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       logging: this.createAWSLogDriver(this.node.id)
     });
 
-    this.addTaskDefinitionToEventTarget(taskDefinition);
-  }
-
-  /**
-   * Add an additional non-essential container to the service.
-   */
-  public addAdditionalContainer(id: string, props: ecs.ContainerDefinitionOptions) {
-    return this.taskDefinition.addContainer(id, props);
+    this.addTaskDefinitionToEventTarget(this.taskDefinition);
   }
 }

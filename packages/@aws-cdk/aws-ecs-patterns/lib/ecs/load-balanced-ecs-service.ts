@@ -1,9 +1,9 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
- * Properties for a LoadBalancedEc2Service
+ * The properties for the LoadBalancedEc2Service service.
  */
 export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProps {
 
@@ -56,15 +56,15 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
   /**
    * The ECS service in this construct
    */
-  public readonly service: ecs.Ec2Service;
+  public readonly service: Ec2Service;
 
   /**
    * Constructs a new instance of the LoadBalancedEc2Service class.
    */
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
+  constructor(scope: Construct, id: string, props: LoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
+    const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
       executionRole: props.executionRole,
       taskRole: props.taskRole
     });
@@ -83,7 +83,7 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
       containerPort: props.containerPort || 80
     });
 
-    this.service = new ecs.Ec2Service(this, "Service", {
+    this.service = new Ec2Service(this, "Service", {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition,
@@ -91,12 +91,5 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
       serviceName: props.serviceName
     });
     this.addServiceAsTarget(this.service);
-  }
-
-  /**
-   * Add an additional non-essential container to the service.
-   */
-  public addAdditionalContainer(id: string, props: ecs.ContainerDefinitionOptions) {
-    return this.service.taskDefinition.addContainer(id, props);
   }
 }
