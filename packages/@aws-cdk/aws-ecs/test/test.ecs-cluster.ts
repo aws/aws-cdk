@@ -235,6 +235,9 @@ export = {
     test.done();
   },
 
+  /*
+   * TODO:v2.0.0 BEGINNING OF OBSOLETE BLOCK
+   */
   "allows specifying special HW AMI Type"(test: Test) {
     // GIVEN
     const app = new cdk.App();
@@ -354,6 +357,97 @@ export = {
         }),
       });
     }, /"windowsVersion" and Linux image "generation" cannot be both set/);
+
+    test.done();
+  },
+
+  /*
+   * TODO:v2.0.0 END OF OBSOLETE BLOCK
+   */
+
+  "allows specifying special HW AMI Type statically"(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('GpuAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ecs.EcsOptimizedAmiStatic.amazonLinux2(ecs.AmiHardwareType.GPU)
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template = assembly.getStack(stack.stackName).template;
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      ImageId: {
+        Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      }
+    }));
+
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: "AWS::SSM::Parameter::Value<String>",
+        Default: "/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id"
+      }
+    });
+
+    test.done();
+  },
+
+  "allows specifying Amazon Linux v1 AMI"(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('GpuAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ecs.EcsOptimizedAmiStatic.amazonLinux()
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template = assembly.getStack(stack.stackName).template;
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      ImageId: {
+        Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      }
+    }));
+
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: "AWS::SSM::Parameter::Value<String>",
+        Default: "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+      }
+    });
+
+    test.done();
+  },
+
+  "allows specifying windows image statically"(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('WindowsAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ecs.EcsOptimizedAmiStatic.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template = assembly.getStack(stack.stackName).template;
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: "AWS::SSM::Parameter::Value<String>",
+        Default: "/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id"
+      }
+    });
 
     test.done();
   },

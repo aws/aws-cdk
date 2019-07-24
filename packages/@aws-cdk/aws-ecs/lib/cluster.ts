@@ -4,9 +4,10 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
-import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
-import { CfnCluster } from './ecs.generated';
+import {AmazonLinuxGeneration} from "@aws-cdk/aws-ec2";
+import {Construct, Duration, IResource, Resource, Stack} from '@aws-cdk/core';
+import {InstanceDrainHook} from './drain-hook/instance-drain-hook';
+import {CfnCluster} from './ecs.generated';
 
 /**
  * The properties used to define an ECS cluster.
@@ -231,13 +232,23 @@ export class Cluster extends Resource implements ICluster {
   }
 }
 
+/**
+ * ECS-optimized Windows version list
+ */
 export enum WindowsOptimizedVersion {
   SERVER_2019 = '2019',
   SERVER_2016 = '2016',
 }
 
+/*
+ * TODO:v2.0.0
+ *  * remove `export` keyword
+ *  * remove @depracted
+ */
 /**
  * The properties that define which ECS-optimized AMI is used.
+ *
+ * @deprecated see {@link EcsOptimizedAmazonLinuxAmiProps} and {@link EcsOptimizedAmazonLinuxAmiProps}
  */
 export interface EcsOptimizedAmiProps {
   /**
@@ -263,7 +274,38 @@ export interface EcsOptimizedAmiProps {
 }
 
 /**
+ * The properties that define which ECS-optimized AMI is used.
+ */
+export interface EcsOptimizedAmazonLinuxAmiProps {
+  /**
+   * The Amazon Linux generation to use.
+   *
+   * @default AmazonLinuxGeneration.AmazonLinux2
+   */
+  readonly generation?: ec2.AmazonLinuxGeneration;
+
+  /**
+   * The ECS-optimized AMI variant to use.
+   *
+   * @default AmiHardwareType.Standard
+   */
+  readonly hardwareType?: AmiHardwareType;
+}
+
+export interface EcsOptimizedWindowsAmiProps {
+  /**
+   * The Windows Server version to use.
+   */
+  readonly windowsVersion: WindowsOptimizedVersion;
+}
+
+/*
+ * TODO:v2.0.0 remove EcsOptimizedAmi
+ */
+/**
  * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
+ *
+ * @deprecated see {@link EcsOptimizedAmiStatic#amazonLinux}, {@link EcsOptimizedAmiStatic#amazonLinux} and {@link EcsOptimizedAmiStatic#windows}
  */
 export class EcsOptimizedAmi implements ec2.IMachineImage {
   private readonly generation?: ec2.AmazonLinuxGeneration;
@@ -304,6 +346,77 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
                           + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
                           + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
                           + "recommended/image_id";
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+    };
+  }
+}
+
+/**
+ * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
+ */
+export class EcsOptimizedAmiStatic implements ec2.IMachineImage {
+  private readonly generation?: ec2.AmazonLinuxGeneration;
+  private readonly windowsVersion?: WindowsOptimizedVersion;
+  private readonly hwType?: AmiHardwareType;
+
+  private readonly amiParameterName: string;
+
+  /**
+   * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
+   *
+   * @param hardwareType ECS-optimized AMI variant to use
+   */
+  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedAmiStatic {
+    return new EcsOptimizedAmiStatic({generation: AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType});
+  }
+
+  /**
+   * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
+   */
+  public static amazonLinux(): EcsOptimizedAmiStatic {
+    return new EcsOptimizedAmiStatic({generation: AmazonLinuxGeneration.AMAZON_LINUX});
+  }
+
+  /**
+   * Construct a Windows image from the latest ECS Optimized AMI published in SSM
+   *
+   * @param windowsVersion Windows Version to use
+   */
+  public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedAmiStatic {
+    return new EcsOptimizedAmiStatic({windowsVersion});
+  }
+
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
+  private constructor(props: EcsOptimizedAmiProps) {
+    this.hwType = props && props.hardwareType;
+
+    if (props.windowsVersion) {
+      this.windowsVersion = props.windowsVersion;
+    } else if (props.generation) {
+      this.generation = props.generation;
+    } else {
+      throw new Error('This error should never be thrown');
+    }
+
+    // set the SSM parameter name
+    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
+        + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "" )
+        + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
+        + ( this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "" )
+        + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
+        + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
+        + "recommended/image_id";
   }
 
   /**
