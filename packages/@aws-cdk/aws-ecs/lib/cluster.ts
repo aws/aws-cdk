@@ -248,7 +248,7 @@ export enum WindowsOptimizedVersion {
 /**
  * The properties that define which ECS-optimized AMI is used.
  *
- * @deprecated see {@link EcsOptimizedAmazonLinuxAmiProps} and {@link EcsOptimizedAmazonLinuxAmiProps}
+ * @deprecated see {@link EcsOptimizedAmiStatic}
  */
 export interface EcsOptimizedAmiProps {
   /**
@@ -271,32 +271,6 @@ export interface EcsOptimizedAmiProps {
    * @default AmiHardwareType.Standard
    */
   readonly hardwareType?: AmiHardwareType;
-}
-
-/**
- * The properties that define which ECS-optimized AMI is used.
- */
-export interface EcsOptimizedAmazonLinuxAmiProps {
-  /**
-   * The Amazon Linux generation to use.
-   *
-   * @default AmazonLinuxGeneration.AmazonLinux2
-   */
-  readonly generation?: ec2.AmazonLinuxGeneration;
-
-  /**
-   * The ECS-optimized AMI variant to use.
-   *
-   * @default AmiHardwareType.Standard
-   */
-  readonly hardwareType?: AmiHardwareType;
-}
-
-export interface EcsOptimizedWindowsAmiProps {
-  /**
-   * The Windows Server version to use.
-   */
-  readonly windowsVersion: WindowsOptimizedVersion;
 }
 
 /*
