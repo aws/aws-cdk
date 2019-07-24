@@ -73,10 +73,9 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
-   * If no value is specified, the tags are not propagated.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default - propagate from services.
+   * @default SERVICE
    */
   readonly propagateTaskTagsFrom?: PropagateTagsFromType;
 }

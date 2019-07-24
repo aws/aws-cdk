@@ -83,7 +83,7 @@ export interface BaseServiceOptions {
    *
    * Valid values are: PropagateTagFromType.SERVICE or PropagateTagFromType.TASK_DEFINITION
    *
-   * @default - propagate from services.
+   * @default SERVICE
    */
   readonly propagateTags?: PropagateTagsFromType;
 
@@ -517,16 +517,16 @@ export enum LaunchType {
 }
 
 /**
- * Propagate tags from either services or task definitions
+ * Propagate tags from either service or task definition
  */
 export enum PropagateTagsFromType {
   /**
-   * Propagate tags from services
+   * Propagate tags from service
    */
   SERVICE = 'SERVICE',
 
   /**
-   * Propagate tags from task definitions
+   * Propagate tags from task definition
    */
   TASK_DEFINITION = 'TASK_DEFINITION'
 }
