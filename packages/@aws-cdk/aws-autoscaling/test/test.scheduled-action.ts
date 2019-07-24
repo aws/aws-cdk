@@ -97,7 +97,7 @@ export = {
         }
       },
       Parameters: {
-        "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+        SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
           Type: "AWS::SSM::Parameter::Value<String>",
           Default: "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
         }
