@@ -1,4 +1,4 @@
-import { Connections, IConnectable, ISecurityGroup, ISubnet, IVpc, Peer, Port, SecurityGroup  } from '@aws-cdk/aws-ec2';
+import { Connections, IConnectable, ISecurityGroup, ISubnet, IVpc, Peer, Port, SecurityGroup, SelectedSubnets  } from '@aws-cdk/aws-ec2';
 import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -57,6 +57,11 @@ export interface LoadBalancerProps {
    * @default true
    */
   readonly crossZone?: boolean;
+
+  /**
+   * @default - Private subnets
+   */
+  readonly subnets?: SelectedSubnets;
 }
 
 /**
@@ -226,7 +231,7 @@ export class LoadBalancer extends Resource implements IConnectable {
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: ISubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const subnets: ISubnet[] = loadBalancerSubnets(props);
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
@@ -425,4 +430,18 @@ function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthChec
     timeout: (healthCheck.timeout || Duration.seconds(5)).toSeconds().toString(),
     unhealthyThreshold: ifUndefined(healthCheck.unhealthyThreshold, 5).toString(),
   };
+}
+
+function loadBalancerSubnets(props: LoadBalancerProps): ISubnet[] {
+  if (props.subnets !== undefined) {
+    const subnets = props.subnets;
+
+    return subnets.subnetIds.map((subnetId, index) => ({
+      subnetId,
+      availabilityZone: subnets.availabilityZones[index],
+      internetConnectivityEstablished: subnets.internetConnectivityEstablished
+    }) as ISubnet);
+  } else {
+    return props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+  }
 }
