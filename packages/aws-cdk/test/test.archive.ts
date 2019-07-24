@@ -70,5 +70,39 @@ export = {
     await fs.remove(stagingDir);
     await fs.remove(extractDir);
     test.done();
-  }
+  },
+
+  async 'zipDirectory preserves mode of source files'(test: Test) {
+    const stagingDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test.archive'));
+    const zipFile = path.join(stagingDir, 'output.zip');
+    const originalDir = path.join(__dirname, 'test-archive-mode');
+    const extractDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test.archive.mode'));
+    await zipDirectory(originalDir, zipFile);
+
+    // unzip and verify that the resulting tree is the same
+    await exec(`unzip ${zipFile}`, { cwd: extractDir });
+
+    // tslint:disable-next-line:no-bitwise
+    const beExecutable = fs.constants.S_IXGRP | fs.constants.S_IXOTH | fs.constants.S_IXUSR;
+
+    let readable = true;
+    try {
+      await fs.access(path.join(extractDir, 'readable.txt'));
+    } catch {
+      readable = false;
+    }
+    test.ok(readable, 'extracted readable.txt cannot be accessed');
+
+    let executable = true;
+    try {
+      await fs.access(path.join(extractDir, 'executable.txt'), beExecutable);
+    } catch {
+      executable = false;
+    }
+    test.ok(executable, 'extracted executable.txt cannot be executable');
+
+    await fs.remove(stagingDir);
+    await fs.remove(extractDir);
+    test.done();
+  },
 };

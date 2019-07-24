@@ -6,7 +6,10 @@ import path = require('path');
 
 const appendFiles = async (directory: string, files: string[], archive: archiver.Archiver): Promise<void> => {
   await Promise.all(files.map(async file => {
-    archive.append(fs.createReadStream(path.join(directory, file)), {
+    const srcPath = path.join(directory, file);
+    const stat = await fs.stat(srcPath);
+    archive.append(fs.createReadStream(srcPath), {
+      mode: stat.mode,
       name: file,
       date: new Date('1980-01-01T00:00:00.000Z'), // reset dates to get the same hash for the same content
     });
