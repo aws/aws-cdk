@@ -1,5 +1,5 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-    IDependable, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
+    IDependable, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
@@ -415,7 +415,7 @@ export interface SubnetAttributes {
   /**
    * The ID of the route table for this particular subnet
    */
-  readonly routeTableId: string;
+  readonly routeTableId?: string;
 }
 
 /**
@@ -1368,9 +1368,20 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
 
+    if (!attrs.routeTableId) {
+      const ref = Token.isUnresolved(attrs.subnetId)
+        ? `at '${scope.node.path}/${id}'`
+        : `'${attrs.subnetId}'`;
+      // tslint:disable-next-line: max-line-length
+      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read it's .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+    }
+
     this.availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
-    this.routeTable = { routeTableId: attrs.routeTableId };
+    this.routeTable = {
+      // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
+      routeTableId: attrs.routeTableId!
+    };
   }
 }
 
