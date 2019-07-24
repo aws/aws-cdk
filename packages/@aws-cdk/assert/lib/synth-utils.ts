@@ -1,13 +1,24 @@
-import { ConstructNode, Stack, SynthesisOptions, App } from '@aws-cdk/core';
+import { App, ConstructNode, Stack, SynthesisOptions } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
 
 export class SynthUtils {
+  public static synthesize(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
+    // always synthesize against the root (be it an App or whatever) so all artifacts will be included
+    const root = stack.node.root;
+
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const assembly = root instanceof App ? root.synth() : ConstructNode.synth(root.node, options);
+
+    return assembly.getStack(stack.stackName);
+  }
+
   /**
    * Synthesizes the stack and returns a `CloudFormationStackArtifact` which can be inspected.
+   * Supports nested stacks as well as normal stacks.
    */
-  public static synthesize(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
+  public static synthesizeWithNested(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
     const root = stack.node.root;
 
@@ -26,7 +37,7 @@ export class SynthUtils {
    * Synthesizes the stack and returns the resulting CloudFormation template.
    */
   public static toCloudFormation(stack: Stack, options: SynthesisOptions = { }): any {
-    const synth = this.synthesize(stack, options);
+    const synth = this.synthesizeWithNested(stack, options);
     if (synth instanceof cxapi.CloudFormationStackArtifact) {
       return synth.template;
     } else {

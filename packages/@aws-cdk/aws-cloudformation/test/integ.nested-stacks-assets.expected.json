@@ -1,0 +1,92 @@
+{
+  "Parameters": {
+    "NestedNestedStackAssetS3BucketD2D79A5D": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-assets/Nested.NestedStack/Asset\""
+    },
+    "NestedNestedStackAssetS3VersionKeyDB274B5F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-assets/Nested.NestedStack/Asset\""
+    },
+    "NestedNestedStackAssetArtifactHash4FE531E9": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-assets/Nested.NestedStack/Asset\""
+    },
+    "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66bucket": {
+      "Type": "String",
+      "Description": "Proxy for asset parameter \"nestedstacksassetsNestedHandlerCodeE594CF66.bucket\" within the nested stack \"nested-stacks-assets/Nested\""
+    },
+    "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66key": {
+      "Type": "String",
+      "Description": "Proxy for asset parameter \"nestedstacksassetsNestedHandlerCodeE594CF66.key\" within the nested stack \"nested-stacks-assets/Nested\""
+    },
+    "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66hash": {
+      "Type": "String",
+      "Description": "Proxy for asset parameter \"nestedstacksassetsNestedHandlerCodeE594CF66.hash\" within the nested stack \"nested-stacks-assets/Nested\""
+    }
+  },
+  "Resources": {
+    "NestedNestedStackNestedNestedStackResourceDEFDAA4D": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "NestedNestedStackAssetS3BucketD2D79A5D"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedNestedStackAssetS3VersionKeyDB274B5F"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedNestedStackAssetS3VersionKeyDB274B5F"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        "Parameters": {
+          "HandlerCodeS3Bucket8DD11ED9": {
+            "Ref": "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66bucket"
+          },
+          "HandlerCodeS3VersionKey0BB5191E": {
+            "Ref": "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66key"
+          },
+          "HandlerCodeArtifactHashD7814EF8": {
+            "Ref": "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66hash"
+          }
+        }
+      }
+    }
+  }
+}

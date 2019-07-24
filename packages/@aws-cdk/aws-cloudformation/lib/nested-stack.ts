@@ -3,6 +3,7 @@ import sns = require('@aws-cdk/aws-sns');
 import {
   Aws, CfnOutput, CfnParameter, Construct, Duration, Fn, IConstruct,
   IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
+import cxapi = require('@aws-cdk/cx-api');
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -137,6 +138,33 @@ export class NestedStack extends Stack {
   }
 
   /**
+   * If a file asset is added to the nested stack, we also need to add it to the
+   * parent and wire the parameters.
+   *
+   * @param asset
+   */
+  public addFileAsset(asset: cxapi.FileAssetMetadataEntry) {
+    const parent = this.parentStack!;
+
+    const proxyParameter = (type: string, logicalId: string) => {
+      const p = new CfnParameter(parent, `${this.node.uniqueId}.${asset.id}.${type}`, {
+        type: 'String',
+        description: `Proxy for asset parameter "${asset.id}.${type}" within the nested stack "${this.node.path}"`
+      });
+
+      this.parameters[logicalId] = p.valueAsString;
+      return p.logicalId;
+    };
+
+    parent.addFileAsset({
+      ...asset,
+      s3BucketParameter: proxyParameter('bucket', asset.s3BucketParameter),
+      s3KeyParameter: proxyParameter('key', asset.s3KeyParameter),
+      artifactHashParameter: proxyParameter('hash', asset.artifactHashParameter)
+    });
+  }
+
+  /**
    * An attribute that represents the ID of the stack.
    *
    * If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
@@ -227,7 +255,7 @@ function findParentStack(scope: Construct): Stack {
   }
 
   const parentStack = scope.node.scopes.reverse().find(p => Stack.isStack(p));
-  if (!parentStack || NestedStack.isNestedStack(parentStack)) {
+  if (!parentStack) {
     throw new Error(`Nested stacks must be defined within scope of another non-nested stack`);
   }
 

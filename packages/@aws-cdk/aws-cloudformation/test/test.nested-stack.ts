@@ -1,4 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import s3_assets = require('@aws-cdk/aws-s3-assets');
 import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
 import fs = require('fs');
 import { Test } from 'nodeunit';
@@ -22,18 +23,6 @@ export = {
     // THEN
     test.throws(() => new NestedStack(app, 'boom'), /must be defined within scope of another non-nested stack/);
     test.throws(() => new NestedStack(group, 'bam'), /must be defined within scope of another non-nested stack/);
-    test.done();
-  },
-
-  'fails if defined as a child of another nested stack'(test: Test) {
-    // GIVEN
-    const parent = new Stack();
-
-    // WHEN
-    const nested = new NestedStack(parent, 'nested');
-
-    // THEN
-    test.throws(() => new NestedStack(nested, 'child-of-nested'), /must be defined within scope of another non-nested stack/);
     test.done();
   },
 
@@ -647,27 +636,107 @@ export = {
     test.done();
   },
 
-  // 'assets within nested stacks'(test: Test) {
-  //   // GIVEN
-  //   const app = new App();
-  //   const parent = new Stack(app, 'ParentStack');
-  //   const nested = new NestedStack(parent, 'NestedStack');
+  'double-nested stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parent = new Stack(app, 'stack');
 
-  //   // WHEN
-  //   const asset = new s3_assets.Asset(nested, 'asset', {
-  //     path: __filename
-  //   });
+    // WHEN
+    const nested1 = new NestedStack(parent, 'Nested1');
+    const nested2 = new NestedStack(nested1, 'Nested2');
 
-  //   new CfnResource(nested, 'NestedResource', {
-  //     type: 'Nested::Resource',
-  //     properties: {
-  //       AssetBucket: asset.s3BucketName,
-  //       AssetKey: asset.s3ObjectKey
-  //     }
-  //   });
+    new CfnResource(nested1, 'Resource1', { type: 'Resource::1' });
+    new CfnResource(nested2, 'Resource2', { type: 'Resource::2' });
 
-  //   // THEN
-  //   expect(parent).toMatch({});
-  //   test.done();
-  // }
+    // THEN
+    const assembly = app.synth();
+
+    // nested2 is a "leaf", so it's just the resource
+    expect(nested2).toMatch({
+      Resources: {
+        Resource2: { Type: "Resource::2" }
+      }
+    });
+
+    // nested1 wires the nested2 template through parameters, so we expect those
+    expect(nested1).to(haveResource('Resource::1'));
+    const nested2Template = SynthUtils.toCloudFormation(nested1);
+    test.deepEqual(nested2Template.Parameters, {
+      Nested2NestedStackAssetS3BucketE2A8CC0B: { Type: 'String', Description: 'S3 bucket for asset "stack/Nested1/Nested2.NestedStack/Asset"' },
+      Nested2NestedStackAssetS3VersionKey08AAB71C: { Type: 'String', Description: 'S3 key for asset version "stack/Nested1/Nested2.NestedStack/Asset"' },
+      Nested2NestedStackAssetArtifactHash850D4B8C: { Type: 'String', Description: 'Artifact hash for asset "stack/Nested1/Nested2.NestedStack/Asset"' }
+    });
+
+    // parent stack should have two sets of parameters. one for the first nested stack and the second
+    // for the second nested stack, passed in as parameters to the first
+    const template = SynthUtils.toCloudFormation(parent);
+    test.deepEqual(template.Parameters, {
+      Nested1NestedStackAssetS3Bucket330ED98A: { Type: 'String', Description: 'S3 bucket for asset "stack/Nested1.NestedStack/Asset"' },
+      Nested1NestedStackAssetS3VersionKeyE52B2824: { Type: 'String', Description: 'S3 key for asset version "stack/Nested1.NestedStack/Asset"' },
+      Nested1NestedStackAssetArtifactHashD180A344: { Type: 'String', Description: 'Artifact hash for asset "stack/Nested1.NestedStack/Asset"' },
+      stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90bucket: { Type: 'String', Description: 'Proxy for asset parameter "stackNested1Nested2NestedStackAsset86465D90.bucket" within the nested stack "stack/Nested1"' },
+      stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90key: { Type: 'String', Description: 'Proxy for asset parameter "stackNested1Nested2NestedStackAsset86465D90.key" within the nested stack "stack/Nested1"' },
+      stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90hash: { Type: 'String', Description: 'Proxy for asset parameter "stackNested1Nested2NestedStackAsset86465D90.hash" within the nested stack "stack/Nested1"' }
+    });
+
+    // proxy asset params to nested stack
+    expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        Nested2NestedStackAssetS3BucketE2A8CC0B: { Ref: "stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90bucket" },
+        Nested2NestedStackAssetS3VersionKey08AAB71C: { Ref: "stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90key" },
+        Nested2NestedStackAssetArtifactHash850D4B8C: { Ref: "stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90hash" }
+      }
+    }));
+
+    // parent stack should have 2 assets
+    test.deepEqual(assembly.getStack(parent.stackName).assets.length, 2);
+    test.done();
+  },
+
+  'assets within nested stacks are proxied from the parent'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parent = new Stack(app, 'ParentStack');
+    const nested = new NestedStack(parent, 'NestedStack');
+
+    // WHEN
+    const asset = new s3_assets.Asset(nested, 'asset', {
+      path: __filename
+    });
+
+    new CfnResource(nested, 'NestedResource', {
+      type: 'Nested::Resource',
+      properties: {
+        AssetBucket: asset.s3BucketName,
+        AssetKey: asset.s3ObjectKey
+      }
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template = SynthUtils.toCloudFormation(parent);
+
+    // two sets of asset parameters: one for the nested stack itself and one as a proxy for the asset within the stack
+    test.deepEqual(template.Parameters, {
+      NestedStackNestedStackAssetS3Bucket292742BB: { Type: 'String', Description: 'S3 bucket for asset "ParentStack/NestedStack.NestedStack/Asset"' },
+      NestedStackNestedStackAssetS3VersionKey39EF7642: { Type: 'String', Description: 'S3 key for asset version "ParentStack/NestedStack.NestedStack/Asset"' },
+      NestedStackNestedStackAssetArtifactHash49340D38: { Type: 'String', Description: 'Artifact hash for asset "ParentStack/NestedStack.NestedStack/Asset"' },
+      ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEbucket: { Type: 'String', Description: 'Proxy for asset parameter "ParentStackNestedStackasset74F6B2AE.bucket" within the nested stack "ParentStack/NestedStack"' },
+      ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEkey: { Type: 'String', Description: 'Proxy for asset parameter "ParentStackNestedStackasset74F6B2AE.key" within the nested stack "ParentStack/NestedStack"' },
+      ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEhash: { Type: 'String', Description: 'Proxy for asset parameter "ParentStackNestedStackasset74F6B2AE.hash" within the nested stack "ParentStack/NestedStack"' }
+    });
+
+    // asset proxy parameters are passed to the nested stack
+    expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        assetS3BucketAC69B279: { Ref: "ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEbucket" },
+        assetS3VersionKey99C8DE32: { Ref: "ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEkey" },
+        assetArtifactHash409B3ECC: { Ref: "ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEhash" }
+      }
+    }));
+
+    // parent stack should have 2 assets
+    test.deepEqual(assembly.getStack(parent.stackName).assets.length, 2);
+    test.done();
+  }
 };

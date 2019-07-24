@@ -1,7 +1,7 @@
 import assets = require('@aws-cdk/assets');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { CfnParameter, Construct, Fn } from '@aws-cdk/core';
+import { CfnParameter, Construct, Fn, Stack } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 
 export interface SynthesizedAssetProps {
@@ -115,7 +115,7 @@ export class SynthesizedAsset extends Construct implements assets.IAsset {
       artifactHashParameter: hashParam.logicalId,
     };
 
-    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
+    Stack.of(this).addFileAsset(asset);
 
     for (const reader of (props.readers || [])) {
       this.grantRead(reader);

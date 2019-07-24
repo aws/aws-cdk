@@ -76,6 +76,7 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "^1.0.0",
     "@aws-cdk/aws-lambda": "^1.0.0",
+    "@aws-cdk/cx-api": "^1.0.0",
     "@aws-cdk/aws-s3-assets": "^1.0.0",
     "@aws-cdk/aws-sns": "^1.0.0",
     "@aws-cdk/core": "^1.0.0"
@@ -84,6 +85,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-iam": "^1.0.0",
     "@aws-cdk/aws-s3-assets": "^1.0.0",
+    "@aws-cdk/cx-api": "^1.0.0",
     "@aws-cdk/aws-lambda": "^1.0.0",
     "@aws-cdk/aws-sns": "^1.0.0",
     "@aws-cdk/core": "^1.0.0"

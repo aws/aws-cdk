@@ -435,6 +435,10 @@ export class Stack extends Construct implements ITaggable {
     return value;
   }
 
+  public addFileAsset(asset: cxapi.FileAssetMetadataEntry) {
+    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
+  }
+
   /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize

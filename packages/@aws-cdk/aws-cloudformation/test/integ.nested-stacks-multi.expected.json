@@ -1,0 +1,92 @@
+{
+  "Parameters": {
+    "NestedStackNestedStackAssetS3Bucket292742BB": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"nested-stacks-multi/NestedStack.NestedStack/Asset\""
+    },
+    "NestedStackNestedStackAssetS3VersionKey39EF7642": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"nested-stacks-multi/NestedStack.NestedStack/Asset\""
+    },
+    "NestedStackNestedStackAssetArtifactHash49340D38": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"nested-stacks-multi/NestedStack.NestedStack/Asset\""
+    },
+    "nestedstacksmultiNestedStack08DBC739nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15Ebucket": {
+      "Type": "String",
+      "Description": "Proxy for asset parameter \"nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15E.bucket\" within the nested stack \"nested-stacks-multi/NestedStack\""
+    },
+    "nestedstacksmultiNestedStack08DBC739nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15Ekey": {
+      "Type": "String",
+      "Description": "Proxy for asset parameter \"nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15E.key\" within the nested stack \"nested-stacks-multi/NestedStack\""
+    },
+    "nestedstacksmultiNestedStack08DBC739nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15Ehash": {
+      "Type": "String",
+      "Description": "Proxy for asset parameter \"nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15E.hash\" within the nested stack \"nested-stacks-multi/NestedStack\""
+    }
+  },
+  "Resources": {
+    "NestedStackNestedStackNestedStackNestedStackResourceB70834FD": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "NestedStackNestedStackAssetS3Bucket292742BB"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedStackNestedStackAssetS3VersionKey39EF7642"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "NestedStackNestedStackAssetS3VersionKey39EF7642"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        "Parameters": {
+          "NestedChildNestedStackAssetS3BucketE70A0094": {
+            "Ref": "nestedstacksmultiNestedStack08DBC739nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15Ebucket"
+          },
+          "NestedChildNestedStackAssetS3VersionKey2FC62393": {
+            "Ref": "nestedstacksmultiNestedStack08DBC739nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15Ekey"
+          },
+          "NestedChildNestedStackAssetArtifactHash80369552": {
+            "Ref": "nestedstacksmultiNestedStack08DBC739nestedstacksmultiNestedStackNestedChildNestedStackAssetC34AB15Ehash"
+          }
+        }
+      }
+    }
+  }
+}
