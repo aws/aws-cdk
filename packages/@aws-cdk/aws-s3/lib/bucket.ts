@@ -1564,7 +1564,6 @@ export interface RoutingRuleProps {
   /**
    * The host name to use in the redirect request
    *
-   * // TODO verify
    * @default - The host name used in the original request.
    */
   readonly hostName?: string;
@@ -1574,8 +1573,7 @@ export interface RoutingRuleProps {
    *
    * Not required if one of the siblings is present.
    *
-   * // TODO verify
-   * @default -
+   * @default "301" - Moved Permanently
    */
   readonly httpRedirectCode?: string;
 
