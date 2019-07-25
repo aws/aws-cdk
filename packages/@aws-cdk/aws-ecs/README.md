@@ -111,9 +111,9 @@ cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.xlarge'),
-  machineImage: EcsOptimizedAmiStatic.amazonLinux(),
+  machineImage: EcsOptimizedImage.amazonLinux(),
   // Or use Amazon ECS-Optimized Amazon Linux 2 AMI
-  // machineImage: EcsOptimizedAmiStatic.amazonLinux2(),
+  // machineImage: EcsOptimizedImage.amazonLinux2(),
   desiredCapacity: 3,
   // ... other options here ...
 });

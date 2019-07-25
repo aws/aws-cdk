@@ -247,7 +247,7 @@ export enum WindowsOptimizedVersion {
 /**
  * The properties that define which ECS-optimized AMI is used.
  *
- * @deprecated see {@link EcsOptimizedAmiStatic}
+ * @deprecated see {@link EcsOptimizedImage}
  */
 export interface EcsOptimizedAmiProps {
   /**
@@ -278,7 +278,7 @@ export interface EcsOptimizedAmiProps {
 /**
  * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
  *
- * @deprecated see {@link EcsOptimizedAmiStatic#amazonLinux}, {@link EcsOptimizedAmiStatic#amazonLinux} and {@link EcsOptimizedAmiStatic#windows}
+ * @deprecated see {@link EcsOptimizedImage#amazonLinux}, {@link EcsOptimizedImage#amazonLinux} and {@link EcsOptimizedImage#windows}
  */
 export class EcsOptimizedAmi implements ec2.IMachineImage {
   private readonly generation?: ec2.AmazonLinuxGeneration;
@@ -336,21 +336,21 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 /**
  * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
  */
-export class EcsOptimizedAmiStatic implements ec2.IMachineImage {
+export class EcsOptimizedImage implements ec2.IMachineImage {
   /**
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
    * @param hardwareType ECS-optimized AMI variant to use
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedAmiStatic {
-    return new EcsOptimizedAmiStatic({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType});
+  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedImage {
+    return new EcsOptimizedImage({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType});
   }
 
   /**
    * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
    */
-  public static amazonLinux(): EcsOptimizedAmiStatic {
-    return new EcsOptimizedAmiStatic({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX});
+  public static amazonLinux(): EcsOptimizedImage {
+    return new EcsOptimizedImage({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX});
   }
 
   /**
@@ -358,8 +358,8 @@ export class EcsOptimizedAmiStatic implements ec2.IMachineImage {
    *
    * @param windowsVersion Windows Version to use
    */
-  public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedAmiStatic {
-    return new EcsOptimizedAmiStatic({windowsVersion});
+  public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedImage {
+    return new EcsOptimizedImage({windowsVersion});
   }
 
   private readonly generation?: ec2.AmazonLinuxGeneration;

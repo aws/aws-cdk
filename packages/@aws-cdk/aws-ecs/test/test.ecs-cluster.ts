@@ -365,7 +365,7 @@ export = {
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
 
-  "allows specifying special HW AMI Type statically"(test: Test) {
+  "allows specifying special HW AMI Type v2"(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -374,7 +374,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('GpuAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: ecs.EcsOptimizedAmiStatic.amazonLinux2(ecs.AmiHardwareType.GPU)
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.GPU)
     });
 
     // THEN
@@ -405,7 +405,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('GpuAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: ecs.EcsOptimizedAmiStatic.amazonLinux()
+      machineImage: ecs.EcsOptimizedImage.amazonLinux()
     });
 
     // THEN
@@ -427,7 +427,7 @@ export = {
     test.done();
   },
 
-  "allows specifying windows image statically"(test: Test) {
+  "allows specifying windows image v2"(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -436,7 +436,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('WindowsAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: ecs.EcsOptimizedAmiStatic.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+      machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
     });
 
     // THEN
