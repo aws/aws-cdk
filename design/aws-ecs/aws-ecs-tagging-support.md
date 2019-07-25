@@ -4,7 +4,7 @@ Amazon ECS supports tagging for all the ECS resources (see [here](https://docs.a
 
 In addition, `EnableECSManagedTags` is provided as another property so that ECS managed tags can be supported and used to tag ECS tasks. However, currently users cannot set `EnableECSManagedTags` and the default value is `false`.
 
-Additionally, CDK support tagging and can cascade tags to its all tagable children (see [here](https://docs.aws.amazon.com/cdk/latest/guide/tagging.html)). The current CDK tagging API is shown below:
+Additionally, CDK support tagging and can cascade tags to all its tagable children (see [here](https://docs.aws.amazon.com/cdk/latest/guide/tagging.html)). The current CDK tagging API is shown below:
 
 ``` ts
 myConstruct.node.applyAspect(new Tag('key', 'value'));
@@ -21,7 +21,7 @@ The new `BaseService` class will include two more base properties:
 * propagateTags
 * enableECSManagedTags
 
-`propagateTags` specifies whether to propagate the tags from the task definition or the service to the tasks in the service and `enableECSManagedTags` specifies whether to enable Amazon ECS managed tags for the tasks within the service. Also, for `Ec2Service` and `FargateService` we will have the corresponding two new properties exposed to users:
+`propagateTags` specifies whether to propagate the tags from the task definition or the service to ECS tasks and `enableECSManagedTags` specifies whether to enable Amazon ECS managed tags for the tasks within the service. Also, for `Ec2Service` and `FargateService` we will have the corresponding two new properties exposed to users:
 
 * propagateTaskTagsFrom
 * enableECSManagedTags
@@ -30,7 +30,7 @@ The new `BaseService` class will include two more base properties:
 
 For the tagging behavior part, we have three options for the new tagging API:
 
-**Option 1: define a public static method**
+**Option 1: define public static method**
 
 ``` ts
 Tag.apply(myConstruct, 'key', 'value');
@@ -38,7 +38,7 @@ Tag.apply(myConstruct, 'key', 'value');
 RemoveTag.apply(myConstruct, 'key');
 ```
 
-**Option 2: tag using a Tag object (RECOMMENDED since you can reuse tags)**
+**Option 2: use Tag object (RECOMMENDED since users can reuse tags)**
 
 ``` ts
 const tag = new Tag('key', 'value');
@@ -48,7 +48,7 @@ const removetag = new RemoveTag('key');
 removetag.apply(myConstruct);
 ```
 
-**Option 3: define a method in Construct**
+**Option 3: define method in Construct**
 
 ``` ts
 myConstruct.apply(new Tag('key', 'value'));
@@ -59,10 +59,12 @@ myConstruct.apply(new RemoveTag('key'));
 ## Code changes
 
 Given the above, we should make the following changes on ECS:
-1. Add `propagateTags` and `enableECSManagedTags` properties to `BaseServiceOptions`.
-2. Add `propagateTaskTagsFrom` and `enableECSManagedTags` properties to `Ec2ServiceProps` and `FargateServiceProps`.
-3. Add an enum type `PropagateTagsFromType` to support `propagateTaskTagsFrom`.
-4. Add a method `apply(scope, 'key', 'value')` to `Tag` class and `RemoveTag` class, which calls `applyAspect`.
+* Support tag propagation for ECS task and ECS managed tags
+  1. Add `propagateTags` and `enableECSManagedTags` properties to `BaseServiceOptions`.
+  2. Add `propagateTaskTagsFrom` and `enableECSManagedTags` properties to `Ec2ServiceProps` and `FargateServiceProps`.
+  3. Add an enum type `PropagateTagsFromType` to support `propagateTaskTagsFrom`.
+* Change CDK Tagging API
+  1. Add a method `apply(scope, 'key', 'value')` to `Tag` class and `RemoveTag` class, which calls `applyAspect`.
 
 # Part 1: Support Tag Propagation for ECS Task and ECS Managed Tags
 
@@ -134,7 +136,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
 }
 ```
 
-The `Ec2Service` and `FargateService` constructs will have new properties like this:
+The `Ec2Service` and `FargateService` constructs will have two new properties:
 
 * propagateTaskTagsFrom - Propagate tags from either ECS Task Definition or Service to Task.
 * enableECSManagedTags - Enable ECS managed tags to ECS Task.
@@ -176,7 +178,7 @@ abstract class TagBase implements IAspect {
 }
 ```
 
-And below is an example demonstrating how the current tagging API works:
+And below is an example use case demonstrating how the adjusted tagging API works:
 
 ``` ts
 // Create Task Definition
