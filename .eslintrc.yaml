@@ -35,17 +35,18 @@ rules:
     - error
     - 2
 
-  "@typescript-eslint/explicit-member-accessibility": off
-  "@typescript-eslint/explicit-function-return-type": off
-  "@typescript-eslint/no-use-before-define": off
-  "@typescript-eslint/no-non-null-assertion": off
-  "@typescript-eslint/no-var-requires": off
-  "no-constant-condition": warn
-  "@typescript-eslint/no-parameter-properties": warn
+  # recommendation overrides
   "@typescript-eslint/array-type": warn
+  "@typescript-eslint/explicit-function-return-type": off
+  "@typescript-eslint/explicit-member-accessibility": off
   "@typescript-eslint/member-delimiter-style": warn
+  "@typescript-eslint/no-non-null-assertion": off
+  "@typescript-eslint/no-parameter-properties": warn
+  "@typescript-eslint/no-use-before-define": off
+  "@typescript-eslint/no-var-requires": off
   "no-case-declarations": warn
   "no-console": warn
+  "no-constant-condition": warn
 
   # duplicate of "camelcase"
   "@typescript-eslint/camelcase": off
