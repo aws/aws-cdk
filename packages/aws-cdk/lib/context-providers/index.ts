@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { SDK } from '../api/util/sdk';
+import { ISDK } from '../api/util/sdk';
 import { debug } from '../logging';
 import { Context } from '../settings';
 import { AZContextProviderPlugin } from './availability-zones';
@@ -8,7 +8,7 @@ import { ContextProviderPlugin } from './provider';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
-type ProviderConstructor =  (new (sdk: SDK) => ContextProviderPlugin);
+type ProviderConstructor =  (new (sdk: ISDK) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ProviderConstructor};
 
 /**
@@ -17,7 +17,7 @@ export type ProviderMap = {[name: string]: ProviderConstructor};
 export async function provideContextValues(
   missingValues: cxapi.MissingContext[],
   context: Context,
-  sdk: SDK) {
+  sdk: ISDK) {
   for (const missingContext of missingValues) {
     const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];

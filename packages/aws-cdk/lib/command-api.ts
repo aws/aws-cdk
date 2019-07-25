@@ -1,6 +1,6 @@
 import yargs = require('yargs');
 import { AppStacks } from './api/cxapp/stacks';
-import { SDK } from './api/util/sdk';
+import { ISDK } from './api/util/sdk';
 import { Configuration } from './settings';
 
 /**
@@ -19,7 +19,7 @@ export interface CommandOptions {
   args: yargs.Arguments;
   configuration: Configuration;
   appStacks: AppStacks;
-  aws: SDK;
+  aws: ISDK;
 }
 
 /**

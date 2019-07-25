@@ -22,6 +22,9 @@
     },
     "PrivateSubnets": {
       "Value": "ids:"
+    },
+    "PublicRouteTables": {
+      "Value": "ids: rtb-e19455ca, rtb-e0c24797, rtb-ccd77395"
     }
   }
 }

@@ -1,11 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Mode, SDK } from '../api';
+import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
 export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: SDK) {
+  constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: {[key: string]: any}): Promise<object> {
