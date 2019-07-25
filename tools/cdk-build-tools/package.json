@@ -17,7 +17,7 @@
     "cdk-awslint": "bin/cdk-awslint"
   },
   "scripts": {
-    "build": "tsc -b && tslint -p . && eslint . --ext .ts && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && pkglint",
+    "build": "tsc -b && tslint -p . && eslint . --ext .ts,.js --ignore-path .gitignore && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && pkglint",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "build+test+package": "npm run build+test",

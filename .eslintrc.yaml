@@ -7,29 +7,45 @@ parserOptions:
   sourceType: module
   ecmaFeatures:
     modules: true
-# extends:
-  # - eslint:recommended
-  # - plugin:@typescript-eslint/eslint-recommended
-  # - plugin:@typescript-eslint/recommended
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
 rules:
-  # FIXME should be error
-  semi: warn
+  semi: error
   no-template-curly-in-string: off
   quotes: off
   "@typescript-eslint/interface-name-prefix": off
   eol-last: off
   arrow-parens: off
   "@typescript-eslint/no-namespace": off
-  # FIXME should be error
   max-len: 
-    - warn
+    - error
     - code: 150
   sort-keys: off
   comma-dangle: off
-  # FIXME should be error
-  no-unused-expressions: warn
-  # FIXME should be error
-  camelcase: warn
-  # FIXME should be error
-  "@typescript-eslint/no-floating-promises": warn
+  no-unused-expressions: error
+  camelcase: 
+    - error
+    - allow:
+      - "child_process"
+  "@typescript-eslint/no-floating-promises": error
   "@typescript-eslint/no-empty-interface": off
+  "@typescript-eslint/indent": 
+    - error
+    - 2
+
+  "@typescript-eslint/explicit-member-accessibility": off
+  "@typescript-eslint/explicit-function-return-type": off
+  "@typescript-eslint/no-use-before-define": off
+  "@typescript-eslint/no-non-null-assertion": off
+  "@typescript-eslint/no-var-requires": off
+  "no-constant-condition": warn
+  "@typescript-eslint/no-parameter-properties": warn
+  "@typescript-eslint/array-type": warn
+  "@typescript-eslint/member-delimiter-style": warn
+  "no-case-declarations": warn
+  "no-console": warn
+
+  # duplicate of "camelcase"
+  "@typescript-eslint/camelcase": off
