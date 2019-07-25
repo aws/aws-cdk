@@ -4,7 +4,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import {AmazonLinuxGeneration} from "@aws-cdk/aws-ec2";
 import {Construct, Duration, IResource, Resource, Stack} from '@aws-cdk/core';
 import {InstanceDrainHook} from './drain-hook/instance-drain-hook';
 import {CfnCluster} from './ecs.generated';
@@ -350,14 +349,14 @@ export class EcsOptimizedAmiStatic implements ec2.IMachineImage {
    * @param hardwareType ECS-optimized AMI variant to use
    */
   public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedAmiStatic {
-    return new EcsOptimizedAmiStatic({generation: AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType});
+    return new EcsOptimizedAmiStatic({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType});
   }
 
   /**
    * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
    */
   public static amazonLinux(): EcsOptimizedAmiStatic {
-    return new EcsOptimizedAmiStatic({generation: AmazonLinuxGeneration.AMAZON_LINUX});
+    return new EcsOptimizedAmiStatic({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX});
   }
 
   /**
