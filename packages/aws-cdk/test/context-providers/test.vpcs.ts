@@ -26,7 +26,7 @@ export = nodeunit.testCase({
     const provider = new VpcNetworkContextProviderPlugin(mockSDK);
 
     AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
-      test.deepEqual(params.Filters, [{ Name: 'tag:foo', Values: ['bar'] }]);
+      test.deepEqual(params.Filters, [{ Name: 'foo', Values: ['bar'] }]);
       return cb(null, { Vpcs: [{ VpcId: 'vpc-1234567' }] });
     });
     AWS.mock('EC2', 'describeSubnets', (params: aws.EC2.DescribeSubnetsRequest, cb: AwsCallback<aws.EC2.DescribeSubnetsResult>) => {
@@ -85,7 +85,7 @@ export = nodeunit.testCase({
     const provider = new VpcNetworkContextProviderPlugin(mockSDK);
 
     AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
-      test.deepEqual(params.Filters, [{ Name: 'tag:foo', Values: ['bar'] }]);
+      test.deepEqual(params.Filters, [{ Name: 'foo', Values: ['bar'] }]);
       return cb(null, {});
     });
 
@@ -107,7 +107,7 @@ export = nodeunit.testCase({
     const provider = new VpcNetworkContextProviderPlugin(mockSDK);
 
     AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
-      test.deepEqual(params.Filters, [{ Name: 'tag:foo', Values: ['bar'] }]);
+      test.deepEqual(params.Filters, [{ Name: 'foo', Values: ['bar'] }]);
       return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }]});
     });
 
@@ -129,7 +129,7 @@ export = nodeunit.testCase({
     const provider = new VpcNetworkContextProviderPlugin(mockSDK);
 
     AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
-      test.deepEqual(params.Filters, [{ Name: 'tag:foo', Values: ['bar'] }]);
+      test.deepEqual(params.Filters, [{ Name: 'foo', Values: ['bar'] }]);
       return cb(null, { Vpcs: [{ VpcId: 'vpc-1234567' }] });
     });
     AWS.mock('EC2', 'describeSubnets', (params: aws.EC2.DescribeSubnetsRequest, cb: AwsCallback<aws.EC2.DescribeSubnetsResult>) => {
