@@ -98,11 +98,11 @@ export interface CompilerOverrides {
  * Return the compiler for this package (either tsc or jsii)
  */
 export function packageCompiler(compilers: CompilerOverrides): string[] {
-    if (isJsii()) {
-        return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references'];
-    } else {
-        return [compilers.tsc || require.resolve('typescript/bin/tsc')];
-    }
+  if (isJsii()) {
+    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references'];
+  } else {
+    return [compilers.tsc || require.resolve('typescript/bin/tsc')];
+  }
 }
 
 export interface CDKBuildOptions {

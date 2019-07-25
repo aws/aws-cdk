@@ -25,8 +25,8 @@ export class PackageNameMatchesDirectoryName extends ValidationRule {
     const parts = pkg.packageRoot.split(path.sep);
 
     const expectedName = parts[parts.length - 2].startsWith('@')
-               ? parts.slice(parts.length - 2).join('/')
-               : parts[parts.length - 1];
+      ? parts.slice(parts.length - 2).join('/')
+      : parts[parts.length - 1];
 
     expectJSON(this.name, pkg, 'name', expectedName);
   }
