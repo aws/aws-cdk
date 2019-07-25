@@ -4,6 +4,10 @@ language: python
 python:
   - "3.6"
 
+branches:
+  only:
+    - master
+
 env:
   - NODE_VERSION="8.11.3"
 

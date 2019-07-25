@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/aws/aws-cdk/compare/v1.1.0...v1.2.0) (2019-07-25)
+
+
+### Bug Fixes
+
+* **assert:** CfnParameter MatchStyle diff support ([#3408](https://github.com/aws/aws-cdk/issues/3408)) ([2747a76](https://github.com/aws/aws-cdk/commit/2747a76)), closes [#3399](https://github.com/aws/aws-cdk/issues/3399)
+* **ecs:** make registry URL domain-suffix dependent ([#3394](https://github.com/aws/aws-cdk/issues/3394)) ([c989fa4](https://github.com/aws/aws-cdk/commit/c989fa4)), closes [#3377](https://github.com/aws/aws-cdk/issues/3377)
+* **events:** allow adding the same target to rule multiple times ([#3353](https://github.com/aws/aws-cdk/issues/3353)) ([5879178](https://github.com/aws/aws-cdk/commit/5879178)), closes [#3173](https://github.com/aws/aws-cdk/issues/3173)
+* **s3:** fail early with bad notification filters ([#3397](https://github.com/aws/aws-cdk/issues/3397)) ([cd0e9bd](https://github.com/aws/aws-cdk/commit/cd0e9bd)), closes [#3347](https://github.com/aws/aws-cdk/issues/3347) [#3398](https://github.com/aws/aws-cdk/issues/3398)
+
+
+### Features
+
+* **autoscaling:** health check configuration ([#3390](https://github.com/aws/aws-cdk/issues/3390)) ([c9a2c21](https://github.com/aws/aws-cdk/commit/c9a2c21)), closes [#3381](https://github.com/aws/aws-cdk/issues/3381)
+* **cli:** VPC context provider looks up RouteTable IDs ([#3171](https://github.com/aws/aws-cdk/issues/3171)) ([6d762f9](https://github.com/aws/aws-cdk/commit/6d762f9))
+* **cloudformation:** update to Resource Specification v4.2.0 ([#3351](https://github.com/aws/aws-cdk/issues/3351)) ([9ec57af](https://github.com/aws/aws-cdk/commit/9ec57af))
+* **cloudwatch:** dashboardName validation ([#3382](https://github.com/aws/aws-cdk/issues/3382)) ([f53f845](https://github.com/aws/aws-cdk/commit/f53f845)), closes [#2976](https://github.com/aws/aws-cdk/issues/2976)
+* **core:** allow multiple transforms on ITemplateOptions ([#3395](https://github.com/aws/aws-cdk/issues/3395)) ([9565b9b](https://github.com/aws/aws-cdk/commit/9565b9b)), closes [#3366](https://github.com/aws/aws-cdk/issues/3366)
+* **s3:** bucket access control ([#3391](https://github.com/aws/aws-cdk/issues/3391)) ([820575b](https://github.com/aws/aws-cdk/commit/820575b)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html#cfn-s3](https://github.com//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html/issues/cfn-s3) [#3383](https://github.com/aws/aws-cdk/issues/3383)
+* **s3:** bucket websiteRedirect ([#3392](https://github.com/aws/aws-cdk/issues/3392)) ([dd574cc](https://github.com/aws/aws-cdk/commit/dd574cc)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-websiteconfiguration.html#cfn-s3](https://github.com//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-websiteconfiguration.html/issues/cfn-s3) [#1083](https://github.com/aws/aws-cdk/issues/1083)
+
+
+
 ## [1.1.0](https://github.com/aws/aws-cdk/compare/v1.0.0...v1.1.0) (2019-07-18)
 
 
