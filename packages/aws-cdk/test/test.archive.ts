@@ -32,6 +32,12 @@ export = {
     test.equal(dates[0], '1980-01-01T00:00:00.000Z', 'Dates are not reset');
     test.equal(new Set(dates).size, 1, 'Dates are not equal');
 
+    // check that mode is preserved
+    const stat = await fs.stat(path.join(extractDir, 'executable.txt'));
+    // tslint:disable-next-line:no-bitwise
+    const isExec = (stat.mode & fs.constants.S_IXUSR) || (stat.mode & fs.constants.S_IXGRP) || (stat.mode & fs.constants.S_IXOTH);
+    test.ok(isExec, 'File is not executable');
+
     await fs.remove(stagingDir);
     await fs.remove(extractDir);
     test.done();
