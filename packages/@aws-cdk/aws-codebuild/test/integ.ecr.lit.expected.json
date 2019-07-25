@@ -1,9 +1,8 @@
 {
   "Resources": {
     "MyRepoF4F48043": {
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain",
       "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
     "MyProjectRole9BBE5233": {
@@ -170,7 +169,11 @@
                     }
                   ]
                 },
-                ".amazonaws.com/",
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                },
+                "/",
                 {
                   "Ref": "MyRepoF4F48043"
                 },
