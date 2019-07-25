@@ -1,9 +1,9 @@
 import cxapi = require('@aws-cdk/cx-api');
 import minimatch = require('minimatch');
-import { SDK } from '../util/sdk';
+import { ISDK } from '../util/sdk';
 import { AppStacks } from './stacks';
 
-export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: SDK): Promise<cxapi.Environment[]> {
+export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: ISDK): Promise<cxapi.Environment[]> {
   if (environmentGlobs.length === 0) {
     environmentGlobs = [ '**' ]; // default to ALL
   }
@@ -26,7 +26,7 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
   return environments;
 }
 
-async function parseEnvironment(sdk: SDK, env: cxapi.Environment): Promise<cxapi.Environment> {
+async function parseEnvironment(sdk: ISDK, env: cxapi.Environment): Promise<cxapi.Environment> {
   const account = env.account === cxapi.UNKNOWN_ACCOUNT ? await sdk.defaultAccount() : env.account;
   const region = env.region === cxapi.UNKNOWN_REGION ? await sdk.defaultRegion() : env.region;
 
