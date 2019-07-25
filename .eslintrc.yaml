@@ -1,0 +1,35 @@
+parser: "@typescript-eslint/parser"
+plugins:
+  - "@typescript-eslint"
+parserOptions:
+  project: ./tsconfig.json
+  ecmaVersion: 6
+  sourceType: module
+  ecmaFeatures:
+    modules: true
+# extends:
+  # - eslint:recommended
+  # - plugin:@typescript-eslint/eslint-recommended
+  # - plugin:@typescript-eslint/recommended
+rules:
+  # FIXME should be error
+  semi: warn
+  no-template-curly-in-string: off
+  quotes: off
+  "@typescript-eslint/interface-name-prefix": off
+  eol-last: off
+  arrow-parens: off
+  "@typescript-eslint/no-namespace": off
+  # FIXME should be error
+  max-len: 
+    - warn
+    - code: 150
+  sort-keys: off
+  comma-dangle: off
+  # FIXME should be error
+  no-unused-expressions: warn
+  # FIXME should be error
+  camelcase: warn
+  # FIXME should be error
+  "@typescript-eslint/no-floating-promises": warn
+  "@typescript-eslint/no-empty-interface": off
