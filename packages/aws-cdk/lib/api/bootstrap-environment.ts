@@ -3,7 +3,7 @@ import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 import { deployStack, DeployStackResult } from './deploy-stack';
-import { SDK } from './util/sdk';
+import { ISDK } from './util/sdk';
 
 // tslint:disable:max-line-length
 
@@ -13,7 +13,7 @@ export const BUCKET_NAME_OUTPUT = 'BucketName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 
 /** @experimental */
-export async function bootstrapEnvironment(environment: cxapi.Environment, aws: SDK, toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<DeployStackResult> {
+export async function bootstrapEnvironment(environment: cxapi.Environment, aws: ISDK, toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<DeployStackResult> {
 
   const template = {
     Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
