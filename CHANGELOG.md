@@ -15,7 +15,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **autoscaling:** health check configuration ([#3390](https://github.com/aws/aws-cdk/issues/3390)) ([c9a2c21](https://github.com/aws/aws-cdk/commit/c9a2c21)), closes [#3381](https://github.com/aws/aws-cdk/issues/3381)
 * **cli:** VPC context provider looks up RouteTable IDs ([#3171](https://github.com/aws/aws-cdk/issues/3171)) ([6d762f9](https://github.com/aws/aws-cdk/commit/6d762f9))
 * **cloudformation:** update to Resource Specification v4.2.0 ([#3351](https://github.com/aws/aws-cdk/issues/3351)) ([9ec57af](https://github.com/aws/aws-cdk/commit/9ec57af))
 * **cloudwatch:** dashboardName validation ([#3382](https://github.com/aws/aws-cdk/issues/3382)) ([f53f845](https://github.com/aws/aws-cdk/commit/f53f845)), closes [#2976](https://github.com/aws/aws-cdk/issues/2976)
