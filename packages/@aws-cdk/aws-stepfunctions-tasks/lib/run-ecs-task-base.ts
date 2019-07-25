@@ -16,7 +16,10 @@ export interface CommonEcsRunTaskProps {
   readonly cluster: ecs.ICluster;
 
   /**
-   * Task Definition used for running tasks in the service
+   * Task Definition used for running tasks in the service.
+   *
+   * Note: this must be TaskDefinition, and not ITaskDefinition,
+   * as it requires properties that are not known for imported task definitions
    */
   readonly taskDefinition: ecs.TaskDefinition;
 
@@ -154,8 +157,8 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     // Need to be able to pass both Task and Execution role, apparently
     const ret = new Array<iam.IRole>();
     ret.push(this.props.taskDefinition.taskRole);
-    if ((this.props.taskDefinition as any).executionRole) {
-      ret.push((this.props.taskDefinition as any).executionRole);
+    if (this.props.taskDefinition.executionRole) {
+      ret.push(this.props.taskDefinition.executionRole);
     }
     return ret;
   }
