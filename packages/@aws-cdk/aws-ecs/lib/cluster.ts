@@ -337,12 +337,6 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
  * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
  */
 export class EcsOptimizedAmiStatic implements ec2.IMachineImage {
-  private readonly generation?: ec2.AmazonLinuxGeneration;
-  private readonly windowsVersion?: WindowsOptimizedVersion;
-  private readonly hwType?: AmiHardwareType;
-
-  private readonly amiParameterName: string;
-
   /**
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
@@ -367,6 +361,12 @@ export class EcsOptimizedAmiStatic implements ec2.IMachineImage {
   public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedAmiStatic {
     return new EcsOptimizedAmiStatic({windowsVersion});
   }
+
+  private readonly generation?: ec2.AmazonLinuxGeneration;
+  private readonly windowsVersion?: WindowsOptimizedVersion;
+  private readonly hwType?: AmiHardwareType;
+
+  private readonly amiParameterName: string;
 
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
