@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 import { ContainerImage } from '../../lib';
-import { LaunchType, PropagateTagsFromType } from '../../lib/base/base-service';
+import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 
 export = {
   "When creating a Fargate Service": {
@@ -42,7 +42,7 @@ export = {
         LaunchType: LaunchType.FARGATE,
         LoadBalancers: [],
         EnableECSManagedTags: true,
-        PropagateTags: PropagateTagsFromType.SERVICE,
+        PropagateTags: PropagatedTagSource.SERVICE,
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: "DISABLED",

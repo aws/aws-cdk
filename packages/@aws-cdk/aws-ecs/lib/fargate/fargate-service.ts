@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/core');
 import { Construct, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, PropagateTagsFromType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
@@ -55,7 +55,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * @default SERVICE
    */
-  readonly propagateTaskTagsFrom?: PropagateTagsFromType;
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -94,7 +94,7 @@ export class FargateService extends BaseService implements IFargateService {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
       launchType: LaunchType.FARGATE,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagateTagsFromType.SERVICE : props.propagateTaskTagsFrom,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE : props.propagateTaskTagsFrom,
       enableECSManagedTags: props.enableECSManagedTags === undefined ? true : props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,

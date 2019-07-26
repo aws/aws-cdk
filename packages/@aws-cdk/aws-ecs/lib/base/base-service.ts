@@ -85,7 +85,7 @@ export interface BaseServiceOptions {
    *
    * @default SERVICE
    */
-  readonly propagateTags?: PropagateTagsFromType;
+  readonly propagateTags?: PropagatedTagSource;
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
@@ -519,7 +519,7 @@ export enum LaunchType {
 /**
  * Propagate tags from either service or task definition
  */
-export enum PropagateTagsFromType {
+export enum PropagatedTagSource {
   /**
    * Propagate tags from service
    */
@@ -528,5 +528,10 @@ export enum PropagateTagsFromType {
   /**
    * Propagate tags from task definition
    */
-  TASK_DEFINITION = 'TASK_DEFINITION'
+  TASK_DEFINITION = 'TASK_DEFINITION',
+
+  /**
+   * Do not propagate
+   */
+  NO_PROPAGATE = 'NO_PROPAGATE'
 }
