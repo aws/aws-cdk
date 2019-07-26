@@ -12,7 +12,7 @@ myConstruct.node.applyAspect(new Tag('key', 'value'));
 myConstruct.node.applyAspect(new RemoveTag('key', 'value'));
 ```
 
-As we can see, the current tagging API is not nice and grammatically verbose for using, since there is no reason to expose `node` to users and `applyAspect` is not intuitive enough, which leaves room for improvement.
+As we can see, the current tagging API is not nice and grammatically verbose for using, since there is no reason to expose `node` to users and `applyAspect` does not indicate anything towards tags, which leaves room for improvement. Also, users need to create two objects to add tag and remove tag which causes confusion to some degree.
 
 ## General approach
 
