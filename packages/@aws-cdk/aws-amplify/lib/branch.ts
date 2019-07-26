@@ -45,7 +45,7 @@ export class Branch extends Resource implements IBranch {
     const resource = new CfnBranch(this, 'Branch', {
       appId: props.app.appId,
       basicAuthConfig: this.basicAuthResolver,
-      branchName: props.branchName,
+      branchName: this.physicalName,
       buildSpec: props.buildSpec,
       description: props.description,
       environmentVariables: this.environmentVariablesResolver,
