@@ -16,7 +16,9 @@ rules:
   quotes: off
   "@typescript-eslint/interface-name-prefix": off
   eol-last: off
-  arrow-parens: off
+  arrow-parens:
+    - error
+    - "as-needed"
   "@typescript-eslint/no-namespace": off
   max-len:
     - error
@@ -34,7 +36,7 @@ rules:
   # recommendation overrides
   "@typescript-eslint/array-type": warn
   "@typescript-eslint/explicit-function-return-type": off
-  "@typescript-eslint/explicit-member-accessibility": off
+  "@typescript-eslint/explicit-member-accessibility": warn
   "@typescript-eslint/member-delimiter-style": warn
   "@typescript-eslint/no-non-null-assertion": off
   "@typescript-eslint/no-parameter-properties": warn
