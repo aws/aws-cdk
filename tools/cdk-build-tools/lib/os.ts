@@ -1,4 +1,4 @@
-import childProcess = require("childProcess");
+import childProcess = require("child_process");
 import colors = require('colors/safe');
 import fs = require('fs');
 import util = require('util');
