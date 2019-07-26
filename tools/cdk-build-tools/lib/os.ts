@@ -1,4 +1,4 @@
-import child_process = require("child_process");
+import childProcess = require("childProcess");
 import colors = require('colors/safe');
 import fs = require('fs');
 import util = require('util');
@@ -18,7 +18,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
   await makeShellScriptExecutable(command[0]);
 
-  const child = child_process.spawn(command[0], command.slice(1), {
+  const child = childProcess.spawn(command[0], command.slice(1), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
     stdio: [ 'ignore', 'pipe', 'pipe' ]

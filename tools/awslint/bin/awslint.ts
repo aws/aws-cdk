@@ -1,5 +1,5 @@
 // tslint:disable:max-line-length
-import child_process = require('child_process');
+import childProcess = require('child_process');
 import colors = require('colors');
 import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
@@ -265,7 +265,7 @@ function mergeOptions(dest: any, pkg?: any) {
 }
 
 async function shell(command: string) {
-  const child = child_process.spawn(command, undefined, { stdio: [ 'inherit', 'inherit', 'inherit' ]});
+  const child = childProcess.spawn(command, undefined, { stdio: [ 'inherit', 'inherit', 'inherit' ]});
   return new Promise((ok, ko) => {
     child.once('exit', status => {
       if (status === 0) {

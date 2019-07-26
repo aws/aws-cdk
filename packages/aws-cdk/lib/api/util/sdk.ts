@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import AWS = require('aws-sdk');
-import child_process = require('child_process');
+import childProcess = require('child_process');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
@@ -453,7 +453,7 @@ async function hasEc2Credentials() {
   let instance = false;
   if (process.platform === 'win32') {
     // https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
-    const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
+    const result = await util.promisify(childProcess.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
     // output looks like
     //  UUID
     //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF

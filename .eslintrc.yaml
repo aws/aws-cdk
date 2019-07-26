@@ -25,10 +25,7 @@ rules:
   sort-keys: off
   comma-dangle: off
   no-unused-expressions: error
-  camelcase:
-    - error
-    - allow:
-      - "child_process"
+  camelcase: error
   "@typescript-eslint/no-floating-promises": error
   "@typescript-eslint/no-empty-interface": off
   "@typescript-eslint/indent":

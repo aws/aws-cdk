@@ -5,7 +5,7 @@
  * have an AWS construct library.
  */
 
-import child_process = require('child_process');
+import childProcess = require('child_process');
 import fs = require('fs-extra');
 import path = require('path');
 import cfnspec = require('../lib');
@@ -261,7 +261,7 @@ main().catch(e => {
 });
 
 async function exec(command: string) {
-  const child = child_process.spawn(command, [], {
+  const child = childProcess.spawn(command, [], {
     stdio: [ 'ignore', 'inherit', 'inherit' ],
     shell: true
   });
