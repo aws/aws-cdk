@@ -4,7 +4,7 @@ Amazon ECS supports tagging for all the ECS resources (see [here](https://docs.a
 
 In addition, `EnableECSManagedTags` is provided as another property so that ECS managed tags can be supported and used to tag ECS tasks. However, currently users cannot set `EnableECSManagedTags` and the default value is `false`.
 
-Additionally, CDK support tagging and can cascade tags to all its tagable children (see [here](https://docs.aws.amazon.com/cdk/latest/guide/tagging.html)). The current CDK tagging API is shown below:
+Additionally, CDK support tagging and can cascade tags to all its taggable children (see [here](https://docs.aws.amazon.com/cdk/latest/guide/tagging.html)). The current CDK tagging API is shown below:
 
 ``` ts
 myConstruct.node.applyAspect(new Tag('key', 'value'));
@@ -12,7 +12,7 @@ myConstruct.node.applyAspect(new Tag('key', 'value'));
 myConstruct.node.applyAspect(new RemoveTag('key', 'value'));
 ```
 
-As we can see, the current tagging API is not nice and intuitive enough for users which needs to be improved.
+As we can see, the current tagging API is not nice and grammatically verbose for using, since there is no reason to expose `node` to users and `applyAspect` is not intuitive enough, which leaves room for improvement.
 
 ## General approach
 
@@ -28,32 +28,12 @@ The new `BaseService` class will include two more base properties:
 
 *Note that the reason why we define `propagateTaskTagsFrom` is because we want to have a different name for `propagateTags` to eliminate the naming confusion.*
 
-For the tagging behavior part, we have three options for the new tagging API:
-
-**Option 1: define public static method**
+For the tagging behavior part, we propose using just one entry point `Tag` for the new tagging API:
 
 ``` ts
-Tag.apply(myConstruct, 'key', 'value');
+Tag.add(myConstruct, 'key', 'value');
 
-RemoveTag.apply(myConstruct, 'key');
-```
-
-**Option 2: use Tag object (RECOMMENDED since users can reuse tags)**
-
-``` ts
-const tag = new Tag('key', 'value');
-tag.apply(myConstruct);
-
-const removetag = new RemoveTag('key');
-removetag.apply(myConstruct);
-```
-
-**Option 3: define method in Construct**
-
-``` ts
-myConstruct.apply(new Tag('key', 'value'));
-
-myConstruct.apply(new RemoveTag('key'));
+Tag.remove(myConstruct, 'key');
 ```
 
 ## Code changes
@@ -63,8 +43,8 @@ Given the above, we should make the following changes on ECS:
   1. Add `propagateTags` and `enableECSManagedTags` properties to `BaseServiceOptions`.
   2. Add `propagateTaskTagsFrom` and `enableECSManagedTags` properties to `Ec2ServiceProps` and `FargateServiceProps`.
   3. Add an enum type `PropagateTagsFromType` to support `propagateTaskTagsFrom`.
-* Change CDK Tagging API
-  1. Add a method `apply(scope, 'key', 'value')` to `Tag` class and `RemoveTag` class, which calls `applyAspect`.
+* Change CDK Tagging API.
+  1. Add two methods `add(scope, key, value, props)` and `remove(scope, key, props)` to `Tag` class, which calls `applyAspect` and implementing tags adding and removal.
 
 # Part 1: Support Tag Propagation for ECS Task and ECS Managed Tags
 
@@ -155,26 +135,29 @@ const service = new ecs.Ec2Service(stack, "Service", {
 
 # Part2: Change CDK Tagging API
 
-Implementation below is for Option 2:
+Implementation for the new tagging API is shown below:
 
 ``` ts
 /**
- * The common functionality for Tag and Remove Tag Aspects
+ * The Tag Aspect will handle adding a tag to this node and cascading tags to children
  */
-abstract class TagBase implements IAspect {
-
-  ...
-
+export class Tag extends TagBase {
 
   /**
-   * apply the Tag/RemoveTag to the node of a construct and all its the tagable children
+   * add tags to the node of a construct and all its the taggable children
    */
-  public apply(scope: Construct) {
-    scope.node.applyAspect(this);
+  public static add(scope: Construct, key: string, value: string, props: TagProps = {}) {
+    scope.node.applyAspect(new Tag(key, value, props));
+  }
+
+  /**
+   * remove tags to the node of a construct and all its the taggable children
+   */
+  public static remove(scope: Construct, key: string, props: TagProps = {}) {
+    scope.node.applyAspect(new RemoveTag(key, props));
   }
 
   ...
-
 }
 ```
 
@@ -190,7 +173,9 @@ const service = new ecs.Ec2Service(stack, "Service", {
   taskDefinition,
 });
 
-const tag = new Tag("foo", "bar");
-tag.apply(taskDefinition);
-tag.apply(service);
+Tag.add(taskDefinition, 'tfoo', 'tbar');
+Tag.remove(taskDefinition, 'foo', 'bar');
+
+Tag.add(service, 'sfoo', 'sbar');
+Tag.remove(service, 'foo', 'bar');
 ```
