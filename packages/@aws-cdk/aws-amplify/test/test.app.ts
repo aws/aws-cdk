@@ -1,5 +1,4 @@
 import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { App, BuildSpec } from '../lib';
