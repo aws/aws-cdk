@@ -60,6 +60,8 @@ export class App extends Resource implements IApp {
    */
   private readonly role: IRole;
 
+  private readonly resource: CfnApp;
+
   private readonly basicAuthResolver: BasicAuthResolver = new BasicAuthResolver();
 
   private readonly environmentVariablesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
@@ -96,6 +98,8 @@ export class App extends Resource implements IApp {
       repository: props.repository,
       tags: props.tags
     });
+
+    this.resource = resource;
 
     this.appArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'amplify',
@@ -181,6 +185,17 @@ export class App extends Resource implements IApp {
     };
 
     return new Branch(this, id, branchProps);
+  }
+
+  protected validate(): string[] {
+    const errors: string[] = [];
+
+    const repo: string | undefined = this.resource.repository;
+    if (repo && repo.endsWith('.git')) {
+      errors.push(`Your repository ends with .git, Amplify doesn't like this`);
+    }
+
+    return errors;
   }
 }
 
@@ -269,7 +284,7 @@ export interface AppProps {
    * Required to be in HTTP URL format: https://github.com/awslabs/aws-cdk
    * If you use a Git URL, it will error.
    */
-  readonly repository: string;
+  readonly repository?: string;
 
   /**
    * Tag for an Amplify App
