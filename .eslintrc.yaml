@@ -12,7 +12,6 @@ extends:
   - plugin:@typescript-eslint/eslint-recommended
   - plugin:@typescript-eslint/recommended
 rules:
-  semi: error
   no-template-curly-in-string: off
   quotes: off
   "@typescript-eslint/interface-name-prefix": off
@@ -44,6 +43,64 @@ rules:
   no-case-declarations: warn
   no-console: warn
   no-constant-condition: warn
-
+  no-inner-declarations: warn
+  # duplicate of @typescript-eslint/semi
+  semi: off
   # duplicate of "camelcase"
   "@typescript-eslint/camelcase": off
+
+  # tslint:recommended rules equivalents
+  arrow-body-style: error
+  "@typescript-eslint/ban-types":
+    - error
+    - types:
+        Object:
+          message: "Avoid using the `Object` type. Did you mean `object`?"
+          fixWith: object
+        Function: "Avoid using the `Function` type. Prefer a specific function type, like `() => void`."
+        Boolean:
+          message: "Avoid using the `Boolean` type. Did you mean `boolean`?"
+          fixWith: boolean
+        Number:
+          message: "Avoid using the `Number` type. Did you mean `number`?"
+          fixWith: number
+        String:
+          message: "Avoid using the `String` type. Did you mean `string`?"
+          fixWith: string
+        Symbol:
+          message: "Avoid using the `Symbol` type. Did you mean `symbol`?"
+          fixWith: symbol
+  "@typescript-eslint/prefer-function-type": error
+  guard-for-in: error
+  "@typescript-eslint/member-ordering":
+    - error
+    - default:
+      - 'static-method'
+      - 'instance-field'
+      - 'static-field'
+      - 'constructor'
+      - 'instance-method'
+  new-parens: error
+  # FIXME https://github.com/typescript-eslint/typescript-eslint/releases/v1.14.0
+  # "@typescript-eslint/consistent-type-assertions": error
+  no-caller: error
+  no-bitwise: error
+  no-new-wrappers: error
+  no-eval: error
+  no-shadow: error
+  dot-notation: error
+  no-throw-literal: error
+  no-switch-case-fall-through: off
+  no-undef-init: error
+  quote-props:
+    - error
+    - consistent-as-needed
+  object-shorthand: error
+  one-var:
+    - error
+    - never
+  "@typescript-eslint/prefer-for-of": error
+  radix: error
+  "@typescript-eslint/semi": error
+  eqeqeq: error
+  "@typescript-eslint/unified-signatures": error
