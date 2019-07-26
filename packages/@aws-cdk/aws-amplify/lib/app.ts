@@ -1,8 +1,8 @@
+import { BuildSpec } from '@aws-cdk/aws-codebuild';
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResolvable, IResolveContext, IResource, Resource, SecretValue, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 import { Branch, BranchBaseProps } from './branch';
-import { BuildSpec } from './buildspec';
 import { Domain, DomainBaseProps } from './domain';
 import { BasicAuth, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 

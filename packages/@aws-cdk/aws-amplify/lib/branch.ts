@@ -1,3 +1,4 @@
+import { BuildSpec } from '@aws-cdk/aws-codebuild';
 import { Construct, IResource, Resource, Tag } from '@aws-cdk/core';
 import { CfnBranch } from './amplify.generated';
 import { IApp } from './app';
@@ -130,7 +131,7 @@ export interface BranchBaseProps {
    *
    * @default - No build spec
    */
-  readonly buildSpec?: string;
+  readonly buildSpec?: BuildSpec;
 
   /**
    * Description for the branch.
