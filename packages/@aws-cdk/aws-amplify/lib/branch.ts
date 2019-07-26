@@ -47,7 +47,7 @@ export class Branch extends Resource implements IBranch {
       appId: props.app.appId,
       basicAuthConfig: this.basicAuthResolver,
       branchName: this.physicalName,
-      buildSpec: props.buildSpec,
+      buildSpec: (props.buildSpec) ? props.buildSpec.toBuildSpec() : undefined,
       description: props.description,
       environmentVariables: this.environmentVariablesResolver,
       stage: props.stage,
