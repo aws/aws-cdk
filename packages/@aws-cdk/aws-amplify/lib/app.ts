@@ -60,11 +60,6 @@ export class App extends Resource implements IApp {
    */
   private readonly role: IRole;
 
-  /**
-   * Resource
-   */
-  private readonly resource: CfnApp;
-
   private readonly basicAuthResolver: BasicAuthResolver = new BasicAuthResolver();
 
   private readonly environmentVariablesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
@@ -111,8 +106,6 @@ export class App extends Resource implements IApp {
     this.appDefaultDomain = resource.attrDefaultDomain;
     this.appId = resource.attrAppId;
     this.appName = resource.attrAppName;
-
-    this.resource = resource;
   }
 
   /**
