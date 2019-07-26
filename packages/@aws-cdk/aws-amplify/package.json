@@ -78,7 +78,8 @@
   "peerDependencies": {
     "@aws-cdk/core": "^1.1.0",
     "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/aws-certificatemanager": "^1.1.0"
+    "@aws-cdk/aws-certificatemanager": "^1.1.0",
+    "@aws-cdk/aws-codebuild": "^1.2.0"
   },
   "engines": {
     "node": ">= 8.10.0"

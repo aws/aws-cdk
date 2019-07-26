@@ -60,30 +60,6 @@ export = {
     test.done();
   },
 
-  'Test Manual IAM Role'(test: Test) {
-    const stack = new Stack();
-    const app = new App(stack, 'AmpApp', {
-      appName: 'foo',
-      repository: 'https://github.com/awslabs/aws-cdk',
-      buildSpec: BuildSpec.fromObject({version: 0.2})
-    });
-
-    const role = new Role(stack, 'role', {
-      assumedBy: new ServicePrincipal('amplify.amazonaws.com')
-    });
-
-    app.addServiceRole(role);
-
-    expect(stack).to(haveResource('AWS::IAM::Role'));
-    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
-      IAMServiceRole: {
-        'Fn::GetAtt': [ 'roleC7B7E775', 'Arn' ]
-      }
-    }));
-
-    test.done();
-  },
-
   'Test Custom Rules'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {

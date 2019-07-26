@@ -1,5 +1,5 @@
 import { BuildSpec } from '@aws-cdk/aws-codebuild';
-import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResolvable, IResolveContext, IResource, Resource, SecretValue, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 import { Branch, BranchBaseProps } from './branch';
@@ -56,6 +56,11 @@ export class App extends Resource implements IApp {
   public readonly appDefaultDomain: string;
 
   /**
+   * IAM Role
+   */
+  private readonly role: IRole;
+
+  /**
    * Resource
    */
   private readonly resource: CfnApp;
@@ -79,19 +84,9 @@ export class App extends Resource implements IApp {
       this.environmentVariablesResolver.addEnvironmentVariables(...props.environmentVariables);
     }
 
-    let roleArn: string | undefined;
-
-    if (props.serviceRole) {
-      roleArn = props.serviceRole.roleArn;
-    }
-
-    if (props.buildSpec && !props.serviceRole) {
-      const role = new LazyRole(scope, 'lazy-role', {
-        assumedBy: new ServicePrincipal('amplify.amazonaws.com')
-      });
-
-      roleArn = role.roleArn;
-    }
+    this.role = props.role || new Role(this, 'lazy-role', {
+      assumedBy: new ServicePrincipal('amplify.amazonaws.com')
+    });
 
     const resource = new CfnApp(this, 'App', {
       accessToken: props.accessToken,
@@ -100,7 +95,7 @@ export class App extends Resource implements IApp {
       customRules: this.customRulesResolver,
       description: props.description,
       environmentVariables: this.environmentVariablesResolver,
-      iamServiceRole: roleArn,
+      iamServiceRole: this.role.roleArn,
       name: props.appName,
       oauthToken: (props.oauthToken && props.oauthToken.toString()) ? props.oauthToken.toString() : undefined,
       repository: props.repository,
@@ -121,12 +116,12 @@ export class App extends Resource implements IApp {
   }
 
   /**
-   * Add Service Role
+   * Adds a policy to the app role
    *
-   * @param role
+   * @param statement
    */
-  public addServiceRole(role: IRole) {
-    this.resource.iamServiceRole = role.roleArn;
+  public addToAppRolePolicy(statement: PolicyStatement) {
+    this.role.addToPolicy(statement);
   }
 
   /**
@@ -260,7 +255,7 @@ export interface AppProps {
    *
    * @default - No service role
    */
-  readonly serviceRole?: IRole;
+  readonly role?: IRole;
 
   /**
    * Name for the Amplify App.
