@@ -107,7 +107,12 @@ export class App extends Resource implements IApp {
       tags: props.tags
     });
 
-    this.appArn = resource.attrArn,
+    this.appArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'amplify',
+      resource: 'apps',
+      resourceName: resource.attrAppId
+    });
+
     this.appDefaultDomain = resource.attrDefaultDomain;
     this.appId = resource.attrAppId;
     this.appName = resource.attrAppName;

@@ -53,7 +53,12 @@ export class Branch extends Resource implements IBranch {
       tags: props.tags
     });
 
-    this.branchArn = resource.attrArn;
+    this.branchArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'amplify',
+      resource: 'apps',
+      resourceName: `${props.app.appId}/branches/${props.branchName}`
+    });
+
     this.branchName = resource.attrBranchName;
   }
 

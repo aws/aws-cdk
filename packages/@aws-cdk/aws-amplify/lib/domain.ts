@@ -55,11 +55,16 @@ export class Domain extends Resource implements IDomain {
 
     const resource = new CfnDomain(this, 'Domain', {
       appId: props.app.appId,
-      domainName: props.domainName,
+      domainName: this.physicalName,
       subDomainSettings: this.subdomainSettingsResolver
     });
 
-    this.arn = resource.attrArn;
+    this.arn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'amplify',
+      resource: 'apps',
+      resourceName: `${props.app.appId}/domains/${this.domainName}`
+    });
+
     this.certificateRecord = Certificate.fromCertificateArn(this, 'certificate', resource.attrCertificateRecord);
     this.domainName = resource.attrDomainName;
     this.domainStatus = resource.attrDomainStatus;
