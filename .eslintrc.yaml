@@ -19,19 +19,19 @@ rules:
   eol-last: off
   arrow-parens: off
   "@typescript-eslint/no-namespace": off
-  max-len: 
+  max-len:
     - error
     - code: 150
   sort-keys: off
   comma-dangle: off
   no-unused-expressions: error
-  camelcase: 
+  camelcase:
     - error
     - allow:
       - "child_process"
   "@typescript-eslint/no-floating-promises": error
   "@typescript-eslint/no-empty-interface": off
-  "@typescript-eslint/indent": 
+  "@typescript-eslint/indent":
     - error
     - 2
 
@@ -44,9 +44,9 @@ rules:
   "@typescript-eslint/no-parameter-properties": warn
   "@typescript-eslint/no-use-before-define": off
   "@typescript-eslint/no-var-requires": off
-  "no-case-declarations": warn
-  "no-console": warn
-  "no-constant-condition": warn
+  no-case-declarations: warn
+  no-console: warn
+  no-constant-condition: warn
 
   # duplicate of "camelcase"
   "@typescript-eslint/camelcase": off
