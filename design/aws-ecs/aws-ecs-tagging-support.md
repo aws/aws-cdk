@@ -16,6 +16,7 @@ As we can see, the current tagging API is not nice and grammatically verbose for
 
 ## General approach
 
+#### ECS Tagging Support
 The new `BaseService` class will include two more base properties:
 
 * propagateTags
@@ -23,10 +24,16 @@ The new `BaseService` class will include two more base properties:
 
 `propagateTags` specifies whether to propagate the tags from the task definition or the service to ECS tasks and `enableECSManagedTags` specifies whether to enable Amazon ECS managed tags for the tasks within the service. Also, for `Ec2Service` and `FargateService` we will have the corresponding two new properties exposed to users:
 
-* propagateTaskTagsFrom
-* enableECSManagedTags
+* propagateTaskTagsFrom (`SERVICE` | `TASK_DEFINITION` | `NO_PROPAGATE`)
+* enableECSManagedTags (`true` | `false`)
 
-*Note that the reason why we define `propagateTaskTagsFrom` is because we want to have a different name for `propagateTags` to eliminate the naming confusion.*
+\*SERVICE and true are default values.\
+\*`propagateTaskTagsFrom` takes enum type `PropagatedTagSource`.\
+\*Note that the reason why we define `propagateTaskTagsFrom` is because we want to have a different name for `propagateTags` to eliminate the naming confusion.
+
+In addition, for `aws-ecs-pattern` we don’t want to bother users to make additional choice, since aws-ecs-pattern modules  should be convenient to use. As a result, `SERVICE` will be set for `propagateTaskTagsFrom` when creating an ECS service, while `true` will be set for `enableECSManagedTags`.
+
+#### Tagging API Change
 
 For the tagging behavior part, we propose using just one entry point `Tag` for the new tagging API:
 
@@ -42,9 +49,9 @@ Given the above, we should make the following changes on ECS:
 * Support tag propagation for ECS task and ECS managed tags
   1. Add `propagateTags` and `enableECSManagedTags` properties to `BaseServiceOptions`.
   2. Add `propagateTaskTagsFrom` and `enableECSManagedTags` properties to `Ec2ServiceProps` and `FargateServiceProps`.
-  3. Add an enum type `PropagateTagsFromType` to support `propagateTaskTagsFrom`.
-* Change CDK Tagging API.
-  1. Add two methods `add(scope, key, value, props)` and `remove(scope, key, props)` to `Tag` class, which calls `applyAspect` and implementing tags adding and removal.
+  3. Add an enum type `PropagatedTagSource` to support `propagateTaskTagsFrom`.
+* Change CDK Tagging API
+  1. Add two methods `add` and `remove` to `Tag` class, which calls `applyAspect`to add tags or remove tags.
 
 # Part 1: Support Tag Propagation for ECS Task and ECS Managed Tags
 
@@ -60,7 +67,7 @@ export interface BaseServiceOptions {
    *
    * @default SERVICE
    */
-  readonly propagateTags?: PropagateTagsFromType;
+  readonly propagateTags?: PropagatedTagSource;
 
    /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
@@ -73,16 +80,21 @@ export interface BaseServiceOptions {
 ```
 
 ``` ts
-export enum PropagateTagsFromType {
+export enum PropagatedTagSource {
   /**
    * Propagate tags from service
    */
   SERVICE = 'SERVICE',
 
-   /**
+  /**
    * Propagate tags from task definition
    */
-  TASK_DEFINITION = 'TASK_DEFINITION'
+  TASK_DEFINITION = 'TASK_DEFINITION',
+
+  /**
+   * Do not propagate
+   */
+  NO_PROPAGATE = 'NO_PROPAGATE'
 }
 ```
 
@@ -97,7 +109,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * @default SERVICE
    */
-  readonly propagateTaskTagsFrom?: PropagateTagsFromType;
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 ```
 
@@ -112,7 +124,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * @default SERVICE
    */
-  readonly propagateTaskTagsFrom?: PropagateTagsFromType;
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 ```
 
@@ -128,7 +140,7 @@ An example use case to create an EC2/Fargate service:
 const service = new ecs.Ec2Service(stack, "Service", {
   cluster,
   taskDefinition,
-  propagateTaskTagsFrom: ecs.PropagateTagsFromType.TASK_DEFINITION,
+  propagateTaskTagsFrom: ecs.PropagatedTagSource.TASK_DEFINITION,
   enableECSManagedTags: true,
 });
 ```
