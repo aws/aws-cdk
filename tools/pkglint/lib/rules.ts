@@ -499,7 +499,7 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
-    expectJSON(this.name, pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /\./g, /*case insensitive*/ true);
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /\./g, /* case insensitive */ true);
 
     if (dotnet) {
       const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
