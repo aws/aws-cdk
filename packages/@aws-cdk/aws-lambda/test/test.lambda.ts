@@ -186,19 +186,6 @@ export = {
       test.done();
     },
 
-    'fails if the principal is not a service or account principals'(test: Test) {
-      const stack = new cdk.Stack();
-      const fn = newTestLambda(stack);
-
-      test.throws(() => fn.addPermission('F1', { principal: new iam.ArnPrincipal('just:arn') }),
-        /Invalid principal type for Lambda permission statement/);
-
-      fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
-      fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
-
-      test.done();
-    },
-
     'BYORole'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1069,6 +1056,34 @@ export = {
         ]
       },
       Principal: '123456789012'
+    }));
+
+    test.done();
+  },
+
+  'grantInvoke with an arn principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+    const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
+
+    // WHEN
+    fn.grantInvoke(account);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: 'arn:aws:iam::123456789012:role/someRole'
     }));
 
     test.done();

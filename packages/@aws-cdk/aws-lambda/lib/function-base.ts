@@ -285,6 +285,10 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.ServicePrincipal).service;
     }
 
+    if (`arn` in principal) {
+      return (principal as iam.ArnPrincipal).arn;
+    }
+
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
   }
