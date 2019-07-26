@@ -1,4 +1,3 @@
-import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { Construct, IResolvable, IResolveContext, IResource, Resource } from '@aws-cdk/core';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
@@ -19,7 +18,7 @@ export class Domain extends Resource implements IDomain {
    *
    * @attribute
    */
-  public readonly certificateRecord: ICertificate;
+  public readonly certificateRecord: string;
 
   /**
    * Name of the domain
@@ -65,7 +64,7 @@ export class Domain extends Resource implements IDomain {
       resourceName: `${props.app.appId}/domains/${this.domainName}`
     });
 
-    this.certificateRecord = Certificate.fromCertificateArn(this, 'certificate', resource.attrCertificateRecord);
+    this.certificateRecord = resource.attrCertificateRecord;
     this.domainName = resource.attrDomainName;
     this.domainStatus = resource.attrDomainStatus;
     this.statusReason = resource.attrStatusReason;
