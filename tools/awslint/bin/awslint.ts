@@ -5,8 +5,8 @@ import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
 import path = require('path');
 import yargs = require('yargs');
-import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, durationsLinter, eventsLinter, exportsLinter,
-  importsLinter, integrationLinter, moduleLinter, noUnusedTypeLinter, publicStaticPropertiesLinter, resourceLinter } from '../lib';
+import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, durationsLinter, eventsLinter,
+  exportsLinter, importsLinter, integrationLinter, moduleLinter, noUnusedTypeLinter, publicStaticPropertiesLinter, resourceLinter } from '../lib';
 
 const linter = new AggregateLinter(
   moduleLinter,
@@ -40,7 +40,11 @@ async function main() {
     .option('force', { type: 'boolean', desc: 'succeed silently if this is not a jsii module', default: true })
     .option('config', { type: 'boolean', desc: 'reads options from the "awslint" section in package.json', default: true })
     .option('debug', { type: 'boolean', desc: 'debug output', default: false })
-    .option('compile', { alias: 'c', type: 'boolean',  desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)' })
+    .option('compile', {
+      alias: 'c',
+      type: 'boolean',
+      desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)'
+    })
     .group('include', 'Filtering')
     .group('exclude', 'Filtering')
     .group('config', 'Configuration')
@@ -162,7 +166,9 @@ async function main() {
       }
 
       if (color) {
-        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${colors.bold(`awslint:${diag.rule.code}`)}:${colors.bold(diag.scope)}] ${diag.message}`));
+        console.error(color(
+          `${DiagnosticLevel[diag.level].toLowerCase()}: [${colors.bold(`awslint:${diag.rule.code}`)}:${colors.bold(diag.scope)}] ${diag.message}`
+        ));
       }
     }
 

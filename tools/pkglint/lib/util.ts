@@ -17,12 +17,14 @@ export function expectJSON(ruleName: string, pkg: PackageJson, jsonPath: string,
   }
 
   function applyIgnore(val: any): string {
+    // eslint-disable-next-line eqeqeq
     if (!ignore || val == null) { return JSON.stringify(val); }
     const str = JSON.stringify(val);
     return str.replace(ignore, '');
   }
 
   function applyCaseInsensitive(val: any): string {
+    // eslint-disable-next-line eqeqeq
     if (!caseInsensitive || val == null) { return JSON.stringify(val); }
     const str = JSON.stringify(val);
     return str.toLowerCase();

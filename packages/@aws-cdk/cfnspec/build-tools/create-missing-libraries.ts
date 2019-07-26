@@ -102,12 +102,12 @@ async function main() {
     console.log(`generating module for ${packageName}...`);
 
     await write('package.json', {
-      name: packageName,
+      'name': packageName,
       version,
-      description: `The CDK Construct Library for ${namespace}`,
-      main: 'lib/index.js',
-      types: 'lib/index.d.ts',
-      jsii: {
+      'description': `The CDK Construct Library for ${namespace}`,
+      'main': 'lib/index.js',
+      'types': 'lib/index.d.ts',
+      'jsii': {
         outdir: 'dist',
         targets: {
           dotnet: {
@@ -129,12 +129,12 @@ async function main() {
           }
         }
       },
-      repository: {
+      'repository': {
         type: "git",
         url: "https://github.com/aws/aws-cdk.git"
       },
-      homepage: "https://github.com/aws/aws-cdk",
-      scripts: {
+      'homepage': "https://github.com/aws/aws-cdk",
+      'scripts': {
         build: "cdk-build",
         integ: "cdk-integ",
         lint: "cdk-lint",
@@ -148,32 +148,32 @@ async function main() {
       'cdk-build': {
         cloudformation: namespace
       },
-      keywords: [
+      'keywords': [
         "aws",
         "cdk",
         "constructs",
         namespace,
         moduleName
       ],
-      author: {
+      'author': {
         name: "Amazon Web Services",
         url: "https://aws.amazon.com",
         organization: true
       },
-      license: "Apache-2.0",
-      devDependencies: {
+      'license': "Apache-2.0",
+      'devDependencies': {
         "@aws-cdk/assert": `^${version}`,
         "cdk-build-tools": `^${version}`,
         "cfn2ts": `^${version}`,
         "pkglint": `^${version}`,
       },
-      dependencies: {
+      'dependencies': {
         "@aws-cdk/core": `^${version}`,
       },
-      peerDependencies: {
+      'peerDependencies': {
         "@aws-cdk/core": `^${version}`,
       },
-      engines: {
+      'engines': {
         node: '>= 8.10.0'
       }
     });

@@ -91,7 +91,7 @@ export class SDK implements ISDK {
     // Find the package.json from the main toolkit
     const pkg = (require.main as any).require('../package.json');
     AWS.config.update({
-        customUserAgent: `${pkg.name}/${pkg.version}`
+      customUserAgent: `${pkg.name}/${pkg.version}`
     });
 
     // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
@@ -277,8 +277,8 @@ class DefaultAWSAccount {
   private readonly accountCache = new AccountAccessKeyCache();
 
   constructor(
-      private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>,
-      private readonly region: () => Promise<string | undefined>) {
+    private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>,
+    private readonly region: () => Promise<string | undefined>) {
   }
 
   /**

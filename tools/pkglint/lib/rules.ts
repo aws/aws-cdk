@@ -908,6 +908,7 @@ export class JestCoverageTarget extends ValidationRule {
       for (const key of Object.keys(defaults)) {
         const deepPath = ['coverageThreshold', 'global', key];
         const setting = deepGet(pkg.json.jest, deepPath);
+        // eslint-disable-next-line eqeqeq
         if (setting == null) {
           pkg.report({
             ruleName: this.name,

@@ -72,6 +72,7 @@ export class PackageJson {
     this.excludeRules = _forceArray(this.json.pkglint && this.json.pkglint.exclude) || (disabled ? [/^.*$/] : []);
 
     function _forceArray(arg: string | string[] | undefined): RegExp[] | undefined {
+      // eslint-disable-next-line eqeqeq
       if (arg == null) { return arg; }
       if (Array.isArray(arg)) { return arg.map(_toRegExp); }
       return [_toRegExp(arg)];
@@ -84,7 +85,9 @@ export class PackageJson {
   }
 
   public shouldApply(rule: ValidationRule): boolean {
+    // eslint-disable-next-line eqeqeq
     const included = this.includeRules.find(r => r.test(rule.name)) != null;
+    // eslint-disable-next-line eqeqeq
     const excluded = this.excludeRules.find(r => r.test(rule.name)) != null;
     return included && !excluded;
   }

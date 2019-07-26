@@ -75,9 +75,9 @@ function doRender(cmd: string[], needsEscaping: (x: string) => boolean, doEscape
  * Return a predicate that checks if a string has any of the indicated chars in it
  */
 function hasAnyChars(...chars: string[]): (x: string) => boolean {
-  return (str: string) => {
-    return chars.some(c => str.indexOf(c) !== -1);
-  };
+  return (str: string) =>
+    chars.some(c => str.indexOf(c) !== -1)
+  ;
 }
 
 /**
