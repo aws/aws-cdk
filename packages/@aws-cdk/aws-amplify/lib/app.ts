@@ -283,6 +283,8 @@ export interface AppProps {
    *
    * Required to be in HTTP URL format: https://github.com/awslabs/aws-cdk
    * If you use a Git URL, it will error.
+   *
+   * @default - No repository set
    */
   readonly repository?: string;
 
