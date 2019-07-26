@@ -29,9 +29,6 @@ rules:
   camelcase: error
   "@typescript-eslint/no-floating-promises": error
   "@typescript-eslint/no-empty-interface": off
-  "@typescript-eslint/indent":
-    - error
-    - 2
 
   # recommendation overrides
   "@typescript-eslint/array-type": warn
@@ -106,3 +103,25 @@ rules:
   "@typescript-eslint/semi": error
   eqeqeq: error
   "@typescript-eslint/unified-signatures": error
+
+  # tslint:recommended formatting rules
+  spaced-comment: error
+  curly: error
+  "@typescript-eslint/indent":
+    - error
+    - 2
+  no-multiple-empty-lines: error
+  space-before-function-paren:
+    - error
+    - anonymous: never
+      asyncArrow: always
+      named: never
+  "@typescript-eslint/type-annotation-spacing":
+    - error
+    - before: false
+      after: true
+      overrides:
+        arrow:
+          before: true
+          after: true
+  no-trailing-spaces: error
