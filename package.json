@@ -15,6 +15,7 @@
     "@typescript-eslint/parser": "^1.13.0",
     "conventional-changelog-cli": "^2.0.21",
     "eslint": "^5.16.0",
+    "eslint-plugin-import": "^2.18.2",
     "fs-extra": "^8.1.0",
     "jest": "^24.8.0",
     "jsii-diff": "^0.14.2",

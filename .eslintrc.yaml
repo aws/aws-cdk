@@ -1,6 +1,7 @@
 parser: "@typescript-eslint/parser"
 plugins:
   - "@typescript-eslint"
+  - import
 parserOptions:
   project: ./tsconfig.json
   ecmaVersion: 6
@@ -103,6 +104,7 @@ rules:
   "@typescript-eslint/semi": error
   eqeqeq: error
   "@typescript-eslint/unified-signatures": error
+  import/order: error
 
   # tslint:recommended formatting rules
   spaced-comment: error
