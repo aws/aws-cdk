@@ -70,15 +70,15 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "^1.1.0",
+    "@aws-cdk/aws-certificatemanager": "^1.2.0",
     "@aws-cdk/aws-codebuild": "^1.2.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/core": "^1.1.0"
+    "@aws-cdk/aws-iam": "^1.2.0",
+    "@aws-cdk/core": "^1.2.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.1.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/aws-certificatemanager": "^1.1.0",
+    "@aws-cdk/core": "^1.2.0",
+    "@aws-cdk/aws-iam": "^1.2.0",
+    "@aws-cdk/aws-certificatemanager": "^1.2.0",
     "@aws-cdk/aws-codebuild": "^1.2.0"
   },
   "engines": {
