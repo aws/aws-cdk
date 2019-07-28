@@ -1,11 +1,47 @@
 import s3 = require('@aws-cdk/aws-s3');
+import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
-import { Project } from './project';
+import { IProject } from './project';
+
+/**
+ * The type returned from {@link IArtifacts#bind}.
+ */
+export interface ArtifactsConfig {
+  /**
+   * The low-level CloudFormation artifacts property.
+   */
+  readonly artifactsProperty: CfnProject.ArtifactsProperty;
+}
+
+/**
+ * The abstract interface of a CodeBuild build output.
+ * Implemented by {@link Artifacts}.
+ */
+export interface IArtifacts {
+  /**
+   * The artifact identifier.
+   * This property is required on secondary artifacts.
+   */
+  readonly identifier?: string;
+
+  /**
+   * The CodeBuild type of this artifact.
+   */
+  readonly type: string;
+
+  /**
+   * Callback when an Artifacts class is used in a CodeBuild Project.
+   *
+   * @param scope a root Construct that allows creating new Constructs
+   * @param project the Project this Artifacts is used in
+   */
+  bind(scope: Construct, project: IProject): ArtifactsConfig;
+}
 
 /**
  * Properties common to all Artifacts classes.
  */
-export interface BuildArtifactsProps {
+export interface ArtifactsProps {
   /**
    * The artifact identifier.
    * This property is required on secondary artifacts.
@@ -16,69 +52,32 @@ export interface BuildArtifactsProps {
 /**
  * Artifacts definition for a CodeBuild Project.
  */
-export abstract class BuildArtifacts {
-  public readonly identifier?: string;
-  protected abstract readonly type: string;
+export abstract class Artifacts implements IArtifacts {
+  public static s3(props: S3ArtifactsProps): IArtifacts {
+    return new S3Artifacts(props);
+  }
 
-  constructor(props: BuildArtifactsProps) {
+  public readonly identifier?: string;
+  public abstract readonly type: string;
+
+  protected constructor(props: ArtifactsProps) {
     this.identifier = props.identifier;
   }
 
-  /**
-   * @internal
-   */
-  public _bind(_project: Project) {
-    return;
-  }
-
-  public toArtifactsJSON(): CfnProject.ArtifactsProperty {
-    const artifactsProp = this.toArtifactsProperty();
+  public bind(_scope: Construct, _project: IProject): ArtifactsConfig {
     return {
-      artifactIdentifier: this.identifier,
-      type: this.type,
-      ...artifactsProp,
-    };
-  }
-
-  protected toArtifactsProperty(): any {
-    return {
+      artifactsProperty: {
+        artifactIdentifier: this.identifier,
+        type: this.type,
+      },
     };
   }
 }
 
 /**
- * A `NO_ARTIFACTS` CodeBuild Project Artifact definition.
- * This is the default artifact type,
- * if none was specified when creating the Project
- * (and the source was not specified to be CodePipeline).
- * *Note*: the `NO_ARTIFACTS` type cannot be used as a secondary artifact,
- * and because of that, you're not allowed to specify an identifier for it.
+ * Construction properties for {@link S3Artifacts}.
  */
-export class NoBuildArtifacts  extends BuildArtifacts {
-  protected readonly type = 'NO_ARTIFACTS';
-
-  constructor() {
-    super({});
-  }
-}
-
-/**
- * CodePipeline Artifact definition for a CodeBuild Project.
- * *Note*: this type cannot be used as a secondary artifact,
- * and because of that, you're not allowed to specify an identifier for it.
- */
-export class CodePipelineBuildArtifacts extends BuildArtifacts {
-  protected readonly type = 'CODEPIPELINE';
-
-  constructor() {
-    super({});
-  }
-}
-
-/**
- * Construction properties for {@link S3BucketBuildArtifacts}.
- */
-export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
+export interface S3ArtifactsProps extends ArtifactsProps {
   /**
    * The name of the output bucket.
    */
@@ -114,32 +113,39 @@ export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
    * @default true - files will be archived
    */
   readonly packageZip?: boolean;
+
+  /**
+   * If this is false, build output will not be encrypted.
+   * This is useful if the artifact to publish a static website or sharing content with others
+   *
+   * @default true - output will be encrypted
+   */
+  readonly encryption?: boolean;
 }
 
 /**
  * S3 Artifact definition for a CodeBuild Project.
  */
-export class S3BucketBuildArtifacts extends BuildArtifacts {
-  protected readonly type = 'S3';
+class S3Artifacts extends Artifacts {
+  public readonly type = 'S3';
 
-  constructor(private readonly props: S3BucketBuildArtifactsProps) {
+  constructor(private readonly props: S3ArtifactsProps) {
     super(props);
   }
 
-  /**
-   * @internal
-   */
-  public _bind(project: Project) {
+  public bind(_scope: Construct, project: IProject): ArtifactsConfig {
     this.props.bucket.grantReadWrite(project);
-  }
-
-  protected toArtifactsProperty(): any {
+    const superConfig = super.bind(_scope, project);
     return {
-      location: this.props.bucket.bucketName,
-      path: this.props.path,
-      namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
-      name: this.props.name,
-      packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
+      artifactsProperty: {
+        ...superConfig.artifactsProperty,
+        location: this.props.bucket.bucketName,
+        path: this.props.path,
+        namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
+        name: this.props.name,
+        packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
+        encryptionDisabled: this.props.encryption === false ? true : undefined,
+      }
     };
   }
 }

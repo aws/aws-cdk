@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptRuleSet } from '../lib';
 
@@ -12,7 +12,7 @@ export = {
 
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {
-      name: 'MyRuleSet'
+      receiptRuleSetName: 'MyRuleSet',
     });
 
     // THEN
@@ -58,44 +58,12 @@ export = {
     test.done();
   },
 
-  'export receipt rule set'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const receiptRuleSet = new ReceiptRuleSet(stack, 'RuleSet');
-
-    // WHEN
-    receiptRuleSet.export();
-
-    // THEN
-    expect(stack).toMatch({
-      "Resources": {
-        "RuleSetE30C6C48": {
-          "Type": "AWS::SES::ReceiptRuleSet"
-        }
-      },
-      "Outputs": {
-        "RuleSetReceiptRuleSetNameBA4266DD": {
-          "Value": {
-            "Ref": "RuleSetE30C6C48"
-          },
-          "Export": {
-            "Name": "Stack:RuleSetReceiptRuleSetNameBA4266DD"
-          }
-        }
-      }
-    });
-
-    test.done();
-  },
-
   'import receipt rule set'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    const receiptRuleSet = ReceiptRuleSet.import(stack, 'ImportedRuleSet', {
-      name: 'MyRuleSet'
-    });
+    const receiptRuleSet = ReceiptRuleSet.fromReceiptRuleSetName(stack, 'ImportedRuleSet', 'MyRuleSet');
 
     receiptRuleSet.addRule('MyRule');
 

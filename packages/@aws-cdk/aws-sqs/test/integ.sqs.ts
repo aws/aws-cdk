@@ -1,4 +1,4 @@
-import { App, CfnOutput, Stack } from '@aws-cdk/cdk';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Queue } from '../lib';
 
 const app = new App();
@@ -16,4 +16,4 @@ new Queue(stack, 'FifoQueue', {
 
 new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
 
-app.run();
+app.synth();

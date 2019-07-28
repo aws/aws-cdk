@@ -1,7 +1,7 @@
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format } from 'util';
-import { AppStacks, ExtendedStackSelection } from "./api/cxapp/stacks";
+import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success } from './logging';
@@ -38,9 +38,10 @@ export class CdkToolkit {
   }
 
   public async diff(options: DiffOptions): Promise<number> {
-    const stacks = await this.appStacks.selectStacks(
-      options.stackNames,
-      options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
+    const stacks = await this.appStacks.selectStacks(options.stackNames, {
+      extend: options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
+      defaultBehavior: DefaultSelection.AllStacks
+    });
 
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
@@ -75,12 +76,15 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
 
-    const stacks = await this.appStacks.selectStacks(
-      options.stackNames,
-      options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
+    const stacks = await this.appStacks.selectStacks(options.stackNames, {
+      extend: options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
+      defaultBehavior: DefaultSelection.OnlySingle
+    });
+
+    this.appStacks.processMetadata(stacks);
 
     for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
+      if (stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -108,6 +112,10 @@ export class CdkToolkit {
         print('%s: deploying...', colors.bold(stack.name));
       }
 
+      if (!options.tags || options.tags.length === 0) {
+        options.tags = this.appStacks.getTagsFromStackMetadata(stack);
+      }
+
       try {
         const result = await this.provisioner.deployStack({
           stack,
@@ -116,6 +124,7 @@ export class CdkToolkit {
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
+          tags: options.tags
         });
 
         const message = result.noOp
@@ -229,4 +238,9 @@ export interface DeployOptions {
    * Reuse the assets with the given asset IDs
    */
   reuseAssets?: string[];
+
+  /**
+   * Tags to pass to CloudFormation for deployment
+   */
+  tags?: Tag[];
 }

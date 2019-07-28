@@ -6,7 +6,9 @@
         "WebsiteConfiguration": {
           "IndexDocument": "index.html"
         }
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "DestinationPolicy7982387E": {
       "Type": "AWS::S3::BucketPolicy",
@@ -89,7 +91,9 @@
           "Ref": "Destination920A3C57"
         },
         "RetainOnDelete": false
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
       "Type": "AWS::IAM::Role",
@@ -354,7 +358,8 @@
     },
     "Destination281A09BDF": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "DeployWithPrefixCustomResource9CF7C694": {
       "Type": "Custom::CDKBucketDeployment",
@@ -406,7 +411,9 @@
         },
         "DestinationBucketKeyPrefix": "deploy/here/",
         "RetainOnDelete": false
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     }
   },
   "Parameters": {
@@ -418,6 +425,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployMe/Asset\""
     },
+    "DeployMeAssetArtifactHash31436FAA": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployMe/Asset\""
+    },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket6E5FB2B7": {
       "Type": "String",
       "Description": "S3 bucket for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
@@ -426,6 +437,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeArtifactHashEF37AD24": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
+    },
     "DeployWithPrefixAssetS3Bucket8B33F071": {
       "Type": "String",
       "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
@@ -433,6 +448,10 @@
     "DeployWithPrefixAssetS3VersionKey45049418": {
       "Type": "String",
       "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
+    },
+    "DeployWithPrefixAssetArtifactHash9495ADE8": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
     }
   }
 }

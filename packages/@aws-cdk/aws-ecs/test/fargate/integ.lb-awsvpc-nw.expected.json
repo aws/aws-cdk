@@ -381,14 +381,6 @@
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "MountPoints": [],
             "Name": "web",
             "PortMappings": [
@@ -403,7 +395,7 @@
         ],
         "Cpu": "512",
         "Family": "awsecsintegTaskDef6FDFB69A",
-        "Memory": "1GB",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE"
@@ -431,6 +423,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
           {

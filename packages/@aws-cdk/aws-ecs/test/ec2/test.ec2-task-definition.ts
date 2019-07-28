@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 
@@ -16,9 +16,8 @@ export = {
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [],
-        PlacementConstraints: [],
         Volumes: [],
-        NetworkMode: ecs.NetworkMode.Bridge,
+        NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ["EC2"]
       }));
 
@@ -30,12 +29,12 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: ecs.NetworkMode.AwsVpc
+        networkMode: ecs.NetworkMode.AWS_VPC
       });
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        NetworkMode: ecs.NetworkMode.AwsVpc,
+        NetworkMode: ecs.NetworkMode.AWS_VPC,
       }));
 
       test.done();
@@ -59,7 +58,7 @@ export = {
 
       container.addUlimits({
         hardLimit: 128,
-        name: ecs.UlimitName.Rss,
+        name: ecs.UlimitName.RSS,
         softLimit: 128
       });
 
@@ -71,20 +70,12 @@ export = {
           Memory: 512,
           Image: "amazon/amazon-ecs-sample",
           Links: [],
-          LinuxParameters: {
-            Capabilities: {
-              Add: [],
-              Drop: []
-            },
-            Devices: [],
-            Tmpfs: []
-          },
           MountPoints: [],
           Name: "web",
           PortMappings: [{
             ContainerPort: 3000,
             HostPort: 0,
-            Protocol: Protocol.Tcp
+            Protocol: Protocol.TCP
           }],
           Ulimits: [{
             HardLimit: 128,
@@ -192,10 +183,9 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        placementConstraints: [{
-          expression: "attribute:ecs.instance-type =~ t2.*",
-          type: ecs.PlacementConstraintType.MemberOf
-        }]
+        placementConstraints: [
+          ecs.PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"),
+        ]
       });
 
       taskDefinition.addContainer("web", {
@@ -232,7 +222,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        TaskRoleArn: stack.node.resolve(taskDefinition.taskRole.roleArn)
+        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn)
       }));
 
       test.done();
@@ -245,7 +235,7 @@ export = {
         name: "scratch",
         dockerVolumeConfiguration: {
           driver: "local",
-          scope: ecs.Scope.Task
+          scope: ecs.Scope.TASK
         }
       };
 

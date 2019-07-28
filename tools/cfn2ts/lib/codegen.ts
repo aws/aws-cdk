@@ -42,7 +42,7 @@ export default class CodeGenerator {
     this.code.line();
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
     this.code.line();
-    this.code.line(`import ${CORE} = require('@aws-cdk/cdk');`);
+    this.code.line(`import ${CORE} = require('@aws-cdk/core');`);
   }
 
   public async upToDate(outPath: string): Promise<boolean> {
@@ -65,11 +65,9 @@ export default class CodeGenerator {
     return false;
   }
 
-  public emitCode() {
+  public emitCode(): void {
     for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
       const resourceType = this.spec.ResourceTypes[name];
-
-      this.validateRefKindPresence(name, resourceType);
 
       const cfnName = SpecName.parse(name);
       const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
@@ -83,7 +81,7 @@ export default class CodeGenerator {
   /**
    * Saves the generated file.
    */
-  public async save(dir: string) {
+  public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
     return await this.code.save(dir);
   }
@@ -91,7 +89,7 @@ export default class CodeGenerator {
   /**
    * Emits classes for all property types
    */
-  private emitPropertyTypes(resourceName: string, resourceClass: genspec.CodeName) {
+  private emitPropertyTypes(resourceName: string, resourceClass: genspec.CodeName): void {
     const prefix = `${resourceName}.`;
     for (const name of Object.keys(this.spec.PropertyTypes).sort()) {
       if (!name.startsWith(prefix)) { continue; }
@@ -104,7 +102,7 @@ export default class CodeGenerator {
     }
   }
 
-  private openClass(name: genspec.CodeName, superClasses?: string) {
+  private openClass(name: genspec.CodeName, superClasses?: string): string {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
     this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
     return name.className;
@@ -118,10 +116,13 @@ export default class CodeGenerator {
     if (!spec.Properties || Object.keys(spec.Properties).length === 0) { return; }
     const name = genspec.CodeName.forResourceProperties(resourceContext);
 
-    this.docLink(spec.Documentation, `Properties for defining a \`${resourceContext.specName!.fqn}\``);
+    this.docLink(spec.Documentation,
+      `Properties for defining a \`${resourceContext.specName!.fqn}\``,
+      '',
+      '@stability external');
     this.code.openBlock(`export interface ${name.className}`);
 
-    const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties);
+    const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties, Container.Interface);
 
     this.code.closeBlock();
 
@@ -138,13 +139,23 @@ export default class CodeGenerator {
    *
    * Return a mapping of { originalName -> newName }.
    */
-  private emitPropsTypeProperties(resource: genspec.CodeName, propertiesSpec: { [name: string]: schema.Property }): Dictionary<string> {
+  private emitPropsTypeProperties(
+    resource: genspec.CodeName,
+    propertiesSpec: { [name: string]: schema.Property },
+    container: Container): Dictionary<string> {
     const propertyMap: Dictionary<string> = {};
 
     Object.keys(propertiesSpec).sort(propertyComparator).forEach(propName => {
+      this.code.line();
       const propSpec = propertiesSpec[propName];
       const additionalDocs = resource.specName!.relativeName(propName).fqn;
-      const newName = this.emitProperty(resource, propName, propSpec, quoteCode(additionalDocs));
+      const newName = this.emitProperty({
+        context: resource,
+        propName,
+        spec: propSpec,
+        additionalDocs: quoteCode(additionalDocs)},
+        container
+      );
       propertyMap[propName] = newName;
     });
     return propertyMap;
@@ -167,7 +178,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName): void {
+  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType): void {
     this.beginNamespace(resourceName);
 
     const cfnName = resourceName.specName!.fqn;
@@ -181,33 +192,28 @@ export default class CodeGenerator {
       this.code.line();
     }
 
-    const deprecation = deprecated &&
-      `"cloudformation.${resourceName.fqn}" will be deprecated in a future release ` +
-      `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)`;
-
-    this.docLink(spec.Documentation, ...[
+    this.docLink(spec.Documentation,
       `A CloudFormation \`${cfnName}\``,
       '',
       `@cloudformationResource ${cfnName}`,
-      ...(deprecation ? [ `@deprecated ${deprecation}` ] : [ ]),
-    ]);
+      '@stability external');
     this.openClass(resourceName, RESOURCE_BASE_CLASS);
 
     //
     // Static inspectors.
     //
 
-    const resourceTypeName = `${JSON.stringify(cfnName)}`;
+    const cfnResourceTypeName = `${JSON.stringify(cfnName)}`;
     this.code.line('/**');
     this.code.line(` * The CloudFormation resource type name for this resource class.`);
     this.code.line(' */');
-    this.code.line(`public static readonly resourceTypeName = ${resourceTypeName};`);
+    this.code.line(`public static readonly CFN_RESOURCE_TYPE_NAME = ${cfnResourceTypeName};`);
 
     if (spec.RequiredTransform) {
       this.code.line('/**');
       this.code.line(' * The `Transform` a template must use in order to use this resource');
       this.code.line(' */');
-      this.code.line(`public static readonly requiredTransform = ${JSON.stringify(spec.RequiredTransform)};`);
+      this.code.line(`public static readonly REQUIRED_TRANSFORM = ${JSON.stringify(spec.RequiredTransform)};`);
     }
 
     //
@@ -223,7 +229,7 @@ export default class CodeGenerator {
         this.code.line();
 
         this.docLink(undefined, `@cloudformationAttribute ${attributeName}`);
-        const attr = genspec.attributeDefinition(resourceName, attributeName, attributeSpec);
+        const attr = genspec.attributeDefinition(attributeName, attributeSpec);
 
         this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType};`);
 
@@ -231,31 +237,10 @@ export default class CodeGenerator {
       }
     }
 
-    //
-    // Ref attribute
-    //
-    if (spec.RefKind !== schema.SpecialRefKind.None) {
-      const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefKind!);
-
-      // If there's already an attribute with the same name, ref is not needed
-      if (!attributes.some(a => a.propertyName === refAttribute.propertyName)) {
-        this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType};`);
-        attributes.push(refAttribute);
-      }
-    }
-    // set the TagType to help format tags later
-    const tagEnum = tagType(spec);
-    if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
-      this.code.line();
-      this.code.line('/**');
-      this.code.line(' * The `TagManager` handles setting, removing and formatting tags');
-      this.code.line(' *');
-      this.code.line(' * Tags should be managed either passing them as properties during');
-      this.code.line(' * initiation or by calling methods on this object. If both techniques are');
-      this.code.line(' * used only the tags from the TagManager will be used. `Tag` (aspect)');
-      this.code.line(' * will use the manager.');
-      this.code.line(' */');
-      this.code.line(`public readonly tags: ${TAG_MANAGER};`);
+    // set class properties to match CloudFormation Properties spec
+    let propMap;
+    if (propsType) {
+      propMap = this.emitPropsTypeProperties(resourceName, spec.Properties!, Container.Class);
     }
 
     //
@@ -271,9 +256,9 @@ export default class CodeGenerator {
     this.code.line(` * @param props - resource properties`);
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
-    const propsArgument = propsType ? `, props${optionalProps ? '?' : ''}: ${propsType.className}` : '';
+    const propsArgument = propsType ? `, props: ${propsType.className}${optionalProps ? ' = {}' : ''}` : '';
     this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string${propsArgument})`);
-    this.code.line(`super(scope, id, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties: props' : ''} });`);
+    this.code.line(`super(scope, id, { type: ${resourceName.className}.CFN_RESOURCE_TYPE_NAME${propsType ? ', properties: props' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const propName of Object.keys(spec.Properties)) {
@@ -284,44 +269,46 @@ export default class CodeGenerator {
       }
     }
     if (spec.RequiredTransform) {
-      const transformField = `${resourceName.className}.requiredTransform`;
+      const transformField = `${resourceName.className}.REQUIRED_TRANSFORM`;
       this.code.line('// If a different transform than the required one is in use, this resource cannot be used');
-      this.code.openBlock(`if (this.node.stack.templateOptions.transform && this.node.stack.templateOptions.transform !== ${transformField})`);
+      this.code.openBlock(`if (this.stack.templateOptions.transform && this.stack.templateOptions.transform !== ${transformField})`);
       // tslint:disable-next-line:max-line-length
-      this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.node.stack.templateOptions.transform)} is used.\`);`);
+      this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.stack.templateOptions.transform)} is used.\`);`);
       this.code.closeBlock();
       this.code.line('// Automatically configure the required transform');
-      this.code.line(`this.node.stack.templateOptions.transform = ${resourceName.className}.requiredTransform;`);
+      this.code.line(`this.stack.templateOptions.transform = ${resourceName.className}.REQUIRED_TRANSFORM;`);
     }
 
     // initialize all attribute properties
     for (const at of attributes) {
       if (at.attributeType === 'string') {
-        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toString();`);
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.asString(${at.constructorArguments});`);
       } else if (at.attributeType === 'string[]') {
-        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toList();`);
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.asList(${at.constructorArguments});`);
+      } else if (at.attributeType === 'number') {
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.asNumber(${at.constructorArguments});`);
       } else if (at.attributeType === genspec.TOKEN_NAME.fqn) {
         this.code.line(`this.${at.propertyName} = ${at.constructorArguments};`);
       }
     }
 
-    if (deprecated) {
-      this.code.line(`this.node.addWarning('DEPRECATION: ${deprecation}');`);
+    // initialize all property class members
+    if (propsType && propMap) {
+      this.code.line();
+      for (const prop of Object.values(propMap)) {
+        if (prop === 'tags' && isTaggable(spec)) {
+          this.code.line(`this.tags = new ${TAG_MANAGER}(${tagType(spec)}, ${cfnResourceTypeName}, props.tags);`);
+        } else {
+          this.code.line(`this.${prop} = props.${prop};`);
+        }
+      }
     }
-    if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
-      this.code.line('const tags = props === undefined ? undefined : props.tags;');
-      this.code.line(`this.tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName}, tags);`);
-    }
-
     this.code.closeBlock();
 
-    //
-    // propertyOverrides
-    //
-
-    if (propsType) {
+    // setup render properties
+    if (propsType && propMap) {
       this.code.line();
-      this.emitCloudFormationPropertiesOverride(propsType);
+      this.emitCloudFormationProperties(propsType, propMap, isTaggable(spec));
     }
 
     this.closeClass(resourceName);
@@ -334,13 +321,21 @@ export default class CodeGenerator {
    *
    * Since resolve() deep-resolves, we only need to do this once.
    */
-  private emitCloudFormationPropertiesOverride(propsType: genspec.CodeName) {
-    this.code.openBlock(`public get propertyOverrides(): ${propsType.className}`);
-    this.code.line(`return this.untypedPropertyOverrides;`);
+  private emitCloudFormationProperties(propsType: genspec.CodeName, propMap: Dictionary<string>, taggable: boolean): void {
+    this.code.openBlock('protected get cfnProperties(): { [key: string]: any } ');
+    this.code.indent('return {');
+    for (const prop of Object.values(propMap)) {
+      // handle tag rendering because of special cases
+      if (prop === 'tags' && taggable) {
+        this.code.line(`${prop}: this.tags.renderTags(),`);
+        continue;
+      }
+      this.code.line(`${prop}: this.${prop},`);
+    }
+    this.code.unindent('};');
     this.code.closeBlock();
-
-    this.code.openBlock('protected renderProperties(properties: any): { [key: string]: any } ');
-    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(this.node.resolve(properties));`);
+    this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
+    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
     this.code.closeBlock();
   }
 
@@ -452,7 +447,7 @@ export default class CodeGenerator {
   private emitValidator(resource: genspec.CodeName,
                         typeName: genspec.CodeName,
                         propSpecs: { [name: string]: schema.Property },
-                        nameConversionTable: Dictionary<string>) {
+                        nameConversionTable: Dictionary<string>): void {
     const validatorName = genspec.validatorName(typeName);
 
     this.code.line('/**');
@@ -514,16 +509,44 @@ export default class CodeGenerator {
     this.code.closeBlock();
   }
 
-  private emitProperty(context: genspec.CodeName, propName: string, spec: schema.Property, additionalDocs: string): string {
-    const question = spec.Required ? '' : '?';
-    const javascriptPropertyName = genspec.cloudFormationToScriptName(propName);
+  private emitInterfaceProperty(props: EmitPropertyProps): string {
+    const javascriptPropertyName = genspec.cloudFormationToScriptName(props.propName);
 
-    this.docLink(spec.Documentation, additionalDocs);
-    this.code.line(`readonly ${javascriptPropertyName}${question}: ${this.findNativeType(context, spec, propName)};`);
+    this.docLink(props.spec.Documentation, props.additionalDocs);
+    const line = `: ${this.findNativeType(props.context, props.spec, props.propName)};`;
 
+    const question = props.spec.Required ? '' : '?';
+    this.code.line(`readonly ${javascriptPropertyName}${question}${line}`);
     return javascriptPropertyName;
   }
-  private beginNamespace(type: genspec.CodeName) {
+
+  private emitClassProperty(props: EmitPropertyProps): string {
+    const javascriptPropertyName = genspec.cloudFormationToScriptName(props.propName);
+
+    this.docLink(props.spec.Documentation, props.additionalDocs);
+    const question = props.spec.Required ? ';' : ' | undefined;';
+    const line = `: ${this.findNativeType(props.context, props.spec, props.propName)}${question}`;
+    if (props.propName === 'Tags' && schema.isTagProperty(props.spec)) {
+      this.code.line(`public readonly tags: ${TAG_MANAGER};`);
+    } else {
+      this.code.line(`public ${javascriptPropertyName}${line}`);
+    }
+    return javascriptPropertyName;
+  }
+
+  private emitProperty(props: EmitPropertyProps, container: Container): string {
+    switch (container) {
+      case Container.Class:
+        return this.emitClassProperty(props);
+      case Container.Interface:
+        return this.emitInterfaceProperty(props);
+      default:
+        throw new Error(`Unsupported container ${container}`);
+    }
+
+  }
+
+  private beginNamespace(type: genspec.CodeName): void {
     if (type.namespace) {
       const parts = type.namespace.split('.');
       for (const part of parts) {
@@ -532,7 +555,7 @@ export default class CodeGenerator {
     }
   }
 
-  private endNamespace(type: genspec.CodeName) {
+  private endNamespace(type: genspec.CodeName): void {
     if (type.namespace) {
       const parts = type.namespace.split('.');
       for (const _ of parts) {
@@ -541,11 +564,11 @@ export default class CodeGenerator {
     }
   }
 
-  private emitPropertyType(resourceContext: genspec.CodeName, typeName: genspec.CodeName, propTypeSpec: schema.PropertyBag) {
+  private emitPropertyType(resourceContext: genspec.CodeName, typeName: genspec.CodeName, propTypeSpec: schema.PropertyBag): void {
     this.code.line();
     this.beginNamespace(typeName);
 
-    this.docLink(propTypeSpec.Documentation);
+    this.docLink(propTypeSpec.Documentation, '@stability external');
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
       this.code.line(`// tslint:disable-next-line:no-empty-interface | A genuine empty-object type`);
     }
@@ -555,7 +578,12 @@ export default class CodeGenerator {
       Object.keys(propTypeSpec.Properties).forEach(propName => {
         const propSpec = propTypeSpec.Properties[propName];
         const additionalDocs = quoteCode(`${typeName.fqn}.${propName}`);
-        const newName = this.emitProperty(resourceContext, propName, propSpec, additionalDocs);
+        const newName = this.emitInterfaceProperty({
+          context: resourceContext,
+          propName,
+          spec: propSpec,
+          additionalDocs,
+        });
         conversionTable[propName] = newName;
       });
     }
@@ -575,6 +603,7 @@ export default class CodeGenerator {
   private findNativeType(resourceContext: genspec.CodeName, propSpec: schema.Property, propName?: string): string {
     const alternatives: string[] = [];
 
+    // render the union of all item types
     if (schema.isCollectionProperty(propSpec)) {
       // render the union of all item types
       const itemTypes = genspec.specTypesToCodeTypes(resourceContext, itemTypeNames(propSpec));
@@ -593,7 +622,6 @@ export default class CodeGenerator {
         alternatives.push(`{ [key: string]: (${union}) }`);
       } else {
         // To make TSLint happy, we have to either emit: SingleType[] or Array<Alt1 | Alt2>
-
         if (union.indexOf('|') !== -1) {
           alternatives.push(`Array<${union}>`);
         } else {
@@ -618,7 +646,6 @@ export default class CodeGenerator {
     if (!tokenizableType(alternatives) && propName !== 'Tags') {
       alternatives.push(genspec.TOKEN_NAME.fqn);
     }
-
     return alternatives.join(' | ');
   }
 
@@ -634,11 +661,11 @@ export default class CodeGenerator {
     return this.findNativeType(context, specType);
   }
 
-  private renderTypeUnion(context: genspec.CodeName, types: genspec.CodeName[]) {
+  private renderTypeUnion(context: genspec.CodeName, types: genspec.CodeName[]): string {
     return types.map(t => this.renderCodeName(context, t)).join(' | ');
   }
 
-  private docLink(link: string | undefined, ...before: string[]) {
+  private docLink(link: string | undefined, ...before: string[]): void {
     if (!link && before.length === 0) { return; }
     this.code.line('/**');
     before.forEach(line => this.code.line(` * ${line}`.trimRight()));
@@ -647,12 +674,6 @@ export default class CodeGenerator {
     }
     this.code.line(' */');
     return;
-  }
-
-  private validateRefKindPresence(name: string, resourceType: schema.ResourceType): any {
-    if (!resourceType.RefKind) { // Both empty string and undefined
-      throw new Error(`Resource ${name} does not have a RefKind; please run in @aws-cdk/cfnspec: npm run set-refkind ${name} Arn|Id|None|...`);
-    }
   }
 }
 
@@ -668,7 +689,7 @@ function quoteCode(code: string): string {
   return '`' + code + '`';
 }
 
-function tokenizableType(alternatives: string[]) {
+function tokenizableType(alternatives: string[]): boolean {
   if (alternatives.length > 1) {
     return false;
   }
@@ -682,7 +703,9 @@ function tokenizableType(alternatives: string[]) {
     return true;
   }
 
-  // TODO: number
+  if (type === 'number') {
+    return true;
+  }
 
   return false;
 }
@@ -691,14 +714,30 @@ function tagType(resource: schema.ResourceType): string {
   if (schema.isTaggableResource(resource)) {
     const prop = resource.Properties.Tags;
     if (schema.isTagPropertyStandard(prop)) {
-      return `${TAG_TYPE}.Standard`;
+      return `${TAG_TYPE}.STANDARD`;
     }
     if (schema.isTagPropertyAutoScalingGroup(prop)) {
-      return `${TAG_TYPE}.AutoScalingGroup`;
+      return `${TAG_TYPE}.AUTOSCALING_GROUP`;
     }
     if (schema.isTagPropertyJson(prop) || schema.isTagPropertyStringMap(prop)) {
-      return `${TAG_TYPE}.Map`;
+      return `${TAG_TYPE}.MAP`;
     }
   }
-  return `${TAG_TYPE}.NotTaggable`;
+  return `${TAG_TYPE}.NOT_TAGGABLE`;
+}
+
+function isTaggable(resource: schema.ResourceType): boolean {
+  return tagType(resource) !== `${TAG_TYPE}.NOT_TAGGABLE`;
+}
+
+enum Container {
+  Interface = 'INTERFACE',
+  Class = 'CLASS',
+}
+
+interface EmitPropertyProps {
+  context: genspec.CodeName;
+  propName: string;
+  spec: schema.Property;
+  additionalDocs: string;
 }

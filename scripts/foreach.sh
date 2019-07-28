@@ -20,8 +20,9 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-statefile="${HOME}/.foreach.state"
-commandfile="${HOME}/.foreach.command"
+statedir="${scriptdir}"
+statefile="${statedir}/.foreach.state"
+commandfile="${statedir}/.foreach.command"
 command_arg="${@:-}"
 base=$PWD
 
@@ -38,7 +39,7 @@ function success {
 }
 
 if [[ "${1:-}" == "--reset" ]]; then
-    rm -f ~/.foreach.*
+    rm -f "${statedir}/.foreach."*
     success "state cleared. you are free to start a new command."
     exit 0
 fi
@@ -79,6 +80,18 @@ heading "${next}: ${command} (${remaining} remaining)"
 
 (
   cd ${next}
+
+  # special-case "npm run" - skip any modules that simply don't have
+  # that script (similar to how "lerna run" behaves)
+  if [[ "${command}" == "npm run "* ]]; then
+    script="$(echo ${command} | cut -d" " -f3)"
+    exists=$(node -pe "require('./package.json').scripts['${script}'] || ''")
+    if [ -z "${exists}" ]; then
+      echo "skipping (no "${script}" script in package.json)"
+      exit 0
+    fi
+  fi
+
   sh -c "${command}" &> /tmp/foreach.stdio || {
     cd ${base}
     cat /tmp/foreach.stdio | ${scriptdir}/path-prefix ${next}

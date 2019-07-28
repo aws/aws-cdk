@@ -1,4 +1,13 @@
 ## AWS CodePipeline Actions
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 This package contains Actions that can be used in a CodePipeline.
 
@@ -30,7 +39,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -41,18 +50,18 @@ To use GitHub as the source of a CodePipeline:
 
 ```typescript
 // Read the secret from ParameterStore
-const token = new cdk.SecretParameter(this, 'GitHubToken', { ssmParameter: 'my-github-token' });
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: token.value,
+  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
+  trigger: codepipeline_actions.GitHubTrigger.POLL // default: 'WEBHOOK', 'NONE' is also possible for no Source trigger
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -77,14 +86,14 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
 
 By default, the Pipeline will poll the Bucket to detect changes.
-You can change that behavior to use CloudWatch Events by setting the `pollForSourceChanges`
-property to `false` (it's `true` by default).
+You can change that behavior to use CloudWatch Events by setting the `trigger`
+property to `S3Trigger.EVENTS` (it's `S3Trigger.POLL` by default).
 If you do that, make sure the source Bucket is part of an AWS CloudTrail Trail -
 otherwise, the CloudWatch Events will not be emitted,
 and your Pipeline will not react to changes in the Bucket.
@@ -94,16 +103,16 @@ You can do it through the CDK:
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
 const key = 'some/key.zip';
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+const trail = new cloudtrail.Trail(this, 'CloudTrail');
 trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
-  readWriteType: cloudtrail.ReadWriteType.WriteOnly,
+  readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY,
 });
 const sourceAction = new codepipeline_actions.S3SourceAction({
   actionName: 'S3Source',
   bucketKey: key,
   bucket: sourceBucket,
   output: sourceOutput,
-  pollForSourceChanges: false, // default: true
+  trigger: codepipeline_actions.S3Trigger.EVENTS, // default: S3Trigger.POLL
 });
 ```
 
@@ -123,7 +132,7 @@ const sourceAction = new codepipeline_actions.EcrSourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  actionName: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -153,32 +162,21 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: new codepipeline.Artifact(), // optional
+  outputs: [new codepipeline.Artifact()], // optional
 });
 
 new codepipeline.Pipeline(this, 'MyPipeline', {
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     },
     {
-      name: 'Build',
+      stageName: 'Build',
       actions: [buildAction],
     },
   ],
 });
-```
-
-The `PipelineProject` utility class is a simple sugar around the `Project`
-class, it's equivalent to:
-
-```ts
-const project = new codebuild.Project(this, 'MyProject', {
-  source: new codebuild.CodePipelineSource(),
-  artifacts: new codebuild.CodePipelineBuildArtifacts(),
-  // rest of the properties from PipelineProject are passed unchanged...
-}
 ```
 
 The default category of the CodeBuild Action is `Build`;
@@ -220,11 +218,11 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Build',
   project,
   input: sourceOutput1,
-  output: new codepipeline.Artifact('artifact1'), // for better buildspec readability - see below
   extraInputs: [
     sourceOutput2, // this is where 'source2' comes from
   ],
-  extraOutputs: [
+  outputs: [
+    new codepipeline.Artifact('artifact1'), // for better buildspec readability - see below
     new codepipeline.Artifact('artifact2'),
   ],
 });
@@ -233,14 +231,14 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
 **Note**: when a CodeBuild Action in a Pipeline has more than one output, it
 only uses the `secondary-artifacts` field of the buildspec, never the
 primary output specification directly under `artifacts`. Because of that, it
-pays to name even your primary output artifact on the Pipeline, like we did
+pays to explicitly name all output artifacts of that Action, like we did
 above, so that you know what name to use in the buildspec.
 
 Example buildspec for the above project:
 
 ```ts
 const project = new codebuild.PipelineProject(this, 'MyProject', {
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       build: {
@@ -263,7 +261,7 @@ const project = new codebuild.PipelineProject(this, 'MyProject', {
         },
       },
     },
-  },
+  }),
   // ...
 });
 ```
@@ -369,7 +367,7 @@ const deployAction = new codepipeline_actions.CodeDeployServerDeployAction({
   deploymentGroup,
 });
 pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [deployAction],
 });
 ```
@@ -383,10 +381,10 @@ const lambdaCode = lambda.Code.cfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NodeJS810,
+  runtime: lambda.Runtime.NODEJS_8_10,
 });
 // used to make sure each CDK synthesis produces a different Version
-const version = func.newVersion();
+const version = func.addVersion('NewVersion')
 const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
   aliasName: 'Prod',
   version,
@@ -394,7 +392,7 @@ const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
 
 new codedeploy.LambdaDeploymentGroup(lambdaStack, 'DeploymentGroup', {
   alias,
-  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
 });
 ```
 
@@ -410,7 +408,7 @@ The deploy Action receives one input Artifact which contains the [image definiti
 
 ```typescript
 const deployStage = pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [
     new codepipeline_actions.EcsDeployAction({
       actionName: 'DeployAction',
@@ -445,7 +443,7 @@ const deployAction = new codepipeline_actions.S3DeployAction({
   input: sourceOutput,
 });
 const deployStage = pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [deployAction],
 });
 ```
@@ -456,18 +454,18 @@ You can deploy to Alexa using CodePipeline with the following Action:
 
 ```ts
 // Read the secrets from ParameterStore
-const clientId = new cdk.SecretParameter(this, 'AlexaClientId', { ssmParameter: '/Alexa/ClientId' });
-const clientSecret = new cdk.SecretParameter(this, 'AlexaClientSecret', { ssmParameter: '/Alexa/ClientSecret' });
-const refreshToken = new cdk.SecretParameter(this, 'AlexaRefreshToken', { ssmParameter: '/Alexa/RefreshToken' });
+const clientId = cdk.SecretValue.secretsManager('AlexaClientId');
+const clientSecret = cdk.SecretValue.secretsManager('AlexaClientSecret');
+const refreshToken = cdk.SecretValue.secretsManager('AlexaRefreshToken');
 
 // Add deploy action
 new codepipeline_actions.AlexaSkillDeployAction({
   actionName: 'DeploySkill',
   runOrder: 1,
   input: sourceOutput,
-  clientId: clientId.value,
-  clientSecret: clientSecret.value,
-  refreshToken: refreshToken.value,
+  clientId: clientId.toString(),
+  clientSecret: clientSecret,
+  refreshToken: refreshToken,
   skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-123456789012',
 });
 ```
@@ -494,9 +492,9 @@ new codepipeline_actions.AlexaSkillDeployAction({
   runOrder: 1,
   input: sourceOutput,
   parameterOverridesArtifact: executeOutput,
-  clientId: clientId.value,
-  clientSecret: clientSecret.value,
-  refreshToken: refreshToken.value,
+  clientId: clientId.toString(),
+  clientSecret: clientSecret,
+  refreshToken: refreshToken,
   skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-123456789012',
 });
 ```
@@ -508,7 +506,7 @@ new codepipeline_actions.AlexaSkillDeployAction({
 This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
 
 ```typescript
-const manualApprovalAction = new codepipeline.ManualApprovalAction({
+const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
   actionName: 'Approve',
   notificationTopic: new sns.Topic(this, 'Topic'), // optional
   notifyEmails: [
@@ -539,7 +537,7 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   lambda: fn,
 });
 pipeline.addStage({
-  actionName: 'Lambda',
+  stageName: 'Lambda',
   actions: [lambdaAction],
 });
 ```
@@ -548,6 +546,7 @@ The Lambda Action can have up to 5 inputs,
 and up to 5 outputs:
 
 ```typescript
+
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   inputs: [
@@ -558,6 +557,7 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
     new codepipeline.Artifact('Out1'),
     new codepipeline.Artifact('Out2'),
   ],
+  lambda: fn
 });
 ```
 

@@ -1,13 +1,14 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { CfnOutput } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
 
 export = {
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
 
     // WHEN
     new eks.Cluster(stack, 'Cluster', { vpc });
@@ -18,10 +19,8 @@ export = {
         SubnetIds: [
           { Ref: "VPCPublicSubnet1SubnetB4246D30" },
           { Ref: "VPCPublicSubnet2Subnet74179F39" },
-          { Ref: "VPCPublicSubnet3Subnet631C5E25" },
           { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
           { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-          { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
         ]
       }
     }));
@@ -31,7 +30,7 @@ export = {
 
   'creating a cluster tags the private VPC subnets'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
 
     // WHEN
     new eks.Cluster(stack, 'Cluster', { vpc });
@@ -39,7 +38,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       Tags: [
-        { Key: "Name", Value: "VPC/PrivateSubnet1" },
+        { Key: "Name", Value: "Stack/VPC/PrivateSubnet1" },
         { Key: "aws-cdk:subnet-name", Value: "Private" },
         { Key: "aws-cdk:subnet-type", Value: "Private" },
         { Key: "kubernetes.io/role/internal-elb", Value: "1" }
@@ -51,7 +50,7 @@ export = {
 
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
@@ -65,7 +64,7 @@ export = {
         {
           Key: "Name",
           PropagateAtLaunch: true,
-          Value: "Cluster/Default"
+          Value: "Stack/Cluster/Default"
         },
         {
           Key: { "Fn::Join": [ "", [ "kubernetes.io/cluster/", { Ref: "ClusterEB0386A7" } ] ] },
@@ -80,7 +79,7 @@ export = {
 
   'adding capacity correctly deduces maxPods and adds userdata'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
@@ -109,25 +108,41 @@ export = {
 
   'exercise export/import'(test: Test) {
     // GIVEN
-    const [stack1, vpc] = testFixture();
-    const stack2 = new cdk.Stack();
+    const { stack: stack1, vpc, app } = testFixture();
+    const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', { vpc });
 
     // WHEN
-    const imported = eks.Cluster.import(stack2, 'Imported', cluster.export());
-
-    // THEN
-    test.deepEqual(stack2.node.resolve(imported.clusterArn), {
-      'Fn::ImportValue': 'Stack:ClusterClusterArn00DCA0E0'
+    const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', {
+      clusterArn: cluster.clusterArn,
+      vpc: cluster.vpc,
+      clusterEndpoint: cluster.clusterEndpoint,
+      clusterName: cluster.clusterName,
+      securityGroups: cluster.connections.securityGroups,
+      clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData
     });
 
+    // this should cause an export/import
+    new CfnOutput(stack2, 'ClusterARN', { value: imported.clusterArn });
+
+    // THEN
+    expect(stack2).toMatch({
+      Outputs: {
+        ClusterARN: {
+          Value: {
+            "Fn::ImportValue": "Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F"
+          }
+        }
+      }
+    });
     test.done();
   },
 };
 
-function testFixture(): [cdk.Stack, ec2.VpcNetwork] {
-  const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' }});
-  const vpc = new ec2.VpcNetwork(stack, 'VPC');
+function testFixture() {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1' }});
+  const vpc = new ec2.Vpc(stack, 'VPC');
 
-  return [stack, vpc];
+  return { stack, vpc, app };
 }

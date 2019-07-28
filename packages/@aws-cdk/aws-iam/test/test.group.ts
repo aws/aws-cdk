@@ -1,15 +1,18 @@
-import { App, Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/assert';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Group, User } from '../lib';
+import { Group, ManagedPolicy, User } from '../lib';
 
 export = {
   'default group'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new Group(stack, 'MyGroup');
-    test.deepEqual(app.synthesizeStack(stack.name).template, {
+
+    expect(stack).toMatch({
       Resources: { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } }
     });
+
     test.done();
   },
 
@@ -22,7 +25,7 @@ export = {
     user1.addToGroup(group);
     group.addUser(user2);
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
         User1E278A736:
          { Type: 'AWS::IAM::User',
@@ -32,4 +35,23 @@ export = {
          Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } } } });
     test.done();
   },
+
+  'create with managed policy'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Group(stack, 'MyGroup', {
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('asdf')]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Group', {
+      ManagedPolicyArns: [
+        { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf" ] ] }
+      ]
+    }));
+
+    test.done();
+  }
 };

@@ -1,6 +1,7 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScheduledAction } from './autoscaling.generated';
+import { Schedule } from './schedule';
 
 /**
  * Properties for a scheduled scaling action
@@ -15,19 +16,19 @@ export interface BasicScheduledActionProps {
    *
    * @example 0 8 * * ?
    */
-  readonly schedule: string;
+  readonly schedule: Schedule;
 
   /**
    * When this scheduled action becomes active.
    *
-   * @default The rule is activate immediately
+   * @default - The rule is activate immediately.
    */
   readonly startTime?: Date
 
   /**
    * When this scheduled action expires.
    *
-   * @default The rule never expires.
+   * @default - The rule never expires.
    */
   readonly endTime?: Date;
 
@@ -38,7 +39,7 @@ export interface BasicScheduledActionProps {
    *
    * At least one of maxCapacity, minCapacity, or desiredCapacity must be supplied.
    *
-   * @default No new minimum capacity
+   * @default - No new minimum capacity.
    */
   readonly minCapacity?: number;
 
@@ -49,7 +50,7 @@ export interface BasicScheduledActionProps {
    *
    * At least one of maxCapacity, minCapacity, or desiredCapacity must be supplied.
    *
-   * @default No new maximum capacity
+   * @default - No new maximum capacity.
    */
   readonly maxCapacity?: number;
 
@@ -59,6 +60,8 @@ export interface BasicScheduledActionProps {
    * At the scheduled time, set the desired capacity to the given capacity.
    *
    * At least one of maxCapacity, minCapacity, or desiredCapacity must be supplied.
+   *
+   * @default - No new desired capacity.
    */
   readonly desiredCapacity?: number;
 }
@@ -73,20 +76,12 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
   readonly autoScalingGroup: IAutoScalingGroup;
 }
 
-const CRON_PART = '(\\*|\\?|[0-9]+)';
-
-const CRON_EXPRESSION = new RegExp('^' + [CRON_PART, CRON_PART, CRON_PART, CRON_PART, CRON_PART].join('\\s+') + '$');
-
 /**
  * Define a scheduled scaling action
  */
 export class ScheduledAction extends Resource {
   constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
-
-    if (!CRON_EXPRESSION.exec(props.schedule)) {
-      throw new Error(`Input to ScheduledAction should be a cron expression, got: ${props.schedule}`);
-    }
 
     if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
@@ -99,7 +94,7 @@ export class ScheduledAction extends Resource {
       minSize: props.minCapacity,
       maxSize: props.maxCapacity,
       desiredCapacity: props.desiredCapacity,
-      recurrence: props.schedule,
+      recurrence: props.schedule.expressionString,
     });
   }
 }

@@ -1,10 +1,32 @@
+import iam = require('@aws-cdk/aws-iam');
 import { CfnRule } from './events.generated';
+import { RuleTargetInput } from './input';
+import { IRule } from './rule-ref';
 
-export interface EventRuleTargetProps {
+/**
+ * An abstract target for EventRules.
+ */
+export interface IRuleTarget {
+  /**
+   * Returns the rule target specification.
+   * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
+   *
+   * @param rule The CloudWatch Event Rule that would trigger this target.
+   * @param id The id of the target that will be attached to the rule.
+   */
+  bind(rule: IRule, id?: string): RuleTargetConfig;
+}
+
+/**
+ * Properties for an event rule target
+ */
+export interface RuleTargetConfig {
   /**
    * A unique, user-defined identifier for the target. Acceptable values
    * include alphanumeric characters, periods (.), hyphens (-), and
    * underscores (_).
+   *
+   * @deprecated prefer auto-generated id by specifying an empty string
    */
   readonly id: string;
 
@@ -14,12 +36,9 @@ export interface EventRuleTargetProps {
   readonly arn: string;
 
   /**
-   * The Amazon Resource Name (ARN) of the AWS Identity and Access Management
-   * (IAM) role to use for this target when the rule is triggered. If one rule
-   * triggers multiple targets, you can use a different IAM role for each
-   * target.
+   * Role to use to invoke this event target
    */
-  readonly roleArn?: string;
+  readonly role?: iam.IRole;
 
   /**
    * The Amazon ECS task definition and task count to use, if the event target
@@ -39,18 +58,11 @@ export interface EventRuleTargetProps {
    * Command.
    */
   readonly runCommandParameters?: CfnRule.RunCommandParametersProperty;
-}
 
-/**
- * An abstract target for EventRules.
- */
-export interface IEventRuleTarget {
   /**
-   * Returns the rule target specification.
-   * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
+   * What input to send to the event target
    *
-   * @param ruleArn The ARN of the CloudWatch Event Rule that would trigger this target.
-   * @param ruleUniqueId A unique ID for this rule. Can be used to implement idempotency.
+   * @default the entire event
    */
-  asEventRuleTarget(ruleArn: string, ruleUniqueId: string): EventRuleTargetProps;
+  readonly input?: RuleTargetInput;
 }

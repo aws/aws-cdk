@@ -1,11 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import { IResource } from '@aws-cdk/core';
+import { Endpoint } from './endpoint';
 
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends cdk.IConstruct, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Identifier of the cluster
    */
@@ -18,13 +19,15 @@ export interface IDatabaseCluster extends cdk.IConstruct, ec2.IConnectable, secr
 
   /**
    * The endpoint to use for read/write operations
+   * @attribute EndpointAddress,EndpointPort
    */
   readonly clusterEndpoint: Endpoint;
 
   /**
    * Endpoint to use for load-balanced read-only operations.
+   * @attribute ReadEndpointAddress
    */
-  readonly readerEndpoint: Endpoint;
+  readonly clusterReadEndpoint: Endpoint;
 
   /**
    * Endpoints which address each individual replica.
@@ -35,21 +38,16 @@ export interface IDatabaseCluster extends cdk.IConstruct, ec2.IConnectable, secr
    * The security group for this database cluster
    */
   readonly securityGroupId: string;
-
-  /**
-   * Export a Database Cluster for importing in another stack
-   */
-  export(): DatabaseClusterImportProps;
 }
 
 /**
  * Properties that describe an existing cluster instance
  */
-export interface DatabaseClusterImportProps {
+export interface DatabaseClusterAttributes {
   /**
    * The database port
    */
-  readonly port: string;
+  readonly port: number;
 
   /**
    * The security group for this database cluster
@@ -81,32 +79,4 @@ export interface DatabaseClusterImportProps {
    * Endpoint addresses of individual instances
    */
   readonly instanceEndpointAddresses: string[];
-}
-
-/**
- * Connection endpoint of a database cluster or instance
- *
- * Consists of a combination of hostname and port.
- */
-export class Endpoint {
-  /**
-   * The hostname of the endpoint
-   */
-  public readonly hostname: string;
-
-  /**
-   * The port of the endpoint
-   */
-  public readonly port: string;
-
-  /**
-   * The combination of "HOSTNAME:PORT" for this endpoint
-   */
-  public readonly socketAddress: string;
-
-  constructor(address: string, port: string) {
-    this.hostname = address;
-    this.port = port;
-    this.socketAddress = `${address}:${port}`;
-  }
 }

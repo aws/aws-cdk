@@ -1,4 +1,20 @@
 # AWS Region-Specific Information Directory
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+>
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
+
 ## Usage
 Some information used in CDK Applications differs from one AWS region to
 another, such as service principals used in IAM policies, S3 static website
@@ -36,7 +52,7 @@ import regionInfo = require('@aws-cdk/region-info');
 const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com
 
-const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName.s3StaticWebsiteEndpoint);
+const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName.S3_STATIC_WEBSITE_ENDPOINT);
 // => s3-website-ap-northeast-1.amazonaws.com
 ```
 
@@ -70,8 +86,8 @@ If you happen to have stumbled upon incorrect data built into this library, it
 is always a good idea to report your findings in a [GitHub issue], so we can fix
 it for everyone else!
 
-[GitHub issue]: https://github.com/awslabs/aws-cdk/issues
+[GitHub issue]: https://github.com/aws/aws-cdk/issues
 
 ---
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.

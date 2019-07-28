@@ -3,7 +3,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable:max-line-length
 import { EmailEncoding, LambdaInvocationType, ReceiptRuleAddHeaderAction, ReceiptRuleBounceAction, ReceiptRuleBounceActionTemplate, ReceiptRuleLambdaAction, ReceiptRuleS3Action, ReceiptRuleSet, ReceiptRuleSnsAction, ReceiptRuleStopAction } from '../lib';
@@ -95,7 +95,7 @@ export = {
           actions: [
             new ReceiptRuleBounceAction({
               sender: 'noreply@aws.com',
-              template: ReceiptRuleBounceActionTemplate.MessageContentRejected,
+              template: ReceiptRuleBounceActionTemplate.MESSAGE_CONTENT_REJECTED,
               topic
             })
           ]
@@ -135,7 +135,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline(''),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // WHEN
@@ -145,7 +145,7 @@ export = {
           actions: [
             new ReceiptRuleLambdaAction({
               function: fn,
-              invocationType: LambdaInvocationType.RequestResponse,
+              invocationType: LambdaInvocationType.REQUEST_RESPONSE,
               topic
             })
           ]
@@ -201,7 +201,7 @@ export = {
 
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const kmsKey = new kms.EncryptionKey(stack, 'Key');
+    const kmsKey = new kms.Key(stack, 'Key');
 
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {
@@ -385,7 +385,7 @@ export = {
         {
           actions: [
             new ReceiptRuleSnsAction({
-              encoding: EmailEncoding.Base64,
+              encoding: EmailEncoding.BASE64,
               topic
             })
           ]

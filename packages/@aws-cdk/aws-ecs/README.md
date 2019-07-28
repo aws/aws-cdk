@@ -1,4 +1,13 @@
-# Amazon ECS
+## Amazon ECS Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 This package contains constructs for working with **Amazon Elastic Container
 Service** (Amazon ECS).
@@ -15,24 +24,28 @@ adds capacity to it,
 and instantiates the Amazon ECS Service with an automatic load balancer.
 
 ```ts
+import ecs = require('@aws-cdk/aws-ecs');
+
 // Create an ECS cluster
 const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc,
 });
 
 // Add capacity to it
-cluster.addDefaultAutoScalingGroupCapacity('Capacity', {
+cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   desiredCapacity: 3,
 });
 
-// Instantiate Amazon ECS Service with an automatic load balancer
-const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
+// Instantiate an Amazon ECS Service
+const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 ```
+
+For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
 ## AWS Fargate vs Amazon ECS
 
@@ -89,7 +102,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 
 // Either add default capacity
-cluster.addDefaultAutoScalingGroupCapacity({
+cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   desiredCapacity: 3,
 });
@@ -98,14 +111,14 @@ cluster.addDefaultAutoScalingGroupCapacity({
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.xlarge'),
-  machineImage: new EcsOptimizedAmi(),
+  machineImage: EcsOptimizedImage.amazonLinux(),
   // Or use Amazon ECS-Optimized Amazon Linux 2 AMI
-  // machineImage: new EcsOptimizedAmi({ generation: ec2.AmazonLinuxGeneration.AmazonLinux2 }),
+  // machineImage: EcsOptimizedImage.amazonLinux2(),
   desiredCapacity: 3,
   // ... other options here ...
 });
 
-cluster.addAutoScalingGroupCapacity(autoScalingGroup);
+cluster.addAutoScalingGroup(autoScalingGroup);
 ```
 
 ## Task definitions
@@ -121,12 +134,12 @@ To run a task or service with Amazon EC2 launch type, use the `Ec2TaskDefinition
 `FargateTaskDefinition`. These classes provide a simplified API that only contain
 properties relevant for that specific launch type.
 
-For a `FargateTaskDefinition`, specify the task size (`memoryMiB` and `cpu`):
+For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`):
 
 ```ts
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
-  memoryMiB: '512',
-  cpu: '256'
+  memoryLimitMiB: 512,
+  cpu: 256
 });
 ```
 To add containers to a task definition, call `addContainer()`:
@@ -143,7 +156,7 @@ For a `Ec2TaskDefinition`:
 
 ```ts
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
-  networkMode: bridge
+  networkMode: NetworkMode.BRIDGE
 });
 
 const container = ec2TaskDefinition.addContainer("WebContainer", {
@@ -172,9 +185,9 @@ The following example uses both:
 ```ts
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512',
-  cpu: 256,
-  networkMode: 'awsvpc',
-  compatibility: ecs.Compatibility.Ec2AndFargate,
+  cpu: '256',
+  networkMode: NetworkMode.AWS_VPC,
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
 ```
 
@@ -187,7 +200,7 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
 * `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
 * `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start. If no tag is provided, "latest" is assumed.
-* `ecs.ContainerImage.fromAsset(this, 'Image', { directory: './image' })`: build and upload an
+* `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 
 ## Service
@@ -225,7 +238,7 @@ const target = listener.addTargets('ECS', {
 });
 ```
 
-There are two higher-level constructs available which include a load balancer for you:
+There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
 
 * `LoadBalancedFargateService`
 * `LoadBalancedEc2Service`
@@ -262,16 +275,16 @@ your Amazon EC2 instances halfway loaded, scaling up to a maximum of 30 instance
 if required:
 
 ```ts
-const autoScalingGroup = cluster.addDefaultAutoScalingGroupCapacity({
+const autoScalingGroup = cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   minCapacity: 3,
-  maxCapacity: 30
+  maxCapacity: 30,
   desiredCapacity: 3,
 
   // Give instances 5 minutes to drain running tasks when an instance is
   // terminated. This is the default, turn this off by specifying 0 or
   // change the timeout up to 900 seconds.
-  taskDrainTimeSec: 300,
+  taskDrainTime: Duration.seconds(300)
 });
 
 autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
@@ -285,12 +298,37 @@ you can configure on your instances.
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
-`Ec2TaskEventRuleTarget` instead of an `Ec2Service`:
+`@aws-cdk/aws-events-targets.EcsTask` instead of an `Ec2Service`:
 
-[example of CloudWatch Events integration](test/ec2/integ.event-task.lit.ts)
+```ts
+import targets = require('@aws-cdk/aws-events-targets');
+
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
+  memoryLimitMiB: 256,
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+});
+
+// An Rule that describes the event trigger (in this case a scheduled run)
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 min)')
+});
+
+// Pass an environment variable to the container 'TheContainer' in the task
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    environment: [{
+      name: 'I_WAS_TRIGGERED',
+      value: 'From CloudWatch Events'
+    }]
+  }]
+}));
+```
 
 > Note: it is currently not possible to start AWS Fargate tasks in this way.
-
-## Roadmap
-
-- [ ] Service Discovery Integration

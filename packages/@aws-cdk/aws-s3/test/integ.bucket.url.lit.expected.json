@@ -1,28 +1,17 @@
 {
   "Resources": {
     "MyBucketF68F3FF0": {
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     }
   },
   "Outputs": {
     "BucketURL": {
       "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://s3.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/",
-            {
-              "Ref": "MyBucketF68F3FF0"
-            }
-          ]
+        "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "WebsiteURL"
         ]
       }
     },

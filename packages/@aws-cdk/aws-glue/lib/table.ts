@@ -1,17 +1,22 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
 import { Column } from './schema';
 
 export interface ITable extends IResource {
+  /**
+   * @attribute
+   */
   readonly tableArn: string;
-  readonly tableName: string;
 
-  export(): TableImportProps;
+  /**
+   * @attribute
+   */
+  readonly tableName: string;
 }
 
 /**
@@ -20,36 +25,36 @@ export interface ITable extends IResource {
  * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
  */
 export enum TableEncryption {
-  Unencrypted = 'Unencrypted',
+  UNENCRYPTED = 'Unencrypted',
 
   /**
    * Server side encryption (SSE) with an Amazon S3-managed key.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
    */
-  S3Managed = 'SSE-S3',
+  S3_MANAGED = 'SSE-S3',
 
   /**
    * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
    */
-  Kms = 'SSE-KMS',
+  KMS = 'SSE-KMS',
 
   /**
    * Server-side encryption (SSE) with an AWS KMS key managed by the KMS service.
    */
-  KmsManaged = 'SSE-KMS-MANAGED',
+  KMS_MANAGED = 'SSE-KMS-MANAGED',
 
   /**
    * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
-  ClientSideKms = 'CSE-KMS'
+  CLIENT_SIDE_KMS = 'CSE-KMS'
 }
 
-export interface TableImportProps {
+export interface TableAttributes {
   readonly tableArn: string;
   readonly tableName: string;
 }
@@ -129,7 +134,7 @@ export interface TableProps {
    *
    * @default key is managed by KMS.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Indicates whether the table data is stored in subdirectories.
@@ -143,21 +148,41 @@ export interface TableProps {
  * A Glue table.
  */
 export class Table extends Resource implements ITable {
+
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+    const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).parseArn(tableArn).resourceName!));
+
+    return Table.fromTableAttributes(scope, id, {
+      tableArn,
+      tableName
+    });
+  }
+
   /**
    * Creates a Table construct that represents an external table.
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param props A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
+   * @param attrs Import attributes
    */
-  public static import(scope: Construct, id: string, props: TableImportProps): ITable {
-    return new ImportedTable(scope, id, props);
+  public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
+    class Import extends Resource implements ITable {
+      public readonly tableArn = attrs.tableArn;
+      public readonly tableName = attrs.tableName;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
    * Database this table belongs to.
    */
   public readonly database: IDatabase;
+
+  /**
+   * Indicates whether the table's data is compressed or not.
+   */
+  public readonly compressed: boolean;
 
   /**
    * The type of encryption enabled for the table.
@@ -167,7 +192,7 @@ export class Table extends Resource implements ITable {
   /**
    * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
    */
-  public readonly encryptionKey?: kms.IEncryptionKey;
+  public readonly encryptionKey?: kms.IKey;
 
   /**
    * S3 bucket in which the table's data resides.
@@ -205,7 +230,9 @@ export class Table extends Resource implements ITable {
   public readonly partitionKeys?: Column[];
 
   constructor(scope: Construct, id: string, props: TableProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.tableName,
+    });
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
@@ -215,6 +242,7 @@ export class Table extends Resource implements ITable {
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
+    this.compressed = props.compressed === undefined ? false : props.compressed;
     const {bucket, encryption, encryptionKey} = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
@@ -226,17 +254,17 @@ export class Table extends Resource implements ITable {
       databaseName: props.database.databaseName,
 
       tableInput: {
-        name: props.tableName,
+        name: this.physicalName,
         description: props.description || `${props.tableName} generated by CDK`,
 
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
-          has_encrypted_data: this.encryption !== TableEncryption.Unencrypted
+          has_encrypted_data: this.encryption !== TableEncryption.UNENCRYPTED
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
-          compressed: props.compressed === undefined ? false : props.compressed,
+          compressed: this.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
           columns: renderColumns(props.columns),
           inputFormat: props.dataFormat.inputFormat.className,
@@ -250,15 +278,12 @@ export class Table extends Resource implements ITable {
       }
     });
 
-    this.tableName = tableResource.tableName;
-    this.tableArn = `${this.database.databaseArn}/${this.tableName}`;
-  }
-
-  public export(): TableImportProps {
-    return {
-      tableName: new CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
-      tableArn: new CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
-    };
+    this.tableName = this.getResourceNameAttribute(tableResource.ref);
+    this.tableArn = this.stack.formatArn({
+      service: 'glue',
+      resource: 'table',
+      resourceName: `${this.database.databaseName}/${this.tableName}`
+    });
   }
 
   /**
@@ -268,7 +293,7 @@ export class Table extends Resource implements ITable {
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantDecrypt(grantee); }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
     this.bucket.grantRead(grantee, this.s3Prefix);
     return ret;
   }
@@ -280,7 +305,7 @@ export class Table extends Resource implements ITable {
    */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncrypt(grantee); }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
     this.bucket.grantWrite(grantee, this.s3Prefix);
     return ret;
   }
@@ -292,7 +317,7 @@ export class Table extends Resource implements ITable {
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
-    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncryptDecrypt(grantee); }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
     this.bucket.grantReadWrite(grantee, this.s3Prefix);
     return ret;
   }
@@ -322,34 +347,34 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
 
 // map TableEncryption to bucket's SSE configuration (s3.BucketEncryption)
 const encryptionMappings = {
-  [TableEncryption.S3Managed]: s3.BucketEncryption.S3Managed,
-  [TableEncryption.KmsManaged]: s3.BucketEncryption.KmsManaged,
-  [TableEncryption.Kms]: s3.BucketEncryption.Kms,
-  [TableEncryption.ClientSideKms]: s3.BucketEncryption.Unencrypted,
-  [TableEncryption.Unencrypted]: s3.BucketEncryption.Unencrypted,
+  [TableEncryption.S3_MANAGED]: s3.BucketEncryption.S3_MANAGED,
+  [TableEncryption.KMS_MANAGED]: s3.BucketEncryption.KMS_MANAGED,
+  [TableEncryption.KMS]: s3.BucketEncryption.KMS,
+  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.UNENCRYPTED,
+  [TableEncryption.UNENCRYPTED]: s3.BucketEncryption.UNENCRYPTED,
 };
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
 function createBucket(table: Table, props: TableProps) {
-  const encryption = props.encryption || TableEncryption.Unencrypted;
+  const encryption = props.encryption || TableEncryption.UNENCRYPTED;
   let bucket = props.bucket;
 
-  if (bucket && (encryption !== TableEncryption.Unencrypted && encryption !== TableEncryption.ClientSideKms)) {
+  if (bucket && (encryption !== TableEncryption.UNENCRYPTED && encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
     throw new Error('you can not specify encryption settings if you also provide a bucket');
   }
 
-  let encryptionKey: kms.IEncryptionKey | undefined;
-  if (encryption === TableEncryption.ClientSideKms && props.encryptionKey === undefined) {
+  let encryptionKey: kms.IKey | undefined;
+  if (encryption === TableEncryption.CLIENT_SIDE_KMS && props.encryptionKey === undefined) {
     // CSE-KMS should behave the same as SSE-KMS - use the provided key or create one automatically
     // Since Bucket only knows about SSE, we repeat the logic for CSE-KMS at the Table level.
-    encryptionKey = new kms.EncryptionKey(table, 'Key');
+    encryptionKey = new kms.Key(table, 'Key');
   } else {
     encryptionKey = props.encryptionKey;
   }
 
   // create the bucket if none was provided
   if (!bucket) {
-    if (encryption === TableEncryption.ClientSideKms) {
+    if (encryption === TableEncryption.CLIENT_SIDE_KMS) {
       bucket = new s3.Bucket(table, 'Bucket');
     } else {
       bucket = new s3.Bucket(table, 'Bucket', {
@@ -396,19 +421,4 @@ function renderColumns(columns?: Array<Column | Column>) {
       comment: column.comment
     };
   });
-}
-
-class ImportedTable extends Construct implements ITable {
-  public readonly tableArn: string;
-  public readonly tableName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: TableImportProps) {
-    super(scope, id);
-    this.tableArn = props.tableArn;
-    this.tableName = props.tableName;
-  }
-
-  public export(): TableImportProps {
-    return this.props;
-  }
 }

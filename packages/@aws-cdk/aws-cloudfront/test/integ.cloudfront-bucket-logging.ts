@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cloudfront = require('../lib');
 
 const app = new cdk.App();
@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront-custom');
 
 const loggingBucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 
 new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -52,4 +52,4 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
   loggingConfig: {}
 });
 
-app.run();
+app.synth();

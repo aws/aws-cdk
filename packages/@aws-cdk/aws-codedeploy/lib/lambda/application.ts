@@ -1,6 +1,6 @@
-import cdk = require("@aws-cdk/cdk");
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApplication } from "../codedeploy.generated";
-import { applicationNameToArn } from "../utils";
+import { arnForApplication } from "../utils";
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to AWS Lambda.
@@ -10,13 +10,14 @@ import { applicationNameToArn } from "../utils";
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link LambdaApplication#import} method.
+ * use the {@link LambdaApplication#fromLambdaApplicationName} method.
  */
-export interface ILambdaApplication extends cdk.IConstruct {
+export interface ILambdaApplication extends IResource {
+  /** @attribute */
   readonly applicationArn: string;
-  readonly applicationName: string;
 
-  export(): LambdaApplicationImportProps;
+  /** @attribute */
+  readonly applicationName: string;
 }
 
 /**
@@ -33,69 +34,46 @@ export interface LambdaApplicationProps {
 
 /**
  * A CodeDeploy Application that deploys to an AWS Lambda function.
+ *
+ * @resource AWS::CodeDeploy::Application
  */
-export class LambdaApplication extends cdk.Construct implements ILambdaApplication {
+export class LambdaApplication extends Resource implements ILambdaApplication {
   /**
-   * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link ILambdaApplication#export} method.
+   * Import an Application defined either outside the CDK, or in a different CDK Stack.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced Application
+   * @param lambdaApplicationName the name of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static import(scope: cdk.Construct, id: string, props: LambdaApplicationImportProps): ILambdaApplication {
-    return new ImportedLambdaApplication(scope, id, props);
+  public static fromLambdaApplicationName(scope: Construct, id: string, lambdaApplicationName: string): ILambdaApplication {
+    class Import extends Resource implements ILambdaApplication {
+      public applicationArn = arnForApplication(lambdaApplicationName);
+      public applicationName = lambdaApplicationName;
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LambdaApplicationProps = {}) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: LambdaApplicationProps = {}) {
+    super(scope, id, {
+      physicalName: props.applicationName,
+    });
 
     const resource = new CfnApplication(this, 'Resource', {
-      applicationName: props.applicationName,
+      applicationName: this.physicalName,
       computePlatform: 'Lambda'
     });
 
-    this.applicationName = resource.ref;
-    this.applicationArn = applicationNameToArn(this.applicationName, this);
-  }
-
-  public export(): LambdaApplicationImportProps {
-    return {
-      applicationName: new cdk.CfnOutput(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * Properties of a reference to a CodeDeploy Application.
- *
- * @see LambdaApplication#import
- * @see ILambdaApplication#export
- */
-export interface LambdaApplicationImportProps {
-  /**
-   * The physical, human-readable name of the Lambda Application we're referencing.
-   * The Application must be in the same account and region as the root Stack.
-   */
-  readonly applicationName: string;
-}
-
-class ImportedLambdaApplication extends cdk.Construct implements ILambdaApplication {
-  public readonly applicationArn: string;
-  public readonly applicationName: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaApplicationImportProps) {
-    super(scope, id);
-
-    this.applicationName = props.applicationName;
-    this.applicationArn = applicationNameToArn(props.applicationName, this);
-  }
-
-  public export(): LambdaApplicationImportProps {
-    return this.props;
+    this.applicationName = this.getResourceNameAttribute(resource.ref);
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
   }
 }

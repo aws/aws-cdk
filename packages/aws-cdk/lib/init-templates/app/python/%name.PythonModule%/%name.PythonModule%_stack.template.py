@@ -1,9 +1,9 @@
-from aws_cdk import cdk
+from aws_cdk import core
 
 
-class %name.PascalCased%Stack(cdk.Stack):
+class %name.PascalCased%Stack(core.Stack):
 
-    def __init__(self, app: cdk.App, id: str, **kwargs) -> None:
-        super().__init__(app, id)
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
 
         # The code that defines your stack goes here

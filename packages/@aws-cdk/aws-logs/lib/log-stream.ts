@@ -1,23 +1,12 @@
-import { CfnOutput, Construct, DeletionPolicy, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
 export interface ILogStream extends IResource {
   /**
    * The name of this log stream
+   * @attribute
    */
-  readonly logStreamName: string;
-
-  /**
-   * Export this LogStream
-   */
-  export(): LogStreamImportProps;
-}
-
-/**
- * Properties for importing a LogStream
- */
-export interface LogStreamImportProps {
   readonly logStreamName: string;
 }
 
@@ -40,17 +29,18 @@ export interface LogStreamProps {
   readonly logStreamName?: string;
 
   /**
-   * Retain the log stream if the stack or containing construct ceases to exist
+   * Determine what happens when the log stream resource is removed from the
+   * app.
    *
-   * Normally you want to retain the log stream so you can diagnose issues
-   * from logs even after a deployment that no longer includes the log stream.
+   * Normally you want to retain the log stream so you can diagnose issues from
+   * logs even after a deployment that no longer includes the log stream.
    *
    * The date-based retention policy of your log group will age out the logs
    * after a certain time.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retainLogStream?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -60,8 +50,12 @@ export class LogStream extends Resource implements ILogStream {
   /**
    * Import an existing LogGroup
    */
-  public static import(scope: Construct, id: string, props: LogStreamImportProps): ILogStream {
-    return new ImportedLogStream(scope, id, props);
+  public static fromLogStreamName(scope: Construct, id: string, logStreamName: string): ILogStream {
+    class Import extends Resource implements ILogStream {
+      public readonly logStreamName = logStreamName;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -70,46 +64,16 @@ export class LogStream extends Resource implements ILogStream {
   public readonly logStreamName: string;
 
   constructor(scope: Construct, id: string, props: LogStreamProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.logStreamName,
+    });
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
-      logStreamName: props.logStreamName
+      logStreamName: this.physicalName,
     });
 
-    if (props.retainLogStream !== false) {
-      resource.options.deletionPolicy = DeletionPolicy.Retain;
-    }
-
-    this.logStreamName = resource.logStreamName;
-  }
-
-  /**
-   * Export this LogStream
-   */
-  public export(): LogStreamImportProps {
-    return {
-      logStreamName: new CfnOutput(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * An imported LogStream
- */
-class ImportedLogStream extends Construct implements ILogStream {
-  /**
-   * The name of this log stream
-   */
-  public readonly logStreamName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: LogStreamImportProps) {
-    super(scope, id);
-
-    this.logStreamName = props.logStreamName;
-  }
-
-  public export() {
-    return this.props;
+    resource.applyRemovalPolicy(props.removalPolicy);
+    this.logStreamName = this.getResourceNameAttribute(resource.ref);
   }
 }

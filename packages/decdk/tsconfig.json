@@ -15,9 +15,14 @@
     "noFallthroughCasesInSwitch": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "composite": true
   },
   "exclude": [
     "test/enrichments/**"
+  ],
+  "references": [
+    { "path": "../@aws-cdk/core" },
+    { "path": "../@aws-cdk/cx-api" }
   ]
 }

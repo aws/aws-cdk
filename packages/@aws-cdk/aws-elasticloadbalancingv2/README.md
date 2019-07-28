@@ -1,4 +1,13 @@
-## AWS Application and Network Load Balancing Construct Library
+## Amazon Elastic Load Balancing V2 Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
@@ -20,7 +29,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 
 // ...
 
-const vpc = new ec2.VpcNetwork(...);
+const vpc = new ec2.Vpc(...);
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
@@ -49,6 +58,17 @@ listener.addTargets('ApplicationFleet', {
 
 The security groups of the load balancer and the target are automatically
 updated to allow the network traffic.
+
+Use the `addFixedResponse()` method to add fixed response rules on the listener:
+
+```ts
+listener.addFixedResponse('Fixed', {
+    pathPattern: '/ok',
+    contentType: elbv2.ContentType.TEXT_PLAIN,
+    messageBody: 'OK',
+    statusCode: '200'
+});
+```
 
 #### Conditions
 
@@ -142,7 +162,7 @@ listener.addTargets('AppFleet', {
     targets: [asg],
     healthCheck: {
         path: '/ping',
-        intervalSecs: 60,
+        interval: cdk.Duration.minutes(1),
     }
 });
 ```
@@ -164,7 +184,7 @@ listener.addTargets('AppFleet', {
     }
 });
 
-listener.connections.allowFrom(lb, new TcpPort(8088));
+listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
 
 ### Protocol for Load Balancer Targets

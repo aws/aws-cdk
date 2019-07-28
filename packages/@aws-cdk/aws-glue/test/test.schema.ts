@@ -4,50 +4,50 @@ import { Schema } from '../lib';
 
 export = {
   'boolean type'(test: Test) {
-    test.equals(Schema.boolean.inputString, 'boolean');
-    test.equals(Schema.boolean.isPrimitive, true);
+    test.equals(Schema.BOOLEAN.inputString, 'boolean');
+    test.equals(Schema.BOOLEAN.isPrimitive, true);
     test.done();
   },
 
   'binary type'(test: Test) {
-    test.equals(Schema.binary.inputString, 'binary');
-    test.equals(Schema.binary.isPrimitive, true);
+    test.equals(Schema.BINARY.inputString, 'binary');
+    test.equals(Schema.BINARY.isPrimitive, true);
     test.done();
   },
 
   'bigint type'(test: Test) {
-    test.equals(Schema.bigint.inputString, 'bigint');
-    test.equals(Schema.bigint.isPrimitive, true);
+    test.equals(Schema.BIG_INT.inputString, 'bigint');
+    test.equals(Schema.BIG_INT.isPrimitive, true);
     test.done();
   },
 
   'double type'(test: Test) {
-    test.equals(Schema.double.inputString, 'double');
-    test.equals(Schema.double.isPrimitive, true);
+    test.equals(Schema.DOUBLE.inputString, 'double');
+    test.equals(Schema.DOUBLE.isPrimitive, true);
     test.done();
   },
 
   'float type'(test: Test) {
-    test.equals(Schema.float.inputString, 'float');
-    test.equals(Schema.float.isPrimitive, true);
+    test.equals(Schema.FLOAT.inputString, 'float');
+    test.equals(Schema.FLOAT.isPrimitive, true);
     test.done();
   },
 
   'integer type'(test: Test) {
-    test.equals(Schema.integer.inputString, 'integer');
-    test.equals(Schema.integer.isPrimitive, true);
+    test.equals(Schema.INTEGER.inputString, 'int');
+    test.equals(Schema.INTEGER.isPrimitive, true);
     test.done();
   },
 
   'smallint type'(test: Test) {
-    test.equals(Schema.smallint.inputString, 'smallint');
-    test.equals(Schema.smallint.isPrimitive, true);
+    test.equals(Schema.SMALL_INT.inputString, 'smallint');
+    test.equals(Schema.SMALL_INT.isPrimitive, true);
     test.done();
   },
 
   'tinyint type'(test: Test) {
-    test.equals(Schema.tinyint.inputString, 'tinyint');
-    test.equals(Schema.tinyint.isPrimitive, true);
+    test.equals(Schema.TINY_INT.inputString, 'tinyint');
+    test.equals(Schema.TINY_INT.isPrimitive, true);
     test.done();
   },
 
@@ -61,20 +61,20 @@ export = {
   // TODO: decimal bounds
 
   'date type'(test: Test) {
-    test.equals(Schema.date.inputString, 'date');
-    test.equals(Schema.date.isPrimitive, true);
+    test.equals(Schema.DATE.inputString, 'date');
+    test.equals(Schema.DATE.isPrimitive, true);
     test.done();
   },
 
   'timestamp type'(test: Test) {
-    test.equals(Schema.timestamp.inputString, 'timestamp');
-    test.equals(Schema.timestamp.isPrimitive, true);
+    test.equals(Schema.TIMESTAMP.inputString, 'timestamp');
+    test.equals(Schema.TIMESTAMP.isPrimitive, true);
     test.done();
   },
 
   'string type'(test: Test) {
-    test.equals(Schema.string.inputString, 'string');
-    test.equals(Schema.string.isPrimitive, true);
+    test.equals(Schema.STRING.inputString, 'string');
+    test.equals(Schema.STRING.isPrimitive, true);
     test.done();
   },
 
@@ -117,7 +117,7 @@ export = {
   },
 
   'array<string>'(test: Test) {
-    const type = Schema.array(Schema.string);
+    const type = Schema.array(Schema.STRING);
     test.equals(type.inputString, 'array<string>');
     test.equals(type.isPrimitive, false);
     test.done();
@@ -132,7 +132,7 @@ export = {
 
   'array<array>'(test: Test) {
     const type = Schema.array(
-      Schema.array(Schema.string));
+      Schema.array(Schema.STRING));
     test.equals(type.inputString, 'array<array<string>>');
     test.equals(type.isPrimitive, false);
     test.done();
@@ -140,7 +140,7 @@ export = {
 
   'array<map>'(test: Test) {
     const type = Schema.array(
-      Schema.map(Schema.string, Schema.string));
+      Schema.map(Schema.STRING, Schema.STRING));
     test.equals(type.inputString, 'array<map<string,string>>');
     test.equals(type.isPrimitive, false);
     test.done();
@@ -150,7 +150,7 @@ export = {
     const type = Schema.array(
       Schema.struct([{
         name: 'key',
-        type: Schema.string
+        type: Schema.STRING
       }]));
     test.equals(type.inputString, 'array<struct<key:string>>');
     test.equals(type.isPrimitive, false);
@@ -159,20 +159,20 @@ export = {
 
   'map<string,string>'(test: Test) {
     const type = Schema.map(
-      Schema.string,
-      Schema.string
+      Schema.STRING,
+      Schema.STRING
     );
     test.equals(type.inputString, 'map<string,string>');
     test.equals(type.isPrimitive, false);
     test.done();
   },
 
-  'map<integer,string>'(test: Test) {
+  'map<int,string>'(test: Test) {
     const type = Schema.map(
-      Schema.integer,
-      Schema.string
+      Schema.INTEGER,
+      Schema.STRING
     );
-    test.equals(type.inputString, 'map<integer,string>');
+    test.equals(type.inputString, 'map<int,string>');
     test.equals(type.isPrimitive, false);
     test.done();
   },
@@ -190,7 +190,7 @@ export = {
   'map<string,array>'(test: Test) {
     const type = Schema.map(
       Schema.char(1),
-      Schema.array(Schema.string)
+      Schema.array(Schema.STRING)
     );
     test.equals(type.inputString, 'map<char(1),array<string>>');
     test.equals(type.isPrimitive, false);
@@ -201,8 +201,8 @@ export = {
     const type = Schema.map(
       Schema.char(1),
       Schema.map(
-        Schema.string,
-        Schema.string)
+        Schema.STRING,
+        Schema.STRING)
     );
     test.equals(type.inputString, 'map<char(1),map<string,string>>');
     test.equals(type.isPrimitive, false);
@@ -214,7 +214,7 @@ export = {
       Schema.char(1),
       Schema.struct([{
         name: 'key',
-        type: Schema.string
+        type: Schema.STRING
       }])
     );
     test.equals(type.inputString, 'map<char(1),struct<key:string>>');
@@ -224,19 +224,19 @@ export = {
 
   'map throws if keyType is non-primitive'(test: Test) {
     test.throws(() => Schema.map(
-      Schema.array(Schema.string),
-      Schema.string
+      Schema.array(Schema.STRING),
+      Schema.STRING
     ));
     test.throws(() => Schema.map(
-      Schema.map(Schema.string, Schema.string),
-      Schema.string
+      Schema.map(Schema.STRING, Schema.STRING),
+      Schema.STRING
     ));
     test.throws(() => Schema.map(
       Schema.struct([{
         name: 'key',
-        type: Schema.string
+        type: Schema.STRING
       }]),
-      Schema.string
+      Schema.STRING
     ));
     test.done();
   },
@@ -244,22 +244,22 @@ export = {
   'struct type'(test: Test) {
     const type = Schema.struct([{
       name: 'primitive',
-      type: Schema.string
+      type: Schema.STRING
     }, {
       name: 'with_comment',
-      type: Schema.string,
+      type: Schema.STRING,
       comment: 'this has a comment'
     }, {
       name: 'array',
-      type: Schema.array(Schema.string)
+      type: Schema.array(Schema.STRING)
     }, {
       name: 'map',
-      type: Schema.map(Schema.string, Schema.string)
+      type: Schema.map(Schema.STRING, Schema.STRING)
     }, {
       name: 'nested_struct',
       type: Schema.struct([{
         name: 'nested',
-        type: Schema.string,
+        type: Schema.STRING,
         comment: 'nested comment'
       }])
     }]);

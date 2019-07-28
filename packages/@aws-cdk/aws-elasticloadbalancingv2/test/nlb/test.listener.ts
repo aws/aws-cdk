@@ -1,7 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import acm = require('@aws-cdk/aws-certificatemanager');
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -10,7 +10,7 @@ export = {
   'Trivial add listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
@@ -31,7 +31,7 @@ export = {
   'Can add target groups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
     const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
@@ -55,7 +55,7 @@ export = {
   'Can implicitly create target groups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
 
@@ -89,7 +89,7 @@ export = {
   'Enable health check for targets'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
 
@@ -99,8 +99,8 @@ export = {
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
     group.configureHealthCheck({
-      timeoutSeconds: 3600,
-      intervalSecs: 30,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
       path: '/test',
     });
 
@@ -117,7 +117,7 @@ export = {
   'Enable taking a dependency on an NLB target group\'s load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
     const group = listener.addTargets('Group', {
@@ -149,7 +149,7 @@ export = {
   'Trivial add TLS listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const cert = new acm.Certificate(stack, 'Certificate', {
       domainName: 'example.com'
@@ -158,7 +158,7 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.Tls,
+      protocol: elbv2.Protocol.TLS,
       certificates: [ { certificateArn: cert.certificateArn } ],
       sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
@@ -179,12 +179,12 @@ export = {
 
   'Invalid Protocol listener'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     test.throws(() => lb.addListener('Listener', {
         port: 443,
-        protocol: elbv2.Protocol.Http,
+        protocol: elbv2.Protocol.HTTP,
         defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
       }), Error, '/The protocol must be either TCP or TLS. Found HTTP/');
 
@@ -193,12 +193,12 @@ export = {
 
   'Protocol & certs TLS listener'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     test.throws(() => lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.Tls,
+      protocol: elbv2.Protocol.TLS,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     }), Error, '/When the protocol is set to TLS, you must specify certificates/');
 
@@ -207,7 +207,7 @@ export = {
 
   'TLS and certs specified listener'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const cert = new acm.Certificate(stack, 'Certificate', {
       domainName: 'example.com'
@@ -215,7 +215,7 @@ export = {
 
     test.throws(() => lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.Tcp,
+      protocol: elbv2.Protocol.TCP,
       certificates: [ { certificateArn: cert.certificateArn } ],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     }), Error, '/Protocol must be TLS when certificates have been specified/');

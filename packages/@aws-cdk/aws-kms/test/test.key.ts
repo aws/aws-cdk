@@ -1,14 +1,14 @@
 import { exactlyMatchTemplate, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import { PolicyDocument, PolicyStatement, User } from '@aws-cdk/aws-iam';
-import { App, Stack, Tag } from '@aws-cdk/cdk';
+import { PolicyStatement, User } from '@aws-cdk/aws-iam';
+import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EncryptionKey } from '../lib';
+import { Key } from '../lib';
 
 export = {
   'default key'(test: Test) {
     const stack = new Stack();
 
-    new EncryptionKey(stack, 'MyKey');
+    new Key(stack, 'MyKey');
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {
@@ -57,7 +57,8 @@ export = {
           Version: "2012-10-17"
         }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain"
       }
       }
     }));
@@ -68,9 +69,9 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
-    new EncryptionKey(stack, 'MyKey', { retain: false });
+    new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
-    expect(app.synthesizeStack(stack.name)).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
+    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete", UpdateReplacePolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();
   },
 
@@ -78,12 +79,12 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey');
-    const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-    p.addAwsPrincipal('arn');
+    const key = new Key(stack, 'MyKey');
+    const p = new PolicyStatement({ resources: ['*'], actions: ['kms:encrypt'] });
+    p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    expect(app.synthesizeStack(stack.name)).to(exactlyMatchTemplate({
+    expect(stack).to(exactlyMatchTemplate({
       Resources: {
         MyKey6AB29FA6: {
         Type: "AWS::KMS::Key",
@@ -138,7 +139,8 @@ export = {
           Version: "2012-10-17"
           }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain",
         }
       }
       }));
@@ -149,17 +151,17 @@ export = {
   'key with some options'(test: Test) {
     const stack = new Stack();
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false,
     });
-    const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-    p.addAwsPrincipal('arn');
+    const p = new PolicyStatement({ resources: ['*'], actions: ['kms:encrypt'] });
+    p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    key.node.apply(new Tag('tag1', 'value1'));
-    key.node.apply(new Tag('tag2', 'value2'));
-    key.node.apply(new Tag('tag3', ''));
+    key.node.applyAspect(new Tag('tag1', 'value1'));
+    key.node.applyAspect(new Tag('tag2', 'value2'));
+    key.node.applyAspect(new Tag('tag3', ''));
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {
@@ -232,7 +234,8 @@ export = {
               }
             ]
           },
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
     }));
@@ -244,7 +247,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false
     });
@@ -252,7 +255,7 @@ export = {
     const alias = key.addAlias('alias/xoo');
     test.ok(alias.aliasName);
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, {
+    expect(stack).toMatch({
       Resources: {
         MyKey6AB29FA6: {
           Type: "AWS::KMS::Key",
@@ -301,7 +304,8 @@ export = {
               Version: "2012-10-17"
             }
           },
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         },
         MyKeyAlias1B45D9DA: {
           Type: "AWS::KMS::Alias",
@@ -324,7 +328,7 @@ export = {
   'grant decrypt on a key'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const key = new EncryptionKey(stack, 'Key');
+    const key = new Key(stack, 'Key');
     const user = new User(stack, 'User');
 
     // WHEN
@@ -371,47 +375,8 @@ export = {
   },
 
   'import/export can be used to bring in an existing key'(test: Test) {
-    const stack1 = new Stack();
-    const policy = new PolicyDocument();
-    policy.addStatement(new PolicyStatement().addAllResources());
-    const myKey = new EncryptionKey(stack1, 'MyKey', { policy });
-    const exportedKeyRef = myKey.export();
-
-    expect(stack1).toMatch({
-      Resources: {
-        MyKey6AB29FA6: {
-          Type: "AWS::KMS::Key",
-          Properties: {
-            KeyPolicy: {
-              Statement: [
-                {
-                  Effect: "Allow",
-                  Resource: "*"
-                }
-              ],
-              Version: "2012-10-17"
-            }
-          },
-          DeletionPolicy: "Retain"
-        }
-      },
-      Outputs: {
-        MyKeyKeyArn317F1332: {
-          Value: {
-            "Fn::GetAtt": [
-              "MyKey6AB29FA6",
-              "Arn"
-            ]
-          },
-          Export: {
-            Name: "Stack:MyKeyKeyArn317F1332"
-          }
-        }
-      }
-    });
-
     const stack2 = new Stack();
-    const myKeyImported = EncryptionKey.import(stack2, 'MyKeyImported', exportedKeyRef);
+    const myKeyImported = Key.fromKeyArn(stack2, 'MyKeyImported', 'arn:of:key');
 
     // addAlias can be called on imported keys.
     myKeyImported.addAlias('alias/hello');
@@ -422,9 +387,7 @@ export = {
           Type: "AWS::KMS::Alias",
           Properties: {
             AliasName: "alias/hello",
-            TargetKeyId: {
-              "Fn::ImportValue": "Stack:MyKeyKeyArn317F1332"
-            }
+            TargetKeyId: 'arn:of:key'
           }
         }
       }
@@ -437,9 +400,9 @@ export = {
     'succeed if set to true (default)'(test: Test) {
       const stack = new Stack();
 
-      const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
+      const key = Key.fromKeyArn(stack, 'Imported', 'foo/bar');
 
-      key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'));
+      key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       test.done();
     },
@@ -448,10 +411,10 @@ export = {
 
       const stack = new Stack();
 
-      const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
+      const key = Key.fromKeyArn(stack, 'Imported', 'foo/bar');
 
       test.throws(() =>
-        key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'), /* allowNoOp */ false),
+        key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }), /* allowNoOp */ false),
         'Unable to add statement to IAM resource policy for KMS key: "foo/bar"');
 
       test.done();

@@ -1,4 +1,4 @@
-import { IResource } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/core';
 
 /**
  * Imported or created hosted zone
@@ -6,6 +6,8 @@ import { IResource } from '@aws-cdk/cdk';
 export interface IHostedZone extends IResource {
   /**
    * ID of this hosted zone, such as "Z23ABC4XYZL05B"
+   *
+   * @attribute
    */
   readonly hostedZoneId: string;
 
@@ -19,19 +21,16 @@ export interface IHostedZone extends IResource {
    * ns1.example.com.
    *
    * This attribute will be undefined for private hosted zones or hosted zones imported from another stack.
+   *
+   * @attribute
    */
   readonly hostedZoneNameServers?: string[];
-
-  /**
-   * Export the hosted zone
-   */
-  export(): HostedZoneImportProps;
 }
 
 /**
  * Reference to a hosted zone
  */
-export interface HostedZoneImportProps {
+export interface HostedZoneAttributes {
   /**
    * Identifier of the hosted zone
    */

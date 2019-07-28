@@ -1,10 +1,10 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
-import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
+import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { LifecycleRule } from './rule';
@@ -14,30 +14,44 @@ import { parseBucketArn, parseBucketName } from './util';
 export interface IBucket extends IResource {
   /**
    * The ARN of the bucket.
+   * @attribute
    */
   readonly bucketArn: string;
 
   /**
    * The name of the bucket.
+   * @attribute
    */
   readonly bucketName: string;
 
   /**
-   * The domain of the bucket.
+   * The URL of the static website.
+   * @attribute
    */
-  readonly domainName: string;
+  readonly bucketWebsiteUrl: string;
+
+  /**
+   * The IPv4 DNS name of the specified bucket.
+   * @attribute
+   */
+  readonly bucketDomainName: string;
+
+  /**
+   * The IPv6 DNS name of the specified bucket.
+   * @attribute
+   */
+  readonly bucketDualStackDomainName: string;
+
+  /**
+   * The regional domain name of the specified bucket.
+   * @attribute
+   */
+  readonly bucketRegionalDomainName: string;
 
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
-
-  /**
-   * The https:// URL of this bucket.
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * Similar to calling `urlForObject` with no object key.
-   */
-  readonly bucketUrl: string;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -46,11 +60,6 @@ export interface IBucket extends IResource {
    * first call to addToResourcePolicy(s).
    */
   policy?: BucketPolicy;
-
-  /**
-   * Exports this bucket from the stack.
-   */
-  export(): BucketImportProps;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -74,13 +83,8 @@ export interface IBucket extends IResource {
   /**
    * Returns an ARN that represents all objects within the bucket that match
    * the key pattern specified. To represent all keys, specify ``"*"``.
-   *
-   * If you specify multiple components for keyPattern, they will be concatenated::
-   *
-   *   arnForObjects('home/', team, '/', user, '/*')
-   *
    */
-  arnForObjects(...keyPattern: string[]): string;
+  arnForObjects(keyPattern: string): string;
 
   /**
    * Grant read permissions for this bucket and it's contents to an IAM
@@ -147,12 +151,12 @@ export interface IBucket extends IResource {
    * Without arguments, this method will grant read ("s3:GetObject") access to
    * all objects ("*") in the bucket.
    *
-   * The method returns the `iam.PolicyStatement` object, which can then be modified
+   * The method returns the `iam.Grant` object, which can then be modified
    * as needed. For example, you can add a condition that will restrict access only
    * to an IPv4 range like this:
    *
-   *     const statement = bucket.grantPublicAccess();
-   *     statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+   *     const grant = bucket.grantPublicAccess();
+   *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
@@ -162,14 +166,27 @@ export interface IBucket extends IResource {
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
-   * Defines a CloudWatch Event Rule that triggers upon putting an object into the Bucket.
+   * Define a CloudWatch event that triggers when something happens to this repository
    *
-   * @param name the logical ID of the newly created Event Rule
-   * @param target the optional target of the Event Rule
-   * @param path the optional path inside the Bucket that will be watched for changes
-   * @returns a new {@link events.EventRule} instance
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
    */
-  onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule;
+  onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -177,7 +194,7 @@ export interface IBucket extends IResource {
  * `bucket.export()`. Then, the consumer can use `Bucket.import(this, ref)` and
  * get a `Bucket`.
  */
-export interface BucketImportProps {
+export interface BucketAttributes {
   /**
    * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
@@ -207,6 +224,16 @@ export interface BucketImportProps {
   readonly bucketWebsiteUrl?: string;
 
   /**
+   * The regional domain name of the specified bucket.
+   */
+  readonly bucketRegionalDomainName?: string;
+
+  /**
+   * The IPv6 DNS name of the specified bucket.
+   */
+  readonly bucketDualStackDomainName?: string;
+
+  /**
    * The format of the website URL of the bucket. This should be true for
    * regions launched since 2014.
    *
@@ -232,26 +259,18 @@ export interface BucketImportProps {
  *   Bucket.import(this, 'MyImportedBucket', ref);
  *
  */
-export abstract class BucketBase extends Resource implements IBucket {
-  /**
-   * The ARN of the bucket.
-   */
+abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketArn: string;
-
-  /**
-   * The name of the bucket.
-   */
   public abstract readonly bucketName: string;
-
-  /**
-   * The domain of the bucket.
-   */
-  public abstract readonly domainName: string;
+  public abstract readonly bucketDomainName: string;
+  public abstract readonly bucketWebsiteUrl: string;
+  public abstract readonly bucketRegionalDomainName: string;
+  public abstract readonly bucketDualStackDomainName: string;
 
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  public abstract readonly encryptionKey?: kms.IEncryptionKey;
+  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -273,36 +292,47 @@ export abstract class BucketBase extends Resource implements IBucket {
   protected abstract disallowPublicAccess?: boolean;
 
   /**
-   * Exports this bucket from the stack.
+   * Define a CloudWatch event that triggers when something happens to this repository
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
    */
-  public abstract export(): BucketImportProps;
-
-  public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
-    const eventRule = new events.EventRule(this, name, {
-      eventPattern: {
-        source: [
-          'aws.s3',
-        ],
-        detailType: [
-          'AWS API Call via CloudTrail',
-        ],
-        detail: {
-          eventSource: [
-            's3.amazonaws.com',
-          ],
-          eventName: [
-            'PutObject',
-          ],
-          resources: {
-            ARN: [
-              path ? this.arnForObjects(path) : this.bucketArn,
-            ],
-          },
+  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.s3'],
+      detailType: ['AWS API Call via CloudTrail'],
+      detail: {
+        resources: {
+          ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
         },
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
+    const rule = this.onCloudTrailEvent(id, options);
+    rule.addEventPattern({
+      detail: {
+        eventName: ['PutObject'],
       },
     });
-    eventRule.addTarget(target);
-    return eventRule;
+    return rule;
   }
 
   /**
@@ -317,17 +347,8 @@ export abstract class BucketBase extends Resource implements IBucket {
     }
 
     if (this.policy) {
-      this.policy.document.addStatement(permission);
+      this.policy.document.addStatements(permission);
     }
-  }
-
-  /**
-   * The https:// URL of this bucket.
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * Similar to calling `urlForObject` with no object key.
-   */
-  public get bucketUrl() {
-    return this.urlForObject();
   }
 
   /**
@@ -340,7 +361,8 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const components = [ `https://s3.${this.node.stack.region}.${this.node.stack.urlSuffix}/${this.bucketName}` ];
+    const stack = Stack.of(this);
+    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -362,8 +384,8 @@ export abstract class BucketBase extends Resource implements IBucket {
    *   arnForObjects('home/', team, '/', user, '/*')
    *
    */
-  public arnForObjects(...keyPattern: string[]): string {
-    return `${this.bucketArn}/${keyPattern.join('')}`;
+  public arnForObjects(keyPattern: string): string {
+    return `${this.bucketArn}/${keyPattern}`;
   }
 
   /**
@@ -454,12 +476,12 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Without arguments, this method will grant read ("s3:GetObject") access to
    * all objects ("*") in the bucket.
    *
-   * The method returns the `iam.PolicyStatement` object, which can then be modified
+   * The method returns the `iam.Grant` object, which can then be modified
    * as needed. For example, you can add a condition that will restrict access only
    * to an IPv4 range like this:
    *
-   *     const statement = bucket.grantPublicAccess();
-   *     statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+   *     const grant = bucket.grantPublicAccess();
+   *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
@@ -486,18 +508,51 @@ export abstract class BucketBase extends Resource implements IBucket {
                 resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    const ret = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: bucketActions,
-      resourceArns: resources,
-      resource: this,
-    });
+    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
+    let ret: iam.Grant;
+    if (crossAccountAccess) {
+      // if the access is cross-account, we need to trust the accessing principal in the bucket's policy
+      ret = iam.Grant.addToPrincipalAndResource({
+        grantee,
+        actions: bucketActions,
+        resourceArns: resources,
+        resource: this,
+      });
+    } else {
+      // if not, we don't need to modify the resource policy if the grantee is an identity principal
+      ret = iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions: bucketActions,
+        resourceArns: resources,
+        resource: this,
+      });
+    }
 
     if (this.encryptionKey) {
-      this.encryptionKey.grant(grantee, ...keyActions);
+      if (crossAccountAccess) {
+        // we can't access the Key ARN (they don't have physical names),
+        // so fall back on using '*'. ToDo we need to make this better... somehow
+        iam.Grant.addToPrincipalAndResource({
+          actions: keyActions,
+          grantee,
+          resourceArns: ['*'],
+          resource: this.encryptionKey,
+        });
+      } else {
+        this.encryptionKey.grant(grantee, ...keyActions);
+      }
     }
 
     return ret;
+  }
+
+  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
+    if (!(Construct.isConstruct(grantee))) {
+      return false;
+    }
+    const bucketStack = Stack.of(this);
+    const identityStack = Stack.of(grantee);
+    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -532,14 +587,14 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
-  public static readonly BlockAll = new BlockPublicAccess({
+  public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
     restrictPublicBuckets: true
   });
 
-  public static readonly BlockAcls = new BlockPublicAccess({
+  public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true
   });
@@ -557,6 +612,114 @@ export class BlockPublicAccess {
   }
 }
 
+/**
+ * Specifies a metrics configuration for the CloudWatch request metrics from an Amazon S3 bucket.
+ */
+export interface BucketMetrics {
+  /**
+   * The ID used to identify the metrics configuration.
+   */
+  readonly id: string;
+  /**
+   * The prefix that an object must have to be included in the metrics results.
+   */
+  readonly prefix?: string;
+  /**
+   * Specifies a list of tag filters to use as a metrics configuration filter.
+   * The metrics configuration includes only objects that meet the filter's criteria.
+   */
+  readonly tagFilters?: {[tag: string]: any};
+}
+
+/**
+ * All http request methods
+ */
+export enum HttpMethods {
+  /**
+   * The GET method requests a representation of the specified resource.
+   */
+  GET = "GET",
+  /**
+   * The PUT method replaces all current representations of the target resource with the request payload.
+   */
+  PUT = "PUT",
+  /**
+   * The HEAD method asks for a response identical to that of a GET request, but without the response body.
+   */
+  HEAD = "HEAD",
+  /**
+   * The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
+   */
+  POST = "POST",
+  /**
+   * The DELETE method deletes the specified resource.
+   */
+  DELETE = "DELETE",
+}
+
+/**
+ * Specifies a cross-origin access rule for an Amazon S3 bucket.
+ */
+export interface CorsRule {
+  /**
+   * A unique identifier for this rule.
+   *
+   * @default - No id specified.
+   */
+  readonly id?: string;
+  /**
+   * The time in seconds that your browser is to cache the preflight response for the specified resource.
+   *
+   * @default - No caching.
+   */
+  readonly maxAge?: number;
+  /**
+   * Headers that are specified in the Access-Control-Request-Headers header.
+   *
+   * @default - No headers allowed.
+   */
+  readonly allowedHeaders?: string[];
+  /**
+   * An HTTP method that you allow the origin to execute.
+   */
+  readonly allowedMethods: HttpMethods[];
+  /**
+   * One or more origins you want customers to be able to access the bucket from.
+   */
+  readonly allowedOrigins: string[];
+  /**
+   * One or more headers in the response that you want customers to be able to access from their applications.
+   *
+   * @default - No headers exposed.
+   */
+  readonly exposedHeaders?: string[];
+}
+
+/**
+ * All http request methods
+ */
+export enum RedirectProtocol {
+  HTTP = 'http',
+  HTTPS = 'https',
+}
+
+/**
+ * Specifies a redirect behavior of all requests to a website endpoint of a bucket.
+ */
+export interface RedirectTarget {
+  /**
+   * Name of the host where requests are redirected
+   */
+  readonly hostName: string;
+
+  /**
+   * Protocol to use when redirecting requests
+   *
+   * @default - The protocol used in the original request.
+   */
+  readonly protocol?: RedirectProtocol;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -564,7 +727,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default Unencrypted
+   * @default - `Kms` if `encryptionKey` is specified, or `Unencrypted` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
@@ -575,22 +738,22 @@ export interface BucketProps {
    * An error will be emitted if encryption is set to "Unencrypted" or
    * "Managed".
    *
-   * @default If encryption is set to "Kms" and this property is undefined, a
-   * new KMS key will be created and associated with this bucket.
+   * @default - If encryption is set to "Kms" and this property is undefined,
+   * a new KMS key will be created and associated with this bucket.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Physical name of this bucket.
    *
-   * @default Assigned by CloudFormation (recommended)
+   * @default - Assigned by CloudFormation (recommended).
    */
   readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
    *
-   * @default The bucket will be orphaned
+   * @default - The bucket will be orphaned.
    */
   readonly removalPolicy?: RemovalPolicy;
 
@@ -604,25 +767,47 @@ export interface BucketProps {
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
-   * @default No lifecycle rules
+   * @default - No lifecycle rules.
    */
   readonly lifecycleRules?: LifecycleRule[];
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
    * hosting for this bucket.
+   *
+   * @default - No index document.
    */
   readonly websiteIndexDocument?: string;
 
   /**
    * The name of the error document (e.g. "404.html") for the website.
    * `websiteIndexDocument` must also be set if this is set.
+   *
+   * @default - No error document.
    */
   readonly websiteErrorDocument?: string;
 
   /**
+   * Specifies the redirect behavior of all requests to a website endpoint of a bucket.
+   *
+   * If you specify this property, you can't specify "websiteIndexDocument" nor "websiteErrorDocument".
+   *
+   * @default - No redirection.
+   */
+  readonly websiteRedirect?: RedirectTarget;
+
+  /**
+   * Specifies a canned ACL that grants predefined permissions to the bucket.
+   *
+   * @default BucketAccessControl.PRIVATE
+   */
+  readonly accessControl?: BucketAccessControl;
+
+  /**
    * Grants public read access to all objects in the bucket.
    * Similar to calling `bucket.grantPublicAccess()`
+   *
+   * @default false
    */
   readonly publicReadAccess?: boolean;
 
@@ -630,8 +815,29 @@ export interface BucketProps {
    * The block public access configuration of this bucket.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+   *
+   * @default false New buckets and objects don't allow public access, but users can modify bucket
+   * policies or object permissions to allow public access.
    */
   readonly blockPublicAccess?: BlockPublicAccess;
+
+  /**
+   * The metrics configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-metricsconfiguration.html
+   *
+   * @default - No metrics configuration.
+   */
+  readonly metrics?: BucketMetrics[];
+
+  /**
+   * The CORS configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-cors.html
+   *
+   * @default - No CORS configuration.
+   */
+  readonly cors?: CorsRule[];
 }
 
 /**
@@ -641,58 +847,127 @@ export interface BucketProps {
  * BucketResource.
  */
 export class Bucket extends BucketBase {
+
+  public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
+    return Bucket.fromBucketAttributes(scope, id, { bucketArn });
+  }
+
+  public static fromBucketName(scope: Construct, id: string, bucketName: string): IBucket {
+    return Bucket.fromBucketAttributes(scope, id, { bucketName });
+  }
+
   /**
    * Creates a Bucket construct that represents an external bucket.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param props A `BucketAttributes` object. Can be obtained from a call to
+   * @param attrs A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(scope: Construct, id: string, props: BucketImportProps): IBucket {
-    return new ImportedBucket(scope, id, props);
+  public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
+    const stack = Stack.of(scope);
+    const region = stack.region;
+    const urlSuffix = stack.urlSuffix;
+
+    const bucketName = parseBucketName(scope, attrs);
+    if (!bucketName) {
+      throw new Error('Bucket name is required');
+    }
+
+    const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
+      ? false
+      : attrs.bucketWebsiteNewUrlFormat;
+
+    const websiteUrl = newUrlFormat
+      ? `${bucketName}.s3-website.${region}.${urlSuffix}`
+      : `${bucketName}.s3-website-${region}.${urlSuffix}`;
+
+    class Import extends BucketBase {
+      public readonly bucketName = bucketName!;
+      public readonly bucketArn = parseBucketArn(scope, attrs);
+      public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
+      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || websiteUrl;
+      public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
+      public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
+      public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
+      public readonly encryptionKey?: kms.IKey;
+      public policy?: BucketPolicy = undefined;
+      protected autoCreatePolicy = false;
+      protected disallowPublicAccess = false;
+
+      /**
+       * Exports this bucket from the stack.
+       */
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly bucketArn: string;
   public readonly bucketName: string;
-  public readonly domainName: string;
+  public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
-  public readonly dualstackDomainName: string;
-  public readonly encryptionKey?: kms.IEncryptionKey;
+  public readonly bucketDualStackDomainName: string;
+  public readonly bucketRegionalDomainName: string;
+
+  public readonly encryptionKey?: kms.IKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
+  private readonly metrics: BucketMetrics[] = [];
+  private readonly cors: CorsRule[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
-    super(scope, id);
-
-    const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    if (props.bucketName && !Token.unresolved(props.bucketName)) {
-      this.validateBucketName(props.bucketName);
-    }
-
-    const resource = new CfnBucket(this, 'Resource', {
-      bucketName: props && props.bucketName,
-      bucketEncryption,
-      versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
-      websiteConfiguration: this.renderWebsiteConfiguration(props),
-      publicAccessBlockConfiguration: props.blockPublicAccess
+    super(scope, id, {
+      physicalName: props.bucketName,
     });
 
-    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
+    const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+
+    this.validateBucketName(this.physicalName);
+
+    const resource = new CfnBucket(this, 'Resource', {
+      bucketName: this.physicalName,
+      bucketEncryption,
+      versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
+      lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
+      websiteConfiguration: this.renderWebsiteConfiguration(props),
+      publicAccessBlockConfiguration: props.blockPublicAccess,
+      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
+      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: props.accessControl,
+    });
+
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
-    this.bucketArn = resource.bucketArn;
-    this.bucketName = resource.bucketName;
-    this.domainName = resource.bucketDomainName;
-    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
-    this.dualstackDomainName = resource.bucketDualStackDomainName;
+
+    this.bucketName = this.getResourceNameAttribute(resource.ref);
+    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
+    });
+
+    this.bucketDomainName = resource.attrDomainName;
+    this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketDualStackDomainName = resource.attrDualStackDomainName;
+    this.bucketRegionalDomainName = resource.attrRegionalDomainName;
+
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+
+    // Add all bucket metric configurations rules
+    (props.metrics || []).forEach(this.addMetric.bind(this));
+    // Add all cors configuration rules
+    (props.cors || []).forEach(this.addCorsRule.bind(this));
 
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
@@ -707,30 +982,36 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Exports this bucket from the stack.
-   */
-  public export(): BucketImportProps {
-    return {
-      bucketArn: new CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
-      bucketName: new CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new CfnOutput(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
-      bucketWebsiteUrl: new CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
-    };
-  }
-
-  /**
    * Add a lifecycle rule to the bucket
    *
    * @param rule The rule to add
    */
   public addLifecycleRule(rule: LifecycleRule) {
-    if ((rule.noncurrentVersionExpirationInDays !== undefined
+    if ((rule.noncurrentVersionExpiration !== undefined
       || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
       && !this.versioned) {
       throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
     }
 
     this.lifecycleRules.push(rule);
+  }
+
+  /**
+   * Adds a metrics configuration for the CloudWatch request metrics from the bucket.
+   *
+   * @param metric The metric configuration to add
+   */
+  public addMetric(metric: BucketMetrics) {
+    this.metrics.push(metric);
+  }
+
+  /**
+   * Adds a cross-origin access configuration for objects in an Amazon S3 bucket
+   *
+   * @param rule The CORS configuration rule to add
+   */
+  public addCorsRule(rule: CorsRule) {
+    this.cors.push(rule);
   }
 
   /**
@@ -747,12 +1028,12 @@ export class Bucket extends BucketBase {
    *
    * @example
    *
-   *    bucket.onEvent(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
-  public onEvent(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+  public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     this.notifications.addNotification(event, dest, ...filters);
   }
 
@@ -764,8 +1045,8 @@ export class Bucket extends BucketBase {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public onObjectCreated(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.onEvent(EventType.ObjectCreated, dest, ...filters);
+  public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.addEventNotification(EventType.OBJECT_CREATED, dest, ...filters);
   }
 
   /**
@@ -776,11 +1057,18 @@ export class Bucket extends BucketBase {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
+  public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
-  private validateBucketName(bucketName: string) {
+  private validateBucketName(physicalName: string): void {
+    const bucketName = physicalName;
+    if (!bucketName || Token.isUnresolved(bucketName)) {
+      // the name is a late-bound value, not a defined string,
+      // so skip validation
+      return;
+    }
+
     const errors: string[] = [];
 
     // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
@@ -820,23 +1108,26 @@ export class Bucket extends BucketBase {
    */
   private parseEncryption(props: BucketProps): {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.IEncryptionKey
+    encryptionKey?: kms.IKey
   } {
 
-    // default to unencrypted.
-    const encryptionType = props.encryption || BucketEncryption.Unencrypted;
+    // default based on whether encryptionKey is specified
+    let encryptionType = props.encryption;
+    if (encryptionType === undefined) {
+      encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
+    }
 
     // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== BucketEncryption.Kms && props.encryptionKey) {
+    if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
-    if (encryptionType === BucketEncryption.Unencrypted) {
+    if (encryptionType === BucketEncryption.UNENCRYPTED) {
       return { bucketEncryption: undefined, encryptionKey: undefined };
     }
 
-    if (encryptionType === BucketEncryption.Kms) {
-      const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
+    if (encryptionType === BucketEncryption.KMS) {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
       });
 
@@ -853,7 +1144,7 @@ export class Bucket extends BucketBase {
       return { encryptionKey, bucketEncryption };
     }
 
-    if (encryptionType === BucketEncryption.S3Managed) {
+    if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }
@@ -863,7 +1154,7 @@ export class Bucket extends BucketBase {
       return { bucketEncryption };
     }
 
-    if (encryptionType === BucketEncryption.KmsManaged) {
+    if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }
@@ -884,42 +1175,88 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
+    const self = this;
+
     return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
-      const x = {
+      const x: CfnBucket.RuleProperty = {
         // tslint:disable-next-line:max-line-length
-        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfterDays !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfterDays } : undefined,
+        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expirationInDays,
+        expirationInDays: rule.expiration && rule.expiration.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
-        noncurrentVersionTransitions: rule.noncurrentVersionTransitions,
+        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
+        noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionInDays: t.transitionAfter.toDays()
+        })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: rule.transitions,
-        tagFilters: parseTagFilters(rule.tagFilters)
+        transitions: mapOrUndefined(rule.transitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionDate: t.transitionDate,
+          transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
+        })),
+        tagFilters: self.parseTagFilters(rule.tagFilters)
       };
 
       return x;
     }
+  }
 
-    function parseTagFilters(tagFilters?: {[tag: string]: any}) {
-      if (!tagFilters || tagFilters.length === 0) {
-        return undefined;
-      }
+  private parseMetricConfiguration(): CfnBucket.MetricsConfigurationProperty[] | undefined {
+    if (!this.metrics || this.metrics.length === 0) {
+      return undefined;
+    }
 
-      return Object.keys(tagFilters).map(tag => ({
-        key: tag,
-        value: tagFilters[tag]
-      }));
+    const self = this;
+
+    return this.metrics.map(parseMetric);
+
+    function parseMetric(metric: BucketMetrics): CfnBucket.MetricsConfigurationProperty {
+      return {
+        id: metric.id,
+        prefix: metric.prefix,
+        tagFilters: self.parseTagFilters(metric.tagFilters)
+      };
     }
   }
 
+  private parseCorsConfiguration(): CfnBucket.CorsConfigurationProperty | undefined {
+    if (!this.cors || this.cors.length === 0) {
+      return undefined;
+    }
+
+    return { corsRules: this.cors.map(parseCors) };
+
+    function parseCors(rule: CorsRule): CfnBucket.CorsRuleProperty {
+      return {
+        id: rule.id,
+        maxAge: rule.maxAge,
+        allowedHeaders: rule.allowedHeaders,
+        allowedMethods: rule.allowedMethods,
+        allowedOrigins: rule.allowedOrigins,
+        exposedHeaders: rule.exposedHeaders
+      };
+    }
+  }
+
+  private parseTagFilters(tagFilters?: {[tag: string]: any}) {
+    if (!tagFilters || tagFilters.length === 0) {
+      return undefined;
+    }
+
+    return Object.keys(tagFilters).map(tag => ({
+      key: tag,
+      value: tagFilters[tag]
+    }));
+  }
+
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
-    if (!props.websiteErrorDocument && !props.websiteIndexDocument) {
+    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect) {
       return undefined;
     }
 
@@ -927,9 +1264,14 @@ export class Bucket extends BucketBase {
       throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
     }
 
+    if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument)) {
+        throw new Error('"websiteIndexDocument" and "websiteErrorDocument" cannot be set if "websiteRedirect" is used');
+    }
+
     return {
       indexDocument: props.websiteIndexDocument,
-      errorDocument: props.websiteErrorDocument
+      errorDocument: props.websiteErrorDocument,
+      redirectAllRequestsTo: props.websiteRedirect,
     };
   }
 }
@@ -941,23 +1283,23 @@ export enum BucketEncryption {
   /**
    * Objects in the bucket are not encrypted.
    */
-  Unencrypted = 'NONE',
+  UNENCRYPTED = 'NONE',
 
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */
-  KmsManaged = 'MANAGED',
+  KMS_MANAGED = 'MANAGED',
 
   /**
    * Server-side encryption with a master key managed by S3.
    */
-  S3Managed = 'S3MANAGED',
+  S3_MANAGED = 'S3MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
-  Kms = 'KMS',
+  KMS = 'KMS',
 }
 
 /**
@@ -971,7 +1313,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreated = 's3:ObjectCreated:*',
+  OBJECT_CREATED = 's3:ObjectCreated:*',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -980,7 +1322,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedPut = 's3:ObjectCreated:Put',
+  OBJECT_CREATED_PUT = 's3:ObjectCreated:Put',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -989,7 +1331,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedPost = 's3:ObjectCreated:Post',
+  OBJECT_CREATED_POST = 's3:ObjectCreated:Post',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -998,7 +1340,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedCopy = 's3:ObjectCreated:Copy',
+  OBJECT_CREATED_COPY = 's3:ObjectCreated:Copy',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -1007,7 +1349,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedCompleteMultipartUpload = 's3:ObjectCreated:CompleteMultipartUpload',
+  OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD = 's3:ObjectCreated:CompleteMultipartUpload',
 
   /**
    * By using the ObjectRemoved event types, you can enable notification when
@@ -1024,7 +1366,7 @@ export enum EventType {
    * You will not receive event notifications from automatic deletes from
    * lifecycle policies or from failed operations.
    */
-  ObjectRemoved = 's3:ObjectRemoved:*',
+  OBJECT_REMOVED = 's3:ObjectRemoved:*',
 
   /**
    * By using the ObjectRemoved event types, you can enable notification when
@@ -1041,7 +1383,7 @@ export enum EventType {
    * You will not receive event notifications from automatic deletes from
    * lifecycle policies or from failed operations.
    */
-  ObjectRemovedDelete = 's3:ObjectRemoved:Delete',
+  OBJECT_REMOVED_DELETE = 's3:ObjectRemoved:Delete',
 
   /**
    * By using the ObjectRemoved event types, you can enable notification when
@@ -1058,14 +1400,14 @@ export enum EventType {
    * You will not receive event notifications from automatic deletes from
    * lifecycle policies or from failed operations.
    */
-  ObjectRemovedDeleteMarkerCreated = 's3:ObjectRemoved:DeleteMarkerCreated',
+  OBJECT_REMOVED_DELETE_MARKER_CREATED = 's3:ObjectRemoved:DeleteMarkerCreated',
 
   /**
    * You can use this event type to request Amazon S3 to send a notification
    * message when Amazon S3 detects that an object of the RRS storage class is
    * lost.
    */
-  ReducedRedundancyLostObject = 's3:ReducedRedundancyLostObject',
+  REDUCED_REDUNDANCY_LOST_OBJECT = 's3:ReducedRedundancyLostObject',
 }
 
 export interface NotificationKeyFilter {
@@ -1080,53 +1422,73 @@ export interface NotificationKeyFilter {
   readonly suffix?: string;
 }
 
-class ImportedBucket extends BucketBase {
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
-  public readonly domainName: string;
-  public readonly bucketWebsiteUrl: string;
-  public readonly bucketWebsiteNewUrlFormat: boolean;
-  public readonly encryptionKey?: kms.EncryptionKey;
+/**
+ * Options for the onCloudTrailPutObject method
+ */
+export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
+  /**
+   * Only watch changes to these object paths
+   *
+   * @default - Watch changes to all objects
+   */
+  readonly paths?: string[];
+}
 
-  public policy?: BucketPolicy;
-  protected autoCreatePolicy: boolean;
-
-  protected disallowPublicAccess?: boolean;
-
-  constructor(scope: Construct, id: string, private readonly props: BucketImportProps) {
-    super(scope, id);
-
-    const bucketName = parseBucketName(this, props);
-    if (!bucketName) {
-      throw new Error('Bucket name is required');
-    }
-
-    this.bucketArn = parseBucketArn(this, props);
-    this.bucketName = bucketName;
-    this.domainName = props.bucketDomainName || this.generateDomainName();
-    this.bucketWebsiteUrl = props.bucketWebsiteUrl || this.generateBucketWebsiteUrl();
-    this.autoCreatePolicy = false;
-    this.bucketWebsiteNewUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
-      ? false
-      : props.bucketWebsiteNewUrlFormat;
-    this.policy = undefined;
-    this.disallowPublicAccess = false;
-  }
+/**
+ * Default bucket access control types.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html
+ */
+export enum BucketAccessControl {
+  /**
+   * Owner gets FULL_CONTROL. No one else has access rights.
+   */
+  PRIVATE = 'Private',
 
   /**
-   * Exports this bucket from the stack.
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ access.
    */
-  public export() {
-    return this.props;
+  PUBLIC_READ = 'PublicRead',
+
+  /**
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ and WRITE access.
+   * Granting this on a bucket is generally not recommended.
+   */
+  PUBLIC_READ_WRITE = 'PublicReadWrite',
+
+  /**
+   * Owner gets FULL_CONTROL. The AuthenticatedUsers group gets READ access.
+   */
+  AUTHENTICATED_READ = 'AuthenticatedRead',
+
+  /**
+   * The LogDelivery group gets WRITE and READ_ACP permissions on the bucket.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+   */
+  LOG_DELIVERY_WRITE = 'LogDeliveryWrite',
+
+  /**
+   * Object owner gets FULL_CONTROL. Bucket owner gets READ access.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_READ = 'BucketOwnerRead',
+
+  /**
+   * Both the object owner and the bucket owner get FULL_CONTROL over the object.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_FULL_CONTROL = 'BucketOwnerFullControl',
+
+  /**
+   * Owner gets FULL_CONTROL. Amazon EC2 gets READ access to GET an Amazon Machine Image (AMI) bundle from Amazon S3.
+   */
+  AWS_EXEC_READ = 'AwsExecRead',
+}
+
+function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
+  if (!list || list.length === 0) {
+    return undefined;
   }
 
-  private generateDomainName() {
-    return `${this.bucketName}.s3.amazonaws.com`;
-  }
-
-  private generateBucketWebsiteUrl() {
-    return this.bucketWebsiteNewUrlFormat
-      ? `${this.bucketName}.s3-website.${this.node.stack.region}.${this.node.stack.urlSuffix}`
-      : `${this.bucketName}.s3-website-${this.node.stack.region}.${this.node.stack.urlSuffix}`;
-  }
+  return list.map(callback);
 }

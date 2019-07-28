@@ -1,14 +1,13 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, ConstructNode, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
 import {
   Connections,
   IConnectable,
+  Port,
   SecurityGroup,
-  TcpAllPorts,
-  TcpPort,
-  VpcNetwork,
+  Vpc,
 } from "../lib";
 
 export = {
@@ -16,7 +15,7 @@ export = {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
 
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SG1', { vpc });
     const sg2 = new SecurityGroup(stack, 'SG2', { vpc });
 
@@ -24,7 +23,7 @@ export = {
     const conn2 = new SomethingConnectable(new Connections({ securityGroups: [sg2] }));
 
     // WHEN
-    conn1.connections.allowTo(conn2, new TcpPort(80), 'Test');
+    conn1.connections.allowTo(conn2, Port.tcp(80), 'Test');
 
     // THEN -- it finishes!
     test.done();
@@ -33,14 +32,14 @@ export = {
   '(imported) SecurityGroup can be used as target of .allowTo()'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
     const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
 
-    const securityGroup = SecurityGroup.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
+    const securityGroup = SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-12345');
 
     // WHEN
-    somethingConnectable.connections.allowTo(securityGroup, new TcpAllPorts(), 'Connect there');
+    somethingConnectable.connections.allowTo(securityGroup, Port.allTcp(), 'Connect there');
 
     // THEN: rule to generated security group to connect to imported
     expect(stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
@@ -68,13 +67,13 @@ export = {
   'security groups added to connections after rule still gets rule'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SecurityGroup1', { vpc, allowAllOutbound: false });
     const sg2 = new SecurityGroup(stack, 'SecurityGroup2', { vpc, allowAllOutbound: false });
     const connections = new Connections({ securityGroups: [sg1] });
 
     // WHEN
-    connections.allowFromAnyIPv4(new TcpPort(88));
+    connections.allowFromAnyIpv4(Port.tcp(88));
     connections.addSecurityGroup(sg2);
 
     // THEN
@@ -110,7 +109,7 @@ export = {
   'when security groups are added to target they also get the rule'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SecurityGroup1', { vpc, allowAllOutbound: false });
     const sg2 = new SecurityGroup(stack, 'SecurityGroup2', { vpc, allowAllOutbound: false });
     const sg3 = new SecurityGroup(stack, 'SecurityGroup3', { vpc, allowAllOutbound: false });
@@ -119,7 +118,7 @@ export = {
     const connectable = new SomethingConnectable(connections2);
 
     // WHEN
-    connections1.allowTo(connectable, new TcpPort(88));
+    connections1.allowTo(connectable, Port.tcp(88));
     connections2.addSecurityGroup(sg3);
 
     // THEN
@@ -143,13 +142,13 @@ export = {
   'multiple security groups allows internally between them'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SecurityGroup1', { vpc, allowAllOutbound: false });
     const sg2 = new SecurityGroup(stack, 'SecurityGroup2', { vpc, allowAllOutbound: false });
     const connections = new Connections({ securityGroups: [sg1] });
 
     // WHEN
-    connections.allowInternally(new TcpPort(88));
+    connections.allowInternally(Port.tcp(88));
     connections.addSecurityGroup(sg2);
 
     // THEN
@@ -168,18 +167,18 @@ export = {
     const app = new App();
 
     const stack1 = new Stack(app, 'Stack1');
-    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const vpc1 = new Vpc(stack1, 'VPC');
     const sg1 = new SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1, allowAllOutbound: false });
 
     const stack2 = new Stack(app, 'Stack2');
-    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const vpc2 = new Vpc(stack2, 'VPC');
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
-    sg2.connections.allowFrom(sg1, new TcpPort(100));
+    sg2.connections.allowFrom(sg1, Port.tcp(100));
 
     // THEN -- both rules are in Stack2
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
@@ -199,18 +198,18 @@ export = {
     const app = new App();
 
     const stack1 = new Stack(app, 'Stack1');
-    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const vpc1 = new Vpc(stack1, 'VPC');
     const sg1 = new SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1, allowAllOutbound: false });
 
     const stack2 = new Stack(app, 'Stack2');
-    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const vpc2 = new Vpc(stack2, 'VPC');
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
-    sg2.connections.allowTo(sg1, new TcpPort(100));
+    sg2.connections.allowTo(sg1, Port.tcp(100));
 
     // THEN -- both rules are in Stack2
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
@@ -230,20 +229,20 @@ export = {
     const app = new App();
 
     const stack1 = new Stack(app, 'Stack1');
-    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const vpc1 = new Vpc(stack1, 'VPC');
     const sg1a = new SecurityGroup(stack1, 'SecurityGroupA', { vpc: vpc1, allowAllOutbound: false });
     const sg1b = new SecurityGroup(stack1, 'SecurityGroupB', { vpc: vpc1, allowAllOutbound: false });
 
     const stack2 = new Stack(app, 'Stack2');
-    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const vpc2 = new Vpc(stack2, 'VPC');
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
-    sg2.connections.allowFrom(sg1a, new TcpPort(100));
-    sg2.connections.allowFrom(sg1b, new TcpPort(100));
+    sg2.connections.allowFrom(sg1a, Port.tcp(100));
+    sg2.connections.allowFrom(sg1b, Port.tcp(100));
 
     // THEN -- both egress rules are in Stack2
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A" },

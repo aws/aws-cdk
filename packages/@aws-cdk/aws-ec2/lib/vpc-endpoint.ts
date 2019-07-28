@@ -1,22 +1,24 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
+import { Port } from './port';
 import { SecurityGroup } from './security-group';
-import { TcpPort, TcpPortFromAttribute } from './security-group-rule';
-import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc-ref';
+import { allRouteTableIds } from './util';
+import { IVpc, SubnetSelection, SubnetType } from './vpc';
 
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends cdk.IConstruct {
+export interface IVpcEndpoint extends IResource {
   /**
    * The VPC endpoint identifier.
+   * @attribute
    */
   readonly vpcEndpointId: string;
 }
 
-export abstract class VpcEndpoint extends cdk.Construct implements IVpcEndpoint {
+export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
 
   protected policyDocument?: iam.PolicyDocument;
@@ -39,7 +41,7 @@ export abstract class VpcEndpoint extends cdk.Construct implements IVpcEndpoint 
       this.policyDocument = new iam.PolicyDocument();
     }
 
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 }
 
@@ -47,10 +49,6 @@ export abstract class VpcEndpoint extends cdk.Construct implements IVpcEndpoint 
  * A gateway VPC endpoint.
  */
 export interface IGatewayVpcEndpoint extends IVpcEndpoint {
-  /**
-   * Exports this VPC endpoint from the stack.
-   */
-  export(): GatewayVpcEndpointImportProps;
 }
 
 /**
@@ -64,7 +62,7 @@ export enum VpcEndpointType {
    * address that serves as an entry point for traffic destined to a supported
    * service.
    */
-  Interface = 'Interface',
+  INTERFACE = 'Interface',
 
   /**
    * Gateway
@@ -72,7 +70,7 @@ export enum VpcEndpointType {
    * A gateway endpoint is a gateway that is a target for a specified route in
    * your route table, used for traffic destined to a supported AWS service.
    */
-  Gateway = 'Gateway'
+  GATEWAY = 'Gateway'
 }
 
 /**
@@ -89,7 +87,7 @@ export interface IGatewayVpcEndpointService {
  * An AWS service for a gateway VPC endpoint.
  */
 export class GatewayVpcEndpointAwsService implements IGatewayVpcEndpointService {
-  public static readonly DynamoDb = new GatewayVpcEndpointAwsService('dynamodb');
+  public static readonly DYNAMODB = new GatewayVpcEndpointAwsService('dynamodb');
   public static readonly S3 = new GatewayVpcEndpointAwsService('s3');
 
   /**
@@ -98,7 +96,7 @@ export class GatewayVpcEndpointAwsService implements IGatewayVpcEndpointService 
   public readonly name: string;
 
   constructor(name: string, prefix?: string) {
-    this.name = `${prefix || 'com.amazonaws'}.${cdk.Aws.region}.${name}`;
+    this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
   }
 }
 
@@ -126,18 +124,21 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
   /**
    * The VPC network in which the gateway endpoint will be used.
    */
-  readonly vpc: IVpcNetwork
+  readonly vpc: IVpc
 }
 
 /**
  * A gateway VPC endpoint.
+ * @resource AWS::EC2::VPCEndpoint
  */
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
-  /**
-   * Imports an existing gateway VPC endpoint.
-   */
-  public static import(scope: cdk.Construct, id: string, props: GatewayVpcEndpointImportProps): IGatewayVpcEndpoint {
-    return new ImportedGatewayVpcEndpoint(scope, id, props);
+
+  public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
+    class Import extends VpcEndpoint {
+      public vpcEndpointId = gatewayVpcEndpointId;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -147,71 +148,42 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
 
   /**
    * The date and time the gateway VPC endpoint was created.
+   * @attribute
    */
   public readonly vpcEndpointCreationTimestamp: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GatewayVpcEndpointProps) {
+  /**
+   * @attribute
+   */
+  public readonly vpcEndpointNetworkInterfaceIds: string[];
+
+  /**
+   * @attribute
+   */
+  public readonly vpcEndpointDnsEntries: string[];
+
+  constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    const subnets = props.subnets || [{ subnetType: SubnetType.Private }];
-    const routeTableIds = [...new Set(Array().concat(...subnets.map(s => props.vpc.selectSubnets(s).routeTableIds)))];
+    const subnets = props.subnets || [{ subnetType: SubnetType.PRIVATE }];
+    const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
 
     if (routeTableIds.length === 0) {
       throw new Error(`Can't add a gateway endpoint to VPC; route table IDs are not available`);
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: new cdk.Token(() => this.policyDocument),
+      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
-      vpcEndpointType: VpcEndpointType.Gateway,
+      vpcEndpointType: VpcEndpointType.GATEWAY,
       vpcId: props.vpc.vpcId
     });
 
-    this.vpcEndpointId = endpoint.vpcEndpointId;
-    this.vpcEndpointCreationTimestamp = endpoint.vpcEndpointCreationTimestamp;
-  }
-
-  /**
-   * Exports this gateway VPC endpoint from the stack.
-   */
-  public export(): GatewayVpcEndpointImportProps {
-    return {
-      vpcEndpointId: new cdk.CfnOutput(this, 'VpcEndpointId', { value: this.vpcEndpointId }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * Construction properties for an ImportedGatewayVpcEndpoint.
- */
-export interface GatewayVpcEndpointImportProps {
-  /**
-   * The gateway VPC endpoint identifier.
-   */
-  readonly vpcEndpointId: string;
-}
-
-/**
- * An imported gateway VPC endpoint.
- */
-class ImportedGatewayVpcEndpoint extends cdk.Construct implements IGatewayVpcEndpoint {
-  /**
-   * The gateway VPC endpoint identifier.
-   */
-  public readonly vpcEndpointId: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: GatewayVpcEndpointImportProps) {
-    super(scope, id);
-
-    this.vpcEndpointId = props.vpcEndpointId;
-  }
-
-  /**
-   * Exports this gateway VPC endpoint from the stack.
-   */
-  public export(): GatewayVpcEndpointImportProps {
-    return this.props;
+    this.vpcEndpointId = endpoint.ref;
+    this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
+    this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
+    this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
   }
 }
 
@@ -234,43 +206,43 @@ export interface IInterfaceVpcEndpointService {
  * An AWS service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
-  public static readonly SageMakerNotebook = new InterfaceVpcEndpointAwsService('sagemaker', 'aws.sagemaker');
-  public static readonly CloudFormation = new InterfaceVpcEndpointAwsService('cloudformation');
-  public static readonly CloudTrail = new InterfaceVpcEndpointAwsService('cloudtrail');
-  public static readonly CodeBuild = new InterfaceVpcEndpointAwsService('codebuild');
-  public static readonly CodeBuildFips = new InterfaceVpcEndpointAwsService('codebuil-fips');
-  public static readonly CodeCommit = new InterfaceVpcEndpointAwsService('codecommit');
-  public static readonly CodeCommitFips = new InterfaceVpcEndpointAwsService('codecommit-fips');
-  public static readonly CodePipeline = new InterfaceVpcEndpointAwsService('codepipeline');
-  public static readonly Config = new InterfaceVpcEndpointAwsService('config');
-  public static readonly Ec2 = new InterfaceVpcEndpointAwsService('ec2');
-  public static readonly Ec2Messages = new InterfaceVpcEndpointAwsService('ec2messages');
-  public static readonly Ecr = new InterfaceVpcEndpointAwsService('ecr.api');
-  public static readonly EcrDocker = new InterfaceVpcEndpointAwsService('ecr.dkr');
-  public static readonly Ecs = new InterfaceVpcEndpointAwsService('ecs');
-  public static readonly EcsAgent = new InterfaceVpcEndpointAwsService('ecs-agent');
-  public static readonly EcsTelemetry = new InterfaceVpcEndpointAwsService('ecs-telemetry');
-  public static readonly ElasticInferenceRuntime = new InterfaceVpcEndpointAwsService('elastic-inference.runtime');
-  public static readonly ElasticLoadBalancing = new InterfaceVpcEndpointAwsService('elasticloadbalancing');
-  public static readonly CloudWatchEvents = new InterfaceVpcEndpointAwsService('events');
-  public static readonly ApiGateway = new InterfaceVpcEndpointAwsService('execute-api');
-  public static readonly CodeCommitGit = new InterfaceVpcEndpointAwsService('git-codecommit');
-  public static readonly CodeCommitGitFips = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
-  public static readonly KinesisStreams = new InterfaceVpcEndpointAwsService('kinesis-streams');
-  public static readonly Kms = new InterfaceVpcEndpointAwsService('kms');
-  public static readonly CloudWatchLogs = new InterfaceVpcEndpointAwsService('logs');
-  public static readonly CloudWatch = new InterfaceVpcEndpointAwsService('monitoring');
-  public static readonly SageMakerApi = new InterfaceVpcEndpointAwsService('sagemaker.api');
-  public static readonly SageMakerRuntime = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
-  public static readonly SageMakerRuntimeFips = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
-  public static readonly SecretsManager = new InterfaceVpcEndpointAwsService('secretsmanager');
-  public static readonly ServiceCatalog = new InterfaceVpcEndpointAwsService('servicecatalog');
-  public static readonly Sns = new InterfaceVpcEndpointAwsService('sns');
-  public static readonly Sqs = new InterfaceVpcEndpointAwsService('sqs');
-  public static readonly Ssm = new InterfaceVpcEndpointAwsService('ssm');
-  public static readonly SsmMessages = new InterfaceVpcEndpointAwsService('ssmmessages');
-  public static readonly Sts = new InterfaceVpcEndpointAwsService('sts');
-  public static readonly Transfer = new InterfaceVpcEndpointAwsService('transfer.server');
+  public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
+  public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
+  public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
+  public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
+  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuil-fips');
+  public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
+  public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
+  public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
+  public static readonly CONFIG = new InterfaceVpcEndpointAwsService('config');
+  public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
+  public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
+  public static readonly ECR = new InterfaceVpcEndpointAwsService('ecr.api');
+  public static readonly ECR_DOCKER = new InterfaceVpcEndpointAwsService('ecr.dkr');
+  public static readonly ECS = new InterfaceVpcEndpointAwsService('ecs');
+  public static readonly ECS_AGENT = new InterfaceVpcEndpointAwsService('ecs-agent');
+  public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
+  public static readonly ELASTIC_INFERENCE_RUNTIME = new InterfaceVpcEndpointAwsService('elastic-inference.runtime');
+  public static readonly ELASTIC_LOAD_BALANCING = new InterfaceVpcEndpointAwsService('elasticloadbalancing');
+  public static readonly CLOUDWATCH_EVENTS = new InterfaceVpcEndpointAwsService('events');
+  public static readonly APIGATEWAY = new InterfaceVpcEndpointAwsService('execute-api');
+  public static readonly CODECOMMIT_GIT = new InterfaceVpcEndpointAwsService('git-codecommit');
+  public static readonly CODECOMMIT_GIT_FIPS = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
+  public static readonly KINESIS_STREAMS = new InterfaceVpcEndpointAwsService('kinesis-streams');
+  public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
+  public static readonly CLOUDWATCH_LOGS = new InterfaceVpcEndpointAwsService('logs');
+  public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
+  public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
+  public static readonly SAGEMAKER_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
+  public static readonly SAGEMAKER_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
+  public static readonly SECRETS_MANAGER = new InterfaceVpcEndpointAwsService('secretsmanager');
+  public static readonly SERVICE_CATALOG = new InterfaceVpcEndpointAwsService('servicecatalog');
+  public static readonly SNS = new InterfaceVpcEndpointAwsService('sns');
+  public static readonly SQS = new InterfaceVpcEndpointAwsService('sqs');
+  public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
+  public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
+  public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
+  public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
 
   /**
    * The name of the service.
@@ -283,7 +255,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public readonly port: number;
 
   constructor(name: string, prefix?: string, port?: number) {
-    this.name = `${prefix || 'com.amazonaws'}.${cdk.Aws.region}.${name}`;
+    this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
     this.port = port || 443;
   }
 }
@@ -321,28 +293,34 @@ export interface InterfaceVpcEndpointProps extends InterfaceVpcEndpointOptions {
   /**
    * The VPC network in which the interface endpoint will be used.
    */
-  readonly vpc: IVpcNetwork
+  readonly vpc: IVpc
 }
 
 /**
  * An interface VPC endpoint.
  */
 export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
-  /**
-   * Exports this interface VPC endpoint from the stack.
-   */
-  export(): InterfaceVpcEndpointImportProps;
 }
 
 /**
  * A interface VPC endpoint.
+ * @resource AWS::EC2::VPCEndpoint
  */
 export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEndpoint {
   /**
    * Imports an existing interface VPC endpoint.
    */
-  public static import(scope: cdk.Construct, id: string, props: InterfaceVpcEndpointImportProps): IInterfaceVpcEndpoint {
-    return new ImportedInterfaceVpcEndpoint(scope, id, props);
+  public static fromInterfaceVpcEndpointAttributes(scope: Construct, id: string, attrs: InterfaceVpcEndpointAttributes): IInterfaceVpcEndpoint {
+    class Import extends Resource implements IInterfaceVpcEndpoint {
+      public readonly vpcEndpointId = attrs.vpcEndpointId;
+      public readonly securityGroupId = attrs.securityGroupId;
+      public readonly connections = new Connections({
+        defaultPort: Port.tcp(attrs.port),
+        securityGroups: [SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+      });
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -352,18 +330,21 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
   /**
    * The date and time the interface VPC endpoint was created.
+   * @attribute
    */
   public readonly vpcEndpointCreationTimestamp: string;
 
   /**
    * The DNS entries for the interface VPC endpoint.
+   * @attribute
    */
-  public readonly dnsEntries: string[];
+  public readonly vpcEndpointDnsEntries: string[];
 
   /**
    * One or more network interfaces for the interface VPC endpoint.
+   * @attribute
    */
-  public readonly networkInterfaceIds: string[];
+  public readonly vpcEndpointNetworkInterfaceIds: string[];
 
   /**
    * The identifier of the security group associated with this interface VPC
@@ -376,18 +357,15 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    */
   public readonly connections: Connections;
 
-  private readonly port: number;
-
-  constructor(scope: cdk.Construct, id: string, props: InterfaceVpcEndpointProps) {
+  constructor(scope: Construct, id: string, props: InterfaceVpcEndpointProps) {
     super(scope, id);
 
-    this.port = props.service.port;
     const securityGroup = new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc
     });
     this.securityGroupId = securityGroup.securityGroupId;
     this.connections = new Connections({
-      defaultPortRange: new TcpPort(props.service.port),
+      defaultPort: Port.tcp(props.service.port),
       securityGroups: [securityGroup]
     });
 
@@ -395,37 +373,26 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const subnetIds = subnets.subnetIds;
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      privateDnsEnabled: props.privateDnsEnabled || true,
-      policyDocument: new cdk.Token(() => this.policyDocument),
+      privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : true,
+      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,
-      vpcEndpointType: VpcEndpointType.Interface,
+      vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId
     });
 
-    this.vpcEndpointId = endpoint.vpcEndpointId;
-    this.vpcEndpointCreationTimestamp = endpoint.vpcEndpointCreationTimestamp;
-    this.dnsEntries = endpoint.vpcEndpointDnsEntries;
-    this.networkInterfaceIds = endpoint.vpcEndpointNetworkInterfaceIds;
-  }
-
-  /**
-   * Exports this interface VPC endpoint from the stack.
-   */
-  public export(): InterfaceVpcEndpointImportProps {
-    return {
-      vpcEndpointId: new cdk.CfnOutput(this, 'VpcEndpointId', { value: this.vpcEndpointId }).makeImportValue().toString(),
-      securityGroupId: new cdk.CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString(),
-      port: new cdk.CfnOutput(this, 'port', { value: this.port }).makeImportValue().toString()
-    };
+    this.vpcEndpointId = endpoint.ref;
+    this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
+    this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
+    this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
   }
 }
 
 /**
  * Construction properties for an ImportedInterfaceVpcEndpoint.
  */
-export interface InterfaceVpcEndpointImportProps {
+export interface InterfaceVpcEndpointAttributes {
   /**
    * The interface VPC endpoint identifier.
    */
@@ -439,45 +406,5 @@ export interface InterfaceVpcEndpointImportProps {
   /**
    * The port of the service of the interface VPC endpoint.
    */
-  readonly port: string;
-}
-
-/**
- * An imported VPC interface endpoint.
- */
-class ImportedInterfaceVpcEndpoint extends cdk.Construct implements IInterfaceVpcEndpoint {
-  /**
-   * The interface VPC endpoint identifier.
-   */
-  public readonly vpcEndpointId: string;
-
-  /**
-   * The identifier of the security group associated with the interface VPC endpoint.
-   */
-  public readonly securityGroupId: string;
-
-  /**
-   * Access to network connections.
-   */
-  public readonly connections: Connections;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: InterfaceVpcEndpointImportProps) {
-    super(scope, id);
-
-    this.vpcEndpointId = props.vpcEndpointId;
-
-    this.securityGroupId = props.securityGroupId;
-
-    this.connections = new Connections({
-      defaultPortRange: new TcpPortFromAttribute(props.port),
-      securityGroups: [SecurityGroup.import(this, 'SecurityGroup', props)],
-    });
-  }
-
-  /**
-   * Exports this interface VPC endpoint from the stack.
-   */
-  public export(): InterfaceVpcEndpointImportProps {
-    return this.props;
-  }
+  readonly port: number;
 }

@@ -1,5 +1,6 @@
-// import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import { expect, haveResourceLike } from '@aws-cdk/assert';
+import cdk = require('@aws-cdk/core');
+import { ConstructNode } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 import { FakeBuildAction } from './fake-build-action';
@@ -21,7 +22,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -30,7 +31,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -57,7 +58,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -66,7 +67,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -93,7 +94,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -102,7 +103,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -123,10 +124,59 @@ export = {
 
       test.done();
     },
+
+    "an Action's output can be used as input for an Action in the same Stage with a higher runOrder"(test: Test) {
+      const stack = new cdk.Stack();
+
+      const sourceOutput1 = new codepipeline.Artifact('sourceOutput1');
+      const buildOutput1 = new codepipeline.Artifact('buildOutput1');
+      const sourceOutput2 = new codepipeline.Artifact('sourceOutput2');
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new FakeSourceAction({
+                actionName: 'source1',
+                output: sourceOutput1,
+              }),
+              new FakeSourceAction({
+                actionName: 'source2',
+                output: sourceOutput2,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'build1',
+                input: sourceOutput1,
+                output: buildOutput1,
+              }),
+              new FakeBuildAction({
+                actionName: 'build2',
+                input: sourceOutput2,
+                extraInputs: [buildOutput1],
+                output: new codepipeline.Artifact('buildOutput2'),
+                runOrder: 2,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        //
+      }));
+
+      test.done();
+    },
   },
 };
 
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  construct.node.prepareTree();
-  return construct.node.validateTree();
+  ConstructNode.prepare(construct.node);
+  return ConstructNode.validate(construct.node);
 }

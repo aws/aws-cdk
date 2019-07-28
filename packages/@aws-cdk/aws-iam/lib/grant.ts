@@ -1,9 +1,11 @@
-import cdk = require('@aws-cdk/cdk');
-import { PolicyStatement } from "./policy-document";
+import cdk = require('@aws-cdk/core');
+import { PolicyStatement } from "./policy-statement";
 import { IGrantable } from "./principals";
 
 /**
  * Basic options for a grant operation
+ *
+ * @experimental
  */
 export interface CommonGrantOptions {
   /**
@@ -26,6 +28,8 @@ export interface CommonGrantOptions {
 
 /**
  * Options for a grant operation
+ *
+ * @experimental
  */
 export interface GrantWithResourceOptions extends CommonGrantOptions {
   /**
@@ -48,6 +52,8 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
 
 /**
  * Options for a grant operation that only applies to principals
+ *
+ * @experimental
  */
 export interface GrantOnPrincipalOptions extends CommonGrantOptions {
   /**
@@ -58,6 +64,8 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
 
 /**
  * Options for a grant operation to both identity and resource
+ *
+ * @experimental
  */
 export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
   /**
@@ -106,10 +114,11 @@ export class Grant {
 
     if (result.success) { return result; }
 
-    const statement = new PolicyStatement()
-      .addActions(...options.actions)
-      .addResources(...(options.resourceSelfArns || options.resourceArns))
-      .addPrincipal(options.grantee!.grantPrincipal);
+    const statement = new PolicyStatement({
+      actions: options.actions,
+      resources: (options.resourceSelfArns || options.resourceArns),
+      principals: [options.grantee!.grantPrincipal]
+    });
 
     options.resource.addToResourcePolicy(statement);
 
@@ -123,9 +132,10 @@ export class Grant {
    * the permissions to a present principal is not an error.
    */
   public static addToPrincipal(options: GrantOnPrincipalOptions): Grant {
-    const statement = new PolicyStatement()
-      .addActions(...options.actions)
-      .addResources(...options.resourceArns);
+    const statement = new PolicyStatement({
+      actions: options.actions,
+      resources: options.resourceArns
+    });
 
     const addedToPrincipal = options.grantee.grantPrincipal.addToPolicy(statement);
 
@@ -147,14 +157,30 @@ export class Grant {
       scope: options.resource,
     });
 
-    const statement = new PolicyStatement()
-      .addActions(...options.actions)
-      .addResources(...(options.resourceSelfArns || options.resourceArns))
-      .addPrincipal(options.grantee!.grantPrincipal);
+    const statement = new PolicyStatement({
+      actions: options.actions,
+      resources: (options.resourceSelfArns || options.resourceArns),
+      principals: [options.grantee!.grantPrincipal]
+    });
 
     options.resource.addToResourcePolicy(statement);
 
     return new Grant({ principalStatement: statement, resourceStatement: result.resourceStatement, options });
+  }
+
+  /**
+   * Returns a "no-op" `Grant` object which represents a "dropped grant".
+   *
+   * This can be used for e.g. imported resources where you may not be able to modify
+   * the resource's policy or some underlying policy which you don't know about.
+   *
+   * @param grantee The intended grantee
+   * @param _intent The user's intent (will be ignored at the moment)
+   */
+  public static drop(grantee: IGrantable, _intent: string): Grant {
+    return new Grant({
+      options: { grantee, actions: [], resourceArns: [] }
+    });
   }
 
   /**

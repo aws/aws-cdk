@@ -1,4 +1,5 @@
 export * from './policy-document';
+export * from './policy-statement';
 export * from './managed-policy';
 export * from './role';
 export * from './policy';
@@ -8,7 +9,7 @@ export * from './lazy-role';
 export * from './principals';
 export * from './identity-base';
 export * from './grant';
-export * from './imported-resource-principal';
+export * from './unknown-principal';
 
 // AWS::IAM CloudFormation Resources:
 export * from './iam.generated';

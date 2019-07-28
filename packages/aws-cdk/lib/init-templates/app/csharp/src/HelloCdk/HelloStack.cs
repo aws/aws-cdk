@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SNS;
+using Amazon.CDK.AWS.SNS.Subscriptions;
 using Amazon.CDK.AWS.SQS;
 
 namespace HelloCdk
@@ -12,7 +13,7 @@ namespace HelloCdk
             // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
             var queue = new Queue(this, "MyFirstQueue", new QueueProps
             {
-                VisibilityTimeoutSec = 300
+                VisibilityTimeout = Duration.Seconds(300)
             });
 
             var topic = new Topic(this, "MyFirstTopic", new TopicProps
@@ -20,7 +21,7 @@ namespace HelloCdk
                 DisplayName = "My First Topic Yeah"
             });
 
-            topic.SubscribeQueue(queue, null);
+            topic.AddSubscription(new SqsSubscription(queue, null));
 
             // You can also define your own constructs and use them in your stack.
             HelloConstruct hello = new HelloConstruct(this, "Buckets", new HelloConstructProps()

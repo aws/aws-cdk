@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
 
@@ -84,7 +84,7 @@ export = {
   'IpInstance for service in PrivateDnsNamespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'public',
@@ -240,7 +240,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
@@ -291,7 +291,7 @@ export = {
       namespace,
     });
 
-    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     // THEN
@@ -312,10 +312,10 @@ export = {
     });
 
     const service = namespace.createService('MyService', {
-      routingPolicy: servicediscovery.RoutingPolicy.Multivalue
+      routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE
     });
 
-    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     // THEN

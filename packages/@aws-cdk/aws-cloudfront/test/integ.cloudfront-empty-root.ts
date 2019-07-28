@@ -1,5 +1,5 @@
 
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cloudfront = require('../lib');
 
 const app = new cdk.App();
@@ -25,4 +25,4 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
   defaultRootObject: ''
 });
 
-app.run();
+app.synth();

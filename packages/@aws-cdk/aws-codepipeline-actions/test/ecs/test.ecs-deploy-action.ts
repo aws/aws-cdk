@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 
@@ -24,13 +24,13 @@ export = {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      const action = new cpactions.EcsDeployAction({
-        actionName: 'ECS',
-        service,
-        input: artifact,
+      test.doesNotThrow(() => {
+        new cpactions.EcsDeployAction({
+          actionName: 'ECS',
+          service,
+          input: artifact,
+        });
       });
-
-      test.equal(action.configuration.FileName, undefined);
 
       test.done();
     },
@@ -39,13 +39,13 @@ export = {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      const action = new cpactions.EcsDeployAction({
-        actionName: 'ECS',
-        service,
-        imageFile: artifact.atPath('imageFile.json'),
+      test.doesNotThrow(() => {
+        new cpactions.EcsDeployAction({
+          actionName: 'ECS',
+          service,
+          imageFile: artifact.atPath('imageFile.json'),
+        });
       });
-
-      test.equal(action.configuration.FileName, 'imageFile.json');
 
       test.done();
     },
@@ -65,6 +65,21 @@ export = {
 
       test.done();
     },
+
+    "sets the target service as the action's backing resource"(test: Test) {
+      const service = anyEcsService();
+      const artifact = new codepipeline.Artifact('Artifact');
+
+      const action = new cpactions.EcsDeployAction({
+        actionName: 'ECS',
+        service,
+        input: artifact
+      });
+
+      test.equal(action.actionProperties.resource, service);
+
+      test.done();
+    },
   },
 };
 
@@ -74,7 +89,7 @@ function anyEcsService(): ecs.FargateService {
   taskDefinition.addContainer('MainContainer', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   });
-  const vpc = new ec2.VpcNetwork(stack, 'VPC');
+  const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', {
     vpc,
   });

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -10,45 +10,39 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 export interface ILogGroup extends IResource {
   /**
    * The ARN of this log group
+   * @attribute
    */
   readonly logGroupArn: string;
 
   /**
    * The name of this log group
+   * @attribute
    */
   readonly logGroupName: string;
 
   /**
    * Create a new Log Stream for this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  newStream(scope: Construct, id: string, props?: NewLogStreamProps): LogStream;
+  addStream(id: string, props?: StreamOptions): LogStream;
 
   /**
    * Create a new Subscription Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter;
+  addSubscriptionFilter(id: string, props: SubscriptionFilterOptions): SubscriptionFilter;
 
   /**
    * Create a new Metric Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter;
-
-  /**
-   * Export this LogGroup
-   */
-  export(): LogGroupImportProps;
+  addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -78,16 +72,9 @@ export interface ILogGroup extends IResource {
 }
 
 /**
- * Properties for importing a LogGroup
- */
-export interface LogGroupImportProps {
-  readonly logGroupArn: string;
-}
-
-/**
  * An CloudWatch Log Group
  */
-export abstract class LogGroupBase extends Resource implements ILogGroup {
+abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * The ARN of this log group
    */
@@ -101,12 +88,11 @@ export abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Create a new Log Stream for this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  public newStream(scope: Construct, id: string, props: NewLogStreamProps = {}): LogStream {
-    return new LogStream(scope, id, {
+  public addStream(id: string, props: StreamOptions = {}): LogStream {
+    return new LogStream(this, id, {
       logGroup: this,
       ...props
     });
@@ -115,12 +101,11 @@ export abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Create a new Subscription Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  public newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
-    return new SubscriptionFilter(scope, id, {
+  public addSubscriptionFilter(id: string, props: SubscriptionFilterOptions): SubscriptionFilter {
+    return new SubscriptionFilter(this, id, {
       logGroup: this,
       ...props
     });
@@ -129,18 +114,15 @@ export abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Create a new Metric Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  public newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter {
-    return new MetricFilter(scope, id, {
+  public addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter {
+    return new MetricFilter(this, id, {
       logGroup: this,
       ...props
     });
   }
-
-  public abstract export(): LogGroupImportProps;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -197,87 +179,92 @@ export enum RetentionDays {
   /**
    * 1 day
    */
-  OneDay = 1,
+  ONE_DAY = 1,
 
   /**
    * 3 days
    */
-  ThreeDays = 3,
+  THREE_DAYS = 3,
 
   /**
    * 5 days
    */
-  FiveDays = 5,
+  FIVE_DAYS = 5,
 
   /**
    * 1 week
    */
-  OneWeek = 7,
+  ONE_WEEK = 7,
 
   /**
    * 2 weeks
    */
-  TwoWeeks =  14,
+  TWO_WEEKS =  14,
 
   /**
    * 1 month
    */
-  OneMonth = 30,
+  ONE_MONTH = 30,
 
   /**
    * 2 months
    */
-  TwoMonths = 60,
+  TWO_MONTHS = 60,
 
   /**
    * 3 months
    */
-  ThreeMonths = 90,
+  THREE_MONTHS = 90,
 
   /**
    * 4 months
    */
-  FourMonths = 120,
+  FOUR_MONTHS = 120,
 
   /**
    * 5 months
    */
-  FiveMonths = 150,
+  FIVE_MONTHS = 150,
 
   /**
    * 6 months
    */
-  SixMonths = 180,
+  SIX_MONTHS = 180,
 
   /**
    * 1 year
    */
-  OneYear = 365,
+  ONE_YEAR = 365,
 
   /**
    * 13 months
    */
-  ThirteenMonths = 400,
+  THIRTEEN_MONTHS = 400,
 
   /**
    * 18 months
    */
-  EighteenMonths = 545,
+  EIGHTEEN_MONTHS = 545,
 
   /**
    * 2 years
    */
-  TwoYears = 731,
+  TWO_YEARS = 731,
 
   /**
    * 5 years
    */
-  FiveYears = 1827,
+  FIVE_YEARS = 1827,
 
   /**
    * 10 years
    */
-  TenYears = 3653
+  TEN_YEARS = 3653,
+
+  /**
+   * Retain logs forever
+   */
+  INFINITE = 9999,
 }
 
 /**
@@ -294,23 +281,23 @@ export interface LogGroupProps {
   /**
    * How long, in days, the log contents will be retained.
    *
-   * To retain all logs, set this value to Infinity.
+   * To retain all logs, set this value to RetentionDays.INFINITE.
    *
-   * @default 731 days (2 years)
+   * @default RetentionDays.TWO_YEARS
    */
-  readonly retentionDays?: RetentionDays;
+  readonly retention?: RetentionDays;
 
   /**
-   * Retain the log group if the stack or containing construct ceases to exist
+   * Determine the removal policy of this log group.
    *
    * Normally you want to retain the log group so you can diagnose issues
    * from logs even after a deployment that no longer includes the log group.
    * In that case, use the normal date-based retention policy to age out your
    * logs.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retainLogGroup?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -320,8 +307,13 @@ export class LogGroup extends LogGroupBase {
   /**
    * Import an existing LogGroup
    */
-  public static import(scope: Construct, id: string, props: LogGroupImportProps): ILogGroup {
-    return new ImportedLogGroup(scope, id, props);
+  public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
+    class Import extends LogGroupBase {
+      public readonly logGroupArn = logGroupArn;
+      public readonly logGroupName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -335,72 +327,39 @@ export class LogGroup extends LogGroupBase {
   public readonly logGroupName: string;
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.logGroupName,
+    });
 
-    let retentionInDays = props.retentionDays;
-    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TwoYears; }
-    if (retentionInDays === Infinity) { retentionInDays = undefined; }
+    let retentionInDays = props.retention;
+    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
+    if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      logGroupName: props.logGroupName,
+      logGroupName: this.physicalName,
       retentionInDays,
     });
 
-    if (props.retainLogGroup !== false) {
-      applyRemovalPolicy(resource, RemovalPolicy.Orphan);
-    }
+    resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.logGroupArn = resource.logGroupArn;
-    this.logGroupName = resource.logGroupName;
-  }
-
-  /**
-   * Export this LogGroup
-   */
-  public export(): LogGroupImportProps {
-    return {
-      logGroupArn: new CfnOutput(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * An imported CloudWatch Log Group
- */
-class ImportedLogGroup extends LogGroupBase {
-  /**
-   * The ARN of this log group
-   */
-  public readonly logGroupArn: string;
-
-  /**
-   * The name of this log group
-   */
-  public readonly logGroupName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: LogGroupImportProps) {
-    super(scope, id);
-
-    this.logGroupArn = props.logGroupArn;
-    this.logGroupName = this.node.stack.parseArn(props.logGroupArn, ':').resourceName!;
-  }
-
-  /**
-   * Export this LogGroup
-   */
-  public export() {
-    return this.props;
+    this.logGroupArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
+    this.logGroupName = this.getResourceNameAttribute(resource.ref);
   }
 }
 
 /**
  * Properties for a new LogStream created from a LogGroup
  */
-export interface NewLogStreamProps {
+export interface StreamOptions {
   /**
    * The name of the log stream to create.
    *
@@ -414,7 +373,7 @@ export interface NewLogStreamProps {
 /**
  * Properties for a new SubscriptionFilter created from a LogGroup
  */
-export interface NewSubscriptionFilterProps {
+export interface SubscriptionFilterOptions {
   /**
    * The destination to send the filtered events to.
    *
@@ -431,7 +390,7 @@ export interface NewSubscriptionFilterProps {
 /**
  * Properties for a MetricFilter created from a LogGroup
  */
-export interface NewMetricFilterProps {
+export interface MetricFilterOptions {
   /**
    * Pattern to search for log events.
    */

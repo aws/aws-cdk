@@ -1,6 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -13,7 +13,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.S3SourceAction({
           actionName: 'S3',
@@ -24,7 +24,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
       ],
     },
     {
-      name: 'Approve',
+      stageName: 'Approve',
       actions: [
         new cpactions.ManualApprovalAction({
           actionName: 'ManualApproval',
@@ -35,4 +35,4 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-app.run();
+app.synth();

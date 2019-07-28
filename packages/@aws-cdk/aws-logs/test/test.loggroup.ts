@@ -1,6 +1,6 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { Stack } from '@aws-cdk/cdk';
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: RetentionDays.OneWeek
+      retention: RetentionDays.ONE_WEEK
     });
 
     // THEN
@@ -43,7 +43,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: Infinity
+      retention: RetentionDays.INFINITE,
     });
 
     // THEN
@@ -51,7 +51,34 @@ export = {
       Resources: {
         LogGroupF5B46931: {
           Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
+        }
+      }
+    }));
+
+    test.done();
+  },
+
+  'infinite retention via legacy method'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      // Don't know why TypeScript doesn't complain about passing Infinity to
+      // something where an enum is expected, but better keep this behavior for
+      // existing clients.
+      retention: Infinity
+    });
+
+    // THEN
+    expect(stack).to(matchTemplate({
+      Resources: {
+        LogGroupF5B46931: {
+          Type: "AWS::Logs::LogGroup",
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
         }
       }
     }));
@@ -65,15 +92,19 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: Infinity,
-      retainLogGroup: false
+      retention: Infinity,
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     // THEN
     expect(stack).to(matchTemplate({
       Resources: {
-        LogGroupF5B46931: { Type: "AWS::Logs::LogGroup" }
+        LogGroupF5B46931: {
+          Type: "AWS::Logs::LogGroup",
+          DeletionPolicy: "Delete",
+          UpdateReplacePolicy: "Delete"
         }
+      }
     }));
 
     test.done();
@@ -81,17 +112,16 @@ export = {
 
   'export/import'(test: Test) {
     // GIVEN
-    const stack1 = new Stack();
-    const lg = new LogGroup(stack1, 'LogGroup');
     const stack2 = new Stack();
 
     // WHEN
-    const imported = LogGroup.import(stack2, 'Import', lg.export());
-    imported.newStream(stack2, 'MakeMeAStream');
+    const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+    imported.addStream('MakeMeAStream');
 
     // THEN
-    expect(stack2).to(haveResource('AWS::Logs::LogStream', {}));
-
+    expect(stack2).to(haveResource('AWS::Logs::LogStream', {
+      LogGroupName: "my-log-group"
+    }));
     test.done();
   },
 

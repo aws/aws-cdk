@@ -1,6 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -23,7 +23,7 @@ const sourceAction = new cpactions.S3SourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 
@@ -34,7 +34,7 @@ const jenkinsProvider = new cpactions.JenkinsProvider(stack, 'JenkinsProvider', 
 });
 
 pipeline.addStage({
-  name: 'Build',
+  stageName: 'Build',
   actions: [
     new cpactions.JenkinsAction({
       actionName: 'JenkinsBuild',
@@ -61,4 +61,4 @@ pipeline.addStage({
   ],
 });
 
-app.run();
+app.synth();

@@ -12,11 +12,13 @@
   "devDependencies": {
     "@types/node": "8.10.45",
     "typescript": "^3.3.3333",
+    "ts-node": "^8.1.0",
     "aws-cdk": "^%cdk-version%"
   },
   "dependencies": {
     "@aws-cdk/aws-sns": "^%cdk-version%",
+    "@aws-cdk/aws-sns-subscriptions": "^%cdk-version%",
     "@aws-cdk/aws-sqs": "^%cdk-version%",
-    "@aws-cdk/cdk": "^%cdk-version%"
+    "@aws-cdk/core": "^%cdk-version%"
   }
 }

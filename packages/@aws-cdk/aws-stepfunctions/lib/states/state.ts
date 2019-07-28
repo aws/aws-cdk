@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Condition } from '../condition';
 import { StateGraph } from '../state-graph';
 import { CatchProps, DISCARD, Errors, IChainable, INextable, RetryProps } from '../types';
@@ -188,7 +188,7 @@ export abstract class State extends cdk.Construct implements IChainable {
      * Register this state as part of the given graph
      *
      * Don't call this. It will be called automatically when you work
-     * states normally.
+     * with states normally.
      */
     public bindToGraph(graph: StateGraph) {
         if (this.containingGraph === graph) { return; }
@@ -199,7 +199,7 @@ export abstract class State extends cdk.Construct implements IChainable {
         }
 
         this.containingGraph = graph;
-        this.onBindToGraph(graph);
+        this.whenBoundToGraph(graph);
 
         for (const incoming of this.incomingStates) {
             incoming.bindToGraph(graph);
@@ -224,7 +224,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     protected _addRetry(props: RetryProps = {}) {
         this.retries.push({
             ...props,
-            errors: props.errors ? props.errors : [Errors.All],
+            errors: props.errors ? props.errors : [Errors.ALL],
         });
     }
 
@@ -236,7 +236,7 @@ export abstract class State extends cdk.Construct implements IChainable {
         this.catches.push({
             next: handler,
             props: {
-                errors: props.errors ? props.errors : [Errors.All],
+                errors: props.errors ? props.errors : [Errors.ALL],
                 resultPath: props.resultPath
             }
         });
@@ -349,7 +349,7 @@ export abstract class State extends cdk.Construct implements IChainable {
      *
      * Can be overridden by subclasses.
      */
-    protected onBindToGraph(graph: StateGraph) {
+    protected whenBoundToGraph(graph: StateGraph) {
         graph.registerState(this);
     }
 
@@ -437,7 +437,7 @@ interface CatchTransition {
 function renderRetry(retry: RetryProps) {
     return {
         ErrorEquals: retry.errors,
-        IntervalSeconds: retry.intervalSeconds,
+        IntervalSeconds: retry.interval && retry.interval.toSeconds(),
         MaxAttempts: retry.maxAttempts,
         BackoffRate: retry.backoffRate
     };
@@ -494,17 +494,4 @@ function isPrefixable(x: any): x is Prefixable {
  */
 function isNextable(x: any): x is INextable {
     return typeof(x) === 'object' && x.next;
-}
-
-/**
- * State types
- */
-export enum StateType {
-    Pass = 'Pass',
-    Task = 'Task',
-    Choice = 'Choice',
-    Wait = 'Wait',
-    Succeed = 'Succeed',
-    Fail = 'Fail',
-    Parallel = 'Parallel'
 }

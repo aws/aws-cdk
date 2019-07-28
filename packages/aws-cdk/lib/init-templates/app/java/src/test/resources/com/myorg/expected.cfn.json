@@ -1,33 +1,18 @@
 {
     "Resources": {
-        "MyFirstQueueMyFirstTopicSubscription774591B6": {
-            "Type": "AWS::SNS::Subscription",
+        "MyFirstQueueFF09316A": {
+            "Type": "AWS::SQS::Queue",
             "Properties": {
-                "Endpoint": {
-                    "Fn::GetAtt": [
-                        "MyFirstQueueFF09316A",
-                        "Arn"
-                    ]
-                },
-                "TopicArn": {
-                    "Ref": "MyFirstTopic0ED1F8A4"
-                },
-                "Protocol": "sqs"
-            }
-        },
-        "MyFirstTopic0ED1F8A4": {
-            "Type": "AWS::SNS::Topic",
-            "Properties": {
-                "DisplayName": "My First Topic Yeah"
+                "VisibilityTimeout": 300
             }
         },
         "MyFirstQueuePolicy596EEC78": {
             "Type": "AWS::SQS::QueuePolicy",
             "Properties": {
                 "PolicyDocument": {
-                    "Version": "2012-10-17",
                     "Statement": [
                         {
+                            "Action": "sqs:SendMessage",
                             "Condition": {
                                 "ArnEquals": {
                                     "aws:SourceArn": {
@@ -35,19 +20,19 @@
                                     }
                                 }
                             },
-                            "Action": "sqs:SendMessage",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "sns.amazonaws.com"
+                            },
                             "Resource": {
                                 "Fn::GetAtt": [
                                     "MyFirstQueueFF09316A",
                                     "Arn"
                                 ]
-                            },
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "sns.amazonaws.com"
                             }
                         }
-                    ]
+                    ],
+                    "Version": "2012-10-17"
                 },
                 "Queues": [
                     {
@@ -56,27 +41,51 @@
                 ]
             }
         },
-        "BucketsBucket1B98A5B53": {
-            "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
-        },
-        "MyFirstQueueFF09316A": {
-            "Type": "AWS::SQS::Queue",
+        "MyFirstQueuetestMyFirstTopic4B48EB90A3428EB7": {
+            "Type": "AWS::SNS::Subscription",
             "Properties": {
-                "VisibilityTimeout": 300
+                "Protocol": "sqs",
+                "TopicArn": {
+                    "Ref": "MyFirstTopic0ED1F8A4"
+                },
+                "Endpoint": {
+                    "Fn::GetAtt": [
+                        "MyFirstQueueFF09316A",
+                        "Arn"
+                    ]
+                }
             }
         },
-        "BucketsBucket351AD8978": {
+        "MyFirstTopic0ED1F8A4": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "DisplayName": "My First Topic Yeah"
+            }
+        },
+        "BucketsBucket04F23AD6D": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
+        },
+        "BucketsBucket1B98A5B53": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "BucketsBucket237F4E9C5": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
+        },
+        "BucketsBucket351AD8978": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "BucketsBucket4AEE1AAD9": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "MyUserDC45028B": {
             "Type": "AWS::IAM::User"
@@ -84,9 +93,7 @@
         "MyUserDefaultPolicy7B897426": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
-                "PolicyName": "MyUserDefaultPolicy7B897426",
                 "PolicyDocument": {
-                    "Version": "2012-10-17",
                     "Statement": [
                         {
                             "Action": [
@@ -94,6 +101,7 @@
                                 "s3:GetBucket*",
                                 "s3:List*"
                             ],
+                            "Effect": "Allow",
                             "Resource": [
                                 {
                                     "Fn::GetAtt": [
@@ -115,8 +123,7 @@
                                         ]
                                     ]
                                 }
-                            ],
-                            "Effect": "Allow"
+                            ]
                         },
                         {
                             "Action": [
@@ -124,6 +131,7 @@
                                 "s3:GetBucket*",
                                 "s3:List*"
                             ],
+                            "Effect": "Allow",
                             "Resource": [
                                 {
                                     "Fn::GetAtt": [
@@ -145,8 +153,7 @@
                                         ]
                                     ]
                                 }
-                            ],
-                            "Effect": "Allow"
+                            ]
                         },
                         {
                             "Action": [
@@ -154,6 +161,7 @@
                                 "s3:GetBucket*",
                                 "s3:List*"
                             ],
+                            "Effect": "Allow",
                             "Resource": [
                                 {
                                     "Fn::GetAtt": [
@@ -175,8 +183,7 @@
                                         ]
                                     ]
                                 }
-                            ],
-                            "Effect": "Allow"
+                            ]
                         },
                         {
                             "Action": [
@@ -184,6 +191,7 @@
                                 "s3:GetBucket*",
                                 "s3:List*"
                             ],
+                            "Effect": "Allow",
                             "Resource": [
                                 {
                                     "Fn::GetAtt": [
@@ -205,8 +213,7 @@
                                         ]
                                     ]
                                 }
-                            ],
-                            "Effect": "Allow"
+                            ]
                         },
                         {
                             "Action": [
@@ -214,6 +221,7 @@
                                 "s3:GetBucket*",
                                 "s3:List*"
                             ],
+                            "Effect": "Allow",
                             "Resource": [
                                 {
                                     "Fn::GetAtt": [
@@ -235,21 +243,18 @@
                                         ]
                                     ]
                                 }
-                            ],
-                            "Effect": "Allow"
+                            ]
                         }
-                    ]
+                    ],
+                    "Version": "2012-10-17"
                 },
+                "PolicyName": "MyUserDefaultPolicy7B897426",
                 "Users": [
                     {
                         "Ref": "MyUserDC45028B"
                     }
                 ]
             }
-        },
-        "BucketsBucket04F23AD6D": {
-            "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
         }
     }
 }

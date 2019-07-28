@@ -47,6 +47,7 @@
         "Description": "Created by Pg12321Stack/MyBucket"
       },
       "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "Pg12321Stack/MyBucket/Key/Resource"
       }
@@ -71,6 +72,7 @@
         }
       },
       "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
       "Metadata": {
         "aws:cdk:path": "Pg12321Stack/MyBucket/Resource"
       }
@@ -78,7 +80,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Modules": "aws-cdk=0.28.0,@aws-cdk/aws-events=0.28.0,@aws-cdk/aws-iam=0.28.0,@aws-cdk/aws-kms=0.28.0,@aws-cdk/aws-s3=0.28.0,@aws-cdk/aws-s3-notifications=0.28.0,@aws-cdk/cdk=0.28.0,@aws-cdk/cx-api=0.28.0,@aws-cdk/region-info=0.28.0,jsii-runtime=node.js/v10.13.0"
+        "Modules": "aws-cdk=0.28.0,@aws-cdk/aws-events=0.28.0,@aws-cdk/aws-iam=0.28.0,@aws-cdk/aws-kms=0.28.0,@aws-cdk/aws-s3=0.28.0,@aws-cdk/aws-s3-notifications=0.28.0,@aws-cdk/core=0.28.0,@aws-cdk/cx-api=0.28.0,@aws-cdk/region-info=0.28.0,jsii-runtime=node.js/v10.13.0"
       }
     }
   }

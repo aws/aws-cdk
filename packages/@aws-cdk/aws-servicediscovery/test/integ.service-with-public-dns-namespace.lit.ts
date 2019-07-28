@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import servicediscovery = require('../lib');
 
 const app = new cdk.App();
@@ -11,9 +11,9 @@ const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
 const service = namespace.createService('Service', {
   name: 'foo',
   dnsRecordType: servicediscovery.DnsRecordType.A,
-  dnsTtlSec: 30,
+  dnsTtl: cdk.Duration.seconds(30),
   healthCheck: {
-    type: servicediscovery.HealthCheckType.Https,
+    type: servicediscovery.HealthCheckType.HTTPS,
     resourcePath: '/healthcheck',
     failureThreshold: 2
   }
@@ -24,4 +24,4 @@ service.registerIpInstance('IpInstance', {
   port: 443
 });
 
-app.run();
+app.synth();

@@ -2,8 +2,8 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import { BaseLoadBalancer, BaseLoadBalancerProps } from '../shared/base-load-balancer';
+import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
 
@@ -39,27 +39,31 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default 60
    */
-  readonly idleTimeoutSecs?: number;
+  readonly idleTimeout?: Duration;
 }
 
 /**
  * Define an Application Load Balancer
+ *
+ * @resource AWS::ElasticLoadBalancingV2::LoadBalancer
  */
 export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplicationLoadBalancer {
   /**
    * Import an existing Application Load Balancer
    */
-  public static import(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
-    return new ImportedApplicationLoadBalancer(scope, id, props);
+  public static fromApplicationLoadBalancerAttributes(
+    scope: Construct, id: string, attrs: ApplicationLoadBalancerAttributes): IApplicationLoadBalancer {
+
+    return new ImportedApplicationLoadBalancer(scope, id, attrs);
   }
 
   public readonly connections: ec2.Connections;
   private readonly securityGroup: ec2.ISecurityGroup;
 
-  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerProps) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
       type: "application",
-      securityGroups: new cdk.Token(() => [this.securityGroup.securityGroupId]),
+      securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
       ipAddressType: props.ipAddressType,
     });
 
@@ -71,7 +75,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
-    if (props.idleTimeoutSecs !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeoutSecs.toString()); }
+    if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
   }
 
   /**
@@ -82,16 +86,20 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
 
-    const region = this.node.stack.requireRegion('Enable ELBv2 access logging');
+    const region = Stack.of(this).region;
+    if (Token.isUnresolved(region)) {
+      throw new Error(`Region is required to enable ELBv2 access logging`);
+    }
+
     const account = ELBV2_ACCOUNTS[region];
     if (!account) {
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
     }
 
     prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), prefix + '*');
+    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
 
-    // make sure the bucket's policy is created before the ALB (see https://github.com/awslabs/aws-cdk/issues/1633)
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
   }
 
@@ -106,16 +114,6 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   }
 
   /**
-   * Export this load balancer
-   */
-  public export(): ApplicationLoadBalancerImportProps {
-    return {
-      loadBalancerArn: new cdk.CfnOutput(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString(),
-      securityGroupId: this.securityGroup.export().securityGroupId,
-    };
-  }
-
-  /**
    * Return the given named metric for this Application Load Balancer
    *
    * @default Average over 5 minutes
@@ -124,7 +122,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: { LoadBalancer: this.fullName },
+      dimensions: { LoadBalancer: this.loadBalancerFullName },
       ...props
     });
   }
@@ -239,7 +237,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
+  public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6ProcessedBytes', {
       statistic: 'Sum',
       ...props
@@ -251,7 +249,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
+  public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props
@@ -429,7 +427,7 @@ export enum HttpCodeElb {
   /**
    * The number of HTTP 3XX redirection codes that originate from the load balancer.
    */
-  Elb3xxCount = 'HTTPCode_ELB_3XX_Count',
+  ELB_3XX_COUNT = 'HTTPCode_ELB_3XX_Count',
 
   /**
    * The number of HTTP 4XX client error codes that originate from the load balancer.
@@ -438,12 +436,12 @@ export enum HttpCodeElb {
    * These requests have not been received by the target. This count does not
    * include any response codes generated by the targets.
    */
-  Elb4xxCount = 'HTTPCode_ELB_4XX_Count',
+  ELB_4XX_COUNT = 'HTTPCode_ELB_4XX_Count',
 
   /**
    * The number of HTTP 5XX server error codes that originate from the load balancer.
    */
-  Elb5xxCount = 'HTTPCode_ELB_5XX_Count',
+  ELB_5XX_COUNT = 'HTTPCode_ELB_5XX_Count',
 }
 
 /**
@@ -453,28 +451,28 @@ export enum HttpCodeTarget {
   /**
    * The number of 2xx response codes from targets
    */
-  Target2xxCount = 'HTTPCode_Target_2XX_Count',
+  TARGET_2XX_COUNT = 'HTTPCode_Target_2XX_Count',
 
   /**
    * The number of 3xx response codes from targets
    */
-  Target3xxCount = 'HTTPCode_Target_3XX_Count',
+  TARGET_3XX_COUNT = 'HTTPCode_Target_3XX_Count',
 
   /**
    * The number of 4xx response codes from targets
    */
-  Target4xxCount = 'HTTPCode_Target_4XX_Count',
+  TARGET_4XX_COUNT = 'HTTPCode_Target_4XX_Count',
 
   /**
    * The number of 5xx response codes from targets
    */
-  Target5xxCount = 'HTTPCode_Target_5XX_Count'
+  TARGET_5XX_COUNT = 'HTTPCode_Target_5XX_Count'
 }
 
 /**
  * An application load balancer
  */
-export interface IApplicationLoadBalancer extends cdk.IConstruct, ec2.IConnectable {
+export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnectable {
   /**
    * The ARN of this load balancer
    */
@@ -483,23 +481,18 @@ export interface IApplicationLoadBalancer extends cdk.IConstruct, ec2.IConnectab
   /**
    * The VPC this load balancer has been created in (if available)
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Add a new listener to this load balancer
    */
   addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener;
-
-  /**
-   * Export this load balancer
-   */
-  export(): ApplicationLoadBalancerImportProps;
 }
 
 /**
  * Properties to reference an existing load balancer
  */
-export interface ApplicationLoadBalancerImportProps {
+export interface ApplicationLoadBalancerAttributes {
   /**
    * ARN of the load balancer
    */
@@ -509,10 +502,24 @@ export interface ApplicationLoadBalancerImportProps {
    * ID of the load balancer's security group
    */
   readonly securityGroupId: string;
+
+  /**
+   * The canonical hosted zone ID of this load balancer
+   *
+   * @default - When not provided, LB cannot be used as Route53 Alias target.
+   */
+  readonly loadBalancerCanonicalHostedZoneId?: string;
+
+  /**
+   * The DNS name of this load balancer
+   *
+   * @default - When not provided, LB cannot be used as Route53 Alias target.
+   */
+  readonly loadBalancerDnsName?: string;
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
-const ELBV2_ACCOUNTS: {[region: string]: string } = {
+const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-east-1': '127311923021',
   'us-east-2': '033677994240',
   'us-west-1': '027434742980',
@@ -537,7 +544,7 @@ const ELBV2_ACCOUNTS: {[region: string]: string } = {
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
  */
-class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicationLoadBalancer {
+class ImportedApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   /**
    * Manage connections for this load balancer
    */
@@ -553,19 +560,15 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
    *
    * Always undefined.
    */
-  public readonly vpc?: ec2.IVpcNetwork;
+  public readonly vpc?: ec2.IVpc;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ApplicationLoadBalancerImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
     super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })]
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)]
     });
-  }
-
-  public export() {
-    return this.props;
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
@@ -573,5 +576,17 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
       loadBalancer: this,
       ...props
     });
+  }
+
+  public get loadBalancerCanonicalHostedZoneId(): string {
+    if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
+  }
+
+  public get loadBalancerDnsName(): string {
+    if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
 }

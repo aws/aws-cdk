@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { CfnReceiptFilter } from './ses.generated';
 
 /**
@@ -8,12 +8,12 @@ export enum ReceiptFilterPolicy {
   /**
    * Allow the ip address or range.
    */
-  Allow = 'Allow',
+  ALLOW = 'Allow',
 
   /**
    * Block the ip address or range.
    */
-  Block = 'Block'
+  BLOCK = 'Block'
 }
 
 /**
@@ -25,7 +25,7 @@ export interface ReceiptFilterProps {
    *
    * @default a CloudFormation generated name
    */
-  readonly name?: string;
+  readonly receiptFilterName?: string;
 
   /**
    * The ip address or range to filter.
@@ -47,16 +47,18 @@ export interface ReceiptFilterProps {
  * block all receipt filter.
  */
 export class ReceiptFilter extends Resource {
-  constructor(scope: Construct, id: string, props?: ReceiptFilterProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ReceiptFilterProps = {}) {
+    super(scope, id, {
+      physicalName: props.receiptFilterName,
+    });
 
     new CfnReceiptFilter(this, 'Resource', {
       filter: {
         ipFilter: {
-          cidr: (props && props.ip) || '0.0.0.0/0',
-          policy: (props && props.policy) || ReceiptFilterPolicy.Block
+          cidr: props.ip || '0.0.0.0/0',
+          policy: props.policy || ReceiptFilterPolicy.BLOCK,
         },
-        name: props ? props.name : undefined
+        name: this.physicalName,
       }
     });
   }
@@ -75,7 +77,7 @@ export interface WhiteListReceiptFilterProps {
 /**
  * A white list receipt filter.
  */
-export class WhiteListReceiptFilter extends Resource {
+export class WhiteListReceiptFilter extends Construct {
   constructor(scope: Construct, id: string, props: WhiteListReceiptFilterProps) {
     super(scope, id);
 
@@ -84,7 +86,7 @@ export class WhiteListReceiptFilter extends Resource {
     props.ips.forEach(ip => {
       new ReceiptFilter(this, `Allow${ip.replace(/[^\d]/g, '')}`, {
         ip,
-        policy: ReceiptFilterPolicy.Allow
+        policy: ReceiptFilterPolicy.ALLOW
       });
     });
   }

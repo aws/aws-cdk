@@ -1,27 +1,31 @@
-import { CfnOutput, Construct, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
-import { TargetInputTemplate } from './input-options';
-import { EventRuleImportProps, IEventRule } from './rule-ref';
-import { IEventRuleTarget } from './target';
+import { IRule } from './rule-ref';
+import { Schedule } from './schedule';
+import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
-export interface EventRuleProps {
+export interface RuleProps {
   /**
    * A description of the rule's purpose.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
-   * A name for the rule. If you don't specify a name, AWS CloudFormation
-   * generates a unique physical ID and uses that ID for the rule name. For
-   * more information, see Name Type.
+   * A name for the rule.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the rule name. For more information, see Name Type.
    */
   readonly ruleName?: string;
 
   /**
    * Indicates whether the rule is enabled.
-   * @default Rule is enabled
+   *
+   * @default true
    */
   readonly enabled?: boolean;
 
@@ -33,8 +37,10 @@ export interface EventRuleProps {
    * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
    *
    * You must specify this property, the `eventPattern` property, or both.
+   *
+   * @default - None.
    */
-  readonly scheduleExpression?: string;
+  readonly schedule?: Schedule;
 
   /**
    * Describes which events CloudWatch Events routes to the specified target.
@@ -48,6 +54,8 @@ export interface EventRuleProps {
    * `addEventPattern`), the `scheduleExpression` property, or both. The
    * method `addEventPattern` can be used to add filter values to the event
    * pattern.
+   *
+   * @default - None.
    */
   readonly eventPattern?: EventPattern;
 
@@ -56,19 +64,24 @@ export interface EventRuleProps {
    *
    * Input will be the full matched event. If you wish to specify custom
    * target input, use `addTarget(target[, inputOptions])`.
+   *
+   * @default - No targets.
    */
-  readonly targets?: IEventRuleTarget[];
+  readonly targets?: IRuleTarget[];
 }
 
 /**
  * Defines a CloudWatch Event Rule in this stack.
+ *
+ * @resource AWS::Events::Rule
  */
-export class EventRule extends Construct implements IEventRule {
-  /**
-   * Imports a rule by ARN into this stack.
-   */
-  public static import(scope: Construct, id: string, props: EventRuleImportProps): IEventRule {
-    return new ImportedEventRule(scope, id, props);
+export class Rule extends Resource implements IRule {
+
+  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
+    class Import extends Resource implements IRule {
+      public ruleArn = eventRuleArn;
+    }
+    return new Import(scope, id);
   }
 
   public readonly ruleArn: string;
@@ -77,35 +90,32 @@ export class EventRule extends Construct implements IEventRule {
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
-    super(scope, id);
-
-    const resource = new CfnRule(this, 'Resource', {
-      name: props.ruleName,
-      description: props.description,
-      state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: new Token(() => this.scheduleExpression).toString(),
-      eventPattern: new Token(() => this.renderEventPattern()),
-      targets: new Token(() => this.renderTargets())
+  constructor(scope: Construct, id: string, props: RuleProps = { }) {
+    super(scope, id, {
+      physicalName: props.ruleName,
     });
 
-    this.ruleArn = resource.ruleArn;
+    const resource = new CfnRule(this, 'Resource', {
+      name: this.physicalName,
+      description: props.description,
+      state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
+      scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
+      eventPattern: Lazy.anyValue({ produce: () => this.renderEventPattern() }),
+      targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
+    });
+
+    this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'events',
+      resource: 'rule',
+      resourceName: this.physicalName,
+    });
 
     this.addEventPattern(props.eventPattern);
-    this.scheduleExpression = props.scheduleExpression;
+    this.scheduleExpression = props.schedule && props.schedule.expressionString;
 
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
-  }
-
-  /**
-   * Exports this rule resource from this stack and returns an import token.
-   */
-  public export(): EventRuleImportProps {
-    return {
-      eventRuleArn: new CfnOutput(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
-    };
   }
 
   /**
@@ -114,54 +124,31 @@ export class EventRule extends Construct implements IEventRule {
    *
    * No-op if target is undefined.
    */
-  public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
+  public addTarget(target?: IRuleTarget) {
     if (!target) { return; }
-    const self = this;
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
+    // Simply increment id for each `addTarget` call. This is guaranteed to be unique.
+    const id = `Target${this.targets.length}`;
 
-    // check if a target with this ID already exists
-    if (this.targets.find(t => t.id === targetProps.id)) {
-      throw new Error('Duplicate event rule target with ID: ' + targetProps.id);
-    }
+    const targetProps = target.bind(this, id);
+    const inputProps = targetProps.input && targetProps.input.bind(this);
+
+    const roleArn = targetProps.role ? targetProps.role.roleArn : undefined;
 
     this.targets.push({
-      ...targetProps,
-      inputTransformer: renderTransformer(),
+      id: targetProps.id || id,
+      arn: targetProps.arn,
+      roleArn,
+      ecsParameters: targetProps.ecsParameters,
+      kinesisParameters: targetProps.kinesisParameters,
+      runCommandParameters: targetProps.runCommandParameters,
+      input: inputProps && inputProps.input,
+      inputPath: inputProps && inputProps.inputPath,
+      inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {
+        inputTemplate: inputProps.inputTemplate,
+        inputPathsMap: inputProps.inputPathsMap,
+      } : undefined,
     });
-
-    function renderTransformer(): CfnRule.InputTransformerProperty | undefined {
-      if (!inputOptions) {
-        return undefined;
-      }
-
-      if (inputOptions.jsonTemplate && inputOptions.textTemplate) {
-        throw new Error('"jsonTemplate" and "textTemplate" are mutually exclusive');
-      }
-
-      if (!inputOptions.jsonTemplate && !inputOptions.textTemplate) {
-        throw new Error('One of "jsonTemplate" or "textTemplate" are required');
-      }
-
-      let inputTemplate: any;
-
-      if (inputOptions.jsonTemplate) {
-        inputTemplate = typeof inputOptions.jsonTemplate === 'string'
-            ? inputOptions.jsonTemplate
-            : self.node.stringifyJson(inputOptions.jsonTemplate);
-      } else {
-        inputTemplate = typeof(inputOptions.textTemplate) === 'string'
-            // Newline separated list of JSON-encoded strings
-            ? inputOptions.textTemplate.split('\n').map(x => self.node.stringifyJson(x)).join('\n')
-            // Some object, stringify it, then stringify the string for proper escaping
-            : self.node.stringifyJson(self.node.stringifyJson(inputOptions.textTemplate));
-      }
-
-      return {
-        inputPathsMap: inputOptions.pathsMap,
-        inputTemplate
-      };
-    }
   }
 
   /**
@@ -206,7 +193,7 @@ export class EventRule extends Construct implements IEventRule {
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [ `Either 'eventPattern' or 'scheduleExpression' must be defined` ];
+      return [ `Either 'eventPattern' or 'schedule' must be defined` ];
     }
 
     return [ ];
@@ -238,19 +225,5 @@ export class EventRule extends Construct implements IEventRule {
     }
 
     return out;
-  }
-}
-
-class ImportedEventRule extends Construct implements IEventRule {
-  public readonly ruleArn: string;
-
-  constructor(scope: Construct, id: string, private readonly props: EventRuleImportProps) {
-    super(scope, id);
-
-    this.ruleArn = props.eventRuleArn;
-  }
-
-  public export() {
-    return this.props;
   }
 }

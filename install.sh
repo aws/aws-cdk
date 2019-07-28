@@ -13,8 +13,13 @@ echo "installing repo-global dependencies..."
 npm ci --global-style
 
 # Now that we have lerna available...
-export PATH=node_modules/.bin:$PATH
+export PATH=$(npm bin):$PATH
 
 echo "============================================================================================="
-echo "bootstrapping..."
+echo "cleanup and start bootstrapping..."
+lerna clean --yes
 lerna bootstrap --reject-cycles --ci
+
+echo "============================================================================================="
+echo "installing local links..."
+node scripts/install-local-deps.js

@@ -1,5 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 
@@ -7,35 +7,13 @@ import codepipeline = require('../lib');
 
 export = {
   'Pipeline Stages': {
-    'can be inserted at index 0'(test: Test) {
-      const stack = new cdk.Stack();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-      pipeline.addStage({ name: 'SecondStage' });
-      pipeline.addStage({
-        name: 'FirstStage',
-        placement: {
-          atIndex: 0,
-        },
-      });
-
-      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
-          { "Name": "FirstStage" },
-          { "Name": "SecondStage" },
-        ],
-      }));
-
-      test.done();
-    },
-
     'can be inserted before another Stage'(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-      const secondStage = pipeline.addStage({ name: 'SecondStage' });
+      const secondStage = pipeline.addStage({ stageName: 'SecondStage' });
       pipeline.addStage({
-        name: 'FirstStage',
+        stageName: 'FirstStage',
         placement: {
           rightBefore: secondStage,
         },
@@ -55,10 +33,10 @@ export = {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-      const firstStage = pipeline.addStage({ name: 'FirstStage' });
-      pipeline.addStage({ name: 'ThirdStage' });
+      const firstStage = pipeline.addStage({ stageName: 'FirstStage' });
+      pipeline.addStage({ stageName: 'ThirdStage' });
       pipeline.addStage({
-        name: 'SecondStage',
+        stageName: 'SecondStage',
         placement: {
           justAfter: firstStage,
         },
@@ -75,47 +53,15 @@ export = {
       test.done();
     },
 
-    'attempting to insert a Stage at a negative index results in an error'(test: Test) {
-      const stack = new cdk.Stack();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-      test.throws(() => {
-        pipeline.addStage({
-          name: 'Stage',
-          placement: {
-            atIndex: -1,
-          },
-        });
-      }, /atIndex/);
-
-      test.done();
-    },
-
-    'attempting to insert a Stage at an index larger than the current number of Stages results in an error'(test: Test) {
-      const stack = new cdk.Stack();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-      test.throws(() => {
-        pipeline.addStage({
-          name: 'Stage',
-          placement: {
-            atIndex: 1,
-          },
-        });
-      }, /atIndex/);
-
-      test.done();
-    },
-
     "attempting to insert a Stage before a Stage that doesn't exist results in an error"(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-      const stage = pipeline.addStage({ name: 'Stage' });
+      const stage = pipeline.addStage({ stageName: 'Stage' });
 
       const anotherPipeline = new codepipeline.Pipeline(stack, 'AnotherPipeline');
       test.throws(() => {
         anotherPipeline.addStage({
-          name: 'AnotherStage',
+          stageName: 'AnotherStage',
           placement: {
             rightBefore: stage,
           },
@@ -128,12 +74,12 @@ export = {
     "attempting to insert a Stage after a Stage that doesn't exist results in an error"(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-      const stage = pipeline.addStage({ name: 'Stage' });
+      const stage = pipeline.addStage({ stageName: 'Stage' });
 
       const anotherPipeline = new codepipeline.Pipeline(stack, 'AnotherPipeline');
       test.throws(() => {
         anotherPipeline.addStage({
-          name: 'AnotherStage',
+          stageName: 'AnotherStage',
           placement: {
             justAfter: stage,
           },
@@ -146,11 +92,11 @@ export = {
     "providing more than one placement value results in an error"(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-      const stage = pipeline.addStage({ name: 'Stage' });
+      const stage = pipeline.addStage({ stageName: 'Stage' });
 
       test.throws(() => {
         pipeline.addStage({
-          name: 'SecondStage',
+          stageName: 'SecondStage',
           placement: {
             rightBefore: stage,
             justAfter: stage,

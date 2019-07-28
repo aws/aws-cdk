@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
 
@@ -257,7 +257,7 @@ export = {
         const resource = api.root.resourceForPath('/boom/trach');
 
         // THEN
-        test.deepEqual(resource.resourcePath, '/boom/trach');
+        test.deepEqual(resource.path, '/boom/trach');
         test.done();
       },
 
@@ -273,14 +273,14 @@ export = {
         // THEN
         const parent = api.root.getResource('boom');
         test.ok(parent);
-        test.deepEqual(parent!.resourcePath, '/boom');
+        test.deepEqual(parent!.path, '/boom');
 
         test.same(trach.parentResource, parent);
-        test.deepEqual(trach.parentResource!.resourcePath, '/boom');
+        test.deepEqual(trach.parentResource!.path, '/boom');
 
         const bam2 = api.root.resourceForPath('/boom/bam');
         test.same(bam1, bam2);
-        test.deepEqual(bam1.parentResource!.resourcePath, '/boom');
+        test.deepEqual(bam1.parentResource!.path, '/boom');
         test.done();
       }
 
