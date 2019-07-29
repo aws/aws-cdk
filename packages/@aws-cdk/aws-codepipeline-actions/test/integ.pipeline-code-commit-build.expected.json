@@ -40,7 +40,11 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
               "Effect": "Allow",
               "Resource": [
                 {
@@ -104,14 +108,20 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -129,22 +139,35 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
               }
             },
             {
-              "Action": ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -153,10 +176,16 @@
               ]
             },
             {
-              "Action": ["kms:Decrypt", "kms:DescribeKey"],
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
               }
             }
           ],
@@ -183,7 +212,10 @@
           "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {
-          "Fn::GetAtt": ["MyBuildProjectRole6B7E2258", "Arn"]
+          "Fn::GetAtt": [
+            "MyBuildProjectRole6B7E2258",
+            "Arn"
+          ]
         },
         "Source": {
           "Type": "CODEPIPELINE"
