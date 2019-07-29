@@ -305,7 +305,9 @@
                   "BucketName": {
                     "Ref": "DeployBucket67E2C076"
                   },
-                  "Extract": "true"
+                  "Extract": "true",
+                  "CannedACL": "PublicRead",
+                  "CacheControl": "private, no-cache"
                 },
                 "InputArtifacts": [
                   {

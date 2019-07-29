@@ -29,6 +29,24 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    * The Amazon S3 bucket that is the deploy target.
    */
   readonly bucket: s3.IBucket;
+
+  /**
+   * The specified canned ACL to objects deployed to Amazon S3.
+   * This overwrites any existing ACL that was applied to the object.
+   *
+   * @default - the original object ACL
+   */
+  readonly cannedAcl?: s3.BucketAccessControl;
+
+  /**
+   * The caching behavior for requests/responses for objects in the bucket.
+   *
+   * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9 Cache-Control header field for HTTP operations
+   * @example 'public, max-age=31536000'
+   *
+   * @default - none, decided to the HTTP client
+   */
+  readonly cacheControl?: string;
 }
 
 /**
@@ -62,6 +80,8 @@ export class S3DeployAction extends Action {
         BucketName: this.props.bucket.bucketName,
         Extract: this.props.extract === false ? 'false' : 'true',
         ObjectKey: this.props.objectKey,
+        CannedACL: this.props.cannedAcl,
+        CacheControl: this.props.cacheControl,
       },
     };
   }

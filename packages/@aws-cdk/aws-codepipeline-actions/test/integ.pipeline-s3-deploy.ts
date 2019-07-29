@@ -34,6 +34,8 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
           actionName: 'DeployAction',
           input: sourceOutput,
           bucket: deployBucket,
+          cannedAcl: s3.BucketAccessControl.PUBLIC_READ,
+          cacheControl: 'private, no-cache',
         })
       ],
     },
