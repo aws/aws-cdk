@@ -82,6 +82,7 @@ function setup() {
   install_dep @aws-cdk/aws-lambda
   install_dep @aws-cdk/aws-ssm
   install_dep @aws-cdk/aws-ecr-assets
+  install_dep @aws-cdk/aws-ec2
 
   echo "| setup complete at: $PWD"
   echo "| 'cdk' is: $(which cdk)"
