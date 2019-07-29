@@ -247,8 +247,8 @@ export = {
       ],
     }));
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      VpcId: { Ref: "Stack8A423254" },
       TargetType: "lambda",
+      VpcId: undefined,
       Targets: [
         { Id: "arn:aws:lambda:region:account-id:function:function-1234" }
       ]
