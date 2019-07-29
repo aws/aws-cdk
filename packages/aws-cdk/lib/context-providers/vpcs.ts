@@ -22,7 +22,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
   private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<string> {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
-    const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(x => ({ Name: x[0], Values: [x[1]] }));
+    const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
     debug(`Listing VPCs in ${args.account}:${args.region}`);
     const response = await ec2.describeVpcs({ Filters: filters }).promise();
