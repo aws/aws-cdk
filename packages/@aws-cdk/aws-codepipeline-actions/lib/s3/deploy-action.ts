@@ -41,8 +41,7 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The caching behavior for requests/responses for objects in the bucket.
    *
-   * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9 Cache-Control header field for HTTP operations
-   * @example 'public, max-age=31536000'
+   * @example (new CacheControlResponse()).public().maxAge(Duration.days(365))
    *
    * @default - none, decided to the HTTP client
    */
