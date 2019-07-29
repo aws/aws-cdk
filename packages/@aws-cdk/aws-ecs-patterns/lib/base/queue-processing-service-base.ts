@@ -41,9 +41,19 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The environment variables to pass to the container.
    *
+   * The variable `QUEUE_NAME` with value `queue.queueName` will
+   * always be passed.
+   *
    * @default 'QUEUE_NAME: queue.queueName'
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * Secret environment variables to pass to the container
+   *
+   * @default - No secret environment variables.
+   */
+  readonly secrets?: { [key: string]: ecs.Secret };
 
   /**
    * A queue for which to process items from.
@@ -89,18 +99,27 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
    * Environment variables that will include the queue name
    */
   public readonly environment: { [key: string]: string };
+
+  /**
+   * Secret environment variables
+   */
+  public readonly secrets?: { [key: string]: ecs.Secret };
+
   /**
    * The minimum number of tasks to run
    */
   public readonly desiredCount: number;
+
   /**
    * The maximum number of instances for autoscaling to scale up to
    */
   public readonly maxCapacity: number;
+
   /**
    * The scaling interval for autoscaling based off an SQS Queue size
    */
   public readonly scalingSteps: autoscaling.ScalingInterval[];
+
   /**
    * The AwsLogDriver to use for logging if logging is enabled.
    */
@@ -122,6 +141,7 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
+    this.secrets = props.secrets;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
     this.desiredCount = props.desiredTaskCount || 1;
