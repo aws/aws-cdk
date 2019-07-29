@@ -43,7 +43,7 @@ For day-to-day development and normal contributions, [Node.js 8.11](https://node
 should be sufficient.
 
 ```console
-$ git clone git@github.com:awslabs/aws-cdk.git
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 $ ./build.sh
 ```
