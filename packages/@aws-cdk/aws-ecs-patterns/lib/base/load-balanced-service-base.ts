@@ -1,4 +1,5 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
@@ -16,8 +17,19 @@ export enum LoadBalancerType {
 export interface LoadBalancedServiceBaseProps {
   /**
    * The cluster where your service will be deployed
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well
    */
-  readonly cluster: ecs.ICluster;
+  readonly cluster?: ecs.ICluster;
+
+  /**
+   * VPC that the cluster instances or tasks are running in
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default - use vpc of cluster or create a new one
+   */
+  readonly vpc?: ec2.IVpc;
 
   /**
    * The image to start.
@@ -115,10 +127,17 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
 
   public readonly targetGroup: elbv2.ApplicationTargetGroup | elbv2.NetworkTargetGroup;
 
+  public readonly cluster: ecs.ICluster;
+
   public readonly logDriver?: ecs.LogDriver;
 
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceBaseProps) {
     super(scope, id);
+
+    if (props.cluster && props.vpc) {
+      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+    }
+    this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
@@ -134,7 +153,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
 
     const lbProps = {
-      vpc: props.cluster.vpc,
+      vpc: this.cluster.vpc,
       internetFacing
     };
 
@@ -181,6 +200,13 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     }
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+  }
+
+  protected getDefaultCluster(scope: cdk.Construct, vpc?: ec2.IVpc): ecs.Cluster {
+    // magic string to avoid collision with user-defined constructs
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const stack = cdk.Stack.of(scope);
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as ecs.Cluster || new ecs.Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   protected addServiceAsTarget(service: ecs.BaseService) {
