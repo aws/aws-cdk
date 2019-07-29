@@ -53,6 +53,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
       cpu: props.cpu,
       command: props.command,
       environment: props.environment,
+      secrets: props.secrets,
       logging: this.createAWSLogDriver(this.node.id)
     });
 

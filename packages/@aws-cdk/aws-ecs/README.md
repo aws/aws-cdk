@@ -203,6 +203,26 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
 * `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 
+### Environment variables
+
+To pass environment variables to the container, use the `environment` and `secrets` props.
+
+```ts
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  environment: { // clear text, not for sensitive data
+    STAGE: 'prod',
+  },
+  secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
+    SECRET: ecs.Secret.fromSecretsManager(secret),
+    PARAMETER: ecs.Secret.fromSsmParameter(parameter),
+  }
+});
+```
+
+The task execution role is automatically granted read permissions on the secrets/parameters.
+
 ## Service
 
 A `Service` instantiates a `TaskDefinition` on a `Cluster` a given number of
@@ -330,5 +350,3 @@ rule.addTarget(new targets.EcsTask({
   }]
 }));
 ```
-
-> Note: it is currently not possible to start AWS Fargate tasks in this way.
