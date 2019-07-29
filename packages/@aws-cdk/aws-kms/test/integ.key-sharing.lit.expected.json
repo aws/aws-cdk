@@ -19,7 +19,8 @@
                   "kms:Get*",
                   "kms:Delete*",
                   "kms:ScheduleKeyDeletion",
-                  "kms:CancelKeyDeletion"
+                  "kms:CancelKeyDeletion",
+                  "kms:GenerateDataKey"
                 ],
                 "Effect": "Allow",
                 "Principal": {
@@ -54,10 +55,7 @@
         "Properties": {
           "AliasName": "alias/foo",
           "TargetKeyId": {
-            "Fn::GetAtt": [
-              "MyKey6AB29FA6",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["MyKey6AB29FA6", "Arn"]
           }
         }
       }
