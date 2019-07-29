@@ -1,12 +1,12 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup, BaseLoadBalancer, NetworkListener,
   NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import { CfnOutput, Construct } from '@aws-cdk/core';
+import cdk = require('@aws-cdk/core');
 
 export enum LoadBalancerType {
   APPLICATION,
@@ -148,7 +148,7 @@ export interface LoadBalancedServiceBaseProps {
 /**
  * The base class for LoadBalancedEc2Service and LoadBalancedFargateService services.
  */
-export abstract class LoadBalancedServiceBase extends Construct {
+export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly assignPublicIp: boolean;
 
   public readonly desiredCount: number;
@@ -168,7 +168,7 @@ export abstract class LoadBalancedServiceBase extends Construct {
   /**
    * Constructs a new instance of the LoadBalancedServiceBase class.
    */
-  constructor(scope: Construct, id: string, props: LoadBalancedServiceBaseProps) {
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceBaseProps) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
@@ -239,21 +239,17 @@ export abstract class LoadBalancedServiceBase extends Construct {
       });
     }
 
-    new CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
   }
 
-<<<<<<< HEAD
-  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as ecs.Cluster || new ecs.Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   protected addServiceAsTarget(service: BaseService) {
-=======
-  protected addServiceAsTarget(service: BaseService) {
->>>>>>> Address feedback
     if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
       (this.targetGroup as ApplicationTargetGroup).addTarget(service);
     } else {

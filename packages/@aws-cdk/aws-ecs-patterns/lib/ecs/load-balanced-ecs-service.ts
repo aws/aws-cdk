@@ -84,7 +84,7 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
     });
 
     this.service = new Ec2Service(this, "Service", {
-      cluster: props.cluster,
+      cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition,
       assignPublicIp: this.assignPublicIp,

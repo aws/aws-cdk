@@ -79,7 +79,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     });
 
     this.service = new FargateService(this, "Service", {
-      cluster: props.cluster,
+      cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition,
       assignPublicIp: this.assignPublicIp,

@@ -1,5 +1,5 @@
 import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { AwsLogDriver, ContainerImage, ICluster, TaskDefinition } from "@aws-cdk/aws-ecs";
+import { AwsLogDriver, ContainerImage, ICluster, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
 import { Rule } from "@aws-cdk/aws-events";
 import { EcsTask } from "@aws-cdk/aws-events-targets";
 import { Construct } from "@aws-cdk/core";
@@ -59,7 +59,7 @@ export interface ScheduledTaskBaseProps {
    *
    * @default - No secret environment variables.
    */
-  readonly secrets?: { [key: string]: ecs.Secret };
+  readonly secrets?: { [key: string]: Secret };
 }
 
 /**
