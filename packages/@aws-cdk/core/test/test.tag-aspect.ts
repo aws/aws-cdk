@@ -107,6 +107,33 @@ export = {
     test.deepEqual(res2.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
     test.done();
   },
+  'add will add a tag and remove will remove a tag if it exists'(test: Test) {
+    const root = new Stack();
+    const res = new TaggableResource(root, 'FakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+    const res2 = new TaggableResource(res, 'FakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+    const asg = new AsgTaggableResource(res, 'AsgFakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+
+    const map = new MapTaggableResource(res, 'MapFakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+    Tag.add(root, 'root', 'was here');
+    Tag.add(res, 'first', 'there is only 1');
+    Tag.remove(res, 'root');
+    Tag.remove(res, 'doesnotexist');
+    ConstructNode.prepare(root.node);
+
+    test.deepEqual(res.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
+    test.deepEqual(map.tags.renderTags(), {first: 'there is only 1'});
+    test.deepEqual(asg.tags.renderTags(), [{key: 'first', value: 'there is only 1', propagateAtLaunch: true}]);
+    test.deepEqual(res2.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
+    test.done();
+  },
   'the #visit function is idempotent'(test: Test) {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
