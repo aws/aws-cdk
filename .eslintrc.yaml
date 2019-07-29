@@ -102,7 +102,10 @@ rules:
   "@typescript-eslint/prefer-for-of": error
   radix: error
   "@typescript-eslint/semi": error
-  eqeqeq: error
+  eqeqeq: 
+    - error
+    - always
+    - {null: "ignore"}
   "@typescript-eslint/unified-signatures": error
   import/order: error
 
