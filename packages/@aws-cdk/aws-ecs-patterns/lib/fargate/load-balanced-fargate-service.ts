@@ -98,7 +98,8 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     const container = taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
-      environment: props.environment
+      environment: props.environment,
+      secrets: props.secrets,
     });
 
     container.addPortMappings({
