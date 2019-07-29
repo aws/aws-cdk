@@ -68,6 +68,13 @@ export interface LoadBalancedServiceBaseProps {
   readonly environment?: { [key: string]: string };
 
   /**
+   * Secret environment variables to pass to the container
+   *
+   * @default - No secret environment variables.
+   */
+  readonly secrets?: { [key: string]: ecs.Secret };
+
+  /**
    * Whether to create an AWS log driver
    *
    * @default true
