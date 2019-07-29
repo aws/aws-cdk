@@ -53,7 +53,10 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": ["MyPipelineRoleC0D47CA4", "Arn"]
+                  "Fn::GetAtt": [
+                    "MyPipelineRoleC0D47CA4",
+                    "Arn"
+                  ]
                 }
               },
               "Resource": "*"
@@ -88,7 +91,10 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": ["BuildProjectRoleAA92C755", "Arn"]
+                  "Fn::GetAtt": [
+                    "BuildProjectRoleAA92C755",
+                    "Arn"
+                  ]
                 }
               },
               "Resource": "*"
@@ -108,7 +114,10 @@
             {
               "ServerSideEncryptionByDefault": {
                 "KMSMasterKeyID": {
-                  "Fn::GetAtt": ["MyPipelineArtifactsBucketEncryptionKey8BF0A7F3", "Arn"]
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                    "Arn"
+                  ]
                 },
                 "SSEAlgorithm": "aws:kms"
               }
@@ -163,14 +172,20 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["MyPipelineArtifactsBucket727923DD", "Arn"]
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucket727923DD",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["MyPipelineArtifactsBucket727923DD", "Arn"]
+                        "Fn::GetAtt": [
+                          "MyPipelineArtifactsBucket727923DD",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -188,7 +203,10 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["MyPipelineArtifactsBucketEncryptionKey8BF0A7F3", "Arn"]
+                "Fn::GetAtt": [
+                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                  "Arn"
+                ]
               }
             },
             {
@@ -226,7 +244,10 @@
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
         "RoleArn": {
-          "Fn::GetAtt": ["MyPipelineRoleC0D47CA4", "Arn"]
+          "Fn::GetAtt": [
+            "MyPipelineRoleC0D47CA4",
+            "Arn"
+          ]
         },
         "Stages": [
           {
@@ -240,7 +261,10 @@
                 },
                 "Configuration": {
                   "RepositoryName": {
-                    "Fn::GetAtt": ["CodeCommitRepoDC6A41F9", "Name"]
+                    "Fn::GetAtt": [
+                      "CodeCommitRepoDC6A41F9",
+                      "Name"
+                    ]
                   },
                   "BranchName": "master",
                   "PollForSourceChanges": true
@@ -303,7 +327,10 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Fn::GetAtt": ["MyPipelineArtifactsBucketEncryptionKey8BF0A7F3", "Arn"]
+              "Fn::GetAtt": [
+                "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                "Arn"
+              ]
             },
             "Type": "KMS"
           },
@@ -313,7 +340,10 @@
           "Type": "S3"
         }
       },
-      "DependsOn": ["MyPipelineRoleDefaultPolicy34F09EFA", "MyPipelineRoleC0D47CA4"]
+      "DependsOn": [
+        "MyPipelineRoleDefaultPolicy34F09EFA",
+        "MyPipelineRoleC0D47CA4"
+      ]
     },
     "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F": {
       "Type": "AWS::IAM::Role",
@@ -364,14 +394,20 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["MyPipelineArtifactsBucket727923DD", "Arn"]
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucket727923DD",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["MyPipelineArtifactsBucket727923DD", "Arn"]
+                        "Fn::GetAtt": [
+                          "MyPipelineArtifactsBucket727923DD",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -389,7 +425,10 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["MyPipelineArtifactsBucketEncryptionKey8BF0A7F3", "Arn"]
+                "Fn::GetAtt": [
+                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                  "Arn"
+                ]
               }
             },
             {
@@ -402,7 +441,10 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["CodeCommitRepoDC6A41F9", "Arn"]
+                "Fn::GetAtt": [
+                  "CodeCommitRepoDC6A41F9",
+                  "Arn"
+                ]
               }
             }
           ],
@@ -420,8 +462,12 @@
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "detail-type": ["CodePipeline Stage Execution State Change"],
-          "source": ["aws.codepipeline"],
+          "detail-type": [
+            "CodePipeline Stage Execution State Change"
+          ],
+          "source": [
+            "aws.codepipeline"
+          ],
           "resources": [
             {
               "Fn::Join": [
@@ -448,9 +494,15 @@
             }
           ],
           "detail": {
-            "stage": ["Source"],
-            "action": ["CodeCommitSource"],
-            "state": ["STARTED"]
+            "stage": [
+              "Source"
+            ],
+            "action": [
+              "CodeCommitSource"
+            ],
+            "state": [
+              "STARTED"
+            ]
           }
         },
         "State": "ENABLED",
@@ -468,8 +520,12 @@
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "detail-type": ["CodePipeline Stage Execution State Change"],
-          "source": ["aws.codepipeline"],
+          "detail-type": [
+            "CodePipeline Stage Execution State Change"
+          ],
+          "source": [
+            "aws.codepipeline"
+          ],
           "resources": [
             {
               "Fn::Join": [
@@ -496,7 +552,9 @@
             }
           ],
           "detail": {
-            "stage": ["Source"]
+            "stage": [
+              "Source"
+            ]
           }
         },
         "State": "ENABLED",
@@ -548,10 +606,17 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": ["codebuild:BatchGetBuilds", "codebuild:StartBuild", "codebuild:StopBuild"],
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["BuildProject097C5DB7", "Arn"]
+                "Fn::GetAtt": [
+                  "BuildProject097C5DB7",
+                  "Arn"
+                ]
               }
             }
           ],
@@ -569,7 +634,9 @@
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "source": ["aws.codepipeline"],
+          "source": [
+            "aws.codepipeline"
+          ],
           "resources": [
             {
               "Fn::Join": [
@@ -595,7 +662,9 @@
               ]
             }
           ],
-          "detail-type": ["CodePipeline Pipeline Execution State Change"]
+          "detail-type": [
+            "CodePipeline Pipeline Execution State Change"
+          ]
         },
         "State": "ENABLED",
         "Targets": [
@@ -655,7 +724,11 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
               "Effect": "Allow",
               "Resource": [
                 {
@@ -719,14 +792,20 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["MyPipelineArtifactsBucket727923DD", "Arn"]
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucket727923DD",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["MyPipelineArtifactsBucket727923DD", "Arn"]
+                        "Fn::GetAtt": [
+                          "MyPipelineArtifactsBucket727923DD",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -744,7 +823,10 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["MyPipelineArtifactsBucketEncryptionKey8BF0A7F3", "Arn"]
+                "Fn::GetAtt": [
+                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                  "Arn"
+                ]
               }
             }
           ],
@@ -771,7 +853,10 @@
           "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {
-          "Fn::GetAtt": ["BuildProjectRoleAA92C755", "Arn"]
+          "Fn::GetAtt": [
+            "BuildProjectRoleAA92C755",
+            "Arn"
+          ]
         },
         "Source": {
           "Type": "CODEPIPELINE"

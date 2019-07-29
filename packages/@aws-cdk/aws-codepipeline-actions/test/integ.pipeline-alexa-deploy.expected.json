@@ -63,17 +63,27 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": ["PipelineRoleD68726F7", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineRoleD68726F7",
+                    "Arn"
+                  ]
                 }
               },
               "Resource": "*"
             },
             {
-              "Action": ["kms:Encrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*"],
+              "Action": [
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": ["PipelineSourceCodePipelineActionRoleC6F9E7F5", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
                 }
               },
               "Resource": "*"
@@ -93,7 +103,10 @@
             {
               "ServerSideEncryptionByDefault": {
                 "KMSMasterKeyID": {
-                  "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketEncryptionKey01D58D69",
+                    "Arn"
+                  ]
                 },
                 "SSEAlgorithm": "aws:kms"
               }
@@ -148,14 +161,20 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -173,14 +192,20 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
               }
             },
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["PipelineSourceCodePipelineActionRoleC6F9E7F5", "Arn"]
+                "Fn::GetAtt": [
+                  "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                  "Arn"
+                ]
               }
             }
           ],
@@ -198,7 +223,10 @@
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
         "RoleArn": {
-          "Fn::GetAtt": ["PipelineRoleD68726F7", "Arn"]
+          "Fn::GetAtt": [
+            "PipelineRoleD68726F7",
+            "Arn"
+          ]
         },
         "Stages": [
           {
@@ -224,7 +252,10 @@
                   }
                 ],
                 "RoleArn": {
-                  "Fn::GetAtt": ["PipelineSourceCodePipelineActionRoleC6F9E7F5", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
                 },
                 "RunOrder": 1
               }
@@ -262,7 +293,10 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
+              "Fn::GetAtt": [
+                "PipelineArtifactsBucketEncryptionKey01D58D69",
+                "Arn"
+              ]
             },
             "Type": "KMS"
           },
@@ -272,7 +306,10 @@
           "Type": "S3"
         }
       },
-      "DependsOn": ["PipelineRoleDefaultPolicyC7A05455", "PipelineRoleD68726F7"]
+      "DependsOn": [
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
+      ]
     },
     "PipelineSourceCodePipelineActionRoleC6F9E7F5": {
       "Type": "AWS::IAM::Role",
@@ -312,18 +349,28 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["PipelineBucketB967BD35", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineBucketB967BD35",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["PipelineBucketB967BD35", "Arn"]
+                        "Fn::GetAtt": [
+                          "PipelineBucketB967BD35",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -332,18 +379,28 @@
               ]
             },
             {
-              "Action": ["s3:DeleteObject*", "s3:PutObject*", "s3:Abort*"],
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
                       },
                       "/*"
                     ]
@@ -352,10 +409,17 @@
               ]
             },
             {
-              "Action": ["kms:Encrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*"],
+              "Action": [
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
               }
             }
           ],

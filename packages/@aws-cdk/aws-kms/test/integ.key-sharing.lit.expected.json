@@ -55,7 +55,10 @@
         "Properties": {
           "AliasName": "alias/foo",
           "TargetKeyId": {
-            "Fn::GetAtt": ["MyKey6AB29FA6", "Arn"]
+            "Fn::GetAtt": [
+              "MyKey6AB29FA6",
+              "Arn"
+            ]
           }
         }
       }
