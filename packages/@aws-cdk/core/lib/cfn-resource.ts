@@ -120,7 +120,7 @@ export class CfnResource extends CfnRefElement {
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
-    if (options.applyToUpdateReplacePolicy) {
+    if (options.applyToUpdateReplacePolicy !== false) {
       this.cfnOptions.updateReplacePolicy = deletionPolicy;
     }
   }
@@ -230,7 +230,8 @@ export class CfnResource extends CfnRefElement {
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId
           }, props => {
-            props.Properties = this.renderProperties(props.Properties);
+            const renderedProps = this.renderProperties(props.Properties || {});
+            props.Properties = renderedProps && (Object.values(renderedProps).find(v => !!v) ? renderedProps : undefined);
             return deepMerge(props, this.rawOverrides);
           })
         }

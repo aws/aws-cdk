@@ -66,12 +66,48 @@
                 }
               },
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
@@ -92,7 +128,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -176,91 +213,42 @@
               }
             },
             {
-              "Action": [
-                "codecommit:GetBranch",
-                "codecommit:GetCommit",
-                "codecommit:UploadArchive",
-                "codecommit:GetUploadArchiveStatus",
-                "codecommit:CancelUploadArchive"
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TemplateRepo2326F199",
+                  "PipelineSourceCodePipelineActionRoleC6F9E7F5",
                   "Arn"
                 ]
               }
             },
             {
-              "Action": "iam:PassRole",
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "PipelineDeployPrepareChangesRoleD28C853C",
+                  "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
                   "Arn"
                 ]
               }
             },
             {
-              "Action": [
-                "cloudformation:CreateChangeSet",
-                "cloudformation:DeleteChangeSet",
-                "cloudformation:DescribeChangeSet",
-                "cloudformation:DescribeStacks"
-              ],
-              "Condition": {
-                "StringEqualsIfExists": {
-                  "cloudformation:ChangeSetName": "StagedChangeSet"
-                }
-              },
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":cloudformation:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":stack/OurStack/*"
-                  ]
+                "Fn::GetAtt": [
+                  "PipelineDeployApproveChangesCodePipelineActionRole5AA6E21B",
+                  "Arn"
                 ]
               }
             },
             {
-              "Action": "cloudformation:ExecuteChangeSet",
-              "Condition": {
-                "StringEquals": {
-                  "cloudformation:ChangeSetName": "StagedChangeSet"
-                }
-              },
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":cloudformation:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":stack/OurStack/*"
-                  ]
+                "Fn::GetAtt": [
+                  "PipelineDeployExecuteChangesCodePipelineActionRole6AA2756F",
+                  "Arn"
                 ]
               }
             }
@@ -311,6 +299,12 @@
                     "Name": "SourceArtifact"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -327,16 +321,16 @@
                 },
                 "Configuration": {
                   "StackName": "OurStack",
-                  "ActionMode": "CHANGE_SET_REPLACE",
-                  "ChangeSetName": "StagedChangeSet",
-                  "TemplatePath": "SourceArtifact::template.yaml",
                   "Capabilities": "CAPABILITY_NAMED_IAM",
                   "RoleArn": {
                     "Fn::GetAtt": [
                       "PipelineDeployPrepareChangesRoleD28C853C",
                       "Arn"
                     ]
-                  }
+                  },
+                  "ActionMode": "CHANGE_SET_REPLACE",
+                  "ChangeSetName": "StagedChangeSet",
+                  "TemplatePath": "SourceArtifact::template.yaml"
                 },
                 "InputArtifacts": [
                   {
@@ -345,6 +339,12 @@
                 ],
                 "Name": "PrepareChanges",
                 "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               },
               {
@@ -357,6 +357,12 @@
                 "InputArtifacts": [],
                 "Name": "ApproveChanges",
                 "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineDeployApproveChangesCodePipelineActionRole5AA6E21B",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 2
               },
               {
@@ -374,6 +380,12 @@
                 "InputArtifacts": [],
                 "Name": "ExecuteChanges",
                 "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineDeployExecuteChangesCodePipelineActionRole6AA2756F",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 3
               }
             ],
@@ -400,6 +412,254 @@
         "PipelineRoleDefaultPolicyC7A05455",
         "PipelineRoleD68726F7"
       ]
+    },
+    "PipelineSourceCodePipelineActionRoleC6F9E7F5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "codecommit:GetBranch",
+                "codecommit:GetCommit",
+                "codecommit:UploadArchive",
+                "codecommit:GetUploadArchiveStatus",
+                "codecommit:CancelUploadArchive"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TemplateRepo2326F199",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925",
+        "Roles": [
+          {
+            "Ref": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
+          }
+        ]
+      }
+    },
+    "PipelineDeployPrepareChangesCodePipelineActionRole41931444": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineDeployPrepareChangesCodePipelineActionRoleDefaultPolicyAD3C24A3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineDeployPrepareChangesRoleD28C853C",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks"
+              ],
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "cloudformation:ChangeSetName": "StagedChangeSet"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/OurStack/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineDeployPrepareChangesCodePipelineActionRoleDefaultPolicyAD3C24A3",
+        "Roles": [
+          {
+            "Ref": "PipelineDeployPrepareChangesCodePipelineActionRole41931444"
+          }
+        ]
+      }
     },
     "PipelineDeployPrepareChangesRoleD28C853C": {
       "Type": "AWS::IAM::Role",
@@ -445,6 +705,119 @@
         "Roles": [
           {
             "Ref": "PipelineDeployPrepareChangesRoleD28C853C"
+          }
+        ]
+      }
+    },
+    "PipelineDeployApproveChangesCodePipelineActionRole5AA6E21B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineDeployExecuteChangesCodePipelineActionRole6AA2756F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineDeployExecuteChangesCodePipelineActionRoleDefaultPolicy70764525": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks",
+                "cloudformation:ExecuteChangeSet"
+              ],
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "cloudformation:ChangeSetName": "StagedChangeSet"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/OurStack/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineDeployExecuteChangesCodePipelineActionRoleDefaultPolicy70764525",
+        "Roles": [
+          {
+            "Ref": "PipelineDeployExecuteChangesCodePipelineActionRole6AA2756F"
           }
         ]
       }

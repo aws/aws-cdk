@@ -32,7 +32,7 @@ export enum CodeCommitTrigger {
 /**
  * Construction properties of the {@link CodeCommitSourceAction CodeCommit source CodePipeline Action}.
  */
-export interface CodeCommitSourceActionProps extends codepipeline.CommonActionProps {
+export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
    *
    */
@@ -88,6 +88,10 @@ export class CodeCommitSourceAction extends Action {
         branches: [this.branch],
       });
     }
+
+    // the Action will write the contents of the Git repository to the Bucket,
+    // so its Role needs write permissions to the Pipeline Bucket
+    options.bucket.grantReadWrite(options.role);
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
     options.role.addToPolicy(new iam.PolicyStatement({

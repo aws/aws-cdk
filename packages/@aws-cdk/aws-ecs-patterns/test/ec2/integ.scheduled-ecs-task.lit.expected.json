@@ -449,9 +449,7 @@
               "Action": [
                 "ecs:ListContainerInstances",
                 "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
+                "ecs:SubmitTaskStateChange"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -460,6 +458,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -506,22 +522,7 @@
         "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
     },
-    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionA8966A35": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicE6B1EBA6": {
+    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegecsEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic0C4958AFBA77E328": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -534,6 +535,21 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+        }
+      }
+    },
+    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
+            "Arn"
+          ]
         }
       }
     },
@@ -649,11 +665,7 @@
             "Cpu": 1,
             "Environment": [
               {
-                "Name": "name",
-                "Value": "TRIGGER"
-              },
-              {
-                "Name": "value",
+                "Name": "TRIGGER",
                 "Value": "CloudWatch Events"
               }
             ],
@@ -699,6 +711,11 @@
         },
         "Volumes": []
       }
+    },
+    "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "ScheduledEc2TaskScheduledTaskDefExecutionRole65A8CC6F": {
       "Type": "AWS::IAM::Role",
@@ -826,10 +843,6 @@
         ]
       }
     },
-    "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
-    },
     "ScheduledEc2TaskScheduledEventRuleFE2376A2": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -849,7 +862,7 @@
                 "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
               }
             },
-            "Id": "awsecsintegecsScheduledEc2TaskScheduledTaskDef18FB4348",
+            "Id": "Target0",
             "Input": "{}",
             "RoleArn": {
               "Fn::GetAtt": [

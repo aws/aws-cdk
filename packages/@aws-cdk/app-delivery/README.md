@@ -7,7 +7,7 @@
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
+>
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -17,7 +17,7 @@
 
 This library includes a *CodePipeline* composite Action for deploying AWS CDK Applications.
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ### Limitations
 The construct library in it's current form has the following limitations:
@@ -51,7 +51,7 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
 import cdk = require('@aws-cdk/core');
-import cicd = require('@aws-cdk/cicd');
+import cicd = require('@aws-cdk/app-delivery');
 
 const app = new cdk.App();
 
@@ -78,7 +78,7 @@ pipeline.addStage({
 });
 
 const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
-  /** 
+  /**
   * Choose an environment configuration that meets your use case.
   * For NodeJS, this might be:
   *
@@ -101,42 +101,40 @@ pipeline.addStage({
 
 // Optionally, self-update the pipeline stack
 const selfUpdateStage = pipeline.addStage({ stageName: 'SelfUpdate' });
-new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
-  stage: selfUpdateStage,
+selfUpdateStage.addAction(new cicd.PipelineDeployStackAction({
   stack: pipelineStack,
   input: synthesizedApp,
-});
+  adminPermissions: true,
+}));
 
 // Now add our service stacks
 const deployStage = pipeline.addStage({ stageName: 'Deploy' });
 const serviceStackA = new MyServiceStackA(app, 'ServiceStackA', { /* ... */ });
 // Add actions to deploy the stacks in the deploy stage:
-const deployServiceAAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {
-  stage: deployStage,
+const deployServiceAAction = new cicd.PipelineDeployStackAction({
   stack: serviceStackA,
   input: synthesizedApp,
   // See the note below for details about this option.
-  adminPermissions: false, 
+  adminPermissions: false,
 });
+deployStage.addAction(deployServiceAAction);
 // Add the necessary permissions for you service deploy action. This role is
 // is passed to CloudFormation and needs the permissions necessary to deploy
-// stack. Alternatively you can enable [Administrator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) permissions above, 
+// stack. Alternatively you can enable [Administrator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) permissions above,
 // users should understand the privileged nature of this role.
-deployServiceAAction.addToRolePolicy(
-  new iam.PolicyStatement()
-    .addAction('service:SomeAction')
-    .addResource(myResource.myResourceArn)
+deployServiceAAction.addToRolePolicy(new iam.PolicyStatement({
+    actions: ['service:SomeAction'],
+    resources: [myResource.myResourceArn],
     // add more Action(s) and/or Resource(s) here, as needed
-);
+}));
 
 const serviceStackB = new MyServiceStackB(app, 'ServiceStackB', { /* ... */ });
-new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackB', {
-  stage: deployStage,
+deployStage.addAction(new cicd.PipelineDeployStackAction({
   stack: serviceStackB,
   input: synthesizedApp,
   createChangeSetRunOrder: 998,
   adminPermissions: true, // no need to modify the role with admin
-}); 
+}));
 ```
 
 #### `buildspec.yml`
@@ -167,7 +165,7 @@ artifacts:
   files: '**/*'
 ```
 
-The `PipelineDeployStackAction` expects it's `input` to contain the result of 
+The `PipelineDeployStackAction` expects it's `input` to contain the result of
 synthesizing a CDK App using the `cdk synth -o <directory>`.
 
 

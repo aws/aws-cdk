@@ -390,15 +390,15 @@ export class Stack extends Construct implements ITaggable {
    * reports them as missing, and let the CLI resolve them by calling EC2
    * `DescribeAvailabilityZones` on the target environment.
    */
-  public get availabilityZones() {
+  public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
     // denominator is 2 AZs across all AWS regions.
     const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
     if (agnostic) {
       return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
-        Fn.select(0, Fn.getAZs()),
-        Fn.select(1, Fn.getAZs())
+        Fn.select(0, Fn.getAzs()),
+        Fn.select(1, Fn.getAzs())
       ];
     }
 
@@ -545,9 +545,19 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   protected _toCloudFormation() {
+    if (this.templateOptions.transform) {
+      // tslint:disable-next-line: max-line-length
+      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `templateOptions.transforms`.');
+      if (!this.templateOptions.transforms) {
+        this.templateOptions.transforms = [];
+      }
+      if (this.templateOptions.transforms.indexOf(this.templateOptions.transform) === -1) {
+        this.templateOptions.transforms.unshift(this.templateOptions.transform);
+      }
+    }
     const template: any = {
       Description: this.templateOptions.description,
-      Transform: this.templateOptions.transform,
+      Transform: extractSingleValue(this.templateOptions.transforms),
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
       Metadata: this.templateOptions.metadata
     };
@@ -690,8 +700,15 @@ export interface ITemplateOptions {
 
   /**
    * Gets or sets the top-level template transform for this stack (e.g. "AWS::Serverless-2016-10-31").
+   *
+   * @deprecated use `transforms` instead.
    */
   transform?: string;
+
+  /**
+   * Gets or sets the top-level template transform(s) for this stack (e.g. `["AWS::Serverless-2016-10-31"]`).
+   */
+  transforms?: string[];
 
   /**
    * Metadata associated with the CloudFormation template.
@@ -745,4 +762,11 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
 interface StackDependency {
   stack: Stack;
   reason: string;
+}
+
+function extractSingleValue<T>(array: T[] | undefined): T[] | T | undefined {
+  if (array && array.length === 1) {
+    return array[0];
+  }
+  return array;
 }

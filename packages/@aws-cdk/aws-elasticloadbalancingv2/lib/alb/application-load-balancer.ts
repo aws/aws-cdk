@@ -99,7 +99,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     prefix = prefix || '';
     bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
 
-    // make sure the bucket's policy is created before the ALB (see https://github.com/awslabs/aws-cdk/issues/1633)
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
   }
 
@@ -237,7 +237,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
+  public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6ProcessedBytes', {
       statistic: 'Sum',
       ...props
@@ -249,7 +249,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
+  public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props

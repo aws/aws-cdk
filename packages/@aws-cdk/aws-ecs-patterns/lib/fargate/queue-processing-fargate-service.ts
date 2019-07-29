@@ -58,13 +58,14 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
 
     // Create a Task Definition for the container to start
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
-      memoryLimitMiB: props.memoryLimitMiB,
-      cpu: props.cpu,
+      memoryLimitMiB: props.memoryLimitMiB || 512,
+      cpu: props.cpu || 256,
     });
     taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       command: props.command,
       environment: this.environment,
+      secrets: this.secrets,
       logging: this.logDriver
     });
 

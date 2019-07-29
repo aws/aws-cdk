@@ -158,7 +158,7 @@ export = {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
       bind: () => ({
-        id: 'T1',
+        id: '',
         arn: 'ARN1',
         kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
       })
@@ -166,7 +166,7 @@ export = {
 
     const t2: IRuleTarget = {
       bind: () => ({
-        id: 'T2',
+        id: '',
         arn: 'ARN2',
         input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla')}`),
       })
@@ -189,14 +189,14 @@ export = {
           "Targets": [
           {
             "Arn": "ARN1",
-            "Id": "T1",
+            "Id": "Target0",
             "KinesisParameters": {
             "PartitionKeyPath": "partitionKeyPath"
             }
           },
           {
             "Arn": "ARN2",
-            "Id": "T2",
+            "Id": "Target1",
             "InputTransformer": {
             "InputPathsMap": {
               "detail-bla": "$.detail.bla"
@@ -222,7 +222,7 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: 'T2', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"')
+        id: '', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"')
       })
     });
 
@@ -230,7 +230,8 @@ export = {
     // expect it to be wrapped in double quotes automatically for us.
     rule.addTarget({
       bind: () => ({
-        id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+        id: '',
+        arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
         input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
       })
     });
@@ -238,7 +239,8 @@ export = {
     // jsonTemplate can be used to format JSON documents with replacements
     rule.addTarget({
       bind: () => ({
-        id: 'T3', arn: 'ARN3',
+        id: '',
+        arn: 'ARN3',
         input: RuleTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }),
       })
     });
@@ -246,7 +248,8 @@ export = {
     // tokens can also used for JSON templates.
     rule.addTarget({
       bind: () => ({
-        id: 'T4', arn: 'ARN4',
+        id: '',
+        arn: 'ARN4',
         input: RuleTargetInput.fromText(cdk.Fn.join(' ', ['hello', '"world"']).toString()),
       })
     });
@@ -261,12 +264,12 @@ export = {
           "Targets": [
             {
               "Arn": "ARN2",
-              "Id": "T2",
+              "Id": "Target0",
               "Input": '"Hello, \\"world\\""',
             },
             {
               "Arn": "ARN1",
-              "Id": "T1",
+              "Id": "Target1",
               "Input": "\"ab\"",
               "KinesisParameters": {
                 "PartitionKeyPath": "partitionKeyPath"
@@ -274,7 +277,7 @@ export = {
             },
             {
               "Arn": "ARN3",
-              "Id": "T3",
+              "Id": "Target2",
               "InputTransformer": {
                 "InputPathsMap": {
                   "detail-bar": "$.detail.bar"
@@ -284,7 +287,7 @@ export = {
             },
             {
               "Arn": "ARN4",
-              "Id": "T4",
+              "Id": "Target3",
               "Input": '"hello \\"world\\""'
             }
           ]
@@ -311,7 +314,7 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: 'T2',
+        id: '',
         arn: 'ARN2',
         role,
       })
@@ -322,7 +325,7 @@ export = {
       "Targets": [
         {
           "Arn": "ARN2",
-          "Id": "T2",
+          "Id": "Target0",
           "RoleArn": {"Fn::GetAtt": ["SomeRole6DDC54DD", "Arn"]}
         }
       ]
@@ -343,7 +346,7 @@ export = {
         receivedRuleId = eventRule.node.uniqueId;
 
         return {
-          id: 'T1',
+          id: '',
           arn: 'ARN1',
           kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
         };
@@ -388,7 +391,7 @@ export = {
     test.done();
   },
 
-  'fails if multiple targets with the same id are added'(test: Test) {
+  'can add multiple targets with the same id'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'Rule', {
@@ -396,9 +399,28 @@ export = {
       enabled: false
     });
     rule.addTarget(new SomeTarget());
+    rule.addTarget(new SomeTarget());
 
     // THEN
-    test.throws(() => rule.addTarget(new SomeTarget()), /Duplicate event rule target with ID/);
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      Targets: [
+        {
+          "Arn": "ARN1",
+          "Id": "Target0",
+          "KinesisParameters": {
+            "PartitionKeyPath": "partitionKeyPath"
+          }
+        },
+        {
+          "Arn": "ARN1",
+          "Id": "Target1",
+          "KinesisParameters": {
+            "PartitionKeyPath": "partitionKeyPath"
+          }
+        }
+      ]
+    }));
+
     test.done();
   }
 };
@@ -406,7 +428,8 @@ export = {
 class SomeTarget implements IRuleTarget {
   public bind() {
     return {
-      id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
+      id: '',
+      arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
     };
   }
 }

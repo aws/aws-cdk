@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ecs-patterns",
-  "version": "0.36.0",
+  "version": "1.2.0",
   "description": "CDK Constructs for AWS ECS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.ecs.patterns",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ecs-patterns"
+          "artifactId": "ecs-patterns",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ECS.Patterns",
         "packageId": "Amazon.CDK.AWS.ECS.Patterns",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-ecs-patterns",
@@ -28,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-ecs-patterns"
   },
   "scripts": {
@@ -58,41 +60,41 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.0",
-    "cdk-build-tools": "^0.36.0",
-    "cdk-integ-tools": "^0.36.0",
-    "cfn2ts": "^0.36.0",
+    "@aws-cdk/assert": "^1.2.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
     "jest": "^24.8.0",
-    "pkglint": "^0.36.0"
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.36.0",
-    "@aws-cdk/aws-certificatemanager": "^0.36.0",
-    "@aws-cdk/aws-ec2": "^0.36.0",
-    "@aws-cdk/aws-ecs": "^0.36.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
-    "@aws-cdk/aws-events": "^0.36.0",
-    "@aws-cdk/aws-events-targets": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-route53": "^0.36.0",
-    "@aws-cdk/aws-route53-targets": "^0.36.0",
-    "@aws-cdk/aws-sqs": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-applicationautoscaling": "^1.2.0",
+    "@aws-cdk/aws-certificatemanager": "^1.2.0",
+    "@aws-cdk/aws-ec2": "^1.2.0",
+    "@aws-cdk/aws-ecs": "^1.2.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.2.0",
+    "@aws-cdk/aws-events": "^1.2.0",
+    "@aws-cdk/aws-events-targets": "^1.2.0",
+    "@aws-cdk/aws-iam": "^1.2.0",
+    "@aws-cdk/aws-route53": "^1.2.0",
+    "@aws-cdk/aws-route53-targets": "^1.2.0",
+    "@aws-cdk/aws-sqs": "^1.2.0",
+    "@aws-cdk/core": "^1.2.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.36.0",
-    "@aws-cdk/aws-certificatemanager": "^0.36.0",
-    "@aws-cdk/aws-ec2": "^0.36.0",
-    "@aws-cdk/aws-ecs": "^0.36.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
-    "@aws-cdk/aws-events": "^0.36.0",
-    "@aws-cdk/aws-events-targets": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-route53": "^0.36.0",
-    "@aws-cdk/aws-route53-targets": "^0.36.0",
-    "@aws-cdk/aws-sqs": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-applicationautoscaling": "^1.2.0",
+    "@aws-cdk/aws-certificatemanager": "^1.2.0",
+    "@aws-cdk/aws-ec2": "^1.2.0",
+    "@aws-cdk/aws-ecs": "^1.2.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.2.0",
+    "@aws-cdk/aws-events": "^1.2.0",
+    "@aws-cdk/aws-events-targets": "^1.2.0",
+    "@aws-cdk/aws-iam": "^1.2.0",
+    "@aws-cdk/aws-route53": "^1.2.0",
+    "@aws-cdk/aws-route53-targets": "^1.2.0",
+    "@aws-cdk/aws-sqs": "^1.2.0",
+    "@aws-cdk/core": "^1.2.0"
   },
   "engines": {
     "node": ">= 8.10.0"

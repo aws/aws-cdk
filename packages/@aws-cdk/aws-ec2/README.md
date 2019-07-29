@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -55,17 +49,17 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 24,
       name: 'Ingress',
-      subnetType: SubnetType.Public,
+      subnetType: ec2.SubnetType.PUBLIC,
     },
     {
       cidrMask: 24,
       name: 'Application',
-      subnetType: SubnetType.Private,
+      subnetType: ec2.SubnetType.PRIVATE,
     },
     {
       cidrMask: 28,
       name: 'Database',
-      subnetType: SubnetType.Isolated,
+      subnetType: ec2.SubnetType.ISOLATED,
     }
   ],
 });
@@ -76,21 +70,24 @@ constructs above to implement many other network configurations.
 
 The `Vpc` from the above configuration in a Region with three
 availability zones will be the following:
- * IngressSubnet1: 10.0.0.0/24
- * IngressSubnet2: 10.0.1.0/24
- * IngressSubnet3: 10.0.2.0/24
- * ApplicationSubnet1: 10.0.3.0/24
- * ApplicationSubnet2: 10.0.4.0/24
- * ApplicationSubnet3: 10.0.5.0/24
- * DatabaseSubnet1: 10.0.6.0/28
- * DatabaseSubnet2: 10.0.6.16/28
- * DatabaseSubnet3: 10.0.6.32/28
+
+Subnet Name       |Type      |IP Block      |AZ|Features
+------------------|----------|--------------|--|--------
+IngressSubnet1    |`PUBLIC`  |`10.0.0.0/24` |#1|NAT Gateway
+IngressSubnet2    |`PUBLIC`  |`10.0.1.0/24` |#2|NAT Gateway
+IngressSubnet3    |`PUBLIC`  |`10.0.2.0/24` |#3|NAT Gateway
+ApplicationSubnet1|`PRIVATE` |`10.0.3.0/24` |#1|Route to NAT in IngressSubnet1
+ApplicationSubnet2|`PRIVATE` |`10.0.4.0/24` |#2|Route to NAT in IngressSubnet2
+ApplicationSubnet3|`PRIVATE` |`10.0.5.0/24` |#3|Route to NAT in IngressSubnet3
+DatabaseSubnet1   |`ISOLATED`|`10.0.6.0/28` |#1|Only routes within the VPC
+DatabaseSubnet2   |`ISOLATED`|`10.0.6.16/28`|#2|Only routes within the VPC
+DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 Each `Public` Subnet will have a NAT Gateway. Each `Private` Subnet will have a
-route to the NAT Gateway in the same availability zone. Each `Isolated` subnet
-will not have a route to the internet, but is routeable inside the VPC. The
-numbers [1-3] will consistently map to availability zones (e.g. IngressSubnet1
-and ApplicationSubnet1 will be in the same avialbility zone).
+route to the NAT Gateway in the same availability zone. `Isolated` subnets
+will not have a route to the internet, but are routeable within the VPC. The
+numbers [1-3] will consistently map to availability zones (e.g. *IngressSubnet1*
+and *ApplicationSubnet1* will be in the same avialbility zone).
 
 `Isolated` Subnets provide simplified secure networking principles, but come at
 an operational complexity. The lack of an internet route means that if you deploy
@@ -115,21 +112,20 @@ import ec2 = require('@aws-cdk/aws-ec2');
 
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
-  natGateways: 1,
   subnetConfiguration: [
     {
       cidrMask: 26,
       name: 'Public',
-      subnetType: SubnetType.Public,
+      subnetType: ec2.SubnetType.PUBLIC,
     },
     {
       name: 'Application',
-      subnetType: SubnetType.Private,
+      subnetType: ec2.SubnetType.PRIVATE,
     },
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: SubnetType.Isolated,
+      subnetType: ec2.SubnetType.ISOLATED,
     }
   ],
 });
@@ -137,15 +133,18 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
 
 The `Vpc` from the above configuration in a Region with three
 availability zones will be the following:
- * PublicSubnet1: 10.0.0.0/26
- * PublicSubnet2: 10.0.0.64/26
- * PublicSubnet3: 10.0.2.128/26
- * DatabaseSubnet1: 10.0.0.192/27
- * DatabaseSubnet2: 10.0.0.224/27
- * DatabaseSubnet3: 10.0.1.0/27
- * ApplicationSubnet1: 10.0.64.0/18
- * ApplicationSubnet2: 10.0.128.0/18
- * ApplicationSubnet3: 10.0.192.0/18
+
+Subnet Name       |Type      | IP Block
+------------------|----------|----------------
+PublicSubnet1     |`PUBLIC`  |`10.0.0.0/26`
+PublicSubnet2     |`PUBLIC`  |`10.0.0.64/26`
+PublicSubnet3     |`PUBLIC`  |`10.0.2.128/26`
+DatabaseSubnet1   |`PRIVATE` |`10.0.0.192/27`
+DatabaseSubnet2   |`PRIVATE` |`10.0.0.224/27`
+DatabaseSubnet3   |`PRIVATE` |`10.0.1.0/27`
+ApplicationSubnet1|`ISOLATED`|`10.0.64.0/18`
+ApplicationSubnet2|`ISOLATED`|`10.0.128.0/18`
+ApplicationSubnet3|`ISOLATED`|`10.0.192.0/18`
 
 Any subnet configuration without a `cidrMask` will be counted up and allocated
 evenly across the remaining IP space.
@@ -167,17 +166,17 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 26,
       name: 'Public',
-      subnetType: SubnetType.Public,
+      subnetType: ec2.SubnetType.PUBLIC,
       natGateway: true,
     },
     {
       name: 'Application',
-      subnetType: SubnetType.Private,
+      subnetType: ec2.SubnetType.PRIVATE,
     },
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: SubnetType.Isolated,
+      subnetType: ec2.SubnetType.ISOLATED,
     }
   ],
 });
@@ -189,7 +188,7 @@ Application subnets will route to the NAT Gateway.
 
 #### Reserving subnet IP space
 There are situations where the IP space for a subnet or number of subnets
- will need to be reserved. This is useful in situations where subnets
+will need to be reserved. This is useful in situations where subnets
 would need to be added after the vpc is originally deployed, without causing
 IP renumbering for existing subnets. The IP space for a subnet may be reserved
 by setting the `reserved` subnetConfiguration property to true, as shown below:
@@ -203,23 +202,23 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 26,
       name: 'Public',
-      subnetType: SubnetType.Public,
+      subnetType: ec2.SubnetType.PUBLIC,
     },
     {
       cidrMask: 26,
       name: 'Application1',
-      subnetType: SubnetType.Private,
+      subnetType: ec2.SubnetType.PRIVATE,
     },
     {
       cidrMask: 26,
       name: 'Application2',
-      subnetType: SubnetType.Private,
+      subnetType: ec2.SubnetType.PRIVATE,
       reserved: true,
     },
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: SubnetType.Isolated,
+      subnetType: ec2.SubnetType.ISOLATED,
     }
   ],
 });
@@ -229,21 +228,21 @@ In the example above, the subnet for Application2 is not actually provisioned
 but its IP space is still reserved. If in the future this subnet needs to be
 provisioned, then the `reserved: true` property should be removed. Most
 importantly, this action would not cause the Database subnet to get renumbered,
-but rather the IP space that was previously reserved will be used for the 
+but rather the IP space that was previously reserved will be used for the
 subnet provisioned for Application2. The `reserved` property also takes into
 consideration the number of availability zones when reserving IP space.
 
 #### Sharing VPCs between stacks
 
 If you are creating multiple `Stack`s inside the same CDK application, you
-can reuse a VPC defined in one Stack in another by using `export()` and
-`import()`:
+can reuse a VPC defined in one Stack in another by simply passing the VPC
+instance around:
 
 [sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
 
 #### Importing an existing VPC
 
-If your VPC is created outside your CDK app, you can use `fromLookup()`:
+If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
 
@@ -265,7 +264,7 @@ const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
   description: 'Allow ssh access to ec2 instances',
   allowAllOutbound: true   // Can be set to false
 });
-mySecurityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
+mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
 ```
 
 All constructs that create ENIs on your behalf (typically constructs that create
@@ -279,13 +278,13 @@ take care of this for you:
 
 ```ts
 // Allow connections from anywhere
-loadBalancer.connections.allowFromAnyIpv4(new ec2.TcpPort(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(443), 'Allow inbound HTTPS');
 
 // The same, but an explicit IP address
-loadBalancer.connections.allowFrom(new ec2.CidrIpv4('1.2.3.4/32'), new ec2.TcpPort(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(443), 'Allow inbound HTTPS');
 
 // Allow connection between AutoScalingGroups
-appFleet.connections.allowTo(dbFleet, new ec2.TcpPort(443), 'App can call database');
+appFleet.connections.allowTo(dbFleet, ec2.Port.tcp(443), 'App can call database');
 ```
 
 ### Connection Peers
@@ -294,21 +293,21 @@ There are various classes that implement the connection peer part:
 
 ```ts
 // Simple connection peers
-let peer = new ec2.CidrIp("10.0.0.0/16");
-let peer = new ec2.AnyIPv4();
-let peer = new ec2.CidrIpv6("::0/0");
-let peer = new ec2.AnyIPv6();
-let peer = new ec2.PrefixList("pl-12345");
-fleet.connections.allowTo(peer, new ec2.TcpPort(443), 'Allow outbound HTTPS');
+let peer = ec2.Peer.ipv4("10.0.0.0/16");
+let peer = ec2.Peer.anyIpv4();
+let peer = ec2.ipv6("::0/0");
+let peer = ec2.anyIpv6();
+let peer = ec2.prefixList("pl-12345");
+fleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
 ```
 
 Any object that has a security group can itself be used as a connection peer:
 
 ```ts
 // These automatically create appropriate ingress and egress rules in both security groups
-fleet1.connections.allowTo(fleet2, new ec2.TcpPort(80), 'Allow between fleets');
+fleet1.connections.allowTo(fleet2, ec2.Port.tcp(80), 'Allow between fleets');
 
-fleet.connections.allowTcpPort(80), 'Allow from load balancer');
+fleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
 ```
 
 ### Port Ranges
@@ -317,10 +316,10 @@ The connections that are allowed are specified by port ranges. A number of class
 the connection specifier:
 
 ```ts
-new ec2.TcpPort(80)
-new ec2.TcpPortRange(60000, 65535)
-new ec2.TcpAllPorts()
-new ec2.AllConnections()
+ec2.Port.tcp(80)
+ec2.tcpRange(60000, 65535)
+ec2.allTcp()
+ec2.allTraffic()
 ```
 
 > NOTE: This set is not complete yet; for example, there is no library support for ICMP at the moment.
@@ -334,7 +333,7 @@ RDS database (it's the port the database is accepting connections on).
 
 If the object you're calling the peering method on has a default port associated with it, you can call
 `allowDefaultPortFrom()` and omit the port specifier. If the argument has an associated default port, call
-`allowToDefaultPort()`.
+`allowDefaultPortTo()`.
 
 For example:
 
@@ -343,7 +342,7 @@ For example:
 listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 
 // Port implicit in peer
-fleet.connections.allowToDefaultPort(rdsDatabase, 'Fleet can access database');
+fleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
 ### Machine Images (AMIs)
@@ -403,7 +402,7 @@ vpc.addVpnConnection('Dynamic', {
 
 Routes will be propagated on the route tables associated with the private subnets.
 
-VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
 ```ts
 // Across all tunnels in the account/region
 const allDataOut = VpnConnection.metricAllTunnelDataOut();

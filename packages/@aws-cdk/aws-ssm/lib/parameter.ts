@@ -50,7 +50,7 @@ export interface IStringParameter extends IParameter {
   /**
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value.
    *
-   * @attribute parameterValue
+   * @attribute Value
    */
   readonly stringValue: string;
 }
@@ -63,7 +63,7 @@ export interface IStringListParameter extends IParameter {
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value. Values in the array
    * cannot contain commas (``,``).
    *
-   * @attribute parameterValue
+   * @attribute Value
    */
   readonly stringListValue: string[];
 }
@@ -248,6 +248,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
+
     if (exists) { return exists.stringValue; }
 
     return this.fromStringParameterAttributes(stack, id, { parameterName, version }).stringValue;

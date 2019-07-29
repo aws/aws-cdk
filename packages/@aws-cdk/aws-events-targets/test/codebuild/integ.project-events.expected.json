@@ -44,7 +44,7 @@
                 "Arn"
               ]
             },
-            "Id": "awscdkcodebuildeventsMyProjectEF919B0E",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyProjectEventsRole5B7D93F5",
@@ -56,7 +56,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "awscdkcodebuildeventsMyTopic550011DC",
+            "Id": "Target1",
             "InputTransformer": {
               "InputPathsMap": {
                 "detail-repositoryName": "$.detail.repositoryName",
@@ -231,7 +231,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "awscdkcodebuildeventsMyTopic550011DC"
+            "Id": "Target0"
           }
         ]
       }
@@ -260,7 +260,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "awscdkcodebuildeventsMyTopic550011DC",
+            "Id": "Target0",
             "InputTransformer": {
               "InputPathsMap": {
                 "detail-completed-phase": "$.detail.completed-phase"
@@ -327,21 +327,6 @@
     "MyQueueE6CA6235": {
       "Type": "AWS::SQS::Queue"
     },
-    "MyTopicMyQueueFA241964": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "sqs",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "MyQueueE6CA6235",
-            "Arn"
-          ]
-        }
-      }
-    },
     "MyQueuePolicy6BBEDDAC": {
       "Type": "AWS::SQS::QueuePolicy",
       "Properties": {
@@ -375,6 +360,21 @@
             "Ref": "MyQueueE6CA6235"
           }
         ]
+      }
+    },
+    "MyQueueawscdkcodebuildeventsMyTopic550011DCF72DE3ED": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "sqs",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "MyQueueE6CA6235",
+            "Arn"
+          ]
+        }
       }
     },
     "MyTopic86869434": {

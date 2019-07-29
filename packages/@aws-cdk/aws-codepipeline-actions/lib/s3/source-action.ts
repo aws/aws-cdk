@@ -33,7 +33,7 @@ export enum S3Trigger {
 /**
  * Construction properties of the {@link S3SourceAction S3 source Action}.
  */
-export interface S3SourceActionProps extends codepipeline.CommonActionProps {
+export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
    *
    */
@@ -92,8 +92,11 @@ export class S3SourceAction extends Action {
       });
     }
 
-    // pipeline needs permissions to read from the S3 bucket
+    // we need to read from the source bucket...
     this.props.bucket.grantRead(options.role);
+
+    // ...and write to the Pipeline bucket
+    options.bucket.grantWrite(options.role);
 
     return {
       configuration: {

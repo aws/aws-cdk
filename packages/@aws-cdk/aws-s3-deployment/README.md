@@ -7,7 +7,7 @@
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
+>
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -70,7 +70,7 @@ in which case the contents will be retained.
  * AWS Lambda execution time is limited to 15min. This limits the amount of data which can
    be deployed into the bucket by this timeout.
  * When the `BucketDeployment` is removed from the stack, the contents are retained
-   in the destination bucket ([#952](https://github.com/awslabs/aws-cdk/issues/952)).
+   in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
  * Bucket deployment _only happens_ during stack create/update. This means that
    if you wish to update the contents of the destination, you will need to
    change the source s3 key (or bucket), so that the resource will be updated.
@@ -90,5 +90,5 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/awslabs/aws-cdk/issues/953))
- - [ ] Support "blue/green" deployments ([#954](https://github.com/awslabs/aws-cdk/issues/954))
+ - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/aws/aws-cdk/issues/953))
+ - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

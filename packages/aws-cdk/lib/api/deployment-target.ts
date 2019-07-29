@@ -5,7 +5,7 @@ import { deserializeStructure } from '../serialize';
 import { Mode } from './aws-auth/credentials';
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
-import { SDK } from './util/sdk';
+import { ISDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -33,14 +33,14 @@ export interface DeployStackOptions {
 }
 
 export interface ProvisionerProps {
-  aws: SDK;
+  aws: ISDK;
 }
 
 /**
  * Default provisioner (applies to CloudFormation).
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
-  private readonly aws: SDK;
+  private readonly aws: ISDK;
 
   constructor(props: ProvisionerProps) {
     this.aws = props.aws;

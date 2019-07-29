@@ -137,7 +137,7 @@ export = {
             subnetType: SubnetType.ISOLATED,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       expect(stack).to(countResources("AWS::EC2::Subnet", 6));
       test.done();
@@ -164,7 +164,7 @@ export = {
             subnetType: SubnetType.PRIVATE,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       for (let i = 0; i < 3; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
@@ -205,7 +205,7 @@ export = {
             subnetType: SubnetType.ISOLATED,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
       expect(stack).to(countResources("AWS::EC2::NatGateway", zones));
@@ -244,7 +244,7 @@ export = {
             subnetType: SubnetType.ISOLATED,
           }
         ],
-        maxAZs: 3
+        maxAzs: 3
       });
       expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
       expect(stack).to(countResources("AWS::EC2::NatGateway", 2));
@@ -272,7 +272,7 @@ export = {
     "with public subnets MapPublicIpOnLaunch is true"(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
-        maxAZs: 1,
+        maxAzs: 1,
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -309,7 +309,7 @@ export = {
 
     "with maxAZs set to 2"(test: Test) {
       const stack = getTestStack();
-      new Vpc(stack, 'VPC', { maxAZs: 2 });
+      new Vpc(stack, 'VPC', { maxAzs: 2 });
       expect(stack).to(countResources("AWS::EC2::Subnet", 4));
       expect(stack).to(countResources("AWS::EC2::Route", 4));
       for (let i = 0; i < 4; i++) {
@@ -366,6 +366,9 @@ export = {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
           Key: 'Name',
           Value: `VPC/egressSubnet${i}`,
+        }, {
+            Key: 'aws-cdk:subnet-name',
+            Value: 'egress',
         }])));
       }
       test.done();
@@ -674,6 +677,7 @@ export = {
         vpcId: 'vpc-1234',
         availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
         publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
       });
 
       test.throws(() => {
@@ -687,7 +691,7 @@ export = {
       // GIVEN
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VpcNetwork', {
-        maxAZs: 1,
+        maxAzs: 1,
         subnetConfiguration: [
           {name: 'app', subnetType: SubnetType.PRIVATE },
           {name: 'db', subnetType: SubnetType.PRIVATE },

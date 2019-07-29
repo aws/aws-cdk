@@ -9,7 +9,7 @@ import { Action } from '../action';
 /**
  * Properties common to all CloudFormation actions
  */
-interface CloudFormationActionProps extends codepipeline.CommonActionProps {
+interface CloudFormationActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The name of the stack to apply this action to
    */
@@ -47,15 +47,6 @@ interface CloudFormationActionProps extends codepipeline.CommonActionProps {
    * @default the Action resides in the same region as the Pipeline
    */
   readonly region?: string;
-
-  /**
-   * The service role that is assumed during execution of action.
-   * This role is not mandatory, however more advanced configuration
-   * may require specifying it.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
-   */
-  readonly role?: iam.IRole;
 }
 
 /**
@@ -84,8 +75,16 @@ abstract class CloudFormationAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
+    const singletonPolicy = SingletonPolicy.forRole(options.role);
+
+    if ((this.actionProperties.outputs || []).length > 0) {
+      options.bucket.grantReadWrite(singletonPolicy);
+    } else if ((this.actionProperties.inputs || []).length > 0) {
+      options.bucket.grantRead(singletonPolicy);
+    }
+
     return {
       configuration: {
         StackName: this.props.stackName,
@@ -471,7 +470,7 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
  * Statements created outside of this class are not considered when adding new
  * permissions.
  */
-class SingletonPolicy extends cdk.Construct {
+class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
   /**
    * Obtain a SingletonPolicy for a given role.
    * @param role the Role this policy is bound to.
@@ -484,16 +483,23 @@ class SingletonPolicy extends cdk.Construct {
 
   private static readonly UUID = '8389e75f-0810-4838-bf64-d6f85a95cf83';
 
+  public readonly grantPrincipal: iam.IPrincipal;
+
   private statements: { [key: string]: iam.PolicyStatement } = {};
 
   private constructor(private readonly role: iam.IRole) {
     super(role as unknown as cdk.Construct, SingletonPolicy.UUID);
+    this.grantPrincipal = role;
   }
 
   public grantExecuteChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
     this.statementFor({
-      actions: ['cloudformation:ExecuteChangeSet'],
-      conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
+      actions: [
+        'cloudformation:DescribeStacks',
+        'cloudformation:DescribeChangeSet',
+        'cloudformation:ExecuteChangeSet',
+      ],
+      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
     }).addResources(this.stackArnFromProps(props));
   }
 

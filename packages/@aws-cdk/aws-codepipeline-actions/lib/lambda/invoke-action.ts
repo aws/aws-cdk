@@ -7,7 +7,7 @@ import { Action } from '../action';
 /**
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
  */
-export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps {
+export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionProps {
   // because of @see links
   // tslint:disable:max-line-length
 
@@ -86,6 +86,14 @@ export class LambdaInvokeAction extends Action {
       actions: ['lambda:InvokeFunction'],
       resources: [this.props.lambda.functionArn]
     }));
+
+    // allow the Role access to the Bucket, if there are any inputs/outputs
+    if ((this.actionProperties.inputs || []).length > 0) {
+      options.bucket.grantRead(options.role);
+    }
+    if ((this.actionProperties.outputs || []).length > 0) {
+      options.bucket.grantWrite(options.role);
+    }
 
     // allow lambda to put job results for this pipeline
     // CodePipeline requires this to be granted to '*'

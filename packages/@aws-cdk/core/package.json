@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/core",
-  "version": "0.36.0",
+  "version": "1.2.0",
   "description": "AWS Cloud Development Kit Core Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.core",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "core"
+          "artifactId": "core",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.core",
@@ -28,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/core"
   },
   "awslint": {
@@ -71,21 +73,21 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/lodash": "^4.14.134",
-    "cdk-build-tools": "^0.36.0",
-    "cfn2ts": "^0.36.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
     "fast-check": "^1.15.1",
     "lodash": "^4.17.11",
-    "pkglint": "^0.36.0"
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.36.0"
+    "@aws-cdk/cx-api": "^1.2.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cx-api": "^0.36.0"
+    "@aws-cdk/cx-api": "^1.2.0"
   },
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

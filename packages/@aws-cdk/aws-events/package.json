@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-events",
-  "version": "0.36.0",
+  "version": "1.2.0",
   "description": "AWS CloudWatch Events Construct Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,27 +11,26 @@
         "package": "software.amazon.awscdk.services.events",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "events"
+          "artifactId": "events",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Events",
         "packageId": "Amazon.CDK.AWS.Events",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-events",
         "module": "aws_cdk.aws_events"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon CloudWatch Events"
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-events"
   },
   "scripts": {
@@ -64,19 +63,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.0",
-    "cdk-build-tools": "^0.36.0",
-    "cfn2ts": "^0.36.0",
-    "pkglint": "^0.36.0"
+    "@aws-cdk/assert": "^1.2.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-iam": "^1.2.0",
+    "@aws-cdk/core": "^1.2.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-iam": "^1.2.0",
+    "@aws-cdk/core": "^1.2.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -87,5 +86,5 @@
       "no-unused-type:@aws-cdk/aws-events.OnEventOptions"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

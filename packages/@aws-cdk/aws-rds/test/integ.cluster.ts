@@ -8,7 +8,7 @@ import { ClusterParameterGroup } from '../lib/parameter-group';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 
 const params = new ClusterParameterGroup(stack, 'Params', {
   family: 'aurora5.6',
