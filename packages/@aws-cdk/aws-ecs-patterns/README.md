@@ -51,6 +51,11 @@ const loadBalancedFargateService = new ecsPatterns.LoadBalancedFargateService(st
 });
 ```
 
+Instead of providing a cluster you can specify a VPC and CDK will create a new ECS cluster. 
+If you deploy multiple services CDK will only create on cluster per VPC.
+
+You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and create a cluster inside this VPC.
+
 ## Queue Processing Services
 
 To define a service that creates a queue and reads from that queue, instantiate one of the following:

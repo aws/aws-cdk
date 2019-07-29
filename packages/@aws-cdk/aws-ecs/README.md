@@ -121,6 +121,8 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 cluster.addAutoScalingGroup(autoScalingGroup);
 ```
 
+If you omit the property `vpc`, the construct will create a new VPC with two AZs.
+
 ## Task definitions
 
 A task Definition describes what a single copy of a **task** should look like.
