@@ -18,7 +18,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -52,10 +53,7 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": [
-                    "PipelineRoleD68726F7",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineRoleD68726F7", "Arn"]
                 }
               },
               "Resource": "*"
@@ -71,10 +69,7 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": [
-                    "PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8", "Arn"]
                 }
               },
               "Resource": "*"
@@ -109,10 +104,7 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": [
-                    "CdkBuildProjectRoleE0B6FEB0",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["CdkBuildProjectRoleE0B6FEB0", "Arn"]
                 }
               },
               "Resource": "*"
@@ -128,19 +120,13 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": [
-                    "LambdaBuildProjectRoleD0C4F982",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["LambdaBuildProjectRoleD0C4F982", "Arn"]
                 }
               },
               "Resource": "*"
             },
             {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
+              "Action": ["kms:Decrypt", "kms:DescribeKey"],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -167,10 +153,7 @@
             {
               "ServerSideEncryptionByDefault": {
                 "KMSMasterKeyID": {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKey01D58D69",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
                 },
                 "SSEAlgorithm": "aws:kms"
               }
@@ -225,20 +208,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                       },
                       "/*"
                     ]
@@ -256,20 +233,14 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
               }
             },
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8", "Arn"]
               }
             },
             {
@@ -286,30 +257,21 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineBuildCDKBuildCodePipelineActionRole15F4B424",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineBuildCDKBuildCodePipelineActionRole15F4B424", "Arn"]
               }
             },
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineBuildLambdaBuildCodePipelineActionRole2DAE39E9",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineBuildLambdaBuildCodePipelineActionRole2DAE39E9", "Arn"]
               }
             },
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineDeployLambdaCFNDeployCodePipelineActionRoleF8A74488",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineDeployLambdaCFNDeployCodePipelineActionRoleF8A74488", "Arn"]
               }
             }
           ],
@@ -327,10 +289,7 @@
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
         "RoleArn": {
-          "Fn::GetAtt": [
-            "PipelineRoleD68726F7",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["PipelineRoleD68726F7", "Arn"]
         },
         "Stages": [
           {
@@ -344,10 +303,7 @@
                 },
                 "Configuration": {
                   "RepositoryName": {
-                    "Fn::GetAtt": [
-                      "CdkCodeRepo7D2EC742",
-                      "Name"
-                    ]
+                    "Fn::GetAtt": ["CdkCodeRepo7D2EC742", "Name"]
                   },
                   "BranchName": "master",
                   "PollForSourceChanges": false
@@ -360,10 +316,7 @@
                   }
                 ],
                 "RoleArn": {
-                  "Fn::GetAtt": [
-                    "PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8", "Arn"]
                 },
                 "RunOrder": 1
               },
@@ -376,10 +329,7 @@
                 },
                 "Configuration": {
                   "RepositoryName": {
-                    "Fn::GetAtt": [
-                      "LambdaCodeRepoE08DD409",
-                      "Name"
-                    ]
+                    "Fn::GetAtt": ["LambdaCodeRepoE08DD409", "Name"]
                   },
                   "BranchName": "master",
                   "PollForSourceChanges": false
@@ -428,10 +378,7 @@
                   }
                 ],
                 "RoleArn": {
-                  "Fn::GetAtt": [
-                    "PipelineBuildCDKBuildCodePipelineActionRole15F4B424",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineBuildCDKBuildCodePipelineActionRole15F4B424", "Arn"]
                 },
                 "RunOrder": 1
               },
@@ -459,10 +406,7 @@
                   }
                 ],
                 "RoleArn": {
-                  "Fn::GetAtt": [
-                    "PipelineBuildLambdaBuildCodePipelineActionRole2DAE39E9",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineBuildLambdaBuildCodePipelineActionRole2DAE39E9", "Arn"]
                 },
                 "RunOrder": 1
               }
@@ -482,10 +426,7 @@
                   "StackName": "LambdaStackDeployedName",
                   "Capabilities": "CAPABILITY_NAMED_IAM",
                   "RoleArn": {
-                    "Fn::GetAtt": [
-                      "PipelineDeployLambdaCFNDeployRole89CA1043",
-                      "Arn"
-                    ]
+                    "Fn::GetAtt": ["PipelineDeployLambdaCFNDeployRole89CA1043", "Arn"]
                   },
                   "ParameterOverrides": "{\"LambdaLambdaSourceBucketNameParameter159473FC\":{\"Fn::GetArtifactAtt\":[\"Artifact_Build_Lambda_Build\",\"BucketName\"]},\"LambdaLambdaSourceObjectKeyParameter06573F1D\":{\"Fn::GetArtifactAtt\":[\"Artifact_Build_Lambda_Build\",\"ObjectKey\"]}}",
                   "ActionMode": "CREATE_UPDATE",
@@ -516,10 +457,7 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Fn::GetAtt": [
-                "PipelineArtifactsBucketEncryptionKey01D58D69",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
             },
             "Type": "KMS"
           },
@@ -529,10 +467,7 @@
           "Type": "S3"
         }
       },
-      "DependsOn": [
-        "PipelineRoleDefaultPolicyC7A05455",
-        "PipelineRoleD68726F7"
-      ]
+      "DependsOn": ["PipelineRoleDefaultPolicyC7A05455", "PipelineRoleD68726F7"]
     },
     "PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8": {
       "Type": "AWS::IAM::Role",
@@ -583,20 +518,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                       },
                       "/*"
                     ]
@@ -614,10 +543,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
               }
             },
             {
@@ -630,10 +556,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "CdkCodeRepo7D2EC742",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["CdkCodeRepo7D2EC742", "Arn"]
               }
             }
           ],
@@ -696,20 +619,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                       },
                       "/*"
                     ]
@@ -727,10 +644,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
               }
             },
             {
@@ -743,10 +657,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "LambdaCodeRepoE08DD409",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["LambdaCodeRepoE08DD409", "Arn"]
               }
             }
           ],
@@ -868,17 +779,10 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
+              "Action": ["codebuild:BatchGetBuilds", "codebuild:StartBuild", "codebuild:StopBuild"],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "CdkBuildProject9382C38D",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["CdkBuildProject9382C38D", "Arn"]
               }
             }
           ],
@@ -930,17 +834,10 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
+              "Action": ["codebuild:BatchGetBuilds", "codebuild:StartBuild", "codebuild:StopBuild"],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "LambdaBuildProject7E2DAB11",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["LambdaBuildProject7E2DAB11", "Arn"]
               }
             }
           ],
@@ -995,35 +892,22 @@
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineDeployLambdaCFNDeployRole89CA1043",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineDeployLambdaCFNDeployRole89CA1043", "Arn"]
               }
             },
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
+              "Action": ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                       },
                       "/*"
                     ]
@@ -1032,16 +916,10 @@
               ]
             },
             {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
+              "Action": ["kms:Decrypt", "kms:DescribeKey"],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
               }
             },
             {
@@ -1146,28 +1024,16 @@
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "source": [
-            "aws.codecommit"
-          ],
+          "source": ["aws.codecommit"],
           "resources": [
             {
-              "Fn::GetAtt": [
-                "CdkCodeRepo7D2EC742",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["CdkCodeRepo7D2EC742", "Arn"]
             }
           ],
-          "detail-type": [
-            "CodeCommit Repository State Change"
-          ],
+          "detail-type": ["CodeCommit Repository State Change"],
           "detail": {
-            "event": [
-              "referenceCreated",
-              "referenceUpdated"
-            ],
-            "referenceName": [
-              "master"
-            ]
+            "event": ["referenceCreated", "referenceUpdated"],
+            "referenceName": ["master"]
           }
         },
         "State": "ENABLED",
@@ -1198,10 +1064,7 @@
             },
             "Id": "Target0",
             "RoleArn": {
-              "Fn::GetAtt": [
-                "PipelineEventsRole46BEEA7C",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["PipelineEventsRole46BEEA7C", "Arn"]
             }
           }
         ]
@@ -1218,28 +1081,16 @@
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "source": [
-            "aws.codecommit"
-          ],
+          "source": ["aws.codecommit"],
           "resources": [
             {
-              "Fn::GetAtt": [
-                "LambdaCodeRepoE08DD409",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["LambdaCodeRepoE08DD409", "Arn"]
             }
           ],
-          "detail-type": [
-            "CodeCommit Repository State Change"
-          ],
+          "detail-type": ["CodeCommit Repository State Change"],
           "detail": {
-            "event": [
-              "referenceCreated",
-              "referenceUpdated"
-            ],
-            "referenceName": [
-              "master"
-            ]
+            "event": ["referenceCreated", "referenceUpdated"],
+            "referenceName": ["master"]
           }
         },
         "State": "ENABLED",
@@ -1270,10 +1121,7 @@
             },
             "Id": "Target0",
             "RoleArn": {
-              "Fn::GetAtt": [
-                "PipelineEventsRole46BEEA7C",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["PipelineEventsRole46BEEA7C", "Arn"]
             }
           }
         ]
@@ -1312,11 +1160,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
               "Effect": "Allow",
               "Resource": [
                 {
@@ -1380,20 +1224,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                       },
                       "/*"
                     ]
@@ -1411,10 +1249,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
               }
             }
           ],
@@ -1441,10 +1276,7 @@
           "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {
-          "Fn::GetAtt": [
-            "CdkBuildProjectRoleE0B6FEB0",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["CdkBuildProjectRoleE0B6FEB0", "Arn"]
         },
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": [\n        \"npm run build\",\n        \"npm run cdk synth LambdaStack -- -o .\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": \"LambdaStack.template.yaml\"\n  }\n}",
@@ -1485,11 +1317,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
               "Effect": "Allow",
               "Resource": [
                 {
@@ -1553,20 +1381,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["PipelineArtifactsBucket22248F97", "Arn"]
                       },
                       "/*"
                     ]
@@ -1584,10 +1406,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["PipelineArtifactsBucketEncryptionKey01D58D69", "Arn"]
               }
             }
           ],
@@ -1614,10 +1433,7 @@
           "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {
-          "Fn::GetAtt": [
-            "LambdaBuildProjectRoleD0C4F982",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["LambdaBuildProjectRoleD0C4F982", "Arn"]
         },
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": \"npm run build\"\n    }\n  },\n  \"artifacts\": {\n    \"files\": [\n      \"index.js\",\n      \"node_modules/**/*\"\n    ]\n  }\n}",

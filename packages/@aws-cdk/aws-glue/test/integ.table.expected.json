@@ -120,7 +120,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -154,10 +155,7 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::GetAtt": [
-                    "MyUserDC45028B",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["MyUserDC45028B", "Arn"]
                 }
               },
               "Resource": "*"
@@ -177,10 +175,7 @@
             {
               "ServerSideEncryptionByDefault": {
                 "KMSMasterKeyID": {
-                  "Fn::GetAtt": [
-                    "MyKey6AB29FA6",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["MyKey6AB29FA6", "Arn"]
                 },
                 "SSEAlgorithm": "aws:kms"
               }
@@ -324,20 +319,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "MyTableBucketD51E7EDC",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["MyTableBucketD51E7EDC", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "MyTableBucketD51E7EDC",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["MyTableBucketD51E7EDC", "Arn"]
                       },
                       "/data/"
                     ]
@@ -401,20 +390,14 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "MyEncryptedTableBucket7B28486D",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["MyEncryptedTableBucket7B28486D", "Arn"]
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
                       {
-                        "Fn::GetAtt": [
-                          "MyEncryptedTableBucket7B28486D",
-                          "Arn"
-                        ]
+                        "Fn::GetAtt": ["MyEncryptedTableBucket7B28486D", "Arn"]
                       },
                       "/data/"
                     ]
@@ -432,10 +415,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "MyKey6AB29FA6",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["MyKey6AB29FA6", "Arn"]
               }
             }
           ],
