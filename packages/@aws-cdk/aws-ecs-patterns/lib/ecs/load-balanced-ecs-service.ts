@@ -53,6 +53,7 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       environment: props.environment,
+      secrets: props.secrets,
       logging: this.logDriver,
     });
 
@@ -62,7 +63,7 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
 
     const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     const service = new ecs.Ec2Service(this, "Service", {
-      cluster: props.cluster,
+      cluster: this.cluster,
       desiredCount: props.desiredCount || 1,
       taskDefinition,
       assignPublicIp
