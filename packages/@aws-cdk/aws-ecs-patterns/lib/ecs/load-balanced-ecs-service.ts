@@ -53,6 +53,7 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       environment: props.environment,
+      secrets: props.secrets,
       logging: this.logDriver,
     });
 
