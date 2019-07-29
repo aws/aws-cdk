@@ -35,7 +35,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
           input: sourceOutput,
           bucket: deployBucket,
           cannedAcl: s3.BucketAccessControl.PUBLIC_READ,
-          cacheControl: 'private, no-cache',
+          cacheControl: (new cpactions.CacheControlResponse()).private().noCache(),
         })
       ],
     },
