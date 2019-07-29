@@ -65,6 +65,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       image: props.image,
       command: props.command,
       environment: this.environment,
+      secrets: this.secrets,
       logging: this.logDriver
     });
 
