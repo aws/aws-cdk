@@ -797,6 +797,13 @@ export interface BucketProps {
   readonly websiteRedirect?: RedirectTarget;
 
   /**
+   * Specifies a canned ACL that grants predefined permissions to the bucket.
+   *
+   * @default BucketAccessControl.PRIVATE
+   */
+  readonly accessControl?: BucketAccessControl;
+
+  /**
    * Grants public read access to all objects in the bucket.
    * Similar to calling `bucket.grantPublicAccess()`
    *
@@ -933,7 +940,8 @@ export class Bucket extends BucketBase {
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
+      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: props.accessControl,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1424,6 +1432,57 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    * @default - Watch changes to all objects
    */
   readonly paths?: string[];
+}
+
+/**
+ * Default bucket access control types.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html
+ */
+export enum BucketAccessControl {
+  /**
+   * Owner gets FULL_CONTROL. No one else has access rights.
+   */
+  PRIVATE = 'Private',
+
+  /**
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ access.
+   */
+  PUBLIC_READ = 'PublicRead',
+
+  /**
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ and WRITE access.
+   * Granting this on a bucket is generally not recommended.
+   */
+  PUBLIC_READ_WRITE = 'PublicReadWrite',
+
+  /**
+   * Owner gets FULL_CONTROL. The AuthenticatedUsers group gets READ access.
+   */
+  AUTHENTICATED_READ = 'AuthenticatedRead',
+
+  /**
+   * The LogDelivery group gets WRITE and READ_ACP permissions on the bucket.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+   */
+  LOG_DELIVERY_WRITE = 'LogDeliveryWrite',
+
+  /**
+   * Object owner gets FULL_CONTROL. Bucket owner gets READ access.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_READ = 'BucketOwnerRead',
+
+  /**
+   * Both the object owner and the bucket owner get FULL_CONTROL over the object.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_FULL_CONTROL = 'BucketOwnerFullControl',
+
+  /**
+   * Owner gets FULL_CONTROL. Amazon EC2 gets READ access to GET an Amazon Machine Image (AMI) bundle from Amazon S3.
+   */
+  AWS_EXEC_READ = 'AwsExecRead',
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
