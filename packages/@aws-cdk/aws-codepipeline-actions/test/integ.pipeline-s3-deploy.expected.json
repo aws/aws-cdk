@@ -33,8 +33,7 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey"
+                "kms:CancelKeyDeletion"
               ],
               "Effect": "Allow",
               "Principal": {
