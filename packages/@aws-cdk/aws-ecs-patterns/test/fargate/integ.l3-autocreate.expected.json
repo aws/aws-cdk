@@ -288,6 +288,8 @@
             ]
           }
         },
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE",
         "ServiceRegistries": []
       },
       "DependsOn": [
@@ -967,6 +969,8 @@
             ]
           }
         },
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE",
         "ServiceRegistries": []
       },
       "DependsOn": [
