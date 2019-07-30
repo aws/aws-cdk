@@ -1898,6 +1898,7 @@ Object {
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
               ],
               "Effect": "Allow",
               "Principal": Object {
@@ -1986,6 +1987,7 @@ Object {
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
               ],
               "Effect": "Allow",
               "Principal": Object {
@@ -2908,6 +2910,7 @@ Object {
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
               ],
               "Effect": "Allow",
               "Principal": Object {
