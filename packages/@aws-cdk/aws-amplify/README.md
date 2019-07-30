@@ -1,4 +1,11 @@
 ## AWS Amplify Construct Library
+
+The AWS Amplify Console provides a Git-based workflow for deploying and hosting fullstack serverless web applications. A fullstack serverless app consists of a backend built with cloud resources such as GraphQL or REST APIs, file and data storage, and a frontend built with single page application frameworks such as React, Angular, Vue, or Gatsby. 
+
+Fullstack serverless web applications functionality is often spread across frontend code running in the browser and backend business logic running in the cloud. This makes application deployment complex and time consuming as you need to carefully coordinate release cycles to ensure your frontend and backend are compatible, and new features do not break your production customers.
+
+The Amplify Console accelerates your application release cycle by providing a simple workflow for deploying full-stack serverless applications. You just connect your application's code repository to Amplify Console, and changes to your frontend and backend are deployed in a single workflow on every code commit.
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -15,9 +22,59 @@
 ---
 <!--END STABILITY BANNER-->
 
+## Create a Todo App
+Using the sample application from VueJS (https://github.com/vuejs/vue/tree/dev/examples/todomvc), you can deploy a Todo app that uses VueJS.
+
+The example will create an Amplify app that contains a BuildSpec and some custom rules to ensure files are able to be loaded correctly when the page is requested. It will also add domain pointing to the master branch. 
+
+
+```ts
+const app = new amplify.App(stack, 'TodoApp', {
+  name: 'TodoApp',
+  repository: 'https://github.com/vuejs/vue',
+  description: 'TodoApp Example from VueJS',
+  oauthToken: new cdk.Secret('sometoken'),
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: 0.2,
+    frontend: {
+      phases: {
+        build: {
+          commands: [
+            'npm i'
+            'npm run build',
+            'cp dist/vue.min.js examples/todomvc/'
+          ]
+        }
+      },
+      artifacts: {
+        baseDirectory: 'examples/todomvc/',
+        files: [
+          '*'
+        ]
+      }
+    }
+  })
+});
+
+app.addCustomRule('/dist/vue.min.js', '/vue.min.js', '200');
+app.addBranch('TodoMaster', {
+  branchName: 'master',
+  description: 'master branch'
+});
+
+app.addDomain('TodoDomain', {
+  domainName: 'example.com',
+  subdomainSettings: [{
+    branchName: 'master',
+    prefix: '/'
+  }]
+})
+```
+
+## Add an App
 Define a new App:
 ```ts
-new App(this, 'MyApp', {
+new amplify.App(stack, 'MyApp', {
   name: 'MyApp',
   repository: 'https://github.com/aws/aws-cdk'
 });
@@ -30,7 +87,7 @@ new App(this, 'MyApp', {
 
 ### Add Domain
 ```ts
-const app = new App(stack, 'MyApp', {
+const app = new amplify.App(stack, 'MyApp', {
   name: 'MyApp',
   repository: 'https://github.com/aws/aws-cdk'
 });
@@ -46,7 +103,7 @@ app.addDomain('MyDomain', {
 
 ### Add Branch
 ```ts
-const app = new App(stack, 'MyApp', {
+const app = new amplify.App(stack, 'MyApp', {
   name: 'MyApp',
   repository: 'https://github.com/aws/aws-cdk'
 });
@@ -59,7 +116,7 @@ app.addBranch('MyBranch', {
 ## Domain
 To add a domain to an existing app:
 ```ts
-const app = App.fromAppId(stack, 'MyApp', 'dbhvlzrug0n3u');
+const app = amplify.App.fromAppId(stack, 'MyApp', 'dbhvlzrug0n3u');
 
 app.addDomain('MyDomain', {
   domainName: 'example.com',
@@ -81,7 +138,7 @@ The `Domain` construct exposes the following deploy-time attributes:
 ## Branch
 To add a branch to an existing app:
 ```ts
-const app = App.fromAppId(stack, 'MyApp', 'dbhvlzrug0n3u');
+const app = amplify.App.fromAppId(stack, 'MyApp', 'dbhvlzrug0n3u');
 
 app.addBranch('MyBranch', {
   branchName: 'master'
