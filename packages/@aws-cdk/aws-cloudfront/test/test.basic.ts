@@ -351,14 +351,14 @@ export = {
     };
 
     // THEN
-    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region/);
+    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region, got 'eu-west-1'/);
     test.done();
   },
 
   'throws if certificate arn is invalid - constructor'(test: Test) {
     // GIVEN
     const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'RegionStack', {env: {region: 'eu-west-1'}});
+    const stack = new cdk.Stack(app, 'RegionStack', {env: {region: 'eu-west-3'}});
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
     const certificate = new certificatemanager.Certificate(stack, 'TestCertificate', {
       domainName: 'www.example.com',
@@ -381,7 +381,7 @@ export = {
     };
 
     // THEN
-    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region/);
+    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region, got 'eu-west-3'/);
     test.done();
   },
 };
