@@ -245,7 +245,8 @@ export class Key extends KeyBase {
       "kms:Get*",
       "kms:Delete*",
       "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion"
+      "kms:CancelKeyDeletion",
+      "kms:GenerateDataKey"
     ];
 
     this.addToResourcePolicy(new PolicyStatement({

@@ -30,7 +30,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
             ],
             Effect: "Allow",
             Principal: {
@@ -104,7 +105,8 @@ export = {
               "kms:Get*",
               "kms:Delete*",
               "kms:ScheduleKeyDeletion",
-              "kms:CancelKeyDeletion"
+              "kms:CancelKeyDeletion",
+              "kms:GenerateDataKey"
             ],
             Effect: "Allow",
             Principal: {
@@ -183,7 +185,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   Effect: "Allow",
                   Principal: {
@@ -277,7 +280,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   Effect: "Allow",
                   Principal: {
@@ -341,7 +345,7 @@ export = {
           // This one is there by default
           {
             // tslint:disable-next-line:max-line-length
-            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion" ],
+            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey" ],
             Effect: "Allow",
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root" ] ] } },
             Resource: "*"

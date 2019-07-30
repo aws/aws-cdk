@@ -310,7 +310,8 @@ export = {
               'kms:Get*',
               'kms:Delete*',
               'kms:ScheduleKeyDeletion',
-              'kms:CancelKeyDeletion'
+              'kms:CancelKeyDeletion',
+              "kms:GenerateDataKey"
             ],
             Effect: 'Allow',
             Principal: {
