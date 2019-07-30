@@ -320,10 +320,13 @@ pipeline.addStage({
 
 ## Open Issues
 
+- [ ] __SECURITY ISSUE__: since the deployment action needs to run `docker build`, it requires both privileged mode on the machine _and_ can execute arbitrary user-code, so we are essentially losing our ability to really control the deployment environment. 
+- [ ] Users are concerned with costs of the deployment actions in their pipeline. CloudFormation actions are free.
 - [ ] How to handle removal of stacks
 - [ ] Define a workflow and a special verb for updating **cdk.context.json**
   (currently, users need to simply run `cdk ls` or `cdk synth` from their dev
   machine with credentials to access each environment. It’s not super nice.
-
+- [ ] Integration with AWS Organization
+- [ ] Extensability model for `cdk boostrap` to allow teams to customize this behavior.
 
 
