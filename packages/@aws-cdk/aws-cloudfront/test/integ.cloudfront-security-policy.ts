@@ -23,7 +23,7 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
     }
   ],
   aliasConfiguration: {
-    acmCertRef: 'testACM',
+    acmCertRef: 'arn:aws:acm:us-east-1:1234567890:certificate/testACM',
     names: ['test.test.com'],
     sslMethod: cloudfront.SSLMethod.SNI,
     securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1

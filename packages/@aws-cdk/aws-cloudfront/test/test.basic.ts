@@ -1,4 +1,5 @@
 import { expect } from '@aws-cdk/assert';
+import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -325,4 +326,62 @@ export = {
     test.done();
   },
 
+  'throws if certificate is not in us-east-1 - fromCertificateArn'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const certificate = certificatemanager.Certificate.fromCertificateArn(
+        stack, 'EuCertificate', 'arn:aws:acm:eu-west-1:1234567890:certificate/testACM'
+    );
+
+    // WHEN
+    const toThrow = () => {
+      new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [
+          {
+            s3OriginSource: {s3BucketSource: sourceBucket},
+            behaviors: [{isDefaultBehavior: true}]
+          }
+        ],
+        aliasConfiguration: {
+          names: ['www.example.com'],
+          acmCertRef: certificate.certificateArn
+        }
+      });
+    };
+
+    // THEN
+    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region/);
+    test.done();
+  },
+
+  'throws if certificate arn is invalid - constructor'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'RegionStack', {env: {region: 'eu-west-1'}});
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const certificate = new certificatemanager.Certificate(stack, 'TestCertificate', {
+      domainName: 'www.example.com',
+    });
+
+    // WHEN
+    const toThrow = () => {
+      new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+        originConfigs: [
+          {
+            s3OriginSource: {s3BucketSource: sourceBucket},
+            behaviors: [{isDefaultBehavior: true}]
+          }
+        ],
+        aliasConfiguration: {
+          names: ['www.example.com'],
+          acmCertRef: certificate.certificateArn
+        }
+      });
+    };
+
+    // THEN
+    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region/);
+    test.done();
+  },
 };

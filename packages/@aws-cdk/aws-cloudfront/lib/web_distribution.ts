@@ -656,6 +656,14 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       const sslSupportMethod = props.aliasConfiguration.sslMethod || SSLMethod.SNI;
       const acmCertificateArn = props.aliasConfiguration.acmCertRef;
 
+      if (acmCertificateArn) {
+        const {region} = cdk.Arn.parse(acmCertificateArn);
+
+        if (region !== 'us-east-1') {
+          throw new Error(`acmCertificateArn must be in the 'us-east-1' region, got ${region}`);
+        }
+      }
+
       distributionConfig = {
         ...distributionConfig,
         aliases: props.aliasConfiguration.names,
