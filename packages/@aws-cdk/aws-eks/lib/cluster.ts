@@ -4,8 +4,11 @@ import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/core';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
+import { AwsAuth, Mapping } from './aws-auth';
 import { CfnCluster } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
+import { KubernetesManifest } from './k8s-manifest';
+import { KubectlHandler } from './kubectl-handler';
 
 /**
  * An EKS cluster
@@ -94,37 +97,59 @@ export interface ClusterProps {
    * ]
    * ```
    *
-   * @default All public and private subnets
+   * @default - All public and private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection[];
 
   /**
    * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
    *
-   * @default A role is automatically created for you
+   * @default - A role is automatically created for you
    */
   readonly role?: iam.IRole;
 
   /**
    * Name for the cluster.
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name
    */
   readonly clusterName?: string;
 
   /**
    * Security Group to use for Control Plane ENIs
    *
-   * @default A security group is automatically created
+   * @default - A security group is automatically created
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The Kubernetes version to run in the cluster
    *
-   * @default If not supplied, will use Amazon default version
+   * @default - If not supplied, will use Amazon default version
    */
   readonly version?: string;
+
+  /**
+   * This flag will enable support for defining Kubernetes resources inside this
+   * cluster.
+   *
+   * The following capabilities are enabled by this:
+   *
+   * * `cluster.addManifest` can be used to define Kubernetes resource
+   *   manifests.
+   * * `cluster.addUserMapping` and `cluster.addRoleMapping` can be used to map
+   *   AWS IAM principals to Kubernetes RBAC.
+   * * When auto-scaling capacity is added to his cluster it's IAM instance role
+   *   will be automatically mapped to Kubernetes RBAC to enable instances to
+   *   join the cluster.
+   *
+   * NOTE: this option requires that your stack will be deployed using an
+   * explicit IAM role (`cdk deploy --role-arn ROLE`), and that the trust
+   * relationship policy of this IAM role will allow the custom resource.
+   *
+   * @default true
+   */
+  readonly kubectlEnabled?: boolean;
 }
 
 /**
@@ -189,7 +214,17 @@ export class Cluster extends Resource implements ICluster {
    */
   public readonly role: iam.IRole;
 
+  /**
+   * The CloudFormation custom resource handler that can apply Kubernetes
+   * manifests to this cluster.
+   *
+   * If this is `undefined`, it means that `kubectrl` is not enabled for this
+   * cluster.
+   */
+  public readonly kubectl?: KubectlHandler;
+
   private readonly version: string | undefined;
+  private _awsAuth?: AwsAuth;
 
   /**
    * Initiates an EKS Cluster with the supplied arguments
@@ -251,6 +286,11 @@ export class Cluster extends Resource implements ICluster {
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
     new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+
+    const kubectl = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
+    if (kubectl) {
+      this.kubectl = new KubectlHandler(this, 'kubectl', { cluster: this });
+    }
   }
 
   /**
@@ -259,7 +299,7 @@ export class Cluster extends Resource implements ICluster {
    * The nodes will automatically be configured with the right VPC and AMI
    * for the instance type and Kubernetes version.
    */
-  public addCapacity(id: string, options: AddWorkerNodesOptions): autoscaling.AutoScalingGroup {
+  public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
@@ -273,6 +313,7 @@ export class Cluster extends Resource implements ICluster {
 
     this.addAutoScalingGroup(asg, {
       maxPods: maxPodsForInstanceType(options.instanceType),
+      mapRole: options.mapRole,
     });
 
     return asg;
@@ -292,7 +333,7 @@ export class Cluster extends Resource implements ICluster {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
    * @param autoScalingGroup [disable-awslint:ref-via-interface]
    */
-  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
+  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
     // self rules
     autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
@@ -326,6 +367,63 @@ export class Cluster extends Resource implements ICluster {
     new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
       value: autoScalingGroup.role.roleArn
     });
+
+    // do not attempt to map the role if `kubectl` is not enabled for this
+    // cluster or if `mapRole` is set to false. By default this should happen.
+    const mapRole = options.mapRole === undefined ? true : options.mapRole;
+    if (mapRole && this.kubectl) {
+      // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
+      this.addRoleMapping(autoScalingGroup.role, {
+        username: 'system:node:{{EC2PrivateDNSName}}',
+        groups: [
+          'system:bootstrappers',
+          'system:nodes'
+        ]
+      });
+    }
+  }
+
+  /**
+   * Adds a mapping between an IAM user to a Kubernetes user and groups.
+   *
+   * @param user The IAM user to map
+   * @param mapping Mapping to k8s user name and groups
+   */
+  public addUserMapping(user: iam.IUser, mapping: Mapping) {
+    this.awsAuth.addUserMapping(user, mapping);
+  }
+
+  /**
+   * Adds a mapping between an IAM role to a Kubernetes user and groups.
+   *
+   * @param role The IAM role to map
+   * @param mapping Mapping to k8s user name and groups
+   */
+  public addRoleMapping(role: iam.IRole, mapping: Mapping) {
+    this.awsAuth.addRoleMapping(role, mapping);
+  }
+
+  /**
+   * Applies (`kubectl apply`) a Kubernetes manifest to this cluster.
+   *
+   * This is treated as a resource, so if you remove this call, it will issue a
+   * `kubectl delete`.
+   *
+   * @param manifest a list of Kubernetes resources
+   */
+  public addManifest(id: string, ...resources: any[]) {
+    new KubernetesManifest(this, `manifest-${id}`, { cluster: this, resources });
+  }
+
+  /**
+   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
+   */
+  private get awsAuth() {
+    if (!this._awsAuth) {
+      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
+    }
+
+    return this._awsAuth;
   }
 
   /**
@@ -351,17 +449,25 @@ export class Cluster extends Resource implements ICluster {
 /**
  * Options for adding worker nodes
  */
-export interface AddWorkerNodesOptions extends autoscaling.CommonAutoScalingGroupProps {
+export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
    */
   readonly instanceType: ec2.InstanceType;
+
+  /**
+   * Will automatically update the aws-auth ConfigMap to map the IAM instance
+   * role to BRAC.
+   *
+   * @default true
+   */
+  readonly mapRole?: boolean;
 }
 
 /**
  * Options for adding an AutoScalingGroup as capacity
  */
-export interface AddAutoScalingGroupOptions {
+export interface AutoScalingGroupOptions {
   /**
    * How many pods to allow on this instance.
    *
@@ -369,6 +475,14 @@ export interface AddAutoScalingGroupOptions {
    * the instance type less one.
    */
   readonly maxPods: number;
+
+  /**
+   * Will automatically update the aws-auth ConfigMap to map the IAM instance
+   * role to BRAC.
+   *
+   * @default true
+   */
+  readonly mapRole?: boolean;
 }
 
 /**
