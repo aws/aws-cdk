@@ -57,7 +57,7 @@ export class CodeName {
    * Simply returns the top-level declaration name,  but reads better at the call site if
    * we're generating a function instead of a class.
    */
-  public get functionName() {
+  public get functionName(): string {
     return this.className;
   }
 
@@ -66,7 +66,7 @@ export class CodeName {
    *
    * (When referred to it from the same package)
    */
-  public get fqn() {
+  public get fqn(): string {
     return util.joinIf(this.namespace, '.', util.joinIf(this.className, '.', this.methodName));
   }
 
@@ -125,7 +125,7 @@ export function packageName(module: SpecName | string): string {
 /**
  * Overrides special-case namespaces like serverless=>sam
  */
-function overridePackageName(name: string) {
+function overridePackageName(name: string): string {
   if (name === 'serverless') {
     return 'sam';
   }

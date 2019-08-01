@@ -1,8 +1,7 @@
 import { ArnComponents } from './arn';
 import { Construct, IConstruct } from './construct';
 import { Lazy } from './lazy';
-import { PhysicalName } from './physical-name';
-import { generatePhysicalName } from './private/physical-name-generator';
+import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token } from './token';
@@ -64,7 +63,7 @@ export abstract class Resource extends Construct implements IResource {
 
     let physicalName = props.physicalName;
 
-    if (props.physicalName === PhysicalName.GENERATE_IF_NEEDED) {
+    if (props.physicalName && isGeneratedWhenNeededMarker(props.physicalName)) {
       // auto-generate only if cross-env is required
       this._physicalName = undefined;
       this._allowCrossEnvironment = true;

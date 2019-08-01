@@ -1,4 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
@@ -7,6 +9,36 @@ import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 /**
+ * A secret environment variable.
+ */
+export abstract class Secret {
+  /**
+   * Creates an environment variable value from a parameter stored in AWS
+   * Systems Manager Parameter Store.
+   */
+  public static fromSsmParameter(parameter: ssm.IParameter): Secret {
+    return {
+      arn: parameter.parameterArn,
+      grantRead: grantee => parameter.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   */
+  public static fromSecretsManager(secret: secretsmanager.ISecret): Secret {
+    return {
+      arn: secret.secretArn,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  public abstract readonly arn: string;
+  public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
+}
+
+/*
  * The options for creating a container definition.
  */
 export interface ContainerDefinitionOptions {
@@ -88,6 +120,13 @@ export interface ContainerDefinitionOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * The secret environment variables to pass to the container.
+   *
+   * @default - No secret environment variables.
+   */
+  readonly secrets?: { [key: string]: Secret };
 
   /**
    * Specifies whether the container is marked essential.
@@ -189,7 +228,7 @@ export interface ContainerDefinitionOptions {
 
   /**
    * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
-   * For more information see KernelCapabilities. [https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html]
+   * For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
    *
    * @default - No Linux paramters.
    */
@@ -412,8 +451,10 @@ export class ContainerDefinition extends cdk.Construct {
 
   /**
    * Render this container definition to a CloudFormation object
+   *
+   * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
    */
-  public renderContainerDefinition(): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       cpu: this.props.cpu,
@@ -439,7 +480,17 @@ export class ContainerDefinition extends cdk.Construct {
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      secrets: this.props.secrets && Object.entries(this.props.secrets)
+        .map(([k, v]) => {
+          if (taskDefinition) {
+            v.grantRead(taskDefinition.obtainExecutionRole());
+          }
+          return {
+            name: k,
+            valueFrom: v.arn
+          };
+        }),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
@@ -546,8 +597,7 @@ export interface Ulimit {
   /**
    * The type of the ulimit.
    *
-   * For more information, see UlimitName:
-   * [https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName]
+   * For more information, see [UlimitName](https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName).
    */
   readonly name: UlimitName,
 

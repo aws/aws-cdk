@@ -312,7 +312,7 @@ export = {
     test.done();
   },
 
-  // https://github.com/awslabs/aws-cdk/issues/1201
+  // https://github.com/aws/aws-cdk/issues/1201
   'policy statements with multiple principal types can be created using multiple addPrincipal calls'(test: Test) {
     const stack = new Stack();
     const s = new PolicyStatement();

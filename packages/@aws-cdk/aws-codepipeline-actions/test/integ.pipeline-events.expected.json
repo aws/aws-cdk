@@ -18,7 +18,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -510,7 +511,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "awscdkpipelineeventtargetMyTopic8D32776A"
+            "Id": "Target0"
           }
         ]
       }
@@ -562,7 +563,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "awscdkpipelineeventtargetMyTopic8D32776A"
+            "Id": "Target0"
           }
         ]
       }
@@ -671,7 +672,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "awscdkpipelineeventtargetMyTopic8D32776A",
+            "Id": "Target0",
             "InputTransformer": {
               "InputPathsMap": {
                 "detail-pipeline": "$.detail.pipeline",

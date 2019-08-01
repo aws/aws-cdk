@@ -665,11 +665,7 @@
             "Cpu": 1,
             "Environment": [
               {
-                "Name": "name",
-                "Value": "TRIGGER"
-              },
-              {
-                "Name": "value",
+                "Name": "TRIGGER",
                 "Value": "CloudWatch Events"
               }
             ],
@@ -866,7 +862,7 @@
                 "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
               }
             },
-            "Id": "awsecsintegecsScheduledEc2TaskScheduledTaskDef18FB4348",
+            "Id": "Target0",
             "Input": "{}",
             "RoleArn": {
               "Fn::GetAtt": [

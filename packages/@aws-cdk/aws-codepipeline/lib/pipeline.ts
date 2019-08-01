@@ -88,6 +88,7 @@ export interface PipelineProps {
    * the construct will automatically create a Stack containing an S3 Bucket in that region.
    *
    * @default - None.
+   * @experimental
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
 
@@ -102,8 +103,8 @@ export interface PipelineProps {
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
-  public abstract pipelineName: string;
-  public abstract pipelineArn: string;
+  public abstract readonly pipelineName: string;
+  public abstract readonly pipelineArn: string;
 
   /**
    * Defines an event rule triggered by this CodePipeline.
@@ -158,6 +159,22 @@ abstract class PipelineBase extends Resource implements IPipeline {
  * // ... add more stages
  */
 export class Pipeline extends PipelineBase {
+  /**
+   * Import a pipeline into this app.
+   *
+   * @param scope the scope into which to import this pipeline
+   * @param id the logical ID of the returned pipeline construct
+   * @param pipelineArn The ARN of the pipeline (e.g. `arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline`)
+   */
+  public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
+    class Import extends PipelineBase {
+      public readonly pipelineName = Stack.of(scope).parseArn(pipelineArn).resource;
+      public readonly pipelineArn = pipelineArn;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -292,6 +309,8 @@ export class Pipeline extends PipelineBase {
   /**
    * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
+   *
+   * @experimental
    */
   public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
     const ret: { [region: string]: CrossRegionSupport }  = {};
@@ -617,6 +636,8 @@ export class Pipeline extends PipelineBase {
  * An interface representing resources generated in order to support
  * the cross-region capabilities of CodePipeline.
  * You get instances of this interface from the {@link Pipeline#crossRegionSupport} property.
+ *
+ * @experimental
  */
 export interface CrossRegionSupport {
   /**

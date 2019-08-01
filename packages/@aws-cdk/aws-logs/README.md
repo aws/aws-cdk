@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -29,7 +27,8 @@ configures after how much time the events in the log stream expire and are
 deleted.
 
 The default retention period if not supplied is 2 years, but it can be set to
-any amount of days, or `Infinity` to keep the data in the log group forever.
+one of the values in the `RetentionDays` enum to configure a different
+retention period (including infinite retention).
 
 [retention example](test/example.retention.lit.ts)
 

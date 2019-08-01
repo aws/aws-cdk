@@ -18,7 +18,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -638,7 +639,7 @@
                 ]
               ]
             },
-            "Id": "awscdkcodepipelinelambdaPipeline87A4B3D3",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",
