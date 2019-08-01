@@ -70,6 +70,14 @@ class SuffixNamePart extends NamePart {
 
 const GENERATE_IF_NEEDED_SYMBOL = Symbol.for('@aws-cdk/core.<private>.GenerateIfNeeded');
 
+/**
+ * This marker token is used by PhysicalName.GENERATE_IF_NEEDED. When that token is passed to the
+ * physicalName property of a Resource, it triggers different behavior in the Resource constructor
+ * that will allow emission of a generated physical name (when the resource is used across
+ * environments) or undefined (when the resource is not shared).
+ *
+ * This token throws an Error when it is resolved, as a way to prevent inadvertent mis-uses of it.
+ */
 export class GeneratedWhenNeededMarker implements IResolvable {
   public readonly creationStack: string[] = [];
 
@@ -86,6 +94,9 @@ export class GeneratedWhenNeededMarker implements IResolvable {
   }
 }
 
+/**
+ * Checks whether a stringified token resolves to a `GeneratedWhenNeededMarker`.
+ */
 export function isGeneratedWhenNeededMarker(val: string): boolean {
   const token = TokenMap.instance().lookupString(val);
   return !!token && GENERATE_IF_NEEDED_SYMBOL in token;
