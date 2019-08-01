@@ -15,27 +15,86 @@
 ---
 <!--END STABILITY BANNER-->
 
-This construct library allows you to define and create [Amazon Elastic Container
-Service for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters
-programmatically.
+This construct library allows you to define [Amazon Elastic Container Service
+for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters programmatically.
 
-### Getting Started
+This library also supports programmatically defining Kubernetes resource
+manifests within EKS clusters.
 
-The following code shows how to define an EKS cluster with an initial fleet of
-worker nodes:
+This example defines an Amazon EKS cluster and
 
-[starting a cluster example](test/integ.eks-cluster.lit.ts)
+```ts
+const cluster = new eks.Cluster(this, 'hello-eks', { vpc });
 
-As described under [kubectl support](#kubectl-support) below, deploy this stack
-with an explicit IAM role:
+cluster.addCapacity('default', {
+  instanceType: new ec2.InstanceType('t2.medium'),
+  desiredCapacity: 10,
+});
+
+cluster.addManifest('mypod', {
+  apiVersion: 'v1',
+  kind: 'Pod',
+  metadata: { name: 'mypod' },
+  spec: {
+    containers: [
+      {
+        name: 'hello',
+        image: 'paulbouwer/hello-kubernetes:1.5',
+        ports: [ { containerPort: 8080 } ]
+      }
+    ]
+  }
+});
+```
+
+**NOTE**: in order to determine the default AMI for for Amazon EKS instances the
+`eks.Cluster` resource must be defined within a stack that is configured with an
+explicit `env.region`. See [Environments](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)
+in the AWS CDK Developer Guide for more details.
+
+Here is a [complete sample](./test/integ.eks-kubectl.lit.ts).
+
+### Interacting with Your Cluster
+
+The Amazon EKS construct library allows you to specify an IAM role that will be
+granted `system:masters` privileges on your cluster.
+
+Without specifying a `mastersRole`, you will not be able to interact manually
+with the cluster.
+
+The following example defines an IAM role that can be assumed by all users
+in the account and shows how to use the `mastersRole` property to map this
+role to the Kubernetes `system:masters` group:
+
+```ts
+// first define the role
+const clusterAdmin = new iam.Role(this, 'AdminRole', {
+  assumedBy: new iam.AccountRootPrincipal()
+});
+
+// now define the cluster and make map the role to the "masters" group
+new eks.Cluster(this, 'Cluster', {
+  vpc: vpc,
+  mastersRole: clusterAdmin
+});
+```
+
+Now, given AWS credentials for a user that is trusted by the masters role, you
+should be able to interact with your cluster like this:
 
 ```console
-$ cdk deploy --role-arn arn:aws:iam::111111111111:role/aws-cdk-deployment
+$ aws eks update-kubeconfig --name CLUSTER-NAME
+$ kubectl get all -n kube-system
+...
 ```
+
+**NOTE**: if the cluster is configured with `kubectlEnabled: false`, it
+will be created with the role/user that created the AWS CloudFormation
+stack. See [Kubectl Support](#kubectl-support) for details.
 
 ### Defining Kubernetes Resources
 
-The `cluster.addManifest` method can be used to apply Kubernetes resource
+The `cluster.addManifest()` method can be used to apply Kubernetes resource
 manifests to this cluster.
 
 The following examples will deploy the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes)
@@ -77,7 +136,6 @@ const service = {
   }
 };
 
-// kubectl apply -f manifest.yaml
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
@@ -85,7 +143,24 @@ Since manifests are modeled as CloudFormation resources. This means that if the
 `addManifest` statement is deleted from your code, the next `cdk deploy` will
 issue a `kubectl delete` command and the Kubernetes resources will be deleted.
 
-### IAM Users and Role Mapping
+You can also use the `KubernetesManifest` construct directly:
+
+```ts
+new KubernetesManifest(this, 'service', {
+  manifest: [ {
+    apiVersion: "v1",
+    kind: "Service",
+    metadata: { name: "hello-kubernetes" },
+    spec: {
+      type: "LoadBalancer",
+      ports: [ { port: 80, targetPort: 8080 } ],
+      selector: appLabel
+    }
+  } ]
+});
+```
+
+### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html),
 you can map AWS IAM users and roles to Kubernetes RBAC configuration.
@@ -106,7 +181,7 @@ Furthermore, when auto-scaling capacity is added to the cluster (through
 of the auto-scaling group will be automatically mapped to RBAC so nodes can
 connect to the cluster. No manual mapping is required any longer.
 
-### SSH into your nodes
+### Node ssh Access
 
 If you want to be able to SSH into your worker nodes, you must already
 have an SSH key in the region you're connecting to and pass it, and you must
@@ -121,41 +196,66 @@ unfortunately beyond the scope of this documentation.
 
 ### kubectl Support
 
-> This section is required due to the current behavior of Amazon EKS. We are
-> exploring ways to enable a more streamlined process.
-
-#### Background
-
 When you create an Amazon EKS cluster, the IAM entity user or role, such as a
 [federated user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers.html)
 that creates the cluster, is automatically granted `system:masters` permissions
-in the cluster's RBAC configuration. This means that when you use `cdk deploy`
-to provision EKS clusters, the IAM role that was used to create the AWS
-CloudFormation stack will be used. In order to allow the AWS CDK to assume this
-role in order to execute `kubectl` against this cluster, you will need to
-**explicitly** specify an IAM role when you deploy the AWS CDK stack,
-and this role's trust policy of this IAM role will allow the AWS Lambda role
-that executes `kubectl` to assume it.
+in the cluster's RBAC configuration.
 
-#### Create the IAM Role
+In order to allow programmatically defining **Kubernetes resources** in your AWS
+CDK app and provisioning them through AWS CloudFormation, we will need to assume
+this "masters" role every time we want to issue `kubectl` operations against your
+cluster.
 
-This means that in order to allow the CDK to perform `kubectl` operations
-against the cluster, you will have to
+At the moment, the [AWS::EKS::Cluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-cluster.html)
+AWS CloudFormation resource does not support this behavior, so in order to
+support "programmatic kubectl", such as applying manifests
+and mapping IAM roles from within your CDK application, the Amazon EKS
+construct library uses a custom resource for provisioning the cluster.
+This custom resource is executed with an IAM role that we can then use
+to issue `kubectl` commands.
 
+The default behavior of this library is to use this custom resource in order
+to retain programmatic control over the cluster. In order words: to allow
+you to define Kubernetes resources in your CDK code instead of having to
+manage your Kubernetes applications through a separate system.
 
-#### Disabling `kubectl` Support
+One of the implications of this design is that, by default, the user who
+provisioned the AWS CloudFormation stack (executed `cdk deploy`) will
+not have administrative privileges on the EKS cluster.
 
-If you wish to disable `kubectl` support, specify `kubectlEnabled: false` when
-you define your `eks.Cluster`:
+1. Additional resources will be synthesized into your template (the AWS Lambda
+   function, the role and policy).
+2. As described in [Interacting with Your Cluster](#interacting-with-your-cluster),
+   if you wish to be able to manually interact with your cluster, you will need
+   to map an IAM role or user to the `system:masters` group. This can be either
+   done by specifying a `mastersRole` when the cluster is defined, calling
+   `cluster.addMastersRole` or explicitly mapping an IAM role or IAM user to the
+   relevant Kubernetes RBAC groups using `cluster.addRoleMapping` and/or
+   `cluster.addUserMapping`.
+
+If you wish to disable the programmatic kubectl behavior and use the standard
+AWS::EKS::Cluster resource, you can specify `kubectlEnabled: false` when you define
+the cluster:
 
 ```ts
-new eks.Cluster(this, 'cluster', { vpc, kubectlEnabled: false })
+new eks.Cluster(this, 'cluster', {
+  vpc: vpc,
+  kubectlEnabled: false
+});
 ```
 
-This will disable automatic mapping of autoscaling group roles to RBAC and will
-throw errors when trying to define Kubernetes resources in this cluster.
+**Take care**: a change in this property will cause the cluster to be destroyed
+and a new cluster to be created.
+
+When kubectl is disabled, you should be aware of the following:
+
+1. When you log-in to your cluster, you don't need to specify `--role-arn` as long as you are using the same user that created
+   the cluster.
+2. As described in the Amazon EKS User Guide, you will need to manually
+   edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html) when you add capacity in order to map
+   the IAM instance role to RBAC to allow nodes to join the cluster.
+3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail with an error: `addManifest`, `addRoleMapping`, `addUserMapping`, `addMastersRole`, `props.mastersRole`.
 
 ### Roadmap
 
-- [ ] Add ability to start tasks on clusters using CDK (similar to ECS's "`Service`" concept).
 - [ ] Describe how to set up AutoScaling (how to combine EC2 and Kubernetes scaling)
