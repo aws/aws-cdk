@@ -1,6 +1,5 @@
 import cdk = require('@aws-cdk/core');
 import { CfnTaskDefinition } from './ecs.generated';
-import { Lazy } from '@aws-cdk/core';
 
 /**
  * The properties for defining Linux-specific options that are applied to the container.
@@ -107,11 +106,11 @@ export class LinuxParameters extends cdk.Construct {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
       capabilities: {
-        add: Lazy.listValue({ produce: () => this.capAdd }),
-        drop: Lazy.listValue({  produce: () => this.capDrop }),
+        add: cdk.Lazy.listValue({ produce: () => this.capAdd }),
+        drop: cdk.Lazy.listValue({  produce: () => this.capDrop }),
       },
-      devices: Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }),
-      tmpfs: Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) })
+      devices: cdk.Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }),
+      tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) })
     };
   }
 }

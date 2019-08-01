@@ -2,7 +2,6 @@ import iam = require('@aws-cdk/aws-iam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
-import { Lazy } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
@@ -478,7 +477,7 @@ export class ContainerDefinition extends cdk.Construct {
       command: this.props.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: Lazy.anyValue({ produce: () => renderArray(this.containerDependencies, renderContainerDependency) }),
+      dependsOn: cdk.Lazy.anyValue({ produce: () => renderArray(this.containerDependencies, renderContainerDependency) }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
@@ -489,15 +488,15 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: Lazy.anyValue({ produce: () => renderArray(this.mountPoints, renderMountPoint) }),
+      mountPoints: cdk.Lazy.anyValue({ produce: () => renderArray(this.mountPoints, renderMountPoint) }),
       name: this.containerName,
-      portMappings: Lazy.anyValue({ produce: () => renderArray(this.portMappings, renderPortMapping) }),
+      portMappings: cdk.Lazy.anyValue({ produce: () => renderArray(this.portMappings, renderPortMapping) }),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
-      ulimits: Lazy.anyValue({ produce: () => renderArray(this.ulimits, renderUlimit) }),
+      ulimits: cdk.Lazy.anyValue({ produce: () => renderArray(this.ulimits, renderUlimit) }),
       user: this.props.user,
-      volumesFrom: Lazy.anyValue({ produce: () => renderArray(this.volumesFrom, renderVolumeFrom) }),
+      volumesFrom: cdk.Lazy.anyValue({ produce: () => renderArray(this.volumesFrom, renderVolumeFrom) }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
@@ -513,7 +512,7 @@ export class ContainerDefinition extends cdk.Construct {
         }),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
-      links: Lazy.listValue({ produce: () => renderArray(this.links, l => l) }),
+      links: cdk.Lazy.listValue({ produce: () => renderArray(this.links, l => l) }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
     };
   }
