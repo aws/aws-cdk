@@ -1,5 +1,5 @@
 import nodeunit = require('nodeunit');
-import { App, Aws, Resource, Stack, Token, Lazy } from '../../lib';
+import { App, Aws, Lazy, Resource, Stack, Token } from '../../lib';
 import { GeneratedWhenNeededMarker, generatePhysicalName, isGeneratedWhenNeededMarker } from '../../lib/private/physical-name-generator';
 
 export = nodeunit.testCase({
