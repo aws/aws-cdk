@@ -92,6 +92,7 @@
     "@aws-cdk/aws-iot": "^1.2.0",
     "@aws-cdk/aws-iot1click": "^1.2.0",
     "@aws-cdk/aws-iotanalytics": "^1.2.0",
+    "@aws-cdk/aws-iotevents": "^1.2.0",
     "@aws-cdk/aws-iotthingsgraph": "^1.2.0",
     "@aws-cdk/aws-kinesis": "^1.2.0",
     "@aws-cdk/aws-kinesisanalytics": "^1.2.0",
