@@ -290,7 +290,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
-      'Supported: AccountPrincipal, ServicePrincipal');
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
   }
 }
 

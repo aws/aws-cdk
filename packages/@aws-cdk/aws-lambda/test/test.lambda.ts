@@ -186,6 +186,20 @@ export = {
       test.done();
     },
 
+    'fails if the principal is not a service, account or arn principal'(test: Test) {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+
+      test.throws(() => fn.addPermission('F1', { principal: new iam.OrganizationPrincipal('org') }),
+        /Invalid principal type for Lambda permission statement/);
+
+      fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
+      fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
+      fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
+
+      test.done();
+    },
+
     'BYORole'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
