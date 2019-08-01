@@ -19,5 +19,4 @@ cache:
   - pip
 
 install: ./install.sh
-script: ./build.sh
-
+script: ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD
