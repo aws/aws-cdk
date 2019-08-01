@@ -2,6 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
+import { Lazy } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
@@ -252,37 +253,6 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
  */
 export class ContainerDefinition extends cdk.Construct {
   /**
-   * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
-   */
-  public readonly linuxParameters?: LinuxParameters;
-
-  /**
-   * The mount points for data volumes in your container.
-   */
-  public readonly mountPoints = new Array<MountPoint>();
-
-  /**
-   * The list of port mappings for the container. Port mappings allow containers to access ports
-   * on the host container instance to send or receive traffic.
-   */
-  public readonly portMappings = new Array<PortMapping>();
-
-  /**
-   * The data volumes to mount from another container in the same task definition.
-   */
-  public readonly volumesFrom = new Array<VolumeFrom>();
-
-  /**
-   * An array of ulimits to set in the container.
-   */
-  public readonly ulimits = new Array<Ulimit>();
-
-  /**
-   * An array dependencies defined for container startup and shutdown.
-   */
-  public readonly containerDependencies = new Array<ContainerDependency>();
-
-  /**
    * Specifies whether the container will be marked essential.
    *
    * If the essential parameter of a container is marked as true, and that container
@@ -293,6 +263,11 @@ export class ContainerDefinition extends cdk.Construct {
    * If this parameter isomitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
+
+   /**
+    * The name of this container
+    */
+  public readonly containerName: string;
 
   /**
    * Whether there was at least one memory limit specified in this definition
@@ -305,6 +280,11 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
+   * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
+   */
+  public readonly linuxParameters?: LinuxParameters;
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
@@ -312,6 +292,32 @@ export class ContainerDefinition extends cdk.Construct {
   private readonly imageConfig: ContainerImageConfig;
 
   private readonly logDriverConfig?: LogDriverConfig;
+
+  /**
+   * The mount points for data volumes in your container.
+   */
+  private readonly mountPoints = new Array<MountPoint>();
+
+  /**
+   * The list of port mappings for the container. Port mappings allow containers to access ports
+   * on the host container instance to send or receive traffic.
+   */
+  private readonly portMappings = new Array<PortMapping>();
+
+  /**
+   * The data volumes to mount from another container in the same task definition.
+   */
+  private readonly volumesFrom = new Array<VolumeFrom>();
+
+  /**
+   * An array of ulimits to set in the container.
+   */
+  private readonly ulimits = new Array<Ulimit>();
+
+  /**
+   * An array dependencies defined for container startup and shutdown.
+   */
+  private readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Constructs a new instance of the ContainerDefinition class.
@@ -322,6 +328,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
+    this.containerName = this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -341,9 +348,9 @@ export class ContainerDefinition extends cdk.Construct {
       throw new Error(`You must use network mode Bridge to add container links.`);
     }
     if (alias !== undefined) {
-      this.links.push(`${container.node.id}:${alias}`);
+      this.links.push(`${container.containerName}:${alias}`);
     } else {
-      this.links.push(`${container.node.id}`);
+      this.links.push(`${container.containerName}`);
     }
   }
 
@@ -436,7 +443,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -455,7 +462,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
     return defaultPortMapping.containerPort;
@@ -471,7 +478,7 @@ export class ContainerDefinition extends cdk.Construct {
       command: this.props.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: renderArray(this.containerDependencies, renderContainerDependency),
+      dependsOn: Lazy.anyValue({ produce: () => renderArray(this.containerDependencies, renderContainerDependency) }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
@@ -482,15 +489,15 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: renderArray(this.mountPoints, renderMountPoint),
-      name: this.node.id,
-      portMappings: renderArray(this.portMappings, renderPortMapping),
+      mountPoints: Lazy.anyValue({ produce: () => renderArray(this.mountPoints, renderMountPoint) }),
+      name: this.containerName,
+      portMappings: Lazy.anyValue({ produce: () => renderArray(this.portMappings, renderPortMapping) }),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
-      ulimits: renderArray(this.ulimits, renderUlimit),
+      ulimits: Lazy.anyValue({ produce: () => renderArray(this.ulimits, renderUlimit) }),
       user: this.props.user,
-      volumesFrom: renderArray(this.volumesFrom, renderVolumeFrom),
+      volumesFrom: Lazy.anyValue({ produce: () => renderArray(this.volumesFrom, renderVolumeFrom) }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
@@ -506,7 +513,7 @@ export class ContainerDefinition extends cdk.Construct {
         }),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
-      links: renderArray(this.links, l => l),
+      links: Lazy.listValue({ produce: () => renderArray(this.links, l => l) }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
     };
   }
@@ -708,7 +715,7 @@ export enum ContainerDependencyCondition {
 
 function renderContainerDependency(containerDependency: ContainerDependency): CfnTaskDefinition.ContainerDependencyProperty {
   return {
-    containerName: containerDependency.container.node.id,
+    containerName: containerDependency.container.containerName,
     condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY
   };
 }
