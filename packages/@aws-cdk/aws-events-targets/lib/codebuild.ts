@@ -21,6 +21,7 @@ export class CodeBuildProject implements events.IRuleTarget {
         actions: ['codebuild:StartBuild'],
         resources: [this.project.projectArn],
       })]),
+      targetResource: this.project,
     };
   }
 }
