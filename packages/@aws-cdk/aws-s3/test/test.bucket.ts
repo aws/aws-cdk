@@ -279,7 +279,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -423,6 +424,27 @@ export = {
             "PublicAccessBlockConfiguration": {
               "RestrictPublicBuckets": true,
             }
+          },
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
+  'bucket with custom canned access control'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "AccessControl": "LogDeliveryWrite"
           },
           "DeletionPolicy": "Retain",
           "UpdateReplacePolicy": "Retain",
@@ -807,7 +829,7 @@ export = {
           "Statement": [
             {
               "Action": ["kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
-                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion"],
+                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey"],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -861,7 +883,8 @@ export = {
                       "kms:Get*",
                       "kms:Delete*",
                       "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion"
+                      "kms:CancelKeyDeletion",
+                      "kms:GenerateDataKey"
                     ],
                     "Effect": "Allow",
                     "Principal": {
