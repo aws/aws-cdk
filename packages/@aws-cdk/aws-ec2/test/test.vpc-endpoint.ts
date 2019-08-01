@@ -180,8 +180,8 @@ export = {
       const vpc = new Vpc(stack, 'VpcNetwork');
 
       // WHEN
-      vpc.addS3Endpoint('S3');
-      vpc.addDynamoDbEndpoint('DynamoDb');
+      vpc.addGatewayEndpoint('S3', { service: GatewayVpcEndpointAwsService.S3 });
+      vpc.addGatewayEndpoint('DynamoDb', { service: GatewayVpcEndpointAwsService.DYNAMODB });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
@@ -228,7 +228,7 @@ export = {
       });
 
       // THEN
-      vpc.addS3Endpoint('Gateway');
+      vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 });
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
         ServiceName: { 'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3']] },
@@ -249,7 +249,7 @@ export = {
         availabilityZones: ['a', 'b', 'c']
       });
 
-      test.throws(() => vpc.addS3Endpoint('Gateway'), /route table/);
+      test.throws(() => vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 }), /route table/);
 
       test.done();
     }

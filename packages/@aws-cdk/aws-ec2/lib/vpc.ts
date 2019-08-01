@@ -100,16 +100,6 @@ export interface IVpc extends IResource {
   addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint
 
   /**
-   * Adds a new S3 gateway endpoint to this VPC
-   */
-  addS3Endpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint
-
-  /**
-   * Adds a new DynamoDB gateway endpoint to this VPC
-   */
-  addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint
-
-  /**
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
@@ -309,28 +299,6 @@ abstract class VpcBase extends Resource implements IVpc {
     return new GatewayVpcEndpoint(this, id, {
       vpc: this,
       ...options
-    });
-  }
-
-  /**
-   * Adds a new S3 gateway endpoint to this VPC
-   */
-  public addS3Endpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
-    return new GatewayVpcEndpoint(this, id, {
-      service: GatewayVpcEndpointAwsService.S3,
-      vpc: this,
-      subnets
-    });
-  }
-
-  /**
-   * Adds a new DynamoDB gateway endpoint to this VPC
-   */
-  public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
-    return new GatewayVpcEndpoint(this, id, {
-      service: GatewayVpcEndpointAwsService.DYNAMODB,
-      vpc: this,
-      subnets
     });
   }
 
@@ -967,6 +935,32 @@ export class Vpc extends VpcBase {
         this.addGatewayEndpoint(endpointId, endpoint);
       }
     }
+  }
+
+  /**
+   * Adds a new S3 gateway endpoint to this VPC
+   *
+   * @deprecated use `addGatewayEndpoint()` instead
+   */
+  public addS3Endpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
+    return new GatewayVpcEndpoint(this, id, {
+      service: GatewayVpcEndpointAwsService.S3,
+      vpc: this,
+      subnets
+    });
+  }
+
+  /**
+   * Adds a new DynamoDB gateway endpoint to this VPC
+   *
+   * @deprecated use `addGatewayEndpoint()` instead
+   */
+  public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
+    return new GatewayVpcEndpoint(this, id, {
+      service: GatewayVpcEndpointAwsService.DYNAMODB,
+      vpc: this,
+      subnets
+    });
   }
 
   private createNatGateways(gateways?: number, placement?: SubnetSelection): void {
