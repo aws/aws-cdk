@@ -174,49 +174,6 @@ export = {
       test.done();
     },
 
-    'conveniance methods for S3 and DynamoDB'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VpcNetwork');
-
-      // WHEN
-      vpc.addGatewayEndpoint('S3', { service: GatewayVpcEndpointAwsService.S3 });
-      vpc.addGatewayEndpoint('DynamoDb', { service: GatewayVpcEndpointAwsService.DYNAMODB });
-
-      // THEN
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.s3'
-            ]
-          ]
-        },
-      }));
-
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.dynamodb'
-            ]
-          ]
-        },
-      }));
-
-      test.done();
-    },
-
     'works with an imported vpc'(test: Test) {
       // GIVEN
       const stack = new Stack();
