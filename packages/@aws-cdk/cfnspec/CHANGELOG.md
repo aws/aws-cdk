@@ -1,3 +1,40 @@
+# CloudFormation Resource Specification v4.3.0
+
+## New Resource Types
+
+* AWS::IoTEvents::DetectorModel
+* AWS::IoTEvents::Input
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker EncryptionOptions (__added__)
+* AWS::Amplify::App AutoBranchCreationConfig (__added__)
+* AWS::Amplify::Branch EnableAutoBuild (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.EncryptionOptions (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig (__added__)
+* AWS::Amplify::App.BasicAuthConfig Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Amplify::App.BasicAuthConfig Username.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
 # CloudFormation Resource Specification v4.2.0
 
 ## New Resource Types
