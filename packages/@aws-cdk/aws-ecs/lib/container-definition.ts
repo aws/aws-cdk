@@ -252,6 +252,37 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
  */
 export class ContainerDefinition extends cdk.Construct {
   /**
+   * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
+   */
+  public readonly linuxParameters?: LinuxParameters;
+
+  /**
+   * The mount points for data volumes in your container.
+   */
+   public readonly mountPoints = new Array<MountPoint>();
+
+  /**
+   * The list of port mappings for the container. Port mappings allow containers to access ports
+   * on the host container instance to send or receive traffic.
+   */
+   public readonly portMappings = new Array<PortMapping>();
+
+   /**
+    * The data volumes to mount from another container in the same task definition.
+    */
+   public readonly volumesFrom = new Array<VolumeFrom>();
+
+   /**
+    * An array of ulimits to set in the container.
+    */
+   public readonly ulimits = new Array<Ulimit>();
+
+   /**
+    * An array dependencies defined for container startup and shutdown.
+    */
+   public readonly containerDependencies = new Array<ContainerDependency>();
+
+  /**
    * Specifies whether the container will be marked essential.
    *
    * If the essential parameter of a container is marked as true, and that container
@@ -279,11 +310,6 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
-   * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
-   */
-  public readonly linuxParameters?: LinuxParameters;
-
-  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
@@ -291,32 +317,6 @@ export class ContainerDefinition extends cdk.Construct {
   private readonly imageConfig: ContainerImageConfig;
 
   private readonly logDriverConfig?: LogDriverConfig;
-
-  /**
-   * The mount points for data volumes in your container.
-   */
-  private readonly mountPoints = new Array<MountPoint>();
-
-  /**
-   * The list of port mappings for the container. Port mappings allow containers to access ports
-   * on the host container instance to send or receive traffic.
-   */
-  private readonly portMappings = new Array<PortMapping>();
-
-  /**
-   * The data volumes to mount from another container in the same task definition.
-   */
-  private readonly volumesFrom = new Array<VolumeFrom>();
-
-  /**
-   * An array of ulimits to set in the container.
-   */
-  private readonly ulimits = new Array<Ulimit>();
-
-  /**
-   * An array dependencies defined for container startup and shutdown.
-   */
-  private readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Constructs a new instance of the ContainerDefinition class.
