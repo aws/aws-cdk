@@ -222,6 +222,11 @@ export interface DeployOptions {
   roleArn?: string;
 
   /**
+   * ARNs of SNS topics that CloudFormation associates with the stack
+   */
+  notificationArns?: string[];
+
+  /**
    * What kind of security changes require approval
    *
    * @default RequireApproval.Broadening
