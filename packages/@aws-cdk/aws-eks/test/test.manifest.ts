@@ -2,8 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Cluster } from '../lib';
-import { KubernetesManifest } from '../lib';
+import { Cluster, KubernetesManifest } from '../lib';
 
 // tslint:disable:max-line-length
 

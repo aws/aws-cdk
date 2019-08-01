@@ -100,6 +100,10 @@ export class CustomResource extends Resource {
     this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
   }
 
+  public get ref() {
+    return this.resource.ref;
+  }
+
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
   }

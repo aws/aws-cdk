@@ -28,7 +28,6 @@ def handler(event, context):
     try:
         logger.info(json.dumps(event))
 
-        stack_id = event['StackId']
         request_type = event['RequestType']
         props = event['ResourceProperties']
         old_props = event.get('OldResourceProperties', {})
@@ -40,19 +39,9 @@ def handler(event, context):
             cfn_error("CLUSTER_NAME is missing in environment")
             return
 
-        # query cloudformation to figure out which role created this stack
-        cfn = boto3.client('cloudformation')
-        stack_desc = cfn.describe_stacks(StackName=stack_id)
-        stack_role_arn = stack_desc['Stacks'][0].get('RoleARN')
-        if stack_role_arn is None:
-            cfn_error("Stack '%s' must be created with an explicit IAM role in order to allow applying Kubernetes manifests to the EKS cluster" % stack_id)
-            return
-        logger.info("stack_role_arn: %s" % stack_role_arn)
-    
         # "log in" to the cluster
         subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
             '--name', cluster_name,
-            '--role-arn', stack_role_arn,
             '--kubeconfig', kubeconfig
         ])
 
@@ -68,7 +57,10 @@ def handler(event, context):
             kubectl('apply', manifest_file)
         elif request_type == "Delete":
             # TODO: never fail
-            kubectl('delete', manifest_file)
+            try:
+                kubectl('delete', manifest_file)
+            except Exception as e:
+                logger.info("delete error: %s" % e)
 
         # if we are creating a new resource, allocate a physical id for it
         # otherwise, we expect physical id to be relayed by cloudformation
@@ -89,7 +81,15 @@ def handler(event, context):
         cfn_error(str(e))
 
 def kubectl(verb, file):
-    subprocess.check_call(['kubectl', verb, '--kubeconfig', kubeconfig, '-f', file])
+    import subprocess
+    try:
+        cmnd = ['kubectl', verb, '--kubeconfig', kubeconfig, '-f', file]
+        output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+        raise Exception(exc.output)
+    else:
+        logger.info(output)
+
 
 #---------------------------------------------------------------------------------------------------
 # sends a response to cloudformation
