@@ -1,7 +1,9 @@
 import crypto = require('crypto');
+import { IResolvable, IResolveContext } from '../resolvable';
 import { IResource } from '../resource';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { TokenMap } from './token-map';
 
 export function generatePhysicalName(resource: IResource): string {
   const stack = Stack.of(resource);
@@ -64,4 +66,27 @@ class SuffixNamePart extends NamePart {
     const startIndex = Math.max(strLen - this.suffixLength, 0);
     return this.bareStr.slice(startIndex, strLen);
   }
+}
+
+const GENERATE_IF_NEEDED_SYMBOL = Symbol.for('@aws-cdk/core.<private>.GenerateIfNeeded');
+
+export class GeneratedWhenNeededMarker implements IResolvable {
+  public readonly creationStack: string[] = [];
+
+  constructor() {
+    Object.defineProperty(this, GENERATE_IF_NEEDED_SYMBOL, { value: true });
+  }
+
+  public resolve(_ctx: IResolveContext): never {
+    throw new Error(`Invalid physical name passed to CloudFormation. Use "this.physicalName" instead`);
+  }
+
+  public toString(): string {
+    return 'PhysicalName.GENERATE_IF_NEEDED';
+  }
+}
+
+export function isGeneratedWhenNeededMarker(val: string): boolean {
+  const token = TokenMap.instance().lookupString(val);
+  return !!token && GENERATE_IF_NEEDED_SYMBOL in token;
 }
