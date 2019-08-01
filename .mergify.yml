@@ -1,0 +1,23 @@
+# *******************************
+#     Mergidy.io Config File
+#
+# See https://doc.mergify.io for 
+# more info on config files
+# *******************************
+
+pull_request_rules:
+- name: auto_merge
+  conditions: 
+    - -title~=(WIP|wip)
+    - -merged
+    - -closed
+    - -locked
+    - -label=blocked
+    - "#approved-reviews-by>=1"
+    - "#changes-requested-reviews-by=0"
+    - status-success=continuous-integration/travis-ci/pr
+    - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+  actions:
+    merge:
+      method: squash
+      strict: smart
