@@ -10,7 +10,6 @@ pull_request_rules:
     - -label=blocked
     - "#approved-reviews-by>=1"
     - "#changes-requested-reviews-by=0"
-    - status-success=continuous-integration/travis-ci/pr
     - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
   actions:
     merge:
