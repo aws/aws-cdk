@@ -122,6 +122,7 @@ export class CdkToolkit {
           stack,
           deployName: stack.name,
           roleArn: options.roleArn,
+          notificationArns: options.notificationArns,
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
