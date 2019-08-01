@@ -21,7 +21,7 @@ for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters programmatically.
 This library also supports programmatically defining Kubernetes resource
 manifests within EKS clusters.
 
-This example defines an Amazon EKS cluster and
+This example defines an Amazon EKS cluster with a single pod:
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', { vpc });
