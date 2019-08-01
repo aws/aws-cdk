@@ -17,7 +17,8 @@ export class CodePipeline implements events.IRuleTarget {
       role: singletonEventRole(this.pipeline, [new iam.PolicyStatement({
         resources: [this.pipeline.pipelineArn],
         actions: ['codepipeline:StartPipelineExecution'],
-      })])
+      })]),
+      targetResource: this.pipeline,
     };
   }
 }
