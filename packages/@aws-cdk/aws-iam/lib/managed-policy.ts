@@ -1,4 +1,4 @@
-import { Construct, IResolveContext, Lazy, Resource , Stack} from '@aws-cdk/core';
+import { Construct, IResolveContext, Lazy, Resource, Stack} from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -13,6 +13,7 @@ import { generatePolicyName, undefinedIfEmpty } from './util';
 export interface IManagedPolicy {
   /**
    * The ARN of the managed policy
+   * @attribute
    */
   readonly managedPolicyArn: string;
 }
@@ -85,8 +86,6 @@ export interface ManagedPolicyProps {
 /**
  * Managed policy
  *
- * This class is an incomplete placeholder class, and exists only to get access
- * to AWS Managed policies.
  */
 export class ManagedPolicy extends Resource implements IManagedPolicy {
   /**
@@ -95,8 +94,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    * For this managed policy, you only need to know the name to be able to use it.
    *
    */
-  public static fromManagedPolicyName(managedPolicyName: string): IManagedPolicy {
-    class CustomerManagedPolicy implements IManagedPolicy {
+  public static fromManagedPolicyName(scope: Construct, id: string, managedPolicyName: string): IManagedPolicy {
+    class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = Lazy.stringValue({
         produce(ctx: IResolveContext) {
           return Stack.of(ctx.scope).formatArn({
@@ -109,7 +108,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
         }
       });
     }
-    return new CustomerManagedPolicy();
+    return new Import(scope, id);
   }
 
   /**
@@ -137,8 +136,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
     }
     return new AwsManagedPolicy();
   }
+
   /**
    * Returns the ARN of this managed policy.
+   *
+   * @attribute
    */
   public readonly managedPolicyArn: string;
 
