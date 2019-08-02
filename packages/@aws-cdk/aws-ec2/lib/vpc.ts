@@ -685,7 +685,7 @@ export class Vpc extends VpcBase {
    * Import an existing VPC from by querying the AWS environment this stack is deployed to.
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
-    const filter: {[key: string]: string} = options.tags || {};
+    const filter: {[key: string]: string} = makeTagFilter(options.tags);
 
     // We give special treatment to some tags
     if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
@@ -701,6 +701,17 @@ export class Vpc extends VpcBase {
     });
 
     return this.fromVpcAttributes(scope, id, attributes);
+
+    /**
+     * Prefixes all keys in the argument with `tag:`.`
+     */
+    function makeTagFilter(tags: { [name: string]: string } | undefined): { [name: string]: string } {
+      const result: { [name: string]: string } = {};
+      for (const [name, value] of Object.entries(tags || {})) {
+        result[`tag:${name}`] = value;
+      }
+      return result;
+    }
   }
 
   /**

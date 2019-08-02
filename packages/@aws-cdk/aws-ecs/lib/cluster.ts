@@ -20,9 +20,11 @@ export interface ClusterProps {
   readonly clusterName?: string;
 
   /**
-   * The VPC to associate with the cluster.
+   * The VPC where your ECS instances will be running or your ENIs will be deployed
+   *
+   * @default - creates a new VPC with two AZs
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -66,10 +68,7 @@ export class Cluster extends Resource implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  /**
-   * Constructs a new instance of the Cluster class.
-   */
-  constructor(scope: Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps = {}) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
@@ -85,7 +84,7 @@ export class Cluster extends Resource implements ICluster {
     });
     this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
-    this.vpc = props.vpc;
+    this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
   }
 
   /**
