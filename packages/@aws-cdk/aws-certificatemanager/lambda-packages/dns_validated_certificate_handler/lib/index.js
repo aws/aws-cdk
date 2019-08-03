@@ -76,7 +76,7 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  */
 const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
   const crypto = require('crypto');
-  const acm = new aws.ACM({region});
+  const acm = new aws.ACM({ region });
   const route53 = new aws.Route53();
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
@@ -96,18 +96,22 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for ACM to provide DNS records for validation...');
 
-  var describeCertResponse;
+  let options;
   let attempt = 0;
   do {
+    if(attempt > 2) {
+      throw new Error('Response from describeCertificate did not contain DomainValidationOptions after 3 attempts.')
+    }
     // Exponential backoff with jitter based on 100ms base
-    await sleep(Math.random() * (Math.pow(attempt, 2) * 100));
-    describeCertResponse = await acm.describeCertificate({
+    await sleep(Math.random() * (Math.pow(2, attempt) * 100));
+    const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
-  } while (describeCertResponse.Certificate.DomainValidationOptions < 1 ||
-    'ResourceRecord' in describeCertResponse.Certificate.DomainValidationOptions[0] === false);
+    options =  Certificate.DomainValidationOptions;
+    attempt++;
+  } while (!options || options.length < 1 || !options[0].ResourceRecord);
 
-  const record = describeCertResponse.Certificate.DomainValidationOptions[0].ResourceRecord;
+  const record = options[0].ResourceRecord;
 
   console.log(`Upserting DNS record into zone ${hostedZoneId}: ${record.Name} ${record.Type} ${record.Value}`);
 
@@ -158,7 +162,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
  * @param {string} arn The certificate ARN
  */
 const deleteCertificate = async function (arn, region) {
-  const acm = new aws.ACM({region});
+  const acm = new aws.ACM({ region });
 
   console.log(`Deleting certificate ${arn}`);
 
