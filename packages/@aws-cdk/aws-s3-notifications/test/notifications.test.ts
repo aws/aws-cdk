@@ -88,7 +88,7 @@ test('bucketNotificationTarget is not called during synthesis', () => {
       },
       "Effect": "Allow",
       "Principal": {
-        "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
+        "Service": "s3.amazonaws.com"
       },
       "Resource": {
         "Ref": "TopicBFC7AF6E"
