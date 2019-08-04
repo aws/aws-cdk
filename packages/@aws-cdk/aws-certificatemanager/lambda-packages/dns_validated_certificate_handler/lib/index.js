@@ -100,11 +100,12 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   let attempt = 0;
   do {
     // Exponential backoff with jitter based on 100ms base
-    await sleep(Math.random() * (Math.pow(attempt, 2) * 100));
+    await sleep(Math.random() * (Math.pow(2, attempt) * 100));
     describeCertResponse = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
-  } while (describeCertResponse.Certificate.DomainValidationOptions < 1 ||
+  } while (!describeCertResponse.Certificate.DomainValidationOptions ||
+    describeCertResponse.Certificate.DomainValidationOptions.length < 1 ||
     'ResourceRecord' in describeCertResponse.Certificate.DomainValidationOptions[0] === false);
 
   const record = describeCertResponse.Certificate.DomainValidationOptions[0].ResourceRecord;
