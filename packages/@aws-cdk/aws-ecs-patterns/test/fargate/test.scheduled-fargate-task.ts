@@ -29,7 +29,7 @@ export = {
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
-          Id: "ScheduledFargateTaskScheduledTaskDef4D131A6E",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
         }
@@ -41,7 +41,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -54,11 +53,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -78,7 +73,7 @@ export = {
       desiredTaskCount: 2,
       memoryLimitMiB: 512,
       cpu: 2,
-      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -91,7 +86,7 @@ export = {
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
-          Id: "ScheduledFargateTaskScheduledTaskDef4D131A6E",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522", "Arn"] }
         }
@@ -103,17 +98,12 @@ export = {
         {
           Environment: [
             {
-              Name: "name",
-              Value: "TRIGGER"
-            },
-            {
-              Name: "value",
+              Name: "TRIGGER",
               Value: "CloudWatch Events"
             }
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -126,11 +116,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -156,7 +142,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -169,11 +154,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -205,7 +186,6 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -218,11 +198,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));

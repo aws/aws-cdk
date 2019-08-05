@@ -18,7 +18,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -1196,7 +1197,7 @@
                 ]
               ]
             },
-            "Id": "PipelineStackPipeline9DB740AF",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",
@@ -1268,7 +1269,7 @@
                 ]
               ]
             },
-            "Id": "PipelineStackPipeline9DB740AF",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",
