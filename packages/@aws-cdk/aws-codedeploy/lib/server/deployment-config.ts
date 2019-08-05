@@ -84,8 +84,8 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
   public static readonly ALL_AT_ONCE   = deploymentConfig('CodeDeployDefault.AllAtOnce');
 
   /**
-   * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK app,
+   * or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct

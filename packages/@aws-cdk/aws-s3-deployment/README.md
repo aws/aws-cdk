@@ -63,6 +63,32 @@ By default, the contents of the destination bucket will be deleted when the
 changed. You can use the option `retainOnDelete: true` to disable this behavior,
 in which case the contents will be retained.
 
+## CloudFront Invalidation
+
+You can provide a CloudFront distribution and optional paths to invalidate after the bucket deployment finishes.
+
+```ts
+const bucket = new s3.Bucket(this, 'Destination');
+
+const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
+  originConfigs: [
+    {
+      s3OriginSource: {
+        s3BucketSource: bucket
+      },
+      behaviors : [ {isDefaultBehavior: true}]
+    }
+  ]
+});
+
+new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
+  source: s3deploy.Source.asset('./website-dist'),
+  destinationBucket: bucket,
+  distribution,
+  distributionPaths: ['/images/*.png'],
+});
+```
+
 ## Notes
 
  * This library uses an AWS CloudFormation custom resource which about 10MiB in
@@ -70,7 +96,7 @@ in which case the contents will be retained.
  * AWS Lambda execution time is limited to 15min. This limits the amount of data which can
    be deployed into the bucket by this timeout.
  * When the `BucketDeployment` is removed from the stack, the contents are retained
-   in the destination bucket ([#952](https://github.com/awslabs/aws-cdk/issues/952)).
+   in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
  * Bucket deployment _only happens_ during stack create/update. This means that
    if you wish to update the contents of the destination, you will need to
    change the source s3 key (or bucket), so that the resource will be updated.
@@ -90,5 +116,5 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/awslabs/aws-cdk/issues/953))
- - [ ] Support "blue/green" deployments ([#954](https://github.com/awslabs/aws-cdk/issues/954))
+ - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/aws/aws-cdk/issues/953))
+ - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

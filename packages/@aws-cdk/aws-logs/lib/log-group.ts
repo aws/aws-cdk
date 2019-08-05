@@ -259,7 +259,12 @@ export enum RetentionDays {
   /**
    * 10 years
    */
-  TEN_YEARS = 3653
+  TEN_YEARS = 3653,
+
+  /**
+   * Retain logs forever
+   */
+  INFINITE = 9999,
 }
 
 /**
@@ -276,9 +281,9 @@ export interface LogGroupProps {
   /**
    * How long, in days, the log contents will be retained.
    *
-   * To retain all logs, set this value to Infinity.
+   * To retain all logs, set this value to RetentionDays.INFINITE.
    *
-   * @default RetentionDays.TwoYears
+   * @default RetentionDays.TWO_YEARS
    */
   readonly retention?: RetentionDays;
 
@@ -328,7 +333,7 @@ export class LogGroup extends LogGroupBase {
 
     let retentionInDays = props.retention;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
-    if (retentionInDays === Infinity) { retentionInDays = undefined; }
+    if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);

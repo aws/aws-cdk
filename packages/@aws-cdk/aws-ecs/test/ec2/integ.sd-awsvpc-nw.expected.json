@@ -829,9 +829,7 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "Memory": 256,
-            "MountPoints": [],
             "Name": "frontend",
             "PortMappings": [
               {
@@ -839,9 +837,7 @@
                 "HostPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Family": "awsecsintegecsTaskDef8DD0C801",

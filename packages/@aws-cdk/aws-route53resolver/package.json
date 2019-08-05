@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53resolver",
-  "version": "0.37.0",
+  "version": "1.3.0",
   "description": "The CDK Construct Library for AWS::Route53Resolver",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,17 +26,14 @@
         "distName": "aws-cdk.aws-route53resolver",
         "module": "aws_cdk.aws_route53resolver"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon Route53 Resolver"
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-route53resolver"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
     "integ": "cdk-integ",
@@ -66,16 +63,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.37.0",
-    "cdk-build-tools": "^0.37.0",
-    "cfn2ts": "^0.37.0",
-    "pkglint": "^0.37.0"
+    "@aws-cdk/assert": "^1.3.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.37.0"
+    "@aws-cdk/core": "^1.3.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^0.37.0"
+    "@aws-cdk/core": "^1.3.0"
   },
   "engines": {
     "node": ">= 8.10.0"

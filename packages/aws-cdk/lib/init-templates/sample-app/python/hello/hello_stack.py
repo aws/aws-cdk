@@ -6,13 +6,13 @@ from aws_cdk import (
     core
 )
 
-from hello_construct import HelloConstruct
+from .hello_construct import HelloConstruct
 
 
 class MyStack(core.Stack):
 
-    def __init__(self, app: core.App, id: str, **kwargs) -> None:
-        super().__init__(app, id, **kwargs)
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
 
         queue = sqs.Queue(
             self, "MyFirstQueue",

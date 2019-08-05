@@ -36,8 +36,8 @@ export interface ITaskDefinition extends IResource {
 }
 
 /**
- * The common properties for all task definitions. For more information, see Task Definition Parameters:
- * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html]
+ * The common properties for all task definitions. For more information, see
+ * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html).
  */
 export interface CommonTaskDefinitionProps {
   /**
@@ -64,8 +64,8 @@ export interface CommonTaskDefinitionProps {
   readonly taskRole?: iam.IRole;
 
   /**
-   * The list of volume definitions for the task. For more information, see Task Definition Parameter Volumes:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes]
+   * The list of volume definitions for the task. For more information, see
+   * [Task Definition Parameter Volumes](https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes).
    *
    * @default - No volumes are passed to the Docker daemon on a container instance.
    */
@@ -265,7 +265,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: Lazy.anyValue({ produce: () => this.containers.map(x => x.renderContainerDefinition()) }),
+      containerDefinitions: Lazy.anyValue({ produce: () => this.containers.map(x => x.renderContainerDefinition(this)) }),
       volumes: Lazy.anyValue({ produce: () => this.volumes }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
@@ -376,7 +376,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       // Container sizes
       for (const container of this.containers) {
         if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.node.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
         }
       }
     }
@@ -418,8 +418,7 @@ export enum NetworkMode {
  * For tasks that use a Docker volume, specify a DockerVolumeConfiguration.
  * For tasks that use a bind mount host volume, specify a host and optional sourcePath.
  *
- * For more information, see Using Data Volumes in Tasks:
- * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_data_volumes.html]
+ * For more information, see [Using Data Volumes in Tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_data_volumes.html).
  */
 export interface Volume {
   /**
