@@ -19,7 +19,7 @@ the policy either by calling `xxx.attachInlinePolicy(policy)` or `policy.attachT
 
 [attaching policies to user and group](test/example.attaching.lit.ts)
 
-Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
+Managed policies can be attached using `xxx.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`:
 
 [attaching managed policies](test/example.managedpolicy.lit.ts)
 
