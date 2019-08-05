@@ -1,16 +1,28 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
-import { AwsLogDriver, BaseService, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { IVpc } from '@aws-cdk/aws-ec2';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Construct } from '@aws-cdk/core';
+import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
  */
 export interface QueueProcessingServiceBaseProps {
   /**
-   * The name of the cluster that hosts the service.
+   * The cluster where your service will be deployed
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well
    */
-  readonly cluster: ICluster;
+  readonly cluster?: ICluster;
+
+  /**
+   * VPC that the cluster instances or tasks are running in
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default - use vpc of cluster or create a new one
+   */
+  readonly vpc?: IVpc;
 
   /**
    * The image used to start a container.
@@ -87,6 +99,13 @@ export interface QueueProcessingServiceBaseProps {
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
   readonly scalingSteps?: ScalingInterval[];
+
+  /**
+   * The LogDriver to use for logging.
+   *
+   * @default AwsLogDriver if enableLogging is true
+   */
+  readonly logDriver?: LogDriver;
 }
 
 /**
@@ -117,6 +136,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
   public readonly desiredCount: number;
 
   /**
+   * The minimum number of tasks to run
+   */
+  public readonly cluster: ICluster;
+
+  /**
    * The maximum number of instances for autoscaling to scale up to
    */
   public readonly maxCapacity: number;
@@ -136,6 +160,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
   constructor(scope: Construct, id: string, props: QueueProcessingServiceBaseProps) {
     super(scope, id);
 
+    if (props.cluster && props.vpc) {
+      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+    }
+    this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+
     // Create the SQS queue if one is not provided
     this.sqsQueue = props.queue !== undefined ? props.queue : new Queue(this, 'EcsProcessingQueue', {});
 
@@ -145,7 +174,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
-    this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
+    this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
@@ -173,6 +202,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
       scalingSteps: this.scalingSteps
     });
+  }
+
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+    // magic string to avoid collision with user-defined constructs
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const stack = Stack.of(scope);
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**
