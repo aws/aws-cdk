@@ -76,6 +76,7 @@
           "Version": "2012-10-17"
         }
       },
+      "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
     "FifoQueueE5FF7273": {
