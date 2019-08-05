@@ -41,7 +41,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -54,11 +53,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -109,7 +104,6 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -122,11 +116,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -152,7 +142,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -165,11 +154,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -201,7 +186,6 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -214,11 +198,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));

@@ -44,7 +44,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -58,11 +57,7 @@ export = {
             }
           },
           Memory: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -117,7 +112,6 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -131,11 +125,7 @@ export = {
             }
           },
           Memory: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -165,7 +155,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -179,11 +168,7 @@ export = {
             }
           },
           MemoryReservation: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -219,7 +204,6 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -233,11 +217,7 @@ export = {
             }
           },
           MemoryReservation: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));

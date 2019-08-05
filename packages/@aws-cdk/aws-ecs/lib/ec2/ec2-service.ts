@@ -195,7 +195,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
 
     this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.node.id,
+      containerName: this.taskDefinition.defaultContainer!.containerName,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
   }

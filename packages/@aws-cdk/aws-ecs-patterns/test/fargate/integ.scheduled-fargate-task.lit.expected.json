@@ -368,7 +368,6 @@
                 ]
               ]
             },
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -381,11 +380,7 @@
                 }
               }
             },
-            "MountPoints": [],
-            "Name": "ScheduledContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "ScheduledContainer"
           }
         ],
         "Cpu": "256",

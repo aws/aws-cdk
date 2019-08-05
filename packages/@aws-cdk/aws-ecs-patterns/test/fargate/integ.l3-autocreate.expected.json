@@ -134,7 +134,6 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -147,16 +146,13 @@
                 }
               }
             },
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Cpu": "512",
@@ -813,7 +809,6 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -826,16 +821,13 @@
                 }
               }
             },
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Cpu": "512",

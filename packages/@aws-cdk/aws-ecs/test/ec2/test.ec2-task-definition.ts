@@ -69,8 +69,6 @@ export = {
           Essential: true,
           Memory: 512,
           Image: "amazon/amazon-ecs-sample",
-          Links: [],
-          MountPoints: [],
           Name: "web",
           PortMappings: [{
             ContainerPort: 3000,
@@ -82,7 +80,6 @@ export = {
             Name: "rss",
             SoftLimit: 128
           }],
-          VolumesFrom: []
         }],
       }));
 
@@ -128,7 +125,132 @@ export = {
 
       test.done();
     },
+    "correctly sets container dependenices"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
+      const dependency1 = taskDefinition.addContainer('dependency1', {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const dependency2 = taskDefinition.addContainer('dependency2', {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      container.addContainerDependencies({
+        container: dependency1
+      },
+      {
+        container: dependency2,
+        condition: ecs.ContainerDependencyCondition.SUCCESS
+      }
+      );
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        Family: "Ec2TaskDef",
+        ContainerDefinitions: [{
+          Name: "dependency1"
+        },
+        {
+          Name: "dependency2"
+        },
+        {
+          Name: "web",
+          DependsOn: [{
+              Condition: "HEALTHY",
+              ContainerName: "dependency1"
+            },
+            {
+              Condition: "SUCCESS",
+              ContainerName: "dependency2"
+            }]
+        }]
+      }));
+
+      test.done();
+    },
+    "correctly sets links"(test: Test) {
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.BRIDGE
+      });
+
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const linkedContainer1 = taskDefinition.addContainer("linked1", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const linkedContainer2 = taskDefinition.addContainer("linked2", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      container.addLink(linkedContainer1, 'linked');
+      container.addLink(linkedContainer2);
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        ContainerDefinitions: [{
+          Links: [
+            'linked1:linked',
+            'linked2'
+          ],
+          Name: "web"
+        },
+        {
+          Name: 'linked1'
+        },
+        {
+          Name: 'linked2'
+        }]
+      }));
+
+      test.done();
+    },
+    "correctly sets volumes from"(test: Test) {
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {});
+
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      container.addVolumesFrom({
+        sourceContainer: "SourceContainer",
+        readOnly: true
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        ContainerDefinitions: [{
+          VolumesFrom: [
+            {
+              SourceContainer: "SourceContainer",
+              ReadOnly: true,
+            }
+          ]
+        }]
+      }));
+
+      test.done();
+    },
     "correctly sets volumes"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

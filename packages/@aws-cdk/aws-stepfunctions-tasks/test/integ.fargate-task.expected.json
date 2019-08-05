@@ -125,7 +125,6 @@
                 ]
               ]
             },
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -137,11 +136,7 @@
               }
             },
             "Memory": 256,
-            "MountPoints": [],
-            "Name": "TheContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "TheContainer"
           }
         ],
         "Cpu": "256",

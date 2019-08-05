@@ -232,12 +232,7 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
-            "MountPoints": [],
-            "Name": "Container",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "Container"
           }
         ],
         "Cpu": "256",
