@@ -181,20 +181,17 @@ export class ConstructNode {
   }
 
   /**
-   * Return a descendant by path
+   * Return a direct child by id
    *
-   * Throws an error if the descendant is not found.
+   * Throws an error if the child is not found.
    *
-   * Note that if the original ID of the construct you are looking for contained
-   * a '/', then it would have been replaced by '--'.
-   *
-   * @param path Relative path of a direct or indirect child
-   * @returns Child with the given path.
+   * @param id Identifier of direct child
+   * @returns Child with the given id.
    */
-  public findChild(path: string): IConstruct {
-    const ret = this.tryFindChild(path);
+  public findChild(id: string): IConstruct {
+    const ret = this.tryFindChild(id);
     if (!ret) {
-      throw new Error(`No child with path: '${path}'`);
+      throw new Error(`No child with id: '${id}'`);
     }
     return ret;
   }
