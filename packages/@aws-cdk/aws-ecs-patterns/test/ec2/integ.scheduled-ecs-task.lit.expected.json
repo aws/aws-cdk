@@ -671,7 +671,6 @@
             ],
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -685,11 +684,7 @@
               }
             },
             "Memory": 512,
-            "MountPoints": [],
-            "Name": "ScheduledContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "ScheduledContainer"
           }
         ],
         "ExecutionRoleArn": {

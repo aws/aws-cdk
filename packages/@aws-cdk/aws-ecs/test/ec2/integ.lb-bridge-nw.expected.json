@@ -841,9 +841,7 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "Memory": 256,
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
@@ -851,9 +849,7 @@
                 "HostPort": 8080,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Family": "awsecsintegecsTaskDef8DD0C801",
