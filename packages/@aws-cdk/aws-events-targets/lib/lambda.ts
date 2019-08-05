@@ -42,6 +42,7 @@ export class LambdaFunction implements events.IRuleTarget {
       id: '',
       arn: this.handler.functionArn,
       input: this.props.event,
+      targetResource: this.handler,
     };
   }
 }

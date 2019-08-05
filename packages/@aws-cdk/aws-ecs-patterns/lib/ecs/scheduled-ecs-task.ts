@@ -1,7 +1,10 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { ScheduledTaskBase, ScheduledTaskBaseProps } from '../base/scheduled-task-base';
 
+/**
+ * The properties for the ScheduledEc2Task task.
+ */
 export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
   /**
    * The minimum number of CPU units to reserve for the container.
@@ -41,12 +44,21 @@ export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
  * A scheduled Ec2 task that will be initiated off of cloudwatch events.
  */
 export class ScheduledEc2Task extends ScheduledTaskBase {
-  constructor(scope: cdk.Construct, id: string, props: ScheduledEc2TaskProps) {
+
+  /**
+   * The ECS service in this construct
+   */
+  public readonly taskDefinition: Ec2TaskDefinition;
+
+  /**
+   * Constructs a new instance of the ScheduledEc2Task class.
+   */
+  constructor(scope: Construct, id: string, props: ScheduledEc2TaskProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start, also creates a log driver
-    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'ScheduledTaskDef');
-    taskDefinition.addContainer('ScheduledContainer', {
+    this.taskDefinition = new Ec2TaskDefinition(this, 'ScheduledTaskDef');
+    this.taskDefinition.addContainer('ScheduledContainer', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
@@ -57,6 +69,6 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
       logging: this.createAWSLogDriver(this.node.id)
     });
 
-    this.addTaskDefinitionToEventTarget(taskDefinition);
+    this.addTaskDefinitionToEventTarget(this.taskDefinition);
   }
 }
