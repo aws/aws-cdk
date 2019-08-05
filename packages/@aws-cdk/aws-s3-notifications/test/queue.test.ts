@@ -140,12 +140,3 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
     Description: "Created by Queue"
   });
 });
-
-test('fails if trying to subscribe to a queue with managed kms encryption', () => {
-  const stack = new Stack();
-  const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
-  const bucket = new s3.Bucket(stack, 'Bucket');
-  expect(() => {
-    bucket.addObjectRemovedNotification(new notif.SqsDestination(queue));
-  }).toThrow('Unable to add statement to IAM resource policy for KMS key: "alias/aws/sqs"');
-});
