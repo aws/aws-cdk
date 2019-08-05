@@ -58,9 +58,7 @@ installed, or use the Docker workflow.
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
 ## Pull Requests
-*PLEASE NOTE: We are working hard to stabilize the CDK APIs and tuning them to meet our consistency guidelines. While we work on getting the APIs aligned with our guidelines, we are pausing work on most community PRs starting around the 21st of this month. Please continue to report issues and submit feature requests, of course. We expect to get back to work on community PRs within a few weeks.*
 
----
 ### Pull Request Checklist
 
 * [ ] Testing
