@@ -684,12 +684,12 @@
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
       },
-      "cluster22ManifestResourceHandlerAEBB21E4": {
+      "cluster22KubernetesResourceHandler599F07E6": {
         "Type": "AWS::Lambda::Function",
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "cluster22ManifestResourceHandlerCodeS3Bucket87519699"
+              "Ref": "cluster22KubernetesResourceHandlerCodeS3Bucket73E6A860"
             },
             "S3Key": {
               "Fn::Join": [
@@ -702,7 +702,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "cluster22ManifestResourceHandlerCodeS3VersionKey0139C827"
+                            "Ref": "cluster22KubernetesResourceHandlerCodeS3VersionKey7C559451"
                           }
                         ]
                       }
@@ -715,7 +715,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "cluster22ManifestResourceHandlerCodeS3VersionKey0139C827"
+                            "Ref": "cluster22KubernetesResourceHandlerCodeS3VersionKey7C559451"
                           }
                         ]
                       }
@@ -757,11 +757,11 @@
         ]
       },
       "cluster22AwsAuthmanifest4685C84D": {
-        "Type": "Custom::AWSCDK-EKS-KubernetesManifest",
+        "Type": "Custom::AWSCDK-EKS-KubernetesResource",
         "Properties": {
           "ServiceToken": {
             "Fn::GetAtt": [
-              "cluster22ManifestResourceHandlerAEBB21E4",
+              "cluster22KubernetesResourceHandler599F07E6",
               "Arn"
             ]
           },
@@ -783,7 +783,7 @@
                     "Arn"
                   ]
                 },
-                "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\"}}]"
+                "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
               ]
             ]
           }
@@ -1057,11 +1057,11 @@
         }
       },
       "cluster22manifesthellokubernetes849F52EA": {
-        "Type": "Custom::AWSCDK-EKS-KubernetesManifest",
+        "Type": "Custom::AWSCDK-EKS-KubernetesResource",
         "Properties": {
           "ServiceToken": {
             "Fn::GetAtt": [
-              "cluster22ManifestResourceHandlerAEBB21E4",
+              "cluster22KubernetesResourceHandler599F07E6",
               "Arn"
             ]
           },
@@ -1124,17 +1124,17 @@
         "Type": "String",
         "Description": "Artifact hash for asset \"k8s-cluster/cluster22/Resource/ResourceHandler/Code\""
       },
-      "cluster22ManifestResourceHandlerCodeS3Bucket87519699": {
+      "cluster22KubernetesResourceHandlerCodeS3Bucket73E6A860": {
         "Type": "String",
-        "Description": "S3 bucket for asset \"k8s-cluster/cluster22/ManifestResourceHandler/Code\""
+        "Description": "S3 bucket for asset \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
       },
-      "cluster22ManifestResourceHandlerCodeS3VersionKey0139C827": {
+      "cluster22KubernetesResourceHandlerCodeS3VersionKey7C559451": {
         "Type": "String",
-        "Description": "S3 key for asset version \"k8s-cluster/cluster22/ManifestResourceHandler/Code\""
+        "Description": "S3 key for asset version \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
       },
-      "cluster22ManifestResourceHandlerCodeArtifactHash9DC87F49": {
+      "cluster22KubernetesResourceHandlerCodeArtifactHash8138542A": {
         "Type": "String",
-        "Description": "Artifact hash for asset \"k8s-cluster/cluster22/ManifestResourceHandler/Code\""
+        "Description": "Artifact hash for asset \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
       }
     },
     "Outputs": {
