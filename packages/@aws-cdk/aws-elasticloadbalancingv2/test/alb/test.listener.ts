@@ -241,16 +241,65 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Actions: [
         {
-          TargetGroupArn: { Ref: "LBListenerWithPathGroupE889F9E5" },
+          TargetGroupArn: { Ref: "LBListenerLambdaTargetGroupE889F9E5" },
           Type: "forward"
         }
       ],
     }));
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      VpcId: { Ref: "Stack8A423254" },
       TargetType: "lambda",
       Targets: [
         { Id: "arn:aws:lambda:region:account-id:function:function-1234" }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Can create target groups with lambda targets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    listener.addTargets('Targets', {
+      targets: [new elbv2.LambdaTarget('arn:aws:lambda:region:account-id:function:function-1234')]
+    });
+    listener.addTargets('LambdaTargets', {
+      pathPattern: '/lambda',
+      priority: 20,
+      targets: [new elbv2.LambdaTarget('arn:aws:lambda:region:account-id:function:function-1235')]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          TargetGroupArn: { Ref: "LBListenerTargetsGroup76EF81E8" },
+          Type: "forward"
+        }
+      ],
+    }));
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetType: "lambda",
+      Targets: [
+        { Id: "arn:aws:lambda:region:account-id:function:function-1234" }
+      ]
+    }));
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          TargetGroupArn: { Ref: "LBListenerLambdaTargetsGroup411C5453" },
+          Type: "forward"
+        }
+      ],
+    }));
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetType: "lambda",
+      Targets: [
+        { Id: "arn:aws:lambda:region:account-id:function:function-1235" }
       ]
     }));
 
