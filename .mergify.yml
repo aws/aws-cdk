@@ -8,6 +8,7 @@ pull_request_rules:
     - -closed
     - -locked
     - -label=blocked
+    - -label=do-not-merge
     - "#approved-reviews-by>=1"
     - "#changes-requested-reviews-by=0"
     - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
