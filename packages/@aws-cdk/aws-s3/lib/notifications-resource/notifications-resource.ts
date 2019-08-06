@@ -122,6 +122,8 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
   }
 
   const renderedRules = new Array<FilterRule>();
+  let hasPrefix = false;
+  let hasSuffix = false;
 
   for (const rule of filters) {
     if (!rule.suffix && !rule.prefix) {
@@ -129,11 +131,19 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
     }
 
     if (rule.suffix) {
+      if (hasSuffix) {
+        throw new Error('Cannot specify more than one suffix rule in a filter.');
+      }
       renderedRules.push({ Name: 'suffix', Value: rule.suffix });
+      hasSuffix = true;
     }
 
     if (rule.prefix) {
+      if (hasPrefix) {
+        throw new Error('Cannot specify more than one prefix rule in a filter.');
+      }
       renderedRules.push({ Name: 'prefix', Value: rule.prefix });
+      hasPrefix = true;
     }
   }
 

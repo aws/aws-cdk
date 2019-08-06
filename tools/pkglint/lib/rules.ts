@@ -9,7 +9,7 @@ import {
   expectDevDependency, expectJSON,
   fileShouldBe, fileShouldContain,
   findInnerPackages,
-  monoRepoRoot, monoRepoVersion
+  monoRepoRoot,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -354,30 +354,6 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
-export class AWSDocsMetadata extends ValidationRule {
-  public readonly name = 'jsii/awsdocs';
-
-  public validate(pkg: PackageJson): void {
-    const scopes = pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
-    if (!scopes) {
-      return;
-    }
-    const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
-    const serviceName = AWS_SERVICE_NAMES[scope];
-    const title = deepGet(pkg.json, ['jsii', 'metadata', 'awsdocs:title']);
-    if (!title || (serviceName && serviceName !== title)) {
-      pkg.report({
-        ruleName: this.name,
-        message: [
-          `JSII packages bound to a CloudFormation scope must have the awsdocs:title JSII metadata entry.`,
-          `Service names are recorded in ${require.resolve('./aws-service-official-names.json')}`,
-        ].join('\n'),
-        fix: serviceName ? () => deepSet(pkg.json, ['jsii', 'metadata', 'awsdocs:title'], serviceName) : undefined
-      });
-    }
-  }
-}
-
 export class CDKPackage extends ValidationRule {
   public readonly name = 'package-info/scripts/package';
 
@@ -583,7 +559,10 @@ export class MustDependOnBuildTools extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-    expectDevDependency(this.name, pkg, 'cdk-build-tools', '^' + monoRepoVersion());
+    expectDevDependency(this.name,
+      pkg,
+      'cdk-build-tools',
+      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-build-tools'))}`);
   }
 }
 
@@ -681,7 +660,7 @@ export class GlobalDevDependencies extends ValidationRule {
       'tslint',
       'nodeunit',
       '@types/nodeunit',
-      '@types/node',
+      // '@types/node', // we tend to get @types/node 12.x from transitive closures now, it breaks builds.
       'nyc'
     ];
 
@@ -753,7 +732,10 @@ export class MustHaveIntegCommand extends ValidationRule {
     if (!hasIntegTests(pkg)) { return; }
 
     expectJSON(this.name, pkg, 'scripts.integ', 'cdk-integ');
-    expectDevDependency(this.name, pkg, 'cdk-integ-tools', '^' + monoRepoVersion());
+    expectDevDependency(this.name,
+      pkg,
+      'cdk-integ-tools',
+      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-integ-tools'))}`);
   }
 }
 
@@ -763,7 +745,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', '^' + monoRepoVersion());
+    expectDevDependency(this.name, pkg, 'pkglint', `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../'))}`);
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({

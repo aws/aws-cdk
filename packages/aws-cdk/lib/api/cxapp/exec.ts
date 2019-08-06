@@ -4,10 +4,10 @@ import fs = require('fs-extra');
 import path = require('path');
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
-import { SDK } from '../util/sdk';
+import { ISDK } from '../util/sdk';
 
 /** Invokes the cloud executable and returns JSON output */
-export async function execProgram(aws: SDK, config: Configuration): Promise<cxapi.CloudAssembly> {
+export async function execProgram(aws: ISDK, config: Configuration): Promise<cxapi.CloudAssembly> {
   const env: { [key: string]: string } = { };
 
   const context = config.context.all;
@@ -126,7 +126,7 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
  *
  * @param context The context key/value bash.
  */
-async function populateDefaultEnvironmentIfNeeded(aws: SDK, env: { [key: string]: string | undefined}) {
+async function populateDefaultEnvironmentIfNeeded(aws: ISDK, env: { [key: string]: string | undefined}) {
   env[cxapi.DEFAULT_REGION_ENV] = await aws.defaultRegion();
   debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 

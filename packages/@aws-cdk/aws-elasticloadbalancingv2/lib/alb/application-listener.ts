@@ -198,6 +198,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       }
     }
     const targetType: TargetType | undefined = hasLambdaTargets(props.targets || []) ? TargetType.LAMBDA : undefined;
+    const vpc: ec2.IVpc | undefined = hasLambdaTargets(props.targets || []) ? undefined : this.loadBalancer.vpc;
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
       deregistrationDelay: props.deregistrationDelay,
@@ -209,7 +210,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       targetType,
-      vpc: this.loadBalancer.vpc,
+      vpc
     });
 
     this.addTargetGroups(id, {

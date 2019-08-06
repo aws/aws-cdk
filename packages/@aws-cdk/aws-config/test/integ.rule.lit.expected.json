@@ -206,7 +206,7 @@
             "Arn": {
               "Ref": "ComplianceTopic0229448B"
             },
-            "Id": "awscdkconfigruleintegComplianceTopic55CAF01A"
+            "Id": "Target0"
           }
         ]
       }
