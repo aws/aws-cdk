@@ -174,7 +174,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
-    this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
+    this.logDriver = props.logDriver !== undefined
+                        ? props.logDriver
+                        : enableLogging
+                            ? this.createAWSLogDriver(this.node.id)
+                            : undefined;
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };

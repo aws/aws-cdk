@@ -101,7 +101,9 @@ export abstract class ScheduledTaskBase extends Construct {
       schedule: props.schedule,
     });
 
-    this.logDriver = props.logDriver !== undefined ? props.logDriver : this.createAWSLogDriver(this.node.id);
+    this.logDriver = props.logDriver !== undefined
+                        ? props.logDriver
+                        : this.createAWSLogDriver(this.node.id);
   }
 
   /**
