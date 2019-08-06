@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -279,6 +280,114 @@ export = {
           }]
         }
       ]
+    }));
+
+    test.done();
+
+  },
+
+  'can add secret environment variables to the container definition'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
+      parameterName: '/name',
+      version: 1
+    });
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      secrets: {
+        SECRET: ecs.Secret.fromSecretsManager(secret),
+        PARAMETER: ecs.Secret.fromSsmParameter(parameter),
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Secrets: [
+            {
+              Name: "SECRET",
+              ValueFrom: {
+                Ref: "SecretA720EF05"
+              }
+            },
+            {
+              Name: "PARAMETER",
+              ValueFrom: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      Ref: "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      Ref: "AWS::Region"
+                    },
+                    ":",
+                    {
+                      Ref: "AWS::AccountId"
+                    },
+                    ":parameter/name"
+                  ]
+                ]
+              }
+            },
+          ]
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'SecretA720EF05'
+            }
+          },
+          {
+            Action: [
+              'ssm:DescribeParameters',
+              'ssm:GetParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory'
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition'
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId'
+                  },
+                  ':parameter/name'
+                ]
+              ]
+            }
+          }
+        ],
+        Version: '2012-10-17'
+      }
     }));
 
     test.done();

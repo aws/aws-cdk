@@ -96,7 +96,7 @@ export class Policy extends Resource implements IPolicy {
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
-        Lazy.stringValue({ produce: () => generatePolicyName(resource.logicalId) })
+        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) })
     });
 
     const resource = new CfnPolicy(this, 'Resource', {
