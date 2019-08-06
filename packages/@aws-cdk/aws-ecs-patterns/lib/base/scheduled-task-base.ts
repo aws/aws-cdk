@@ -1,5 +1,5 @@
 import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { AwsLogDriver, ContainerImage, ICluster, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
+import { AwsLogDriver, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
 import { Rule } from "@aws-cdk/aws-events";
 import { EcsTask } from "@aws-cdk/aws-events-targets";
 import { Construct } from "@aws-cdk/core";
@@ -60,6 +60,13 @@ export interface ScheduledTaskBaseProps {
    * @default - No secret environment variables.
    */
   readonly secrets?: { [key: string]: Secret };
+
+  /**
+   * The LogDriver to use for logging.
+   *
+   * @default AwsLogDriver if enableLogging is true
+   */
+  readonly logDriver?: LogDriver;
 }
 
 /**
@@ -75,6 +82,10 @@ export abstract class ScheduledTaskBase extends Construct {
    */
   public readonly desiredTaskCount: number;
   public readonly eventRule: Rule;
+  /**
+   * The AwsLogDriver to use for logging if logging is enabled.
+   */
+  public readonly logDriver?: LogDriver;
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
@@ -89,6 +100,10 @@ export abstract class ScheduledTaskBase extends Construct {
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
     });
+
+    this.logDriver = props.logDriver !== undefined
+                        ? props.logDriver
+                        : this.createAWSLogDriver(this.node.id);
   }
 
   /**
