@@ -20,9 +20,9 @@ export class Fn {
    * @param attributeName The name of the resource-specific attribute whose
    * value you want. See the resource's reference page for details about the
    * attributes available for that resource type.
-   * @returns a CloudFormationToken object
+   * @returns an IResolvable object
    */
-  public static getAtt(logicalNameOfResource: string, attributeName: string): Token {
+  public static getAtt(logicalNameOfResource: string, attributeName: string): IResolvable {
     return new FnGetAtt(logicalNameOfResource, attributeName);
   }
 

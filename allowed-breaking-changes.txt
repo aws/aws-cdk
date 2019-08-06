@@ -1,0 +1,1 @@
+change-return-type:@aws-cdk/core.Fn.getAtt
