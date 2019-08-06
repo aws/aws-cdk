@@ -37,7 +37,7 @@ export interface KubernetesResourceProps {
 /**
  * Represents a resource within the Kubernetes system.
  *
- * Alternatively, you can use `cluster.addManifest(resource[, resource, ...])`
+ * Alternatively, you can use `cluster.addResource(resource[, resource, ...])`
  * to define resources on this cluster.
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.

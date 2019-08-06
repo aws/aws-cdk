@@ -31,7 +31,7 @@ cluster.addCapacity('default', {
   desiredCapacity: 10,
 });
 
-cluster.addManifest('mypod', {
+cluster.addResource('mypod', {
   apiVersion: 'v1',
   kind: 'Pod',
   metadata: { name: 'mypod' },
@@ -257,7 +257,7 @@ When kubectl is disabled, you should be aware of the following:
 2. As described in the Amazon EKS User Guide, you will need to manually
    edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html) when you add capacity in order to map
    the IAM instance role to RBAC to allow nodes to join the cluster.
-3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail with an error: `addManifest`, `addRoleMapping`, `addUserMapping`, `addMastersRole`, `props.mastersRole`.
+3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail with an error: `cluster.addResource`, `cluster.awsAuth`, `props.mastersRole`.
 
 ### Roadmap
 

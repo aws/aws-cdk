@@ -185,7 +185,7 @@ export = {
     test.done();
   },
 
-  'addManifest can be used to apply k8s manifests on this cluster'(test: Test) {
+  'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
