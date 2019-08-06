@@ -32,4 +32,7 @@ new ec2.SecurityGroup(stack, 'SecurityGroup', {
 new cdk.CfnOutput(stack, 'PublicSubnets', { value: 'ids:' + vpc.publicSubnets.map(s => s.subnetId).join(',') });
 new cdk.CfnOutput(stack, 'PrivateSubnets', { value: 'ids:' + vpc.privateSubnets.map(s => s.subnetId).join(',') });
 
+// Route table IDs
+new cdk.CfnOutput(stack, 'PublicRouteTables', { value: 'ids: ' + vpc.publicSubnets.map(s => s.routeTable.routeTableId).join(', ') });
+
 app.synth();

@@ -217,20 +217,28 @@ export = {
       test.done();
     },
 
-    'throws with an imported vpc'(test: Test) {
+    'works with an imported vpc'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
         vpcId: 'id',
         privateSubnetIds: ['1', '2', '3'],
+        privateSubnetRouteTableIds: ['rt1', 'rt2', 'rt3'],
         availabilityZones: ['a', 'b', 'c']
       });
 
       // THEN
-      test.throws(() => new GatewayVpcEndpoint(stack, 'Gateway', {
+      new GatewayVpcEndpoint(stack, 'Gateway', {
         service: GatewayVpcEndpointAwsService.S3,
         vpc
-      }), /route table/);
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: { 'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3']] },
+        VpcId: 'id',
+        RouteTableIds: ['rt1', 'rt2', 'rt3'],
+        VpcEndpointType: 'Gateway',
+      }));
 
       test.done();
     }

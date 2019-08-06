@@ -1,31 +1,37 @@
-import autoscaling = require('@aws-cdk/aws-applicationautoscaling');
-import ecs = require('@aws-cdk/aws-ecs');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
+import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
+import { AwsLogDriver, BaseService, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { IQueue, Queue } from '@aws-cdk/aws-sqs';
+import { CfnOutput, Construct } from '@aws-cdk/core';
 
 /**
- * Properties to define a queue processing service
+ * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
  */
 export interface QueueProcessingServiceBaseProps {
   /**
-   * Cluster where service will be deployed
+   * The name of the cluster that hosts the service.
    */
-  readonly cluster: ecs.ICluster;
+  readonly cluster: ICluster;
 
   /**
-   * The image to start.
-   */
-  readonly image: ecs.ContainerImage;
-
-  /**
-   * The CMD value to pass to the container. A string with commands delimited by commas.
+   * The image used to start a container.
    *
-   * @default none
+   * This string is passed directly to the Docker daemon.
+   * Images in the Docker Hub registry are available by default.
+   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
+   */
+  readonly image: ContainerImage;
+
+  /**
+   * The command that is passed to the container.
+   *
+   * If you provide a shell command as a single string, you have to quote command-line arguments.
+   *
+   * @default - CMD value built into container image.
    */
   readonly command?: string[];
 
   /**
-   * Number of desired copies of running tasks
+   * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
@@ -41,9 +47,19 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The environment variables to pass to the container.
    *
+   * The variable `QUEUE_NAME` with value `queue.queueName` will
+   * always be passed.
+   *
    * @default 'QUEUE_NAME: queue.queueName'
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * Secret environment variables to pass to the container
+   *
+   * @default - No secret environment variables.
+   */
+  readonly secrets?: { [key: string]: Secret };
 
   /**
    * A queue for which to process items from.
@@ -53,7 +69,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default 'SQSQueue with CloudFormation-generated name'
    */
-  readonly queue?: sqs.IQueue;
+  readonly queue?: IQueue;
 
   /**
    * Maximum capacity to scale to.
@@ -70,17 +86,17 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
-  readonly scalingSteps?: autoscaling.ScalingInterval[];
+  readonly scalingSteps?: ScalingInterval[];
 }
 
 /**
- * Base class for a Fargate and ECS queue processing service
+ * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services.
  */
-export abstract class QueueProcessingServiceBase extends cdk.Construct {
+export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The SQS queue that the service will process from
    */
-  public readonly sqsQueue: sqs.IQueue;
+  public readonly sqsQueue: IQueue;
 
   // Properties that have defaults defined. The Queue Processing Service will handle assigning undefined properties with default
   // values so that derived classes do not need to maintain the same logic.
@@ -89,28 +105,39 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
    * Environment variables that will include the queue name
    */
   public readonly environment: { [key: string]: string };
+
+  /**
+   * Secret environment variables
+   */
+  public readonly secrets?: { [key: string]: Secret };
+
   /**
    * The minimum number of tasks to run
    */
   public readonly desiredCount: number;
+
   /**
    * The maximum number of instances for autoscaling to scale up to
    */
   public readonly maxCapacity: number;
+
   /**
    * The scaling interval for autoscaling based off an SQS Queue size
    */
-  public readonly scalingSteps: autoscaling.ScalingInterval[];
+  public readonly scalingSteps: ScalingInterval[];
   /**
    * The AwsLogDriver to use for logging if logging is enabled.
    */
-  public readonly logDriver?: ecs.LogDriver;
+  public readonly logDriver?: LogDriver;
 
-  constructor(scope: cdk.Construct, id: string, props: QueueProcessingServiceBaseProps) {
+  /**
+   * Constructs a new instance of the QueueProcessingServiceBase class.
+   */
+  constructor(scope: Construct, id: string, props: QueueProcessingServiceBaseProps) {
     super(scope, id);
 
     // Create the SQS queue if one is not provided
-    this.sqsQueue = props.queue !== undefined ? props.queue : new sqs.Queue(this, 'EcsProcessingQueue', {});
+    this.sqsQueue = props.queue !== undefined ? props.queue : new Queue(this, 'EcsProcessingQueue', {});
 
     // Setup autoscaling scaling intervals
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
@@ -122,13 +149,14 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
+    this.secrets = props.secrets;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
     this.desiredCount = props.desiredTaskCount || 1;
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
 
-    new cdk.CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
-    new cdk.CfnOutput(this, 'SQSQueueArn', { value: this.sqsQueue.queueArn });
+    new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
+    new CfnOutput(this, 'SQSQueueArn', { value: this.sqsQueue.queueArn });
   }
 
   /**
@@ -136,7 +164,7 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
    *
    * @param service the ECS/Fargate service for which to apply the autoscaling rules to
    */
-  protected configureAutoscalingForService(service: ecs.BaseService) {
+  protected configureAutoscalingForService(service: BaseService) {
     const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.desiredCount });
     scalingTarget.scaleOnCpuUtilization('CpuScaling', {
       targetUtilizationPercent: 50,
@@ -152,7 +180,7 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
    *
    * @param prefix the Cloudwatch logging prefix
    */
-  private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver({ streamPrefix: prefix });
+  private createAWSLogDriver(prefix: string): AwsLogDriver {
+    return new AwsLogDriver({ streamPrefix: prefix });
   }
 }

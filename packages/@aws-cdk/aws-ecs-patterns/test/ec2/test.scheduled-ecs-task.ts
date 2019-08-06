@@ -44,7 +44,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -58,11 +57,7 @@ export = {
             }
           },
           Memory: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -85,7 +80,7 @@ export = {
       desiredTaskCount: 2,
       memoryLimitMiB: 512,
       cpu: 2,
-      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -111,17 +106,12 @@ export = {
           Cpu: 2,
           Environment: [
             {
-              Name: "name",
-              Value: "TRIGGER"
-            },
-            {
-              Name: "value",
+              Name: "TRIGGER",
               Value: "CloudWatch Events"
             }
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -135,11 +125,7 @@ export = {
             }
           },
           Memory: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -169,7 +155,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -183,11 +168,7 @@ export = {
             }
           },
           MemoryReservation: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -223,7 +204,6 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -237,11 +217,7 @@ export = {
             }
           },
           MemoryReservation: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
