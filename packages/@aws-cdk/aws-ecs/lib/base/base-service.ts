@@ -334,7 +334,7 @@ export abstract class BaseService extends Resource
 
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDefinition.defaultContainer!.node.id,
+      containerName: this.taskDefinition.defaultContainer!.containerName,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
 
@@ -402,7 +402,7 @@ export abstract class BaseService extends Resource
 
     // If the task definition that your service task specifies uses the AWSVPC network mode and a type SRV DNS record is
     // used, you must specify a containerName and containerPort combination
-    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.node.id : undefined;
+    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerName : undefined;
     const containerPort = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerPort : undefined;
 
     const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
