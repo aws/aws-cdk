@@ -1,11 +1,12 @@
-import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
 import { CfnOutput } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
-import { KubernetesManifest } from '../lib';
+import { KubernetesResource } from '../lib';
+import { testFixture } from './util';
 
 // tslint:disable:max-line-length
 
@@ -146,15 +147,11 @@ export = {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false });
-    const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
-    const user = new iam.User(stack, 'user');
 
-    test.throws(() => cluster.addMastersRole(role), /Cannot add IAM role mapping to a cluster with kubectl disabled/);
-    test.throws(() => cluster.addManifest('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
-    test.throws(() => cluster.addUserMapping(user, { groups: [ 'a' ]}), /Cannot add IAM user mapping to a cluster with kubectl disabled/);
-    test.throws(() => cluster.addRoleMapping(role, { groups: [ 'b' ]}), /Cannot add IAM role mapping to a cluster with kubectl disabled/);
+    test.throws(() => cluster.awsAuth, /Cannot define aws-auth mappings if kubectl is disabled/);
+    test.throws(() => cluster.addResource('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
     test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
-      /Cannot map instance IAM role to BRAC if kubectl is disabled for the cluster/);
+      /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
     test.done();
   },
 
@@ -167,7 +164,7 @@ export = {
     new eks.Cluster(stack, 'Cluster', { vpc, mastersRole: role });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesManifest.RESORUCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         "Fn::Join": [
           "",
@@ -179,7 +176,7 @@ export = {
                 "Arn"
               ]
             },
-            "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\"}}]"
+            "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
           ]
         ]
       }
@@ -194,84 +191,18 @@ export = {
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    cluster.addManifest('manifest1', { foo: 123 });
-    cluster.addManifest('manifest2', { bar: 123 }, { boor: [ 1, 2, 3 ] });
+    cluster.addResource('manifest1', { foo: 123 });
+    cluster.addResource('manifest2', { bar: 123 }, { boor: [ 1, 2, 3 ] });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesManifest.RESORUCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: "[{\"foo\":123}]"
     }));
 
-    expect(stack).to(haveResource(KubernetesManifest.RESORUCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: "[{\"bar\":123},{\"boor\":[1,2,3]}]"
     }));
 
-    test.done();
-  },
-
-  'addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap'(test: Test) {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
-    const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
-    const user = new iam.User(stack, 'user');
-
-    // WHEN
-    cluster.addRoleMapping(role, { groups: [ 'role-group1' ], username: 'roleuser' });
-    cluster.addRoleMapping(role, { groups: [ 'role-group2', 'role-group3' ] });
-    cluster.addUserMapping(user, { groups: [ 'user-group1', 'user-group2' ] });
-    cluster.addUserMapping(user, { groups: [ 'user-group1', 'user-group2' ], username: 'foo' });
-
-    // THEN
-    expect(stack).to(countResources(KubernetesManifest.RESORUCE_TYPE, 1));
-    expect(stack).to(haveResource(KubernetesManifest.RESORUCE_TYPE, {
-      Manifest: {
-        "Fn::Join": [
-          "",
-          [
-            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
-            {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
-              ]
-            },
-            "\\\",\\\"username\\\":\\\"roleuser\\\",\\\"groups\\\":[\\\"role-group1\\\"]},{\\\"rolearn\\\":\\\"",
-            {
-              "Fn::GetAtt": [
-                "roleC7B7E775",
-                "Arn"
-              ]
-            },
-            "\\\",\\\"groups\\\":[\\\"role-group2\\\",\\\"role-group3\\\"]}]\",\"mapUsers\":\"[{\\\"userarn\\\":\\\"arn:",
-            {
-              Ref: "AWS::Partition"
-            },
-            ":iam:us-east-1:",
-            {
-              Ref: "AWS::AccountId"
-            },
-            ":user/",
-            {
-              Ref: "user2C2B57AE"
-            },
-            "\\\",\\\"groups\\\":[\\\"user-group1\\\",\\\"user-group2\\\"]},{\\\"userarn\\\":\\\"arn:",
-            {
-              Ref: "AWS::Partition"
-            },
-            ":iam:us-east-1:",
-            {
-              Ref: "AWS::AccountId"
-            },
-            ":user/",
-            {
-              Ref: "user2C2B57AE"
-            },
-            "\\\",\\\"username\\\":\\\"foo\\\",\\\"groups\\\":[\\\"user-group1\\\",\\\"user-group2\\\"]}]\"}}]"
-          ]
-        ]
-      }
-    }));
     test.done();
   },
 
@@ -286,7 +217,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesManifest.RESORUCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         "Fn::Join": [
           "",
@@ -298,7 +229,7 @@ export = {
                 "Arn"
               ]
             },
-            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\"}}]"
+            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
           ]
         ]
       }
@@ -319,7 +250,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(KubernetesManifest.RESORUCE_TYPE)));
+    expect(stack).to(not(haveResource(KubernetesResource.RESOURCE_TYPE)));
     test.done();
   },
 
@@ -334,16 +265,8 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(KubernetesManifest.RESORUCE_TYPE)));
+    expect(stack).to(not(haveResource(KubernetesResource.RESOURCE_TYPE)));
     test.done();
   }
 
 };
-
-function testFixture() {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1' }});
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
-  return { stack, vpc, app };
-}

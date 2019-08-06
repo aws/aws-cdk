@@ -44,7 +44,7 @@ class ClusterStack extends DevelopmentStack {
     // `system:masters` group this is required if you want to be able to issue
     // manual `kubectl` commands against the cluster.
     const mastersRole = new iam.Role(this, 'AdminRole', { assumedBy: new iam.AccountRootPrincipal() });
-    this.cluster.addMastersRole(mastersRole);
+    this.cluster.awsAuth.addMastersRole(mastersRole);
 
     // add some capacity to the cluster. The IAM instance role will
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
@@ -55,7 +55,7 @@ class ClusterStack extends DevelopmentStack {
 
     // add an arbitrary k8s manifest to the cluster. This will `kubectl apply`
     // these resources upon creation or `kubectl delete` upon removal.
-    this.cluster.addManifest('hello-kubernetes',
+    this.cluster.addResource('hello-kubernetes',
       {
         apiVersion: "v1",
         kind: "Service",

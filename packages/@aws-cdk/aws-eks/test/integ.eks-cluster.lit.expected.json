@@ -804,12 +804,12 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "EKSClusterManifestResourceHandler3F2A08F8": {
+    "EKSClusterKubernetesResourceHandler90E6DD64": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "EKSClusterManifestResourceHandlerCodeS3Bucket3E7071C9"
+            "Ref": "EKSClusterKubernetesResourceHandlerCodeS3Bucket5B1A2C93"
           },
           "S3Key": {
             "Fn::Join": [
@@ -822,7 +822,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "EKSClusterManifestResourceHandlerCodeS3VersionKeyE6AB8E3E"
+                          "Ref": "EKSClusterKubernetesResourceHandlerCodeS3VersionKeyB2871B51"
                         }
                       ]
                     }
@@ -835,7 +835,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "EKSClusterManifestResourceHandlerCodeS3VersionKeyE6AB8E3E"
+                          "Ref": "EKSClusterKubernetesResourceHandlerCodeS3VersionKeyB2871B51"
                         }
                       ]
                     }
@@ -1145,11 +1145,11 @@
       }
     },
     "EKSClusterAwsAuthmanifestA4E0796C": {
-      "Type": "Custom::AWSCDK-EKS-KubernetesManifest",
+      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "EKSClusterManifestResourceHandler3F2A08F8",
+            "EKSClusterKubernetesResourceHandler90E6DD64",
             "Arn"
           ]
         },
@@ -1164,7 +1164,11 @@
                   "Arn"
                 ]
               },
-              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\"}}]"
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[\\\"",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              "\\\"]\"}}]"
             ]
           ]
         }
@@ -1198,17 +1202,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"eks-integ-test-basic/EKSCluster/Resource/ResourceHandler/Code\""
     },
-    "EKSClusterManifestResourceHandlerCodeS3Bucket3E7071C9": {
+    "EKSClusterKubernetesResourceHandlerCodeS3Bucket5B1A2C93": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"eks-integ-test-basic/EKSCluster/ManifestResourceHandler/Code\""
+      "Description": "S3 bucket for asset \"eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Code\""
     },
-    "EKSClusterManifestResourceHandlerCodeS3VersionKeyE6AB8E3E": {
+    "EKSClusterKubernetesResourceHandlerCodeS3VersionKeyB2871B51": {
       "Type": "String",
-      "Description": "S3 key for asset version \"eks-integ-test-basic/EKSCluster/ManifestResourceHandler/Code\""
+      "Description": "S3 key for asset version \"eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Code\""
     },
-    "EKSClusterManifestResourceHandlerCodeArtifactHash0DE4C446": {
+    "EKSClusterKubernetesResourceHandlerCodeArtifactHashA13FF2C6": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"eks-integ-test-basic/EKSCluster/ManifestResourceHandler/Code\""
+      "Description": "Artifact hash for asset \"eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Code\""
     }
   },
   "Outputs": {

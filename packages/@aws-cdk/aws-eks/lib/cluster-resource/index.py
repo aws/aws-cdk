@@ -61,7 +61,7 @@ def handler(event, context):
             logger.info('waiting for cluster to be deleted...')
             waiter = eks.get_waiter('cluster_deleted')
             waiter.wait(name=cluster_name)
-            cfn_send(event, content, CFN_SUCCESS, physicalResourceId=cluster_name)
+            cfn_send(event, context, CFN_SUCCESS, physicalResourceId=cluster_name)
             return
 
         if request_type == 'Create':

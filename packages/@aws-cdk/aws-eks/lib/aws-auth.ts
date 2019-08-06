@@ -2,9 +2,14 @@ import iam = require('@aws-cdk/aws-iam');
 import { Construct, Lazy, Stack } from '@aws-cdk/core';
 import { Mapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
-import { KubernetesManifest } from './manifest-resource';
+import { KubernetesResource } from './k8s-resource';
 
 export interface AwsAuthProps {
+  /**
+   * The EKS cluster to apply this configuration to.
+   *
+   * [disable-awslint:ref-via-interface]
+   */
   readonly cluster: Cluster;
 }
 
@@ -17,26 +22,44 @@ export class AwsAuth extends Construct {
   private readonly stack: Stack;
   private readonly roleMappings = new Array<{ role: iam.IRole, mapping: Mapping }>();
   private readonly userMappings = new Array<{ user: iam.IUser, mapping: Mapping }>();
+  private readonly accounts = new Array<string>();
 
   constructor(scope: Construct, id: string, props: AwsAuthProps) {
     super(scope, id);
 
     this.stack = Stack.of(this);
 
-    new KubernetesManifest(this, 'manifest', {
+    new KubernetesResource(this, 'manifest', {
       cluster: props.cluster,
-      resources: [ {
-        apiVersion: "v1",
-        kind: "ConfigMap",
-        metadata: {
-          name: "aws-auth",
-          namespace: "kube-system"
-        },
-        data: {
-          mapRoles: Lazy.anyValue({ produce: () => this.synthesizeMapRoles() }),
-          mapUsers: Lazy.anyValue({ produce: () => this.synthesizeMapUsers() }),
+      manifest: [
+        {
+          apiVersion: "v1",
+          kind: "ConfigMap",
+          metadata: {
+            name: "aws-auth",
+            namespace: "kube-system"
+          },
+          data: {
+            mapRoles: this.synthesizeMapRoles(),
+            mapUsers: this.synthesizeMapUsers(),
+            mapAccounts: this.synthesizeMapAccounts(),
+          }
         }
-      } ]
+      ]
+    });
+  }
+
+  /**
+   * Adds the specified IAM role to the `system:masters` RBAC group, which means
+   * that anyone that can assume it will be able to administer this Kubernetes system.
+   *
+   * @param role The IAM role to add
+   * @param username Optional user (defaults to the role ARN)
+   */
+  public addMastersRole(role: iam.IRole, username?: string) {
+    this.addRoleMapping(role, {
+      username,
+      groups: [ 'system:masters' ]
     });
   }
 
@@ -60,19 +83,37 @@ export class AwsAuth extends Construct {
     this.userMappings.push({ user, mapping });
   }
 
+  /**
+   * Additional AWS account to add to the aws-auth configmap.
+   * @param accountId account number
+   */
+  public addAccount(accountId: string) {
+    this.accounts.push(accountId);
+  }
+
   private synthesizeMapRoles() {
-    return this.stack.toJsonString(this.roleMappings.map(m => ({
-      rolearn: m.role.roleArn,
-      username: m.mapping.username,
-      groups: m.mapping.groups
-    })));
+    return Lazy.anyValue({
+      produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
+        rolearn: m.role.roleArn,
+        username: m.mapping.username,
+        groups: m.mapping.groups
+      })))
+    });
   }
 
   private synthesizeMapUsers() {
-    return this.stack.toJsonString(this.userMappings.map(m => ({
-      userarn: this.stack.formatArn({ service: 'iam', resource: 'user', resourceName: m.user.userName }),
-      username: m.mapping.username,
-      groups: m.mapping.groups
-    })));
+    return Lazy.anyValue({
+      produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
+        userarn: this.stack.formatArn({ service: 'iam', resource: 'user', resourceName: m.user.userName }),
+        username: m.mapping.username,
+        groups: m.mapping.groups
+      })))
+    });
+  }
+
+  private synthesizeMapAccounts() {
+    return Lazy.anyValue({
+      produce: () => this.stack.toJsonString(this.accounts)
+    });
   }
 }

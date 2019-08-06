@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesManifest } from '../lib';
+import { Cluster, KubernetesResource } from '../lib';
 
 // tslint:disable:max-line-length
 
@@ -66,12 +66,12 @@ export = {
     ];
 
     // WHEN
-    new KubernetesManifest(stack, 'manifest', {
+    new KubernetesResource(stack, 'manifest', {
       cluster,
-      resources: manifest
+      manifest
     });
 
-    expect(stack).to(haveResource(KubernetesManifest.RESORUCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
       Manifest: JSON.stringify(manifest)
     }));
     test.done();

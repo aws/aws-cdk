@@ -1,18 +1,17 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
-import ec2 = require('@aws-cdk/aws-ec2');
 import { Subnet } from '@aws-cdk/aws-ec2';
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { CfnOutput, Construct, Duration, IResource, Resource, Tag } from '@aws-cdk/core';
 import path = require('path');
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { AwsAuth } from './aws-auth';
-import { Mapping } from './aws-auth-mapping';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
+import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
-import { KubernetesManifest } from './manifest-resource';
 
 /**
  * An EKS cluster
@@ -76,6 +75,9 @@ export interface ClusterAttributes {
    */
   readonly clusterCertificateAuthorityData: string;
 
+  /**
+   * The security groups associated with this cluster.
+   */
   readonly securityGroups: ec2.ISecurityGroup[];
 }
 
@@ -140,8 +142,8 @@ export interface ClusterProps {
    * @see https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
    *
    * @default - By default, it will only possible to update this Kubernetes
-   *            system by adding manifests to his cluster via `addManifest` or
-   *            by defining `KubernetesManifest` resources in your AWS CDK app.
+   *            system by adding resources to this cluster via `addResource` or
+   *            by defining `KubernetesResource` resources in your AWS CDK app.
    *            Use this if you wish to grant cluster administration privileges
    *            to another role.
    */
@@ -152,7 +154,7 @@ export interface ClusterProps {
    *
    * If this is disabled, it will not be possible to use the following
    * capabilities:
-   * - `addManifest`
+   * - `addResource`
    * - `addRoleMapping`
    * - `addUserMapping`
    * - `addMastersRole` and `props.mastersRole`
@@ -243,7 +245,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @internal
    */
-  public readonly _manifestHandler?: lambda.Function;
+  public readonly _k8sResourceHandler?: lambda.Function;
 
   /**
    * The IAM role that was used to create this cluster. This role is
@@ -333,11 +335,15 @@ export class Cluster extends Resource implements ICluster {
     // we maintain a single manifest custom resource handler per cluster since
     // permissions and role are scoped. This will return `undefined` if kubectl
     // is not enabled for this cluster.
-    this._manifestHandler = this.createManifestHandler();
+    this._k8sResourceHandler = this.createKubernetesResourceHandler();
 
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
-      this.addMastersRole(props.mastersRole);
+      if (!this.kubectlEnabled) {
+        throw new Error(`Cannot specify a "masters" role if kubectl is disabled`);
+      }
+
+      this.awsAuth.addMastersRole(props.mastersRole);
     }
   }
 
@@ -417,7 +423,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
-      throw new Error(`Cannot map instance IAM role to BRAC if kubectl is disabled for the cluster`);
+      throw new Error(`Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster`);
     }
 
     // do not attempt to map the role if `kubectl` is not enabled for this
@@ -425,7 +431,7 @@ export class Cluster extends Resource implements ICluster {
     const mapRole = options.mapRole === undefined ? true : options.mapRole;
     if (mapRole && this.kubectlEnabled) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.addRoleMapping(autoScalingGroup.role, {
+      this.awsAuth.addRoleMapping(autoScalingGroup.role, {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [
           'system:bootstrappers',
@@ -436,65 +442,41 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Adds a mapping between an IAM user to a Kubernetes user and groups.
-   *
-   * @param user The IAM user to map
-   * @param mapping Mapping to k8s user name and groups
+   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
    */
-  public addUserMapping(user: iam.IUser, mapping: Mapping) {
-    if (!this.awsAuth) {
-      throw new Error(`Cannot add IAM user mapping to a cluster with kubectl disabled`);
+  public get awsAuth() {
+    if (!this.kubectlEnabled) {
+      throw new Error(`Cannot define aws-auth mappings if kubectl is disabled`);
     }
-    this.awsAuth.addUserMapping(user, mapping);
-  }
 
-  /**
-   * Adds a mapping between an IAM role to a Kubernetes user and groups.
-   *
-   * @param role The IAM role to map
-   * @param mapping Mapping to k8s user name and groups
-   */
-  public addRoleMapping(role: iam.IRole, mapping: Mapping) {
-    if (!this.awsAuth) {
-      throw new Error(`Cannot add IAM role mapping to a cluster with kubectl disabled`);
+    if (!this._awsAuth) {
+      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
     }
-    this.awsAuth.addRoleMapping(role, mapping);
+
+    return this._awsAuth;
   }
 
   /**
-   * Adds the specified IAM role to the `system:masters` RBAC group, which means
-   * that anyone that can assume it will be able to administer this Kubernetes system.
+   * Defines a Kubernetes resource in this cluster.
    *
-   * @param role The IAM role to add
-   * @param username Optional user (defaults to the role ARN)
-   */
-  public addMastersRole(role: iam.IRole, username?: string) {
-    this.addRoleMapping(role, {
-      username,
-      groups: [ 'system:masters' ]
-    });
-  }
-
-  /**
-   * Applies (`kubectl apply`) a Kubernetes manifest to this cluster.
-   *
-   * This is treated as a resource, so if you remove this call, it will issue a
-   * `kubectl delete`.
+   * The manifest will be applied/deleted using kubectl as needed.
    *
    * @param id logical id of this manifest
-   * @param resources a list of Kubernetes resources
+   * @param manifest a list of Kubernetes resource specifications
+   * @returns a `KubernetesResource` object.
+   * @throws If `kubectlEnabled` is `false`
    */
-  public addManifest(id: string, ...resources: any[]) {
-    return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, resources });
+  public addResource(id: string, ...manifest: any[]) {
+    return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
-  private createManifestHandler() {
+  private createKubernetesResourceHandler() {
     if (!this.kubectlEnabled) {
       return undefined;
     }
 
-    return new lambda.Function(this, 'ManifestResourceHandler', {
-      code: lambda.Code.asset(path.join(__dirname, 'manifest-resource')),
+    return new lambda.Function(this, 'KubernetesResourceHandler', {
+      code: lambda.Code.asset(path.join(__dirname, 'k8s-resource')),
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
@@ -509,21 +491,6 @@ export class Cluster extends Resource implements ICluster {
       // way to be able to interact with the cluster after it's been created.
       role: this._defaultMastersRole,
     });
-  }
-
-  /**
-   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
-   */
-  private get awsAuth() {
-    if (!this.kubectlEnabled) {
-      return undefined;
-    }
-
-    if (!this._awsAuth) {
-      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
-    }
-
-    return this._awsAuth;
   }
 
   /**
@@ -557,7 +524,7 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
 
   /**
    * Will automatically update the aws-auth ConfigMap to map the IAM instance
-   * role to BRAC.
+   * role to RBAC.
    *
    * This cannot be explicitly set to `true` if the cluster has kubectl disabled.
    *
@@ -573,8 +540,6 @@ export interface AutoScalingGroupOptions {
   /**
    * How many pods to allow on this instance.
    *
-   * This cannot be explicitly set to `true` if the cluster has kubectl disabled.
-   *
    * Should be at most equal to the maximum number of IP addresses available to
    * the instance type less one.
    */
@@ -582,7 +547,7 @@ export interface AutoScalingGroupOptions {
 
   /**
    * Will automatically update the aws-auth ConfigMap to map the IAM instance
-   * role to BRAC.
+   * role to RBAC.
    *
    * This cannot be explicitly set to `true` if the cluster has kubectl disabled.
    *

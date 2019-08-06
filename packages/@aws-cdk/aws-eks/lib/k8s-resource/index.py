@@ -2,7 +2,6 @@ import subprocess
 import os
 import json
 import logging
-import yaml
 import boto3
 from uuid import uuid4
 from botocore.vendored import requests
@@ -45,18 +44,18 @@ def handler(event, context):
             '--kubeconfig', kubeconfig
         ])
 
-        # convert manifest to yaml and write to file
-        manifest_yaml = yaml.dump_all(json.loads(manifest_text))
-        logger.info(manifest_yaml)
+        # write resource manifests in sequence: { r1 }{ r2 }{ r3 } (this is how
+        # a stream of JSON objects can be included in a k8s manifest).
+        manifest_list = json.loads(manifest_text)
         manifest_file = os.path.join(outdir, 'manifest.yaml')
         with open(manifest_file, "w") as f:
-            f.write(manifest_yaml)
+            f.writelines(map(lambda obj: json.dumps(obj), manifest_list))
+
         logger.info("manifest written to: %s" % manifest_file)
 
         if request_type == 'Create' or request_type == 'Update':
             kubectl('apply', manifest_file)
         elif request_type == "Delete":
-            # TODO: never fail
             try:
                 kubectl('delete', manifest_file)
             except Exception as e:

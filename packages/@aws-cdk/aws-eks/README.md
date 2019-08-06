@@ -72,7 +72,7 @@ const clusterAdmin = new iam.Role(this, 'AdminRole', {
   assumedBy: new iam.AccountRootPrincipal()
 });
 
-// now define the cluster and make map the role to the "masters" group
+// now define the cluster and map role to "masters" RBAC group
 new eks.Cluster(this, 'Cluster', {
   vpc: vpc,
   mastersRole: clusterAdmin
@@ -80,7 +80,7 @@ new eks.Cluster(this, 'Cluster', {
 ```
 
 Now, given AWS credentials for a user that is trusted by the masters role, you
-should be able to interact with your cluster like this:
+will be able to interact with your cluster like this:
 
 ```console
 $ aws eks update-kubeconfig --name CLUSTER-NAME
@@ -88,14 +88,17 @@ $ kubectl get all -n kube-system
 ...
 ```
 
+For your convenience, an AWS CloudFormation output will automatically be
+included in your template and will be printed when running `cdk deploy`.
+
 **NOTE**: if the cluster is configured with `kubectlEnabled: false`, it
 will be created with the role/user that created the AWS CloudFormation
 stack. See [Kubectl Support](#kubectl-support) for details.
 
 ### Defining Kubernetes Resources
 
-The `cluster.addManifest()` method can be used to apply Kubernetes resource
-manifests to this cluster.
+The `KubernetesResource` construct or `cluster.addResource` method can be used
+to apply Kubernetes resource manifests to this cluster.
 
 The following examples will deploy the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes)
 service on the cluster:
@@ -136,50 +139,50 @@ const service = {
   }
 };
 
-cluster.addManifest('hello-kub', service, deployment);
-```
-
-Since manifests are modeled as CloudFormation resources. This means that if the
-`addManifest` statement is deleted from your code, the next `cdk deploy` will
-issue a `kubectl delete` command and the Kubernetes resources will be deleted.
-
-You can also use the `KubernetesManifest` construct directly:
-
-```ts
-new KubernetesManifest(this, 'service', {
-  manifest: [ {
-    apiVersion: "v1",
-    kind: "Service",
-    metadata: { name: "hello-kubernetes" },
-    spec: {
-      type: "LoadBalancer",
-      ports: [ { port: 80, targetPort: 8080 } ],
-      selector: appLabel
-    }
-  } ]
+// option 1: use a construct
+new KubernetesResource(this, 'hello-kub', {
+  cluster,
+  manifest: [ deployment, service ]
 });
+
+// or, option2: use `addResource`
+cluster.addResource('hello-kub', service, deployment);
 ```
+
+Since Kubernetes resources are implemented as CloudFormation resources in the
+CDK. This means that if the resource is deleted from your code (or the stack is
+deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
+Kubernetes resources will be deleted.
 
 ### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html),
-you can map AWS IAM users and roles to Kubernetes RBAC configuration.
+you can map AWS IAM users and roles to [Kubernetes Role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac).
 
 The Amazon EKS construct manages the **aws-auth ConfigMap** Kubernetes resource
-on your behalf and includes an APIs for adding user and role mappings:
-
-For example, let's say you want to grant an IAM user administrative
-privileges on your cluster:
-
-```ts
-const adminUser = new iam.User(this, 'Admin');
-cluster.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
-```
+on your behalf and exposes an API through the `cluster.awsAuth` for mapping
+users, roles and accounts.
 
 Furthermore, when auto-scaling capacity is added to the cluster (through
 `cluster.addCapacity` or `cluster.addAutoScalingGroup`), the IAM instance role
 of the auto-scaling group will be automatically mapped to RBAC so nodes can
 connect to the cluster. No manual mapping is required any longer.
+
+> NOTE: `cluster.awsAuth` will throw an error if your cluster is created with `kubectlEnabled: false`.
+
+For example, let's say you want to grant an IAM user administrative privileges
+on your cluster:
+
+```ts
+const adminUser = new iam.User(this, 'Admin');
+cluster.awsAuth.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
+```
+
+A convenience method for mapping a role to the `system:masters` group is also available:
+
+```ts
+cluster.awsAuth.addMastersRole(role)
+```
 
 ### Node ssh Access
 
@@ -215,7 +218,7 @@ This custom resource is executed with an IAM role that we can then use
 to issue `kubectl` commands.
 
 The default behavior of this library is to use this custom resource in order
-to retain programmatic control over the cluster. In order words: to allow
+to retain programmatic control over the cluster. In other words: to allow
 you to define Kubernetes resources in your CDK code instead of having to
 manage your Kubernetes applications through a separate system.
 
@@ -258,4 +261,5 @@ When kubectl is disabled, you should be aware of the following:
 
 ### Roadmap
 
-- [ ] Describe how to set up AutoScaling (how to combine EC2 and Kubernetes scaling)
+- [ ] AutoScaling (combine EC2 and Kubernetes scaling)
+- [ ] Spot fleet support
