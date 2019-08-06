@@ -147,7 +147,7 @@ export interface LoadBalancedServiceBaseProps {
   /**
    * The LogDriver to use for logging.
    *
-   * @default AwsLogDriver if enableLogging is true
+   * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
 }

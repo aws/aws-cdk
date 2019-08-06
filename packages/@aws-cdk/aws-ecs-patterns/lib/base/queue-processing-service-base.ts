@@ -117,6 +117,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
    */
   public readonly sqsQueue: IQueue;
 
+  /**
+   * The cluster where your service will be deployed
+   */
+  public readonly cluster: ICluster;
+
   // Properties that have defaults defined. The Queue Processing Service will handle assigning undefined properties with default
   // values so that derived classes do not need to maintain the same logic.
 
@@ -134,11 +139,6 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * The minimum number of tasks to run
    */
   public readonly desiredCount: number;
-
-  /**
-   * The minimum number of tasks to run
-   */
-  public readonly cluster: ICluster;
 
   /**
    * The maximum number of instances for autoscaling to scale up to
