@@ -1,4 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
+import { IConstruct } from '@aws-cdk/core';
 import { CfnRule } from './events.generated';
 import { RuleTargetInput } from './input';
 import { IRule } from './rule-ref';
@@ -65,4 +66,17 @@ export interface RuleTargetConfig {
    * @default the entire event
    */
   readonly input?: RuleTargetInput;
+
+  /**
+   * The resource that is backing this target.
+   * This is the resource that will actually have some action performed on it when used as a target
+   * (for example, start a build for a CodeBuild project).
+   * We need it to determine whether the rule belongs to a different account than the target -
+   * if so, we generate a more complex setup,
+   * including an additional stack containing the EventBusPolicy.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEvents-CrossAccountEventDelivery.html
+   * @default the target is not backed by any resource
+   */
+  readonly targetResource?: IConstruct;
 }
