@@ -359,6 +359,7 @@ export = {
           {
             Action: [
               'ssm:DescribeParameters',
+              'ssm:GetParameters',
               'ssm:GetParameter',
               'ssm:GetParameterHistory'
             ],
