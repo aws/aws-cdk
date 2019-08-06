@@ -4,13 +4,13 @@ using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SNS.Subscriptions;
 using Amazon.CDK.AWS.SQS;
 
-namespace HelloCdk
+namespace %name.PascalCased%
 {
-    public class HelloStack : Stack
+    public class %name.PascalCased%Stack : Stack
     {
-        public HelloStack(Construct parent, string id, IStackProps props) : base(parent, id, props)
+        public %name.PascalCased%Stack(Construct parent, string id, IStackProps props) : base(parent, id, props)
         {
-            // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
+             // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
             var queue = new Queue(this, "MyFirstQueue", new QueueProps
             {
                 VisibilityTimeout = Duration.Seconds(300)
@@ -24,7 +24,7 @@ namespace HelloCdk
             topic.AddSubscription(new SqsSubscription(queue, null));
 
             // You can also define your own constructs and use them in your stack.
-            HelloConstruct hello = new HelloConstruct(this, "Buckets", new HelloConstructProps()
+            %name.PascalCased%Construct hello = new %name.PascalCased%Construct(this, "Buckets", new %name.PascalCased%ConstructProps()
             {
                 BucketCount = 5
             });
