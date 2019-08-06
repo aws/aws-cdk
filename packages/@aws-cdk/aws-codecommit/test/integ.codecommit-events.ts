@@ -16,7 +16,7 @@ repo.onReferenceCreated('OnReferenceCreated', {
   target: {
     bind: () => ({
       arn: topic.topicArn,
-      id: 'MyTopic'
+      id: ''
     })
   }
 });

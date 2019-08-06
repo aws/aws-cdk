@@ -695,6 +695,31 @@ export interface CorsRule {
   readonly exposedHeaders?: string[];
 }
 
+/**
+ * All http request methods
+ */
+export enum RedirectProtocol {
+  HTTP = 'http',
+  HTTPS = 'https',
+}
+
+/**
+ * Specifies a redirect behavior of all requests to a website endpoint of a bucket.
+ */
+export interface RedirectTarget {
+  /**
+   * Name of the host where requests are redirected
+   */
+  readonly hostName: string;
+
+  /**
+   * Protocol to use when redirecting requests
+   *
+   * @default - The protocol used in the original request.
+   */
+  readonly protocol?: RedirectProtocol;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -761,6 +786,22 @@ export interface BucketProps {
    * @default - No error document.
    */
   readonly websiteErrorDocument?: string;
+
+  /**
+   * Specifies the redirect behavior of all requests to a website endpoint of a bucket.
+   *
+   * If you specify this property, you can't specify "websiteIndexDocument" nor "websiteErrorDocument".
+   *
+   * @default - No redirection.
+   */
+  readonly websiteRedirect?: RedirectTarget;
+
+  /**
+   * Specifies a canned ACL that grants predefined permissions to the bucket.
+   *
+   * @default BucketAccessControl.PRIVATE
+   */
+  readonly accessControl?: BucketAccessControl;
 
   /**
    * Grants public read access to all objects in the bucket.
@@ -899,7 +940,8 @@ export class Bucket extends BucketBase {
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
+      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: props.accessControl,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1214,7 +1256,7 @@ export class Bucket extends BucketBase {
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
-    if (!props.websiteErrorDocument && !props.websiteIndexDocument) {
+    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect) {
       return undefined;
     }
 
@@ -1222,9 +1264,14 @@ export class Bucket extends BucketBase {
       throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
     }
 
+    if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument)) {
+        throw new Error('"websiteIndexDocument" and "websiteErrorDocument" cannot be set if "websiteRedirect" is used');
+    }
+
     return {
       indexDocument: props.websiteIndexDocument,
-      errorDocument: props.websiteErrorDocument
+      errorDocument: props.websiteErrorDocument,
+      redirectAllRequestsTo: props.websiteRedirect,
     };
   }
 }
@@ -1385,6 +1432,57 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    * @default - Watch changes to all objects
    */
   readonly paths?: string[];
+}
+
+/**
+ * Default bucket access control types.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html
+ */
+export enum BucketAccessControl {
+  /**
+   * Owner gets FULL_CONTROL. No one else has access rights.
+   */
+  PRIVATE = 'Private',
+
+  /**
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ access.
+   */
+  PUBLIC_READ = 'PublicRead',
+
+  /**
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ and WRITE access.
+   * Granting this on a bucket is generally not recommended.
+   */
+  PUBLIC_READ_WRITE = 'PublicReadWrite',
+
+  /**
+   * Owner gets FULL_CONTROL. The AuthenticatedUsers group gets READ access.
+   */
+  AUTHENTICATED_READ = 'AuthenticatedRead',
+
+  /**
+   * The LogDelivery group gets WRITE and READ_ACP permissions on the bucket.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+   */
+  LOG_DELIVERY_WRITE = 'LogDeliveryWrite',
+
+  /**
+   * Object owner gets FULL_CONTROL. Bucket owner gets READ access.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_READ = 'BucketOwnerRead',
+
+  /**
+   * Both the object owner and the bucket owner get FULL_CONTROL over the object.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_FULL_CONTROL = 'BucketOwnerFullControl',
+
+  /**
+   * Owner gets FULL_CONTROL. Amazon EC2 gets READ access to GET an Amazon Machine Image (AMI) bundle from Amazon S3.
+   */
+  AWS_EXEC_READ = 'AwsExecRead',
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {

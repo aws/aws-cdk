@@ -42,6 +42,7 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
+  public readonly permissionsNode: cdk.ConstructNode;
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: IFunction;
 
@@ -49,6 +50,7 @@ export class SingletonFunction extends FunctionBase {
     super(scope, id);
 
     this.lambdaFunction = this.ensureLambda(props);
+    this.permissionsNode = this.lambdaFunction.node;
 
     this.functionArn = this.lambdaFunction.functionArn;
     this.functionName = this.lambdaFunction.functionName;
