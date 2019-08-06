@@ -1,4 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import appscaling = require('@aws-cdk/aws-applicationautoscaling');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
@@ -317,6 +319,258 @@ export = {
 
       test.done();
     }
+  },
+
+  'allows scaling on a specified scheduled time'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer('MainContainer', {
+      image: ContainerImage.fromRegistry('hello'),
+    });
+    container.addPortMappings({ containerPort: 8000 });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+    capacity.scaleOnSchedule("ScaleOnSchedule", {
+      schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
+      minCapacity: 10,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      ScheduledActions: [
+        {
+          ScalableTargetAction: {
+            MinCapacity: 10
+          },
+          Schedule: "cron(0 8 * * ? *)",
+          ScheduledActionName: "ScaleOnSchedule"
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'allows scaling on a specified metric value'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer('MainContainer', {
+      image: ContainerImage.fromRegistry('hello'),
+    });
+    container.addPortMappings({ containerPort: 8000 });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+    capacity.scaleOnMetric("ScaleOnMetric", {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: "StepScaling",
+      ScalingTargetId: {
+        Ref: "ServiceTaskCountTarget23E25614"
+      },
+      StepScalingPolicyConfiguration: {
+        AdjustmentType: "ChangeInCapacity",
+        MetricAggregationType: "Average",
+        StepAdjustments: [
+          {
+            MetricIntervalUpperBound: 0,
+            ScalingAdjustment: -1
+          }
+        ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'allows scaling on a target CPU utilization'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer('MainContainer', {
+      image: ContainerImage.fromRegistry('hello'),
+    });
+    container.addPortMappings({ containerPort: 8000 });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+    capacity.scaleOnCpuUtilization("ScaleOnCpu", {
+      targetUtilizationPercent: 30
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: "TargetTrackingScaling",
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: "ECSServiceAverageCPUUtilization" },
+        TargetValue: 30
+      }
+    }));
+
+    test.done();
+  },
+
+  'allows scaling on memory utilization'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer('MainContainer', {
+      image: ContainerImage.fromRegistry('hello'),
+    });
+    container.addPortMappings({ containerPort: 8000 });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+    capacity.scaleOnMemoryUtilization("ScaleOnMemory", {
+      targetUtilizationPercent: 30
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: "TargetTrackingScaling",
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: "ECSServiceAverageMemoryUtilization" },
+        TargetValue: 30
+      }
+    }));
+
+    test.done();
+  },
+
+  'allows scaling on custom CloudWatch metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer('MainContainer', {
+      image: ContainerImage.fromRegistry('hello'),
+    });
+    container.addPortMappings({ containerPort: 8000 });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+    capacity.scaleToTrackCustomMetric("ScaleOnCustomMetric", {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
+      targetValue: 5
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: "TargetTrackingScaling",
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          MetricName: "Metric",
+          Namespace: "Test",
+          Statistic: "Average"
+        },
+        TargetValue: 5
+      }
+    }));
+
+    test.done();
+  },
+
+  "allow adding a load balancing target to an application target group"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer('MainContainer', {
+      image: ContainerImage.fromRegistry('hello'),
+    });
+    container.addPortMappings({ containerPort: 8000 });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition
+    });
+
+    const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+    const listener = lb.addListener("listener", { port: 80 });
+    const targetGroup = listener.addTargets("target", {
+      port: 80,
+    });
+
+    // WHEN
+    targetGroup.addTarget(service);
+
+    const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+    capacity.scaleOnRequestCount("ScaleOnRequests", {
+      requestsPerTarget: 1000,
+      targetGroup
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 10,
+      MinCapacity: 1,
+      ResourceId: {
+        "Fn::Join": [
+          "",
+          [
+            "service/",
+            {
+              Ref: "EcsCluster97242B84"
+            },
+            "/",
+            {
+              "Fn::GetAtt": [
+                "ServiceD69D759B",
+                "Name"
+              ]
+            }
+          ]
+        ]
+      },
+    }));
+
+    test.done();
   },
 
   'When enabling service discovery': {
