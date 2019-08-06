@@ -515,6 +515,68 @@ export = {
       test.done();
     },
 
+    "with packedbyCpu placement strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedByCpu());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "cpu",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
+    "with packedbyMemory placement strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedByMemory());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "memory",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
     "with packedBy placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1041,6 +1103,17 @@ export = {
       },
       namespace: 'AWS/ECS',
       metricName: 'MemoryUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'CPUUtilization',
       period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
