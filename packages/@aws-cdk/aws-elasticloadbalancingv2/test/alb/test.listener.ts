@@ -199,11 +199,6 @@ export = {
       port: 80,
       targets: [new elbv2.InstanceTarget('i-5678')]
     });
-    listener.addTargets('LambdaTarget', {
-      pathPattern: '/lambda',
-      priority: 20,
-      targets: [new elbv2.LambdaTarget('arn:aws:lambda:region:account-id:function:function-1234')]
-    });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
@@ -238,21 +233,7 @@ export = {
         { Id: "i-5678" }
       ]
     }));
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
-      Actions: [
-        {
-          TargetGroupArn: { Ref: "LBListenerLambdaTargetGroupE889F9E5" },
-          Type: "forward"
-        }
-      ],
-    }));
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      TargetType: "lambda",
-      Targets: [
-        { Id: "arn:aws:lambda:region:account-id:function:function-1234" }
-      ]
-    }));
-
+ 
     test.done();
   },
 
