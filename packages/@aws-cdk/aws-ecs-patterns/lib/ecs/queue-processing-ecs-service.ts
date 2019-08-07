@@ -72,7 +72,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new Ec2Service(this, 'QueueProcessingService', {
-      cluster: props.cluster,
+      cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition
     });
