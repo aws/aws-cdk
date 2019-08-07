@@ -81,6 +81,8 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.OnlySingle
     });
 
+    this.appStacks.processMetadata(stacks);
+
     for (const stack of stacks) {
       if (stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
@@ -115,8 +117,9 @@ export class CdkToolkit {
         print('%s: deploying...', colors.bold(stack.name));
       }
 
-      if (!options.tags || options.tags.length === 0) {
-        options.tags = this.appStacks.getTagsFromStackMetadata(stack);
+      let tags = options.tags;
+      if (!tags || tags.length === 0) {
+        tags = this.appStacks.getTagsFromStackMetadata(stack);
       }
 
       try {
@@ -127,7 +130,7 @@ export class CdkToolkit {
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
-          tags: options.tags
+          tags
         });
 
         const message = result.noOp

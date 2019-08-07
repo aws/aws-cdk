@@ -1,12 +1,12 @@
 # AWS ECS - Support for Private Registry Authentication
 
-To address issue [#1698](https://github.com/awslabs/aws-cdk/issues/1698), the ECS construct library should provide a way for customers to specify [`repositoryCredentials`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-repositoryCredentials) on their container. 
+To address issue [#1698](https://github.com/aws/aws-cdk/issues/1698), the ECS construct library should provide a way for customers to specify [`repositoryCredentials`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-repositoryCredentials) on their container.
 
-Minimally, this would mean adding a new string field on `ContainerDefinition`, however this doesn't provide any added value in terms of logical grouping or resource creation. We can instead modify the existing ECS CDK construct [`ContainerImage`](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) so that repository credentials are specified along with the image they're meant to access.
+Minimally, this would mean adding a new string field on `ContainerDefinition`, however this doesn't provide any added value in terms of logical grouping or resource creation. We can instead modify the existing ECS CDK construct [`ContainerImage`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) so that repository credentials are specified along with the image they're meant to access.
 
 ## General approach
 
-The [`ecs.ContainerImage`](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) class already includes constructs for 3 types of images:
+The [`ecs.ContainerImage`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/container-image.ts) class already includes constructs for 3 types of images:
 
 * DockerHubImage
 * EcrImage
@@ -16,20 +16,20 @@ DockerHub images are assumed public, however DockerHub also provides private rep
 
 There's also no explicit way to specify images hosted outside of DockerHub, AWS, or your local machine. Customers hosting their own registries or using another registry host, like Quay.io or JFrog Artifactory, would need to be able to specify both the image URI and the registry credentials in order to pull their images down for ECS tasks.
 
-Fundamentally, specifying images hosted in DockerHub or elsewhere works the same, because when passed an image URI vs. a plain (or namespaced) image name + tag, the Docker daemon does the right thing and tries to pull the image from the specified registery. 
+Fundamentally, specifying images hosted in DockerHub or elsewhere works the same, because when passed an image URI vs. a plain (or namespaced) image name + tag, the Docker daemon does the right thing and tries to pull the image from the specified registery.
 
 Therefore, we should rename the existing `DockerHubImage` type be more generic and add the ability to optionally specify credentials.
- 
+
 
 ## Code changes
 
 Given the above, we should make the following changes to support private registry authentication:
 
-1. Define `RepositoryCredentials` interface & class, add to `IContainerImage` 
-2. Rename `DockerHubImage` construct to be more generic, optionally accept and set `RepositoryCreds` 
+1. Define `RepositoryCredentials` interface & class, add to `IContainerImage`
+2. Rename `DockerHubImage` construct to be more generic, optionally accept and set `RepositoryCreds`
 
 
-# Part 1: How to define registry credentials 
+# Part 1: How to define registry credentials
 
 For extensibility, we can define a new `IRepositoryCreds` interface to house the AWS Secrets Manager secret with the creds and a new `RepositoryCreds` class which satisfies it using specific constructs (e.g., "fromSecret").
 
@@ -112,9 +112,7 @@ Example use:
 ```ts
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
-const secret = secretsManager.Secret.import(stack, 'myRepoSecret', {
-  secretArn: 'arn:aws:secretsmanager:.....'
-})
+const secret = secretsManager.Secret.fromSecretArn(stack, 'myRepoSecret', 'arn:aws:secretsmanager:.....')
 
 taskDefinition.AddContainer('myPrivateContainer', {
   image: ecs.ContainerImage.fromInternet('userx/test', {

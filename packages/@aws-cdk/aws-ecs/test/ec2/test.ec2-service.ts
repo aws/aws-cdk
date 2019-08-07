@@ -6,6 +6,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
+import { LaunchType } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -25,7 +26,7 @@ export = {
 
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       // THEN
@@ -41,7 +42,7 @@ export = {
           MinimumHealthyPercent: 50
         },
         DesiredCount: 1,
-        LaunchType: "EC2",
+        LaunchType: LaunchType.EC2,
         LoadBalancers: [],
         SchedulingStrategy: "REPLICA"
       }));
@@ -145,7 +146,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::Service', (service: any) => {
-        return service.LaunchType === 'EC2' && service.DesiredCount === undefined;
+        return service.LaunchType === LaunchType.EC2 && service.DesiredCount === undefined;
       }));
 
       test.done();
@@ -278,7 +279,7 @@ export = {
 
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // THEN
@@ -381,7 +382,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
@@ -412,7 +413,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
@@ -470,7 +471,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.randomly());
@@ -512,6 +513,68 @@ export = {
       test.done();
     },
 
+    "with packedbyCpu placement strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedByCpu());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "cpu",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
+    "with packedbyMemory placement strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedByMemory());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "memory",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
     "with packedBy placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -527,7 +590,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
@@ -584,7 +647,7 @@ export = {
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
+      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition});
 
       // WHEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
@@ -1038,6 +1101,17 @@ export = {
       },
       namespace: 'AWS/ECS',
       metricName: 'MemoryUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'CPUUtilization',
       period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });

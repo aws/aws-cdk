@@ -39,6 +39,13 @@ export interface CertificateProps {
    * @default - Apex domain is used for every domain that's not overridden.
    */
   readonly validationDomains?: {[domainName: string]: string};
+
+  /**
+   * Validation method used to assert domain ownership
+   *
+   * @default ValidationMethod.EMAIL
+   */
+  readonly validationMethod?: ValidationMethod;
 }
 
 /**
@@ -85,6 +92,7 @@ export class Certificate extends Resource implements ICertificate {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: allDomainNames.map(domainValidationOption),
+      validationMethod: props.validationMethod,
     });
 
     this.certificateArn = cert.ref;
@@ -102,4 +110,23 @@ export class Certificate extends Resource implements ICertificate {
       };
     }
   }
+}
+
+/**
+ * Method used to assert ownership of the domain
+ */
+export enum ValidationMethod {
+  /**
+   * Send email to a number of email addresses associated with the domain
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html
+   */
+  EMAIL = 'EMAIL',
+
+  /**
+   * Validate ownership by adding appropriate DNS records
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
+   */
+  DNS = 'DNS',
 }

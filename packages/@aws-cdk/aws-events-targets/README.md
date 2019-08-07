@@ -3,18 +3,27 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
 
-See the README of the `@aws-cdk/aws-events` library.
+This library contains integration classes to send AWS CloudWatch Events to any
+number of supported AWS Services. Instances of these classes should be passed
+to the `rule.addTarget()` method.
+
+Currently supported are:
+
+* Start a CodeBuild build
+* Start a CodePipeline pipeline
+* Run an ECS task
+* Invoke a Lambda function
+* Publish a message to an SNS topic
+* Send a message to an SQS queue
+* Start a StepFunctions state machine
+
+See the README of the `@aws-cdk/aws-events` library for more information on
+CloudWatch Events.
 
 

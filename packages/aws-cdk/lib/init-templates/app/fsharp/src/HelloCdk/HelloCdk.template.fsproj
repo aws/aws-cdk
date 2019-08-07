@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
- 
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -12,10 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.CDK" Version="%cdk-version%" />
-    <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%" />
-    <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%" />
-    <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%" />
+    <PackageReference Include="Amazon.CDK" Version="%cdk-version%-devpreview" />
+    <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%-devpreview" />
+    <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%-devpreview" />
+    <PackageReference Include="Amazon.CDK.AWS.SNS.Subscriptions" Version="%cdk-version%-devpreview" />
+    <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
   </ItemGroup>
 
 </Project>

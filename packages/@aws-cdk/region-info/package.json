@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "0.36.0",
+  "version": "1.3.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.regioninfo",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-region-info"
+          "artifactId": "cdk-region-info",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.RegionInfo",
         "packageId": "Amazon.CDK.RegionInfo",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.region-info",
@@ -49,10 +51,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^7.0.0",
-    "cdk-build-tools": "^0.36.0",
-    "fs-extra": "^8.0.1",
-    "pkglint": "^0.36.0"
+    "@types/fs-extra": "^8.0.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "fs-extra": "^8.1.0",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "jest": {
     "coverageReporters": [
@@ -73,7 +75,7 @@
     ]
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
     "directory": "packages/@aws-cdk/region-info"
   },
@@ -81,7 +83,7 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
   },

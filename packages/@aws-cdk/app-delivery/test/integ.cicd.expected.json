@@ -2,7 +2,8 @@
   "Resources": {
     "ArtifactBucket7410C9EF": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "CodePipelineRoleB3A660B4": {
       "Type": "AWS::IAM::Role",
@@ -251,9 +252,13 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "cloudformation:ExecuteChangeSet",
+              "Action": [
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks",
+                "cloudformation:ExecuteChangeSet"
+              ],
               "Condition": {
-                "StringEquals": {
+                "StringEqualsIfExists": {
                   "cloudformation:ChangeSetName": "CICD-ChangeSet"
                 }
               },

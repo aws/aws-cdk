@@ -126,7 +126,12 @@ abstract class ParameterBase extends Resource implements IParameter {
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
-      actions: ['ssm:DescribeParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
+      actions: [
+        'ssm:DescribeParameters',
+        'ssm:GetParameters',
+        'ssm:GetParameter',
+        'ssm:GetParameterHistory'
+      ],
       resourceArns: [this.parameterArn],
     });
   }
@@ -248,6 +253,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
+
     if (exists) { return exists.stringValue; }
 
     return this.fromStringParameterAttributes(stack, id, { parameterName, version }).stringValue;

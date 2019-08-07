@@ -7,7 +7,7 @@
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
+>
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -50,6 +50,11 @@ const loadBalancedFargateService = new ecsPatterns.LoadBalancedFargateService(st
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 ```
+
+Instead of providing a cluster you can specify a VPC and CDK will create a new ECS cluster. 
+If you deploy multiple services CDK will only create on cluster per VPC.
+
+You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and create a cluster inside this VPC.
 
 ## Queue Processing Services
 

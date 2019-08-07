@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -47,7 +41,7 @@ to the metric function call:
 ```ts
 const minuteErrorRate = fn.metricErrors({
     statistic: 'avg',
-    periodSec: 60,
+    period: Duration.minutes(1),
     label: 'Lambda failure rate'
 });
 ```
@@ -87,10 +81,10 @@ new Alarm(this, 'Alarm', {
 });
 ```
 
-Alternatively, you can call `metric.newAlarm()`:
+Alternatively, you can call `metric.createAlarm()`:
 
 ```ts
-fn.metricErrors().newAlarm(this, 'Alarm', {
+fn.metricErrors().createAlarm(this, 'Alarm', {
     threshold: 100,
     evaluationPeriods: 2,
 });
@@ -124,7 +118,7 @@ A graph widget can display any number of metrics on either the `left` or
 `right` vertical axis:
 
 ```ts
-dashboard.add(new GraphWidget({
+dashboard.addWidgets(new GraphWidget({
     title: "Executions vs error rate",
 
     left: [executionCountMetric],
@@ -142,7 +136,7 @@ dashboard.add(new GraphWidget({
 An alarm widget shows the graph and the alarm line of a single alarm:
 
 ```ts
-dashboard.add(new AlarmWidget({
+dashboard.addWidgets(new AlarmWidget({
     title: "Errors",
     alarm: errorAlarm,
 }));
@@ -154,7 +148,7 @@ A single-value widget shows the latest value of a set of metrics (as opposed
 to a graph of the value over time):
 
 ```ts
-dashboard.add(new SingleValueWidget({
+dashboard.addWidgets(new SingleValueWidget({
     metrics: [visitorCount, purchaseCount],
 }));
 ```
@@ -165,7 +159,7 @@ A text widget shows an arbitrary piece of MarkDown. Use this to add explanations
 to your dashboard:
 
 ```ts
-dashboard.add(new TextWidget({
+dashboard.addWidgets(new TextWidget({
     markdown: '# Key Performance Indicators'
 }));
 ```

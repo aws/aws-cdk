@@ -40,11 +40,14 @@ export interface GroupProps {
   readonly groupName?: string;
 
   /**
-   * A list of ARNs for managed policies associated with group.
+   * A list of managed policies associated with this role.
+   *
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */
-  readonly managedPolicyArns?: any[];
+  readonly managedPolicies?: IManagedPolicy[];
 
   /**
    * The path to the group. For more information about paths, see [IAM
@@ -130,7 +133,7 @@ export class Group extends GroupBase {
       physicalName: props.groupName,
     });
 
-    this.managedPolicies.push(...props.managedPolicyArns || []);
+    this.managedPolicies.push(...props.managedPolicies || []);
 
     const group = new CfnGroup(this, 'Resource', {
       groupName: this.physicalName,

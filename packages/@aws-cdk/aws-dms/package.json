@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dms",
-  "version": "0.36.0",
+  "version": "1.3.0",
   "description": "The CDK Construct Library for AWS::DMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,27 +11,26 @@
         "package": "software.amazon.awscdk.services.dms",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "dms"
+          "artifactId": "dms",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DMS",
         "packageId": "Amazon.CDK.AWS.DMS",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-dms",
         "module": "aws_cdk.aws_dms"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Database Migration Service"
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-dms"
   },
   "scripts": {
@@ -63,17 +62,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.0",
-    "cdk-build-tools": "^0.36.0",
-    "cfn2ts": "^0.36.0",
-    "pkglint": "^0.36.0"
+    "@aws-cdk/assert": "^1.3.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/core": "^1.3.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/core": "^1.3.0"
   },
   "engines": {
     "node": ">= 8.10.0"

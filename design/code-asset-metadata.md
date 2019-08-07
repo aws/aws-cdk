@@ -1,6 +1,6 @@
 # RFC: AWS Lambda - Metadata about Code Assets
 
-As described in [#1432](https://github.com/awslabs/aws-cdk/issues/1432), in order to support local debugging,
+As described in [#1432](https://github.com/aws/aws-cdk/issues/1432), in order to support local debugging,
 debuggers like [SAM CLI](https://github.com/awslabs/aws-sam-cli) need to be able to find the code of a Lambda
 function locally.
 
@@ -57,7 +57,7 @@ well as through the key `assetMetadata` in `cdk.json`. Very similar design to ho
 We considered alternatives that will "enforce" the embedding of metadata when an asset is referenced by a resource. Since
 a single asset can be referenced by multiple resources, it means that the _relationship_ is what should trigger the
 metadata addition. There currently isn't support in the framework for such hooks, but there is a possiblility that
-the changes in [#1436](https://github.com/awslabs/aws-cdk/pull/1436) might enable hooking into the relationnship, and then we might be able to use this mechanism to produce the metadata.
+the changes in [#1436](https://github.com/aws/aws-cdk/pull/1436) might enable hooking into the relationnship, and then we might be able to use this mechanism to produce the metadata.
 
 Having said that, the need to embed asset metadata on resources is mainly confined to authors of L2 constructs, and not applicable for the general user population, so the value of automation is not high.
 

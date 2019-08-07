@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -68,7 +62,7 @@ capacity.scaleOnSchedule(...);
 
 ### Step Scaling
 
-This type of scaling scales in and out in deterministics steps that you
+This type of scaling scales in and out in deterministic steps that you
 configure, in response to metric values. For example, your scaling strategy
 to scale in response to CPU usage might look like this:
 
@@ -96,7 +90,7 @@ capacity.scaleOnMetric('ScaleToCPU', {
 
   // Change this to AdjustmentType.PercentChangeInCapacity to interpret the
   // 'change' numbers before as percentages instead of capacity counts.
-  adjustmentType: autoscaling.AdjustmentType.ChangeInCapacity,
+  adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
 });
 ```
 
@@ -143,7 +137,7 @@ The following schedule expressions can be used:
 * `cron(mm hh dd mm dow)` -- scale on arbitrary schedules
 
 Of these, the cron expression is the most useful but also the most
-complicated. There is a `Cron` helper class to help build cron expressions.
+complicated. A schedule is expressed as a cron expression. The `Schedule` class has a `cron` method to help build cron expressions.
 
 The following example scales the fleet out in the morning, and lets natural
 scaling take over at night:
@@ -155,11 +149,11 @@ const capacity = resource.autoScaleCapacity({
 });
 
 capacity.scaleOnSchedule('PrescaleInTheMorning', {
-  schedule: autoscaling.Cron.dailyUtc(8),
+  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
 });
 
 capacity.scaleOnSchedule('AllowDownscalingAtNight', {
-  schedule: autoscaling.Cron.dailyUtc(20),
+  schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
   minCapacity: 1
 });

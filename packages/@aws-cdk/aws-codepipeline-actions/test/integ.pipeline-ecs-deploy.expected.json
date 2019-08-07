@@ -195,6 +195,7 @@
     },
     "EcrRepoBB83A592": {
       "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
     "TaskDefTaskRole1EDB4A67": {
@@ -231,12 +232,7 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
-            "MountPoints": [],
-            "Name": "Container",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "Container"
           }
         ],
         "Cpu": "256",
@@ -316,6 +312,7 @@
           "Status": "Enabled"
         }
       },
+      "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
     "EcsProjectRoleE2F0E9D2": {
@@ -534,7 +531,11 @@
                         }
                       ]
                     },
-                    ".amazonaws.com/",
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
                     {
                       "Ref": "EcrRepoBB83A592"
                     }

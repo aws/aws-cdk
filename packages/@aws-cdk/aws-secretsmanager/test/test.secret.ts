@@ -105,7 +105,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -204,7 +205,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -394,7 +396,7 @@ export = {
     test.done();
   },
 
-  'equivalence of SecretValue and Secret.import'(test: Test) {
+  'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
     const stack = new Stack();
 

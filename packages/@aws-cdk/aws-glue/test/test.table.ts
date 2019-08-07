@@ -28,7 +28,8 @@ export = {
 
     expect(tableStack).to(haveResource('AWS::S3::Bucket', {
       Type: "AWS::S3::Bucket",
-      DeletionPolicy: "Retain"
+      DeletionPolicy: "Retain",
+      UpdateReplacePolicy: "Retain"
     }, ResourcePart.CompleteDefinition));
 
     expect(tableStack).to(haveResource('AWS::Glue::Table', {
@@ -337,7 +338,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -469,7 +471,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -677,7 +680,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -790,7 +794,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -905,7 +910,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {

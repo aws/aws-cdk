@@ -11,7 +11,7 @@ class EventStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
 
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -26,7 +26,7 @@ class EventStack extends cdk.Stack {
       desiredTaskCount: 2,
       memoryLimitMiB: 512,
       cpu: 1,
-      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
     /// !hide

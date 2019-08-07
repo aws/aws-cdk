@@ -240,7 +240,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -284,6 +285,8 @@
             },
             {
               "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*"
@@ -338,7 +341,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
@@ -359,7 +363,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -654,6 +659,9 @@
           "Statement": [
             {
               "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject*",
                 "s3:Abort*"
@@ -684,6 +692,8 @@
             },
             {
               "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*"

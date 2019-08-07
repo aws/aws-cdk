@@ -1,0 +1,18 @@
+# See https://doc.mergify.io
+
+pull_request_rules:
+- name: auto_merge
+  conditions: 
+    - -title~=(WIP|wip)
+    - -merged
+    - -closed
+    - -locked
+    - -label=blocked
+    - -label=do-not-merge
+    - "#approved-reviews-by>=1"
+    - "#changes-requested-reviews-by=0"
+    - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+  actions:
+    merge:
+      method: squash
+      strict: smart

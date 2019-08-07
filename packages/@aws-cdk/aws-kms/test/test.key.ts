@@ -30,7 +30,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
             ],
             Effect: "Allow",
             Principal: {
@@ -57,7 +58,8 @@ export = {
           Version: "2012-10-17"
         }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain"
       }
       }
     }));
@@ -70,7 +72,7 @@ export = {
 
     new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
-    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
+    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete", UpdateReplacePolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();
   },
 
@@ -103,7 +105,8 @@ export = {
               "kms:Get*",
               "kms:Delete*",
               "kms:ScheduleKeyDeletion",
-              "kms:CancelKeyDeletion"
+              "kms:CancelKeyDeletion",
+              "kms:GenerateDataKey"
             ],
             Effect: "Allow",
             Principal: {
@@ -138,7 +141,8 @@ export = {
           Version: "2012-10-17"
           }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain",
         }
       }
       }));
@@ -181,7 +185,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   Effect: "Allow",
                   Principal: {
@@ -232,7 +237,8 @@ export = {
               }
             ]
           },
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
     }));
@@ -274,7 +280,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   Effect: "Allow",
                   Principal: {
@@ -301,7 +308,8 @@ export = {
               Version: "2012-10-17"
             }
           },
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         },
         MyKeyAlias1B45D9DA: {
           Type: "AWS::KMS::Alias",
@@ -337,7 +345,7 @@ export = {
           // This one is there by default
           {
             // tslint:disable-next-line:max-line-length
-            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion" ],
+            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey" ],
             Effect: "Allow",
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root" ] ] } },
             Resource: "*"

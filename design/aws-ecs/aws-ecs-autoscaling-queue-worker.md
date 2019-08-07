@@ -1,6 +1,6 @@
 # AWS ECS - L3 Construct for Autoscaling ECS/Fargate Service that Processes Items in a SQS Queue
 
-To address issue [#2396](https://github.com/awslabs/aws-cdk/issues/2396), the AWS ECS CDK construct library should provide a way for customers to create a queue processing service (an AWS ECS/Fargate service that processes items from an sqs queue). This would mean adding new ECS CDK constructs `QueueProcessingEc2Service` and `QueueProcessingFargateService`, that would take in the necessary properties required to create a task definition, an SQS queue as well as an ECS/Fargate service and enable autoscaling for the service based on cpu usage and the SQS queue's approximateNumberOfMessagesVisible metric. 
+To address issue [#2396](https://github.com/aws/aws-cdk/issues/2396), the AWS ECS CDK construct library should provide a way for customers to create a queue processing service (an AWS ECS/Fargate service that processes items from an sqs queue). This would mean adding new ECS CDK constructs `QueueProcessingEc2Service` and `QueueProcessingFargateService`, that would take in the necessary properties required to create a task definition, an SQS queue as well as an ECS/Fargate service and enable autoscaling for the service based on cpu usage and the SQS queue's approximateNumberOfMessagesVisible metric.
 
 ## General approach
 
@@ -9,7 +9,7 @@ The new `ecs.QueueProcessingServiceBase`, `ecs.QueueProcessingEc2Service` and `e
 * QueueProcessingEc2Service
 * QueueProcessingFargateService
 
-A `QueueProcessingService` will create a task definition with the specified container (on both EC2 and Fargate). An AWS SQS `Queue` will be created and autoscaling of the ECS Service will be dependent on both CPU as well as the SQS queue's `ApproximateNumberOfMessagesVisible` metric. 
+A `QueueProcessingService` will create a task definition with the specified container (on both EC2 and Fargate). An AWS SQS `Queue` will be created and autoscaling of the ECS Service will be dependent on both CPU as well as the SQS queue's `ApproximateNumberOfMessagesVisible` metric.
 
 The `QueueProcessingService` constructs (for EC2 and Fargate) will use the following existing constructs:
 
@@ -24,7 +24,7 @@ Given the above, we should make the following changes to support queue processin
 2. Create `QueueProcessingEc2ServiceProps` interface  and `QueueProcessingEc2Service` construct
 3. Create `QueueProcessingFargateServiceProps` interface  and `QueueProcessingFargateService` construct
 
-### Part 1: Create `QueueProcessingServiceBaseProps` interface  and `QueueProcessingServiceBase` construct  
+### Part 1: Create `QueueProcessingServiceBaseProps` interface  and `QueueProcessingServiceBase` construct
 
 The `QueueProcessingServiceBaseProps` interface will contain common properties used to construct both the QueueProcessingEc2Service and the QueueProcessingFargateService:
 
@@ -93,14 +93,14 @@ export interface QueueProcessingServiceBaseProps {
    *
    * Maps a range of metric values to a particular scaling behavior.
    * https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html
-   * 
+   *
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
   readonly scalingSteps: autoScaling.ScalingInterval[];
 }
 ```
 
-### Part 2: Create `QueueProcessingEc2ServiceProps` interface  and `QueueProcessingEc2Service` construct  
+### Part 2: Create `QueueProcessingEc2ServiceProps` interface  and `QueueProcessingEc2Service` construct
 
 The `QueueProcessingEc2ServiceProps` interface will contain properties to construct the Ec2TaskDefinition, SQSQueue and Ec2Service:
 
@@ -147,12 +147,12 @@ export interface QueueProcessingEc2ServiceProps {
 An example use case:
 ```ts
 // Create the vpc and cluster used by the queue processing service
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro')
 });
-const queue = new sqs.Queue(stack, 'ProcessingQueue', { 
+const queue = new sqs.Queue(stack, 'ProcessingQueue', {
   QueueName: 'EcsEventQueue'
 });
 
@@ -168,7 +168,7 @@ new QueueProcessingEc2Service(stack, 'QueueProcessingEc2Service', {
 });
 ```
 
-### Part 3: Create `QueueProcessingFargateServiceProps` interface  and `QueueProcessingFargateService` construct  
+### Part 3: Create `QueueProcessingFargateServiceProps` interface  and `QueueProcessingFargateService` construct
 
 The `QueueProcessingFargateServiceProps` interface will contain properties to construct the FargateTaskDefinition, SQSQueue and FargateService:
 
@@ -219,9 +219,9 @@ export interface QueueProcessingFargateServiceProps {
 An example use case:
 ```ts
 // Create the vpc and cluster used by the queue processing service
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
-const queue = new sqs.Queue(stack, 'ProcessingQueue', { 
+const queue = new sqs.Queue(stack, 'ProcessingQueue', {
   QueueName: 'FargateEventQueue'
 });
 

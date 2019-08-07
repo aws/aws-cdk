@@ -8,7 +8,7 @@ import targets = require('../../lib');
 test("Can use EC2 taskdef as EventRule target", () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   cluster.addCapacity('DefaultAutoScalingGroup', {
     instanceType: new ec2.InstanceType('t2.micro')
@@ -51,7 +51,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
           InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
         },
         RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
-        Id: taskDefinition.node.uniqueId
+        Id: "Target0"
       }
     ]
   });
@@ -60,7 +60,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
 test("Can use Fargate taskdef as EventRule target", () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -124,7 +124,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
                 "Arn"
               ]
             },
-            Id: taskDefinition.node.uniqueId,
+            Id: "Target0",
             EcsParameters: {
               TaskDefinitionArn: {
                 Ref: "TaskDef54694570"
@@ -180,7 +180,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
           InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
         },
         RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
-        Id: taskDefinition.node.uniqueId
+        Id: "Target0"
       }
     ]
   });

@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -21,7 +15,7 @@ Here is a minimal deployable DynamoDB table definition:
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
 const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.String }
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
 });
 ```
 
@@ -40,8 +34,8 @@ DynamoDB supports two billing modes:
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
 const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.String },
-  billingMode: dynamodb.BillingMode.PayPerRequest
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST
 });
 ```
 
@@ -64,4 +58,4 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.htm
 https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
 
 ### Amazon DynamoDB Global Tables
-Please see the `@aws-cdk/aws-dynamodb-global` package [here](../aws-dynamodb-global/).
+Please see the `@aws-cdk/aws-dynamodb-global` package.

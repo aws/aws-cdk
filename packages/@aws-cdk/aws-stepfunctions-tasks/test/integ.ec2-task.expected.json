@@ -249,9 +249,7 @@
               "Action": [
                 "ecs:ListContainerInstances",
                 "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
+                "ecs:SubmitTaskStateChange"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -260,6 +258,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "FargateCluster7CCD5F93",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -508,7 +524,11 @@
                       }
                     ]
                   },
-                  ".amazonaws.com/",
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
                   {
                     "Fn::GetAtt": [
                       "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -532,7 +552,6 @@
                 ]
               ]
             },
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -544,11 +563,7 @@
               }
             },
             "Memory": 256,
-            "MountPoints": [],
-            "Name": "TheContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "TheContainer"
           }
         ],
         "ExecutionRoleArn": {
@@ -598,10 +613,12 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
+      "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
     "TaskDefTheContainerLogGroupD94C8EF5": {
       "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
     "TaskDefExecutionRoleB4775C97": {

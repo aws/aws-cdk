@@ -30,8 +30,10 @@ export interface RoleProps {
   readonly externalId?: string;
 
   /**
-   * A list of ARNs for managed policies associated with this role.
-   * You can add managed policies later using `attachManagedPolicy(arn)`.
+   * A list of managed policies associated with this role.
+   *
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */
