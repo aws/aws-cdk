@@ -1165,6 +1165,7 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
     this.subnetNetworkAclAssociationId = subnet.attrNetworkAclAssociationId;
+    this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
