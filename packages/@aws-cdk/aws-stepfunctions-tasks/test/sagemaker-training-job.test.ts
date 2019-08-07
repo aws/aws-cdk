@@ -79,6 +79,31 @@ test('create basic training job', () => {
     });
 });
 
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+    expect(() => {
+        new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+            serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+            trainingJobName: "MyTrainJob",
+            algorithmSpecification: {
+                algorithmName: "BlazingText",
+            },
+            inputDataConfig: [
+                {
+                    channelName: 'train',
+                    dataSource: {
+                        s3DataSource: {
+                            s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
+                        }
+                    }
+                }
+            ],
+            outputDataConfig: {
+                s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
+            },
+        })});
+    }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call SageMaker./i);
+  });
+
 test('create complex training job', () => {
     // WHEN
     const kmsKey = new kms.Key(stack, 'Key');
@@ -95,7 +120,7 @@ test('create complex training job', () => {
 
     const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
         trainingJobName: "MyTrainJob",
-        synchronous: true,
+        serviceIntegrationPattern: sfn.ServiceIntegrationPattern.SYNC,
         role,
         algorithmSpecification: {
             algorithmName: "BlazingText",

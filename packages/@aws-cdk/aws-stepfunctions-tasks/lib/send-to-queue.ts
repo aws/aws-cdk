@@ -2,6 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Duration } from '@aws-cdk/core';
+import { resourceArnSuffix } from './resource-arn-suffix';
 
 /**
  * Properties for SendMessageTask
@@ -39,11 +40,13 @@ export interface SendToQueueProps {
   readonly messageGroupId?: string;
 
   /**
-   * Whether to pause the workflow until a task token is returned
+   * The service integration pattern indicates different ways to call SendMessage to SQS.
    *
-   * @default false
+   * The valid value is either FIRE_AND_FORGET or WAIT_FOR_TASK_TOKEN.
+   *
+   * @default FIRE_AND_FORGET
    */
-  readonly waitForTaskToken?: boolean;
+  readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -54,19 +57,30 @@ export interface SendToQueueProps {
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
 
-  private readonly waitForTaskToken: boolean;
+  private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
-    this.waitForTaskToken = props.waitForTaskToken === true;
+    this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
-    if (this.waitForTaskToken && !sfn.FieldUtils.containsTaskToken(props.messageBody.value)) {
-      throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+    const supportedPatterns = [
+      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+    ];
+
+    if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call SQS.`);
+    }
+
+    if (props.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+      if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
+        throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+      }
     }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sqs:sendMessage' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
+      resourceArn: 'arn:aws:states:::sqs:sendMessage' + resourceArnSuffix.get(this.serviceIntegrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [this.queue.queueArn]

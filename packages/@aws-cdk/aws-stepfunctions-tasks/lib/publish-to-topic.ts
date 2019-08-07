@@ -1,6 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { resourceArnSuffix } from './resource-arn-suffix';
 
 /**
  * Properties for PublishTask
@@ -29,11 +30,13 @@ export interface PublishToTopicProps {
   readonly subject?: string;
 
   /**
-   * Whether to pause the workflow until a task token is returned
+   * The service integration pattern indicates different ways to call Publish to SNS.
    *
-   * @default false
+   * The valid value is either FIRE_AND_FORGET or WAIT_FOR_TASK_TOKEN.
+   *
+   * @default FIRE_AND_FORGET
    */
-  readonly waitForTaskToken?: boolean;
+  readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -44,19 +47,30 @@ export interface PublishToTopicProps {
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
 
-  private readonly waitForTaskToken: boolean;
+  private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
-    this.waitForTaskToken = props.waitForTaskToken === true;
+    this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
-    if (this.waitForTaskToken && !sfn.FieldUtils.containsTaskToken(props.message.value)) {
-      throw new Error('Task Token is missing in message (pass Context.taskToken somewhere in message)');
+    const supportedPatterns = [
+      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+    ];
+
+    if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call SNS.`);
+    }
+
+    if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+      if (!sfn.FieldUtils.containsTaskToken(props.message)) {
+        throw new Error('Task Token is missing in message (pass Context.taskToken somewhere in message)');
+      }
     }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sns:publish' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
+      resourceArn: 'arn:aws:states:::sns:publish' + resourceArnSuffix.get(this.serviceIntegrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [this.topic.topicArn]

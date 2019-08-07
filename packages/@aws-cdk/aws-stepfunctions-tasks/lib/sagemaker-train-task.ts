@@ -2,6 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { resourceArnSuffix } from './resource-arn-suffix';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -26,11 +27,13 @@ export interface SagemakerTrainTaskProps {
     readonly role?: iam.IRole;
 
     /**
-     * Specify if the task is synchronous or asychronous.
+     * The service integration pattern indicates different ways to call SageMaker APIs.
      *
-     * @default false
+     * The valid value is either FIRE_AND_FORGET or SYNC.
+     *
+     * @default FIRE_AND_FORGET
      */
-    readonly synchronous?: boolean;
+    readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
 
     /**
      * Identifies the training algorithm to use.
@@ -114,7 +117,19 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
      */
     private readonly stoppingCondition: StoppingCondition;
 
+    private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
+
     constructor(scope: Construct, private readonly props: SagemakerTrainTaskProps) {
+        this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+        const supportedPatterns = [
+            sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+            sfn.ServiceIntegrationPattern.SYNC
+        ];
+
+        if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
+            throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call SageMaker.`);
+        }
 
         // set the default resource config if not defined.
         this.resourceConfig = props.resourceConfig || {
@@ -194,7 +209,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + (this.props.synchronous ? '.sync' : ''),
+          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + resourceArnSuffix.get(this.serviceIntegrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
@@ -322,7 +337,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
             })
         ];
 
-        if (this.props.synchronous) {
+        if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
             policyStatements.push(new iam.PolicyStatement({
                 actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
                 resources: [stack.formatArn({
