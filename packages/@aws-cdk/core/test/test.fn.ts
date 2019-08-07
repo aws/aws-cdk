@@ -1,7 +1,7 @@
 import fc = require('fast-check');
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
-import { Fn, Stack, Token } from '../lib';
+import { App, CfnOutput, Fn, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
 function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.Test) => void {
@@ -137,6 +137,34 @@ export = nodeunit.testCase({
           { 'Fn::ValueOfAll': ['AWS::EC2::Subnet::Id', 'VpcId'] },
           { 'Fn::RefAll': 'AWS::EC2::VPC::Id'}
         ]
+      });
+    }),
+
+    'cross-stack FnJoin elements are properly resolved': asyncTest(async (test) => {
+      // GIVEN
+      const app = new App();
+      const stack1 = new Stack(app, 'Stack1');
+      const stack2 = new Stack(app, 'Stack2');
+
+      // WHEN
+      new CfnOutput(stack2, 'Stack1Id', {
+        value: Fn.join(' = ', [ 'Stack1Id', stack1.stackId ])
+      });
+
+      // THEN
+      const template = app.synth().getStack('Stack2').template;
+
+      test.deepEqual(template, {
+        Outputs: {
+          Stack1Id: {
+            Value: {
+              'Fn::Join': [' = ', [
+                'Stack1Id',
+                { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' }
+              ]]
+            }
+          }
+        }
       });
     }),
   },
