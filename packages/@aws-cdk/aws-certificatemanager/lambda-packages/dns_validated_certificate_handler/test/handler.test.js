@@ -28,7 +28,7 @@ describe('DNS Validated Certificate Handler', () => {
         }
       };
     });
-    console.log = function () {};
+    console.log = function () { };
   });
   afterEach(() => {
     // Restore waiters and logger
@@ -63,7 +63,17 @@ describe('DNS Validated Certificate Handler', () => {
   });
 
   test('Requests a certificate if RequestType is Create', () => {
-    const describeCertificateFake = sinon.fake.resolves({
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      CertificateArn: testCertificateArn,
+      Certificate: {
+      }
+    });
+    describeCertificateFake.resolves({
       CertificateArn: testCertificateArn,
       Certificate: {
         DomainValidationOptions: [{
@@ -83,7 +93,7 @@ describe('DNS Validated Certificate Handler', () => {
       }
     });
 
-    AWS.mock('ACM', 'requestCertificate', describeCertificateFake);
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
     AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
 
@@ -103,7 +113,7 @@ describe('DNS Validated Certificate Handler', () => {
         }
       })
       .expectResolve(() => {
-        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
           DomainName: testDomainName,
           ValidationMethod: 'DNS'
         }));
@@ -122,6 +132,45 @@ describe('DNS Validated Certificate Handler', () => {
             }]
           },
           HostedZoneId: testHostedZoneId
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Fails after at most 10 attempts if no DomainValidationOptions are available', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+      Certificate: {
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'FAILED' &&
+        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          SubjectAlternativeNames: [],
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
         }));
         expect(request.isDone()).toBe(true);
       });
