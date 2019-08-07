@@ -58,10 +58,11 @@ export class SqsQueue implements events.IRuleTarget {
       })
     );
 
-    const result = {
+    const result: events.RuleTargetConfig = {
       id: '',
       arn: this.queue.queueArn,
       input: this.props.message,
+      targetResource: this.queue,
     };
     if (!!this.props.messageGroupId) {
       Object.assign(result, { sqsParameters: { messageGroupId: this.props.messageGroupId } });

@@ -258,11 +258,7 @@
           {
             "Environment": [
               {
-                "Name": "name",
-                "Value": "TRIGGER"
-              },
-              {
-                "Name": "value",
+                "Name": "TRIGGER",
                 "Value": "CloudWatch Events"
               }
             ],
@@ -372,7 +368,6 @@
                 ]
               ]
             },
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -385,11 +380,7 @@
                 }
               }
             },
-            "MountPoints": [],
-            "Name": "ScheduledContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "ScheduledContainer"
           }
         ],
         "Cpu": "256",

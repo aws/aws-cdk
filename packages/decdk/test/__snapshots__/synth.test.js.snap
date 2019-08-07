@@ -619,13 +619,8 @@ Object {
           Object {
             "Essential": true,
             "Image": "redis",
-            "Links": Array [],
             "Memory": 1024,
-            "MountPoints": Array [],
             "Name": "ContainerDef",
-            "PortMappings": Array [],
-            "Ulimits": Array [],
-            "VolumesFrom": Array [],
           },
         ],
         "Cpu": "1024",
@@ -1898,6 +1893,7 @@ Object {
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
               ],
               "Effect": "Allow",
               "Principal": Object {
@@ -1986,6 +1982,7 @@ Object {
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
               ],
               "Effect": "Allow",
               "Principal": Object {
@@ -2908,6 +2905,7 @@ Object {
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
               ],
               "Effect": "Allow",
               "Principal": Object {

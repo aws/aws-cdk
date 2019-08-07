@@ -10,7 +10,7 @@ class EksClusterStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'VPC');
 
     const cluster = new eks.Cluster(this, 'EKSCluster', {
-      vpc
+      vpc,
     });
 
     cluster.addCapacity('Nodes', {
@@ -25,7 +25,7 @@ const app = new cdk.App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-new EksClusterStack(app, 'eks-integ-test', {
+new EksClusterStack(app, 'eks-integ-test-basic', {
   env: {
     region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
     account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
