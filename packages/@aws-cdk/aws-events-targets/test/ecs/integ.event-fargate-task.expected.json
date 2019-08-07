@@ -303,7 +303,11 @@
                       }
                     ]
                   },
-                  ".amazonaws.com/",
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
                   {
                     "Fn::GetAtt": [
                       "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -327,7 +331,6 @@
                 ]
               ]
             },
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -340,11 +343,7 @@
                 }
               }
             },
-            "MountPoints": [],
-            "Name": "TheContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "TheContainer"
           }
         ],
         "Cpu": "256",
@@ -396,8 +395,13 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "TaskDefTheContainerLogGroupD94C8EF5": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -639,7 +643,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsecsintegfargateTaskDef8878AF94",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "TaskDef54694570"
@@ -716,7 +720,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsecsintegfargateTaskDef8878AF94",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "TaskDef54694570"
@@ -755,13 +759,8 @@
           "physicalResourceId": "awsecsintegfargateTaskDef8878AF94"
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
-    },
-    "TaskDefTheContainerLogGroupD94C8EF5": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",
@@ -938,7 +937,7 @@
                 "Ref": "TaskDef54694570"
               }
             },
-            "Id": "awsecsintegfargateTaskDef8878AF94",
+            "Id": "Target0",
             "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
