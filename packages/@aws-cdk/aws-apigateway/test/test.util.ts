@@ -1,9 +1,9 @@
 import { Test, testCase } from 'nodeunit';
-import { parseAwsApiCall, parseMethodOptionsPath, JsonSchemaMapper } from '../lib/util';
 import { JsonSchema, JsonSchemaType } from '../lib';
+import { JsonSchemaMapper, parseAwsApiCall, parseMethodOptionsPath } from '../lib/util';
 
 export = testCase({
-  parseMethodResourcePath: {
+  'parseMethodResourcePath': {
     'fails if path does not start with a /'(test: Test) {
       test.throws(() => parseMethodOptionsPath('foo'), /Method options path must start with \'\/\'/);
       test.done();
@@ -32,7 +32,7 @@ export = testCase({
     }
   },
 
-  parseAwsApiCall: {
+  'parseAwsApiCall': {
     'fails if "actionParams" is set but "action" is undefined'(test: Test) {
       test.throws(() => parseAwsApiCall(undefined, undefined, { foo: '123' }), /"actionParams" requires that "action" will be set/);
       test.done();
