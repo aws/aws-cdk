@@ -21,7 +21,7 @@ async function main() {
     .option('tslint', {
       type: 'string',
       desc: 'Specify a different tslint executable',
-      defeaultDescription: 'tslint provided by node dependencies'
+      defaultDescription: 'tslint provided by node dependencies'
     })
     .argv;
 

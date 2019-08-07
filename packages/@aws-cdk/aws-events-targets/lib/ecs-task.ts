@@ -170,7 +170,8 @@ export class EcsTask implements events.IRuleTarget {
         taskCount,
         taskDefinitionArn
       },
-      input: events.RuleTargetInput.fromObject(input)
+      input: events.RuleTargetInput.fromObject(input),
+      targetResource: this.taskDefinition,
     };
   }
 }
