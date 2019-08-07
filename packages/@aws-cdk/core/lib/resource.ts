@@ -118,8 +118,8 @@ export abstract class Resource extends Construct implements IResource {
    * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
-    return Token.asString({
-      resolve: (context: IResolveContext) => {
+    return Lazy.stringValue({
+      produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 
         if (this.stack.environment !== consumingStack.environment) {
