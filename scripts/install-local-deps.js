@@ -49,6 +49,10 @@ function installDeps(location, ...depLists) {
       if (locks) {
         fixupDependencies(dependencies, dev);
 
+        if (!locks.dependencies) {
+          locks.dependencies = {};
+        }
+
         locks.dependencies[name] = {
           version,
           dev,
