@@ -22,11 +22,11 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "devDependencies": {
-    "@types/fs-extra": "^7.0.0",
+    "@types/fs-extra": "^8.0.0",
     "@types/md5": "^2.1.33",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "fast-json-patch": "^2.1.0",
-    "fs-extra": "^8.0.1",
+    "fast-json-patch": "^2.2.0",
+    "fs-extra": "^8.1.0",
     "json-diff": "^0.5.4",
     "pkglint": "file:../../../tools/pkglint",
     "sort-json": "^2.0.0"
