@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App, CfnOutput, Construct, PhysicalName, Resource, Stack } from '../lib';
+import { App, CfnOutput, CfnResource, Construct, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 // tslint:disable:object-literal-key-quotes
@@ -195,6 +195,53 @@ export = {
 
     test.done();
   },
+
+  'cross environment when stack is a substack'(test: Test) {
+    const app = new App();
+
+    const parentStack = new Stack(app, 'ParentStack', {
+      env: { account: '112233', region: 'us-east-1' }
+    });
+
+    const childStack = new Stack(parentStack, 'ChildStack', {
+      env: { account: '998877', region: 'eu-west-2' }
+    });
+
+    const childResource = new MyResource(childStack, 'ChildResource', PhysicalName.GENERATE_IF_NEEDED);
+
+    new CfnResource(parentStack, 'ParentResource', {
+      type: 'Parent::Resource',
+      properties: {
+        RefToChildResource: childResource.name
+      }
+    });
+
+    const assembly = app.synth();
+
+    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+      Resources: {
+        ParentResource: {
+          Type: 'Parent::Resource',
+          Properties: {
+            RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e'
+          }
+        }
+      }
+    });
+
+    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+      Resources: {
+        ChildResource8C37244D: {
+          Type: 'My::Resource',
+          Properties: {
+            resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e'
+          }
+        }
+      }
+    });
+
+    test.done();
+  }
 };
 
 class MyResource extends Resource {
@@ -212,5 +259,12 @@ class MyResource extends Resource {
       service: 'myservice',
     });
     this.name = this.getResourceNameAttribute('simple-name');
+
+    new CfnResource(this, 'Resource', {
+      type: 'My::Resource',
+      properties: {
+        resourceName: this.physicalName
+      }
+    });
   }
 }
