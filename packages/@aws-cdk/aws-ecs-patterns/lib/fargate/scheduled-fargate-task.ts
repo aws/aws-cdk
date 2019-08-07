@@ -57,7 +57,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       command: props.command,
       environment: props.environment,
       secrets: props.secrets,
-      logging: this.createAWSLogDriver(this.node.id)
+      logging: this.logDriver
     });
 
     this.addTaskDefinitionToEventTarget(this.taskDefinition);
