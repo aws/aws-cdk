@@ -170,11 +170,10 @@ export class Rule extends Resource implements IRule {
         }
 
         // the _actual_ target is just the event bus of the target's account
-        // make sure we only add it once per region
-        const key = `${targetAccount}-${targetRegion}`;
-        const exists = this.accountEventBusTargets[key];
+        // make sure we only add it once per account
+        const exists = this.accountEventBusTargets[targetAccount];
         if (!exists) {
-          this.accountEventBusTargets[key] = true;
+          this.accountEventBusTargets[targetAccount] = true;
           this.targets.push({
             id,
             arn: targetStack.formatArn({
