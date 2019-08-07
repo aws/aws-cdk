@@ -96,22 +96,24 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for ACM to provide DNS records for validation...');
 
-  let options;
-  let attempt = 0;
-  do {
-    if(attempt > 2) {
-      throw new Error('Response from describeCertificate did not contain DomainValidationOptions after 3 attempts.')
-    }
-    // Exponential backoff with jitter based on 100ms base
-    await sleep(Math.random() * (Math.pow(2, attempt) * 100));
+  let record;
+  const maxAttempts = 6;
+  for (let attempt = 0; attempt < maxAttempts - 1 && !record; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
-    options =  Certificate.DomainValidationOptions;
-    attempt++;
-  } while (!options || options.length < 1 || !options[0].ResourceRecord);
+    const options = Certificate.DomainValidationOptions || [];
 
-  const record = options[0].ResourceRecord;
+    if (options.length > 0 && options[0].ResourceRecord) {
+      record = options[0].ResourceRecord;
+    } else {
+      // Exponential backoff with jitter based on 200ms base
+      await sleep(Math.random() * (Math.pow(2, attempt) * 200));
+    }
+  }
+  if (!record) {
+    throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`)
+  }
 
   console.log(`Upserting DNS record into zone ${hostedZoneId}: ${record.Name} ${record.Type} ${record.Value}`);
 

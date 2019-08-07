@@ -137,7 +137,7 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
-  test('Fails after 3 attempts if no DomainValidationOptions are available', () => {
+  test('Fails after at most 10 attempts if no DomainValidationOptions are available', () => {
     const requestCertificateFake = sinon.fake.resolves({
       CertificateArn: testCertificateArn,
     });
@@ -153,7 +153,7 @@ describe('DNS Validated Certificate Handler', () => {
 
     const request = nock(ResponseURL).put('/', body => {
       return body.Status === 'FAILED' &&
-        body.Reason === 'Response from describeCertificate did not contain DomainValidationOptions after 3 attempts.';
+        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
     }).reply(200);
 
     return LambdaTester(handler.certificateRequestHandler)
