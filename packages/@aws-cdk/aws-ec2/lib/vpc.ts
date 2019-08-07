@@ -95,6 +95,11 @@ export interface IVpc extends IResource {
   addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection;
 
   /**
+   * Adds a new gateway endpoint to this VPC
+   */
+  addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint
+
+  /**
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
@@ -282,6 +287,16 @@ abstract class VpcBase extends Resource implements IVpc {
    */
   public addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint {
     return new InterfaceVpcEndpoint(this, id, {
+      vpc: this,
+      ...options
+    });
+  }
+
+  /**
+   * Adds a new gateway endpoint to this VPC
+   */
+  public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
+    return new GatewayVpcEndpoint(this, id, {
       vpc: this,
       ...options
     });
@@ -921,18 +936,11 @@ export class Vpc extends VpcBase {
       }
     }
   }
-  /**
-   * Adds a new gateway endpoint to this VPC
-   */
-  public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
-    return new GatewayVpcEndpoint(this, id, {
-      vpc: this,
-      ...options
-    });
-  }
 
   /**
    * Adds a new S3 gateway endpoint to this VPC
+   *
+   * @deprecated use `addGatewayEndpoint()` instead
    */
   public addS3Endpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
@@ -944,6 +952,8 @@ export class Vpc extends VpcBase {
 
   /**
    * Adds a new DynamoDB gateway endpoint to this VPC
+   *
+   * @deprecated use `addGatewayEndpoint()` instead
    */
   public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {

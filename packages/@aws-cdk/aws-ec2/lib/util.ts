@@ -124,7 +124,7 @@ export function allRouteTableIds(...ssns: SelectedSubnets[]): string[] {
   const ret = new Set<string>();
   for (const ssn of ssns) {
     for (const subnet of ssn.subnets) {
-      if (subnet.routeTable) {
+      if (subnet.routeTable && subnet.routeTable.routeTableId) {
         ret.add(subnet.routeTable.routeTableId);
       }
     }
