@@ -143,6 +143,13 @@ export interface LoadBalancedServiceBaseProps {
    * @default CloudFormation-generated name
    */
   readonly serviceName?: string;
+
+  /**
+   * The LogDriver to use for logging.
+   *
+   * @default - AwsLogDriver if enableLogging is true
+   */
+  readonly logDriver?: LogDriver;
 }
 
 /**
@@ -178,7 +185,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
-    this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
+    this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
     this.assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     this.desiredCount = props.desiredCount || 1;
