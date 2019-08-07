@@ -236,6 +236,18 @@ export interface GenericLinuxImageProps {
 }
 
 /**
+ * Configuration options for GenericWindowsImage
+ */
+export interface GenericWindowsImageProps {
+  /**
+   * Initial user data
+   *
+   * @default - Empty UserData for Windows machines
+   */
+  readonly userData?: UserData;
+}
+
+/**
  * Construct a Linux machine image from an AMI map
  *
  * Linux images IDs are not published to SSM parameter store yet, so you'll have to
@@ -260,6 +272,34 @@ export class GenericLinuxImage implements IMachineImage  {
       imageId: ami,
       userData: this.props.userData,
       osType: OperatingSystemType.LINUX,
+    };
+  }
+}
+
+/**
+ * Construct a Windows machine image from an AMI map
+ *
+ * Allows you to create a generic Windows EC2 , manually specify an AMI map.
+ */
+export class GenericWindowsImage implements IMachineImage  {
+  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
+  }
+
+  public getImage(scope: Construct): MachineImageConfig {
+    const region = Stack.of(scope).region;
+    if (Token.isUnresolved(region)) {
+      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+    }
+
+    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
+    if (!ami) {
+      throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
+    }
+
+    return {
+      imageId: ami,
+      userData: this.props.userData,
+      osType: OperatingSystemType.WINDOWS,
     };
   }
 }
