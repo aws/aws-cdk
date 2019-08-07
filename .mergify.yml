@@ -37,7 +37,7 @@ pull_request_rules:
             - **Design**: for significant features, follow the [design process](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#step-2-design-optional)
            * [ ] Title uses the format `type(scope): text`
             - __Type__: `fix`, `feat`, `refactor` go into CHANGELOG, `chore` is hidden
-            - __Scope__: name of the module without the `aws-` or `cdk-` prefix (e.g. `s3`, `core`)
+            - __Scope__: name of the module without the `aws-` or `cdk-` prefix or postfix (e.g. `s3` instead of `aws-s3-deployment`)
             - __Style__: use all **lower-case**, **do not** end with a period
            * [ ] Description
             - __Rationale__: describe rationale of change and approach taken
