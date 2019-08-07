@@ -49,8 +49,9 @@ export class CloudFormationLang {
 
       public resolveToken(t: IResolvable, context: IResolveContext, postProcess: IPostProcessor) {
         // Return References directly, so their type is maintained and the references will
-        // continue to work.
-        if (Reference.isReference(t)) { return t; }
+        // continue to work. Only while preparing, because we do need the final value of the
+        // token while resolving.
+        if (Reference.isReference(t) && context.preparing) { return wrap(t); }
 
         // Deep-resolve and wrap. This is necessary for Lazy tokens so we can see "inside" them.
         return wrap(super.resolveToken(t, context, postProcess));

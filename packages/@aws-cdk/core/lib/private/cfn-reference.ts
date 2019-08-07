@@ -104,7 +104,7 @@ export class CfnReference extends Reference {
     const consumingStack = Stack.of(context.scope);
     const token = this.replacementTokens.get(consumingStack);
     if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
-      throw new Error('Should have hadd a cross-stack reference, but not found. prepare() the reference first.');
+      throw new Error('Cross-stack reference has not been assigned a value--call prepare() first');
     }
 
     if (token) {
