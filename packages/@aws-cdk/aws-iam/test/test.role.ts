@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal , User} from '../lib';
 
 export = {
   'default role'(test: Test) {
@@ -114,12 +114,16 @@ export = {
   'managed policy arns can be supplied upon initialization and also added later'(test: Test) {
     const stack = new Stack();
 
+    const managed1 = ManagedPolicy.fromAwsManagedPolicyName('AWSManagedPolicy1');
+    const managed2 = ManagedPolicy.fromAwsManagedPolicyName('AWSManagedPolicy2');
+    const managed3 = ManagedPolicy.fromAwsManagedPolicyName('AWSManagedPolicy3');
+
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ]
+      managedPolicies: [ managed1, managed2 ]
     });
 
-    role.addManagedPolicy({ managedPolicyArn: 'managed3' });
+    role.addManagedPolicy(managed3);
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
@@ -130,7 +134,38 @@ export = {
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' },
-          ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
+          ManagedPolicyArns: [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  { Ref: "AWS::Partition" },
+                  ":iam::aws:policy/AWSManagedPolicy1"
+                ]
+              ]
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  { Ref: "AWS::Partition" },
+                  ":iam::aws:policy/AWSManagedPolicy2"
+                ]
+              ]
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  { Ref: "AWS::Partition" },
+                  ":iam::aws:policy/AWSManagedPolicy3"
+                ]
+              ]
+            }
+          ] } } } });
     test.done();
   },
 

@@ -16,6 +16,24 @@ export interface IManagedPolicy {
    * @attribute
    */
   readonly managedPolicyArn: string;
+
+  /**
+   * Attaches a user princial to this policy
+   * @param user The user to attach
+   */
+  attachToUser(user: IUser): void;
+
+  /**
+   * Attaches a role princial to this policy
+   * @param role The role to attach
+   */
+  attachToRole(role: IRole): void;
+
+  /**
+   * Attaches a group princial to this policy
+   * @param group The group to attach
+   */
+  attachToGroup(group: IGroup): void;
 }
 
 export interface ManagedPolicyProps {
@@ -107,6 +125,27 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
           });
         }
       });
+
+      /**
+       * Attaches this policy to a user.
+       */
+      public attachToUser(user: IUser) {
+        user.addManagedPolicy(this);
+      }
+
+      /**
+       * Attaches this policy to a role.
+       */
+      public attachToRole(role: IRole) {
+        role.addManagedPolicy(this);
+      }
+
+      /**
+       * Attaches this policy to a group.
+       */
+      public attachToGroup(group: IGroup) {
+        group.addManagedPolicy(this);
+      }
     }
     return new Import(scope, id);
   }
@@ -133,6 +172,27 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
           });
         }
       });
+
+      /**
+       * Attaches this policy to a user.
+       */
+      public attachToUser(user: IUser) {
+        user.addManagedPolicy(this);
+      }
+
+      /**
+       * Attaches this policy to a role.
+       */
+      public attachToRole(role: IRole) {
+        role.addManagedPolicy(this);
+      }
+
+      /**
+       * Attaches this policy to a group.
+       */
+      public attachToGroup(group: IGroup) {
+        group.addManagedPolicy(this);
+      }
     }
     return new AwsManagedPolicy();
   }

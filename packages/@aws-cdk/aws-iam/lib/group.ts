@@ -154,6 +154,8 @@ export class Group extends GroupBase {
    * @param policy The managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
+    policy.attachToGroup(this);
   }
 }
