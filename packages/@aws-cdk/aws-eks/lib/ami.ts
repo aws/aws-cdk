@@ -61,6 +61,21 @@ export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
  * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html
  */
 const EKS_AMI: {[version: string]: {[type: string]: {[region: string]: string}}} = {
+  '1.10': parseTable(`
+    US East (Ohio) (us-east-2) 	ami-0523ec257fff1261d 	ami-006382264ad5fc773
+    US East (N. Virginia) (us-east-1) 	ami-01c1c96b9aa69de37 	ami-0f1b9925c9ace2043
+    US West (Oregon) (us-west-2) 	ami-021dd1fb7ba7e6e51 	ami-0c3c59a4a7bea5678
+    Asia Pacific (Mumbai) (ap-south-1) 	ami-04c2ed5ff15a580f4 	ami-0ea42cc96a8375851
+    Asia Pacific (Tokyo) (ap-northeast-1) 	ami-02ffa4511b4baa5fa 	ami-00f64026212ad62c0
+    Asia Pacific (Seoul) (ap-northeast-2) 	ami-06295f3e6390dae00 	ami-060b7aed71dfaa5f5
+    Asia Pacific (Singapore) (ap-southeast-1) 	ami-07f8ccb046b3ce697 	ami-029b65710f075da3d
+    Asia Pacific (Sydney) (ap-southeast-2) 	ami-03ebcd449b224e0a3 	ami-0f13220d49a34e787
+    EU (Frankfurt) (eu-central-1) 	ami-0c40973ffcf8bca40 	ami-08d32cef88aa48343
+    EU (Ireland) (eu-west-1) 	ami-06a96b4cfd627430b 	ami-058a8eec818dc3910
+    EU (London) (eu-west-2) 	ami-03356e704fb004162 	ami-0cd6f7f1f7ceedc27
+    EU (Paris) (eu-west-3) 	ami-0eb77a4ca7135122b 	ami-01e3c54f23b6b02b3
+    EU (Stockholm) (eu-north-1) 	ami-028df8ba9b8603bdd 	ami-0d1ee923abbb8cf6c
+    `),
   '1.11': parseTable(`
     US East (Ohio) (us-east-2) 	ami-03c6648b74285020f 	ami-0b87186dda80931ee
     US East (N. Virginia) (us-east-1) 	ami-0a5f5d5b0f6f58199 	ami-07207754196c1a8fc
