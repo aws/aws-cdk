@@ -595,7 +595,7 @@
         ]
       }
     },
-    "TaskDefPutTargetsF699575F": {
+    "TaskDefRuleTarget0PutTargets77691785": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {

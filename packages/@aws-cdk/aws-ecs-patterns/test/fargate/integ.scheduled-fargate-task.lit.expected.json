@@ -632,7 +632,7 @@
         ]
       }
     },
-    "ScheduledFargateTaskScheduledTaskDefPutTargets7149EAB4": {
+    "ScheduledFargateTaskScheduledTaskDefScheduledEventRuleTarget0PutTargets4F6BAABA": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {

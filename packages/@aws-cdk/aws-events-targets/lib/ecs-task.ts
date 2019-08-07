@@ -117,7 +117,7 @@ export class EcsTask implements events.IRuleTarget {
       const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
       const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PRIVATE ? 'DISABLED' : 'ENABLED';
 
-      new custom.AwsCustomResource(this.taskDefinition, 'PutTargets', {
+      new custom.AwsCustomResource(this.taskDefinition, `${rule.node.id}${id}PutTargets`, {
         // `onCreate´ defaults to `onUpdate` and we don't need an `onDelete` here
         // because the rule/target will be owned by CF anyway.
         onUpdate: {
