@@ -57,6 +57,7 @@ test('Running a Fargate Task', () => {
 
   // WHEN
   const runTask = new sfn.Task(stack, 'RunFargate', { task: new tasks.RunEcsFargateTask({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -154,6 +155,7 @@ test('Running an EC2 Task with bridge network', () => {
 
   // WHEN
   const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -241,6 +243,7 @@ test('Running an EC2 Task with placement strategies', () => {
   });
 
   const ec2Task = new tasks.RunEcsEc2Task({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     placementStrategies: [
@@ -289,6 +292,7 @@ test('Running an EC2 Task with overridden number values', () => {
   });
 
   const ec2Task = new tasks.RunEcsEc2Task({
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
     containerOverrides: [
