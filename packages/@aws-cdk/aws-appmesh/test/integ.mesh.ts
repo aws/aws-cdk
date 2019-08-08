@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 import * as appmesh from '../lib/';
 
@@ -8,7 +8,7 @@ export const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'mesh-stack', {});
 
-const vpc = new ec2.VpcNetwork(stack, 'vpc', {
+const vpc = new ec2.Vpc(stack, 'vpc', {
   natGateways: 1,
 });
 

@@ -1,5 +1,5 @@
 import { INamespace } from '@aws-cdk/aws-servicediscovery';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 import { CfnMesh } from './appmesh.generated';
 import { ListenerProps } from './shared-interfaces';
@@ -76,21 +76,6 @@ export interface MeshSpec {
 }
 
 /**
- * Used for importing and exporting Mesh(es)
- */
-export interface MeshImportProps {
-  /**
-   * The AppMesh name to import
-   */
-  readonly meshName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) of the AppMesh mesh
-   */
-  readonly meshArn?: string;
-}
-
-/**
  * Interface wich all Mesh based classes MUST implement
  */
 export interface IMesh extends cdk.IResource {
@@ -118,11 +103,6 @@ export interface IMesh extends cdk.IResource {
    * Adds a VirtualNode to the Mesh
    */
   addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode;
-
-  /**
-   * Exports the Mesh properties to re-use in other stacks
-   */
-  export(): MeshImportProps;
 }
 
 /**
@@ -170,11 +150,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
       namespace: props.namespace,
     });
   }
-
-  /**
-   * Exports the Mesh properties to re-use in other stacks
-   */
-  public abstract export(): MeshImportProps;
 }
 
 /**
@@ -183,26 +158,55 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
 export interface MeshProps {
   /**
    * The name of the Mesh being defined
+   *
+   * @default - A name is autmoatically generated
    */
   readonly meshName?: string;
 
   /**
-   * The spec to be applied to the mesh, at this point, only egressFilter is available
+   * The spec to be applied to the mesh
+   *
+   * At this point only egressFilter is available.
    */
   readonly meshSpec?: MeshSpec;
 }
 
 /**
- * Defines a new AppMesh mesh
+ * Define a new AppMesh mesh
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/meshes.html
  */
 export class Mesh extends MeshBase {
   /**
-   * A static method to import a mesh an make it re-usable accross stacks
+   * Import an existing mesh by arn
    */
-  public static import(scope: cdk.Construct, id: string, props: MeshImportProps): IMesh {
-    return new ImportedMesh(scope, id, props);
+  public static fromMeshArn(scope: cdk.Construct, id: string, arn: string): IMesh {
+    const parts = cdk.Stack.of(scope).parseArn(arn);
+
+    class Import extends MeshBase {
+      public meshName = parts.resourceName || '';
+      public meshArn = arn;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing mesh by name
+   */
+  public static fromMeshName(scope: cdk.Construct, id: string, name: string): IMesh {
+    const arn = cdk.Stack.of(scope).formatArn({
+      service: 'appmesh',
+      resource: 'mesh',
+      resourceName: name,
+    });
+
+    class Import extends MeshBase {
+      public meshName = name;
+      public meshArn = arn;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -232,68 +236,6 @@ export class Mesh extends MeshBase {
     });
 
     this.meshName = mesh.meshName;
-    this.meshArn = mesh.meshArn;
-  }
-
-  /**
-   * Exports the Mesh properties to re-use in other stacks
-   */
-  public export(): MeshImportProps {
-    return {
-      meshName: new cdk.CfnOutput(this, 'MeshName', { value: this.meshName }).makeImportValue().toString(),
-      meshArn: new cdk.CfnOutput(this, 'MeshArn', { value: this.meshArn }).makeImportValue().toString(),
-    };
-  }
-}
-
-/**
- * Used for importing and exporting Mesh(es)
- */
-export interface ImportedMeshProps {
-  /**
-   * The AppMesh name to import
-   */
-  readonly meshName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) of the AppMesh mesh
-   */
-  readonly meshArn?: string;
-}
-
-/**
- * Use when import is called on Mesh.import(), returns properties that allows the mesh to be used
- * accross stacks.
- */
-export class ImportedMesh extends MeshBase {
-  /**
-   * The name of the AppMesh mesh
-   */
-  public readonly meshName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) of the AppMesh mesh
-   */
-  public readonly meshArn: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: MeshImportProps) {
-    super(scope, id);
-
-    this.meshName = props.meshName;
-
-    this.meshArn =
-      props.meshArn ||
-      this.node.stack.formatArn({
-        service: 'appmesh',
-        resource: `mesh`,
-        resourceName: props.meshName,
-      });
-  }
-
-  /**
-   * Exports the Mesh properties to re-use in other stacks
-   */
-  public export() {
-    return this.props;
+    this.meshArn = mesh.ref;
   }
 }

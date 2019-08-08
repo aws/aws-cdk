@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 
 import appmesh = require('../lib');
@@ -19,7 +19,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -94,7 +94,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -153,7 +153,7 @@ export = {
       meshName: 'test-mesh',
     });
 
-    const vpc = new ec2.VpcNetwork(stack, 'vpc');
+    const vpc = new ec2.Vpc(stack, 'vpc');
     const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
       vpc,
       name: 'domain.local',
@@ -174,7 +174,13 @@ export = {
 
     const stack2 = new cdk.Stack();
 
-    const node2 = appmesh.VirtualNode.import(stack2, 'imported-node', node.export());
+    const mesh2 = appmesh.Mesh.fromMeshArn(stack2, 'importedmesh', mesh.meshArn);
+
+    const node2 = appmesh.VirtualNode.import(stack2, 'imported-node', {
+      mesh: mesh2,
+      virtualNodeArn: node.virtualNodeArn,
+      virtualNodeName: node.virtualNodeName,
+    });
 
     node2.addPortMapping({
       port: 8081,

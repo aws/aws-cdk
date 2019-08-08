@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh } from './mesh';
@@ -8,7 +8,7 @@ import { IVirtualRouter } from './virtual-router';
 /**
  * Interface with properties ncecessary to import a reusable VirtualService
  */
-export interface VirtualServiceImportProps {
+export interface VirtualServiceAttributes {
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
    */
@@ -47,11 +47,6 @@ export interface IVirtualService extends cdk.IResource {
    * The name of the service mesh that the virtual service resides in
    */
   readonly virtualServiceMeshName: string;
-
-  /**
-   * Exports properties for VirtualService reusability
-   */
-  export(): VirtualServiceImportProps;
 }
 
 /**
@@ -95,8 +90,8 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * A static method to import a VirtualService an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: VirtualServiceImportProps): IVirtualService {
-    return new ImportedVirtualService(scope, id, props);
+  public static fromVirtualServiceAttributes(scope: cdk.Construct, id: string, attrs: VirtualServiceAttributes): IVirtualService {
+    return new ImportedVirtualService(scope, id, attrs);
   }
 
   /**
@@ -154,23 +149,8 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       },
     });
 
-    this.virtualServiceArn = svc.virtualServiceArn;
+    this.virtualServiceArn = svc.ref;
     this.virtualServiceName = svc.virtualServiceName;
-  }
-
-  /**
-   * Exports properties for VirtualService reusability
-   */
-  public export(): VirtualServiceImportProps {
-    return {
-      virtualServiceName: new cdk.CfnOutput(this, 'VirtualServiceName', { value: this.virtualServiceName })
-        .makeImportValue()
-        .toString(),
-      virtualServiceArn: new cdk.CfnOutput(this, 'VirtualServiceArn', { value: this.virtualServiceArn })
-        .makeImportValue()
-        .toString(),
-      virtualServiceMeshName: this.virtualServiceMeshName,
-    };
   }
 
   private addVirtualRouter(name: string): CfnVirtualService.VirtualServiceProviderProperty {
@@ -217,7 +197,7 @@ export interface ImportedVirtualServiceProps {
 /**
  * Returns properties that allows a VirtualService to be imported
  */
-export class ImportedVirtualService extends cdk.Construct implements IVirtualService {
+class ImportedVirtualService extends cdk.Resource implements IVirtualService {
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
    */
@@ -233,7 +213,7 @@ export class ImportedVirtualService extends cdk.Construct implements IVirtualSer
    */
   public readonly virtualServiceMeshName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualServiceImportProps) {
+  constructor(scope: cdk.Construct, id: string, props: VirtualServiceAttributes) {
     super(scope, id);
 
     this.virtualServiceName = props.virtualServiceName;
@@ -241,17 +221,10 @@ export class ImportedVirtualService extends cdk.Construct implements IVirtualSer
 
     this.virtualServiceArn =
       props.virtualServiceArn ||
-      this.node.stack.formatArn({
+      cdk.Stack.of(this).formatArn({
         service: 'appmesh',
         resource: `mesh/${this.virtualServiceMeshName}/virtualService`,
         resourceName: this.virtualServiceName,
       });
-  }
-
-  /**
-   * Exports properties for VirtualService reusability
-   */
-  public export() {
-    return this.props;
   }
 }

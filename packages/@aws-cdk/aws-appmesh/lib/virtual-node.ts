@@ -1,5 +1,5 @@
 import { INamespace } from '@aws-cdk/aws-servicediscovery';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
@@ -9,7 +9,7 @@ import { IVirtualService } from './virtual-service';
 /**
  * Interface with properties ncecessary to import a reusable VirtualNode
  */
-export interface VirtualNodeImportProps {
+export interface VirtualNodeAttributes {
   /**
    * The name of the VirtualNode
    */
@@ -21,9 +21,9 @@ export interface VirtualNodeImportProps {
   readonly virtualNodeArn?: string;
 
   /**
-   * The name of the service mesh that the virtual node resides in
+   * The service mesh that the virtual node resides in
    */
-  readonly virtualNodeMeshName: string;
+  readonly mesh: IMesh;
 }
 
 /**
@@ -41,9 +41,9 @@ export interface IVirtualNode extends cdk.IResource {
   readonly virtualNodeArn: string;
 
   /**
-   * The name of the service mesh that the virtual node resides in
+   * The service mesh that the virtual node resides in
    */
-  readonly virtualNodeMeshName: string;
+  readonly mesh: IMesh;
 
   /**
    * Utility method to add a single backend for existing or new VritualNodes
@@ -74,11 +74,6 @@ export interface IVirtualNode extends cdk.IResource {
    * Utility method to add port mappings and healthecks, preferred method would be to use addListeners()
    */
   addPortAndHealthCheckMappings(ports: PortMappingProps[], health: HealthCheckProps[]): void;
-
-  /**
-   * Exports properties for VirtualNode reusability
-   */
-  export(): VirtualNodeImportProps;
 }
 
 /**
@@ -144,17 +139,12 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   public abstract readonly virtualNodeArn: string;
 
   /**
-   * The name of the service mesh that the virtual node resides in
+   * The service mesh that the virtual node resides in
    */
-  public abstract readonly virtualNodeMeshName: string;
+  public abstract readonly mesh: IMesh;
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
-
-  /**
-   * Exports properties for VirtualNode reusability
-   */
-  public abstract export(): VirtualNodeImportProps;
 
   /**
    * Utility method to add a single backend for existing or new VritualNodes
@@ -256,7 +246,7 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * A static method to import a VirtualNode an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: VirtualNodeImportProps): IVirtualNode {
+  public static import(scope: cdk.Construct, id: string, props: VirtualNodeAttributes): IVirtualNode {
     return new ImportedVirtualNode(scope, id, props);
   }
 
@@ -271,18 +261,16 @@ export class VirtualNode extends VirtualNodeBase {
   public readonly virtualNodeArn: string;
 
   /**
-   * The name of the service mesh that the virtual node resides in
+   * The service mesh that the virtual node resides in
    */
-  public readonly virtualNodeMeshName: string;
+  public readonly mesh: IMesh;
 
-  private readonly mesh: IMesh;
   private readonly namespaceName: string;
 
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
     super(scope, id);
 
     this.mesh = props.mesh;
-    this.virtualNodeMeshName = this.mesh.meshName;
 
     this.namespaceName = props.namespace.namespaceName;
 
@@ -318,49 +306,14 @@ export class VirtualNode extends VirtualNodeBase {
     });
 
     this.virtualNodeName = node.virtualNodeName;
-    this.virtualNodeArn = node.virtualNodeArn;
+    this.virtualNodeArn = node.ref;
   }
-
-  /**
-   * Exports properties for VirtualNode reusability
-   */
-  public export(): VirtualNodeImportProps {
-    return {
-      virtualNodeName: new cdk.CfnOutput(this, 'VirtualNodeName', { value: this.virtualNodeName })
-        .makeImportValue()
-        .toString(),
-      virtualNodeArn: new cdk.CfnOutput(this, 'VirtualNodeArn', { value: this.virtualNodeArn })
-        .makeImportValue()
-        .toString(),
-      virtualNodeMeshName: this.virtualNodeMeshName,
-    };
-  }
-}
-
-/**
- * Interface with properties ncecessary to import a reusable VirtualNode
- */
-export interface ImportedVirtualNodeProps {
-  /**
-   * The name of the VirtualNode
-   */
-  readonly virtualNodeName: string;
-
-  /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
-   */
-  readonly virtualNodeArn?: string;
-
-  /**
-   * The name of the service mesh that the virtual node resides in
-   */
-  readonly virtualNodeMeshName: string;
 }
 
 /**
  * Used to import a VirtualNode and read it's properties
  */
-export class ImportedVirtualNode extends VirtualNodeBase {
+class ImportedVirtualNode extends VirtualNodeBase {
   /**
    * The name of the VirtualNode
    */
@@ -372,29 +325,16 @@ export class ImportedVirtualNode extends VirtualNodeBase {
   public readonly virtualNodeArn: string;
 
   /**
-   * The name of the service mesh that the virtual node resides in
+   * The service mesh that the virtual node resides in
    */
-  public readonly virtualNodeMeshName: string;
+  public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualNodeImportProps) {
+  constructor(scope: cdk.Construct, id: string, props: VirtualNodeAttributes) {
     super(scope, id);
 
     this.virtualNodeName = props.virtualNodeName;
-    this.virtualNodeMeshName = props.virtualNodeMeshName;
+    this.mesh = props.mesh;
 
-    this.virtualNodeArn =
-      props.virtualNodeArn ||
-      this.node.stack.formatArn({
-        service: 'appmesh',
-        resource: `mesh/${this.virtualNodeMeshName}/virtualNode`,
-        resourceName: this.virtualNodeName,
-      });
-  }
-
-  /**
-   * Exports properties for VirtualNode reusability
-   */
-  public export() {
-    return this.props;
+    this.virtualNodeArn = props.virtualNodeArn || `${this.mesh.meshArn}/virtualNode/${this.virtualNodeName}`;
   }
 }

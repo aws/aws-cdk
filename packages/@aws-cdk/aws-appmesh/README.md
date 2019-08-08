@@ -154,7 +154,7 @@ The response metadata for your new `virtual node` contains the Amazon Resource N
 > If you require your Envoy stats or tracing to use a different name, you can override the node.cluster value that is set by APPMESH_VIRTUAL_NODE_NAME with the APPMESH_VIRTUAL_NODE_CLUSTER environment variable.
 
 ```typescript
-const vpc = new ec2.VpcNetwork(stack, 'vpc');
+const vpc = new ec2.Vpc(stack, 'vpc');
 const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
   vpc,
   name: 'domain.local',

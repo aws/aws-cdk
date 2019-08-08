@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 
 import appmesh = require('../lib');
@@ -25,7 +25,7 @@ export = {
       ],
     });
 
-    const vpc = new ec2.VpcNetwork(stack, 'vpc');
+    const vpc = new ec2.Vpc(stack, 'vpc');
     const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
       vpc,
       name: 'domain.local',
@@ -68,7 +68,11 @@ export = {
     });
 
     const stack2 = new cdk.Stack();
-    appmesh.Route.import(stack2, 'imported-route', route.export());
+    appmesh.Route.fromRouteAttributes(stack2, 'imported-route', {
+      routeArn: route.routeArn,
+      routeName: route.routeName,
+      virtualRouter: route.virtualRouter
+    });
 
     // Nothing to do with imported route yet
 

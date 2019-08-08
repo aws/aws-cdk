@@ -1,7 +1,7 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 import { CfnVirtualRouter } from './appmesh.generated';
-import { IMesh, Mesh } from './mesh';
+import { IMesh } from './mesh';
 import { Route, RouteBaseProps } from './route';
 import { PortMappingProps, Protocol } from './shared-interfaces';
 
@@ -20,14 +20,9 @@ export interface VirtualRouterImportProps {
   readonly virtualRouterArn?: string;
 
   /**
-   * The name of the service mesh that the virtual router resides in
-   */
-  readonly virtualRouterMeshName: string;
-
-  /**
    * The AppMesh mesh the VirtualRouter belongs to
    */
-  readonly mesh?: IMesh;
+  readonly mesh: IMesh;
 }
 
 /**
@@ -45,9 +40,9 @@ export interface IVirtualRouter extends cdk.IResource {
   readonly virtualRouterArn: string;
 
   /**
-   * The name of the service mesh that the virtual router resides in
+   * The  service mesh that the virtual router resides in
    */
-  readonly virtualRouterMeshName: string;
+  readonly mesh: IMesh;
 
   /**
    * Utility method for adding a single route to the router
@@ -58,11 +53,6 @@ export interface IVirtualRouter extends cdk.IResource {
    * Utility method to add multiple routes to the router
    */
   addRoutes(ids: string[], props: RouteBaseProps[]): Route[];
-
-  /**
-   * Exports properties for reusable VirtualRouter
-   */
-  export(): VirtualRouterImportProps;
 }
 
 /**
@@ -92,19 +82,9 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
   public abstract readonly virtualRouterArn: string;
 
   /**
-   * The name of the service mesh that the virtual router resides in
-   */
-  public abstract readonly virtualRouterMeshName: string;
-
-  /**
    * The AppMesh mesh the VirtualRouter belongs to
    */
   public abstract readonly mesh: IMesh;
-
-  /**
-   * Exports properties for reusable VirtualRouter
-   */
-  public abstract export(): VirtualRouterImportProps;
 
   /**
    * Utility method for adding a single route to the router
@@ -180,11 +160,6 @@ export class VirtualRouter extends VirtualRouterBase {
   public readonly virtualRouterArn: string;
 
   /**
-   * The name of the service mesh that the virtual router resides in
-   */
-  public readonly virtualRouterMeshName: string;
-
-  /**
    * The AppMesh mesh the VirtualRouter belongs to
    */
   public readonly mesh: IMesh;
@@ -195,7 +170,6 @@ export class VirtualRouter extends VirtualRouterBase {
     super(scope, id);
 
     this.mesh = props.mesh;
-    this.virtualRouterMeshName = this.mesh.meshName;
 
     const name = props && props.virtualRouterName ? props.virtualRouterName : this.node.id;
 
@@ -210,23 +184,7 @@ export class VirtualRouter extends VirtualRouterBase {
     });
 
     this.virtualRouterName = router.virtualRouterName;
-    this.virtualRouterArn = router.virtualRouterArn;
-  }
-
-  /**
-   * Exports properties for reusable VirtualRouter
-   */
-  public export(): VirtualRouterImportProps {
-    return {
-      virtualRouterName: new cdk.CfnOutput(this, 'VirtualRouterName', { value: this.virtualRouterName })
-        .makeImportValue()
-        .toString(),
-      virtualRouterArn: new cdk.CfnOutput(this, 'VirtualRouterArn', { value: this.virtualRouterArn })
-        .makeImportValue()
-        .toString(),
-      virtualRouterMeshName: this.virtualRouterMeshName,
-      mesh: this.mesh,
-    };
+    this.virtualRouterArn = router.ref;
   }
 
   /**
@@ -278,11 +236,6 @@ export interface ImportedVirtualRouterProps {
   readonly virtualRouterArn?: string;
 
   /**
-   * The name of the service mesh that the virtual router resides in
-   */
-  readonly virtualRouterMeshName: string;
-
-  /**
    * The AppMesh mesh the VirtualRouter belongs to
    */
   readonly mesh?: IMesh;
@@ -291,7 +244,7 @@ export interface ImportedVirtualRouterProps {
 /**
  * Used to import a VirtualRouter and perform actions or read properties from
  */
-export class ImportedVirtualRouter extends VirtualRouterBase {
+class ImportedVirtualRouter extends VirtualRouterBase {
   /**
    * The name of the VirtualRouter
    */
@@ -303,40 +256,22 @@ export class ImportedVirtualRouter extends VirtualRouterBase {
   public readonly virtualRouterArn: string;
 
   /**
-   * The name of the service mesh that the virtual router resides in
-   */
-  public readonly virtualRouterMeshName: string;
-
-  /**
    * The AppMesh mesh the VirtualRouter belongs to
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualRouterImportProps) {
+  constructor(scope: cdk.Construct, id: string, props: VirtualRouterImportProps) {
     super(scope, id);
 
     this.virtualRouterName = props.virtualRouterName;
-    this.virtualRouterMeshName = props.virtualRouterMeshName;
+    this.mesh = props.mesh;
 
     this.virtualRouterArn =
       props.virtualRouterArn ||
-      this.node.stack.formatArn({
+      cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${this.virtualRouterMeshName}/virtualNode`,
+        resource: `mesh/${this.mesh.meshName}/virtualNode`,
         resourceName: this.virtualRouterName,
       });
-
-    this.mesh =
-      props.mesh ||
-      Mesh.import(this, 'ImportedMesh', {
-        meshName: this.virtualRouterMeshName,
-      });
-  }
-
-  /**
-   * Exports the VirtualRouter to re-use accross stacks
-   */
-  public export() {
-    return this.props;
   }
 }

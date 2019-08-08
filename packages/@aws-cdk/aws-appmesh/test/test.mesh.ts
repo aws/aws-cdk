@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 
 import appmesh = require('../lib');
@@ -130,7 +130,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -215,7 +215,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -269,7 +269,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -306,7 +306,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -357,7 +357,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -424,7 +424,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -508,7 +508,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const vpc = new ec2.Vpc(stack, 'vpc');
         const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
           vpc,
           name: 'domain.local',
@@ -558,17 +558,10 @@ export = {
       },
     },
   },
-  'Can export and import existing Mesh'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
+  'Can construct a mesh from a name'(test: Test) {
     // WHEN
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-
     const stack2 = new cdk.Stack();
-    const mesh2 = appmesh.Mesh.import(stack2, 'imported-mesh', mesh.export());
+    const mesh2 = appmesh.Mesh.fromMeshName(stack2, 'imported-mesh', 'abc');
 
     mesh2.addVirtualService('service', {
       virtualServiceName: 'test.domain.local',
@@ -577,9 +570,7 @@ export = {
     // THEN
     expect(stack2).to(
       haveResourceLike('AWS::AppMesh::VirtualService', {
-        MeshName: {
-          'Fn::ImportValue': 'Stack:meshMeshName91369C94',
-        },
+        MeshName: 'abc',
         Spec: {},
         VirtualServiceName: 'test.domain.local',
       })
