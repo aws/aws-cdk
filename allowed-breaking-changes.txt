@@ -1,5 +1,5 @@
 incompatible-argument:@aws-cdk/aws-ecs.Ec2TaskDefinition.<initializer>
-incompatible-argument:@aws-cdk/aws-ecs.Ec2TaskDefinition.addVolume]
+incompatible-argument:@aws-cdk/aws-ecs.Ec2TaskDefinition.addVolume
 incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.addVolume
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.<initializer>
