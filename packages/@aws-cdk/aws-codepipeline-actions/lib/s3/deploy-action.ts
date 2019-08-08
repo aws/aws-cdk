@@ -41,11 +41,9 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The caching behavior for requests/responses for objects in the bucket.
    *
-   * @example (new CacheControlResponse()).public().maxAge(Duration.days(365))
-   *
    * @default - none, decided to the HTTP client
    */
-  readonly cacheControl?: CacheControlResponse;
+  readonly cacheControl?: CacheControlOptions;
 }
 
 /**
@@ -80,146 +78,126 @@ export class S3DeployAction extends Action {
         Extract: this.props.extract === false ? 'false' : 'true',
         ObjectKey: this.props.objectKey,
         CannedACL: this.props.accessControl,
-        CacheControl: this.props.cacheControl && this.props.cacheControl.toString(),
+        CacheControl: this.props.cacheControl && serializeCacheControlOptions(this.props.cacheControl),
       },
     };
   }
 }
 
 /**
- * Helper class generating RFC 2616 compliant HTTP Cache-Control request or response header values
+ * Options used to generate RFC 2616 compliant HTTP Cache-Control response header values
  *
  * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9 RFC 2616 14.9 Cache-Control
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control MDN: Cache-Control
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Cache_response_directives MDN: Cache-Control
  */
-export class CacheControlDirective {
-  protected readonly directives: string[] = [];
-
+export interface CacheControlOptions {
   /**
    * Specifies the maximum amount of time a resource will be considered fresh
-   *
-   * @param duration Maximum freshness
    */
-  public maxAge(duration: Duration): this {
-    this.directives.push(`max-age=${duration.toSeconds()}`);
-
-    return this;
-  }
+  readonly maxAge?: Duration;
 
   /**
    * Forces caches to submit the request to the origin server for validation before releasing a cached copy
    */
-  public noCache(): this {
-    this.directives.push('no-cache');
-
-    return this;
-  }
+  readonly noCache?: true;
 
   /**
    * The cache should not store anything about the client request or server response
    */
-  public noStore(): this {
-    this.directives.push('no-store');
-
-    return this;
-  }
+  readonly noStore?: true;
 
   /**
    * No transformations or conversions should be made to the resource
    * The Content-Encoding, Content-Range, Content-Type headers must not be modified by a proxy.
    */
-  public noTransform(): this {
-    this.directives.push('no-transform');
+  readonly noTransform?: true;
 
-    return this;
-  }
-
-  protected constructor() {
-  }
-
-  /**
-   * Generate the string value of the built Cache-Control directive
-   */
-  public toString(): string {
-    return this.directives.join(', ');
-  }
-}
-
-/**
- * Helper class generating RFC 2616 compliant HTTP Cache-Control response header values
- *
- * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9 RFC 2616 14.9 Cache-Control
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Cache_response_directives MDN: Cache-Control
- */
-export class CacheControlResponse extends CacheControlDirective {
   /**
    * Indicates that once a resource has become stale (e.g. max-age has expired),
    * a cache must not use the response to satisfy subsequent requests
    * for this resource without successful validation on the origin server.
    */
-  public mustRevalidate(): this {
-    this.directives.push('must-revalidate');
-
-    return this;
-  }
+  readonly mustRevalidate?: true;
 
   /**
    * Indicates that the response may be cached by any cache,
    * even if the response would normally be non-cacheable
    */
-  public public(): this {
-    this.directives.push('public');
-
-    return this;
-  }
+  readonly public?: true;
 
   /**
    * Indicates that the response is intended for a single user and must not be stored by a shared cache
    * A private cache may store the response.
    */
-  public private(): this {
-    this.directives.push('private');
-
-    return this;
-  }
+  readonly private?: true;
 
   /**
    * Same as must-revalidate, but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
    *
    * @see mustRevalidate
    */
-  public proxyRevalidate(): this {
-    this.directives.push('proxy-revalidate');
-
-    return this;
-  }
+  readonly proxyRevalidate?: true;
 
   /**
    * Takes precedence over max-age or the Expires header,
    * but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
    *
-   * @see CacheControlDirective#maxAge
-   * @param duration Maximum freshness
+   * @see CacheControlOptions#maxAge
    */
-  public sMaxAge(duration: Duration): this {
-    this.directives.push(`s-maxage=${duration.toSeconds()}`);
-
-    return this;
-  }
+  readonly sMaxAge?: Duration;
 
   /**
-   * Get a CacheControlResponse value from an arbitrary string
+   * Set a Cache-Control value from an arbitrary RFC 2161 compliant Cache-Control header value
    *
-   * @param cacheDirective RFC 2161 compliant Cache-Control header value
-   * @example CacheControlResponse.of('stale-while-revalidate=3600')
+   * @example {of: ['stale-while-revalidate=3600', 'custom-value']}
    */
-  public of(cacheDirective: string): this {
-    this.directives.push(cacheDirective);
-
-    return this;
-  }
-
-  public constructor() {
-    super();
-  }
+  readonly of?: string[];
 }
+
+type CacheControlOptionsKey = keyof CacheControlOptions;
+type RfcCacheControlOptionsKey = Exclude<CacheControlOptionsKey, 'of'>;
+type DateCacheControlOptionsKey = Extract<RfcCacheControlOptionsKey, 'maxAge' | 'sMaxAge'>;
+type BoleanCacheControlOptionsKey = Exclude<RfcCacheControlOptionsKey, DateCacheControlOptionsKey>;
+
+const CACHE_CONTROL_HEADER_VALUE: {[key in RfcCacheControlOptionsKey]: string} = {
+    maxAge: 'max-age',
+    noCache: 'no-cache',
+    noStore: 'no-store',
+    noTransform: 'no-transform',
+    mustRevalidate: 'must-revalidate',
+    public: 'public',
+    private: 'private',
+    proxyRevalidate: 'proxy-revalidate',
+    sMaxAge: 's-maxage',
+};
+
+const BOLEAN_HEADER_VALUES: BoleanCacheControlOptionsKey[] = ['noCache', 'noStore', 'noTransform', 'mustRevalidate', 'public', 'private'];
+const DATE_HEADER_VALUES: DateCacheControlOptionsKey[] = ['maxAge', 'sMaxAge'];
+
+const isBooleanKey = (key: CacheControlOptionsKey): key is BoleanCacheControlOptionsKey =>
+  BOLEAN_HEADER_VALUES.includes(key as BoleanCacheControlOptionsKey);
+const isDateKey = (key: CacheControlOptionsKey): key is DateCacheControlOptionsKey =>
+  DATE_HEADER_VALUES.includes(key as DateCacheControlOptionsKey);
+
+export const serializeCacheControlOptions = (options: CacheControlOptions): string => {
+    const headers: string[] = [];
+
+    const optionsKeys = Object.keys(options) as CacheControlOptionsKey[];
+    const booleanKeys = optionsKeys.filter(isBooleanKey);
+    const dateKeys = optionsKeys.filter(isDateKey);
+
+    headers.push(...booleanKeys
+      .filter((booleanKey) => options[booleanKey] === true)
+      .map((booleanKey) => CACHE_CONTROL_HEADER_VALUE[booleanKey])
+    );
+    headers.push(...dateKeys
+      .filter((dateKey) => options[dateKey] != null)
+      .map((dateKey) => `${CACHE_CONTROL_HEADER_VALUE[dateKey]}=${(options[dateKey] as Duration).toSeconds()}`)
+    );
+
+    if (options.of) {
+      headers.push(...options.of);
+    }
+
+    return headers.join(', ');
+};
