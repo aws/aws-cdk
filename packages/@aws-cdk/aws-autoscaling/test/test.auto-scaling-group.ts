@@ -648,7 +648,23 @@ export = {
       "Roles": ["HelloDude"]
     }));
     test.done();
-  }
+  },
+
+  'defaultChild is available on an ASG'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // THEN
+    test.notEqual(asg.node.defaultChild, undefined);
+
+    test.done();
+  },
 };
 
 function mockVpc(stack: cdk.Stack) {
