@@ -222,6 +222,9 @@ export class ConstructNode {
    * This should only be used in the cases where the correct
    * default child is not named 'Resource' or 'Default' as it
    * should be.
+   *
+   * If you set this to undefined, the default behavior of finding
+   * the child named 'Resource' or 'Default' will be used.
    */
   public set defaultChild(value: IConstruct | undefined) {
     this._defaultChild = value;
