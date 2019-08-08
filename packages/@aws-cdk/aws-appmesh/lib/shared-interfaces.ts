@@ -1,3 +1,5 @@
+import { Duration } from '@aws-cdk/core';
+
 /**
  * Enum of supported AppMesh protocols
  */
@@ -21,9 +23,9 @@ export interface HealthCheckProps {
   /**
    * Interval in milliseconds to re-check
    *
-   * @default 5000
+   * @default 5 seconds
    */
-  readonly intervalMillis?: number;
+  readonly interval?: Duration;
   /**
    * The path where the application expects any health-checks, this can also be the application path.
    *
@@ -46,9 +48,9 @@ export interface HealthCheckProps {
   /**
    * Timeout in milli-seconds for the healthcheck to be considered a fail.
    *
-   * @default 2000
+   * @default 2 seconds
    */
-  readonly timeoutMillis?: number;
+  readonly timeout?: Duration;
   /**
    * Number of failed attempts before considering the node DOWN.
    *

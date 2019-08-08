@@ -68,11 +68,7 @@ export = {
     });
 
     const stack2 = new cdk.Stack();
-    appmesh.Route.fromRouteAttributes(stack2, 'imported-route', {
-      routeArn: route.routeArn,
-      routeName: route.routeName,
-      virtualRouter: route.virtualRouter
-    });
+    appmesh.Route.fromRouteName(stack2, 'imported-route', mesh.meshName, router.virtualRouterName, route.routeName);
 
     // Nothing to do with imported route yet
 

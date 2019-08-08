@@ -376,11 +376,11 @@ export = {
             healthChecks: [
               {
                 healthyThreshold: 3,
-                intervalMillis: 5000, // min
                 path: '/',
                 port: 8080,
                 protocol: appmesh.Protocol.HTTP,
-                timeoutMillis: 2000, // min
+                interval: cdk.Duration.seconds(5), // min
+                timeout: cdk.Duration.seconds(2), // min
                 unhealthyThreshold: 2,
               },
             ],
@@ -449,11 +449,11 @@ export = {
               healthChecks: [
                 {
                   healthyThreshold: 3,
-                  intervalMillis: 5000, // min
                   path: '/',
                   port: 8080,
                   protocol: appmesh.Protocol.HTTP,
-                  timeoutMillis: 2000, // min
+                  interval: cdk.Duration.seconds(5), // min
+                  timeout: cdk.Duration.seconds(2), // min
                   unhealthyThreshold: 2,
                 },
               ],
@@ -474,20 +474,20 @@ export = {
               healthChecks: [
                 {
                   healthyThreshold: 3,
-                  intervalMillis: 5000, // min
                   path: '/',
                   port: 8080,
                   protocol: appmesh.Protocol.HTTP,
-                  timeoutMillis: 2000, // min
+                  interval: cdk.Duration.seconds(5), // min
+                  timeout: cdk.Duration.seconds(2), // min
                   unhealthyThreshold: 2,
                 },
                 {
                   healthyThreshold: 5,
-                  intervalMillis: 5000, // min
                   path: '/path2',
                   port: 8081,
                   protocol: appmesh.Protocol.TCP,
-                  timeoutMillis: 3000, // min
+                  interval: cdk.Duration.seconds(5), // min
+                  timeout: cdk.Duration.seconds(3), // min
                   unhealthyThreshold: 5,
                 },
               ],

@@ -45,11 +45,11 @@ const node = mesh.addVirtualNode('node', {
     healthChecks: [
       {
         healthyThreshold: 3,
-        intervalMillis: 5000,
+        interval: cdk.Duration.seconds(5),
         path: '/check-path',
         port: 8080,
         protocol: appmesh.Protocol.HTTP,
-        timeoutMillis: 2000,
+        timeout: cdk.Duration.seconds(2),
         unhealthyThreshold: 2,
       },
     ],
@@ -92,11 +92,11 @@ const node2 = mesh.addVirtualNode('node2', {
     healthChecks: [
       {
         healthyThreshold: 3,
-        intervalMillis: 5000,
+        interval: cdk.Duration.seconds(5),
         path: '/check-path2',
         port: 8080,
         protocol: appmesh.Protocol.HTTP,
-        timeoutMillis: 2000,
+        timeout: cdk.Duration.seconds(2),
         unhealthyThreshold: 2,
       },
     ],
@@ -124,11 +124,11 @@ const node3 = mesh.addVirtualNode('node3', {
     healthChecks: [
       {
         healthyThreshold: 3,
-        intervalMillis: 5000,
+        interval: cdk.Duration.seconds(5),
         path: '/check-path3',
         port: 8080,
         protocol: appmesh.Protocol.HTTP,
-        timeoutMillis: 2000,
+        timeout: cdk.Duration.seconds(2),
         unhealthyThreshold: 2,
       },
     ],

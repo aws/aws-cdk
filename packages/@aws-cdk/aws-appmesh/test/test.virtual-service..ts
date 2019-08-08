@@ -38,11 +38,7 @@ export = {
     });
 
     const stack2 = new cdk.Stack();
-    appmesh.VirtualService.fromVirtualServiceAttributes(stack2, 'imported-virtual-service', {
-      virtualServiceArn: service.virtualServiceArn,
-      virtualServiceMeshName: service.virtualServiceMeshName,
-      virtualServiceName: service.virtualServiceName
-    });
+    appmesh.VirtualService.fromVirtualServiceName(stack2, 'imported-virtual-service', mesh.meshName, service.virtualServiceName);
 
     // Nothing to do with imported virtual service yet
 

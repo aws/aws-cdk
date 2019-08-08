@@ -81,11 +81,15 @@ export interface MeshSpec {
 export interface IMesh extends cdk.IResource {
   /**
    * The name of the AppMesh mesh
+   *
+   * @attribute
    */
   readonly meshName: string;
 
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
+   *
+   * @attribute
    */
   readonly meshArn: string;
 
@@ -167,6 +171,8 @@ export interface MeshProps {
    * The spec to be applied to the mesh
    *
    * At this point only egressFilter is available.
+   *
+   * @default - All outbound traffic is dropped.
    */
   readonly meshSpec?: MeshSpec;
 }
@@ -180,12 +186,12 @@ export class Mesh extends MeshBase {
   /**
    * Import an existing mesh by arn
    */
-  public static fromMeshArn(scope: cdk.Construct, id: string, arn: string): IMesh {
-    const parts = cdk.Stack.of(scope).parseArn(arn);
+  public static fromMeshArn(scope: cdk.Construct, id: string, meshArn: string): IMesh {
+    const parts = cdk.Stack.of(scope).parseArn(meshArn);
 
     class Import extends MeshBase {
       public meshName = parts.resourceName || '';
-      public meshArn = arn;
+      public meshArn = meshArn;
     }
 
     return new Import(scope, id);
@@ -194,15 +200,15 @@ export class Mesh extends MeshBase {
   /**
    * Import an existing mesh by name
    */
-  public static fromMeshName(scope: cdk.Construct, id: string, name: string): IMesh {
+  public static fromMeshName(scope: cdk.Construct, id: string, meshName: string): IMesh {
     const arn = cdk.Stack.of(scope).formatArn({
       service: 'appmesh',
       resource: 'mesh',
-      resourceName: name,
+      resourceName: meshName,
     });
 
     class Import extends MeshBase {
-      public meshName = name;
+      public meshName = meshName;
       public meshArn = arn;
     }
 

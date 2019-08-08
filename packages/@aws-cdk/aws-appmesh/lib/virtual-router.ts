@@ -6,36 +6,20 @@ import { Route, RouteBaseProps } from './route';
 import { PortMappingProps, Protocol } from './shared-interfaces';
 
 /**
- * Interface with properties ncecessary to import a reusable VirtualRouter
- */
-export interface VirtualRouterImportProps {
-  /**
-   * The name of the VirtualRouter
-   */
-  readonly virtualRouterName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the VirtualRouter
-   */
-  readonly virtualRouterArn?: string;
-
-  /**
-   * The AppMesh mesh the VirtualRouter belongs to
-   */
-  readonly mesh: IMesh;
-}
-
-/**
  * Interface which all VirtualRouter based classes MUST implement
  */
 export interface IVirtualRouter extends cdk.IResource {
   /**
    * The name of the VirtualRouter
+   *
+   * @attribute
    */
   readonly virtualRouterName: string;
 
   /**
    * The Amazon Resource Name (ARN) for the VirtualRouter
+   *
+   * @attribute
    */
   readonly virtualRouterArn: string;
 
@@ -66,6 +50,8 @@ export interface VirtualRouterBaseProps {
 
   /**
    * The name of the VirtualRouter
+   *
+   * @default - A name is automatically determined
    */
   readonly virtualRouterName?: string;
 }
@@ -143,10 +129,17 @@ export interface VirtualRouterProps extends VirtualRouterBaseProps {
 
 export class VirtualRouter extends VirtualRouterBase {
   /**
-   * A static method to import a VirtualRouter an make it re-usable accross stacks
+   * Import an existing VirtualRouter given an ARN
    */
-  public static import(scope: cdk.Construct, id: string, props: VirtualRouterImportProps): IVirtualRouter {
-    return new ImportedVirtualRouter(scope, id, props);
+  public static fromVirtualRouterArn(scope: cdk.Construct, id: string, virtualRouterArn: string): IVirtualRouter {
+    return new ImportedVirtualRouter(scope, id, { virtualRouterArn });
+  }
+
+  /**
+   * Import an existing VirtualRouter given names
+   */
+  public static fromVirtualRouterName(scope: cdk.Construct, id: string, meshName: string, virtualRouterName: string): IVirtualRouter {
+    return new ImportedVirtualRouter(scope, id, { meshName, virtualRouterName });
   }
 
   /**
@@ -224,11 +217,11 @@ export class VirtualRouter extends VirtualRouterBase {
 /**
  * Interface with properties ncecessary to import a reusable VirtualRouter
  */
-export interface ImportedVirtualRouterProps {
+interface VirtualRouterAttributes {
   /**
    * The name of the VirtualRouter
    */
-  readonly virtualRouterName: string;
+  readonly virtualRouterName?: string;
 
   /**
    * The Amazon Resource Name (ARN) for the VirtualRouter
@@ -238,7 +231,7 @@ export interface ImportedVirtualRouterProps {
   /**
    * The AppMesh mesh the VirtualRouter belongs to
    */
-  readonly mesh?: IMesh;
+  readonly meshName?: string;
 }
 
 /**
@@ -260,18 +253,21 @@ class ImportedVirtualRouter extends VirtualRouterBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterImportProps) {
+  constructor(scope: cdk.Construct, id: string, props: VirtualRouterAttributes) {
     super(scope, id);
 
-    this.virtualRouterName = props.virtualRouterName;
-    this.mesh = props.mesh;
-
-    this.virtualRouterArn =
-      props.virtualRouterArn ||
-      cdk.Stack.of(this).formatArn({
+    if (props.virtualRouterArn) {
+      this.virtualRouterArn = props.virtualRouterArn;
+      this.virtualRouterName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualRouterArn).resourceName!));
+    } else if (props.virtualRouterName && props.meshName) {
+      this.virtualRouterName = props.virtualRouterName;
+      this.virtualRouterArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${this.mesh.meshName}/virtualNode`,
+        resource: `mesh/${props.meshName}/virtualRouter`,
         resourceName: this.virtualRouterName,
       });
+    } else {
+      throw new Error('Need either arn or both names');
+    }
   }
 }

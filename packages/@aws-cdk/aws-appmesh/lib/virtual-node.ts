@@ -7,43 +7,22 @@ import { HealthCheckProps, ListenerProps, PortMappingProps, Protocol } from './s
 import { IVirtualService } from './virtual-service';
 
 /**
- * Interface with properties ncecessary to import a reusable VirtualNode
- */
-export interface VirtualNodeAttributes {
-  /**
-   * The name of the VirtualNode
-   */
-  readonly virtualNodeName: string;
-
-  /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
-   */
-  readonly virtualNodeArn?: string;
-
-  /**
-   * The service mesh that the virtual node resides in
-   */
-  readonly mesh: IMesh;
-}
-
-/**
  * Interface which all VirtualNode based classes must implement
  */
 export interface IVirtualNode extends cdk.IResource {
   /**
    * The name of the VirtualNode
+   *
+   * @attribute
    */
   readonly virtualNodeName: string;
 
   /**
    * The Amazon Resource Name belonging to the VirtualNdoe
+   *
+   * @attribute
    */
   readonly virtualNodeArn: string;
-
-  /**
-   * The service mesh that the virtual node resides in
-   */
-  readonly mesh: IMesh;
 
   /**
    * Utility method to add a single backend for existing or new VritualNodes
@@ -99,8 +78,10 @@ export interface VirtualNodeProps {
 
   /**
    * The name of the VirtualNode
+   *
+   * @default - A name is automatically determined
    */
-  readonly nodeName?: string;
+  readonly virtualNodeName?: string;
 
   /**
    * The hostname of the virtual node, only the host portion
@@ -118,11 +99,15 @@ export interface VirtualNodeProps {
 
   /**
    * Array of VirtualNodeBackendProps
+   *
+   * @default - No backends
    */
   readonly backends?: VirtualNodeBackendProps[];
 
   /**
    * Listener properties, such as portMappings and optional healthChecks
+   *
+   * @default - No listeners
    */
   readonly listener?: ListenerProps;
 }
@@ -137,11 +122,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Amazon Resource Name belonging to the VirtualNdoe
    */
   public abstract readonly virtualNodeArn: string;
-
-  /**
-   * The service mesh that the virtual node resides in
-   */
-  public abstract readonly mesh: IMesh;
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
@@ -225,11 +205,11 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
         },
         healthCheck: {
           healthyThreshold: health[i].healthyThreshold || 2,
-          intervalMillis: health[i].intervalMillis || 5000, // min
+          intervalMillis: (health[i].interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
           path: health[i].path || health[i].protocol === Protocol.HTTP ? '/' : undefined,
           port: health[i].port || 8080,
           protocol: health[i].protocol || Protocol.HTTP,
-          timeoutMillis: health[i].timeoutMillis || 2000,
+          timeoutMillis: (health[i].timeout || cdk.Duration.seconds(2)).toMilliseconds(),
           unhealthyThreshold: health[i].unhealthyThreshold || 2,
         },
       });
@@ -244,10 +224,20 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
  */
 export class VirtualNode extends VirtualNodeBase {
   /**
-   * A static method to import a VirtualNode an make it re-usable accross stacks
+   * Import an existing VirtualNode given an ARN
    */
-  public static import(scope: cdk.Construct, id: string, props: VirtualNodeAttributes): IVirtualNode {
-    return new ImportedVirtualNode(scope, id, props);
+  public static fromVirtualNodeArn(scope: cdk.Construct, id: string, virtualNodeArn: string): IVirtualNode {
+    return new ImportedVirtualNode(scope, id, { virtualNodeArn });
+  }
+
+  /**
+   * Import an existing VirtualNode given its name
+   */
+  public static fromVirtualNodeName(scope: cdk.Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
+    return new ImportedVirtualNode(scope, id, {
+      meshName,
+      virtualNodeName
+    });
   }
 
   /**
@@ -282,7 +272,7 @@ export class VirtualNode extends VirtualNodeBase {
       this.addListener(props.listener);
     }
 
-    const name = props.nodeName || id;
+    const name = props.virtualNodeName || id;
 
     const node = new CfnVirtualNode(this, 'VirtualNode', {
       virtualNodeName: name,
@@ -311,6 +301,26 @@ export class VirtualNode extends VirtualNodeBase {
 }
 
 /**
+ * Interface with properties ncecessary to import a reusable VirtualNode
+ */
+interface VirtualNodeAttributes {
+  /**
+   * The name of the VirtualNode
+   */
+  readonly virtualNodeName?: string;
+
+  /**
+   * The Amazon Resource Name belonging to the VirtualNdoe
+   */
+  readonly virtualNodeArn?: string;
+
+  /**
+   * The service mesh that the virtual node resides in
+   */
+  readonly meshName?: string;
+}
+
+/**
  * Used to import a VirtualNode and read it's properties
  */
 class ImportedVirtualNode extends VirtualNodeBase {
@@ -324,17 +334,21 @@ class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeArn: string;
 
-  /**
-   * The service mesh that the virtual node resides in
-   */
-  public readonly mesh: IMesh;
-
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeAttributes) {
     super(scope, id);
 
-    this.virtualNodeName = props.virtualNodeName;
-    this.mesh = props.mesh;
-
-    this.virtualNodeArn = props.virtualNodeArn || `${this.mesh.meshArn}/virtualNode/${this.virtualNodeName}`;
+    if (props.virtualNodeArn) {
+      this.virtualNodeArn = props.virtualNodeArn;
+      this.virtualNodeName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualNodeArn).resourceName!));
+    } else if (props.virtualNodeName && props.meshName) {
+      this.virtualNodeName = props.virtualNodeName;
+      this.virtualNodeArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${props.meshName}/virtualNode`,
+        resourceName: this.virtualNodeName,
+      });
+    } else {
+      throw new Error('Need either arn or both names');
+    }
   }
 }
