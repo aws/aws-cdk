@@ -146,64 +146,6 @@ export class CacheControlDirective {
 }
 
 /**
- * Helper class generating RFC 2616 compliant HTTP Cache-Control request header values
- *
- * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9 RFC 2616 14.9 Cache-Control
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Cache_request_directives MDN: Cache-Control
- */
-export class CacheControlRequest extends CacheControlDirective {
-  /**
-   * Indicates that the client is willing to accept a response that has exceeded its expiration time
-   *
-   * @param duration Maximum staleness
-   * @default No threshold
-   */
-  public maxStale(duration?: Duration): this {
-    this.directives.push(duration ? `max-stale=${duration.toSeconds()}` : 'max-stale');
-
-    return this;
-  }
-
-  /**
-   * Indicates that the client wants a response that will still be fresh for at least the specified number of seconds
-   *
-   * @param duration minimum freshness
-   */
-  public maxFresh(duration: Duration): this {
-    this.directives.push(`max-fresh=${duration.toSeconds()}`);
-
-    return this;
-  }
-
-  /**
-   * Indicates to not retrieve new data
-   * This being the case, the server wishes the client to obtain a response only once and then cache.
-   */
-  public onlyIfCached(): this {
-    this.directives.push('only-if-cached');
-
-    return this;
-  }
-
-  /**
-   * Get a CacheControlRequest value from an arbitrary string
-   *
-   * @param cacheDirective RFC 2161 compliant Cache-Control header value
-   * @example CacheControlRequest.of('stale-while-revalidate=3600')
-   */
-  public of(cacheDirective: string): this {
-    this.directives.push(cacheDirective);
-
-    return this;
-  }
-
-  public constructor() {
-    super();
-  }
-}
-
-
-/**
  * Helper class generating RFC 2616 compliant HTTP Cache-Control response header values
  *
  * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9 RFC 2616 14.9 Cache-Control
