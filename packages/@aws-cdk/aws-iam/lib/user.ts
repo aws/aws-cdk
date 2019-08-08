@@ -24,9 +24,10 @@ export interface UserProps {
   readonly groups?: IGroup[];
 
   /**
-   * A list managed policies associated with this role.
+   * A list of managed policies associated with this role.
    *
-   * You can add managed policies later using `attachManagedPolicy(policy)`.
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */

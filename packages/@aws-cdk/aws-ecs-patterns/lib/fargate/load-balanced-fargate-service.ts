@@ -1,10 +1,9 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
- * Properties for a LoadBalancedFargateService
+ * The properties for the LoadBalancedFargateService service.
  */
 export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
   /**
@@ -43,34 +42,6 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    * @default 512
    */
   readonly memoryLimitMiB?: number;
-
-  /**
-   * Override for the Fargate Task Definition execution role
-   *
-   * @default - No value
-   */
-  readonly executionRole?: iam.IRole;
-
-  /**
-   * Override for the Fargate Task Definition task role
-   *
-   * @default - No value
-   */
-  readonly taskRole?: iam.IRole;
-
-  /**
-   * Override value for the container name
-   *
-   * @default - No value
-   */
-  readonly containerName?: string;
-
-  /**
-   * Override value for the service name
-   *
-   * @default CloudFormation-generated name
-   */
-  readonly serviceName?: string;
 }
 
 /**
@@ -81,39 +52,39 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
   /**
    * The Fargate service in this construct
    */
-  public readonly service: ecs.FargateService;
+  public readonly service: FargateService;
 
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
+  /**
+   * Constructs a new instance of the LoadBalancedFargateService class.
+   */
+  constructor(scope: Construct, id: string, props: LoadBalancedFargateServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+    const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryLimitMiB: props.memoryLimitMiB,
       cpu: props.cpu,
-      executionRole: props.executionRole !== undefined ? props.executionRole : undefined,
-      taskRole: props.taskRole !== undefined ? props.taskRole : undefined
+      executionRole: props.executionRole,
+      taskRole: props.taskRole
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-
     const container = taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
-      environment: props.environment
+      environment: props.environment,
+      secrets: props.secrets,
     });
-
     container.addPortMappings({
       containerPort: props.containerPort || 80,
     });
-    const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
-    const service = new ecs.FargateService(this, "Service", {
-      cluster: props.cluster,
-      desiredCount: props.desiredCount || 1,
-      taskDefinition,
-      assignPublicIp,
-      serviceName: props.serviceName,
-    });
-    this.service = service;
 
-    this.addServiceAsTarget(service);
+    this.service = new FargateService(this, "Service", {
+      cluster: this.cluster,
+      desiredCount: this.desiredCount,
+      taskDefinition,
+      assignPublicIp: this.assignPublicIp,
+      serviceName: props.serviceName
+    });
+    this.addServiceAsTarget(this.service);
   }
 }
