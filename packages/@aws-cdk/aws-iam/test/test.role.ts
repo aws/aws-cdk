@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 export = {
   'default role'(test: Test) {
@@ -290,4 +290,32 @@ export = {
     test.done();
   },
 
+  'can supply permissions boundary managed policy'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const permissionsBoundary = ManagedPolicy.fromAwsManagedPolicyName('managed-policy');
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      permissionsBoundary,
+    });
+
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      PermissionsBoundary: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              "Ref": "AWS::Partition"
+            },
+            ":iam::aws:policy/managed-policy"
+          ]
+        ]
+      }
+    }));
+
+    test.done();
+  }
 };

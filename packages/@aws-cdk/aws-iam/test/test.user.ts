@@ -53,5 +53,33 @@ export = {
     }));
 
     test.done();
+  },
+
+  'can supply permissions boundary managed policy'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const permissionsBoundary = ManagedPolicy.fromAwsManagedPolicyName('managed-policy');
+
+    new User(stack, 'MyUser', {
+      permissionsBoundary,
+    });
+
+    expect(stack).to(haveResource('AWS::IAM::User', {
+      PermissionsBoundary: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              "Ref": "AWS::Partition"
+            },
+            ":iam::aws:policy/managed-policy"
+          ]
+        ]
+      }
+    }));
+
+    test.done();
   }
 };
