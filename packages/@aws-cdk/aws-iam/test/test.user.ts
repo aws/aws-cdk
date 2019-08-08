@@ -72,7 +72,7 @@ export = {
           [
             "arn:",
             {
-              "Ref": "AWS::Partition"
+              Ref: "AWS::Partition"
             },
             ":iam::aws:policy/managed-policy"
           ]
