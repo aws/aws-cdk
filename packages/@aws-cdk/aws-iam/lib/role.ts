@@ -264,7 +264,6 @@ export class Role extends Resource implements IRole {
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
-    policy.attachToRole(this);
   }
 
   /**

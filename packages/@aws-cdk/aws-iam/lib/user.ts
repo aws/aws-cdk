@@ -149,7 +149,6 @@ export class User extends Resource implements IIdentity {
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
-    policy.attachToUser(this);
   }
 
   /**

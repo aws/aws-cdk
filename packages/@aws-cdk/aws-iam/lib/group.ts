@@ -157,6 +157,5 @@ export class Group extends GroupBase {
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
-    policy.attachToGroup(this);
   }
 }

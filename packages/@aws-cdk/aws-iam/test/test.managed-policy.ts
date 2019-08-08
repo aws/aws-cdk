@@ -51,8 +51,7 @@ export = {
       { MyManagedPolicy9F3720AE:
          { Type: 'AWS::IAM::ManagedPolicy',
          Properties:
-          { Groups: [ { Ref: 'MyGroupCBA54B1B' } ],
-            PolicyDocument:
+          { PolicyDocument:
            { Statement:
             [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
               { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
@@ -88,8 +87,7 @@ export = {
       { MyManagedPolicy9F3720AE:
          { Type: 'AWS::IAM::ManagedPolicy',
          Properties:
-          { Groups: [ { Ref: 'MyGroupCBA54B1B' } ],
-            PolicyDocument:
+          { PolicyDocument:
            { Statement:
             [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
               { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
@@ -132,29 +130,12 @@ export = {
     });
 
     expect(stack).toMatch({ Resources:
-      { User1E278A736: {
-          Type: 'AWS::IAM::User',
-          Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyTestManagedPolicy6535D9F5' }
-            ]
-          }
-        },
-        Group1BEBD4686: {
-          Type: 'AWS::IAM::Group',
-          Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyTestManagedPolicy6535D9F5' }
-            ]
-          }
-        },
+      { User1E278A736: { Type: 'AWS::IAM::User' },
+        Group1BEBD4686: { Type: 'AWS::IAM::Group' },
         Role13A5C70C1:
          { Type: 'AWS::IAM::Role',
          Properties:
-          { ManagedPolicyArns: [
-              { Ref: 'MyTestManagedPolicy6535D9F5' }
-            ],
-            AssumeRolePolicyDocument:
+          { AssumeRolePolicyDocument:
               { Statement:
                 [ { Action: 'sts:AssumeRole',
                 Effect: 'Allow',
@@ -210,28 +191,11 @@ export = {
           Users: [ { Ref: 'MyUserDC45028B' } ],
           Groups: [ { Ref: 'MyGroupCBA54B1B' } ] ,
           Roles: [ { Ref: 'MyRoleF48FFE04' } ] } },
-        MyUserDC45028B: {
-          Type: 'AWS::IAM::User',
-          Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyManagedPolicy9F3720AE' }
-            ]
-          }
-        },
-        MyGroupCBA54B1B: {
-          Type: 'AWS::IAM::Group',
-          Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyManagedPolicy9F3720AE' }
-            ]
-          }
-        },
+        MyUserDC45028B: { Type: 'AWS::IAM::User' },
+        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
         MyRoleF48FFE04: {
           Type: 'AWS::IAM::Role',
           Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyManagedPolicy9F3720AE' }
-            ],
             AssumeRolePolicyDocument:
               { Statement:
                 [ { Action: 'sts:AssumeRole',
@@ -272,35 +236,13 @@ export = {
           Path: '/',
           Roles: [ { Ref: 'Role13A5C70C1' } ],
           Users: [ { Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' } ] } },
-        User1E278A736: {
-          Type: 'AWS::IAM::User',
-          Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyManagedPolicy9F3720AE' }
-            ]
-          }
-        },
-        User21F1486D1: {
-          Type: 'AWS::IAM::User',
-          Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyManagedPolicy9F3720AE' }
-            ]
-          }
-        },
-        Group1BEBD4686: {
-          Type: 'AWS::IAM::Group',
-          Properties: {
-            ManagedPolicyArns: [
-              { Ref: 'MyManagedPolicy9F3720AE' }
-            ]
-          }
-        },
+        User1E278A736: { Type: 'AWS::IAM::User' },
+        User21F1486D1: { Type: 'AWS::IAM::User' },
+        Group1BEBD4686: { Type: 'AWS::IAM::Group' },
         Role13A5C70C1:
          { Type: 'AWS::IAM::Role',
          Properties:
-          { ManagedPolicyArns: [ { Ref: 'MyManagedPolicy9F3720AE' } ],
-            AssumeRolePolicyDocument:
+          { AssumeRolePolicyDocument:
             { Statement:
               [ { Action: 'sts:AssumeRole',
                 Effect: 'Allow',
@@ -328,15 +270,12 @@ export = {
       { MyManagedPolicy9F3720AE:
          { Type: 'AWS::IAM::ManagedPolicy',
          Properties:
-          { Groups: [ { Ref: 'MyGroupCBA54B1B' } ],
-          PolicyDocument:
+          { PolicyDocument:
            { Statement: [ { Action: '*', Effect: 'Allow', Resource: '*' } ],
              Version: '2012-10-17' },
           ManagedPolicyName: 'MyManagedPolicy9F3720AE',
           Description: '',
-          Path: '/',
-          Roles: [ { Ref: 'MyRoleF48FFE04' } ],
-          Users: [ { Ref: 'MyUserDC45028B'} ] } },
+          Path: '/' } },
         MyUserDC45028B: { Type: 'AWS::IAM::User', Properties: { ManagedPolicyArns: [ { Ref: 'MyManagedPolicy9F3720AE' } ] } },
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group', Properties: { ManagedPolicyArns: [ { Ref: 'MyManagedPolicy9F3720AE' } ] } },
         MyRoleF48FFE04:
@@ -352,7 +291,7 @@ export = {
     test.done();
   },
 
-  'policy from AWS managed policy lookup can be attached to users, groups or role via methods'(test: Test) {
+  'policy from AWS managed policy lookup can be attached to users, groups or role via methods on the principal'(test: Test) {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
 
@@ -361,9 +300,9 @@ export = {
     const group = new Group(stack, 'MyGroup');
     const role = new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('test.service') });
 
-    policy.attachToUser(user);
-    policy.attachToGroup(group);
-    policy.attachToRole(role);
+    user.addManagedPolicy(policy);
+    group.addManagedPolicy(policy);
+    role.addManagedPolicy(policy);
 
     expect(stack).toMatch({ Resources:
       {
@@ -427,9 +366,9 @@ export = {
     const group = new Group(stack, 'MyGroup');
     const role = new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('test.service') });
 
-    policy.attachToUser(user);
-    policy.attachToGroup(group);
-    policy.attachToRole(role);
+    user.addManagedPolicy(policy);
+    group.addManagedPolicy(policy);
+    role.addManagedPolicy(policy);
 
     expect(stack).toMatch({ Resources:
       {
