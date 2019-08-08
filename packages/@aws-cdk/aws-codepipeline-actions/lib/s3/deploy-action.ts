@@ -36,7 +36,7 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default - the original object ACL
    */
-  readonly cannedAcl?: s3.BucketAccessControl;
+  readonly accessControl?: s3.BucketAccessControl;
 
   /**
    * The caching behavior for requests/responses for objects in the bucket.
@@ -79,7 +79,7 @@ export class S3DeployAction extends Action {
         BucketName: this.props.bucket.bucketName,
         Extract: this.props.extract === false ? 'false' : 'true',
         ObjectKey: this.props.objectKey,
-        CannedACL: this.props.cannedAcl,
+        CannedACL: this.props.accessControl,
         CacheControl: this.props.cacheControl && this.props.cacheControl.toString(),
       },
     };
