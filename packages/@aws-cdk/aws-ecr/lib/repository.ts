@@ -178,8 +178,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
-      resourceArns: [this.repositoryArn],
-      resourceSelfArns: ['*'],
+      resourceArns: [],
       resource: this,
     });
   }
