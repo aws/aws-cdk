@@ -156,6 +156,13 @@ export interface CommonAutoScalingGroupProps {
    * @default none
    */
   readonly spotPrice?: string;
+
+  /**
+   * Configuration for health checks
+   *
+   * @default - HealthCheck.ec2 with no grace period
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -444,7 +451,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           ],
         }
       ],
-      vpcZoneIdentifier: subnetIds
+      vpcZoneIdentifier: subnetIds,
+      healthCheckType: props.healthCheck && props.healthCheck.type,
+      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
@@ -672,6 +681,61 @@ export enum ScalingProcess {
   ALARM_NOTIFICATION = 'AlarmNotification',
   SCHEDULED_ACTIONS = 'ScheduledActions',
   ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
+}
+
+/**
+ * EC2 Heath check options
+ */
+export interface Ec2HealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly grace?: Duration;
+}
+
+/**
+ * ELB Heath check options
+ */
+export interface ElbHealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * This option is required for ELB health checks.
+   */
+  readonly grace: Duration;
+}
+
+/**
+ * Health check settings
+ */
+export class HealthCheck {
+  /**
+   * Use EC2 for health checks
+   *
+   * @param options EC2 health check options
+   */
+  public static ec2(options: Ec2HealthCheckOptions = {}): HealthCheck {
+    return new HealthCheck(HealthCheckType.EC2, options.grace);
+  }
+
+  /**
+   * Use ELB for health checks.
+   * It considers the instance unhealthy if it fails either the EC2 status checks or the load balancer health checks.
+   *
+   * @param options ELB health check options
+   */
+  public static elb(options: ElbHealthCheckOptions): HealthCheck {
+    return new HealthCheck(HealthCheckType.ELB, options.grace);
+  }
+
+  private constructor(public readonly type: string, public readonly gracePeriod?: Duration) { }
+}
+
+enum HealthCheckType {
+  EC2 = 'EC2',
+  ELB = 'ELB',
 }
 
 /**
