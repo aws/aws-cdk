@@ -240,7 +240,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
-        Lazy.stringValue({ produce: () => generatePolicyName(resource.logicalId) }),
+        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
 
     this.managedPolicyName = this.physicalName;
