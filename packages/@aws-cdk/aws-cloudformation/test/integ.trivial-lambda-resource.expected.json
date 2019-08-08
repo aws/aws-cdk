@@ -11,7 +11,8 @@
         },
         "Message": "CustomResource says hello"
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "SingletonLambdaf7d4f7304ee111e89c2dfa7ae01bbebcServiceRoleFE9ABB04": {
       "Type": "AWS::IAM::Role",

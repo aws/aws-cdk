@@ -1,9 +1,9 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
- * Properties to define a queue processing Fargate service
+ * The properties for the QueueProcessingFargateService service.
  */
 export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps {
   /**
@@ -51,13 +51,16 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   /**
    * The Fargate service in this construct
    */
-  public readonly service: ecs.FargateService;
+  public readonly service: FargateService;
 
-  constructor(scope: cdk.Construct, id: string, props: QueueProcessingFargateServiceProps) {
+  /**
+   * Constructs a new instance of the QueueProcessingFargateService class.
+   */
+  constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new ecs.FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
+    const taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
     });
@@ -65,13 +68,14 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       image: props.image,
       command: props.command,
       environment: this.environment,
+      secrets: this.secrets,
       logging: this.logDriver
     });
 
     // Create a Fargate service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    this.service = new ecs.FargateService(this, 'QueueProcessingFargateService', {
-      cluster: props.cluster,
+    this.service = new FargateService(this, 'QueueProcessingFargateService', {
+      cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition
     });

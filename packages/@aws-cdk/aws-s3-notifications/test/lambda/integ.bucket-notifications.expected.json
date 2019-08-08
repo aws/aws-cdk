@@ -2,6 +2,7 @@
   "Resources": {
     "MyBucketF68F3FF0": {
       "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "MyBucketNotifications46AC0CD2": {
@@ -152,6 +153,7 @@
     },
     "YourBucketC6A57364": {
       "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "YourBucketNotifications8D39901A": {

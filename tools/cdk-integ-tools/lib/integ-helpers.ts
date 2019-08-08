@@ -186,7 +186,8 @@ export const DEFAULT_SYNTH_OPTIONS = {
     "vpc-provider:account=12345678:filter.isDefault=true:region=test-region": {
       vpcId: "vpc-60900905",
       availabilityZones: [ "us-east-1a", "us-east-1b", "us-east-1c" ],
-      publicSubnetIds: [ "subnet-e19455ca", "subnet-e0c24797", "subnet-ccd77395", ],
+      publicSubnetIds: ["subnet-e19455ca", "subnet-e0c24797", "subnet-ccd77395"],
+      publicSubnetRouteTableIds: ["rtb-e19455ca", "rtb-e0c24797", "rtb-ccd77395"],
       publicSubnetNames: [ "Public" ]
     }
   },

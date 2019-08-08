@@ -32,7 +32,8 @@ export interface RoleProps {
   /**
    * A list of managed policies associated with this role.
    *
-   * You can add managed policies later using `attachManagedPolicy(arn)`.
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */

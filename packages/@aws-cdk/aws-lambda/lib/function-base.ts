@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import { IResource, Resource } from '@aws-cdk/core';
+import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
@@ -40,6 +40,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The `$LATEST` version of this function.
    */
   readonly latestVersion: IVersion;
+
+  /**
+   * The construct node where permissions are attached.
+   */
+  readonly permissionsNode: ConstructNode;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -139,6 +144,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * Undefined if the function was imported without a role.
    */
   public abstract readonly role?: iam.IRole;
+
+  /**
+   * The construct node where permissions are attached.
+   */
+  public abstract readonly permissionsNode: ConstructNode;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -275,13 +285,18 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.ServicePrincipal).service;
     }
 
+    if (`arn` in principal) {
+      return (principal as iam.ArnPrincipal).arn;
+    }
+
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
-      'Supported: AccountPrincipal, ServicePrincipal');
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
   }
 }
 
 export abstract class QualifiedFunctionBase extends FunctionBase {
   public abstract readonly lambda: IFunction;
+  public readonly permissionsNode = this.node;
 
   public get latestVersion() {
     return this.lambda.latestVersion;
@@ -294,6 +309,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
 class LatestVersion extends FunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly version = '$LATEST';
+  public readonly permissionsNode = this.node;
 
   protected readonly canCreatePermissions = true;
 

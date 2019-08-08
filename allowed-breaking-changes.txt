@@ -1,12 +1,1 @@
-removed:@aws-cdk/aws-ec2.Port.toRuleJSON
-change-return-type:@aws-cdk/aws-codebuild.PipelineProject.addSecondaryArtifact
-change-return-type:@aws-cdk/aws-codebuild.Project.addSecondaryArtifact
-removed:@aws-cdk/aws-ec2.Connections.allowFromAnyIPv4
-removed:@aws-cdk/aws-ec2.Connections.allowToAnyIPv4
-removed:@aws-cdk/aws-ec2.VpcProps.maxAZs
-removed:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.metricIPv6ProcessedBytes
-removed:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.metricIPv6RequestCount
-removed:@aws-cdk/aws-elasticloadbalancingv2.ApplicationTargetGroup.metricIPv6RequestCount
-removed:@aws-cdk/core.Fn.getAZs
-removed:@aws-cdk/aws-iam.UserProps.managedPolicyArns
-removed:@aws-cdk/aws-iam.GroupProps.managedPolicyArns
+change-return-type:@aws-cdk/core.Fn.getAtt

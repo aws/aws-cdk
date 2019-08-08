@@ -545,9 +545,19 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   protected _toCloudFormation() {
+    if (this.templateOptions.transform) {
+      // tslint:disable-next-line: max-line-length
+      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `templateOptions.transforms`.');
+      if (!this.templateOptions.transforms) {
+        this.templateOptions.transforms = [];
+      }
+      if (this.templateOptions.transforms.indexOf(this.templateOptions.transform) === -1) {
+        this.templateOptions.transforms.unshift(this.templateOptions.transform);
+      }
+    }
     const template: any = {
       Description: this.templateOptions.description,
-      Transform: this.templateOptions.transform,
+      Transform: extractSingleValue(this.templateOptions.transforms),
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
       Metadata: this.templateOptions.metadata
     };
@@ -690,8 +700,15 @@ export interface ITemplateOptions {
 
   /**
    * Gets or sets the top-level template transform for this stack (e.g. "AWS::Serverless-2016-10-31").
+   *
+   * @deprecated use `transforms` instead.
    */
   transform?: string;
+
+  /**
+   * Gets or sets the top-level template transform(s) for this stack (e.g. `["AWS::Serverless-2016-10-31"]`).
+   */
+  transforms?: string[];
 
   /**
    * Metadata associated with the CloudFormation template.
@@ -745,4 +762,11 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
 interface StackDependency {
   stack: Stack;
   reason: string;
+}
+
+function extractSingleValue<T>(array: T[] | undefined): T[] | T | undefined {
+  if (array && array.length === 1) {
+    return array[0];
+  }
+  return array;
 }

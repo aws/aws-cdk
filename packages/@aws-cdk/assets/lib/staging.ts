@@ -16,7 +16,7 @@ export interface StagingProps extends CopyOptions {
  * by the CLI by default in order to ensure that when the CDK app exists, all
  * assets are available for deployment. Otherwise, if an app references assets
  * in temporary locations, those will not be available when it exists (see
- * https://github.com/awslabs/aws-cdk/issues/1716).
+ * https://github.com/aws/aws-cdk/issues/1716).
  *
  * The `stagedPath` property is a stringified token that represents the location
  * of the file or directory after staging. It will be resolved only during the

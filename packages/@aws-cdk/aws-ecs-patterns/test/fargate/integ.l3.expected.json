@@ -480,7 +480,6 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -493,16 +492,13 @@
                 }
               }
             },
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Cpu": "512",
@@ -585,7 +581,8 @@
     },
     "L3TaskDefwebLogGroupC6E4A38A": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "L3Service616D5A93": {
       "Type": "AWS::ECS::Service",

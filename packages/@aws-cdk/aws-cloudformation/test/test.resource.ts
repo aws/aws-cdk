@@ -50,6 +50,7 @@ export = testCase({
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -112,6 +113,7 @@ export = testCase({
         "Custom1D319B237": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [
@@ -124,6 +126,7 @@ export = testCase({
         "Custom2DD5FB44D": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [
@@ -193,9 +196,21 @@ export = testCase({
     },
 
   },
+
+  '.ref returns the intrinsic reference (physical name)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const res = new TestCustomResource(stack, 'myResource');
+
+    // THEN
+    test.deepEqual(stack.resolve(res.resource.ref), { Ref: 'myResourceC6A188A9' });
+    test.done();
+  }
 });
 
 class TestCustomResource extends cdk.Construct {
+  public readonly resource: CustomResource;
+
   constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
@@ -207,7 +222,7 @@ class TestCustomResource extends cdk.Construct {
       timeout: cdk.Duration.minutes(5),
     });
 
-    new CustomResource(this, 'Resource', {
+    this.resource = new CustomResource(this, 'Resource', {
       ...opts,
       provider: CustomResourceProvider.lambda(singletonLambda),
     });
