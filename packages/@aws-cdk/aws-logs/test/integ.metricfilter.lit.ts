@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { FilterPattern, LogGroup, MetricFilter } from '../lib';
 
 class MetricFilterIntegStack extends Stack {
@@ -6,7 +6,7 @@ class MetricFilterIntegStack extends Stack {
     super(scope, id, props);
 
     const logGroup = new LogGroup(this, 'LogGroup', {
-      retainLogGroup: false
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     /// !show
@@ -23,4 +23,4 @@ class MetricFilterIntegStack extends Stack {
 
 const app = new App();
 new MetricFilterIntegStack(app, 'aws-cdk-metricfilter-integ');
-app.run();
+app.synth();

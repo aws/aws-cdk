@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
@@ -43,7 +43,7 @@ export interface IpInstanceProps extends IpInstanceBaseProps {
   readonly service: IService;
 }
 
-/*
+/**
  * Instance that is accessible using an IP address.
  *
  * @resource AWS::ServiceDiscovery::Instance
@@ -114,7 +114,7 @@ export class IpInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.instanceId;
+    this.instanceId = resource.ref;
     this.ipv4 = props.ipv4 || '';
     this.ipv6 = props.ipv6 || '';
     this.port = port;

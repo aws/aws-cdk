@@ -27,7 +27,7 @@ export abstract class Inspector {
 }
 
 export class StackInspector extends Inspector {
-  constructor(public readonly stack: api.SynthesizedStack) {
+  constructor(public readonly stack: api.CloudFormationStackArtifact) {
     super();
   }
 
@@ -46,7 +46,7 @@ export class StackInspector extends Inspector {
 }
 
 export class StackPathInspector extends Inspector {
-  constructor(public readonly stack: api.SynthesizedStack, public readonly path: string) {
+  constructor(public readonly stack: api.CloudFormationStackArtifact, public readonly path: string) {
     super();
   }
 
@@ -54,9 +54,10 @@ export class StackPathInspector extends Inspector {
     // The names of paths in metadata in tests are very ill-defined. Try with the full path first,
     // then try with the stack name preprended for backwards compat with most tests that happen to give
     // their stack an ID that's the same as the stack name.
-    const md = this.stack.metadata[this.path] || this.stack.metadata[`/${this.stack.name}${this.path}`];
+    const metadata = this.stack.manifest.metadata || {};
+    const md = metadata[this.path] || metadata[`/${this.stack.name}${this.path}`];
     if (md === undefined) { return undefined; }
-    const resourceMd = md.find(entry => entry.type === 'aws:cdk:logicalId');
+    const resourceMd = md.find(entry => entry.type === api.LOGICAL_ID_METADATA_KEY);
     if (resourceMd === undefined) { return undefined; }
     const logicalId = resourceMd.data;
     return this.stack.template.Resources[logicalId];

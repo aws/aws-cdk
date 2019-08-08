@@ -1,3 +1,190 @@
+# CloudFormation Resource Specification v4.3.0
+
+## New Resource Types
+
+* AWS::IoTEvents::DetectorModel
+* AWS::IoTEvents::Input
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker EncryptionOptions (__added__)
+* AWS::Amplify::App AutoBranchCreationConfig (__added__)
+* AWS::Amplify::Branch EnableAutoBuild (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.EncryptionOptions (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig (__added__)
+* AWS::Amplify::App.BasicAuthConfig Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Amplify::App.BasicAuthConfig Username.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v4.2.0
+
+## New Resource Types
+
+* AWS::Backup::BackupPlan
+* AWS::Backup::BackupSelection
+* AWS::Backup::BackupVault
+* AWS::CloudWatch::AnomalyDetector
+* AWS::Config::RemediationConfiguration
+* AWS::MediaLive::Channel
+* AWS::MediaLive::Input
+* AWS::MediaLive::InputSecurityGroup
+* AWS::SecurityHub::Hub
+* AWS::ServiceCatalog::StackSetConstraint
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Amplify::App Repository.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Api Tags (__added__)
+* AWS::ApiGatewayV2::DomainName Tags (__added__)
+* AWS::ApiGatewayV2::Stage Tags (__added__)
+* AWS::AppMesh::Mesh Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::Route Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualNode Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualRouter Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualService Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppStream::Fleet IdleDisconnectTimeoutInSeconds (__added__)
+* AWS::IoTAnalytics::Channel ChannelStorage (__added__)
+* AWS::IoTAnalytics::Datastore DatastoreStorage (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProvisioningPreferences (__added__)
+
+## Property Type Changes
+
+* AWS::Amplify::App.Token (__removed__)
+* AWS::AppMesh::Mesh.TagRef (__removed__)
+* AWS::AppMesh::Route.TagRef (__removed__)
+* AWS::AppMesh::VirtualNode.TagRef (__removed__)
+* AWS::AppMesh::VirtualRouter.TagRef (__removed__)
+* AWS::AppMesh::VirtualService.TagRef (__removed__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapInstanceAttribute (__added__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapServiceDiscovery (__added__)
+* AWS::IoTAnalytics::Channel.ChannelStorage (__added__)
+* AWS::IoTAnalytics::Channel.CustomerManagedS3 (__added__)
+* AWS::IoTAnalytics::Channel.ServiceManagedS3 (__added__)
+* AWS::IoTAnalytics::Datastore.CustomerManagedS3 (__added__)
+* AWS::IoTAnalytics::Datastore.DatastoreStorage (__added__)
+* AWS::IoTAnalytics::Datastore.ServiceManagedS3 (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct.ProvisioningPreferences (__added__)
+* AWS::AppMesh::VirtualNode.ServiceDiscovery AWSCloudMap (__added__)
+* AWS::EC2::LaunchTemplate.SpotOptions BlockDurationMinutes (__added__)
+* AWS::EC2::LaunchTemplate.SpotOptions ValidUntil (__added__)
+* AWS::Route53Resolver::ResolverRule.TargetAddress Port.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-branch-tag.html#cfn-amplify-branch-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-branch-tag.html#cfn-amplify-branch-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function Policies.ItemTypes (__changed__)
+  * Added SAMPolicyTemplate
+
+## Property Type Changes
+
+* AWS::Serverless::Function.BucketSAMPT (__added__)
+* AWS::Serverless::Function.CollectionSAMPT (__added__)
+* AWS::Serverless::Function.DomainSAMPT (__added__)
+* AWS::Serverless::Function.EmptySAMPT (__added__)
+* AWS::Serverless::Function.FunctionSAMPT (__added__)
+* AWS::Serverless::Function.IdentitySAMPT (__added__)
+* AWS::Serverless::Function.KeySAMPT (__added__)
+* AWS::Serverless::Function.LogGroupSAMPT (__added__)
+* AWS::Serverless::Function.QueueSAMPT (__added__)
+* AWS::Serverless::Function.SAMPolicyTemplate (__added__)
+* AWS::Serverless::Function.StateMachineSAMPT (__added__)
+* AWS::Serverless::Function.StreamSAMPT (__added__)
+* AWS::Serverless::Function.TableSAMPT (__added__)
+* AWS::Serverless::Function.TableStreamSAMPT (__added__)
+* AWS::Serverless::Function.TopicSAMPT (__added__)
+
+# CloudFormation Resource Specification v3.3.0
+
+## New Resource Types
+
+* AWS::EC2::CapacityReservation
+* AWS::PinpointEmail::ConfigurationSet
+* AWS::PinpointEmail::ConfigurationSetEventDestination
+* AWS::PinpointEmail::DedicatedIpPool
+* AWS::PinpointEmail::Identity
+* AWS::Transfer::Server
+* AWS::Transfer::User
+* AWS::WAFRegional::GeoMatchSet
+* AWS::WAFRegional::RateBasedRule
+* AWS::WAFRegional::RegexPatternSet
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeBuild::Project SecondarySourceVersions (__added__)
+* AWS::CodeBuild::Project SourceVersion (__added__)
+* AWS::CodeCommit::Repository Code (__added__)
+* AWS::ECS::TaskDefinition ProxyConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.ProjectSourceVersion (__added__)
+* AWS::CodeCommit::Repository.Code (__added__)
+* AWS::CodeCommit::Repository.S3 (__added__)
+* AWS::ECS::TaskDefinition.ContainerDependency (__added__)
+* AWS::ECS::TaskDefinition.ProxyConfiguration (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface InterfaceType (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DependsOn (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StartTimeout (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StopTimeout (__added__)
+
+
 # CloudFormation Resource Specification v3.0.0
 
 ## New Resource Types

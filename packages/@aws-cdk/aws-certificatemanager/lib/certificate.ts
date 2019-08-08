@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -7,21 +7,6 @@ export interface ICertificate extends IResource {
    * The certificate's ARN
    *
    * @attribute
-   */
-  readonly certificateArn: string;
-
-  /**
-   * Export this certificate from the stack
-   */
-  export(): CertificateAttributes;
-}
-
-/**
- * Reference to an existing Certificate
- */
-export interface CertificateAttributes {
-  /**
-   * The certificate's ARN
    */
   readonly certificateArn: string;
 }
@@ -41,6 +26,8 @@ export interface CertificateProps {
    * Alternative domain names on your certificate.
    *
    * Use this to register alternative domain names that represent the same site.
+   *
+   * @default - No additional FQDNs will be included as alternative domain names.
    */
   readonly subjectAlternativeNames?: string[];
 
@@ -49,9 +36,16 @@ export interface CertificateProps {
    *
    * Has to be a superdomain of the requested domain.
    *
-   * @default Apex domain is used for every domain that's not overridden.
+   * @default - Apex domain is used for every domain that's not overridden.
    */
   readonly validationDomains?: {[domainName: string]: string};
+
+  /**
+   * Validation method used to assert domain ownership
+   *
+   * @default ValidationMethod.EMAIL
+   */
+  readonly validationMethod?: ValidationMethod;
 }
 
 /**
@@ -79,9 +73,6 @@ export class Certificate extends Resource implements ICertificate {
   public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
     class Import extends Resource implements ICertificate {
       public certificateArn = certificateArn;
-      public export(): CertificateAttributes {
-        return { certificateArn };
-      }
     }
 
     return new Import(scope, id);
@@ -101,9 +92,10 @@ export class Certificate extends Resource implements ICertificate {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: allDomainNames.map(domainValidationOption),
+      validationMethod: props.validationMethod,
     });
 
-    this.certificateArn = cert.certificateArn;
+    this.certificateArn = cert.ref;
 
     /**
      * Return the domain validation options for the given domain
@@ -118,13 +110,23 @@ export class Certificate extends Resource implements ICertificate {
       };
     }
   }
+}
+
+/**
+ * Method used to assert ownership of the domain
+ */
+export enum ValidationMethod {
+  /**
+   * Send email to a number of email addresses associated with the domain
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html
+   */
+  EMAIL = 'EMAIL',
 
   /**
-   * Export this certificate from the stack
+   * Validate ownership by adding appropriate DNS records
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
    */
-  public export(): CertificateAttributes {
-    return {
-      certificateArn: new CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
-    };
-  }
+  DNS = 'DNS',
 }

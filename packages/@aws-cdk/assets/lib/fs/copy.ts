@@ -1,22 +1,11 @@
 import fs = require('fs');
-import minimatch = require('minimatch');
 import path = require('path');
+import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
-
-export interface CopyOptions {
-  /**
-   * @default External only follows symlinks that are external to the source directory
-   */
-  follow?: FollowMode;
-
-  /**
-   * glob patterns to exclude from the copy.
-   */
-  exclude?: string[];
-}
+import { shouldExclude, shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
-  const follow = options.follow !== undefined ? options.follow : FollowMode.External;
+  const follow = options.follow !== undefined ? options.follow : FollowMode.EXTERNAL;
   const exclude = options.exclude || [];
 
   rootDir = rootDir || srcDir;
@@ -29,13 +18,13 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   for (const file of files) {
     const sourceFilePath = path.join(srcDir, file);
 
-    if (shouldExclude(path.relative(rootDir, sourceFilePath))) {
+    if (shouldExclude(exclude, path.relative(rootDir, sourceFilePath))) {
       continue;
     }
 
     const destFilePath = path.join(destDir, file);
 
-    let stat: fs.Stats | undefined = follow === FollowMode.Always
+    let stat: fs.Stats | undefined = follow === FollowMode.ALWAYS
       ? fs.statSync(sourceFilePath)
       : fs.lstatSync(sourceFilePath);
 
@@ -45,10 +34,8 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       // determine if this is an external link (i.e. the target's absolute path
       // is outside of the root directory).
       const targetPath = path.normalize(path.resolve(srcDir, target));
-      const rootPath = path.normalize(rootDir);
-      const external = !targetPath.startsWith(rootPath);
 
-      if (follow === FollowMode.External && external) {
+      if (shouldFollow(follow, rootDir, targetPath)) {
         stat = fs.statSync(sourceFilePath);
       } else {
         fs.symlinkSync(target, destFilePath);
@@ -66,24 +53,5 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       fs.copyFileSync(sourceFilePath, destFilePath);
       stat = undefined;
     }
-  }
-
-  function shouldExclude(filePath: string): boolean {
-    let excludeOutput = false;
-
-    for (const pattern of exclude) {
-      const negate = pattern.startsWith('!');
-      const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
-
-      if (!negate && match) {
-        excludeOutput = true;
-      }
-
-      if (negate && match) {
-        excludeOutput = false;
-      }
-    }
-
-    return excludeOutput;
   }
 }

@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { Construct } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -10,18 +10,18 @@ export = {
   'we can add a lifecycle hook to an ASG'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
       vpc,
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
     });
 
     // WHEN
-    asg.onLifecycleTransition('Transition', {
+    asg.addLifecycleHook('Transition', {
       notificationTarget: new FakeNotificationTarget(),
-      lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
-      defaultResult: autoscaling.DefaultResult.Abandon,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      defaultResult: autoscaling.DefaultResult.ABANDON,
     });
 
     // THEN
@@ -69,11 +69,12 @@ export = {
   }
 };
 
-class FakeNotificationTarget implements autoscaling_api.ILifecycleHookTarget {
-  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
-    lifecycleHook.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('action:Work')
-      .addAllResources());
+class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
+  public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+    lifecycleHook.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['action:Work'],
+      resources: ['*']
+    }));
     return { notificationTargetArn: 'target:arn', };
   }
 }

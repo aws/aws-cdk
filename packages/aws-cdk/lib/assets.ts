@@ -1,5 +1,5 @@
 // tslint:disable-next-line:max-line-length
-import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
 import { CloudFormation } from 'aws-sdk';
 import colors = require('colors');
 import fs = require('fs-extra');
@@ -11,9 +11,9 @@ import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
 // tslint:disable-next-line:max-line-length
-export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
+export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
   reuse = reuse || [];
-  const assets = findAssets(stack.metadata);
+  const assets = stack.assets;
 
   if (assets.length === 0) {
     return [];
@@ -36,39 +36,55 @@ export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: Toolk
       debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
     }
 
-    params = params.concat(await prepareAsset(asset, toolkitInfo, reuseAsset, ci));
+    if (!stack.assembly) {
+      throw new Error(`Unexpected: stack assembly is required in order to find assets in assemly directory`);
+    }
+
+    const assemblyDir = stack.assembly.directory;
+    params = params.concat(await prepareAsset(assemblyDir, asset, toolkitInfo, reuseAsset, ci));
   }
 
   return params;
 }
 
 // tslint:disable-next-line:max-line-length
-async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
-      return await prepareZipAsset(asset, toolkitInfo, reuse);
+      return await prepareZipAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'file':
-      return await prepareFileAsset(asset, toolkitInfo, reuse);
+      return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'container-image':
-      return await prepareContainerAsset(asset, toolkitInfo, reuse, ci);
+      return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse, ci);
     default:
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
 
-async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareZipAsset(
+    assemblyDir: string,
+    asset: cxapi.FileAssetMetadataEntry,
+    toolkitInfo: ToolkitInfo,
+    reuse: boolean): Promise<CloudFormation.Parameter[]> {
+
   if (reuse) {
-    return await prepareFileAsset(asset, toolkitInfo, reuse);
+    return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
   }
 
-  debug('Preparing zip asset from directory:', asset.path);
+  const dirPath = path.isAbsolute(asset.path) ? asset.path : path.join(assemblyDir, asset.path);
+
+  if (!(await fs.pathExists(dirPath)) || !(await fs.stat(dirPath)).isDirectory()) {
+    throw new Error(`Unable to find directory: ${dirPath}`);
+  }
+
+  debug('Preparing zip asset from directory:', dirPath);
   const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
   try {
     const archiveFile = path.join(staging, 'archive.zip');
-    await zipDirectory(asset.path, archiveFile);
+    await zipDirectory(dirPath, archiveFile);
     debug('zip archive:', archiveFile);
-    return await prepareFileAsset(asset, toolkitInfo, reuse, archiveFile, 'application/zip');
+    return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse, archiveFile, 'application/zip');
   } finally {
     await fs.remove(staging);
   }
@@ -81,7 +97,8 @@ async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: Toolk
  * @param contentType Content-type to use when uploading to S3 (none will be specified by default)
  */
 async function prepareFileAsset(
-    asset: FileAssetMetadataEntry,
+    assemblyDir: string,
+    asset: cxapi.FileAssetMetadataEntry,
     toolkitInfo: ToolkitInfo,
     reuse: boolean,
     filePath?: string,
@@ -91,17 +108,23 @@ async function prepareFileAsset(
     return [
       { ParameterKey: asset.s3BucketParameter, UsePreviousValue: true },
       { ParameterKey: asset.s3KeyParameter, UsePreviousValue: true },
+      { ParameterKey: asset.artifactHashParameter, UsePreviousValue: true },
     ];
   }
 
   filePath = filePath || asset.path;
+
+  if (!path.isAbsolute(filePath)) {
+    filePath = path.join(assemblyDir, filePath);
+  }
+
   debug('Preparing file asset:', filePath);
 
   const data = await fs.readFile(filePath);
 
   const s3KeyPrefix = `assets/${asset.id}/`;
 
-  const { filename, key, changed } = await toolkitInfo.uploadIfChanged(data, {
+  const { filename, key, changed, hash } = await toolkitInfo.uploadIfChanged(data, {
     s3KeyPrefix,
     s3KeySuffix: path.extname(filePath),
     contentType
@@ -119,20 +142,7 @@ async function prepareFileAsset(
 
   return [
     { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-    { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${ASSET_PREFIX_SEPARATOR}${filename}` },
+    { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${cxapi.ASSET_PREFIX_SEPARATOR}${filename}` },
+    { ParameterKey: asset.artifactHashParameter, ParameterValue: hash },
   ];
-}
-
-function findAssets(metadata: StackMetadata): AssetMetadataEntry[] {
-  const assets = new Array<AssetMetadataEntry>();
-
-  for (const k of Object.keys(metadata)) {
-    for (const entry of metadata[k]) {
-      if (entry.type === ASSET_METADATA) {
-        assets.push(entry.data);
-      }
-    }
-  }
-
-  return assets;
 }

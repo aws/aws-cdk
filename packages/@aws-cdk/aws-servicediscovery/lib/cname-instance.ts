@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { DnsRecordType, IService } from './service';
@@ -26,7 +26,7 @@ export interface CnameInstanceProps extends CnameInstanceBaseProps {
   readonly service: IService;
 }
 
-/*
+/**
  * Instance that is accessible using a domain name (CNAME).
  * @resource AWS::ServiceDiscovery::Instance
  */
@@ -44,12 +44,12 @@ export class CnameInstance extends InstanceBase {
   /**
    * The domain name returned by DNS queries for the instance
    */
-  public readonly instanceCname: string;
+  public readonly cname: string;
 
   constructor(scope: cdk.Construct, id: string, props: CnameInstanceProps) {
     super(scope, id);
 
-    if (props.service.namespace.type === NamespaceType.Http) {
+    if (props.service.namespace.type === NamespaceType.HTTP) {
       throw new Error('Namespace associated with Service must be a DNS Namespace.');
     }
 
@@ -67,7 +67,7 @@ export class CnameInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.instanceId;
-    this.instanceCname = props.instanceCname;
+    this.instanceId = resource.ref;
+    this.cname = props.instanceCname;
   }
 }

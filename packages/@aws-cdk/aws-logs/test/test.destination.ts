@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { CrossAccountDestination } from '../lib';
 
@@ -43,8 +43,9 @@ export = {
     });
 
     // WHEN
-    dest.addToPolicy(new iam.PolicyStatement()
-      .addAction('logs:TalkToMe'));
+    dest.addToPolicy(new iam.PolicyStatement({
+      actions: ['logs:TalkToMe']
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::Destination', (props: any) => {

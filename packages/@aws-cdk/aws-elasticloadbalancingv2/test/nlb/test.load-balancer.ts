@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 
@@ -8,7 +8,7 @@ export = {
   'Trivial construction: internet facing'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
@@ -22,7 +22,6 @@ export = {
       Subnets: [
         { Ref: "StackPublicSubnet1Subnet0AD81D22" },
         { Ref: "StackPublicSubnet2Subnet3C7D2288" },
-        { Ref: "StackPublicSubnet3SubnetCC1055D9" }
       ],
       Type: "network"
     }));
@@ -33,7 +32,7 @@ export = {
   'Trivial construction: internal'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
@@ -44,7 +43,6 @@ export = {
       Subnets: [
         { Ref: "StackPrivateSubnet1Subnet47AC2BC7" },
         { Ref: "StackPrivateSubnet2SubnetA2F8EDD8" },
-        { Ref: "StackPrivateSubnet3Subnet28548F2E" }
       ],
       Type: "network"
     }));
@@ -55,7 +53,7 @@ export = {
   'Attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
@@ -79,7 +77,7 @@ export = {
   'loadBalancerName'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'ALB', {

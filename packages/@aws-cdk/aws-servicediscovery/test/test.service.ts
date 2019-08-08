@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
 
@@ -64,7 +64,7 @@ export = {
       name: 'service',
       description: 'service description',
       healthCheck: {
-        type: servicediscovery.HealthCheckType.Http,
+        type: servicediscovery.HealthCheckType.HTTP,
         resourcePath: '/check'
       }
     });
@@ -299,7 +299,7 @@ export = {
 
   'Throws when specifying healthCheckConfig on PrivateDnsNamespace'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'name',
@@ -335,7 +335,7 @@ export = {
       namespace.createService('MyService', {
         name: 'service',
         dnsRecordType: servicediscovery.DnsRecordType.CNAME,
-        routingPolicy: servicediscovery.RoutingPolicy.Multivalue,
+        routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE,
       });
     }, /Cannot use `CNAME` record when routing policy is `Multivalue`./);
 
@@ -355,7 +355,7 @@ export = {
       namespace.createService('MyService', {
         name: 'service',
         healthCheck: {
-          type: servicediscovery.HealthCheckType.Tcp,
+          type: servicediscovery.HealthCheckType.TCP,
           resourcePath: '/check'
         }
       });
@@ -395,7 +395,7 @@ export = {
     test.throws(() => {
       namespace.createService('MyService', {
         loadBalancer: true,
-        routingPolicy: servicediscovery.RoutingPolicy.Multivalue
+        routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE
       });
     }, /Cannot register loadbalancers when routing policy is `Multivalue`./);
 
@@ -405,7 +405,7 @@ export = {
   'Service for Private DNS namespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'private',

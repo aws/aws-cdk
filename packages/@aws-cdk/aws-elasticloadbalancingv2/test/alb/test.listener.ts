@@ -1,6 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { ConstructNode, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -9,7 +10,7 @@ export = {
   'Listener guesses protocol from port'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
@@ -30,12 +31,12 @@ export = {
   'Listener guesses port from protocol'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
     lb.addListener('Listener', {
-      protocol: elbv2.ApplicationProtocol.Http,
+      protocol: elbv2.ApplicationProtocol.HTTP,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 
@@ -50,7 +51,7 @@ export = {
   'Listener default to open'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
@@ -78,7 +79,7 @@ export = {
   'HTTPS listener requires certificate'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
@@ -88,7 +89,7 @@ export = {
     });
 
     // THEN
-    const errors = stack.node.validateTree();
+    const errors = ConstructNode.validate(stack.node);
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
 
     test.done();
@@ -97,13 +98,13 @@ export = {
   'Can configure targetType on TargetGroups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
       port: 80,
-      targetType: elbv2.TargetType.Ip
+      targetType: elbv2.TargetType.IP
     });
 
     // THEN
@@ -117,7 +118,7 @@ export = {
   'Can configure name on TargetGroups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
@@ -137,7 +138,7 @@ export = {
   'Can add target groups with and without conditions'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 80 });
     const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
@@ -183,7 +184,7 @@ export = {
   'Can implicitly create target groups with and without conditions'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 80 });
 
@@ -239,7 +240,7 @@ export = {
   'Add certificate to constructed listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
 
@@ -259,13 +260,12 @@ export = {
 
   'Add certificate to imported listener'(test: Test) {
     // GIVEN
-    const stack1 = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack1, 'Stack');
-    const lb = new elbv2.ApplicationLoadBalancer(stack1, 'LB', { vpc });
-    const listener1 = lb.addListener('Listener', { port: 443 });
-
     const stack2 = new cdk.Stack();
-    const listener2 = elbv2.ApplicationListener.import(stack2, 'Listener', listener1.export());
+    const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'Listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroupId: 'security-group-id'
+    });
 
     // WHEN
     listener2.addCertificateArns('Arns', ['cert']);
@@ -283,7 +283,7 @@ export = {
   'Enable stickiness for targets'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 80 });
 
@@ -292,7 +292,7 @@ export = {
       port: 80,
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
-    group.enableCookieStickiness(3600);
+    group.enableCookieStickiness(cdk.Duration.hours(1));
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -318,7 +318,7 @@ export = {
   'Enable health check for targets'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 80 });
 
@@ -329,8 +329,8 @@ export = {
     });
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeoutSeconds: 3600,
-      intervalSecs: 30,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
       path: '/test',
     });
 
@@ -348,8 +348,8 @@ export = {
   'Can call addTargetGroups on imported listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
-    const listener = elbv2.ApplicationListener.import(stack, 'Listener', {
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'Listener', {
       listenerArn: 'ieks',
       securityGroupId: 'sg-12345'
     });
@@ -380,7 +380,7 @@ export = {
   'Can depend on eventual listener via TargetGroup'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc });
     const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
 
@@ -408,7 +408,7 @@ export = {
   'Exercise metrics'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
     lb.addListener('SomeListener', {
@@ -418,8 +418,8 @@ export = {
 
     // WHEN
     const metrics = [];
-    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
-    metrics.push(group.metricIPv6RequestCount());
+    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
+    metrics.push(group.metricIpv6RequestCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricRequestCount());
@@ -431,7 +431,7 @@ export = {
       test.equal('AWS/ApplicationELB', metric.namespace);
       const loadBalancerArn = { Ref: "LBSomeListenerCA01F1A0" };
 
-      test.deepEqual(lb.node.resolve(metric.dimensions), {
+      test.deepEqual(stack.resolve(metric.dimensions), {
          TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
          LoadBalancer: { 'Fn::Join':
             [ '',
@@ -452,7 +452,7 @@ export = {
   'Can add dependency on ListenerRule via TargetGroup'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc });
     const group1 = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup1', { vpc, port: 80 });
     const group2 = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup2', { vpc, port: 80 });
@@ -486,7 +486,7 @@ export = {
   'Can add fixed responses'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
       vpc
     });
@@ -534,12 +534,37 @@ export = {
     test.done();
   },
 
+  'Can configure deregistration_delay for targets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      deregistrationDelay: Duration.seconds(30)
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: "deregistration_delay.timeout_seconds",
+          Value: "30"
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'Throws with bad fixed responses': {
 
     'status code'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'VPC');
+      const vpc = new ec2.Vpc(stack, 'VPC');
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
         vpc
       });
@@ -558,7 +583,7 @@ export = {
     'message body'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'VPC');
+      const vpc = new ec2.Vpc(stack, 'VPC');
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
         vpc
       });
@@ -579,7 +604,7 @@ export = {
   'Throws when specifying both target groups and fixed reponse'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
       vpc
     });

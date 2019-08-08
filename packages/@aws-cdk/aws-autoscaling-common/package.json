@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-autoscaling-common",
-  "version": "0.31.0",
+  "version": "1.3.0",
   "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.autoscaling.common",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "autoscaling-common"
+          "artifactId": "autoscaling-common",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
         "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-autoscaling-common",
@@ -28,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-autoscaling-common"
   },
   "scripts": {
@@ -39,7 +41,9 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "keywords": [
     "aws",
@@ -54,22 +58,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.31.0",
-    "cdk-build-tools": "^0.31.0",
-    "cdk-integ-tools": "^0.31.0",
-    "fast-check": "^1.14.0",
-    "pkglint": "^0.31.0"
+    "@aws-cdk/assert": "^1.3.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "fast-check": "^1.16.0",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-iam": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-iam": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0"
+  },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-autoscaling-common.*"
+    ]
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

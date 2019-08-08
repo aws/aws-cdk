@@ -1,3 +1,4 @@
+import { Duration } from '@aws-cdk/core';
 import { Chain } from './chain';
 import { State } from './states/state';
 
@@ -40,40 +41,40 @@ export class Errors {
     /**
      * Matches any Error.
      */
-    public static readonly All = 'States.ALL';
+    public static readonly ALL = 'States.ALL';
 
     /**
      * A Task State either ran longer than the “TimeoutSeconds” value, or
      * failed to heartbeat for a time longer than the “HeartbeatSeconds” value.
      */
-    public static readonly Timeout = 'States.Timeout';
+    public static readonly TIMEOUT = 'States.Timeout';
 
     /**
      * A Task State failed during the execution.
      */
-    public static readonly TaskFailed = 'States.TaskFailed';
+    public static readonly TASKS_FAILED = 'States.TaskFailed';
 
     /**
      * A Task State failed because it had insufficient privileges to execute
      * the specified code.
      */
-    public static readonly Permissions = 'States.Permissions';
+    public static readonly PERMISSIONS = 'States.Permissions';
 
     /**
      * A Task State’s “ResultPath” field cannot be applied to the input the state received.
      */
-    public static readonly ResultPathMatchFailure = 'States.ResultPathMatchFailure';
+    public static readonly RESULT_PATH_MATCH_FAILURE = 'States.ResultPathMatchFailure';
 
     /**
      * A branch of a Parallel state failed.
      */
-    public static readonly BranchFailed = 'States.BranchFailed';
+    public static readonly BRANCH_FAILED = 'States.BranchFailed';
 
     /**
      * A Choice state failed to find a match for the condition field extracted
      * from its input.
      */
-    public static readonly NoChoiceMatched = 'States.NoChoiceMatched';
+    public static readonly NO_CHOICE_MATCHED = 'States.NoChoiceMatched';
 }
 
 /**
@@ -93,9 +94,9 @@ export interface RetryProps {
     /**
      * How many seconds to wait initially before retrying
      *
-     * @default 1
+     * @default Duration.seconds(1)
      */
-    readonly intervalSeconds?: number;
+    readonly interval?: Duration;
 
     /**
      * How many times to retry this particular error.

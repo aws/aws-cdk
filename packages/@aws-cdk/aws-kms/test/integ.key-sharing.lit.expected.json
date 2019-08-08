@@ -19,7 +19,8 @@
                   "kms:Get*",
                   "kms:Delete*",
                   "kms:ScheduleKeyDeletion",
-                  "kms:CancelKeyDeletion"
+                  "kms:CancelKeyDeletion",
+                  "kms:GenerateDataKey"
                 ],
                 "Effect": "Allow",
                 "Principal": {
@@ -46,7 +47,8 @@
             "Version": "2012-10-17"
           }
         },
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       },
       "MyKeyAlias1B45D9DA": {
         "Type": "AWS::KMS::Alias",

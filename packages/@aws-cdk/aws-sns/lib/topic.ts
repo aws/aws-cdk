@@ -1,6 +1,6 @@
-import { CfnOutput, Construct } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/core';
 import { CfnTopic } from './sns.generated';
-import { ITopic, TopicAttributes, TopicBase } from './topic-base';
+import { ITopic, TopicBase } from './topic-base';
 
 /**
  * Properties for a new SNS topic
@@ -31,18 +31,13 @@ export interface TopicProps {
 export class Topic extends TopicBase {
 
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
-    // arn:aws:sns:region:account-id:topicname
-    return Topic.fromTopicAttributes(scope, id, {
-      topicArn,
-      topicName: scope.node.stack.parseArn(topicArn).resource
-    });
-  }
+    class Import extends TopicBase {
+      public readonly topicArn = topicArn;
+      public readonly topicName = Stack.of(scope).parseArn(topicArn).resource;
+      protected autoCreatePolicy: boolean = false;
+    }
 
-  /**
-   * Import a Topic defined elsewhere
-   */
-  public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
-    return new ImportedTopic(scope, id, attrs);
+    return new Import(scope, id);
   }
 
   public readonly topicArn: string;
@@ -51,44 +46,19 @@ export class Topic extends TopicBase {
   protected readonly autoCreatePolicy: boolean = true;
 
   constructor(scope: Construct, id: string, props: TopicProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.topicName,
+    });
 
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
-      topicName: props.topicName
+      topicName: this.physicalName,
     });
 
-    this.topicArn = resource.ref;
-    this.topicName = resource.topicName;
-  }
-
-  /**
-   * Export this Topic
-   */
-  public export(): TopicAttributes {
-    return {
-      topicArn: new CfnOutput(this, 'TopicArn', { value: this.topicArn }).makeImportValue().toString(),
-      topicName: new CfnOutput(this, 'TopicName', { value: this.topicName }).makeImportValue().toString(),
-    };
-  }
-}
-
-/**
- * An imported topic
- */
-class ImportedTopic extends TopicBase {
-  public readonly topicArn: string;
-  public readonly topicName: string;
-
-  protected autoCreatePolicy: boolean = false;
-
-  constructor(scope: Construct, id: string, private readonly props: TopicAttributes) {
-    super(scope, id);
-    this.topicArn = props.topicArn;
-    this.topicName = props.topicName;
-  }
-
-  public export(): TopicAttributes {
-    return this.props;
+    this.topicArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'sns',
+      resource: this.physicalName,
+    });
+    this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
   }
 }

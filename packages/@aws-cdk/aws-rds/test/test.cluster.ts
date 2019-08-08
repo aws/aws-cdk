@@ -1,26 +1,26 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
   'check that instantiation works'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -45,45 +45,21 @@ export = {
 
     test.done();
   },
-  'check that exporting/importing works'(test: Test) {
-    // GIVEN
-    const stack1 = testStack();
-    const stack2 = testStack();
-
-    const cluster = new DatabaseCluster(stack1, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
-      masterUser: {
-        username: 'admin',
-        password: SecretValue.plainText('tooshort'),
-      },
-      instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
-        vpc: new ec2.VpcNetwork(stack1, 'VPC')
-      }
-    });
-
-    // WHEN
-    DatabaseCluster.import(stack2, 'Database', cluster.export());
-
-    // THEN: No error
-
-    test.done();
-  },
   'can create a cluster with a single instance'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -103,21 +79,21 @@ export = {
   'can create a cluster with imported vpc and security group'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = ec2.VpcNetwork.importFromContext(stack, 'VPC', {
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
       vpcId: "VPC12345"
     });
     const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', "SecurityGroupId12345");
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
         securityGroup: sg
       }
@@ -138,7 +114,7 @@ export = {
   'cluster with parameter group'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     const group = new ClusterParameterGroup(stack, 'Params', {
@@ -149,13 +125,13 @@ export = {
       }
     });
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
       parameterGroup: group
@@ -169,37 +145,19 @@ export = {
     test.done();
   },
 
-  'import/export cluster parameter group'(test: Test) {
-    // GIVEN
-    const stack = testStack();
-    const group = new ClusterParameterGroup(stack, 'Params', {
-      family: 'hello',
-      description: 'desc'
-    });
-
-    // WHEN
-    const exported = group.export();
-    const imported = ClusterParameterGroup.import(stack, 'ImportParams', exported);
-
-    // THEN
-    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' } });
-    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' });
-    test.done();
-  },
-
   'creates a secret when master credentials are not specified'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -247,19 +205,19 @@ export = {
   'create an encrypted cluster with custom KMS key'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
-      kmsKey: new kms.EncryptionKey(stack, 'Key')
+      kmsKey: new kms.Key(stack, 'Key')
     });
 
     // THEN
@@ -271,6 +229,120 @@ export = {
         ]
       }
     }));
+
+    test.done();
+  },
+
+  'cluster with instance parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      family: 'hello',
+      parameters: {
+        key: 'value'
+      }
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        parameterGroup,
+        vpc
+      }
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB'
+      }
+    }));
+
+    test.done();
+
+  },
+
+  'create a cluster using a specific version of MySQL'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      engineVersion: "5.7.mysql_aurora.2.04.4",
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Engine: "aurora-mysql",
+      EngineVersion: "5.7.mysql_aurora.2.04.4",
+    }));
+
+    test.done();
+  },
+
+  'create a cluster using a specific version of Postgresql'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      engineVersion: "10.7",
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Engine: "aurora-postgresql",
+      EngineVersion: "10.7",
+    }));
+
+    test.done();
+  },
+
+  'cluster exposes different read and write endpoints'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // THEN
+    test.notDeepEqual(
+      stack.resolve(cluster.clusterEndpoint),
+      stack.resolve(cluster.clusterReadEndpoint)
+    );
 
     test.done();
   }

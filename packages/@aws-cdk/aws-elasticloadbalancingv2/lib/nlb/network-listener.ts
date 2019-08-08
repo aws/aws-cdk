@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
@@ -17,22 +17,28 @@ export interface BaseNetworkListenerProps {
   /**
    * Default target groups to load balance to
    *
-   * @default None
+   * @default - None.
    */
   readonly defaultTargetGroups?: INetworkTargetGroup[];
 
   /**
    * Protocol for listener, expects TCP or TLS
+   *
+   * @default - TLS if certificates are provided. TCP otherwise.
    */
   readonly protocol?: Protocol;
 
   /**
    * Certificate list of ACM cert ARNs
+   *
+   * @default - No certificates.
    */
   readonly certificates?: INetworkListenerCertificateProps[];
 
   /**
    * SSL Policy
+   *
+   * @default - Current predefined security policy.
    */
   readonly sslPolicy?: SslPolicy;
 }
@@ -59,13 +65,19 @@ export interface NetworkListenerProps extends BaseNetworkListenerProps {
 
 /**
  * Define a Network Listener
+ *
+ * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static import(scope: cdk.Construct, id: string, props: NetworkListenerImportProps): INetworkListener {
-    return new ImportedNetworkListener(scope, id, props);
+  public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
+    class Import extends Resource implements INetworkListener {
+      public listenerArn = networkListenerArn;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -73,19 +85,19 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
-  constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
+  constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
-    const proto = props.protocol || (certs.length > 0 ? Protocol.Tls : Protocol.Tcp);
+    const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
 
-    if ([Protocol.Tcp, Protocol.Tls].indexOf(proto) === -1) {
-      throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
+    if ([Protocol.TCP, Protocol.TLS].indexOf(proto) === -1) {
+      throw new Error(`The protocol must be either ${Protocol.TCP} or ${Protocol.TLS}. Found ${props.protocol}`);
     }
 
-    if (proto === Protocol.Tls && certs.filter(v => v != null).length === 0) {
+    if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
       throw new Error(`When the protocol is set to TLS, you must specify certificates`);
     }
 
-    if (proto !== Protocol.Tls && certs.length > 0) {
+    if (proto !== Protocol.TLS && certs.length > 0) {
       throw new Error(`Protocol must be TLS when certificates have been specified`);
     }
 
@@ -128,7 +140,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {
-      deregistrationDelaySec: props.deregistrationDelaySec,
+      deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
       proxyProtocolV2: props.proxyProtocolV2,
@@ -141,60 +153,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     return group;
   }
-
-  /**
-   * Export this listener
-   */
-  public export(): NetworkListenerImportProps {
-    return {
-      listenerArn: new cdk.CfnOutput(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
-    };
-  }
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends cdk.IConstruct {
+export interface INetworkListener extends IResource {
   /**
    * ARN of the listener
+   * @attribute
    */
   readonly listenerArn: string;
-
-  /**
-   * Export this listener
-   */
-  export(): NetworkListenerImportProps;
-}
-
-/**
- * Properties to reference an existing listener
- */
-export interface NetworkListenerImportProps {
-  /**
-   * ARN of the listener
-   */
-  readonly listenerArn: string;
-}
-
-/**
- * An imported Network Listener
- */
-class ImportedNetworkListener extends cdk.Construct implements INetworkListener {
-  /**
-   * ARN of the listener
-   */
-  public readonly listenerArn: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: NetworkListenerImportProps) {
-    super(scope, id);
-
-    this.listenerArn = props.listenerArn;
-  }
-
-  public export() {
-    return this.props;
-  }
 }
 
 /**
@@ -233,9 +202,9 @@ export interface AddNetworkTargetsProps {
    *
    * The range is 0-3600 seconds.
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly deregistrationDelaySec?: number;
+  readonly deregistrationDelay?: Duration;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.

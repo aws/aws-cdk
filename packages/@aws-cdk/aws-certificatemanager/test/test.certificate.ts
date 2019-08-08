@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Certificate } from '../lib';
+import { Certificate, ValidationMethod } from '../lib';
 
 export = {
   'apex domain selection by default'(test: Test) {
@@ -43,14 +43,30 @@ export = {
   },
 
   'export and import'(test: Test) {
+    // GIVEN
     const stack = new Stack();
 
-    const refProps = new Certificate(stack, 'Cert', {
-      domainName: 'hello.com',
-    }).export();
+    // WHEN
+    const c = Certificate.fromCertificateArn(stack, 'Imported', 'cert-arn');
 
-    Certificate.fromCertificateArn(stack, 'Imported', refProps.certificateArn);
+    // THEN
+    test.deepEqual(c.certificateArn, 'cert-arn');
+    test.done();
+  },
+
+  'can configure validatin method'(test: Test) {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validationMethod: ValidationMethod.DNS
+    });
+
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      ValidationMethod: 'DNS',
+    }));
 
     test.done();
-  }
+  },
 };

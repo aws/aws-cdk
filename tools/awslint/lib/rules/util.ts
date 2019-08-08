@@ -2,16 +2,16 @@ import reflect = require('jsii-reflect');
 
 /**
  * Returns a documentation tag. Looks it up in inheritance hierarchy.
- * @param documetable starting point
+ * @param documentable starting point
  * @param tag the tag to search for
  */
-export function getDocTag(documetable: reflect.Documentable, tag: string): string | undefined {
-  const t = documetable.docs.customTag(tag);
+export function getDocTag(documentable: reflect.Documentable, tag: string): string | undefined {
+  const t = documentable.docs.customTag(tag);
   if (t) { return t; }
 
-  if ((documetable instanceof reflect.Property || documetable instanceof reflect.Method) && documetable.overrides) {
-    if (documetable.overrides.isClassType() || documetable.overrides.isInterfaceType()) {
-      const baseMembers = documetable.overrides.allMembers.filter(m => m.name === documetable.name);
+  if ((documentable instanceof reflect.Property || documentable instanceof reflect.Method) && documentable.overrides) {
+    if (documentable.overrides.isClassType() || documentable.overrides.isInterfaceType()) {
+      const baseMembers = documentable.overrides.allMembers.filter(m => m.name === documentable.name);
       for (const base of baseMembers) {
         const baseTag = getDocTag(base, tag);
         if (baseTag) {
@@ -21,8 +21,8 @@ export function getDocTag(documetable: reflect.Documentable, tag: string): strin
     }
   }
 
-  if (documetable instanceof reflect.ClassType || documetable instanceof reflect.InterfaceType) {
-    for (const base of documetable.interfaces) {
+  if (documentable instanceof reflect.ClassType || documentable instanceof reflect.InterfaceType) {
+    for (const base of documentable.interfaces) {
       const baseTag = getDocTag(base, tag);
       if (baseTag) {
          return baseTag;
@@ -30,12 +30,16 @@ export function getDocTag(documetable: reflect.Documentable, tag: string): strin
     }
   }
 
-  if (documetable instanceof reflect.ClassType && documetable.base) {
-    const baseTag = getDocTag(documetable.base, tag);
+  if (documentable instanceof reflect.ClassType && documentable.base) {
+    const baseTag = getDocTag(documentable.base, tag);
     if (baseTag) {
       return baseTag;
     }
   }
 
   return undefined;
+}
+
+export function memberFqn(m: reflect.Method | reflect.Property) {
+  return `${m.parentType.fqn}.${m.name}`;
 }

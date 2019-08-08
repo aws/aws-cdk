@@ -1,10 +1,12 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { IStepFunctionsTask, StepFunctionsTaskProperties } from '../step-functions-task';
+import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { renderJsonPath, State, StateType } from './state';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 
 /**
  * Props that are common to all tasks
@@ -59,7 +61,7 @@ export interface TaskProps {
      *
      * @default 60
      */
-    readonly timeoutSeconds?: number;
+    readonly timeout?: cdk.Duration;
 }
 
 /**
@@ -74,13 +76,13 @@ export interface TaskProps {
  */
 export class Task extends State implements INextable {
     public readonly endStates: INextable[];
-    private readonly timeoutSeconds?: number;
-    private readonly taskProps: StepFunctionsTaskProperties;
+    private readonly timeout?: cdk.Duration;
+    private readonly taskProps: StepFunctionsTaskConfig;
 
     constructor(scope: cdk.Construct, id: string, props: TaskProps) {
         super(scope, id, props);
 
-        this.timeoutSeconds = props.timeoutSeconds;
+        this.timeout = props.timeout;
         this.taskProps = props.task.bind(this);
         this.endStates = [this];
     }
@@ -123,13 +125,13 @@ export class Task extends State implements INextable {
             ...this.renderNextEnd(),
             ...this.renderRetryCatch(),
             ...this.renderInputOutput(),
-            Type: StateType.Task,
+            Type: StateType.TASK,
             Comment: this.comment,
             Resource: this.taskProps.resourceArn,
-            Parameters: this.taskProps.parameters,
+            Parameters: this.taskProps.parameters && FieldUtils.renderObject(this.taskProps.parameters),
             ResultPath: renderJsonPath(this.resultPath),
-            TimeoutSeconds: this.timeoutSeconds,
-            HeartbeatSeconds: this.taskProps.heartbeatSeconds,
+            TimeoutSeconds: this.timeout && this.timeout.toSeconds(),
+            HeartbeatSeconds: this.taskProps.heartbeat && this.taskProps.heartbeat.toSeconds(),
         };
     }
 
@@ -229,8 +231,8 @@ export class Task extends State implements INextable {
         return this.taskMetric(this.taskProps.metricPrefixPlural, 'HeartbeatTimedOut', props);
     }
 
-    protected onBindToGraph(graph: StateGraph) {
-        super.onBindToGraph(graph);
+    protected whenBoundToGraph(graph: StateGraph) {
+        super.whenBoundToGraph(graph);
         for (const policyStatement of this.taskProps.policyStatements || []) {
             graph.registerPolicyStatement(policyStatement);
         }

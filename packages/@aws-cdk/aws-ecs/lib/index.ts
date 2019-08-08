@@ -9,17 +9,11 @@ export * from './placement';
 
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';
-export * from './ec2/ec2-event-rule-target';
 
 export * from './fargate/fargate-service';
 export * from './fargate/fargate-task-definition';
 
 export * from './linux-parameters';
-export * from './load-balanced-service-base';
-export * from './load-balanced-ecs-service';
-export * from './load-balanced-fargate-service';
-export * from './load-balanced-ecs-service';
-export * from './load-balanced-fargate-service-applet';
 
 export * from './images/asset-image';
 export * from './images/repository';

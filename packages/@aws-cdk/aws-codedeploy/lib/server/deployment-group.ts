@@ -1,15 +1,16 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import codedeploylb = require('@aws-cdk/aws-codedeploy-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
+import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
 
 export interface IServerDeploymentGroup extends cdk.IResource {
   readonly application: IServerApplication;
@@ -25,14 +26,12 @@ export interface IServerDeploymentGroup extends cdk.IResource {
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
-  export(): ServerDeploymentGroupAttributes;
 }
 
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
  *
  * @see ServerDeploymentGroup#import
- * @see IServerDeploymentGroup#export
  */
 export interface ServerDeploymentGroupAttributes {
   /**
@@ -73,12 +72,10 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
-    super(scope, id);
-    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
+  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
+    super(scope, id, props);
+    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
   }
-
-  public abstract export(): ServerDeploymentGroupAttributes;
 }
 
 class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
@@ -88,16 +85,12 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupAttributes) {
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupAttributes) {
     super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
-  }
-
-  public export() {
-    return this.props;
   }
 }
 
@@ -142,20 +135,22 @@ export class InstanceTagSet {
 export interface ServerDeploymentGroupProps {
   /**
    * The CodeDeploy EC2/on-premise Application this Deployment Group belongs to.
-   * If you don't provide one, a new Application will be created.
+   *
+   * @default - A new Application will be created.
    */
   readonly application?: IServerApplication;
 
   /**
    * The service Role of this Deployment Group.
-   * If you don't provide one, a new Role will be created.
+   *
+   * @default - A new Role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
-   * @default an auto-generated name will be used
+   * @default - An auto-generated name will be used.
    */
   readonly deploymentGroupName?: string;
 
@@ -190,24 +185,24 @@ export interface ServerDeploymentGroupProps {
 
   /**
    * The load balancer to place in front of this Deployment Group.
-   * Can be either a classic Elastic Load Balancer,
+   * Can be created from either a classic Elastic Load Balancer,
    * or an Application Load Balancer / Network Load Balancer Target Group.
    *
-   * @default the Deployment Group will not have a load balancer defined
+   * @default - Deployment Group will not have a load balancer defined.
    */
-  readonly loadBalancer?: codedeploylb.ILoadBalancer;
+  readonly loadBalancer?: LoadBalancer;
 
   /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
-   * @default no additional EC2 instances will be added to the Deployment Group
+   * @default - No additional EC2 instances will be added to the Deployment Group.
    */
   readonly ec2InstanceTags?: InstanceTagSet;
 
   /**
    * All on-premise instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
-   * @default no additional on-premise instances will be added to the Deployment Group
+   * @default - No additional on-premise instances will be added to the Deployment Group.
    */
   readonly onPremiseInstanceTags?: InstanceTagSet;
 
@@ -232,6 +227,8 @@ export interface ServerDeploymentGroupProps {
 
   /**
    * The auto-rollback configuration for this Deployment Group.
+   *
+   * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
 }
@@ -242,8 +239,8 @@ export interface ServerDeploymentGroupProps {
  */
 export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   /**
-   * Import an EC2/on-premise Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an EC2/on-premise Deployment Group defined either outside the CDK app,
+   * or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -268,18 +265,20 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
-    super(scope, id, props.deploymentConfig);
+    super(scope, id, props.deploymentConfig, {
+      physicalName: props.deploymentGroupName,
+    });
 
     this.application = props.application || new ServerApplication(this, 'Application');
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-      managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')],
     });
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${this.node.stack.region}`);
+    this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${Stack.of(this).region}`);
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
     }
@@ -288,14 +287,11 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
-      deploymentGroupName: props.deploymentGroupName,
+      deploymentGroupName: this.physicalName,
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
-      autoScalingGroups: new cdk.Token(() =>
-        this._autoScalingGroups.length === 0
-          ? undefined
-          : this._autoScalingGroups.map(asg => asg.autoScalingGroupName)).toList(),
+      autoScalingGroups: cdk.Lazy.listValue({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
       loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
       deploymentStyle: props.loadBalancer === undefined
         ? undefined
@@ -304,22 +300,17 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
-      alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure)),
-      autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(this.alarms, props.autoRollback)),
+      alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
+      autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = resource.deploymentGroupName;
-    this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
-  }
-
-  public export(): ServerDeploymentGroupAttributes {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString(),
-      deploymentConfig: this.deploymentConfig,
-    };
+    this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
+    this.deploymentGroupArn = this.getResourceArnAttribute(arnForDeploymentGroup(this.application.applicationName, resource.ref), {
+      service: 'codedeploy',
+      resource: 'deploymentgroup',
+      resourceName: `${this.application.applicationName}/${this.physicalName}`,
+      sep: ':',
+    });
   }
 
   /**
@@ -355,7 +346,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
     switch (asg.osType) {
-      case ec2.OperatingSystemType.Linux:
+      case ec2.OperatingSystemType.LINUX:
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
           'if [ -z "$PKG_CMD" ]; then',
@@ -371,41 +362,39 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           '$PKG_CMD install -y awscli',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
-          `aws s3 cp s3://aws-codedeploy-${this.node.stack.region}/latest/install . --region ${this.node.stack.region}`,
+          `aws s3 cp s3://aws-codedeploy-${Stack.of(this).region}/latest/install . --region ${Stack.of(this).region}`,
           'chmod +x ./install',
           './install auto',
           'rm -fr $TMP_DIR',
         );
         break;
-      case ec2.OperatingSystemType.Windows:
+      case ec2.OperatingSystemType.WINDOWS:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
-          `aws s3 cp s3://aws-codedeploy-${this.node.stack.region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
+          `aws s3 cp s3://aws-codedeploy-${Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
           '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
         );
         break;
     }
   }
 
-  private loadBalancerInfo(lbProvider?: codedeploylb.ILoadBalancer):
+  private loadBalancerInfo(loadBalancer?: LoadBalancer):
       CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
-    if (!lbProvider) {
+    if (!loadBalancer) {
       return undefined;
     }
 
-    const lb = lbProvider.asCodeDeployLoadBalancer();
-
-    switch (lb.generation) {
-      case codedeploylb.LoadBalancerGeneration.First:
+    switch (loadBalancer.generation) {
+      case LoadBalancerGeneration.FIRST:
         return {
           elbInfoList: [
-            { name: lb.name },
+            { name: loadBalancer.name },
           ],
         };
-      case codedeploylb.LoadBalancerGeneration.Second:
+      case LoadBalancerGeneration.SECOND:
         return {
           targetGroupInfoList: [
-            { name: lb.name },
+            { name: loadBalancer.name },
           ]
         };
     }

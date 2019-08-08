@@ -1,7 +1,6 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
+import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
 
@@ -13,10 +12,10 @@ export = {
             task: {
                 bind: () => ({
                     resourceArn: 'resource',
-                    policyStatements: [new iam.PolicyStatement()
-                        .addAction('resource:Everything')
-                        .addResource('resource')
-                    ],
+                    policyStatements: [new iam.PolicyStatement({
+                        actions: ['resource:Everything'],
+                        resources: ['resource']
+                    })],
                 })
             }
         });
@@ -51,9 +50,10 @@ export = {
                 bind: () => ({
                     resourceArn: 'resource',
                     policyStatements: [
-                        new iam.PolicyStatement()
-                            .addAction('resource:Everything')
-                            .addResource('resource')
+                        new iam.PolicyStatement({
+                            actions: ['resource:Everything'],
+                            resources: ['resource']
+                        })
                     ]
                 })
             }
@@ -130,32 +130,47 @@ export = {
         test.done();
     },
 
-    'State machine can be used as Event Rule target'(test: Test) {
+    'Can grant start execution to a role'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const rule = new events.EventRule(stack, 'Rule', {
-                scheduleExpression: 'rate(1 minute)'
+        const task = new stepfunctions.Task(stack, 'Task', {
+            task: {
+                bind: () => ({ resourceArn: 'resource' })
+            }
         });
-        const stateMachine = new stepfunctions.StateMachine(stack, 'SM', {
-                definition: new stepfunctions.Wait(stack, 'Hello', { duration: stepfunctions.WaitDuration.seconds(10)  })
-            });
+        const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+            definition: task
+        });
+        const role = new iam.Role(stack, 'Role', {
+            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+        });
 
         // WHEN
-        rule.addTarget(stateMachine, {
-            jsonTemplate: { SomeParam: 'SomeValue' },
-        });
+        stateMachine.grantStartExecution(role);
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-            Targets: [
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+            PolicyDocument: {
+                Statement: [
+                    {
+                        Action: 'states:StartExecution',
+                        Effect: 'Allow',
+                        Resource: {
+                            Ref: 'StateMachine2E01A3A5'
+                        }
+                    }
+                ],
+                Version: '2012-10-17',
+            },
+            PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+            Roles: [
                 {
-                    InputTransformer: {
-                        InputTemplate: "{\"SomeParam\":\"SomeValue\"}"
-                    },
+                    Ref: 'Role1ABCC5F0'
                 }
             ]
         }));
 
         test.done();
-    },
+    }
+
 };

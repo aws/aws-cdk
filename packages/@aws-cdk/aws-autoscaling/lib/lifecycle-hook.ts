@@ -1,8 +1,8 @@
-import api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
+import { ILifecycleHookTarget } from './lifecycle-hook-target';
 
 /**
  * Basic properties for a lifecycle hook
@@ -11,7 +11,7 @@ export interface BasicLifecycleHookProps {
   /**
    * Name of the lifecycle hook
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly lifecycleHookName?: string;
 
@@ -26,8 +26,10 @@ export interface BasicLifecycleHookProps {
    * Maximum time between calls to RecordLifecycleActionHeartbeat for the hook
    *
    * If the lifecycle hook times out, perform the action in DefaultResult.
+   *
+   * @default - No heartbeat timeout.
    */
-  readonly heartbeatTimeoutSec?: number;
+  readonly heartbeatTimeout?: Duration;
 
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
@@ -37,19 +39,19 @@ export interface BasicLifecycleHookProps {
   /**
    * Additional data to pass to the lifecycle hook target
    *
-   * @default No metadata
+   * @default - No metadata.
    */
   readonly notificationMetadata?: string;
 
   /**
    * The target of the lifecycle hook
    */
-  readonly notificationTarget: api.ILifecycleHookTarget;
+  readonly notificationTarget: ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
    *
-   * @default A role is automatically created
+   * @default - A role is automatically created.
    */
   readonly role?: iam.IRole;
 }
@@ -64,7 +66,20 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
   readonly autoScalingGroup: IAutoScalingGroup;
 }
 
-export class LifecycleHook extends Resource implements api.ILifecycleHook {
+/**
+ * A basic lifecycle hook object
+ */
+export interface ILifecycleHook extends IResource {
+  /**
+   * The role for the lifecycle hook to execute
+   */
+  readonly role: iam.IRole;
+}
+
+/**
+ * Define a life cycle hook
+ */
+export class LifecycleHook extends Resource implements ILifecycleHook {
   /**
    * The role that allows the ASG to publish to the notification target
    */
@@ -77,19 +92,21 @@ export class LifecycleHook extends Resource implements api.ILifecycleHook {
   public readonly lifecycleHookName: string;
 
   constructor(scope: Construct, id: string, props: LifecycleHookProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.lifecycleHookName,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
     });
 
-    const targetProps = props.notificationTarget.asLifecycleHookTarget(this);
+    const targetProps = props.notificationTarget.bind(this, this);
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
-      heartbeatTimeout: props.heartbeatTimeoutSec,
-      lifecycleHookName: props.lifecycleHookName,
+      heartbeatTimeout: props.heartbeatTimeout && props.heartbeatTimeout.toSeconds(),
+      lifecycleHookName: this.physicalName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
       notificationTargetArn: targetProps.notificationTargetArn,
@@ -101,13 +118,13 @@ export class LifecycleHook extends Resource implements api.ILifecycleHook {
     // lifecycle hook.
     resource.node.addDependency(this.role);
 
-    this.lifecycleHookName = resource.lifecycleHookName;
+    this.lifecycleHookName = resource.ref;
   }
 }
 
 export enum DefaultResult {
-  Continue = 'CONTINUE',
-  Abandon = 'ABANDON',
+  CONTINUE = 'CONTINUE',
+  ABANDON = 'ABANDON',
 }
 
 /**
@@ -117,10 +134,10 @@ export enum LifecycleTransition {
   /**
    * Execute the hook when an instance is about to be added
    */
-  InstanceLaunching = 'autoscaling:EC2_INSTANCE_LAUNCHING',
+  INSTANCE_LAUNCHING = 'autoscaling:EC2_INSTANCE_LAUNCHING',
 
   /**
    * Execute the hook when an instance is about to be terminated
    */
-  InstanceTerminating = 'autoscaling:EC2_INSTANCE_TERMINATING',
+  INSTANCE_TERMINATING = 'autoscaling:EC2_INSTANCE_TERMINATING',
 }

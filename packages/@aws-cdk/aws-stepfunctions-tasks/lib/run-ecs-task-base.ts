@@ -2,8 +2,8 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
-import { renderNumber, renderString, renderStringList } from './json-path';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
 /**
@@ -16,7 +16,10 @@ export interface CommonEcsRunTaskProps {
   readonly cluster: ecs.ICluster;
 
   /**
-   * Task Definition used for running tasks in the service
+   * Task Definition used for running tasks in the service.
+   *
+   * Note: this must be TaskDefinition, and not ITaskDefinition,
+   * as it requires properties that are not known for imported task definitions
    */
   readonly taskDefinition: ecs.TaskDefinition;
 
@@ -64,7 +67,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     for (const override of this.props.containerOverrides || []) {
       const name = override.containerName;
-      if (!cdk.Token.isToken(name)) {
+      if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
           throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
@@ -73,7 +76,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     if (this.networkConfiguration !== undefined) {
       // Make sure we have a security group if we're using AWSVPC networking
       if (this.securityGroup === undefined) {
@@ -96,13 +99,13 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   }
 
   protected configureAwsVpcNetworking(
-      vpc: ec2.IVpcNetwork,
+      vpc: ec2.IVpc,
       assignPublicIp?: boolean,
       subnetSelection?: ec2.SubnetSelection,
       securityGroup?: ec2.ISecurityGroup) {
 
     if (subnetSelection === undefined) {
-      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
     }
 
     // If none is given here, one will be created later on during bind()
@@ -110,37 +113,41 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {
-        AssignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
+        AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: new cdk.Token(() => [this.securityGroup!.securityGroupId]),
+        SecurityGroups: cdk.Lazy.listValue({ produce: () => [this.securityGroup!.securityGroupId] }),
       }
     };
   }
 
   private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = task.node.stack;
+    const stack = Stack.of(task);
 
     // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
     const policyStatements = [
-      new iam.PolicyStatement()
-        .addAction('ecs:RunTask')
-        .addResource(this.props.taskDefinition.taskDefinitionArn),
-      new iam.PolicyStatement()
-        .addActions('ecs:StopTask', 'ecs:DescribeTasks')
-        .addAllResources(),
-      new iam.PolicyStatement()
-        .addAction('iam:PassRole')
-        .addResources(...new cdk.Token(() => this.taskExecutionRoles().map(r => r.roleArn)).toList())
+      new iam.PolicyStatement({
+        actions: ['ecs:RunTask'],
+        resources: [this.props.taskDefinition.taskDefinitionArn],
+      }),
+      new iam.PolicyStatement({
+        actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
+        resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) })
+      }),
     ];
 
     if (this.sync) {
-      policyStatements.push(new iam.PolicyStatement()
-        .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
-        .addResource(stack.formatArn({
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
+        resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
           resourceName: 'StepFunctionsGetEventsForECSTaskRule'
-      })));
+        })]
+      }));
     }
 
     return policyStatements;
@@ -150,8 +157,8 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     // Need to be able to pass both Task and Execution role, apparently
     const ret = new Array<iam.IRole>();
     ret.push(this.props.taskDefinition.taskRole);
-    if ((this.props.taskDefinition as any).executionRole) {
-      ret.push((this.props.taskDefinition as any).executionRole);
+    if (this.props.taskDefinition.executionRole) {
+      ret.push(this.props.taskDefinition.executionRole);
     }
     return ret;
   }
@@ -163,14 +170,14 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
   const ret = new Array<any>();
   for (const override of containerOverrides) {
     ret.push({
-      ...renderString('Name', override.containerName),
-      ...renderStringList('Command', override.command),
-      ...renderNumber('Cpu', override.cpu),
-      ...renderNumber('Memory', override.memoryLimit),
-      ...renderNumber('MemoryReservation', override.memoryReservation),
+      Name: override.containerName,
+      Command: override.command,
+      Cpu: override.cpu,
+      Memory: override.memoryLimit,
+      MemoryReservation: override.memoryReservation,
       Environment: override.environment && override.environment.map(e => ({
-        ...renderString('Name', e.name),
-        ...renderString('Value', e.value),
+        Name: e.name,
+        Value: e.value,
       }))
     });
   }

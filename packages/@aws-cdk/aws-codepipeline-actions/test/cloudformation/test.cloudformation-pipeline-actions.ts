@@ -1,10 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { CodePipelineBuildArtifacts, CodePipelineSource, Project } from '@aws-cdk/aws-codebuild';
+import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
+import codebuild = require('@aws-cdk/aws-codebuild');
 import { Repository } from '@aws-cdk/aws-codecommit';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { Role } from '@aws-cdk/aws-iam';
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 
@@ -21,49 +22,47 @@ export = {
   });
 
   /** Source! */
-  const repo = new Repository(stack, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+  const repo = new Repository(stack, 'MyVeryImportantRepo', {
+    repositoryName: 'my-very-important-repo',
+  });
 
   const sourceOutput = new codepipeline.Artifact('SourceArtifact');
   const source = new cpactions.CodeCommitSourceAction({
     actionName: 'source',
     output: sourceOutput,
     repository: repo,
-    pollForSourceChanges: true,
+    trigger: cpactions.CodeCommitTrigger.POLL,
   });
   pipeline.addStage({
-    name: 'source',
+    stageName: 'source',
     actions: [source]
   });
 
   /** Build! */
 
-  const buildArtifacts = new CodePipelineBuildArtifacts();
-  const project = new Project(stack, 'MyBuildProject', {
-    source: new CodePipelineSource(),
-    artifacts: buildArtifacts,
-  });
+  const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
 
   const buildOutput = new codepipeline.Artifact('OutputYo');
   const buildAction = new cpactions.CodeBuildAction({
     actionName: 'build',
     project,
     input: sourceOutput,
-    output: buildOutput,
+    outputs: [buildOutput],
   });
   pipeline.addStage({
-    name: 'build',
+    stageName: 'build',
     actions: [buildAction],
   });
 
   /** Deploy! */
 
   // To execute a change set - yes, you probably do need *:* 🤷‍♀️
-  changeSetExecRole.addToPolicy(new PolicyStatement().addAllResources().addAction("*"));
+  changeSetExecRole.addToPolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
   const stackName = 'BrelandsStack';
   const changeSetName = 'MyMagicalChangeSet';
   pipeline.addStage({
-    name: 'prod',
+    stageName: 'prod',
     actions: [
       new cpactions.CloudFormationCreateReplaceChangeSetAction({
         actionName: 'BuildChangeSetProd',
@@ -415,7 +414,136 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'Single capability is passed to template'(test: Test) {
+  // GIVEN
+  const stack = new TestFixture();
+
+  // WHEN
+  stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
+    stackName: 'MyStack',
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
+    adminPermissions: false,
+    capabilities: [
+      CloudFormationCapabilities.NAMED_IAM
+    ]
+  }));
+
+  const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+  // THEN: Action in Pipeline has named IAM capabilities
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    "Stages": [
+    { "Name": "Source" /* don't care about the rest */ },
+    {
+      "Name": "Deploy",
+      "Actions": [
+      {
+        "Configuration": {
+        "Capabilities": "CAPABILITY_NAMED_IAM",
+        "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+        "ActionMode": "CREATE_UPDATE",
+        "StackName": "MyStack",
+        "TemplatePath": "SourceArtifact::template.yaml"
+        },
+        "InputArtifacts": [{"Name": "SourceArtifact"}],
+        "Name": "CreateUpdate",
+      },
+      ],
+    }
+    ]
+  }));
+
+  test.done();
+  },
+
+  'Multiple capabilities are passed to template'(test: Test) {
+  // GIVEN
+  const stack = new TestFixture();
+
+  // WHEN
+  stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
+    stackName: 'MyStack',
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
+    adminPermissions: false,
+    capabilities: [
+      CloudFormationCapabilities.NAMED_IAM,
+      CloudFormationCapabilities.AUTO_EXPAND
+    ]
+  }));
+
+  const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+  // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    "Stages": [
+    { "Name": "Source" /* don't care about the rest */ },
+    {
+      "Name": "Deploy",
+      "Actions": [
+      {
+        "Configuration": {
+        "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
+        "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+        "ActionMode": "CREATE_UPDATE",
+        "StackName": "MyStack",
+        "TemplatePath": "SourceArtifact::template.yaml"
+        },
+        "InputArtifacts": [{"Name": "SourceArtifact"}],
+        "Name": "CreateUpdate",
+      },
+      ],
+    }
+    ]
+  }));
+
+  test.done();
+  },
+
+  'Empty capabilities is not passed to template'(test: Test) {
+  // GIVEN
+  const stack = new TestFixture();
+
+  // WHEN
+  stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
+    stackName: 'MyStack',
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
+    adminPermissions: false,
+    capabilities: [
+      CloudFormationCapabilities.NONE
+    ]
+  }));
+
+  const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+  // THEN: Action in Pipeline has no capabilities
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    "Stages": [
+    { "Name": "Source" /* don't care about the rest */ },
+    {
+      "Name": "Deploy",
+      "Actions": [
+      {
+        "Configuration": {
+        "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+        "ActionMode": "CREATE_UPDATE",
+        "StackName": "MyStack",
+        "TemplatePath": "SourceArtifact::template.yaml"
+        },
+        "InputArtifacts": [{"Name": "SourceArtifact"}],
+        "Name": "CreateUpdate",
+      },
+      ],
+    }
+    ]
+  }));
+
+  test.done();
+  },
 };
 
 /**
@@ -432,9 +560,11 @@ class TestFixture extends cdk.Stack {
     super();
 
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
-    this.sourceStage = this.pipeline.addStage({ name: 'Source' });
-    this.deployStage = this.pipeline.addStage({ name: 'Deploy' });
-    this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+    this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
+    this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
+    this.repo = new Repository(this, 'MyVeryImportantRepo', {
+      repositoryName: 'my-very-important-repo',
+    });
     this.sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const source = new cpactions.CodeCommitSourceAction({
       actionName: 'Source',

@@ -1,4 +1,13 @@
-## AWS SQS Construct Library
+## Amazon Simple Queue Service Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 Amazon Simple Queue Service (SQS) is a fully managed message queuing service that 
 enables you to decouple and scale microservices, distributed systems, and serverless 
@@ -33,14 +42,14 @@ can manage yourself.
 ```ts
 // Use managed key
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.Managed,
+    encryption: QueueEncryption.KMS_MANAGED,
 });
 
 // Use custom key
-const myKey = new EncryptionKey(this, 'Key');
+const myKey = new kms.Key(this, 'Key');
 
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.Kms,
+    encryption: QueueEncryption.KMS,
     encryptionMasterKey: myKey
 });
 ```

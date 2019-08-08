@@ -1,5 +1,15 @@
-## The CDK Construct Library for AWS Auto-Scaling
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+## Amazon EC2 Auto Scaling Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
+
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ### Fleet
 
@@ -13,9 +23,9 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
-    vpc,
-    instanceType: new ec2.InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
-    machineImage: new ec2.AmazonLinuxImage() // get the latest Amazon Linux image
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: new ec2.AmazonLinuxImage() // get the latest Amazon Linux image
 });
 ```
 
@@ -123,9 +133,9 @@ capacity.scaleOnMetric('ScaleToCPU', {
     { lower: 70, change: +3 },
   ],
 
-  // Change this to AdjustmentType.PercentChangeInCapacity to interpret the
+  // Change this to AdjustmentType.PERCENT_CHANGE_IN_CAPACITY to interpret the
   // 'change' numbers before as percentages instead of capacity counts.
-  adjustmentType: autoscaling.AdjustmentType.ChangeInCapacity,
+  adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
 });
 ```
 
@@ -186,20 +196,19 @@ AutoScalingGroup, and so can be used for two purposes:
   the range they can scale over (by setting both `minCapacity` and
   `maxCapacity` but changing their range over time).
 
-A schedule is expressed as a cron expression. There is a `Cron` helper class
-to help build cron expressions.
+A schedule is expressed as a cron expression. The `Schedule` class has a `cron` method to help build cron expressions.
 
 The following example scales the fleet out in the morning, going back to natural
 scaling (all the way down to 1 instance if necessary) at night:
 
 ```ts
 autoScalingGroup.scaleOnSchedule('PrescaleInTheMorning', {
-  schedule: autoscaling.Cron.dailyUtc(8),
+  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
 });
 
 autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
-  schedule: autoscaling.Cron.dailyUtc(20),
+  schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
   minCapacity: 1
 });
 ```

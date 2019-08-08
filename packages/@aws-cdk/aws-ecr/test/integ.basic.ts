@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ecr = require('../lib');
 
 const app = new cdk.App();
@@ -11,4 +11,4 @@ new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri
 });
 
-app.run();
+app.synth();

@@ -1,29 +1,42 @@
-import { Construct } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, INamespace, NamespaceBase, NamespaceType } from './namespace';
+import { Construct, Resource } from '@aws-cdk/core';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
-
-export interface IHttpNamespace extends INamespace {
+export interface IHttpNamespace extends INamespace { }
+export interface HttpNamespaceAttributes {
   /**
-   * The Amazon Resource Name (ARN) of the namespace, such as
-   * arn:aws:service-discovery:us-east-1:123456789012:http-namespace/http-namespace-a1bzhi.
-   * @attribute
+   * A name for the Namespace.
    */
-  readonly httpNamespaceArn: string;
+  readonly namespaceName: string;
 
   /**
-   * The ID of the namespace.
-   * @attribute
+   * Namespace Id for the Namespace.
    */
-  readonly httpNamespaceId: string;
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
 }
 
 /**
  * Define an HTTP Namespace
  */
-export class HttpNamespace extends NamespaceBase implements IHttpNamespace {
+export class HttpNamespace extends Resource implements IHttpNamespace {
+
+  public static fromHttpNamespaceAttributes(scope: Construct, id: string, attrs: HttpNamespaceAttributes): IHttpNamespace {
+    class Import extends Resource implements IHttpNamespace {
+      public namespaceName = attrs.namespaceName;
+      public namespaceId = attrs.namespaceId;
+      public namespaceArn = attrs.namespaceArn;
+      public type = NamespaceType.HTTP;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the namespace.
    */
@@ -53,12 +66,18 @@ export class HttpNamespace extends NamespaceBase implements IHttpNamespace {
     });
 
     this.namespaceName = props.name;
-    this.namespaceId = ns.httpNamespaceId;
-    this.namespaceArn = ns.httpNamespaceArn;
-    this.type = NamespaceType.Http;
+    this.namespaceId = ns.attrId;
+    this.namespaceArn = ns.attrArn;
+    this.type = NamespaceType.HTTP;
   }
 
+  /** @attribute */
   public get httpNamespaceArn() { return this.namespaceArn; }
+
+  /** @attribute */
+  public get httpNamespaceName() { return this.namespaceName; }
+
+  /** @attribute */
   public get httpNamespaceId() { return this.namespaceId; }
 
   /**

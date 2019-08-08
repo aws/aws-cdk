@@ -1,11 +1,15 @@
-import { Stack } from "@aws-cdk/cdk";
-import { SynthesizedStack } from "@aws-cdk/cx-api";
+import { Stack } from "@aws-cdk/core";
+import cxapi = require("@aws-cdk/cx-api");
 import { HaveResourceAssertion, ResourcePart } from "./lib/assertions/have-resource";
+import { MatchStyle, matchTemplate } from "./lib/assertions/match-template";
 import { expect as ourExpect } from './lib/expect';
 
 declare global {
   namespace jest {
     interface Matchers<R> {
+      toMatchTemplate(template: any,
+                      matchStyle?: MatchStyle): R;
+
       toHaveResource(resourceType: string,
                      properties?: any,
                      comparison?: ResourcePart): R;
@@ -18,8 +22,29 @@ declare global {
 }
 
 expect.extend({
+  toMatchTemplate(
+    actual: cxapi.CloudFormationStackArtifact | Stack,
+    template: any,
+    matchStyle?: MatchStyle) {
+
+    const assertion = matchTemplate(template, matchStyle);
+    const inspector = ourExpect(actual);
+    const pass = assertion.assertUsing(inspector);
+    if (pass) {
+      return {
+        pass,
+        message: () => `Not ` + assertion.description
+      };
+    } else {
+      return {
+        pass,
+        message: () => assertion.description
+      };
+    }
+  },
+
   toHaveResource(
-      actual: SynthesizedStack | Stack,
+      actual: cxapi.CloudFormationStackArtifact | Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -28,7 +53,7 @@ expect.extend({
     return assertHaveResource(assertion, actual);
   },
   toHaveResourceLike(
-      actual: SynthesizedStack | Stack,
+      actual: cxapi.CloudFormationStackArtifact | Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -38,7 +63,7 @@ expect.extend({
   }
 });
 
-function assertHaveResource(assertion: HaveResourceAssertion, actual: SynthesizedStack | Stack) {
+function assertHaveResource(assertion: HaveResourceAssertion, actual: cxapi.CloudFormationStackArtifact | Stack) {
   const inspector = ourExpect(actual);
   const pass = assertion.assertUsing(inspector);
   if (pass) {

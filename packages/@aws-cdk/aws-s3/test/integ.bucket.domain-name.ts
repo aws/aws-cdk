@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import s3 = require('../lib');
 
 class TestStack extends cdk.Stack {
@@ -7,7 +7,7 @@ class TestStack extends cdk.Stack {
 
     /// !show
     const bucket = new s3.Bucket(this, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.Destroy
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
     const bucket2 = s3.Bucket.fromBucketAttributes(this, "MyBucket2", {
       bucketArn: "arn:aws:s3:::my-bucket-test"
@@ -21,4 +21,4 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 new TestStack(app, 'aws-cdk-s3-urls');
-app.run();
+app.synth();

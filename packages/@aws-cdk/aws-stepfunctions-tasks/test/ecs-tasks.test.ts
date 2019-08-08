@@ -2,29 +2,53 @@ import '@aws-cdk/assert/jest';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import tasks = require('../lib');
-import { JsonPath, NumberValue } from '../lib';
 
 let stack: Stack;
-let vpc: ec2.VpcNetwork;
+let vpc: ec2.Vpc;
 let cluster: ecs.Cluster;
 
 beforeEach(() => {
   // GIVEN
   stack = new Stack();
-  vpc = new ec2.VpcNetwork(stack, 'Vpc');
+  vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addCapacity('Capacity', {
     instanceType: new ec2.InstanceType('t3.medium')
   });
 });
 
+test('Cannot create a Fargate task with a fargate-incompatible task definition', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.EC2,
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
+    .toThrowError(/not configured for compatibility with Fargate/);
+});
+
+test('Cannot create a Fargate task without a default container', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
+    .toThrowError(/must have at least one essential container/);
+});
+
 test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
-    compatibility: ecs.Compatibility.Fargate
+    compatibility: ecs.Compatibility.FARGATE
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -39,7 +63,7 @@ test('Running a Fargate Task', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
+          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')}
         ]
       }
     ]
@@ -50,19 +74,17 @@ test('Running a Fargate Task', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
       LaunchType: "FARGATE",
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          AssignPublicIp: "DISABLED",
           SecurityGroups: [{"Fn::GetAtt": ["RunFargateSecurityGroup709740F2", "GroupId"]}],
           Subnets: [
             {Ref: "VpcPrivateSubnet1Subnet536B997A"},
             {Ref: "VpcPrivateSubnet2Subnet3788AAA1"},
-            {Ref: "VpcPrivateSubnet3SubnetF258B56E"},
           ]
         },
       },
@@ -123,7 +145,7 @@ test('Running a Fargate Task', () => {
 
 test('Running an EC2 Task with bridge network', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.Ec2
+    compatibility: ecs.Compatibility.EC2
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -138,7 +160,7 @@ test('Running an EC2 Task with bridge network', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
+          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')}
         ]
       }
     ]
@@ -149,7 +171,7 @@ test('Running an EC2 Task with bridge network', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
@@ -211,7 +233,7 @@ test('Running an EC2 Task with bridge network', () => {
 
 test('Running an EC2 Task with placement strategies', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.Ec2
+    compatibility: ecs.Compatibility.EC2
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -237,7 +259,7 @@ test('Running an EC2 Task with placement strategies', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
@@ -259,7 +281,7 @@ test('Running an EC2 Task with placement strategies', () => {
 
 test('Running an EC2 Task with overridden number values', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.Ec2
+    compatibility: ecs.Compatibility.EC2
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -272,9 +294,9 @@ test('Running an EC2 Task with overridden number values', () => {
     containerOverrides: [
       {
         containerName: 'TheContainer',
-        command: JsonPath.listFromPath('$.TheCommand'),
-        cpu: NumberValue.fromNumber(5),
-        memoryLimit: JsonPath.numberFromPath('$.MemoryLimit'),
+        command: sfn.Data.listAt('$.TheCommand'),
+        cpu: 5,
+        memoryLimit: sfn.Data.numberAt('$.MemoryLimit'),
       }
     ]
   });
@@ -283,7 +305,7 @@ test('Running an EC2 Task with overridden number values', () => {
   const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},

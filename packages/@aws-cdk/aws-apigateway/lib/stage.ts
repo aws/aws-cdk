@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -9,18 +9,21 @@ export interface StageOptions extends MethodDeploymentOptions {
    * The name of the stage, which API Gateway uses as the first path segment
    * in the invoked Uniform Resource Identifier (URI).
    *
-   * @default "prod"
+   * @default - "prod"
    */
   readonly stageName?: string;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
+   *
    * @default false
    */
   readonly tracingEnabled?: boolean;
 
   /**
    * Indicates whether cache clustering is enabled for the stage.
+   *
+   * @default - Disabled for the stage.
    */
   readonly cacheClusterEnabled?: boolean;
 
@@ -34,17 +37,21 @@ export interface StageOptions extends MethodDeploymentOptions {
    * The identifier of the client certificate that API Gateway uses to call
    * your integration endpoints in the stage.
    *
-   * @default None
+   * @default - None.
    */
   readonly clientCertificateId?: string;
 
   /**
    * A description of the purpose of the stage.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * The version identifier of the API documentation snapshot.
+   *
+   * @default - No documentation version.
    */
   readonly documentationVersion?: string;
 
@@ -52,6 +59,8 @@ export interface StageOptions extends MethodDeploymentOptions {
    * A map that defines the stage variables. Variable names must consist of
    * alphanumeric characters, and the values must match the following regular
    * expression: [A-Za-z0-9-._~:/?#&amp;=,]+.
+   *
+   * @default - No stage variables.
    */
   readonly variables?: { [key: string]: string };
 
@@ -62,8 +71,9 @@ export interface StageOptions extends MethodDeploymentOptions {
    * @param path is {resource_path}/{http_method} (i.e. /api/toys/GET) for an
    * individual method override. You can use `*` for both {resource_path} and {http_method}
    * to define options for all methods/resources.
+   *
+   * @default - Common options will be used.
    */
-
   readonly methodOptions?: { [path: string]: MethodDeploymentOptions };
 }
 
@@ -75,14 +85,15 @@ export interface StageProps extends StageOptions {
 }
 
 export enum MethodLoggingLevel {
-  Off = 'OFF',
-  Error = 'ERROR',
-  Info = 'INFO'
+  OFF = 'OFF',
+  ERROR = 'ERROR',
+  INFO = 'INFO'
 }
 
 export interface MethodDeploymentOptions {
   /**
    * Specifies whether Amazon CloudWatch metrics are enabled for this method.
+   *
    * @default false
    */
   readonly metricsEnabled?: boolean;
@@ -90,43 +101,57 @@ export interface MethodDeploymentOptions {
   /**
    * Specifies the logging level for this method, which effects the log
    * entries pushed to Amazon CloudWatch Logs.
-   * @default Off
+   *
+   * @default - Off
    */
   readonly loggingLevel?: MethodLoggingLevel;
 
   /**
    * Specifies whether data trace logging is enabled for this method, which
    * effects the log entries pushed to Amazon CloudWatch Logs.
+   *
    * @default false
    */
   readonly dataTraceEnabled?: boolean;
 
   /**
    * Specifies the throttling burst limit.
+   * The total rate of all requests in your AWS account is limited to 5,000 requests.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
+   *
+   * @default - No additional restriction.
    */
   readonly throttlingBurstLimit?: number;
 
   /**
    * Specifies the throttling rate limit.
+   * The total rate of all requests in your AWS account is limited to 10,000 requests per second (rps).
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
+   *
+   * @default - No additional restriction.
    */
   readonly throttlingRateLimit?: number;
 
   /**
    * Specifies whether responses should be cached and returned for requests. A
    * cache cluster must be enabled on the stage for responses to be cached.
+   *
+   * @default - Caching is Disabled.
    */
   readonly cachingEnabled?: boolean;
 
   /**
    * Specifies the time to live (TTL), in seconds, for cached responses. The
    * higher the TTL, the longer the response will be cached.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html
+   *
+   * @default Duration.minutes(5)
    */
-  readonly cacheTtlSeconds?: number;
+  readonly cacheTtl?: Duration;
 
   /**
    * Indicates whether the cached responses are encrypted.
+   *
    * @default false
    */
   readonly cacheDataEncrypted?: boolean;
@@ -138,7 +163,7 @@ export class Stage extends Resource {
    */
   public readonly stageName: string;
 
-  private readonly restApi: IRestApi;
+  public readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
   constructor(scope: Construct, id: string, props: StageProps) {
@@ -184,7 +209,7 @@ export class Stage extends Resource {
     if (!path.startsWith('/')) {
       throw new Error(`Path must begin with "/": ${path}`);
     }
-    return `https://${this.restApi.restApiId}.execute-api.${this.node.stack.region}.${this.node.stack.urlSuffix}/${this.stageName}${path}`;
+    return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
@@ -199,7 +224,7 @@ export class Stage extends Resource {
       throttlingBurstLimit: props.throttlingBurstLimit,
       throttlingRateLimit: props.throttlingRateLimit,
       cachingEnabled: props.cachingEnabled,
-      cacheTtlSeconds: props.cacheTtlSeconds,
+      cacheTtl: props.cacheTtl,
       cacheDataEncrypted: props.cacheDataEncrypted
     };
 
@@ -231,7 +256,7 @@ export class Stage extends Resource {
       return {
         httpMethod, resourcePath,
         cacheDataEncrypted: options.cacheDataEncrypted,
-        cacheTtlInSeconds: options.cacheTtlSeconds,
+        cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,
         dataTraceEnabled: options.dataTraceEnabled,
         loggingLevel: options.loggingLevel,

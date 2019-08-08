@@ -2,7 +2,7 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { Role } from '@aws-cdk/aws-iam';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -13,7 +13,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
@@ -25,7 +25,7 @@ const source = new cpactions.S3SourceAction({
   bucketKey: 'key',
 });
 const sourceStage = {
-  name: 'Source',
+  stageName: 'Source',
   actions: [
     source,
     new cpactions.S3SourceAction({
@@ -45,7 +45,7 @@ const role = new Role(stack, 'CfnChangeSetRole', {
 
 pipeline.addStage(sourceStage);
 pipeline.addStage({
-  name: 'CFN',
+  stageName: 'CFN',
   actions: [
     new cpactions.CloudFormationCreateReplaceChangeSetAction({
       actionName: 'DeployCFN',
@@ -65,4 +65,4 @@ pipeline.addStage({
   ],
 });
 
-app.run();
+app.synth();

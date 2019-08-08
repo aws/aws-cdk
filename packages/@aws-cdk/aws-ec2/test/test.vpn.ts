@@ -1,7 +1,7 @@
 import { expect, haveResource,  } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { VpcNetwork, VpnConnection } from '../lib';
+import { Vpc, VpnConnection } from '../lib';
 
 export = {
   'can add a vpn connection to a vpc with a vpn gateway'(test: Test) {
@@ -9,7 +9,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    new VpcNetwork(stack, 'VpcNetwork', {
+    new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           asn: 65001,
@@ -44,7 +44,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    new VpcNetwork(stack, 'VpcNetwork', {
+    new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         static: {
           ip: '192.0.2.1',
@@ -89,7 +89,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    new VpcNetwork(stack, 'VpcNetwork', {
+    new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -127,7 +127,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    const vpc = new VpcNetwork(stack, 'VpcNetwork');
+    const vpc = new Vpc(stack, 'VpcNetwork');
 
     test.throws(() => vpc.addVpnConnection('VpnConnection', {
       asn: 65000,
@@ -141,7 +141,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+    test.throws(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.256'
@@ -156,7 +156,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+    test.throws(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -182,7 +182,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+    test.throws(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -205,7 +205,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+    test.throws(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -225,7 +225,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+    test.throws(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -245,7 +245,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+    test.throws(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -265,7 +265,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    const vpc = new VpcNetwork(stack, 'VpcNetwork', {
+    const vpc = new Vpc(stack, 'VpcNetwork', {
       vpnGateway: true
     });
 
@@ -274,11 +274,11 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(vpn.metricTunnelState()), {
+    test.deepEqual(stack.resolve(vpn.metricTunnelState()), {
       dimensions: { VpnId: { Ref: 'VpcNetworkVpnA476C58D' } },
       namespace: 'AWS/VPN',
       metricName: 'TunnelState',
-      periodSec: 300,
+      period: Duration.minutes(5),
       statistic: 'Average'
     });
 
@@ -290,10 +290,10 @@ export = {
     const stack = new Stack();
 
     // THEN
-    test.deepEqual(stack.node.resolve(VpnConnection.metricAllTunnelDataOut()), {
+    test.deepEqual(stack.resolve(VpnConnection.metricAllTunnelDataOut()), {
       namespace: 'AWS/VPN',
       metricName: 'TunnelDataOut',
-      periodSec: 300,
+      period: Duration.minutes(5),
       statistic: 'Sum'
     });
 

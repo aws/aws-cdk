@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication } from '../utils';
 
@@ -10,43 +10,14 @@ import { arnForApplication } from '../utils';
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link #import} method.
+ * use the {@link #fromServerApplicationName} method.
  */
-export interface IServerApplication extends cdk.IConstruct {
+export interface IServerApplication extends IResource {
+  /** @attribute */
   readonly applicationArn: string;
+
+  /** @attribute */
   readonly applicationName: string;
-
-  export(): ServerApplicationImportProps;
-}
-
-/**
- * Properties of a reference to a CodeDeploy EC2/on-premise Application.
- *
- * @see ServerApplication#import
- * @see ServerApplication#export
- */
-export interface ServerApplicationImportProps {
-  /**
-   * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
-   * The Application must be in the same account and region as the root Stack.
-   */
-  readonly applicationName: string;
-}
-
-class ImportedServerApplication extends cdk.Construct implements IServerApplication {
-  public readonly applicationArn: string;
-  public readonly applicationName: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
-    super(scope, id);
-
-    this.applicationName = props.applicationName;
-    this.applicationArn = arnForApplication(this.applicationName);
-  }
-
-  public export(): ServerApplicationImportProps {
-    return this.props;
-  }
 }
 
 /**
@@ -63,39 +34,47 @@ export interface ServerApplicationProps {
 
 /**
  * A CodeDeploy Application that deploys to EC2/on-premise instances.
+ *
+ * @resource AWS::CodeDeploy::Application
  */
-export class ServerApplication extends cdk.Construct implements IServerApplication {
+export class ServerApplication extends Resource implements IServerApplication {
   /**
-   * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an Application defined either outside the CDK app, or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced Application
+   * @param serverApplicationName the name of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static import(scope: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
-    return new ImportedServerApplication(scope, id, props);
+  public static fromServerApplicationName(scope: Construct, id: string, serverApplicationName: string): IServerApplication {
+    class Import extends Resource implements IServerApplication {
+      public readonly applicationArn = arnForApplication(serverApplicationName);
+      public readonly applicationName = serverApplicationName;
+    }
+
+    return new Import(scope, id);
+
   }
 
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: ServerApplicationProps = {}) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ServerApplicationProps = {}) {
+    super(scope, id, {
+      physicalName: props.applicationName,
+    });
 
     const resource = new CfnApplication(this, 'Resource', {
-      applicationName: props.applicationName,
+      applicationName: this.physicalName,
       computePlatform: 'Server',
     });
 
-    this.applicationName = resource.ref;
-    this.applicationArn = arnForApplication(this.applicationName);
-  }
-
-  public export(): ServerApplicationImportProps {
-    return {
-      applicationName: new cdk.CfnOutput(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
-    };
+    this.applicationName = this.getResourceNameAttribute(resource.ref);
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
   }
 }

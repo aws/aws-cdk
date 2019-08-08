@@ -493,7 +493,18 @@
           "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+              ]
+            ]
+          }
         ]
       }
     },
@@ -579,6 +590,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/Handler/Code\""
     },
+    "HandlerCodeArtifactHashD7814EF8": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-cdk-codedeploy-lambda/Handler/Code\""
+    },
     "PreHookCodeS3BucketE2616D65": {
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-codedeploy-lambda/PreHook/Code\""
@@ -587,6 +602,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/PreHook/Code\""
     },
+    "PreHookCodeArtifactHash540B37CB": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-cdk-codedeploy-lambda/PreHook/Code\""
+    },
     "PostHookCodeS3BucketECF09EB8": {
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-codedeploy-lambda/PostHook/Code\""
@@ -594,6 +613,10 @@
     "PostHookCodeS3VersionKey53451C7E": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/PostHook/Code\""
+    },
+    "PostHookCodeArtifactHash73D72B37": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-cdk-codedeploy-lambda/PostHook/Code\""
     }
   }
 }

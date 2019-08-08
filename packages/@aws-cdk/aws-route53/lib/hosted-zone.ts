@@ -1,7 +1,9 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import cxapi = require('@aws-cdk/cx-api');
+import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
-import { ZoneDelegationRecord } from './records';
+import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -39,22 +41,16 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
    *
    * @default public (no VPCs associated)
    */
-  readonly vpcs?: ec2.IVpcNetwork[];
+  readonly vpcs?: ec2.IVpc[];
 }
 
 export class HostedZone extends Resource implements IHostedZone {
 
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
         throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
-      }
-      public export(): HostedZoneAttributes {
-        return {
-          hostedZoneId: this.hostedZoneId,
-          zoneName: this.zoneName
-        };
       }
     }
 
@@ -65,15 +61,43 @@ export class HostedZone extends Resource implements IHostedZone {
    * Imports a hosted zone from another stack.
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
-      public export() {
-        return attrs;
-      }
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Lookup a hosted zone in the current account/region based on query parameters.
+   */
+  public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
+    const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
+      Id: '/hostedzone/DUMMY',
+      Name: query.domainName,
+    };
+
+    interface HostedZoneContextResponse {
+      Id: string;
+      Name: string;
+    }
+
+    const response: HostedZoneContextResponse = ContextProvider.getValue(scope, {
+      provider: cxapi.HOSTED_ZONE_PROVIDER,
+      dummyValue: DEFAULT_HOSTED_ZONE,
+      props: query
+    });
+
+    // CDK handles the '.' at the end, so remove it here
+    if (response.Name.endsWith('.')) {
+      response.Name = response.Name.substring(0, response.Name.length - 1);
+    }
+
+    return this.fromHostedZoneAttributes(scope, id, {
+      hostedZoneId: response.Id,
+      zoneName: response.Name,
+    });
   }
 
   public readonly hostedZoneId: string;
@@ -94,11 +118,11 @@ export class HostedZone extends Resource implements IHostedZone {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: new Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
+      vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs })
     });
 
     this.hostedZoneId = resource.ref;
-    this.hostedZoneNameServers = resource.hostedZoneNameServers;
+    this.hostedZoneNameServers = resource.attrNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {
@@ -106,24 +130,29 @@ export class HostedZone extends Resource implements IHostedZone {
     }
   }
 
-  public export(): HostedZoneAttributes {
-    return {
-      hostedZoneId: new CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
-      zoneName: this.zoneName,
-    };
-  }
-
   /**
    * Add another VPC to this private hosted zone.
    *
    * @param vpc the other VPC to add.
    */
-  public addVpc(vpc: ec2.IVpcNetwork) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.vpcRegion });
+  public addVpc(vpc: ec2.IVpc) {
+    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: Stack.of(vpc).region });
   }
 }
 
-export interface PublicHostedZoneProps extends CommonHostedZoneProps { }
+/**
+ * Construction properties for a PublicHostedZone.
+ */
+export interface PublicHostedZoneProps extends CommonHostedZoneProps {
+  /**
+   * Whether to create a CAA record to restrict certificate authorities allowed
+   * to issue certificates for this domain to Amazon only.
+   *
+   * @default false
+   */
+  readonly caaAmazon?: boolean;
+}
+
 export interface IPublicHostedZone extends IHostedZone { }
 
 /**
@@ -137,21 +166,21 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
       public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
-      public export(): HostedZoneAttributes {
-        return {
-          hostedZoneId: this.hostedZoneId,
-          zoneName: this.zoneName
-        };
-      }
     }
     return new Import(scope, id);
   }
 
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
+
+    if (props.caaAmazon) {
+      new CaaAmazonRecord(this, 'CaaAmazon', {
+        zone: this
+      });
+    }
   }
 
-  public addVpc(_vpc: ec2.IVpcNetwork) {
+  public addVpc(_vpc: ec2.IVpc) {
     throw new Error('Cannot associate public hosted zones with a VPC');
   }
 
@@ -164,7 +193,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   public addDelegation(delegate: IPublicHostedZone, opts: ZoneDelegationOptions = {}): void {
     new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
       zone: this,
-      delegatedZoneName: delegate.zoneName,
+      recordName: delegate.zoneName,
       nameServers: delegate.hostedZoneNameServers!, // PublicHostedZones always have name servers!
       comment: opts.comment,
       ttl: opts.ttl,
@@ -188,7 +217,7 @@ export interface ZoneDelegationOptions {
    *
    * @default 172800
    */
-  readonly ttl?: number;
+  readonly ttl?: Duration;
 }
 
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
@@ -198,7 +227,7 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
    * Private hosted zones must be associated with at least one VPC. You can
    * associated additional VPCs using `addVpc(vpc)`.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 }
 
 export interface IPrivateHostedZone extends IHostedZone {}
@@ -217,12 +246,6 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
       public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
-      public export(): HostedZoneAttributes {
-        return {
-          hostedZoneId: this.hostedZoneId,
-          zoneName: this.zoneName
-        };
-      }
     }
     return new Import(scope, id);
   }

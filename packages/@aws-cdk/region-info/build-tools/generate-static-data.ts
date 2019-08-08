@@ -38,6 +38,7 @@ async function main(): Promise<void> {
     'us-west-1',
     'us-west-2',
     'ap-south-1',
+    // 'ap-east-1',
     // 'ap-northeast-3',
     'ap-northeast-2',
     'ap-southeast-1',
@@ -56,14 +57,14 @@ async function main(): Promise<void> {
 
   for (const region of AWS_REGIONS) {
     const partition = region.startsWith('cn-') ? 'aws-cn' : 'aws';
-    registerFact(region, 'partition', partition);
+    registerFact(region, 'PARTITION', partition);
 
     const domainSuffix = partition === 'aws' ? 'amazonaws.com' : 'amazonaws.com.cn';
-    registerFact(region, 'domainSuffix', domainSuffix);
+    registerFact(region, 'DOMAIN_SUFFIX', domainSuffix);
 
-    registerFact(region, 'cdkMetadataResourceAvailable', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
+    registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
 
-    registerFact(region, 's3StaticWebsiteEndpoint', AWS_OLDER_REGIONS.has(region)
+    registerFact(region, 'S3_STATIC_WEBSITE_ENDPOINT', AWS_OLDER_REGIONS.has(region)
       ? `s3-website-${region}.${domainSuffix}`
       : `s3-website.${region}.${domainSuffix}`);
 

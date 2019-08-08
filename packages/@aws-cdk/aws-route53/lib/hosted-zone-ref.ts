@@ -1,4 +1,4 @@
-import { IResource } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/core';
 
 /**
  * Imported or created hosted zone
@@ -25,11 +25,6 @@ export interface IHostedZone extends IResource {
    * @attribute
    */
   readonly hostedZoneNameServers?: string[];
-
-  /**
-   * Export the hosted zone
-   */
-  export(): HostedZoneAttributes;
 }
 
 /**

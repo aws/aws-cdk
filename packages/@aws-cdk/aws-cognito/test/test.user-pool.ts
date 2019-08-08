@@ -1,6 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cognito = require('../lib');
 
@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new cognito.UserPool(stack, 'Pool', {
-      poolName: 'myPool'
+      userPoolName: 'myPool',
     });
 
     // THEN
@@ -28,7 +28,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -37,13 +37,13 @@ export = {
         preSignUp: fn
       }
     });
-    pool.onCustomMessage(fn);
+    pool.addCustomMessageTrigger(fn);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
-        PreSignUp: fn.node.resolve(fn.functionArn),
-        CustomMessage: fn.node.resolve(fn.functionArn)
+        PreSignUp: stack.resolve(fn.functionArn),
+        CustomMessage: stack.resolve(fn.functionArn)
       }
     }));
 
@@ -56,31 +56,31 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
     const pool = new cognito.UserPool(stack, 'Pool', { });
-    pool.onCreateAuthChallenge(fn);
-    pool.onCustomMessage(fn);
-    pool.onDefineAuthChallenge(fn);
-    pool.onPostAuthentication(fn);
-    pool.onPostConfirmation(fn);
-    pool.onPreAuthentication(fn);
-    pool.onPreSignUp(fn);
-    pool.onVerifyAuthChallengeResponse(fn);
+    pool.addCreateAuthChallengeTrigger(fn);
+    pool.addCustomMessageTrigger(fn);
+    pool.addDefineAuthChallengeTrigger(fn);
+    pool.addPostAuthenticationTrigger(fn);
+    pool.addPostConfirmationTrigger(fn);
+    pool.addPreAuthenticationTrigger(fn);
+    pool.addPreSignUpTrigger(fn);
+    pool.addVerifyAuthChallengeResponseTrigger(fn);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
-        CreateAuthChallenge: fn.node.resolve(fn.functionArn),
-        CustomMessage: fn.node.resolve(fn.functionArn),
-        DefineAuthChallenge: fn.node.resolve(fn.functionArn),
-        PostAuthentication: fn.node.resolve(fn.functionArn),
-        PostConfirmation: fn.node.resolve(fn.functionArn),
-        PreAuthentication: fn.node.resolve(fn.functionArn),
-        PreSignUp: fn.node.resolve(fn.functionArn),
-        VerifyAuthChallengeResponse: fn.node.resolve(fn.functionArn)
+        CreateAuthChallenge: stack.resolve(fn.functionArn),
+        CustomMessage: stack.resolve(fn.functionArn),
+        DefineAuthChallenge: stack.resolve(fn.functionArn),
+        PostAuthentication: stack.resolve(fn.functionArn),
+        PostConfirmation: stack.resolve(fn.functionArn),
+        PreAuthentication: stack.resolve(fn.functionArn),
+        PreSignUp: stack.resolve(fn.functionArn),
+        VerifyAuthChallengeResponse: stack.resolve(fn.functionArn)
       }
     }));
 
@@ -93,7 +93,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -105,7 +105,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Lambda::Permission', {
-      FunctionName: fn.node.resolve(fn.functionArn),
+      FunctionName: stack.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com'
     }));
 
@@ -118,8 +118,8 @@ export = {
 
     // WHEN
     new cognito.UserPool(stack, 'Pool', {
-      signInType: cognito.SignInType.Email,
-      autoVerifiedAttributes: [cognito.UserPoolAttribute.Email]
+      signInType: cognito.SignInType.EMAIL,
+      autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL]
     });
 
     // THEN
@@ -138,8 +138,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Email,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.PreferredUsername]
+        signInType: cognito.SignInType.EMAIL,
+        usernameAliasAttributes: [cognito.UserPoolAttribute.PREFERRED_USERNAME]
       });
     };
 
@@ -155,8 +155,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Username,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.GivenName]
+        signInType: cognito.SignInType.USERNAME,
+        usernameAliasAttributes: [cognito.UserPoolAttribute.GIVEN_NAME]
       });
     };
 
@@ -172,8 +172,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Email,
-        autoVerifiedAttributes: [cognito.UserPoolAttribute.Email, cognito.UserPoolAttribute.Gender]
+        signInType: cognito.SignInType.EMAIL,
+        autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL, cognito.UserPoolAttribute.GENDER]
       });
     };
 

@@ -1,8 +1,5 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy-api');
-import {
-  AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
-  IVpcNetwork, IVpcSubnet, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Connections, IConnectable, ISecurityGroup, ISubnet, IVpc, Peer, Port, SecurityGroup  } from '@aws-cdk/aws-ec2';
+import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
@@ -12,7 +9,7 @@ export interface LoadBalancerProps {
   /**
    * VPC network of the fleet instances
    */
-  readonly vpc: IVpcNetwork;
+  readonly vpc: IVpc;
 
   /**
    * Whether this is an internet-facing Load Balancer
@@ -28,6 +25,8 @@ export interface LoadBalancerProps {
    * What listeners to set up for the load balancer.
    *
    * Can also be added by .addListener()
+   *
+   * @default -
    */
   readonly listeners?: LoadBalancerListener[];
 
@@ -35,6 +34,8 @@ export interface LoadBalancerProps {
    * What targets to load balance to.
    *
    * Can also be added by .addTarget()
+   *
+   * @default - None.
    */
   readonly targets?: ILoadBalancerTarget[];
 
@@ -42,8 +43,20 @@ export interface LoadBalancerProps {
    * Health check settings for the load balancing targets.
    *
    * Not required but recommended.
+   *
+   * @default - None.
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * Whether cross zone load balancing is enabled
+   *
+   * This controls whether the load balancer evenly distributes requests
+   * across each availability zone
+   *
+   * @default true
+   */
+  readonly crossZone?: boolean;
 }
 
 /**
@@ -91,16 +104,16 @@ export interface HealthCheck {
   /**
    * Number of seconds between health checks
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly interval?: number;
+  readonly interval?: Duration;
 
   /**
    * Health check timeout
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 }
 
 /**
@@ -177,10 +190,10 @@ export interface LoadBalancerListener {
 }
 
 export enum LoadBalancingProtocol {
-  Tcp = 'tcp',
-  Ssl = 'ssl',
-  Http = 'http',
-  Https = 'https'
+  TCP = 'tcp',
+  SSL = 'ssl',
+  HTTP = 'http',
+  HTTPS = 'https'
 }
 
 /**
@@ -188,7 +201,7 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
-export class LoadBalancer extends Resource implements IConnectable, codedeploy.ILoadBalancer {
+export class LoadBalancer extends Resource implements IConnectable {
   /**
    * Control all connections from and to this load balancer
    */
@@ -213,14 +226,15 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: IVpcSubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const subnets: ISubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
       subnets: subnets.map(s => s.subnetId),
-      listeners: new Token(() => this.listeners),
+      listeners: Lazy.anyValue({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
+      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
@@ -240,7 +254,7 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
     const instancePort = listener.internalPort || listener.externalPort;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
                  ifUndefined(tryWellKnownProtocol(instancePort),
-                 isHttpProtocol(protocol) ? LoadBalancingProtocol.Http : LoadBalancingProtocol.Tcp));
+                 isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
 
     this.listeners.push({
       loadBalancerPort: listener.externalPort.toString(),
@@ -251,10 +265,10 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
       policyNames: listener.policyNames
     });
 
-    const port = new ListenerPort(this.securityGroup, new TcpPort(listener.externalPort));
+    const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
 
     // Allow connections on the public port for all supplied peers (default: everyone)
-    ifUndefined(listener.allowConnectionsFrom, [new AnyIPv4()]).forEach(peer => {
+    ifUndefined(listener.allowConnectionsFrom, [Peer.anyIpv4()]).forEach(peer => {
       port.connections.allowDefaultPortFrom(peer, `Default rule allow on ${listener.externalPort}`);
     });
 
@@ -283,42 +297,35 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
    * @attribute
    */
   public get loadBalancerCanonicalHostedZoneNameId() {
-    return this.elb.loadBalancerCanonicalHostedZoneNameId;
+    return this.elb.attrCanonicalHostedZoneNameId;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerCanonicalHostedZoneName() {
-    return this.elb.loadBalancerCanonicalHostedZoneName;
+    return this.elb.attrCanonicalHostedZoneName;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerDnsName() {
-    return this.elb.loadBalancerDnsName;
+    return this.elb.attrDnsName;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerSourceSecurityGroupGroupName() {
-    return this.elb.loadBalancerSourceSecurityGroupGroupName;
+    return this.elb.attrSourceSecurityGroupGroupName;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerSourceSecurityGroupOwnerAlias() {
-    return this.elb.loadBalancerSourceSecurityGroupOwnerAlias;
-  }
-
-  public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
-    return {
-      generation: codedeploy.LoadBalancerGeneration.First,
-      name: this.loadBalancerName,
-    };
+    return this.elb.attrSourceSecurityGroupOwnerAlias;
   }
 
   /**
@@ -347,7 +354,7 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
   private allowTargetConnection(instancePort: number, target: ILoadBalancerTarget) {
     this.connections.allowTo(
       target,
-      new TcpPort(instancePort),
+      Port.tcp(instancePort),
       `Port ${instancePort} LB to fleet`);
   }
 }
@@ -368,8 +375,8 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: ISecurityGroup, defaultPortRange: IPortRange) {
-    this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
+  constructor(securityGroup: ISecurityGroup, defaultPort: Port) {
+    this.connections = new Connections({ securityGroups: [securityGroup], defaultPort });
   }
 }
 
@@ -382,13 +389,13 @@ function wellKnownProtocol(port: number): LoadBalancingProtocol {
 }
 
 function tryWellKnownProtocol(port: number): LoadBalancingProtocol | undefined {
-  if (port === 80) { return LoadBalancingProtocol.Http; }
-  if (port === 443) { return LoadBalancingProtocol.Https; }
+  if (port === 80) { return LoadBalancingProtocol.HTTP; }
+  if (port === 443) { return LoadBalancingProtocol.HTTPS; }
   return undefined;
 }
 
 function isHttpProtocol(proto: LoadBalancingProtocol): boolean {
-  return proto === LoadBalancingProtocol.Https || proto === LoadBalancingProtocol.Http;
+  return proto === LoadBalancingProtocol.HTTPS || proto === LoadBalancingProtocol.HTTP;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T): T {
@@ -405,17 +412,17 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
 function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
            ifUndefined(tryWellKnownProtocol(healthCheck.port),
-           LoadBalancingProtocol.Tcp));
+           LoadBalancingProtocol.TCP));
 
-  const path = protocol === LoadBalancingProtocol.Http || protocol === LoadBalancingProtocol.Https ? ifUndefined(healthCheck.path, "/") : "";
+  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, "/") : "";
 
   const target = `${protocol.toUpperCase()}:${healthCheck.port}${path}`;
 
   return {
     healthyThreshold: ifUndefined(healthCheck.healthyThreshold, 2).toString(),
-    interval: ifUndefined(healthCheck.interval, 30).toString(),
+    interval: (healthCheck.interval || Duration.seconds(30)).toSeconds().toString(),
     target,
-    timeout: ifUndefined(healthCheck.timeout, 5).toString(),
+    timeout: (healthCheck.timeout || Duration.seconds(5)).toSeconds().toString(),
     unhealthyThreshold: ifUndefined(healthCheck.unhealthyThreshold, 5).toString(),
   };
 }

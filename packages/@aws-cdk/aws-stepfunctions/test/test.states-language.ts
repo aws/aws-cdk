@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
 import { IStepFunctionsTask } from '../lib';
@@ -102,7 +102,9 @@ export = {
 
             const task1 = new stepfunctions.Pass(stack, 'State One');
             const task2 = new stepfunctions.Pass(stack, 'State Two');
-            const task3 = new stepfunctions.Wait(stack, 'State Three', { duration: stepfunctions.WaitDuration.seconds(10) });
+            const task3 = new stepfunctions.Wait(stack, 'State Three', {
+                time: stepfunctions.WaitTime.duration(cdk.Duration.seconds(10))
+            });
 
             // WHEN
             const chain = stepfunctions.Chain
@@ -722,11 +724,11 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
 }
 
 function render(sm: stepfunctions.IChainable) {
-    return new cdk.Stack().node.resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+    return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
 }
 
 class FakeTask implements IStepFunctionsTask {
-    public bind(_task: stepfunctions.Task): stepfunctions.StepFunctionsTaskProperties {
+    public bind(_task: stepfunctions.Task): stepfunctions.StepFunctionsTaskConfig {
         return {
             resourceArn: 'resource'
         };

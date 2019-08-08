@@ -1,29 +1,21 @@
 import crypto = require('crypto');
 import fs = require('fs');
 import path = require('path');
+import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
+import { shouldExclude, shouldFollow } from './utils';
 
 const BUFFER_SIZE = 8 * 1024;
+const CTRL_SOH = '\x01';
+const CTRL_SOT = '\x02';
+const CTRL_ETX = '\x03';
 
-export interface FingerprintOptions {
+export interface FingerprintOptions extends CopyOptions {
   /**
    * Extra information to encode into the fingerprint (e.g. build instructions
    * and other inputs)
    */
   extra?: string;
-
-  /**
-   * List of exclude patterns (see `CopyOptions`)
-   * @default include all files
-   */
-  exclude?: string[];
-
-  /**
-   * What to do when we encounter symlinks.
-   * @default External only follows symlinks that are external to the source
-   * directory
-   */
-  follow?: FollowMode;
 }
 
 /**
@@ -38,49 +30,64 @@ export interface FingerprintOptions {
  * @param options Fingerprinting options
  */
 export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
-  const follow = options.follow !== undefined ? options.follow : FollowMode.External;
-  const hash = crypto.createHash('md5');
-  addToHash(fileOrDirectory);
+  const hash = crypto.createHash('sha256');
+  _hashField(hash, 'options.extra', options.extra || '');
+  const follow = options.follow || FollowMode.EXTERNAL;
+  _hashField(hash, 'options.follow', follow);
 
-  hash.update(`==follow==${follow}==\n\n`);
-
-  if (options.extra) {
-    hash.update(`==extra==${options.extra}==\n\n`);
-  }
-
-  for (const ex of options.exclude || []) {
-    hash.update(`==exclude==${ex}==\n\n`);
-  }
+  const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()
+    ? fileOrDirectory
+    : path.dirname(fileOrDirectory);
+  const exclude = options.exclude || [];
+  _processFileOrDirectory(fileOrDirectory);
 
   return hash.digest('hex');
 
-  function addToHash(pathToAdd: string) {
-    hash.update('==\n');
-    const relativePath = path.relative(fileOrDirectory, pathToAdd);
-    hash.update(relativePath + '\n');
-    hash.update('~~~~~~~~~~~~~~~~~~\n');
-    const stat = fs.statSync(pathToAdd);
+  function _processFileOrDirectory(symbolicPath: string, realPath = symbolicPath) {
+    if (shouldExclude(exclude, symbolicPath)) {
+      return;
+    }
+
+    const stat = fs.lstatSync(realPath);
+    const relativePath = path.relative(fileOrDirectory, symbolicPath);
 
     if (stat.isSymbolicLink()) {
-      const target = fs.readlinkSync(pathToAdd);
-      hash.update(target);
+      const linkTarget = fs.readlinkSync(realPath);
+      const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
+      if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
+        _processFileOrDirectory(symbolicPath, resolvedLinkTarget);
+      } else {
+        _hashField(hash, `link:${relativePath}`, linkTarget);
+      }
+    } else if (stat.isFile()) {
+      _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, stat));
     } else if (stat.isDirectory()) {
-      for (const file of fs.readdirSync(pathToAdd)) {
-        addToHash(path.join(pathToAdd, file));
+      for (const item of fs.readdirSync(realPath).sort()) {
+        _processFileOrDirectory(path.join(symbolicPath, item), path.join(realPath, item));
       }
     } else {
-      const file = fs.openSync(pathToAdd, 'r');
-      const buffer = Buffer.alloc(BUFFER_SIZE);
-
-      try {
-        let bytesRead;
-        do {
-          bytesRead = fs.readSync(file, buffer, 0, BUFFER_SIZE, null);
-          hash.update(buffer.slice(0, bytesRead));
-        } while (bytesRead === BUFFER_SIZE);
-      } finally {
-        fs.closeSync(file);
-      }
+      throw new Error(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
     }
   }
+}
+
+function _contentFingerprint(file: string, stat: fs.Stats): string {
+  const hash = crypto.createHash('sha256');
+  const buffer = Buffer.alloc(BUFFER_SIZE);
+  // tslint:disable-next-line: no-bitwise
+  const fd = fs.openSync(file, fs.constants.O_DSYNC | fs.constants.O_RDONLY | fs.constants.O_SYNC);
+  try {
+    let read = 0;
+    // tslint:disable-next-line: no-conditional-assignment
+    while ((read = fs.readSync(fd, buffer, 0, BUFFER_SIZE, null)) !== 0) {
+      hash.update(buffer.slice(0, read));
+    }
+  } finally {
+    fs.closeSync(fd);
+  }
+  return `${stat.size}:${hash.digest('hex')}`;
+}
+
+function _hashField(hash: crypto.Hash, header: string, value: string | Buffer | DataView) {
+  hash.update(CTRL_SOH).update(header).update(CTRL_SOT).update(value).update(CTRL_ETX);
 }

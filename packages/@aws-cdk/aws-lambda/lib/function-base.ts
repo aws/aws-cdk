@@ -1,22 +1,14 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import s3n = require('@aws-cdk/aws-s3-notifications');
-import cdk = require('@aws-cdk/cdk');
-import { IResource, Resource } from '@aws-cdk/cdk';
+import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
+import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, iam.IGrantable {
-
-  /**
-   * Logical ID of this Function.
-   */
-  readonly id: string;
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * The name of the function.
@@ -43,6 +35,16 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    * If this is is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
+
+  /**
+   * The `$LATEST` version of this function.
+   */
+  readonly latestVersion: IVersion;
+
+  /**
+   * The construct node where permissions are attached.
+   */
+  readonly permissionsNode: ConstructNode;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -90,11 +92,6 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    */
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /**
-   * Export this Function (without the role)
-   */
-  export(): FunctionAttributes;
-
   addEventSource(source: IEventSource): void;
 }
 
@@ -125,7 +122,7 @@ export interface FunctionAttributes {
   readonly securityGroupId?: string;
 }
 
-export abstract class FunctionBase extends Resource implements IFunction  {
+export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * The principal this Lambda Function is running as
    */
@@ -149,6 +146,11 @@ export abstract class FunctionBase extends Resource implements IFunction  {
   public abstract readonly role?: iam.IRole;
 
   /**
+   * The construct node where permissions are attached.
+   */
+  public abstract readonly permissionsNode: ConstructNode;
+
+  /**
    * Whether the addPermission() call adds any permissions
    *
    * True for new Lambdas, false for imported Lambdas (they might live in different accounts).
@@ -162,11 +164,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
    * @internal
    */
   protected _connections?: ec2.Connections;
-
-  /**
-   * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
-   */
-  private logSubscriptionDestinationPolicyAddedFor: string[] = [];
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -191,10 +188,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     });
   }
 
-  public get id() {
-    return this.node.id;
-  }
-
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
@@ -214,6 +207,11 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
     }
     return this._connections;
+  }
+
+  public get latestVersion(): IVersion {
+    // Dynamic to avoid invinite recursion when creating the LatestVersion instance...
+    return new LatestVersion(this);
   }
 
   /**
@@ -252,57 +250,9 @@ export abstract class FunctionBase extends Resource implements IFunction  {
             action: 'lambda:InvokeFunction',
           });
         },
-        dependencyRoots: [],
         node: this.node,
       },
     });
-  }
-
-  public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
-    const arn = sourceLogGroup.logGroupArn;
-
-    if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
-      // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
-      // since the Lambda must be in the same region as the SubscriptionFilter anyway.
-      //
-      // (Wildcards in principals are unfortunately not supported.
-      this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.${this.node.stack.region}.amazonaws.com`),
-        sourceArn: arn
-      });
-      this.logSubscriptionDestinationPolicyAddedFor.push(arn);
-    }
-    return { arn: this.functionArn };
-  }
-
-  /**
-   * Export this Function (without the role)
-   */
-  public abstract export(): FunctionAttributes;
-
-  /**
-   * Allows this Lambda to be used as a destination for bucket notifications.
-   * Use `bucket.onEvent(lambda)` to subscribe.
-   */
-  public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
-    const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
-    if (!this.node.tryFindChild(permissionId)) {
-      this.addPermission(permissionId, {
-        sourceAccount: this.node.stack.accountId,
-        principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceArn: bucketArn,
-      });
-    }
-
-    // if we have a permission resource for this relationship, add it as a dependency
-    // to the bucket notifications resource, so it will be created first.
-    const permission = this.node.tryFindChild(permissionId) as cdk.CfnResource;
-
-    return {
-      type: s3n.BucketNotificationDestinationType.Lambda,
-      arn: this.functionArn,
-      dependencies: permission ? [ permission ] : undefined
-    };
   }
 
   /**
@@ -335,7 +285,56 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    throw new Error(`Invalid principal type for Lambda permission statement: ${this.node.resolve(principal.toString())}. ` +
-      'Supported: AccountPrincipal, ServicePrincipal');
+    if (`arn` in principal) {
+      return (principal as iam.ArnPrincipal).arn;
+    }
+
+    throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
+  }
+}
+
+export abstract class QualifiedFunctionBase extends FunctionBase {
+  public abstract readonly lambda: IFunction;
+  public readonly permissionsNode = this.node;
+
+  public get latestVersion() {
+    return this.lambda.latestVersion;
+  }
+}
+
+/**
+ * The $LATEST version of a function, useful when attempting to create aliases.
+ */
+class LatestVersion extends FunctionBase implements IVersion {
+  public readonly lambda: IFunction;
+  public readonly version = '$LATEST';
+  public readonly permissionsNode = this.node;
+
+  protected readonly canCreatePermissions = true;
+
+  constructor(lambda: FunctionBase) {
+    super(lambda, '$LATEST');
+    this.lambda = lambda;
+  }
+
+  public get functionArn() {
+    return `${this.lambda.functionArn}:${this.version}`;
+  }
+
+  public get functionName() {
+    return `${this.lambda.functionName}:${this.version}`;
+  }
+
+  public get grantPrincipal() {
+    return this.lambda.grantPrincipal;
+  }
+
+  public get latestVersion() {
+    return this;
+  }
+
+  public get role() {
+    return this.lambda.role;
   }
 }

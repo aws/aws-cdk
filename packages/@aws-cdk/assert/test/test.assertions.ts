@@ -1,10 +1,10 @@
 import 'source-map-support/register';
 
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cx = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { countResources, exist, expect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
 passingExample('expect <synthStack> at <some path> to have <some type>', () => {
@@ -18,8 +18,7 @@ passingExample('expect non-synthesized stack at <some path> to have <some type>'
   const resourceType = 'Test::Resource';
   const stack = new cdk.Stack();
   new TestResource(stack, 'TestResource', { type: resourceType });
-  // '//' because the stack has no name, which leads to an empty path entry here.
-  expect(stack).at('//TestResource').to(haveType(resourceType));
+  expect(stack).at('/TestResource').to(haveType(resourceType));
 });
 passingExample('expect <synthStack> at <some path> *not* to have <some type>', () => {
   const resourceType = 'Test::Resource';
@@ -82,6 +81,31 @@ passingExample('sugar for matching stack to a template', () => {
       }
     }
   });
+});
+passingExample('expect <synthStack> to match (no replaces) <template> with parameters', () => {
+  const parameterType = 'Test::Parameter';
+  const synthStack = synthesizedStack(stack => {
+    new TestParameter(stack, 'TestParameter', { type: parameterType });
+  });
+  const expected = {};
+  expect(synthStack).to(matchTemplate(expected, MatchStyle.NO_REPLACES));
+});
+passingExample('expect <synthStack> to be a superset of <template> with parameters', () => {
+  const parameterType = 'Test::Parameter';
+  const synthStack = synthesizedStack(stack => {
+    // Added
+    new TestResource(stack, 'NewResource', { type: 'AWS::S3::Bucket' });
+    // Expected
+    new TestParameter(stack, 'TestParameterA', {type: parameterType});
+    new TestParameter(stack, 'TestParameterB', {type: parameterType, default: { Foo: 'Bar' } });
+  });
+  const expected = {
+    Parameters: {
+      TestParameterA: { Type: 'Test::Parameter' },
+      TestParameterB: { Type: 'Test::Parameter', Default: { Foo: 'Bar' } }
+    }
+  };
+  expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });
 
 failingExample('expect <synthStack> at <some path> *not* to have <some type>', () => {
@@ -147,6 +171,36 @@ failingExample('expect <synthStack> to be a superset of <template>', () => {
   };
   expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });
+failingExample('expect <synthStack> to match (no replaces) <template> with parameters', () => {
+  const parameterType = 'Test::Parameter';
+  const synthStack = synthesizedStack(stack => {
+    new TestParameter(stack, 'TestParameter', { type: parameterType });
+  });
+  const expected = {
+    Parameters: {
+      TestParameter: { Type: 'AWS::S3::Bucket' }
+    }
+  };
+  expect(synthStack).to(matchTemplate(expected, MatchStyle.NO_REPLACES));
+});
+failingExample('expect <synthStack> to be a superset of <template> with parameters', () => {
+  const parameterType = 'Test::Parameter';
+  const synthStack = synthesizedStack(stack => {
+    // Added
+    new TestParameter(stack, 'NewParameter', { type: 'AWS::S3::Bucket' });
+    // Expected
+    new TestParameter(stack, 'TestParameterA', { type: parameterType });
+    // Expected, but has different properties - will break
+    new TestParameter(stack, 'TestParameterB', { type: parameterType, default: { Foo: 'Bar' } });
+  });
+  const expected = {
+    Parameters: {
+      TestParameterA: { Type: 'Test::Parameter' },
+      TestParameterB: { Type: 'Test::Parameter', Default: { Foo: 'Baz' } }
+    }
+  };
+  expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
+});
 
 // countResources
 
@@ -205,11 +259,13 @@ function failingExample(title: string, cb: (test: Test) => void) {
   };
 }
 
-function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.SynthesizedStack {
+function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.CloudFormationStackArtifact {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
   fn(stack);
-  return app.synthesizeStack(stack.name);
+
+  const assembly = app.synth();
+  return assembly.getStack(stack.stackName);
 }
 
 interface TestResourceProps extends cdk.CfnResourceProps {
@@ -218,6 +274,16 @@ interface TestResourceProps extends cdk.CfnResourceProps {
 
 class TestResource extends cdk.CfnResource {
   constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
+    super(scope, id, props);
+  }
+}
+
+interface TestParameterProps extends cdk.CfnParameterProps {
+  type: string;
+}
+
+class TestParameter extends cdk.CfnParameter {
+  constructor(scope: cdk.Construct, id: string, props: TestParameterProps) {
     super(scope, id, props);
   }
 }

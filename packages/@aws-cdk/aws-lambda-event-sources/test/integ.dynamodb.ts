@@ -1,6 +1,6 @@
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { DynamoEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
@@ -12,18 +12,19 @@ class DynamoEventSourceTest extends cdk.Stack {
     const queue = new dynamodb.Table(this, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.String
+        type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NewImage
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     fn.addEventSource(new DynamoEventSource(queue, {
       batchSize: 5,
-      startingPosition: lambda.StartingPosition.TrimHorizon
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
     }));
   }
 }
 
 const app = new cdk.App();
 new DynamoEventSourceTest(app, 'lambda-event-source-dynamodb');
-app.run();
+app.synth();

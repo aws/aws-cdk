@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { DnsRecordType, IService, RoutingPolicy } from './service';
@@ -19,9 +19,11 @@ export interface AliasTargetInstanceProps extends BaseInstanceProps {
   readonly service: IService;
 }
 
-/*
+/**
  * Instance that uses Route 53 Alias record type. Currently, the only resource types supported are Elastic Load
  * Balancers.
+ *
+ * @resource AWS::ServiceDiscovery::Instance
  */
 export class AliasTargetInstance extends InstanceBase {
   /**
@@ -42,7 +44,7 @@ export class AliasTargetInstance extends InstanceBase {
   constructor(scope: cdk.Construct, id: string, props: AliasTargetInstanceProps) {
     super(scope, id);
 
-    if (props.service.namespace.type === NamespaceType.Http) {
+    if (props.service.namespace.type === NamespaceType.HTTP) {
       throw new Error('Namespace associated with Service must be a DNS Namespace.');
     }
 
@@ -54,7 +56,7 @@ export class AliasTargetInstance extends InstanceBase {
       throw new Error('Service must use `A` or `AAAA` records to register an AliasRecordTarget.');
     }
 
-    if (props.service.routingPolicy !== RoutingPolicy.Weighted) {
+    if (props.service.routingPolicy !== RoutingPolicy.WEIGHTED) {
       throw new Error('Service must use `WEIGHTED` routing policy.');
     }
 
@@ -68,7 +70,7 @@ export class AliasTargetInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.instanceId;
+    this.instanceId = resource.ref;
     this.dnsName = props.dnsName;
   }
 }

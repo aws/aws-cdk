@@ -1,17 +1,28 @@
-## AWS KMS Construct Library
+## AWS Key Management Service Construct Library
+<!--BEGIN STABILITY BANNER-->
 
-Defines a KMS key:
+---
 
-```js
-new EncryptionKey(this, 'MyKey', {
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
+
+Define a KMS key:
+
+```ts
+import kms = require('@aws-cdk/aws-kms');
+
+new kms.Key(this, 'MyKey', {
     enableKeyRotation: true
 });
 ```
 
 Add a couple of aliases:
 
-```js
-const key = new EncryptionKey(this, 'MyKey');
+```ts
+const key = new kms.Key(this, 'MyKey');
 key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 ```
@@ -27,15 +38,13 @@ pass the construct to the other stack:
 ### Importing existing keys
 
 To use a KMS key that is not defined in this CDK app, but is created through other means, use
-`EncryptionKey.import(parent, name, ref)`:
+`Key.fromKeyArn(parent, name, ref)`:
 
 ```ts
-const myKeyImported = EncryptionKey.import(this, 'MyImportedKey', {
-    keyArn: 'arn:aws:...'
-});
+const myKeyImported = kms.Key.fromKeyArn(this, 'MyImportedKey', 'arn:aws:...');
 
 // you can do stuff with this imported key.
-key.addAlias('alias/foo');
+myKeyImported.addAlias('alias/foo');
 ```
 
 Note that a call to `.addToPolicy(statement)` on `myKeyImported` will not have

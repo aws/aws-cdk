@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
@@ -16,7 +16,7 @@ export interface BaseTargetTrackingProps {
   /**
    * A name for the scaling policy
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly policyName?: string;
 
@@ -35,16 +35,16 @@ export interface BaseTargetTrackingProps {
   /**
    * Period after a scale in activity completes before another scale in activity can start.
    *
-   * @default No scale in cooldown
+   * @default - No scale in cooldown.
    */
-  readonly scaleInCooldownSec?: number;
+  readonly scaleInCooldown?: cdk.Duration;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
-   * @default No scale out cooldown
+   * @default - No scale out cooldown.
    */
-  readonly scaleOutCooldownSec?: number;
+  readonly scaleOutCooldown?: cdk.Duration;
 }
 
 /**
@@ -63,6 +63,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
+   *
+   * @default - No predefined metrics.
    */
   readonly predefinedMetric?: PredefinedMetric;
 
@@ -72,6 +74,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * Only used for predefined metric ALBRequestCountPerTarget.
    *
    * @example app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
+   *
+   * @default - No resource label.
    */
   readonly resourceLabel?: string;
 
@@ -82,8 +86,10 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
+   *
+   * @default - No custom metric.
    */
-  readonly customMetric?: cloudwatch.Metric;
+  readonly customMetric?: cloudwatch.IMetric;
 }
 
 /**
@@ -109,13 +115,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
-    if (props.scaleInCooldownSec !== undefined && props.scaleInCooldownSec < 0) {
-      throw new RangeError(`scaleInCooldown cannot be negative, got: ${props.scaleInCooldownSec}`);
-    }
-    if (props.scaleOutCooldownSec !== undefined && props.scaleOutCooldownSec < 0) {
-      throw new RangeError(`scaleOutCooldown cannot be negative, got: ${props.scaleOutCooldownSec}`);
-    }
-
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
@@ -129,24 +128,30 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
           predefinedMetricType: props.predefinedMetric,
           resourceLabel: props.resourceLabel,
         } : undefined,
-        scaleInCooldown: props.scaleInCooldownSec,
-        scaleOutCooldown: props.scaleOutCooldownSec,
+        scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
+        scaleOutCooldown: props.scaleOutCooldown && props.scaleOutCooldown.toSeconds(),
         targetValue: props.targetValue
       }
     });
 
-    this.scalingPolicyArn = resource.scalingPolicyArn;
+    this.scalingPolicyArn = resource.ref;
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
+function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
+  const c = metric.toAlarmConfig();
+
+  if (!c.statistic) {
+    throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
+  }
+
   return {
-    dimensions: metric.dimensionsAsList(),
-    metricName: metric.metricName,
-    namespace: metric.namespace,
-    statistic: metric.statistic,
-    unit: metric.unit
+    dimensions: c.dimensions,
+    metricName: c.metricName,
+    namespace: c.namespace,
+    statistic: c.statistic,
+    unit: c.unit
   };
 }
 
@@ -154,15 +159,15 @@ function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.Custom
  * One of the predefined autoscaling metrics
  */
 export enum PredefinedMetric {
-  DynamoDBReadCapacityUtilization = 'DynamoDBReadCapacityUtilization',
-  DynamoDBWriteCapacityUtilization = 'DynamoDBWriteCapacityUtilization',
-  ALBRequestCountPerTarget = 'ALBRequestCountPerTarget',
-  RDSReaderAverageCPUUtilization = 'RDSReaderAverageCPUUtilization',
-  RDSReaderAverageDatabaseConnections = 'RDSReaderAverageDatabaseConnections',
-  EC2SpotFleetRequestAverageCPUUtilization = 'EC2SpotFleetRequestAverageCPUUtilization',
-  EC2SpotFleetRequestAverageNetworkIn = 'EC2SpotFleetRequestAverageNetworkIn',
-  EC2SpotFleetRequestAverageNetworkOut = 'EC2SpotFleetRequestAverageNetworkOut',
-  SageMakerVariantInvocationsPerInstance = 'SageMakerVariantInvocationsPerInstance',
-  ECSServiceAverageCPUUtilization = 'ECSServiceAverageCPUUtilization',
-  ECSServiceAverageMemoryUtilization = 'ECSServiceAverageMemoryUtilization',
+  DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
+  DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
+  ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
+  RDS_READER_AVERAGE_CPU_UTILIZATION = 'RDSReaderAverageCPUUtilization',
+  RDS_READER_AVERAGE_DATABASE_CONNECTIONS = 'RDSReaderAverageDatabaseConnections',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION = 'EC2SpotFleetRequestAverageCPUUtilization',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN = 'EC2SpotFleetRequestAverageNetworkIn',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT = 'EC2SpotFleetRequestAverageNetworkOut',
+  SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE = 'SageMakerVariantInvocationsPerInstance',
+  ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
+  ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
 }

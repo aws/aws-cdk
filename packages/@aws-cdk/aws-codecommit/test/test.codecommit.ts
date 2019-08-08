@@ -1,50 +1,50 @@
-import { App, Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/assert';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Repository, RepositoryProps } from '../lib';
 
 export = {
   'CodeCommit Repositories': {
     'add an SNS trigger to repository'(test: Test) {
-      const app = new TestApp();
+      const stack = new Stack();
 
       const props: RepositoryProps = {
-        repositoryName:  'MyRepository'
+        repositoryName: 'MyRepository',
       };
 
       const snsArn = 'arn:aws:sns:*:123456789012:my_topic';
 
-      new Repository(app.stack, 'MyRepository', props).notify(snsArn);
-      const template = app.synthesizeTemplate();
+      new Repository(stack, 'MyRepository', props).notify(snsArn);
 
-      test.deepEqual(template, {
+      expect(stack).toMatch({
         Resources: {
           MyRepository4C4BD5FC: {
             Type: "AWS::CodeCommit::Repository",
             Properties: {
-            RepositoryName: "MyRepository",
-            Triggers: [
-              {
-              Events: [
-                "all"
-              ],
-              DestinationArn: "arn:aws:sns:*:123456789012:my_topic",
-              Name: "MyStack/MyRepository/arn:aws:sns:*:123456789012:my_topic"
-              }
-            ]
+              RepositoryName: "MyRepository",
+              Triggers: [
+                {
+                  Events: [
+                    "all"
+                  ],
+                  DestinationArn: "arn:aws:sns:*:123456789012:my_topic",
+                  Name: "MyRepository/arn:aws:sns:*:123456789012:my_topic"
+                }
+              ]
             }
           }
-          }
+        }
       });
 
       test.done();
     },
 
     'fails when triggers have duplicate names'(test: Test) {
-      const app = new TestApp();
+      const stack = new Stack();
 
-      const props = { repositoryName: 'MyRepository' };
-      const myRepository = new Repository(app.stack, 'MyRepository', props)
-      .notify('myTrigger');
+      const myRepository = new Repository(stack, 'MyRepository', {
+        repositoryName: 'MyRepository',
+      }).notify('myTrigger');
 
       test.throws(() => myRepository.notify('myTrigger'));
 
@@ -60,8 +60,8 @@ export = {
       const repo = Repository.fromRepositoryArn(stack, 'ImportedRepo', repositoryArn);
 
       // THEN
-      test.deepEqual(repo.node.resolve(repo.repositoryArn), repositoryArn);
-      test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+      test.deepEqual(stack.resolve(repo.repositoryArn), repositoryArn);
+      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
 
       test.done();
     },
@@ -74,8 +74,8 @@ export = {
       const repo = Repository.fromRepositoryName(stack, 'ImportedRepo', 'my-repo');
 
       // THEN
-      test.deepEqual(repo.node.resolve(repo.repositoryArn), {
-        'Fn::Join': [ '', [
+      test.deepEqual(stack.resolve(repo.repositoryArn), {
+        'Fn::Join': ['', [
           'arn:',
           { Ref: 'AWS::Partition' },
           ':codecommit:',
@@ -85,19 +85,9 @@ export = {
           ':my-repo'
         ]],
       });
-      test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
 
       test.done();
     },
   },
 };
-
-class TestApp {
-  private readonly app = new App();
-  // tslint:disable-next-line:member-ordering
-  public readonly stack: Stack = new Stack(this.app, 'MyStack');
-
-  public synthesizeTemplate() {
-    return this.app.synthesizeStack(this.stack.name).template;
-  }
-}

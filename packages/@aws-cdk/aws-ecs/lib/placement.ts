@@ -8,29 +8,30 @@ export enum BinPackResource {
   /**
    * Fill up hosts' CPU allocations first
    */
-  Cpu = 'cpu',
+  CPU = 'cpu',
 
   /**
    * Fill up hosts' memory allocations first
    */
-  Memory = 'memory',
+  MEMORY = 'memory',
 }
 
 /**
- * An ECS placement strategy
+ * The placement strategies to use for tasks in the service. For more information, see
+ * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
  *
  * Tasks will preferentially be placed on instances that match these rules.
  */
 export class PlacementStrategy {
   /**
-   * Try to place tasks spread across instances
+   * Places tasks evenly across all container instances in the cluster.
    */
   public static spreadAcrossInstances() {
-    return new PlacementStrategy([{ type: 'spread', field: BuiltInAttributes.InstanceId }]);
+    return new PlacementStrategy([{ type: 'spread', field: BuiltInAttributes.INSTANCE_ID }]);
   }
 
   /**
-   * Try to place tasks spread across instances based on given attributes
+   * Places tasks evenly based on the specified value.
    *
    * You can use one of the built-in attributes found on `BuiltInAttributes`
    * or supply your own custom instance attributes. If more than one attribute
@@ -46,39 +47,40 @@ export class PlacementStrategy {
   }
 
   /**
-   * Try to place tasks on instances with the least amount of CPU
+   * Places tasks on container instances with the least available amount of CPU capacity.
    *
-   * This ensures the total consumption of CPU is lowest
+   * This minimizes the number of instances in use.
    */
   public static packedByCpu() {
-    return PlacementStrategy.packedBy(BinPackResource.Cpu);
+    return PlacementStrategy.packedBy(BinPackResource.CPU);
   }
 
   /**
-   * Try to place tasks on instances with the least amount of memory
+   * Places tasks on container instances with the least available amount of memory capacity.
    *
-   * This ensures the total consumption of memory is lowest
+   * This minimizes the number of instances in use.
    */
   public static packedByMemory() {
-    return PlacementStrategy.packedBy(BinPackResource.Memory);
+    return PlacementStrategy.packedBy(BinPackResource.MEMORY);
   }
 
   /**
-   * Try to place tasks on instances with the least amount of indicated resource available
-   *
-   * This ensures the total consumption of this resource is lowest.
+   * Places tasks on the container instances with the least available capacity of the specified resource.
    */
   public static packedBy(resource: BinPackResource) {
     return new PlacementStrategy([{ type: 'binpack', field: resource }]);
   }
 
   /**
-   * Place tasks randomly across the available instances.
+   * Places tasks randomly.
    */
   public static randomly() {
     return new PlacementStrategy([{ type: 'random' }]);
   }
 
+  /**
+   * Constructs a new instance of the PlacementStrategy class.
+   */
   private constructor(private readonly json: CfnService.PlacementStrategyProperty[]) {
   }
 
@@ -91,23 +93,26 @@ export class PlacementStrategy {
 }
 
 /**
- * An ECS placement constraint
+ * The placement constraints to use for tasks in the service. For more information, see
+ * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
  *
  * Tasks will only be placed on instances that match these rules.
  */
 export class PlacementConstraint {
   /**
-   * Place every task on a different instance
+   * Use distinctInstance to ensure that each task in a particular group is running on a different container instance.
    */
   public static distinctInstances() {
     return new PlacementConstraint([{ type: 'distinctInstance' }]);
   }
 
   /**
-   * Place tasks only on instances matching the given query expression
+   * Use memberOf to restrict the selection to a group of valid candidates specified by a query expression.
    *
-   * You can specify multiple expressions in one call. The tasks will only
-   * be placed on instances matching all expressions.
+   * Multiple expressions can be specified. For more information, see
+   * [Cluster Query Language](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html).
+   *
+   * You can specify multiple expressions in one call. The tasks will only be placed on instances matching all expressions.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html
    */
@@ -115,6 +120,9 @@ export class PlacementConstraint {
     return new PlacementConstraint(expressions.map(expression => ({ type: 'memberOf', expression })));
   }
 
+  /**
+   * Constructs a new instance of the PlacementConstraint class.
+   */
   private constructor(private readonly json: CfnService.PlacementConstraintProperty[]) {
   }
 

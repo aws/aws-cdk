@@ -1,4 +1,19 @@
 ## AWS Step Functions Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+>
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
 serverless workflows using objects. Use this in conjunction with the
@@ -58,7 +73,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
     definition,
-    timeoutSec: 300
+    timeout: Duration.minutes(5)
 });
 ```
 
@@ -114,13 +129,15 @@ couple of the tasks available are:
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
+* `tasks.SagemakerTrainTask` -- run a SageMaker training job
+* `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 
 #### Task parameters from the state json
 
 Many tasks take parameters. The values for those can either be supplied
 directly in the workflow definition (by specifying their values), or at
-runtime by passing a value obtained from the static functions on `JsonPath`,
-such as `JsonPath.stringFromPath()`.
+runtime by passing a value obtained from the static functions on `Data`,
+such as `Data.stringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
@@ -131,12 +148,12 @@ similar to (for example) `inputPath`.
 const task = new sfn.Task(this, 'Invoke The Lambda', {
     task: new tasks.InvokeFunction(myLambda),
     inputPath: '$.input',
-    timeoutSeconds: 300,
+    timeout: Duration.minutes(5),
 });
 
 // Add a retry policy
 task.addRetry({
-    intervalSeconds: 5,
+    interval: Duration.seconds(5),
     maxAttempts: 10
 });
 
@@ -155,9 +172,22 @@ import sns = require('@aws-cdk/aws-sns');
 // ...
 
 const topic = new sns.Topic(this, 'Topic');
-const task = new sfn.Task(this, 'Publish', {
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Publish1', {
     task: new tasks.PublishToTopic(topic, {
-        message: JsonPath.stringFromPath('$.state.message'),
+        message: TaskInput.fromDataAt('$.state.message'),
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Publish2', {
+    task: new tasks.PublishToTopic(topic, {
+        message: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        })
     })
 });
 ```
@@ -170,11 +200,26 @@ import sqs = require('@aws-cdk/aws-sqs');
 // ...
 
 const queue = new sns.Queue(this, 'Queue');
-const task = new sfn.Task(this, 'Send', {
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Send1', {
     task: new tasks.SendToQueue(queue, {
-        messageBody: JsonPath.stringFromPath('$.message'),
+        messageBody: TaskInput.fromDataAt('$.message'),
         // Only for FIFO queues
-        messageGroupId: JsonPath.stringFromPath('$.messageGroupId'),
+        messageGroupId: '1234'
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Send2', {
+    task: new tasks.SendToQueue(queue, {
+        messageBody: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        }),
+        // Only for FIFO queues
+        messageGroupId: '1234'
     })
 });
 ```
@@ -195,7 +240,7 @@ const fargateTask = new ecs.RunEcsFargateTask({
       environment: [
         {
           name: 'CONTAINER_INPUT',
-          value: JsonPath.stringFromPath('$.valueFromStateData')
+          value: Data.stringAt('$.valueFromStateData')
         }
       ]
     }
@@ -206,6 +251,34 @@ fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
 
 const task = new sfn.Task(this, 'CallFargate', {
     task: fargateTask
+});
+```
+
+#### SageMaker Transform example
+
+```ts
+const transformJob = new tasks.SagemakerTransformTask(
+    transformJobName: "MyTransformJob",
+    modelName: "MyModelName",
+    role,
+    transformInput: {
+        transformDataSource: {
+            s3DataSource: {
+                s3Uri: 's3://inputbucket/train',
+                s3DataType: S3DataType.S3Prefix,
+            }
+        }
+    },
+    transformOutput: {
+        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
+    },
+    transformResources: {
+        instanceCount: 1,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+});
+
+const task = new sfn.Task(this, 'Batch Inference', {
+    task: transformJob
 });
 ```
 
