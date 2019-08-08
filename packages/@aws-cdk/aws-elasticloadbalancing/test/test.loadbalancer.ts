@@ -177,9 +177,9 @@ export = {
     // WHEN
     new LoadBalancer(stack, 'LB', {
       vpc,
-      subnets: vpc.selectSubnets({
+      subnetSelection: {
         subnetName: 'private1'
-      }),
+      },
     });
 
     // THEN
