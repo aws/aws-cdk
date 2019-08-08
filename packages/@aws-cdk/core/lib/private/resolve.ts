@@ -18,6 +18,7 @@ const tokenMap = TokenMap.instance();
  */
 export interface IResolveOptions {
   scope: IConstruct;
+  preparing: boolean;
   resolver: ITokenResolver;
   prefix?: string[];
 }
@@ -42,6 +43,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
     let postProcessor: IPostProcessor | undefined;
 
     const context: IResolveContext = {
+      preparing: options.preparing,
       scope: options.scope,
       registerPostProcessor(pp) { postProcessor = pp; },
       resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); },
@@ -168,7 +170,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 export function findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
   const resolver = new RememberingTokenResolver(new StringConcat());
 
-  resolve(fn(), { scope, prefix: [], resolver });
+  resolve(fn(), { scope, prefix: [], resolver, preparing: true });
 
   return resolver.tokens;
 }
