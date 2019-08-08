@@ -33,4 +33,4 @@ export = {
 
     test.done();
   },
-}
+};
