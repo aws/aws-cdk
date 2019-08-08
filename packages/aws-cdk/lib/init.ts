@@ -96,10 +96,13 @@ export class InitTemplate {
       throw new Error(`Unsupported language: ${language}`);
     }
     const sourceDirectory = path.join(this.basePath, language);
+    const hookTempDirectory = path.join(targetDirectory, 'tmp');
+    await fs.mkdir(hookTempDirectory);
     await this.installFiles(sourceDirectory, targetDirectory, {
       name: decamelize(path.basename(path.resolve(targetDirectory)))
     });
-    await this.invokeHooks(sourceDirectory, targetDirectory);
+    await this.invokeHooks(hookTempDirectory, targetDirectory);
+    await fs.remove(hookTempDirectory);
   }
 
   private async installFiles(sourceDirectory: string, targetDirectory: string, project: ProjectInfo) {
@@ -112,7 +115,9 @@ export class InitTemplate {
         continue;
       } else if (file.match(/^.*\.template\.[^.]+$/)) {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
+        continue;
       } else if (file.match(/^.*\.hook\.[^.]+$/)) {
+        await this.installProcessed(fromFile, path.join(targetDirectory, "tmp", file), project);
         continue;
       } else {
         await fs.copy(fromFile, toFile);

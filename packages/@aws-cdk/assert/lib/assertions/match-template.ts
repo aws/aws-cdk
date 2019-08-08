@@ -62,11 +62,21 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
         if (change.changeImpact === cfnDiff.ResourceImpact.MAY_REPLACE) { return false; }
         if (change.changeImpact === cfnDiff.ResourceImpact.WILL_REPLACE) { return false; }
       }
+
+      for (const key of Object.keys(diff.parameters.changes)) {
+        const change = diff.parameters.changes[key]!;
+        if (change.isUpdate) { return false; }
+      }
       return true;
     case MatchStyle.SUPERSET:
       for (const key of Object.keys(diff.resources.changes)) {
         const change = diff.resources.changes[key]!;
         if (change.changeImpact !== cfnDiff.ResourceImpact.WILL_CREATE) { return false; }
+      }
+
+      for (const key of Object.keys(diff.parameters.changes)) {
+        const change = diff.parameters.changes[key]!;
+        if (change.isAddition) { return false; }
       }
       return true;
     }
