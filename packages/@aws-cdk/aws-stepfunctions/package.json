@@ -89,7 +89,8 @@
       "import-props-interface:@aws-cdk/aws-stepfunctions.ActivityImportProps",
       "export:@aws-cdk/aws-stepfunctions.IActivity",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.WaitProps.duration",
-      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT"
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT",
+      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
     ]
   },
   "stability": "experimental"
