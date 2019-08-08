@@ -114,7 +114,7 @@ export class User extends Resource implements IIdentity {
   public readonly userArn: string;
 
   /**
-   * Returns the permissions boundary attached to this role
+   * Returns the permissions boundary attached to this user
    */
   public readonly permissionsBoundary?: IManagedPolicy;
 
