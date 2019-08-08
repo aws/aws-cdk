@@ -35,7 +35,7 @@ taskDefinition.addContainer('TheContainer', {
 const definition = new sfn.Pass(stack, 'Start', {
     result: sfn.Result.fromObject({ SomeKey: 'SomeValue' })
 }).next(new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
-  serviceIntegrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+  integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
   cluster,
   taskDefinition,
   containerOverrides: [

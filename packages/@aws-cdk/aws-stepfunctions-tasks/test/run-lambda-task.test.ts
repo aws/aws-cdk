@@ -45,7 +45,7 @@ test('Invoke lambda with default magic ARN', () => {
 test('Lambda function can be used in a Task with Task Token', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunLambdaTask(fn, {
-      serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       payload: {
         token: sfn.Context.taskToken
       }
@@ -70,7 +70,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not inclu
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunLambdaTask(fn, {
-        serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       })
     });
   }).toThrow(/Task Token is missing in payload/i);
@@ -80,7 +80,7 @@ test('Task throws if SYNC is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunLambdaTask(fn, {
-        serviceIntegrationPattern: sfn.ServiceIntegrationPattern.SYNC
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
   }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call Lambda./i);

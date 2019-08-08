@@ -82,7 +82,7 @@ test('create basic training job', () => {
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
     expect(() => {
         new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
-            serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+            integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
             trainingJobName: "MyTrainJob",
             algorithmSpecification: {
                 algorithmName: "BlazingText",
@@ -120,7 +120,7 @@ test('create complex training job', () => {
 
     const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
         trainingJobName: "MyTrainJob",
-        serviceIntegrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
         role,
         algorithmSpecification: {
             algorithmName: "BlazingText",

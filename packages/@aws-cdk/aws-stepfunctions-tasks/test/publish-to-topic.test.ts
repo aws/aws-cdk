@@ -32,7 +32,7 @@ test('Publish JSON to SNS topic with task token', () => {
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-    serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     message: sfn.TaskInput.fromObject({
       Input: 'Publish this message',
       Token: sfn.Context.taskToken
@@ -61,7 +61,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not inclu
     const topic = new sns.Topic(stack, 'Topic');
     // WHEN
     new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-      serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       message: sfn.TaskInput.fromText('Publish this message')
     }) });
     // THEN
@@ -96,7 +96,7 @@ test('Task throws if SYNC is supplied as service integration pattern', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-      serviceIntegrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
       message: sfn.TaskInput.fromText('Publish this message')
     }) });
   }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call SNS./i);

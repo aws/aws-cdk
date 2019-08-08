@@ -135,7 +135,7 @@ couple of the tasks available are:
 
 Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
-(`serviceIntegrationPattern`) are supposed to be given as parameter when customers want
+(`integrationPattern`) are supposed to be given as parameter when customers want
 to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
 
 #### Task parameters from the state json
@@ -175,7 +175,7 @@ task.next(nextState);
 ```ts
   const task = new sfn.Task(stack, 'Invoke2', {
     task: new tasks.RunLambdaTask(myLambda, {
-      serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       payload: {
         token: sfn.Context.taskToken
       }
@@ -195,7 +195,7 @@ const topic = new sns.Topic(this, 'Topic');
 // Use a field from the execution data as message.
 const task1 = new sfn.Task(this, 'Publish1', {
     task: new tasks.PublishToTopic(topic, {
-        serviceIntegrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
         message: TaskInput.fromDataAt('$.state.message'),
     })
 });

@@ -35,7 +35,7 @@ test('Send message to queue', () => {
 test('Send message to SQS queue with task token', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-    serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     messageBody: sfn.TaskInput.fromObject({
       Input: 'Send this message',
       Token: sfn.Context.taskToken
@@ -61,7 +61,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not inclu
   expect(() => {
     // WHEN
     new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-      serviceIntegrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       messageBody: sfn.TaskInput.fromText('Send this message')
     }) });
     // THEN
@@ -141,7 +141,7 @@ test('Message body object can contain references', () => {
 test('Task throws if SYNC is supplied as service integration pattern', () => {
   expect(() => {
     new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-      serviceIntegrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
       messageBody: sfn.TaskInput.fromText('Send this message')
     }) });
   }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call SQS./i);

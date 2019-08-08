@@ -46,7 +46,7 @@ export interface SendToQueueProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -57,21 +57,21 @@ export interface SendToQueueProps {
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
 
-  private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
-    this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
       sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
     ];
 
-    if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call SQS.`);
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SQS.`);
     }
 
-    if (props.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+    if (props.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
         throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
       }
@@ -80,7 +80,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sqs:sendMessage' + resourceArnSuffix.get(this.serviceIntegrationPattern),
+      resourceArn: 'arn:aws:states:::sqs:sendMessage' + resourceArnSuffix.get(this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [this.queue.queueArn]

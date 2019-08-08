@@ -36,7 +36,7 @@ export interface PublishToTopicProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -47,21 +47,21 @@ export interface PublishToTopicProps {
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
 
-  private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
-    this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
       sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
     ];
 
-    if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call SNS.`);
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`);
     }
 
-    if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
         throw new Error('Task Token is missing in message (pass Context.taskToken somewhere in message)');
       }
@@ -70,7 +70,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sns:publish' + resourceArnSuffix.get(this.serviceIntegrationPattern),
+      resourceArn: 'arn:aws:states:::sns:publish' + resourceArnSuffix.get(this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [this.topic.topicArn]

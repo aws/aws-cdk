@@ -33,7 +33,7 @@ export interface SagemakerTrainTaskProps {
      *
      * @default FIRE_AND_FORGET
      */
-    readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
+    readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
     /**
      * Identifies the training algorithm to use.
@@ -117,18 +117,18 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
      */
     private readonly stoppingCondition: StoppingCondition;
 
-    private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
+    private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
     constructor(scope: Construct, private readonly props: SagemakerTrainTaskProps) {
-        this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+        this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
         const supportedPatterns = [
             sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
             sfn.ServiceIntegrationPattern.SYNC
         ];
 
-        if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
-            throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call SageMaker.`);
+        if (!supportedPatterns.includes(this.integrationPattern)) {
+            throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SageMaker.`);
         }
 
         // set the default resource config if not defined.
@@ -209,7 +209,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + resourceArnSuffix.get(this.serviceIntegrationPattern),
+          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + resourceArnSuffix.get(this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
@@ -337,7 +337,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
             })
         ];
 
-        if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+        if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
             policyStatements.push(new iam.PolicyStatement({
                 actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
                 resources: [stack.formatArn({

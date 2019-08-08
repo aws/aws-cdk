@@ -39,7 +39,7 @@ export interface CommonEcsRunTaskProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -63,10 +63,10 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
   private securityGroup?: ec2.ISecurityGroup;
   private networkConfiguration?: any;
-  private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EcsRunTaskBaseProps) {
-    this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -74,11 +74,11 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       sfn.ServiceIntegrationPattern.SYNC
     ];
 
-    if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call ECS.`);
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
     }
 
-    if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
      throw new Error('Task Token is missing in containerOverrides (pass Context.taskToken somewhere in containerOverrides)');
     }
@@ -104,7 +104,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
 
     return {
-      resourceArn: 'arn:aws:states:::ecs:runTask' + resourceArnSuffix.get(this.serviceIntegrationPattern),
+      resourceArn: 'arn:aws:states:::ecs:runTask' + resourceArnSuffix.get(this.integrationPattern),
       parameters: {
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
@@ -157,7 +157,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       }),
     ];
 
-    if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
         resources: [stack.formatArn({

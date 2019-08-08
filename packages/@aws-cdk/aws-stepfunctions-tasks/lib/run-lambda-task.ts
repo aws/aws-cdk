@@ -24,7 +24,7 @@ export interface RunLambdaTaskProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
   /**
    * Invocation type of the Lambda function
@@ -58,28 +58,28 @@ export interface RunLambdaTaskProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html
  */
 export class RunLambdaTask implements sfn.IStepFunctionsTask {
-  private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: RunLambdaTaskProps = {}) {
-    this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
       sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
     ];
 
-    if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call Lambda.`);
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`);
     }
 
-    if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
         && !sfn.FieldUtils.containsTaskToken(props.payload)) {
       throw new Error('Task Token is missing in payload (pass Context.taskToken somewhere in payload)');
     }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const resourceArn = 'arn:aws:states:::lambda:invoke' + resourceArnSuffix.get(this.serviceIntegrationPattern);
+    const resourceArn = 'arn:aws:states:::lambda:invoke' + resourceArnSuffix.get(this.integrationPattern);
 
     return {
       resourceArn,

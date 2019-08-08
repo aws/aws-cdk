@@ -27,7 +27,7 @@ export interface SagemakerTransformProps {
      *
      * @default FIRE_AND_FORGET
      */
-    readonly serviceIntegrationPattern?: sfn.ServiceIntegrationPattern;
+    readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
     /**
      * Number of records to include in a mini-batch for an HTTP inference request.
@@ -99,18 +99,18 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
      */
     private readonly transformResources: TransformResources;
 
-    private readonly serviceIntegrationPattern: sfn.ServiceIntegrationPattern;
+    private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
     constructor(scope: Construct, private readonly props: SagemakerTransformProps) {
-        this.serviceIntegrationPattern = props.serviceIntegrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+        this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
         const supportedPatterns = [
             sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
             sfn.ServiceIntegrationPattern.SYNC
         ];
 
-        if (!supportedPatterns.includes(this.serviceIntegrationPattern)) {
-            throw new Error(`Invalid Service Integration Pattern: ${this.serviceIntegrationPattern} is not supported to call SageMaker.`);
+        if (!supportedPatterns.includes(this.integrationPattern)) {
+            throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SageMaker.`);
         }
 
         // set the sagemaker role or create new one
@@ -141,7 +141,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + resourceArnSuffix.get(this.serviceIntegrationPattern),
+          resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + resourceArnSuffix.get(this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
@@ -233,7 +233,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
             })
         ];
 
-        if (this.serviceIntegrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+        if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
             policyStatements.push(new iam.PolicyStatement({
                 actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
                 resources: [stack.formatArn({
