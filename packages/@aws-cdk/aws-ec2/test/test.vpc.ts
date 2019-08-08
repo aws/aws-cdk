@@ -540,8 +540,18 @@ export = {
       }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
 
       test.done();
-    }
+    },
 
+    'Subnets have a defaultChild'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      test.notEqual(vpc.publicSubnets[0].node.defaultChild, undefined);
+
+      test.done();
+    },
   },
 
   "When creating a VPC with a custom CIDR range": {

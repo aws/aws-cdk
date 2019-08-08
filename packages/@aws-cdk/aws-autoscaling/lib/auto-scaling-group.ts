@@ -468,6 +468,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       resource: 'autoScalingGroup:*:autoScalingGroupName',
       resourceName: this.autoScalingGroupName
     });
+    this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
   }
