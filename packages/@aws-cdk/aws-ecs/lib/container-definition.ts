@@ -259,23 +259,28 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * The mount points for data volumes in your container.
    */
-  public readonly mountPoints = new Array<MountPoint>();
+   public readonly mountPoints = new Array<MountPoint>();
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-  public readonly portMappings = new Array<PortMapping>();
+   public readonly portMappings = new Array<PortMapping>();
 
-  /**
-   * The data volumes to mount from another container in the same task definition.
-   */
-  public readonly volumesFrom = new Array<VolumeFrom>();
+   /**
+    * The data volumes to mount from another container in the same task definition.
+    */
+   public readonly volumesFrom = new Array<VolumeFrom>();
 
-  /**
-   * An array of ulimits to set in the container.
-   */
-  public readonly ulimits = new Array<Ulimit>();
+   /**
+    * An array of ulimits to set in the container.
+    */
+   public readonly ulimits = new Array<Ulimit>();
+
+   /**
+    * An array dependencies defined for container startup and shutdown.
+    */
+   public readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Specifies whether the container will be marked essential.
@@ -288,6 +293,11 @@ export class ContainerDefinition extends cdk.Construct {
    * If this parameter isomitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
+
+   /**
+    * The name of this container
+    */
+  public readonly containerName: string;
 
   /**
    * Whether there was at least one memory limit specified in this definition
@@ -317,6 +327,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
+    this.containerName = this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -336,9 +347,9 @@ export class ContainerDefinition extends cdk.Construct {
       throw new Error(`You must use network mode Bridge to add container links.`);
     }
     if (alias !== undefined) {
-      this.links.push(`${container.node.id}:${alias}`);
+      this.links.push(`${container.containerName}:${alias}`);
     } else {
-      this.links.push(`${container.node.id}`);
+      this.links.push(`${container.containerName}`);
     }
   }
 
@@ -404,6 +415,13 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
+   * This method adds one or more container dependencies to the container.
+   */
+  public addContainerDependencies(...containerDependencies: ContainerDependency[]) {
+    this.containerDependencies.push(...containerDependencies);
+  }
+
+  /**
    * This method adds one or more volumes to the container.
    */
   public addVolumesFrom(...volumesFrom: VolumeFrom[]) {
@@ -424,7 +442,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -443,7 +461,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
     return defaultPortMapping.containerPort;
@@ -459,6 +477,7 @@ export class ContainerDefinition extends cdk.Construct {
       command: this.props.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
+      dependsOn: cdk.Lazy.anyValue({ produce: () => renderArray(this.containerDependencies, renderContainerDependency) }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
@@ -469,15 +488,15 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: this.mountPoints.map(renderMountPoint),
-      name: this.node.id,
-      portMappings: this.portMappings.map(renderPortMapping),
+      mountPoints: cdk.Lazy.anyValue({ produce: () => renderArray(this.mountPoints, renderMountPoint) }),
+      name: this.containerName,
+      portMappings: cdk.Lazy.anyValue({ produce: () => renderArray(this.portMappings, renderPortMapping) }),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
-      ulimits: this.ulimits.map(renderUlimit),
+      ulimits: cdk.Lazy.anyValue({ produce: () => renderArray(this.ulimits, renderUlimit) }),
       user: this.props.user,
-      volumesFrom: this.volumesFrom.map(renderVolumeFrom),
+      volumesFrom: cdk.Lazy.anyValue({ produce: () => renderArray(this.volumesFrom, renderVolumeFrom) }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
@@ -493,7 +512,7 @@ export class ContainerDefinition extends cdk.Construct {
         }),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
-      links: this.links,
+      links: cdk.Lazy.listValue({ produce: () => renderArray(this.links, l => l) }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
     };
   }
@@ -548,6 +567,13 @@ export interface HealthCheck {
    * @default Duration.seconds(5)
    */
   readonly timeout?: cdk.Duration;
+}
+
+function renderArray<T1, T2>(array: ReadonlyArray<T1>, render: (value: T1) => T2): T2[] | undefined {
+  if (array.length < 1) {
+    return undefined;
+  }
+  return array.map(render);
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
@@ -638,6 +664,58 @@ function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
     name: ulimit.name,
     softLimit: ulimit.softLimit,
     hardLimit: ulimit.hardLimit,
+  };
+}
+/**
+ * The details of a dependency on another container in the task definition.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html
+ */
+export interface ContainerDependency {
+  /**
+   * The container to depend on.
+   */
+  readonly container: ContainerDefinition;
+
+  /**
+   * The state the container needs to be in to satisfy the dependency and proceed with startup.
+   * Valid values are ContainerDependencyCondition.START, ContainerDependencyCondition.COMPLETE,
+   * ContainerDependencyCondition.SUCCESS and ContainerDependencyCondition.HEALTHY.
+   *
+   * @default ContainerDependencyCondition.HEALTHY
+   */
+  readonly condition?: ContainerDependencyCondition;
+}
+
+export enum ContainerDependencyCondition {
+  /**
+   * This condition emulates the behavior of links and volumes today.
+   * It validates that a dependent container is started before permitting other containers to start.
+   */
+  START = 'START',
+
+  /**
+   * This condition validates that a dependent container runs to completion (exits) before permitting other containers to start.
+   * This can be useful for nonessential containers that run a script and then exit.
+   */
+  COMPLETE = 'COMPLETE',
+
+  /**
+   * This condition is the same as COMPLETE, but it also requires that the container exits with a zero status.
+   */
+  SUCCESS = 'SUCCESS',
+
+  /**
+   * This condition validates that the dependent container passes its Docker health check before permitting other containers to start.
+   * This requires that the dependent container has health checks configured. This condition is confirmed only at task startup.
+   */
+  HEALTHY = 'HEALTHY',
+}
+
+function renderContainerDependency(containerDependency: ContainerDependency): CfnTaskDefinition.ContainerDependencyProperty {
+  return {
+    containerName: containerDependency.container.containerName,
+    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY
   };
 }
 
