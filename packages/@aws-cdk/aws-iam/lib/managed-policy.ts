@@ -96,16 +96,12 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    */
   public static fromManagedPolicyName(scope: Construct, id: string, managedPolicyName: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
-      public readonly managedPolicyArn = Lazy.stringValue({
-        produce(ctx: IResolveContext) {
-          return Stack.of(ctx.scope).formatArn({
-            service: "iam",
-            region: "", // no region for managed policy
-            account: Stack.of(ctx.scope).account, // Can this be something the user specifies?
-            resource: "policy",
-            resourceName: managedPolicyName
-          });
-        }
+      public readonly managedPolicyArn = Stack.of(scope).formatArn({
+        service: "iam",
+        region: "", // no region for managed policy
+        account: Stack.of(scope).account, // Can this be something the user specifies?
+        resource: "policy",
+        resourceName: managedPolicyName
       });
     }
     return new Import(scope, id);
