@@ -2,7 +2,6 @@ import s3 = require('@aws-cdk/aws-s3');
 import s3_assets = require('@aws-cdk/aws-s3-assets');
 import cdk = require('@aws-cdk/core');
 import { CfnResource } from '@aws-cdk/core';
-import { CfnFunction } from './lambda.generated';
 
 export abstract class Code {
   /**
@@ -11,25 +10,46 @@ export abstract class Code {
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
-  public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
     return new S3Code(bucket, key, objectVersion);
   }
+
+  // /**
+  //  * @deprecated use `fromBucket`
+  //  */
+  // public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+  //   return this.fromBucket(bucket, key, objectVersion);
+  // }
 
   /**
    * @returns `LambdaInlineCode` with inline code.
    * @param code The actual handler code (limited to 4KiB)
    */
-  public static inline(code: string): InlineCode {
+  public static fromInline(code: string): InlineCode {
     return new InlineCode(code);
   }
+
+  // /**
+  //  * @deprecated use `fromInline`
+  //  */
+  // public static inline(code: string): InlineCode {
+  //   return this.fromInline(code);
+  // }
 
   /**
    * Loads the function code from a local disk asset.
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
-  public static asset(path: string): AssetCode {
+  public static fromAsset(path: string): AssetCode {
     return new AssetCode(path);
   }
+
+  // /**
+  //  * @deprecated use `fromAsset`
+  //  */
+  // public static asset(path: string): AssetCode {
+  //   return this.fromAsset(path);
+  // }
 
   /**
    * Creates a new Lambda source defined using CloudFormation parameters.
@@ -37,12 +57,22 @@ export abstract class Code {
    * @returns a new instance of `CfnParametersCode`
    * @param props optional construction properties of {@link CfnParametersCode}
    */
-  public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
+  public static fromCfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
     return new CfnParametersCode(props);
   }
 
+  // /**
+  //  * @deprecated use `fromCfnParmaeters`
+  //  */
+  // public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
+  //   return this.fromCfnParameters(props);
+  // }
+
   /**
    * Determines whether this Code is inline code or not.
+   *
+   * @deprecated this value is ignored since inline is now determined based on the
+   * the `inlineCode` field of `CodeConfig` returned from `bind()`.
    */
   public abstract readonly isInline: boolean;
 
@@ -53,16 +83,28 @@ export abstract class Code {
    * @param scope The binding scope. Don't be smart about trying to down-cast or
    * assume it's initialized. You may just use it as a construct scope.
    */
-  public abstract bind(scope: cdk.Construct): CfnFunction.CodeProperty;
+  public abstract bind(scope: cdk.Construct): CodeConfig;
 
   /**
    * Called after the CFN function resource has been created to allow the code
    * class to bind to it. Specifically it's required to allow assets to add
    * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bindToResource(_resource?: CfnResource) {
+  public bindToResource(_resource: CfnResource) {
     return;
   }
+}
+
+export interface CodeConfig {
+  /**
+   * The location of the code in S3 (mutually exclusive with `inlineCode`).
+   */
+  readonly s3Location?: s3.Location;
+
+  /**
+   * Inline code (mutually exclusive with `s3Location`).
+   */
+  readonly inlineCode?: string;
 }
 
 /**
@@ -82,11 +124,13 @@ export class S3Code extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  public bind(_scope: cdk.Construct): CfnFunction.CodeProperty {
+  public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      s3Bucket: this.bucketName,
-      s3Key: this.key,
-      s3ObjectVersion: this.objectVersion
+      s3Location: {
+        bucketName: this.bucketName,
+        objectKey: this.key,
+        objectVersion: this.objectVersion
+      }
     };
   }
 }
@@ -105,9 +149,9 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(_scope: cdk.Construct): CfnFunction.CodeProperty {
+  public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      zipFile: this.code
+      inlineCode: this.code
     };
   }
 }
@@ -126,7 +170,7 @@ export class AssetCode extends Code {
     super();
   }
 
-  public bind(scope: cdk.Construct): CfnFunction.CodeProperty {
+  public bind(scope: cdk.Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', { path: this.path });
@@ -137,12 +181,14 @@ export class AssetCode extends Code {
     }
 
     return {
-      s3Bucket: this.asset.s3BucketName,
-      s3Key: this.asset.s3ObjectKey
+      s3Location: {
+        bucketName: this.asset.s3BucketName,
+        objectKey: this.asset.s3ObjectKey
+      }
     };
   }
 
-  public bindToResource(resource: CfnFunction) {
+  public bindToResource(resource: CfnResource) {
     if (!this.asset) {
       throw new Error(`bindToResource() must be called after bind()`);
     }
@@ -193,7 +239,7 @@ export class CfnParametersCode extends Code {
     this._objectKeyParam = props.objectKeyParam;
   }
 
-  public bind(scope: cdk.Construct, _resource?: cdk.CfnResource): CfnFunction.CodeProperty {
+  public bind(scope: cdk.Construct): CodeConfig {
     if (!this._bucketNameParam) {
       this._bucketNameParam = new cdk.CfnParameter(scope, 'LambdaSourceBucketNameParameter', {
         type: 'String',
@@ -207,8 +253,10 @@ export class CfnParametersCode extends Code {
     }
 
     return {
-      s3Bucket: this._bucketNameParam!.valueAsString,
-      s3Key: this._objectKeyParam!.valueAsString,
+      s3Location: {
+        bucketName: this._bucketNameParam.valueAsString,
+        objectKey: this._objectKeyParam.valueAsString,
+      }
     };
   }
 

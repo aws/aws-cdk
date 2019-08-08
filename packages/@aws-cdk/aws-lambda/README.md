@@ -17,7 +17,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.asset('./lambda-handler'),
+    code: lambda.Code.fromAsset('./lambda-handler'),
 });
 ```
 
@@ -26,11 +26,11 @@ const fn = new lambda.Function(this, 'MyFunction', {
 The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
- * `lambda.Code.bucket(bucket, key[, objectVersion])` - specify an S3 object
+ * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
    that contains the archive of your runtime code.
- * `lambda.Code.inline(code)` - inline the handle code as a string. This is
+ * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes and the code cannot exceed 4KiB.
- * `lambda.Code.asset(path)` - specify a directory or a .zip file in the local
+ * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment.
 
 The following example shows how to define a Python function and deploy the code
@@ -102,7 +102,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueueEnabled: true
 });
 ```
@@ -117,7 +117,7 @@ const dlq = new sqs.Queue(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueue: dlq
 });
 ```
@@ -133,7 +133,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     tracing: lambda.Tracing.ACTIVE
 });
 ```
@@ -148,7 +148,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     reservedConcurrentExecutions: 100
 });
 ```

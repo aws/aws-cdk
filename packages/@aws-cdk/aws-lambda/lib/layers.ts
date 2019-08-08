@@ -12,7 +12,9 @@ export interface LayerVersionProps {
   readonly compatibleRuntimes?: Runtime[];
 
   /**
-   * The content of this Layer. Using *inline* (per ``code.isInline``) code is not permitted.
+   * The content of this Layer.
+   *
+   * Using `Code.fromInline` is not supported.
    */
   readonly code: Code;
 
@@ -171,16 +173,19 @@ export class LayerVersion extends LayerVersionBase {
     }
     // Allow usage of the code in this context...
     const code = props.code.bind(this);
-    if (!code.s3Bucket || !code.s3Key) {
-      throw new Error(`Only S3 based code can be used for a Lambda layer`);
+    if (code.inlineCode) {
+      throw new Error(`Inline code is not supported for AWS Lambda layers`);
+    }
+    if (!code.s3Location) {
+      throw new Error(`Code must define an S3 location`);
     }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
       content: {
-        s3Bucket: code.s3Bucket,
-        s3Key: code.s3Key,
-        s3ObjectVersion: code.s3ObjectVersion
+        s3Bucket: code.s3Location.bucketName,
+        s3Key: code.s3Location.objectKey,
+        s3ObjectVersion: code.s3Location.objectVersion
       },
       description: props.description,
       layerName: this.physicalName,

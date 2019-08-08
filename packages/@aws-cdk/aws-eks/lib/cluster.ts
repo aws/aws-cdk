@@ -476,7 +476,7 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return new lambda.Function(this, 'KubernetesResourceHandler', {
-      code: lambda.Code.asset(path.join(__dirname, 'k8s-resource')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'k8s-resource')),
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
