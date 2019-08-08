@@ -4,3 +4,4 @@ incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.addVolume
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
+change-return-type:@aws-cdk/core.Fn.getAtt
