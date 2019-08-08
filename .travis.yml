@@ -19,4 +19,4 @@ cache:
   - pip
 
 install: ./install.sh
-script: ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD && - untracked=$(git ls-files --others --exlude-standard) && echo "${untracked}" && test -z "${untracked}"
+script: ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD && - untracked=$(git ls-files --others --exclude-standard) && echo "${untracked}" && test -z "${untracked}"
