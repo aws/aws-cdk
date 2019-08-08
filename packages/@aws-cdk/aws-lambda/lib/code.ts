@@ -1,6 +1,7 @@
 import s3 = require('@aws-cdk/aws-s3');
 import s3_assets = require('@aws-cdk/aws-s3-assets');
 import cdk = require('@aws-cdk/core');
+import { CfnResource } from '@aws-cdk/core';
 import { CfnFunction } from './lambda.generated';
 
 export abstract class Code {
@@ -46,20 +47,20 @@ export abstract class Code {
   public abstract readonly isInline: boolean;
 
   /**
-   * Called during stack synthesis to render the CodePropery for the
-   * Lambda function.
+   * Called when the lambda or layer is initialized to allow this object to bind
+   * to the stack, add resources and have fun.
    *
-   * @param resource the resource to which the code will be attached (a CfnFunction, or a CfnLayerVersion).
-   *
-   * @internal
+   * @param scope The binding scope. Don't be smart about trying to down-cast or
+   * assume it's initialized. You may just use it as a construct scope.
    */
-  public abstract _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty;
+  public abstract bind(scope: cdk.Construct): CfnFunction.CodeProperty;
 
   /**
-   * Called when the lambda or layer is initialized to allow this object to
-   * bind to the stack, add resources and have fun.
+   * Called after the CFN function resource has been created to allow the code
+   * class to bind to it. Specifically it's required to allow assets to add
+   * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bind(_construct: cdk.Construct) {
+  public bindToResource(_resource?: CfnResource) {
     return;
   }
 }
@@ -81,10 +82,7 @@ export class S3Code extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  /**
-   * @internal
-   */
-  public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
+  public bind(_scope: cdk.Construct): CfnFunction.CodeProperty {
     return {
       s3Bucket: this.bucketName,
       s3Key: this.key,
@@ -107,17 +105,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(construct: cdk.Construct) {
-    const runtime = (construct as any).runtime;
-    if (!runtime.supportsInlineCode) {
-      throw new Error(`Inline source not allowed for ${runtime && runtime.name}`);
-    }
-  }
-
-  /**
-   * @internal
-   */
-  public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
+  public bind(_scope: cdk.Construct): CfnFunction.CodeProperty {
     return {
       zipFile: this.code
     };
@@ -138,30 +126,29 @@ export class AssetCode extends Code {
     super();
   }
 
-  public bind(construct: cdk.Construct) {
+  public bind(scope: cdk.Construct): CfnFunction.CodeProperty {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(construct, 'Code', { path: this.path });
+      this.asset = new s3_assets.Asset(scope, 'Code', { path: this.path });
     }
 
     if (!this.asset.isZipArchive) {
       throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
     }
-  }
-
-  /**
-   * @internal
-   */
-  public _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty {
-    if (resource) {
-      // https://github.com/aws/aws-cdk/issues/1432
-      this.asset!.addResourceMetadata(resource, 'Code');
-    }
 
     return {
-      s3Bucket: this.asset!.s3BucketName,
-      s3Key: this.asset!.s3ObjectKey
+      s3Bucket: this.asset.s3BucketName,
+      s3Key: this.asset.s3ObjectKey
     };
+  }
+
+  public bindToResource(resource: CfnFunction) {
+    if (!this.asset) {
+      throw new Error(`bindToResource() must be called after bind()`);
+    }
+
+      // https://github.com/aws/aws-cdk/issues/1432
+    this.asset.addResourceMetadata(resource, 'Code');
   }
 }
 
@@ -206,18 +193,23 @@ export class CfnParametersCode extends Code {
     this._objectKeyParam = props.objectKeyParam;
   }
 
-  public bind(construct: cdk.Construct) {
+  public bind(scope: cdk.Construct, _resource?: cdk.CfnResource): CfnFunction.CodeProperty {
     if (!this._bucketNameParam) {
-      this._bucketNameParam = new cdk.CfnParameter(construct, 'LambdaSourceBucketNameParameter', {
+      this._bucketNameParam = new cdk.CfnParameter(scope, 'LambdaSourceBucketNameParameter', {
         type: 'String',
       });
     }
 
     if (!this._objectKeyParam) {
-      this._objectKeyParam = new cdk.CfnParameter(construct, 'LambdaSourceObjectKeyParameter', {
+      this._objectKeyParam = new cdk.CfnParameter(scope, 'LambdaSourceObjectKeyParameter', {
         type: 'String',
       });
     }
+
+    return {
+      s3Bucket: this._bucketNameParam!.valueAsString,
+      s3Key: this._objectKeyParam!.valueAsString,
+    };
   }
 
   /**
@@ -237,14 +229,6 @@ export class CfnParametersCode extends Code {
     ret[this.bucketNameParam] = location.bucketName;
     ret[this.objectKeyParam] = location.objectKey;
     return ret;
-  }
-
-  /** @internal */
-  public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
-    return {
-      s3Bucket: this._bucketNameParam!.valueAsString,
-      s3Key: this._objectKeyParam!.valueAsString,
-    };
   }
 
   public get bucketNameParam(): string {

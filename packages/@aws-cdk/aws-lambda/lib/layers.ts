@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -170,15 +170,24 @@ export class LayerVersion extends LayerVersionBase {
       throw new Error('Lambda layers cannot be created from inline code');
     }
     // Allow usage of the code in this context...
-    props.code.bind(this);
+    const code = props.code.bind(this);
+    if (!code.s3Bucket || !code.s3Key) {
+      throw new Error(`Only S3 based code can be used for a Lambda layer`);
+    }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
-      content: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
+      content: {
+        s3Bucket: code.s3Bucket,
+        s3Key: code.s3Key,
+        s3ObjectVersion: code.s3ObjectVersion
+      },
       description: props.description,
       layerName: this.physicalName,
       licenseInfo: props.license,
     });
+
+    props.code.bindToResource(resource);
 
     this.layerVersionArn = resource.ref;
     this.compatibleRuntimes = props.compatibleRuntimes;

@@ -423,7 +423,7 @@ export class Function extends FunctionBase {
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
-      code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
+      code: props.code.bind(this),
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
@@ -446,10 +446,8 @@ export class Function extends FunctionBase {
       resourceName: this.physicalName,
       sep: ':',
     });
-    this.runtime = props.runtime;
 
-    // allow code to bind to stack.
-    props.code.bind(this);
+    this.runtime = props.runtime;
 
     if (props.layers) {
       this.addLayers(...props.layers);
@@ -465,6 +463,12 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention
       });
+    }
+
+    props.code.bindToResource(resource);
+
+    if (props.code.isInline && !this.runtime.supportsInlineCode) {
+      throw new Error(`Inline source not allowed for ${this.runtime.name}`);
     }
   }
 
