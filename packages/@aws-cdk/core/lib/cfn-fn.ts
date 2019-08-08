@@ -1,6 +1,7 @@
 import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
+import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
@@ -637,8 +638,6 @@ class FnJoin implements IResolvable {
 
   private readonly delimiter: string;
   private readonly listOfValues: any[];
-  // Cache for the result of resolveValues() - since it otherwise would be computed several times
-  private _resolvedValues?: any[];
 
   /**
    * Creates an ``Fn::Join`` function.
@@ -682,9 +681,7 @@ class FnJoin implements IResolvable {
    * generate shorter output.
    */
   private resolveValues(context: IResolveContext) {
-    if (this._resolvedValues) { return this._resolvedValues; }
-
-    const resolvedValues = this.listOfValues.map(context.resolve);
-    return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
+    const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
+    return  minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }
