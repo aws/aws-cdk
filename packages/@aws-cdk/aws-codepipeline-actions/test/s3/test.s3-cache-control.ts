@@ -29,7 +29,7 @@ export = {
   'multiple options'(test: Test) {
     test.equal(serialize({noCache: true, noStore: true}), 'no-cache, no-store');
     test.equal(serialize({noCache: true, maxAge: testDuration}), 'no-cache, max-age=3600');
-    test.equal(serialize({noCache: true, of: ['foo, bar', 'value=test']}), 'no-cache, foo, bar, value=foo');
+    test.equal(serialize({noCache: true, of: ['foo, bar', 'value=test']}), 'no-cache, foo, bar, value=test');
 
     test.done();
   },
