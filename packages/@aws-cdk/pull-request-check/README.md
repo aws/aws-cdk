@@ -1,4 +1,4 @@
-## Amazon Cognito Construct Library
+## PullRequestCheck
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -15,4 +15,33 @@
 ---
 <!--END STABILITY BANNER-->
 
+This package provides a Construct for automatically check pull requests
+
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+### Getting Started
+
+```typescript
+import { BuildSpec } from '@aws-cdk/aws-codebuild';
+import { Repository } from '@aws-cdk/aws-codecommit';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { PullRequestCheck } from '@aws-cdk/pull-request-check';
+
+export class CodepipelineStack extends Stack {
+    constructor(parent: App, name: string, props?: StackProps) {
+        super(parent, name, props);
+
+        const repository = new Repository(this, 'Repository', {
+            repositoryName: 'MyRepositoryName',
+            description: 'Some description.', // optional property
+        });
+
+        // Codepipeline etc.
+
+        new PullRequestCheck(this, 'PullRequestCheck', {
+            repository,
+            buildSpec: BuildSpec.fromSourceFilename('buildspecs/prcheck.yml'),
+        });
+    }
+}
+```
