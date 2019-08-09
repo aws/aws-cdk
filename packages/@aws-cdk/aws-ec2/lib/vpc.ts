@@ -528,17 +528,17 @@ export interface VpcProps {
    *    {
    *      cidrMask: 24,
    *      name: 'ingress',
-   *      subnetType: SubnetType.Public,
+   *      subnetType: SubnetType.PUBLIC,
    *    },
    *    {
    *      cidrMask: 24,
    *      name: 'application',
-   *      subnetType: SubnetType.Private,
+   *      subnetType: SubnetType.PRIVATE,
    *    },
    *    {
    *      cidrMask: 28,
    *      name: 'rds',
-   *      subnetType: SubnetType.Isolated,
+   *      subnetType: SubnetType.ISOLATED,
    *    }
    * ]
    *
