@@ -80,6 +80,66 @@ export = {
     test.done();
   },
 
+  'can supply single externalIds'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      externalIds: ['SomeSecret'],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Condition: {
+              StringEquals: { "sts:ExternalId": "SomeSecret" }
+            },
+            Effect: "Allow",
+            Principal: { Service: "sns.amazonaws.com" }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
+
+  'can supply multiple externalIds'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      externalIds: ['SomeSecret', 'AnotherSecret'],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Condition: {
+              StringEquals: { "sts:ExternalId": ["SomeSecret", "AnotherSecret"] }
+            },
+            Effect: "Allow",
+            Principal: { Service: "sns.amazonaws.com" }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
+
   'policy is created automatically when permissions are added'(test: Test) {
     // by default we don't expect a role policy
     const before = new Stack();
