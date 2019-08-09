@@ -662,6 +662,72 @@ export = {
     test.done();
   },
 
+  "allows returning the correct image for windows for EcsOptimizedAmi"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const ami = new ecs.EcsOptimizedAmi({
+      windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+    });
+
+    test.equal(ami.getImage(stack).osType, ec2.OperatingSystemType.WINDOWS);
+
+    test.done();
+  },
+
+  "allows returning the correct image for linux for EcsOptimizedAmi"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const ami = new ecs.EcsOptimizedAmi({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX
+    });
+
+    test.equal(ami.getImage(stack).osType, ec2.OperatingSystemType.LINUX);
+
+    test.done();
+  },
+
+  "allows returning the correct image for linux 2 for EcsOptimizedAmi"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const ami = new ecs.EcsOptimizedAmi({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2
+    });
+
+    test.equal(ami.getImage(stack).osType, ec2.OperatingSystemType.LINUX);
+
+    test.done();
+  },
+
+  "allows returning the correct image for linux for EcsOptimizedImage"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    test.equal(ecs.EcsOptimizedImage.amazonLinux().getImage(stack).osType,
+    ec2.OperatingSystemType.LINUX);
+
+    test.done();
+  },
+
+  "allows returning the correct image for linux 2 for EcsOptimizedImage"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    test.equal(ecs.EcsOptimizedImage.amazonLinux2().getImage(stack).osType,
+    ec2.OperatingSystemType.LINUX);
+
+    test.done();
+  },
+
+  "allows returning the correct image for windows for EcsOptimizedImage"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    test.equal(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType,
+    ec2.OperatingSystemType.WINDOWS);
+
+    test.done();
+  },
+
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
@@ -880,5 +946,46 @@ export = {
     cluster2.vpc.selectSubnets();
 
     test.done();
-  }
+  },
+
+  "Metric"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // THEN
+    test.deepEqual(stack.resolve(cluster.metricCpuReservation()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'CPUReservation',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.deepEqual(stack.resolve(cluster.metricMemoryReservation()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'MemoryReservation',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.deepEqual(stack.resolve(cluster.metric("myMetric")), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'myMetric',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.done();
+  },
 };
