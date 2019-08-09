@@ -311,10 +311,107 @@ export = {
           DeletionPolicy: "Retain",
           UpdateReplacePolicy: "Retain",
         },
-        MyKeyAlias1B45D9DA: {
+        MyKeyAliasaliasxoo1B45D9DA: {
           Type: "AWS::KMS::Alias",
           Properties: {
             AliasName: "alias/xoo",
+            TargetKeyId: {
+              "Fn::GetAtt": [
+                "MyKey6AB29FA6",
+                "Arn"
+              ]
+            }
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'can run multiple addAlias'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'Test');
+
+    const key = new Key(stack, 'MyKey', {
+      enableKeyRotation: true,
+      enabled: false
+    });
+
+    const alias1 = key.addAlias('alias/alias1');
+    const alias2 = key.addAlias('alias/alias2');
+    test.ok(alias1.aliasName);
+    test.ok(alias2.aliasName);
+
+    expect(stack).toMatch({
+      Resources: {
+        MyKey6AB29FA6: {
+          Type: "AWS::KMS::Key",
+          Properties: {
+            EnableKeyRotation: true,
+            Enabled: false,
+            KeyPolicy: {
+              Statement: [
+                {
+                  Action: [
+                    "kms:Create*",
+                    "kms:Describe*",
+                    "kms:Enable*",
+                    "kms:List*",
+                    "kms:Put*",
+                    "kms:Update*",
+                    "kms:Revoke*",
+                    "kms:Disable*",
+                    "kms:Get*",
+                    "kms:Delete*",
+                    "kms:ScheduleKeyDeletion",
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
+                  ],
+                  Effect: "Allow",
+                  Principal: {
+                    AWS: {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            Ref: "AWS::Partition"
+                          },
+                          ":iam::",
+                          {
+                            Ref: "AWS::AccountId"
+                          },
+                          ":root"
+                        ]
+                      ]
+                    }
+                  },
+                  Resource: "*"
+                }
+              ],
+              Version: "2012-10-17"
+            }
+          },
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
+        },
+        MyKeyAliasaliasalias14672E19E: {
+          Type: "AWS::KMS::Alias",
+          Properties: {
+            AliasName: "alias/alias1",
+            TargetKeyId: {
+              "Fn::GetAtt": [
+                "MyKey6AB29FA6",
+                "Arn"
+              ]
+            }
+          }
+        },
+        MyKeyAliasaliasalias2703BB0BA: {
+          Type: "AWS::KMS::Alias",
+          Properties: {
+            AliasName: "alias/alias2",
             TargetKeyId: {
               "Fn::GetAtt": [
                 "MyKey6AB29FA6",
