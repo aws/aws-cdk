@@ -484,7 +484,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No options
    */
-  readonly driverOpts?: string[];
+  readonly driverOpts?: {[key: string]: string};
   /**
    * Custom metadata to add to your Docker volume.
    *
