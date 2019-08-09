@@ -47,18 +47,22 @@ export = {
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
 
-    expect(stack).toMatch({ Resources:
-      { MyManagedPolicy9F3720AE:
-         { Type: 'AWS::IAM::ManagedPolicy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
-             Version: '2012-10-17' },
-          ManagedPolicyName: 'MyManagedPolicyName',
-          Path: '/',
-          Description: '' } },
+    expect(stack).toMatch({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            ManagedPolicyName: 'MyManagedPolicyName',
+            PolicyDocument: {
+              Statement:
+                [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+                { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+              Version: '2012-10-17'
+            },
+            Path: '/',
+            Description: ''
+          }
+        },
         MyGroupCBA54B1B: {
           Type: 'AWS::IAM::Group',
           Properties: {
@@ -83,18 +87,21 @@ export = {
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
 
-    expect(stack).toMatch({ Resources:
-      { MyManagedPolicy9F3720AE:
-         { Type: 'AWS::IAM::ManagedPolicy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
-             Version: '2012-10-17' },
-          ManagedPolicyName: 'MyManagedPolicy9F3720AE',
-          Path: '/',
-          Description: '' } },
+    expect(stack).toMatch({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            PolicyDocument: {
+              Statement:
+                [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+                { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+              Version: '2012-10-17'
+            },
+            Path: '/',
+            Description: ''
+          }
+        },
         MyGroupCBA54B1B: {
           Type: 'AWS::IAM::Group',
           Properties: {
@@ -129,31 +136,42 @@ export = {
       statements: [ new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] }) ],
     });
 
-    expect(stack).toMatch({ Resources:
-      { User1E278A736: { Type: 'AWS::IAM::User' },
+    expect(stack).toMatch({
+      Resources: {
+        User1E278A736: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
-        Role13A5C70C1:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-              { Statement:
-                [ { Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: { Service: 'test.service' } } ],
-                Version: '2012-10-17' } } },
-        MyTestManagedPolicy6535D9F5:
-         { Type: 'AWS::IAM::ManagedPolicy',
-         Properties:
-          { Groups: [ { Ref: 'Group1BEBD4686' } ],
-          Description: 'My Policy Description',
-          Path: 'tahiti/is/a/magical/place',
-          PolicyDocument:
-           { Statement:
-            [ { Action: 'dynamodb:PutItem', Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          ManagedPolicyName: 'Foo',
-          Roles: [ { Ref: 'Role13A5C70C1' } ],
-          Users: [ { Ref: 'User1E278A736' } ] } } } });
+        Role13A5C70C1: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' }
+                }],
+              Version: '2012-10-17'
+            }
+          }
+        },
+        MyTestManagedPolicy6535D9F5: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            Groups: [{ Ref: 'Group1BEBD4686' }],
+            Description: 'My Policy Description',
+            Path: 'tahiti/is/a/magical/place',
+            PolicyDocument: {
+              Statement:
+                [{ Action: 'dynamodb:PutItem', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17'
+            },
+            ManagedPolicyName: 'Foo',
+            Roles: [{ Ref: 'Role13A5C70C1' }],
+            Users: [{ Ref: 'User1E278A736' }]
+          }
+        }
+      }
+    });
 
     test.done();
   },
@@ -178,32 +196,40 @@ export = {
     p.attachToRole(role);
     p.attachToRole(role);
 
-    expect(stack).toMatch({ Resources:
-      { MyManagedPolicy9F3720AE:
-         { Type: 'AWS::IAM::ManagedPolicy',
-         Properties:
-          { PolicyDocument:
-           { Statement: [ { Action: '*', Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          ManagedPolicyName: 'MyManagedPolicy9F3720AE',
-          Description: '',
-          Path: '/',
-          Users: [ { Ref: 'MyUserDC45028B' } ],
-          Groups: [ { Ref: 'MyGroupCBA54B1B' } ] ,
-          Roles: [ { Ref: 'MyRoleF48FFE04' } ] } },
+    expect(stack).toMatch({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17'
+            },
+            Description: '',
+            Path: '/',
+            Users: [{ Ref: 'MyUserDC45028B' }],
+            Groups: [{ Ref: 'MyGroupCBA54B1B' }],
+            Roles: [{ Ref: 'MyRoleF48FFE04' }]
+          }
+        },
         MyUserDC45028B: { Type: 'AWS::IAM::User' },
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
         MyRoleF48FFE04: {
           Type: 'AWS::IAM::Role',
           Properties: {
-            AssumeRolePolicyDocument:
-              { Statement:
-                [ { Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: { Service: 'test.service' } } ],
-                Version: '2012-10-17'
-              }
-          } } } });
+            AssumeRolePolicyDocument: {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' }
+                }],
+              Version: '2012-10-17'
+            }
+          }
+        }
+      }
+    });
     test.done();
   },
 
@@ -222,32 +248,43 @@ export = {
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
     p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['dynamodb:GetItem'] }));
 
-    expect(stack).toMatch({ Resources:
-      { MyManagedPolicy9F3720AE:
-         { Type: 'AWS::IAM::ManagedPolicy',
-         Properties:
-          { Groups: [ { Ref: 'Group1BEBD4686' } ],
-          PolicyDocument:
-           { Statement:
-            [ { Action: 'dynamodb:GetItem', Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          ManagedPolicyName: 'Foo',
-          Description: '',
-          Path: '/',
-          Roles: [ { Ref: 'Role13A5C70C1' } ],
-          Users: [ { Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' } ] } },
+    expect(stack).toMatch({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            Groups: [{ Ref: 'Group1BEBD4686' }],
+            PolicyDocument: {
+              Statement:
+                [{ Action: 'dynamodb:GetItem', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17'
+            },
+            ManagedPolicyName: 'Foo',
+            Description: '',
+            Path: '/',
+            Roles: [{ Ref: 'Role13A5C70C1' }],
+            Users: [{ Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' }]
+          }
+        },
         User1E278A736: { Type: 'AWS::IAM::User' },
         User21F1486D1: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
-        Role13A5C70C1:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-            { Statement:
-              [ { Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: { Service: 'test.service' } } ],
-                Version: '2012-10-17' } } } } });
+        Role13A5C70C1: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' }
+                }],
+              Version: '2012-10-17'
+            }
+          }
+        }
+      }
+    });
     test.done();
   },
 
@@ -266,28 +303,38 @@ export = {
 
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
-    expect(stack).toMatch({ Resources:
-      { MyManagedPolicy9F3720AE:
-         { Type: 'AWS::IAM::ManagedPolicy',
-         Properties:
-          { PolicyDocument:
-           { Statement: [ { Action: '*', Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          ManagedPolicyName: 'MyManagedPolicy9F3720AE',
-          Description: '',
-          Path: '/' } },
-        MyUserDC45028B: { Type: 'AWS::IAM::User', Properties: { ManagedPolicyArns: [ { Ref: 'MyManagedPolicy9F3720AE' } ] } },
-        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group', Properties: { ManagedPolicyArns: [ { Ref: 'MyManagedPolicy9F3720AE' } ] } },
-        MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { ManagedPolicyArns: [ { Ref: 'MyManagedPolicy9F3720AE' } ],
-            AssumeRolePolicyDocument:
-             { Statement:
-              [ { Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: { Service: 'test.service' } } ],
-               Version: '2012-10-17' } } } } });
+    expect(stack).toMatch({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17'
+            },
+            Description: '',
+            Path: '/'
+          }
+        },
+        MyUserDC45028B: { Type: 'AWS::IAM::User', Properties: { ManagedPolicyArns: [{ Ref: 'MyManagedPolicy9F3720AE' }] } },
+        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group', Properties: { ManagedPolicyArns: [{ Ref: 'MyManagedPolicy9F3720AE' }] } },
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            ManagedPolicyArns: [{ Ref: 'MyManagedPolicy9F3720AE' }],
+            AssumeRolePolicyDocument: {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' }
+                }],
+              Version: '2012-10-17'
+            }
+          }
+        }
+      }
+    });
     test.done();
   },
 
@@ -304,41 +351,13 @@ export = {
     group.addManagedPolicy(policy);
     role.addManagedPolicy(policy);
 
-    expect(stack).toMatch({ Resources:
-      {
+    expect(stack).toMatch({
+      Resources: {
         MyUserDC45028B: {
           Type: 'AWS::IAM::User',
-          Properties: { ManagedPolicyArns: [
-          {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  { Ref: "AWS::Partition" },
-                  ":iam::aws:policy/AnAWSManagedPolicy"
-                ]
-              ]
-          } ] }
-        },
-        MyGroupCBA54B1B: {
-          Type: 'AWS::IAM::Group',
-          Properties: { ManagedPolicyArns: [
-          {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  { Ref: "AWS::Partition" },
-                  ":iam::aws:policy/AnAWSManagedPolicy"
-                ]
-              ]
-          } ] }
-        },
-        MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { ManagedPolicyArns: [
-            {
+          Properties: {
+            ManagedPolicyArns: [
+              {
                 "Fn::Join": [
                   "",
                   [
@@ -347,13 +366,52 @@ export = {
                     ":iam::aws:policy/AnAWSManagedPolicy"
                   ]
                 ]
-            } ],
-            AssumeRolePolicyDocument:
-             { Statement:
-              [ { Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: { Service: 'test.service' } } ],
-               Version: '2012-10-17' } } } } });
+              }]
+          }
+        },
+        MyGroupCBA54B1B: {
+          Type: 'AWS::IAM::Group',
+          Properties: {
+            ManagedPolicyArns: [
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    { Ref: "AWS::Partition" },
+                    ":iam::aws:policy/AnAWSManagedPolicy"
+                  ]
+                ]
+              }]
+          }
+        },
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            ManagedPolicyArns: [
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    { Ref: "AWS::Partition" },
+                    ":iam::aws:policy/AnAWSManagedPolicy"
+                  ]
+                ]
+              }],
+            AssumeRolePolicyDocument: {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' }
+                }],
+              Version: '2012-10-17'
+            }
+          }
+        }
+      }
+    });
     test.done();
   },
 
@@ -370,45 +428,13 @@ export = {
     group.addManagedPolicy(policy);
     role.addManagedPolicy(policy);
 
-    expect(stack).toMatch({ Resources:
-      {
+    expect(stack).toMatch({
+      Resources: {
         MyUserDC45028B: {
           Type: 'AWS::IAM::User',
-          Properties: { ManagedPolicyArns: [
-          {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  { Ref: "AWS::Partition" },
-                  ":iam::",
-                  { Ref: "AWS::AccountId" },
-                  ":policy/ACustomerManagedPolicyName"
-                ]
-              ]
-          } ] }
-        },
-        MyGroupCBA54B1B: {
-          Type: 'AWS::IAM::Group',
-          Properties: { ManagedPolicyArns: [
-          {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  { Ref: "AWS::Partition" },
-                  ":iam::",
-                  { Ref: "AWS::AccountId" },
-                  ":policy/ACustomerManagedPolicyName"
-                ]
-              ]
-          } ] }
-        },
-        MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { ManagedPolicyArns: [
-            {
+          Properties: {
+            ManagedPolicyArns: [
+              {
                 "Fn::Join": [
                   "",
                   [
@@ -419,13 +445,56 @@ export = {
                     ":policy/ACustomerManagedPolicyName"
                   ]
                 ]
-            } ],
-            AssumeRolePolicyDocument:
-             { Statement:
-              [ { Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: { Service: 'test.service' } } ],
-               Version: '2012-10-17' } } } } });
+              }]
+          }
+        },
+        MyGroupCBA54B1B: {
+          Type: 'AWS::IAM::Group',
+          Properties: {
+            ManagedPolicyArns: [
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    { Ref: "AWS::Partition" },
+                    ":iam::",
+                    { Ref: "AWS::AccountId" },
+                    ":policy/ACustomerManagedPolicyName"
+                  ]
+                ]
+              }]
+          }
+        },
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            ManagedPolicyArns: [
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    { Ref: "AWS::Partition" },
+                    ":iam::",
+                    { Ref: "AWS::AccountId" },
+                    ":policy/ACustomerManagedPolicyName"
+                  ]
+                ]
+              }],
+            AssumeRolePolicyDocument: {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' }
+                }],
+              Version: '2012-10-17'
+            }
+          }
+        }
+      }
+    });
     test.done();
   },
 
