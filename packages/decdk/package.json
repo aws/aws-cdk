@@ -57,6 +57,7 @@
     "@aws-cdk/aws-codedeploy": "^1.3.0",
     "@aws-cdk/aws-codepipeline": "^1.3.0",
     "@aws-cdk/aws-codepipeline-actions": "^1.3.0",
+    "@aws-cdk/aws-codestar": "^1.3.0",
     "@aws-cdk/aws-cognito": "^1.3.0",
     "@aws-cdk/aws-config": "^1.3.0",
     "@aws-cdk/aws-datapipeline": "^1.3.0",
@@ -148,8 +149,7 @@
     "jsii-reflect": "^0.14.3",
     "jsonschema": "^1.2.4",
     "yaml": "1.6.0",
-    "yargs": "^13.3.0",
-    "@aws-cdk/aws-codestar": "^1.3.0"
+    "yargs": "^13.3.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
