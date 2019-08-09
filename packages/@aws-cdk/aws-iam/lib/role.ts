@@ -25,9 +25,21 @@ export interface RoleProps {
    * If the configured and provided external IDs do not match, the
    * AssumeRole operation will fail.
    *
+   * @deprecated see {@link externalIds}
+   *
    * @default No external ID required
    */
   readonly externalId?: string;
+
+  /**
+   * List of IDs that the role assumer needs to provide one of when assuming this role
+   *
+   * If the configured and provided external IDs do not match, the
+   * AssumeRole operation will fail.
+   *
+   * @default No external ID required
+   */
+  readonly externalIds?: string[];
 
   /**
    * A list of managed policies associated with this role.
@@ -205,7 +217,12 @@ export class Role extends Resource implements IRole {
       physicalName: props.roleName,
     });
 
-    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
+    const externalIds = props.externalIds || [];
+    if (props.externalId) {
+      externalIds.push(props.externalId);
+    }
+
+    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, externalIds);
     this.managedPolicies.push(...props.managedPolicies || []);
 
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
@@ -323,13 +340,13 @@ export interface IRole extends IIdentity {
   grantPassRole(grantee: IPrincipal): Grant;
 }
 
-function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
+function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   const statement = new PolicyStatement();
   statement.addPrincipals(principal);
   statement.addActions(principal.assumeRoleAction);
 
-  if (externalId !== undefined) {
-    statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });
+  if (externalIds.length) {
+    statement.addCondition('StringEquals', { 'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds });
   }
 
   const doc = new PolicyDocument();
