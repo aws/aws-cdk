@@ -70,7 +70,8 @@ export class EcsTask implements events.IRuleTarget {
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
 
     if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
-      this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+      const securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
+      this.securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     }
   }
 
