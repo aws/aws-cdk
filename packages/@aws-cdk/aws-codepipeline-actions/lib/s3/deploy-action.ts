@@ -171,7 +171,15 @@ const CACHE_CONTROL_HEADER_VALUE: {[key in RfcCacheControlOptionsKey]: string} =
     sMaxAge: 's-maxage',
 };
 
-const BOLEAN_HEADER_VALUES: BoleanCacheControlOptionsKey[] = ['noCache', 'noStore', 'noTransform', 'mustRevalidate', 'public', 'private'];
+const BOLEAN_HEADER_VALUES: BoleanCacheControlOptionsKey[] = [
+    'noCache',
+    'noStore',
+    'noTransform',
+    'mustRevalidate',
+    'proxyRevalidate',
+    'public',
+    'private'
+];
 const DATE_HEADER_VALUES: DateCacheControlOptionsKey[] = ['maxAge', 'sMaxAge'];
 
 const isBooleanKey = (key: CacheControlOptionsKey): key is BoleanCacheControlOptionsKey =>
