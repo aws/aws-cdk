@@ -68,7 +68,7 @@ abstract class KeyBase extends Resource implements IKey {
    * Defines a new alias for the key.
    */
   public addAlias(alias: string): Alias {
-    return new Alias(this, 'Alias', { aliasName: alias, targetKey: this });
+    return new Alias(this, `Alias${alias}`, { aliasName: alias, targetKey: this });
   }
 
   /**
@@ -152,6 +152,15 @@ export interface KeyProps {
   readonly description?: string;
 
   /**
+   * Initial alias to add to the key
+   *
+   * More aliases can be added later by calling `addAlias`.
+   *
+   * @default - No alias is added for the key.
+   */
+  readonly alias?: string;
+
+  /**
    * Indicates whether AWS KMS rotates the key.
    *
    * @default false
@@ -226,6 +235,10 @@ export class Key extends KeyBase {
 
     this.keyArn = resource.attrArn;
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    if (props.alias !== undefined) {
+      this.addAlias(props.alias);
+    }
   }
 
   /**
@@ -245,7 +258,8 @@ export class Key extends KeyBase {
       "kms:Get*",
       "kms:Delete*",
       "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion"
+      "kms:CancelKeyDeletion",
+      "kms:GenerateDataKey"
     ];
 
     this.addToResourcePolicy(new PolicyStatement({

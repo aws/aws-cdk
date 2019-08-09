@@ -28,5 +28,17 @@ export = {
 
       test.done();
     },
+
+    'can be imported by ARN'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const pipeline = codepipeline.Pipeline.fromPipelineArn(stack, 'Pipeline',
+        'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline');
+
+      test.equal(pipeline.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline');
+      test.equal(pipeline.pipelineName, 'MyPipeline');
+
+      test.done();
+    },
   },
 };
