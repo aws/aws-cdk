@@ -81,26 +81,28 @@ export class Alias extends AliasBase {
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id);
 
-    if (!Token.isUnresolved(props.aliasName)) {
-      if (!props.aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
-        throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.aliasName}`);
+    let aliasName = props.aliasName;
+
+    if (!Token.isUnresolved(aliasName)) {
+      if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
+        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
       }
 
-      if (props.aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${props.aliasName}`);
+      if (aliasName === REQUIRED_ALIAS_PREFIX) {
+        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`);
       }
 
-      if (props.aliasName.startsWith(DISALLOWED_PREFIX)) {
-        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.aliasName}`);
+      if (aliasName.startsWith(DISALLOWED_PREFIX)) {
+        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`);
       }
 
-      if (!props.aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+      if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new Error(`Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-`);
       }
     }
 
     const resource = new CfnAlias(this, 'Resource', {
-      aliasName: props.aliasName,
+      aliasName,
       targetKeyId: props.targetKey.keyArn
     });
 

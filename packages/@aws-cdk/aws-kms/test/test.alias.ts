@@ -20,18 +20,41 @@ export = {
     test.done();
   },
 
-  'fails if alias name does\'t start with "alias/"'(test: Test) {
+  'add "alias/" prefix if not given.'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new Key(stack, 'MyKey', {
+    const key = new Key(stack, 'Key', {
       enableKeyRotation: true,
       enabled: false
     });
 
-    test.throws(() => new Alias(stack, 'Alias', {
+    new Alias(stack, 'Alias', {
       aliasName: 'foo',
       targetKey: key
+    });
+
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/foo',
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+    }));
+
+    test.done();
+  },
+
+  'can create alias directly while creating the key'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'Test');
+
+    new Key(stack, 'Key', {
+      enableKeyRotation: true,
+      enabled: false,
+      alias: 'foo',
+    });
+
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/foo',
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
     }));
 
     test.done();
