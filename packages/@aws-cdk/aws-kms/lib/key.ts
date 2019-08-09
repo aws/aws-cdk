@@ -152,6 +152,15 @@ export interface KeyProps {
   readonly description?: string;
 
   /**
+   * Initial alias to add to the key
+   *
+   * More aliases can be added later by calling `addAlias`.
+   *
+   * @default - No alias is added for the key.
+   */
+  readonly alias?: string;
+
+  /**
    * Indicates whether AWS KMS rotates the key.
    *
    * @default false
@@ -226,6 +235,10 @@ export class Key extends KeyBase {
 
     this.keyArn = resource.attrArn;
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    if (props.alias !== undefined) {
+      this.addAlias(props.alias);
+    }
   }
 
   /**
