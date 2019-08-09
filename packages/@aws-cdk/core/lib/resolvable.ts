@@ -13,6 +13,11 @@ export interface IResolveContext {
   readonly scope: IConstruct;
 
   /**
+   * True when we are still preparing, false if we're rendering the final output
+   */
+  readonly preparing: boolean;
+
+  /**
    * Resolve an inner object
    */
   resolve(x: any): any;
