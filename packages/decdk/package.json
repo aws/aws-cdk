@@ -57,6 +57,7 @@
     "@aws-cdk/aws-codedeploy": "^1.3.0",
     "@aws-cdk/aws-codepipeline": "^1.3.0",
     "@aws-cdk/aws-codepipeline-actions": "^1.3.0",
+    "@aws-cdk/aws-codestar": "^1.3.0",
     "@aws-cdk/aws-cognito": "^1.3.0",
     "@aws-cdk/aws-config": "^1.3.0",
     "@aws-cdk/aws-datapipeline": "^1.3.0",
