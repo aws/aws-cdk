@@ -16,10 +16,9 @@ export interface InvokeActivityProps {
 }
 
 /**
- * A StepFunctions Task to invoke a Lambda function.
+ * A Step Functions Task to invoke an Activity worker.
  *
- * A Function can be used directly as a Resource, but this class mirrors
- * integration with other AWS services via a specific class instance.
+ * An Activity can be used directly as a Resource.
  */
 export class InvokeActivity implements sfn.IStepFunctionsTask {
   constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {

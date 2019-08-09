@@ -9,13 +9,17 @@ export interface InvokeFunctionProps {
   /**
    * The JSON that you want to provide to your Lambda function as input.
    *
+   * This parameter is named as payload to keep consistent with RunLambdaTask class.
+   *
    * @default - The JSON data indicated by the task's InputPath is used as payload
    */
   readonly payload?: { [key: string]: any };
 }
 
 /**
- * A StepFunctions Task to invoke a Lambda function.
+ * A Step Functions Task to invoke a Lambda function.
+ *
+ * The Lambda function Arn is defined as Resource in the state machine definition.
  *
  * OUTPUT: the output of this task is the return value of the Lambda Function.
  */
