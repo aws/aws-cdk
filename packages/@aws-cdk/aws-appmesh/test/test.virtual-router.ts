@@ -76,7 +76,7 @@ export = {
                 WeightedTargets: [
                   {
                     VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
+                      'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                     },
                     Weight: 50,
                   },
@@ -88,7 +88,7 @@ export = {
             },
           },
           VirtualRouterName: {
-            'Fn::GetAtt': ['meshrouterVirtualRouter7C7DE72C', 'VirtualRouterName'],
+            'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
         })
       );
@@ -229,7 +229,7 @@ export = {
                 WeightedTargets: [
                   {
                     VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
+                      'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                     },
                     Weight: 50,
                   },
@@ -251,7 +251,7 @@ export = {
                 WeightedTargets: [
                   {
                     VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnode2VirtualNodeB854548C', 'VirtualNodeName'],
+                      'Fn::GetAtt': ['meshtestnode20C58B1B2', 'VirtualNodeName'],
                     },
                     Weight: 30,
                   },
@@ -273,7 +273,7 @@ export = {
                 WeightedTargets: [
                   {
                     VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnode3VirtualNode74A3FFF9', 'VirtualNodeName'],
+                      'Fn::GetAtt': ['meshtestnode316EEA2D7', 'VirtualNodeName'],
                     },
                     Weight: 20,
                   },
@@ -357,7 +357,7 @@ export = {
                 WeightedTargets: [
                   {
                     VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
+                      'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                     },
                     Weight: 50,
                   },
@@ -366,7 +366,7 @@ export = {
             },
           },
           VirtualRouterName: {
-            'Fn::GetAtt': ['meshrouterVirtualRouter7C7DE72C', 'VirtualRouterName'],
+            'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
         })
       );

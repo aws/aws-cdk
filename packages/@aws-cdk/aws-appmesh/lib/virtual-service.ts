@@ -109,7 +109,9 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   private readonly mesh: IMesh;
 
   constructor(scope: cdk.Construct, id: string, props: VirtualServiceProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+    });
 
     if (props.virtualNode && props.virtualRouter) {
       throw new Error('Must provide only one of virtualNode or virtualRouter for the provider');
@@ -124,18 +126,20 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       this.virtualServiceProvider = this.addVirtualNode(props.virtualNode.virtualNodeName);
     }
 
-    const name = props.virtualServiceName;
-
-    const svc = new CfnVirtualService(this, 'VirtualService', {
+    const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
-      virtualServiceName: name,
+      virtualServiceName: this.physicalName,
       spec: {
         provider: this.virtualServiceProvider,
       },
     });
 
-    this.virtualServiceArn = svc.ref;
-    this.virtualServiceName = svc.virtualServiceName;
+    this.virtualServiceName = this.getResourceNameAttribute(svc.attrVirtualServiceName);
+    this.virtualServiceArn = this.getResourceArnAttribute(svc.ref, {
+      service: 'appmesh',
+      resource: `mesh/${props.mesh.meshName}/virtualService`,
+      resourceName: this.physicalName,
+    });
   }
 
   private addVirtualRouter(name: string): CfnVirtualService.VirtualServiceProviderProperty {

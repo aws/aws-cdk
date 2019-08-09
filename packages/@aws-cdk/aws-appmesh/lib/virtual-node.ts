@@ -258,7 +258,9 @@ export class VirtualNode extends VirtualNodeBase {
   private readonly namespaceName: string;
 
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+    });
 
     this.mesh = props.mesh;
 
@@ -272,10 +274,8 @@ export class VirtualNode extends VirtualNodeBase {
       this.addListener(props.listener);
     }
 
-    const name = props.virtualNodeName || id;
-
-    const node = new CfnVirtualNode(this, 'VirtualNode', {
-      virtualNodeName: name,
+    const node = new CfnVirtualNode(this, 'Resource', {
+      virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
         backends: this.backends,
@@ -295,8 +295,12 @@ export class VirtualNode extends VirtualNodeBase {
       },
     });
 
-    this.virtualNodeName = node.virtualNodeName;
-    this.virtualNodeArn = node.ref;
+    this.virtualNodeName = this.getResourceNameAttribute(node.attrVirtualNodeName);
+    this.virtualNodeArn = this.getResourceArnAttribute(node.ref, {
+      service: 'appmesh',
+      resource: `mesh/${props.mesh.meshName}/virtualNode`,
+      resourceName: this.physicalName,
+    });
   }
 }
 

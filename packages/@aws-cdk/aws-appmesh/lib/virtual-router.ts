@@ -160,24 +160,28 @@ export class VirtualRouter extends VirtualRouterBase {
   private readonly listeners = new Array<CfnVirtualRouter.VirtualRouterListenerProperty>();
 
   constructor(scope: cdk.Construct, id: string, props: VirtualRouterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.virtualRouterName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+    });
 
     this.mesh = props.mesh;
 
-    const name = props && props.virtualRouterName ? props.virtualRouterName : this.node.id;
-
     this.addListeners(props);
 
-    const router = new CfnVirtualRouter(this, 'VirtualRouter', {
-      virtualRouterName: name,
+    const router = new CfnVirtualRouter(this, 'Resource', {
+      virtualRouterName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners,
       },
     });
 
-    this.virtualRouterName = router.virtualRouterName;
-    this.virtualRouterArn = router.ref;
+    this.virtualRouterName = this.getResourceNameAttribute(router.attrVirtualRouterName);
+    this.virtualRouterArn = this.getResourceArnAttribute(router.ref, {
+      service: 'appmesh',
+      resource: `mesh/${props.mesh.meshName}/virtualRouter`,
+      resourceName: this.physicalName,
+    });
   }
 
   /**

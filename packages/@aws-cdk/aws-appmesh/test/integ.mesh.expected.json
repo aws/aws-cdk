@@ -7,10 +7,12 @@
         "EnableDnsHostnames": true,
         "EnableDnsSupport": true,
         "InstanceTenancy": "default",
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc"
+          }
+        ]
       }
     },
     "vpcPublicSubnet1Subnet2E65531E": {
@@ -22,7 +24,8 @@
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": true,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "Name",
             "Value": "mesh-stack/vpc/PublicSubnet1"
           },
@@ -43,10 +46,12 @@
         "VpcId": {
           "Ref": "vpcA2121C38"
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc/PublicSubnet1"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
@@ -93,10 +98,12 @@
         "SubnetId": {
           "Ref": "vpcPublicSubnet1Subnet2E65531E"
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc/PublicSubnet1"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "vpcPublicSubnet2Subnet009B674F": {
@@ -108,7 +115,8 @@
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": true,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "Name",
             "Value": "mesh-stack/vpc/PublicSubnet2"
           },
@@ -129,10 +137,12 @@
         "VpcId": {
           "Ref": "vpcA2121C38"
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc/PublicSubnet2"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "vpcPublicSubnet2RouteTableAssociation21F81B59": {
@@ -170,7 +180,8 @@
         },
         "AvailabilityZone": "test-region-1c",
         "MapPublicIpOnLaunch": true,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "Name",
             "Value": "mesh-stack/vpc/PublicSubnet3"
           },
@@ -191,10 +202,12 @@
         "VpcId": {
           "Ref": "vpcA2121C38"
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc/PublicSubnet3"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PublicSubnet3"
+          }
+        ]
       }
     },
     "vpcPublicSubnet3RouteTableAssociationD102D1C4": {
@@ -232,7 +245,8 @@
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": false,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "Name",
             "Value": "mesh-stack/vpc/PrivateSubnet1"
           },
@@ -253,10 +267,12 @@
         "VpcId": {
           "Ref": "vpcA2121C38"
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc/PrivateSubnet1"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PrivateSubnet1"
+          }
+        ]
       }
     },
     "vpcPrivateSubnet1RouteTableAssociation67945127": {
@@ -291,7 +307,8 @@
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": false,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "Name",
             "Value": "mesh-stack/vpc/PrivateSubnet2"
           },
@@ -312,10 +329,12 @@
         "VpcId": {
           "Ref": "vpcA2121C38"
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc/PrivateSubnet2"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PrivateSubnet2"
+          }
+        ]
       }
     },
     "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
@@ -350,7 +369,8 @@
         },
         "AvailabilityZone": "test-region-1c",
         "MapPublicIpOnLaunch": false,
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "Name",
             "Value": "mesh-stack/vpc/PrivateSubnet3"
           },
@@ -371,10 +391,12 @@
         "VpcId": {
           "Ref": "vpcA2121C38"
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc/PrivateSubnet3"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PrivateSubnet3"
+          }
+        ]
       }
     },
     "vpcPrivateSubnet3RouteTableAssociationC58B3C2C": {
@@ -403,10 +425,12 @@
     "vpcIGWE57CBDCA": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
-        "Tags": [{
-          "Key": "Name",
-          "Value": "mesh-stack/vpc"
-        }]
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc"
+          }
+        ]
       }
     },
     "vpcVPCGW7984C166": {
@@ -429,10 +453,10 @@
         }
       }
     },
-    "meshAppMeshD6FCBDD7": {
+    "meshACDFE68E": {
       "Type": "AWS::AppMesh::Mesh",
       "Properties": {
-        "MeshName": "mesh",
+        "MeshName": "meshstackmesh680D3CEB",
         "Spec": {
           "EgressFilter": {
             "Type": "DROP_ALL"
@@ -440,32 +464,34 @@
         }
       }
     },
-    "meshrouterVirtualRouter7C7DE72C": {
+    "meshrouter81B8087E": {
       "Type": "AWS::AppMesh::VirtualRouter",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
         "Spec": {
-          "Listeners": [{
-            "PortMapping": {
-              "Port": 8080,
-              "Protocol": "http"
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 8080,
+                "Protocol": "http"
+              }
             }
-          }]
+          ]
         },
-        "VirtualRouterName": "router"
+        "VirtualRouterName": "meshstackmeshrouter2FE6E358"
       }
     },
-    "meshrouterroute1VirtualRoute2589FAF4": {
+    "meshrouterroute118BAC45E": {
       "Type": "AWS::AppMesh::Route",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
@@ -473,15 +499,17 @@
         "Spec": {
           "HttpRoute": {
             "Action": {
-              "WeightedTargets": [{
-                "VirtualNode": {
-                  "Fn::GetAtt": [
-                    "meshnodeVirtualNodeB1F0B8E3",
-                    "VirtualNodeName"
-                  ]
-                },
-                "Weight": 50
-              }]
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode726C787D",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 50
+                }
+              ]
             },
             "Match": {
               "Prefix": "/"
@@ -490,18 +518,18 @@
         },
         "VirtualRouterName": {
           "Fn::GetAtt": [
-            "meshrouterVirtualRouter7C7DE72C",
+            "meshrouter81B8087E",
             "VirtualRouterName"
           ]
         }
       }
     },
-    "meshrouterroute2VirtualRouteB30D38D6": {
+    "meshrouterroute2486D9DEF": {
       "Type": "AWS::AppMesh::Route",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
@@ -509,15 +537,17 @@
         "Spec": {
           "HttpRoute": {
             "Action": {
-              "WeightedTargets": [{
-                "VirtualNode": {
-                  "Fn::GetAtt": [
-                    "meshnode2VirtualNode6BBEA458",
-                    "VirtualNodeName"
-                  ]
-                },
-                "Weight": 30
-              }]
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode2092BA426",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 30
+                }
+              ]
             },
             "Match": {
               "Prefix": "/path2"
@@ -526,18 +556,18 @@
         },
         "VirtualRouterName": {
           "Fn::GetAtt": [
-            "meshrouterVirtualRouter7C7DE72C",
+            "meshrouter81B8087E",
             "VirtualRouterName"
           ]
         }
       }
     },
-    "meshrouterroute3VirtualRouteCE44FFB5": {
+    "meshrouterroute3BD0FA22F": {
       "Type": "AWS::AppMesh::Route",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
@@ -545,32 +575,34 @@
         "Spec": {
           "TcpRoute": {
             "Action": {
-              "WeightedTargets": [{
-                "VirtualNode": {
-                  "Fn::GetAtt": [
-                    "meshnode3VirtualNodeFF1AE9A6",
-                    "VirtualNodeName"
-                  ]
-                },
-                "Weight": 20
-              }]
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 20
+                }
+              ]
             }
           }
         },
         "VirtualRouterName": {
           "Fn::GetAtt": [
-            "meshrouterVirtualRouter7C7DE72C",
+            "meshrouter81B8087E",
             "VirtualRouterName"
           ]
         }
       }
     },
-    "meshserviceVirtualServiceDD02B336": {
+    "meshserviceE06ECED5": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
@@ -579,7 +611,7 @@
             "VirtualRouter": {
               "VirtualRouterName": {
                 "Fn::GetAtt": [
-                  "meshrouterVirtualRouter7C7DE72C",
+                  "meshrouter81B8087E",
                   "VirtualRouterName"
                 ]
               }
@@ -589,21 +621,22 @@
         "VirtualServiceName": "service1.domain.local"
       }
     },
-    "meshnodeVirtualNodeB1F0B8E3": {
+    "meshnode726C787D": {
       "Type": "AWS::AppMesh::VirtualNode",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
         "Spec": {
-          "Backends": [{
+          "Backends": [
+            {
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "meshserviceVirtualServiceDD02B336",
+                    "meshserviceE06ECED5",
                     "VirtualServiceName"
                   ]
                 }
@@ -613,28 +646,30 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "service2VirtualService95387A49",
+                    "service27C65CF7D",
                     "VirtualServiceName"
                   ]
                 }
               }
             }
           ],
-          "Listeners": [{
-            "HealthCheck": {
-              "HealthyThreshold": 3,
-              "IntervalMillis": 5000,
-              "Path": "/",
-              "Port": 8080,
-              "Protocol": "http",
-              "TimeoutMillis": 2000,
-              "UnhealthyThreshold": 2
-            },
-            "PortMapping": {
-              "Port": 8080,
-              "Protocol": "http"
+          "Listeners": [
+            {
+              "HealthCheck": {
+                "HealthyThreshold": 3,
+                "IntervalMillis": 5000,
+                "Path": "/",
+                "Port": 8080,
+                "Protocol": "http",
+                "TimeoutMillis": 2000,
+                "UnhealthyThreshold": 2
+              },
+              "PortMapping": {
+                "Port": 8080,
+                "Protocol": "http"
+              }
             }
-          }],
+          ],
           "Logging": {
             "AccessLog": {
               "File": {
@@ -648,44 +683,48 @@
             }
           }
         },
-        "VirtualNodeName": "node"
+        "VirtualNodeName": "meshstackmeshnode61AD3D23"
       }
     },
-    "meshnode2VirtualNode6BBEA458": {
+    "meshnode2092BA426": {
       "Type": "AWS::AppMesh::VirtualNode",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
         "Spec": {
-          "Backends": [{
-            "VirtualService": {
-              "VirtualServiceName": {
-                "Fn::GetAtt": [
-                  "service3VirtualService300EDED0",
-                  "VirtualServiceName"
-                ]
+          "Backends": [
+            {
+              "VirtualService": {
+                "VirtualServiceName": {
+                  "Fn::GetAtt": [
+                    "service3859EB104",
+                    "VirtualServiceName"
+                  ]
+                }
               }
             }
-          }],
-          "Listeners": [{
-            "HealthCheck": {
-              "HealthyThreshold": 3,
-              "IntervalMillis": 5000,
-              "Path": "/",
-              "Port": 8080,
-              "Protocol": "http",
-              "TimeoutMillis": 2000,
-              "UnhealthyThreshold": 2
-            },
-            "PortMapping": {
-              "Port": 8080,
-              "Protocol": "http"
+          ],
+          "Listeners": [
+            {
+              "HealthCheck": {
+                "HealthyThreshold": 3,
+                "IntervalMillis": 5000,
+                "Path": "/",
+                "Port": 8080,
+                "Protocol": "http",
+                "TimeoutMillis": 2000,
+                "UnhealthyThreshold": 2
+              },
+              "PortMapping": {
+                "Port": 8080,
+                "Protocol": "http"
+              }
             }
-          }],
+          ],
           "Logging": {
             "AccessLog": {
               "File": {
@@ -699,35 +738,37 @@
             }
           }
         },
-        "VirtualNodeName": "node2"
+        "VirtualNodeName": "meshstackmeshnode2F1F28441"
       }
     },
-    "meshnode3VirtualNodeFF1AE9A6": {
+    "meshnode3D2A19CF2": {
       "Type": "AWS::AppMesh::VirtualNode",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
         "Spec": {
           "Backends": [],
-          "Listeners": [{
-            "HealthCheck": {
-              "HealthyThreshold": 3,
-              "IntervalMillis": 5000,
-              "Path": "/",
-              "Port": 8080,
-              "Protocol": "http",
-              "TimeoutMillis": 2000,
-              "UnhealthyThreshold": 2
-            },
-            "PortMapping": {
-              "Port": 8080,
-              "Protocol": "http"
+          "Listeners": [
+            {
+              "HealthCheck": {
+                "HealthyThreshold": 3,
+                "IntervalMillis": 5000,
+                "Path": "/",
+                "Port": 8080,
+                "Protocol": "http",
+                "TimeoutMillis": 2000,
+                "UnhealthyThreshold": 2
+              },
+              "PortMapping": {
+                "Port": 8080,
+                "Protocol": "http"
+              }
             }
-          }],
+          ],
           "Logging": {
             "AccessLog": {
               "File": {
@@ -741,15 +782,15 @@
             }
           }
         },
-        "VirtualNodeName": "node3"
+        "VirtualNodeName": "meshstackmeshnode3C5835BCB"
       }
     },
-    "service2VirtualService95387A49": {
+    "service27C65CF7D": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },
@@ -757,12 +798,12 @@
         "VirtualServiceName": "service2.domain.local"
       }
     },
-    "service3VirtualService300EDED0": {
+    "service3859EB104": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
         "MeshName": {
           "Fn::GetAtt": [
-            "meshAppMeshD6FCBDD7",
+            "meshACDFE68E",
             "MeshName"
           ]
         },

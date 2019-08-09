@@ -129,9 +129,11 @@ export class Route extends cdk.Resource implements IRoute {
   private readonly tcpRoute?: CfnRoute.TcpRouteProperty;
 
   constructor(scope: cdk.Construct, id: string, props: RouteProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+    });
 
-    this.routeName = props && props.routeName ? props.routeName : this.node.id;
+    this.virtualRouter = props.virtualRouter;
 
     if (props.isHttpRoute) {
       this.httpRoute = this.addHttpRoute(props);
@@ -139,8 +141,8 @@ export class Route extends cdk.Resource implements IRoute {
       this.tcpRoute = this.addTcpRoute(props.routeTargets);
     }
 
-    const route = new CfnRoute(this, 'VirtualRoute', {
-      routeName: this.routeName,
+    const route = new CfnRoute(this, 'Resource', {
+      routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
       virtualRouterName: this.virtualRouter.virtualRouterName,
       spec: {
@@ -149,7 +151,12 @@ export class Route extends cdk.Resource implements IRoute {
       },
     });
 
-    this.routeArn = route.ref;
+    this.routeName = this.getResourceNameAttribute(route.attrRouteName);
+    this.routeArn = this.getResourceArnAttribute(route.ref, {
+      service: 'appmesh',
+      resource: `mesh/${props.mesh.meshName}/virtualRouter/${props.virtualRouter.virtualRouterName}/route`,
+      resourceName: this.physicalName,
+    });
   }
 
   /**

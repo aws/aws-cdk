@@ -194,7 +194,7 @@ export = {
               Provider: {
                 VirtualRouter: {
                   VirtualRouterName: {
-                    'Fn::GetAtt': ['meshtestrouterVirtualRouter43ECF978', 'VirtualRouterName'],
+                    'Fn::GetAtt': ['meshtestrouterF78D72DD', 'VirtualRouterName'],
                   },
                 },
               },
@@ -246,7 +246,7 @@ export = {
               Provider: {
                 VirtualNode: {
                   VirtualNodeName: {
-                    'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                 },
               },
@@ -284,7 +284,7 @@ export = {
         expect(stack).to(
           haveResourceLike('AWS::AppMesh::VirtualNode', {
             MeshName: {
-              'Fn::GetAtt': ['meshAppMeshD6FCBDD7', 'MeshName'],
+              'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
             Spec: {
               Backends: [],
@@ -329,7 +329,7 @@ export = {
         expect(stack).to(
           haveResourceLike('AWS::AppMesh::VirtualNode', {
             MeshName: {
-              'Fn::GetAtt': ['meshAppMeshD6FCBDD7', 'MeshName'],
+              'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
             Spec: {
               Listeners: [
@@ -391,7 +391,7 @@ export = {
         expect(stack).to(
           haveResourceLike('AWS::AppMesh::VirtualNode', {
             MeshName: {
-              'Fn::GetAtt': ['meshAppMeshD6FCBDD7', 'MeshName'],
+              'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
             Spec: {
               Listeners: [
@@ -545,7 +545,7 @@ export = {
                 {
                   VirtualService: {
                     VirtualServiceName: {
-                      'Fn::GetAtt': ['service1VirtualService34F32322', 'VirtualServiceName'],
+                      'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
                     },
                   },
                 },

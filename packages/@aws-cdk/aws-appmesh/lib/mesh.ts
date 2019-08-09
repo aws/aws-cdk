@@ -226,14 +226,14 @@ export class Mesh extends MeshBase {
   public readonly meshArn: string;
 
   constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
-    super(scope, id);
-
-    const name = props.meshName || this.node.id;
+    super(scope, id, {
+      physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+    });
 
     const filter = (props.meshSpec && props.meshSpec.egressFilter) || MeshFilterType.DROP_ALL;
 
-    const mesh = new CfnMesh(this, 'AppMesh', {
-      meshName: name,
+    const mesh = new CfnMesh(this, 'Resource', {
+      meshName: this.physicalName,
       spec: {
         egressFilter: {
           type: filter,
@@ -241,7 +241,11 @@ export class Mesh extends MeshBase {
       },
     });
 
-    this.meshName = mesh.meshName;
-    this.meshArn = mesh.ref;
+    this.meshName = this.getResourceNameAttribute(mesh.attrMeshName);
+    this.meshArn = this.getResourceArnAttribute(mesh.ref, {
+      service: 'appmesh',
+      resource: 'mesh',
+      resourceName: this.physicalName,
+    });
   }
 }

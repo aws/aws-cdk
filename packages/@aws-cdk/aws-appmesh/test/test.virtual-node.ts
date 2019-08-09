@@ -65,14 +65,14 @@ export = {
                 {
                   VirtualService: {
                     VirtualServiceName: {
-                      'Fn::GetAtt': ['service1VirtualService34F32322', 'VirtualServiceName'],
+                      'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
                     },
                   },
                 },
                 {
                   VirtualService: {
                     VirtualServiceName: {
-                      'Fn::GetAtt': ['service2VirtualService95387A49', 'VirtualServiceName'],
+                      'Fn::GetAtt': ['service27C65CF7D', 'VirtualServiceName'],
                     },
                   },
                 },
@@ -185,7 +185,7 @@ export = {
     expect(stack).to(
       haveResourceLike('AWS::AppMesh::VirtualNode', {
         MeshName: {
-          'Fn::GetAtt': ['meshAppMeshD6FCBDD7', 'MeshName'],
+          'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
         },
         Spec: {
           Listeners: [
@@ -202,7 +202,7 @@ export = {
             },
           },
         },
-        VirtualNodeName: 'test-node',
+        VirtualNodeName: 'meshtestnode428A9479',
       })
     );
 
