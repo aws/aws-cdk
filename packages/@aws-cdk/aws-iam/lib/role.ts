@@ -58,6 +58,21 @@ export interface RoleProps {
   readonly path?: string;
 
   /**
+   * AWS supports permissions boundaries for IAM entities (users or roles).
+   * A permissions boundary is an advanced feature for using a managed policy
+   * to set the maximum permissions that an identity-based policy can grant to
+   * an IAM entity. An entity's permissions boundary allows it to perform only
+   * the actions that are allowed by both its identity-based policies and its
+   * permissions boundaries.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-permissionsboundary
+   * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+   *
+   * @default - No permissions boundary.
+   */
+  readonly permissionsBoundary?: IManagedPolicy;
+
+  /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
    * the CreateRole action in the IAM API Reference.
    *
@@ -196,6 +211,11 @@ export class Role extends Resource implements IRole {
    */
   public readonly policyFragment: PrincipalPolicyFragment;
 
+  /**
+   * Returns the permissions boundary attached to this role
+   */
+  public readonly permissionsBoundary?: IManagedPolicy;
+
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -207,7 +227,7 @@ export class Role extends Resource implements IRole {
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicies.push(...props.managedPolicies || []);
-
+    this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
 
@@ -216,6 +236,7 @@ export class Role extends Resource implements IRole {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
+      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
     });
