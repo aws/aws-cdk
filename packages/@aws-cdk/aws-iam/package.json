@@ -82,5 +82,11 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+     "exclude": [
+       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
+       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy"
+     ]
+   },
   "stability": "stable"
 }

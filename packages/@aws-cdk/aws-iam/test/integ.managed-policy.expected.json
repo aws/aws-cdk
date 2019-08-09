@@ -1,0 +1,66 @@
+{
+  "Resources": {
+    "MyUserDC45028B": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "ManagedPolicyArns": [
+          {
+            "Ref": "TwoManagedPolicy7E701864"
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/SecurityAudit"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "OneManagedPolicy77F9185F": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "My Policy",
+        "ManagedPolicyName": "Default",
+        "Path": "/some/path/",
+        "Users": [
+          {
+            "Ref": "MyUserDC45028B"
+          }
+        ]
+      }
+    },
+    "TwoManagedPolicy7E701864": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      }
+    }
+  }
+}
