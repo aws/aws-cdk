@@ -5,7 +5,7 @@ import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { IRole } from './role';
 import { IUser } from './user';
-import { generatePolicyName, undefinedIfEmpty } from './util';
+import { undefinedIfEmpty } from './util';
 
 /**
  * A managed policy
@@ -24,8 +24,7 @@ export interface ManagedPolicyProps {
    * specify unique names. For example, if you specify a list of policies for
    * an IAM role, each policy must have a unique name.
    *
-   * @default - Uses the logical ID of the policy resource, which is ensured
-   * to be unique within the stack.
+   * @default - A name is automatically generated.
    */
   readonly managedPolicyName?: string;
 
@@ -172,20 +171,15 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
     super(scope, id, {
-      physicalName: props.managedPolicyName ||
-        // generatePolicyName will take the last 128 characters of the logical id since
-        // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
-        // that shouod be sufficient to ensure uniqueness within a principal.
-        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) }),
+      physicalName: props.managedPolicyName
     });
 
-    this.managedPolicyName = this.physicalName;
     this.description = props.description || '';
     this.path = props.path || '/';
 
     const resource = new CfnManagedPolicy(this, 'Resource', {
       policyDocument: this.document,
-      managedPolicyName: this.managedPolicyName,
+      managedPolicyName: this.physicalName,
       description: this.description,
       path: this.path,
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
@@ -209,6 +203,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       props.statements.forEach(p => this.addStatements(p));
     }
 
+    this.managedPolicyName = this.getResourceNameAttribute(resource.ref);
     this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
       region: '', // IAM is global in each partition
       service: 'iam',
