@@ -158,7 +158,7 @@ export interface SubnetSelection {
    *
    * At most one of `subnetType` and `subnetName` can be supplied.
    *
-   * @default SubnetType.Private
+   * @default SubnetType.PRIVATE
    */
   readonly subnetType?: SubnetType;
 
