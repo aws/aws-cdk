@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, SslPolicy, TargetType } from '../shared/enums';
 import { LambdaTarget } from '../shared/load-balancer-targets';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
@@ -191,6 +191,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     const hasLambdaTargets = (props.targets || []).some(target => target instanceof LambdaTarget);
+    const targetType: TargetType | undefined = hasLambdaTargets ? TargetType.LAMBDA : undefined;
     const vpc: ec2.IVpc | undefined = hasLambdaTargets ? undefined : this.loadBalancer.vpc;
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
@@ -201,6 +202,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
       targetGroupName: props.targetGroupName,
+      targetType,
       targets: props.targets,
       vpc
     });
