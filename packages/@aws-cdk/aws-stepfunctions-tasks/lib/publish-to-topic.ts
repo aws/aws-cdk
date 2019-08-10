@@ -40,7 +40,7 @@ export interface PublishToTopicProps {
 }
 
 /**
- * A StepFunctions Task to invoke a Lambda function.
+ * A Step Functions Task to publish messages to SNS topic.
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.

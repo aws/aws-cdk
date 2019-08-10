@@ -33,5 +33,13 @@ This library contains Route53 Alias Record targets for:
     // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
   });
   ```
+* Classic load balancers
+  ```ts
+  new route53.ARecord(this, 'AliasRecord', {
+    zone,
+    target: route53.RecordTarget.fromAlias(new alias.ClassicLoadBalancerTarget(elb)),
+    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
+  });
+  ```
 
 See the documentation of `@aws-cdk/aws-route53` for more information.
