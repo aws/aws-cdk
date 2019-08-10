@@ -481,6 +481,12 @@ interface BehaviorWithOrigin extends Behavior {
   readonly targetOriginId: string;
 }
 
+abstract class CloudFrontWebDistributionBase extends cdk.Resource implements IDistribution {
+  public abstract readonly distributionId: string;
+  public abstract readonly domainName: string;
+  public abstract readonly distributionArn: string;
+}
+
 /**
  * Amazon CloudFront is a global content delivery network (CDN) service that securely delivers data, videos,
  * applications, and APIs to your viewers with low latency and high transfer speeds.
@@ -511,7 +517,30 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends cdk.Construct implements IDistribution {
+export class CloudFrontWebDistribution extends CloudFrontWebDistributionBase {
+  /**
+   * Creates a Web Distribution construct that represents an external bucket.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param distributionArn
+   */
+  public static fromWebDistributionArn(scope: cdk.Construct, id: string, distributionArn: string): IDistribution {
+    const stack = cdk.Stack.of(scope);
+    /*const region = stack.region;
+    const urlSuffix = stack.urlSuffix;*/
+
+    class Import extends CloudFrontWebDistributionBase {
+      public readonly distributionId = stack.parseArn(distributionArn).resourceName!;
+      // TODO
+      public readonly domainName = "";
+      public readonly distributionArn = distributionArn;
+
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
@@ -529,6 +558,11 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
    * The distribution ID for this distribution.
    */
   public readonly distributionId: string;
+
+  /**
+   * The ARN for this distribution.
+   */
+  public readonly distributionArn: string;
 
   /**
    * Maps our methods to the string arrays they are

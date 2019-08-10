@@ -325,4 +325,18 @@ export = {
     test.done();
   },
 
+
+  'distribution import from arn'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const distributionId = 'ABCEDFGH1234';
+    const distributionArn = `arn:aws:cloudfront::123457890:distribution/${distributionId}`;
+    const distribution = CloudFrontWebDistribution.fromWebDistributionArn(stack, 'test-distro', distributionArn);
+
+    test.equal(distribution.distributionArn, distributionArn);
+    test.equal(distribution.distributionId, distributionId);
+
+    test.done();
+  }
+
 };

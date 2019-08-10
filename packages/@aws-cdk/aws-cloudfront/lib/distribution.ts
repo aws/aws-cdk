@@ -11,4 +11,9 @@ export interface IDistribution {
    * The distribution ID for this distribution.
    */
   readonly distributionId: string;
+
+  /**
+   * The ARN for this distribution.
+   */
+  readonly distributionArn: string;
 }
