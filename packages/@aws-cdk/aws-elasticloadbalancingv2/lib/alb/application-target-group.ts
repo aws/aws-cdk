@@ -79,18 +79,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
   constructor(scope: Construct, id: string, props?: ApplicationTargetGroupProps) {
 
-    const targetType = props ? props.targetType : undefined;
-    const targets = props ? props.targets || [] : [];
-    const slowStart =  props ? props.slowStart : undefined;
-    const stickinessCookieDuration =  props ? props.stickinessCookieDuration : undefined;
-    let protocol = props ? props.protocol : undefined;
-    let port = props ? props.port : undefined;
+    let protocol;
+    let port;
 
-    if (targetType !== TargetType.LAMBDA) {
-      [protocol, port] = determineProtocolAndPort(protocol, port);
+    if (props && props.targetType !== TargetType.LAMBDA) {
+      [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     }
 
-    super(scope, id, {...props}, {
+    super(scope, id, { ...props }, {
       protocol,
       port,
     });
@@ -98,14 +94,15 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.connectableMembers = [];
     this.listeners = [];
 
-    if (slowStart !== undefined) {
-      this.setAttribute('slow_start.duration_seconds', slowStart.toSeconds().toString());
+    if (props) {
+      if (props.slowStart !== undefined) {
+        this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
+      }
+      if (props.stickinessCookieDuration !== undefined) {
+        this.enableCookieStickiness(props.stickinessCookieDuration);
+      }
+      this.addTarget(...(props.targets || []));
     }
-    if (stickinessCookieDuration !== undefined) {
-      this.enableCookieStickiness(stickinessCookieDuration);
-    }
-
-    this.addTarget(...(targets));
   }
 
   /**
