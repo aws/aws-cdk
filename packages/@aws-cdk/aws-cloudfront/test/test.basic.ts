@@ -325,7 +325,6 @@ export = {
     test.done();
   },
 
-
   'distribution import from arn'(test: Test) {
     const stack = new cdk.Stack();
 
