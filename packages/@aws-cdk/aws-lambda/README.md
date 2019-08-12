@@ -15,9 +15,9 @@ This construct library allows you to define AWS Lambda Functions.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_10_X,
-    handler: 'index.handler',
-    code: lambda.Code.asset('./lambda-handler'),
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.asset('./lambda-handler'),
 });
 ```
 
