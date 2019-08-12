@@ -581,6 +581,7 @@ export = {
             codebuild.FilterGroup.inEventOf(
               codebuild.EventAction.PULL_REQUEST_CREATED,
               codebuild.EventAction.PULL_REQUEST_UPDATED,
+              codebuild.EventAction.PULL_REQUEST_MERGED,
             ).andTagIs('v.*'),
             // duplicate event actions are fine
             codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
@@ -602,7 +603,7 @@ export = {
           Webhook: true,
           FilterGroups: [
             [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED' },
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_MERGED' },
               { Type: 'HEAD_REF', Pattern: 'refs/tags/v.*' },
             ],
             [
