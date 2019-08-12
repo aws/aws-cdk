@@ -134,7 +134,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(``)
+      code: lambda.Code.fromInline(`loo`)
     });
 
     const target = new apigateway.LambdaIntegration(handler);
