@@ -259,7 +259,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyLambda', {
-      code: lambda.Code.asset(path.join(__dirname, 'my-lambda-handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_6
     });
@@ -994,7 +994,7 @@ export = {
       assumedBy: new iam.AccountPrincipal('1234'),
     });
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1023,7 +1023,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1051,7 +1051,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1079,7 +1079,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1107,7 +1107,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1128,7 +1128,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1195,7 +1195,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers: [layer],
                   runtime: lambda.Runtime.NODEJS_6_10,
-                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
                 /nodejs6.10 is not in \[nodejs8.10\]/);
@@ -1215,7 +1215,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers,
                   runtime: lambda.Runtime.NODEJS_8_10,
-                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
                 /Unable to add layer:/);
@@ -1320,7 +1320,7 @@ export = {
 
     // WHEN
     new lambda.Function(stack, 'fn', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.bam',
       events: [
