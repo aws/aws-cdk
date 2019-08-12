@@ -11,4 +11,9 @@ export interface Location {
    * The path inside the Bucket where the object is located at.
    */
   readonly objectKey: string;
+
+  /**
+   * The S3 object version.
+   */
+  readonly objectVersion?: string;
 }

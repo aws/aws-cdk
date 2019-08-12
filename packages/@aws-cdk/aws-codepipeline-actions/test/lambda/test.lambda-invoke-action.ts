@@ -262,7 +262,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps) {
           new cpactions.LambdaInvokeAction({
             actionName: 'Lambda',
             lambda: new lambda.Function(stack, 'Lambda', {
-              code: lambda.Code.cfnParameters(),
+              code: lambda.Code.fromCfnParameters(),
               handler: 'index.handler',
               runtime: lambda.Runtime.NODEJS_8_10,
             }),

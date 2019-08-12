@@ -12,7 +12,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-ses-receipt');
 const topic = new sns.Topic(stack, 'Topic');
 
 const fn = new lambda.Function(stack, 'Function', {
-  code: lambda.Code.inline('exports.handler = async (event) => event;'),
+  code: lambda.Code.fromInline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_8_10
 });

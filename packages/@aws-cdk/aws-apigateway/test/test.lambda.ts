@@ -12,7 +12,7 @@ export = {
     const handler = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'boom',
-      code: lambda.Code.inline('foo')
+      code: lambda.Code.fromInline('foo')
     });
 
     // WHEN
@@ -57,7 +57,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_8_10,
-      code: lambda.Code.inline('foo'),
+      code: lambda.Code.fromInline('foo'),
       handler: 'index.handler'
     });
 
@@ -107,7 +107,7 @@ export = {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_8_10,
-      code: lambda.Code.inline('foo'),
+      code: lambda.Code.fromInline('foo'),
       handler: 'index.handler'
     });
 
@@ -134,7 +134,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.handler',
-      code: lambda.Code.inline(``)
+      code: lambda.Code.fromInline(`loo`)
     });
 
     const target = new apigateway.LambdaIntegration(handler);

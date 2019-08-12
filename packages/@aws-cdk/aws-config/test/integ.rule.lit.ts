@@ -13,7 +13,7 @@ class ConfigStack extends cdk.Stack {
     /// !show
     // A custom rule that runs on configuration changes of EC2 instances
     const fn = new lambda.Function(this, 'CustomFunction', {
-      code: lambda.AssetCode.inline('exports.handler = (event) => console.log(event);'),
+      code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });

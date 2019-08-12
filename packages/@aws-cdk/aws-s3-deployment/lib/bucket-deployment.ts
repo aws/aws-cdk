@@ -67,7 +67,7 @@ export class BucketDeployment extends cdk.Construct {
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8756C',
-      code: lambda.Code.asset(handlerCodeBundle),
+      code: lambda.Code.fromAsset(handlerCodeBundle),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',

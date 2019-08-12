@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
-import { Code } from './code';
+import { Code, CodeConfig } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -420,10 +420,18 @@ export class Function extends FunctionBase {
       throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
     }
 
+    const code = props.code.bind(this);
+    verifyCodeConfig(code, props.runtime);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
-      code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
+      code: {
+        s3Bucket: code.s3Location && code.s3Location.bucketName,
+        s3Key: code.s3Location && code.s3Location.objectKey,
+        s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
+        zipFile: code.inlineCode
+      },
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
@@ -446,10 +454,8 @@ export class Function extends FunctionBase {
       resourceName: this.physicalName,
       sep: ':',
     });
-    this.runtime = props.runtime;
 
-    // allow code to bind to stack.
-    props.code.bind(this);
+    this.runtime = props.runtime;
 
     if (props.layers) {
       this.addLayers(...props.layers);
@@ -466,6 +472,8 @@ export class Function extends FunctionBase {
         retention: props.logRetention
       });
     }
+
+    props.code.bindToResource(resource);
   }
 
   /**
@@ -638,4 +646,16 @@ export class Function extends FunctionBase {
  */
 function extractNameFromArn(arn: string) {
   return Fn.select(6, Fn.split(':', arn));
+}
+
+export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
+  // mutually exclusive
+  if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
+    throw new Error(`lambda.Code must specify one of "inlineCode" or "s3Location" but not both`);
+  }
+
+  // if this is inline code, check that the runtime supports
+  if (code.inlineCode && !runtime.supportsInlineCode) {
+    throw new Error(`Inline source not allowed for ${runtime.name}`);
+  }
 }

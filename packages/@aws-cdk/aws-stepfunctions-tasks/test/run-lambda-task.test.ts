@@ -9,7 +9,7 @@ let fn: lambda.Function;
 beforeEach(() => {
   stack = new Stack();
   fn = new lambda.Function(stack, 'Fn', {
-    code: lambda.Code.inline('hello'),
+    code: lambda.Code.fromInline('hello'),
     handler: 'index.hello',
     runtime: lambda.Runtime.PYTHON_2_7,
   });

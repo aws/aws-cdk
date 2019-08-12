@@ -9,7 +9,7 @@ import { LambdaDeploymentConfig } from '../../lib';
 
 function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
-    code: lambda.Code.inline('mock'),
+    code: lambda.Code.fromInline('mock'),
     handler: 'index.handler',
     runtime: lambda.Runtime.NODEJS_8_10
   });

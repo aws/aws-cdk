@@ -13,7 +13,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: GlobalTableProps) {
     super(scope, id, props);
     const lambdaFunction = new lambda.SingletonFunction(this, "SingletonLambda", {
-      code: lambda.Code.asset(path.resolve(__dirname, "../", "lambda-packages", "aws-global-table-coordinator", "lib")),
+      code: lambda.Code.fromAsset(path.resolve(__dirname, "../", "lambda-packages", "aws-global-table-coordinator", "lib")),
       description: "Lambda to make DynamoDB a global table",
       handler: "index.handler",
       runtime: lambda.Runtime.NODEJS_8_10,

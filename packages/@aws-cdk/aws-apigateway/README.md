@@ -119,7 +119,7 @@ The following example shows how to use an API Key with a usage plan:
 const hello = new lambda.Function(this, 'hello', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'hello.handler',
-  code: lambda.Code.asset('lambda')
+  code: lambda.Code.fromAsset('lambda')
 });
 
 const api = new apigateway.RestApi(this, 'hello-api', { });
@@ -158,7 +158,7 @@ have to define your models and mappings for the request, response, and integrati
 const hello = new lambda.Function(this, 'hello', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'hello.handler',
-  code: lambda.Code.asset('lambda')
+  code: lambda.Code.fromAsset('lambda')
 });
 
 const api = new apigateway.RestApi(this, 'hello-api', { });

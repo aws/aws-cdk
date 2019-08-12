@@ -52,7 +52,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
 
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
-            code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
+            code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
             runtime: lambda.Runtime.NODEJS_8_10,
             timeout: cdk.Duration.minutes(15)

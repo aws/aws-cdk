@@ -215,15 +215,15 @@ Alternatively, you can also define multiple `websiteRoutingRules`, to define com
 
 ```ts
 const bucket = new Bucket(this, 'MyRedirectedBucket', {
-     websiteRoutingRules: [{
-       hostName: 'www.example.com',
-       httpRedirectCode: '302',
-       protocol: RedirectProtocol.HTTPS,
-       replaceKey: ReplaceKey.prefixWith('test/'),
-       condition: {
-         httpErrorCodeReturnedEquals: '200',
-         keyPrefixEquals: 'prefix',
-       }
-     }]
+  websiteRoutingRules: [{
+    hostName: 'www.example.com',
+    httpRedirectCode: '302',
+    protocol: RedirectProtocol.HTTPS,
+    replaceKey: ReplaceKey.prefixWith('test/'),
+    condition: {
+      httpErrorCodeReturnedEquals: '200',
+      keyPrefixEquals: 'prefix',
+    }
+  }]
 });
 ```
