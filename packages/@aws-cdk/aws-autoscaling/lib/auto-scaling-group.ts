@@ -940,6 +940,13 @@ export interface EbsDeviceOptionsBase {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    */
   readonly iops?: number;
+
+  /**
+   * The EBS volume type
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   *
+   * @default {@link EbsDeviceVolumeType.GP2}
+   */
   readonly volumeType?: EbsDeviceVolumeType;
 }
 
@@ -1028,9 +1035,28 @@ export class BlockDeviceVolume  {
  * Supported EBS volume types for {@link AutoScalingGroupProps.blockDevices}
  */
 export enum EbsDeviceVolumeType {
+  /**
+   * Magnetic
+   */
   STANDARD = 'standard',
+
+  /**
+   *  Provisioned IOPS SSD
+   */
   IO1 = 'io1',
+
+  /**
+   * General Purpose SSD
+   */
   GP2 = 'gp2',
+
+  /**
+   * Throughput Optimized HDD
+   */
   ST1 = 'st1',
+
+  /**
+   * Cold HDD
+   */
   SC1 = 'sc1',
 }
