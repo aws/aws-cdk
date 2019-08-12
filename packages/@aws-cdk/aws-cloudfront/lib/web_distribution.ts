@@ -657,7 +657,11 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       const acmCertificateArn = props.aliasConfiguration.acmCertRef;
 
       if (acmCertificateArn) {
-        const {region} = cdk.Arn.parse(acmCertificateArn);
+        let {region} = cdk.Arn.parse(acmCertificateArn);
+
+        if (cdk.Token.isUnresolved(region)) {
+          region = cdk.Stack.of(scope).region;
+        }
 
         if (!cdk.Token.isUnresolved(region) && region !== 'us-east-1') {
           throw new Error(`acmCertificateArn must be in the 'us-east-1' region, got '${region}'`);

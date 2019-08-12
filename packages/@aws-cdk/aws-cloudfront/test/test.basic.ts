@@ -1,5 +1,6 @@
 import { expect } from '@aws-cdk/assert';
 import certificatemanager = require('@aws-cdk/aws-certificatemanager');
+import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -355,7 +356,7 @@ export = {
     test.done();
   },
 
-  'throws if certificate arn is invalid - constructor'(test: Test) {
+  'throws if stack region is invalid - constructor'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'RegionStack', {env: {region: 'eu-west-3'}});
@@ -382,6 +383,143 @@ export = {
 
     // THEN
     test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region, got 'eu-west-3'/);
+    test.done();
+  },
+
+  'throws if certificate region is invalid - constructor'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'RegionStack', {env: {region: 'us-east-1'}});
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const hostedZone = route53.HostedZone.fromHostedZoneAttributes(stack, 'zone', {
+      zoneName: 'zoneName',
+      hostedZoneId: 'hostedZoneId'
+    });
+    const certificate = new certificatemanager.DnsValidatedCertificate(stack, 'TestCertificate', {
+      domainName: 'www.example.com',
+      hostedZone,
+      region: 'eu-west-3',
+    });
+
+    // WHEN
+    const toThrow = () => {
+      new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+        originConfigs: [
+          {
+            s3OriginSource: {s3BucketSource: sourceBucket},
+            behaviors: [{isDefaultBehavior: true}]
+          }
+        ],
+        aliasConfiguration: {
+          names: ['www.example.com'],
+          acmCertRef: certificate.certificateArn
+        }
+      });
+    };
+
+    // THEN
+    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region, got 'eu-west-3'/);
+    test.done();
+  },
+
+  'does not throw if region agnostic stack'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const certificate = new certificatemanager.Certificate(stack, 'TestCertificate', {
+      domainName: 'www.example.com',
+    });
+
+    // WHEN
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {s3BucketSource: sourceBucket},
+          behaviors: [{isDefaultBehavior: true}]
+        }
+      ],
+      aliasConfiguration: {
+        names: ['www.example.com'],
+        acmCertRef: certificate.certificateArn
+      }
+    });
+
+    // THEN
+    expect(stack).toMatch({
+        Resources: {
+          Bucket83908E77: {
+            Type: "AWS::S3::Bucket",
+            UpdateReplacePolicy: "Retain",
+            DeletionPolicy: "Retain"
+          },
+          TestCertificate6B4956B6: {
+            Type: "AWS::CertificateManager::Certificate",
+            Properties: {
+              DomainName: "www.example.com",
+              DomainValidationOptions: [
+                {
+                  DomainName: "www.example.com",
+                  ValidationDomain: "example.com"
+                }
+              ]
+            }
+          },
+          AnAmazingWebsiteProbablyCFDistribution47E3983B: {
+            Type: "AWS::CloudFront::Distribution",
+            Properties: {
+              DistributionConfig: {
+                Aliases: [
+                  "www.example.com"
+                ],
+                CacheBehaviors: [],
+                DefaultCacheBehavior: {
+                  AllowedMethods: [
+                    "GET",
+                    "HEAD"
+                  ],
+                  CachedMethods: [
+                    "GET",
+                    "HEAD"
+                  ],
+                  ForwardedValues: {
+                    Cookies: {
+                      Forward: "none"
+                    },
+                    QueryString: false
+                  },
+                  TargetOriginId: "origin1",
+                  ViewerProtocolPolicy: "redirect-to-https"
+                },
+                DefaultRootObject: "index.html",
+                Enabled: true,
+                HttpVersion: "http2",
+                IPV6Enabled: true,
+                Origins: [
+                  {
+                    DomainName: {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "RegionalDomainName"
+                      ]
+                    },
+                    Id: "origin1",
+                    S3OriginConfig: {}
+                  }
+                ],
+                PriceClass: "PriceClass_100",
+                ViewerCertificate: {
+                  AcmCertificateArn: {
+                    Ref: "TestCertificate6B4956B6"
+                  },
+                  SslSupportMethod: "sni-only"
+                }
+              }
+            }
+          }
+        }
+      }
+    );
+
     test.done();
   },
 };
