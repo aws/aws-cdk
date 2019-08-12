@@ -963,7 +963,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
 
 export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
   /**
-   * The volume size, in Gibibytes (GiB
+   * The volume size, in Gibibytes (GiB)
    *
    * If you specify volumeSize, it must be equal or greater than the size of the snapshot.
    *
@@ -983,7 +983,7 @@ export class BlockDeviceVolume  {
   /**
    * Creates a new Elastic Block Storage device
    *
-   * @param volumeSize The volume size, in Gibibytes (GiB
+   * @param volumeSize The volume size, in Gibibytes (GiB)
    * @param options additional device options
    */
   public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
