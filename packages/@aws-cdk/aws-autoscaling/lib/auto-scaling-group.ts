@@ -967,7 +967,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
    *
    * If you specify volumeSize, it must be equal or greater than the size of the snapshot.
    *
-   * @default snapshot size
+   * @default - The snapshot size
    */
   readonly volumeSize?: number;
 }
