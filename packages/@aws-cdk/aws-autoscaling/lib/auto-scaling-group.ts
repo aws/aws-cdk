@@ -901,6 +901,9 @@ export interface BlockDevice {
   readonly deviceName: string;
 
   /**
+   * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
+   *
+   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
    *
    */
   readonly volume: BlockDeviceVolume;
