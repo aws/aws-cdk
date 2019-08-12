@@ -414,7 +414,7 @@ pipeline.addStage({
 To use CodeDeploy for blue-green Lambda deployments in a Pipeline:
 
 ```typescript
-const lambdaCode = lambda.Code.cfnParameters(); 
+const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
