@@ -8,4 +8,4 @@ phases:
       - /bin/bash ./install.sh
   build:
     commands:
-      - /bin/bash ./build.sh
+      - /bin/bash ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD
