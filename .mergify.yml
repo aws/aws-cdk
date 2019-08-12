@@ -1,14 +1,14 @@
 # See https://doc.mergify.io
 
 pull_request_rules:
-  - name: automatic merge non-sensitive
+  - name: automatic merge
     actions:
       comment:
         message: Thank you for contributing! Your pull request is now being automatically merged.
       merge:
         strict: smart
         method: squash
-        strict_method: squash
+        strict_method: merge
       delete_head_brancH: {}
       dismiss_reviews: {}
     conditions:
@@ -49,6 +49,12 @@ pull_request_rules:
             - Grant APIs (if not based on official documentation with a reference)
     conditions:
       - base=master
+  - name: comment on CI fail
+    actions:
+      comment:
+        message: Codebuild (Continuous Integration) build failed for current commits. Please check log and resolve before PR is merged.
+    conditions:
+      - -status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
