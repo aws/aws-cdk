@@ -431,14 +431,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
       blockDeviceMappings: (props.blockDevices !== undefined ? props.blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
-          ({deviceName, volume, noDevice}) => {
+          ({deviceName, volume, mappingEnabled}) => {
             const {virtualName, ebsDevice: ebs} = volume;
 
             return {
               deviceName,
               ebs,
               virtualName,
-              noDevice,
+              noDevice: mappingEnabled !== undefined ? !mappingEnabled : undefined,
             };
           }) : undefined),
     });
@@ -909,13 +909,15 @@ export interface BlockDevice {
   readonly volume: BlockDeviceVolume;
 
   /**
-   * Suppresses the device mapping.
-   * If this property is set to true for the root device,  the instance might fail the Amazon EC2 health check.
+   * If false, the device mapping will be suppressed.
+   * If set to false for the root device, the instance might fail the Amazon EC2 health check.
    * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
    *
-   * @default device mapping is left untouched
+   * @see {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-mapping.html#cfn-as-launchconfig-blockdev-mapping-nodevice inverse of NoDevice property}
+   *
+   * @default true - device mapping is left untouched
    */
-  readonly noDevice?: boolean;
+  readonly mappingEnabled?: boolean;
 }
 
 export interface EbsDeviceOptionsBase {

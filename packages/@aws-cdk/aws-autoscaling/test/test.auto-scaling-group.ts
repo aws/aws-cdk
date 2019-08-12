@@ -676,7 +676,7 @@ export = {
       vpc,
       blockDevices: [{
         deviceName: 'ebs',
-        noDevice: false,
+        mappingEnabled: true,
         volume: autoscaling.BlockDeviceVolume.ebs(15, {
           deleteOnTermination: true,
           encrypted: true,
@@ -685,7 +685,7 @@ export = {
         })
       }, {
         deviceName: 'ebs-snapshot',
-        noDevice: true,
+        mappingEnabled: false,
         volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
           volumeSize: 500,
           deleteOnTermination: false,
@@ -765,7 +765,6 @@ export = {
         vpc,
         blockDevices: [{
           deviceName: 'ebs',
-          noDevice: false,
           volume: autoscaling.BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
@@ -791,7 +790,6 @@ export = {
         vpc,
         blockDevices: [{
           deviceName: 'ebs',
-          noDevice: false,
           volume: autoscaling.BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
@@ -817,7 +815,6 @@ export = {
         vpc,
         blockDevices: [{
           deviceName: 'ebs',
-          noDevice: false,
           volume: autoscaling.BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
