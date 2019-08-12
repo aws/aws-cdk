@@ -9,17 +9,19 @@
             "KeyType": "HASH"
           }
         ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
             "AttributeType": "S"
           }
-        ]
-      }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "TableReadScalingTargetF96E9F76": {
       "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
@@ -64,14 +66,14 @@
             "ScalableTargetAction": {
               "MinCapacity": 20
             },
-            "Schedule": "cron(0 8 * * ?)",
+            "Schedule": "cron(0 8 * * ? *)",
             "ScheduledActionName": "ScaleUpInTheMorning"
           },
           {
             "ScalableTargetAction": {
               "MaxCapacity": 20
             },
-            "Schedule": "cron(0 20 * * ?)",
+            "Schedule": "cron(0 20 * * ? *)",
             "ScheduledActionName": "ScaleDownAtNight"
           }
         ]

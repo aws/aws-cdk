@@ -1,5 +1,5 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 
@@ -99,7 +99,8 @@ export = {
           Ref: "apiC8550315"
           }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain"
         }
       }
     });
@@ -144,7 +145,7 @@ export = {
 
     // tokens supported, and are resolved upon synthesis
     const value = 'hello hello';
-    deployment.addToLogicalId({ foo: new cdk.Token(() => value) });
+    deployment.addToLogicalId({ foo: cdk.Lazy.stringValue({ produce: () => value }) });
 
     const template2 = synthesize();
     test.ok(template2.Resources.deployment33381975a12dfe81474913364dc31c06e37f9449);
@@ -152,8 +153,7 @@ export = {
     test.done();
 
     function synthesize() {
-      stack.node.prepareTree();
-      return SynthUtils.toCloudFormation(stack);
+      return SynthUtils.synthesize(stack).template;
     }
   },
 

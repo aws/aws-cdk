@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import events = require('../lib');
 
@@ -11,7 +11,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.inline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.NODEJS,
     });
 
     // WHEN
@@ -20,12 +20,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: "foo",
-      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FF4B434AC", "RootResourceId" ] }
+      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FFB3F557C", "RootResourceId" ] }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoo73254F28" },
+      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4FfooCA6F87E4" },
     }));
 
     test.done();
@@ -37,7 +37,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.inline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.NODEJS,
     });
 
     // WHEN
@@ -47,22 +47,22 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: "foo",
-      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FF4B434AC", "RootResourceId" ] }
+      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FFB3F557C", "RootResourceId" ] }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: "bar",
-      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FF4B434AC", "RootResourceId" ] }
+      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FFB3F557C", "RootResourceId" ] }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoo73254F28" },
+      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4FfooCA6F87E4" },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4FbarFF0EF497" },
+      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4FbarDFB0F21B" },
     }));
 
     test.done();
@@ -74,7 +74,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.inline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.NODEJS,
     });
 
     // WHEN
@@ -85,22 +85,22 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: "foo",
-      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FF4B434AC", "RootResourceId" ] }
+      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FFB3F557C", "RootResourceId" ] }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: "bar",
-      ParentId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoo73254F28" }
+      ParentId: { Ref: "MyFuncApiEventSourceA7A86A4FfooCA6F87E4" }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoo73254F28" },
+      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4FfooCA6F87E4" },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoobarzoo34214ADE" },
+      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoobar028FFFDE" },
     }));
 
     test.done();

@@ -1,5 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cognito = require('../lib');
 
@@ -16,7 +16,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPoolClient', {
-      UserPoolId: pool.node.resolve(pool.userPoolId)
+      UserPoolId: stack.resolve(pool.userPoolId)
     }));
 
     test.done();

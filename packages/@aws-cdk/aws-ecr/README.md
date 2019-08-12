@@ -1,4 +1,13 @@
-## Amazon Elastic Container Registry Construct Library
+## Amazon ECR Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 This package contains constructs for working with Amazon Elastic Container Registry.
 
@@ -21,5 +30,5 @@ is important here):
 
 ```ts
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
-repository.addLifecycleRule({ maxImageAgeDays: 30 });
+repository.addLifecycleRule({ maxImageAgeDays: cdk.Duration.days(30) });
 ```

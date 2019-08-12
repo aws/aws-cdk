@@ -1,6 +1,8 @@
 {
   "Resources": {
     "MyBucketF68F3FF0": {
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     }
   },

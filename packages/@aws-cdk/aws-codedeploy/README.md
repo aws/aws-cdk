@@ -1,6 +1,17 @@
-## The CDK Construct Library for AWS CodeDeploy
+## AWS CodeDeploy Construct Library
+<!--BEGIN STABILITY BANNER-->
 
-AWS CodeDeploy is a deployment service that automates application deployments to Amazon EC2 instances, on-premises instances, serverless Lambda functions, or Amazon ECS services.
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
+
+AWS CodeDeploy is a deployment service that automates application deployments to
+Amazon EC2 instances, on-premises instances, serverless Lambda functions, or
+Amazon ECS services.
 
 The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
 
@@ -19,9 +30,9 @@ const application = new codedeploy.ServerApplication(this, 'CodeDeployApplicatio
 To import an already existing Application:
 
 ```ts
-const application = codedeploy.ServerApplication.import(this, 'ExistingCodeDeployApplication', {
-    applicationName: 'MyExistingApplication',
-});
+const application = codedeploy.ServerApplication.fromServerApplicationName(
+  this, 'ExistingCodeDeployApplication', 'MyExistingApplication'
+);
 ```
 
 ### EC2/on-premise Deployment Groups
@@ -79,7 +90,7 @@ one will be automatically created.
 To import an already existing Deployment Group:
 
 ```ts
-const deploymentGroup = codedeploy.ServerDeploymentGroup.import(this, 'ExistingCodeDeployDeploymentGroup', {
+const deploymentGroup = codedeploy.ServerDeploymentGroup.fromLambdaDeploymentGroupAttributes(this, 'ExistingCodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyExistingDeploymentGroup',
 });
@@ -90,21 +101,23 @@ const deploymentGroup = codedeploy.ServerDeploymentGroup.import(this, 'ExistingC
 You can [specify a load balancer](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-elastic-load-balancing.html)
 with the `loadBalancer` property when creating a Deployment Group.
 
+`LoadBalancer` is an abstract class with static factory methods that allow you to create instances of it from various sources.
+
 With Classic Elastic Load Balancer, you provide it directly:
 
 ```ts
 import lb = require('@aws-cdk/aws-elasticloadbalancing');
 
 const elb = new lb.LoadBalancer(this, 'ELB', {
-    // ...
+  // ...
 });
 elb.addTarget(/* ... */);
 elb.addListener({
-    // ...
+  // ...
 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
-    loadBalancer: elb,
+  loadBalancer: codedeploy.LoadBalancer.classic(elb),
 });
 ```
 
@@ -115,17 +128,17 @@ you provide a Target Group as the load balancer:
 import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 
 const alb = new lbv2.ApplicationLoadBalancer(this, 'ALB', {
-    // ...
+  // ...
 });
 const listener = alb.addListener('Listener', {
-    // ...
+  // ...
 });
 const targetGroup = listener.addTargets('Fleet', {
-    // ...
+  // ...
 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
-    loadBalancer: targetGroup,
+  loadBalancer: codedeploy.LoadBalancer.application(targetGroup),
 });
 ```
 
@@ -135,11 +148,11 @@ You can also pass a Deployment Configuration when creating the Deployment Group:
 
 ```ts
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDeploymentGroup', {
-    deploymentConfig: codedeploy.ServerDeploymentConfig.AllAtOnce,
+    deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
 });
 ```
 
-The default Deployment Configuration is `ServerDeploymentConfig.OneAtATime`.
+The default Deployment Configuration is `ServerDeploymentConfig.ONE_AT_A_TIME`.
 
 You can also create a custom Deployment Configuration:
 
@@ -155,9 +168,9 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'Deployment
 Or import an existing one:
 
 ```ts
-const deploymentConfig = codedeploy.ServerDeploymentConfig.import(this, 'ExistingDeploymentConfiguration', {
-    deploymentConfigName: 'MyExistingDeploymentConfiguration',
-});
+const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentConfigName(
+  this, 'ExistingDeploymentConfiguration', 'MyExistingDeploymentConfiguration'
+);
 ```
 
 ### Lambda Applications
@@ -175,9 +188,9 @@ const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplicatio
 To import an already existing Application:
 
 ```ts
-const application = codedeploy.LambdaApplication.import(this, 'ExistingCodeDeployApplication', {
-    applicationName: 'MyExistingApplication',
-});
+const application = codedeploy.LambdaApplication.fromLambdaApplicationName(
+  this, 'ExistingCodeDeployApplication', 'MyExistingApplication'
+);
 ```
 
 ### Lambda Deployment Groups
@@ -203,7 +216,7 @@ const version1Alias = new lambda.Alias(this, 'alias', {
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   application: myApplication, // optional property: one will be created for you if not provided
   alias: version1Alias,
-  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
 });
 ```
 
@@ -219,11 +232,11 @@ CodeDeploy will roll back if the deployment fails. You can optionally trigger a 
 ```ts
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   alias,
-  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
   alarms: [
     // pass some alarms when constructing the deployment group
     new cloudwatch.Alarm(stack, 'Errors', {
-      comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
       threshold: 1,
       evaluationPeriods: 1,
       metric: alias.metricErrors()
@@ -233,7 +246,7 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDe
 
 // or add alarms to an existing group
 deploymentGroup.addAlarm(new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
-  comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
   threshold: 1,
   evaluationPeriods: 1,
   metric: blueGreenAlias.metricErrors()
@@ -253,7 +266,7 @@ const endToEndValidation = new lambda.Function(..);
 // pass a hook whe creating the deployment group
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   alias: alias,
-  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
   preHook: warmUpUserCache,
 });
 

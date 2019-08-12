@@ -1,4 +1,20 @@
 ## AWS CloudTrail Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+>
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
+
 Add a CloudTrail construct - for ease of setting up CloudTrail logging in your account
 
 Example usage:
@@ -6,7 +22,7 @@ Example usage:
 ```ts
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+const trail = new cloudtrail.Trail(this, 'CloudTrail');
 ```
 
 You can instantiate the CloudTrail construct with no arguments - this will by default:
@@ -30,7 +46,7 @@ For example, to log to CloudWatch Logs
 
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail', {
+const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   sendToCloudWatchLogs: true
 });
 ```
@@ -45,7 +61,7 @@ Example:
 ```ts
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-const trail = new cloudtrail.CloudTrail(this, 'MyAmazingCloudTrail');
+const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 
 // Adds an event selector to the bucket magic-bucket.
 // By default, this includes management events and all operations (Read + Write)
@@ -54,6 +70,6 @@ trail.addS3EventSelector(["arn:aws:s3:::magic-bucket/"]);
 // Adds an event selector to the bucket foo, with a specific configuration
 trail.addS3EventSelector(["arn:aws:s3:::foo/"], {
   includeManagementEvents: false,
-  readWriteType: ReadWriteType.All,
+  readWriteType: ReadWriteType.ALL,
 });
 ```

@@ -1,4 +1,4 @@
-import { Environment} from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
 import AWS = require('aws-sdk');
 import child_process = require('child_process');
 import fs = require('fs-extra');
@@ -10,6 +10,25 @@ import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 import { AccountAccessKeyCache } from './account-cache';
 import { SharedIniFile } from './sdk_ini_file';
+
+/** @experimental */
+export interface ISDK {
+  cloudFormation(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.CloudFormation>;
+
+  ec2(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2>;
+
+  ssm(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM>;
+
+  s3(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.S3>;
+
+  route53(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53>;
+
+  ecr(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.ECR>;
+
+  defaultRegion(): Promise<string | undefined>;
+
+  defaultAccount(): Promise<string | undefined>;
+}
 
 export interface SDKOptions {
   /**
@@ -44,8 +63,10 @@ export interface SDKOptions {
  *
  * If those don't suffice, a list of CredentialProviderSources is interrogated for access
  * to the requested account.
+ *
+ * @experimental
  */
-export class SDK {
+export class SDK implements ISDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
   private readonly credentialsCache: CredentialsCache;
   private readonly profile?: string;
@@ -84,11 +105,12 @@ export class SDK {
       });
     }
 
-    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegion(this.profile));
+    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
-  public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
+  public async cloudFormation(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.CloudFormation> {
+    const environment = await this.resolveEnvironment(account, region);
     return new AWS.CloudFormation({
       ...this.retryOptions,
       region: environment.region,
@@ -96,23 +118,26 @@ export class SDK {
     });
   }
 
-  public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
+  public async ec2(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
+    const environment = await this.resolveEnvironment(account, region);
     return new AWS.EC2({
       ...this.retryOptions,
-      region,
-      credentials: await this.credentialsCache.get(awsAccountId, mode)
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
-  public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
+  public async ssm(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
+    const environment = await this.resolveEnvironment(account, region);
     return new AWS.SSM({
       ...this.retryOptions,
-      region,
-      credentials: await this.credentialsCache.get(awsAccountId, mode)
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
-  public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
+  public async s3(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.S3> {
+    const environment = await this.resolveEnvironment(account, region);
     return new AWS.S3({
       ...this.retryOptions,
       region: environment.region,
@@ -120,15 +145,17 @@ export class SDK {
     });
   }
 
-  public async route53(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
+  public async route53(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
+    const environment = await this.resolveEnvironment(account, region);
     return new AWS.Route53({
       ...this.retryOptions,
-      region,
-      credentials: await this.credentialsCache.get(awsAccountId, mode),
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode),
     });
   }
 
-  public async ecr(environment: Environment, mode: Mode): Promise<AWS.ECR> {
+  public async ecr(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.ECR> {
+    const environment = await this.resolveEnvironment(account, region);
     return new AWS.ECR({
       ...this.retryOptions,
       region: environment.region,
@@ -137,12 +164,37 @@ export class SDK {
   }
 
   public async defaultRegion(): Promise<string | undefined> {
-    return await getCLICompatibleDefaultRegion(this.profile);
+    return await getCLICompatibleDefaultRegionGetter(this.profile)();
   }
 
   public defaultAccount(): Promise<string | undefined> {
     return this.defaultAwsAccount.get();
   }
+
+  private async resolveEnvironment(account: string | undefined, region: string | undefined, ) {
+    if (region === cxapi.UNKNOWN_REGION) {
+      region = await this.defaultRegion();
+    }
+
+    if (account === cxapi.UNKNOWN_ACCOUNT) {
+      account = await this.defaultAccount();
+    }
+
+    if (!region) {
+      throw new Error(`AWS region must be configured either when you configure your CDK stack or through the environment`);
+    }
+
+    if (!account) {
+      throw new Error(`Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment`);
+    }
+
+    const environment: cxapi.Environment = {
+      region, account, name: cxapi.EnvironmentUtils.format(account, region)
+    };
+
+    return environment;
+  }
+
 }
 
 /**
@@ -177,7 +229,7 @@ class CredentialsCache {
     // If requested account is undefined or equal to default account, use default credentials provider.
     // (Note that we ignore the mode in this case, if you preloaded credentials they better be correct!)
     const defaultAccount = await this.defaultAwsAccount.get();
-    if (!awsAccountId || awsAccountId === defaultAccount) {
+    if (!awsAccountId || awsAccountId === defaultAccount || awsAccountId === cxapi.UNKNOWN_ACCOUNT) {
       debug(`Using default AWS SDK credentials for account ${awsAccountId}`);
 
       // CredentialProviderChain extends Credentials, but that is a lie.
@@ -226,7 +278,7 @@ class DefaultAWSAccount {
 
   constructor(
       private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>,
-      private readonly region: Promise<string | undefined>) {
+      private readonly region: () => Promise<string | undefined>) {
   }
 
   /**
@@ -258,7 +310,7 @@ class DefaultAWSAccount {
       const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
         debug('Looking up default account ID from STS');
-        const result = await new AWS.STS({ credentials: creds, region: await this.region }).getCallerIdentity().promise();
+        const result = await new AWS.STS({ credentials: creds, region: await this.region() }).getCallerIdentity().promise();
         const aid = result.Account;
         if (!aid) {
           debug('STS didn\'t return an account ID');
@@ -333,26 +385,43 @@ async function makeCLICompatibleCredentialProvider(profile: string | undefined, 
  *   SDK does not allow us to specify a profile at runtime).
  * - AWS_DEFAULT_PROFILE and AWS_DEFAULT_REGION are also used as environment
  *   variables to be used to determine the region.
+ *
+ * Returns a function that can be invoked to retrieve the actual region value
+ * (used to be just a promise, but that would lead to firing off a failing
+ * operation and if it was never awaited NodeJS would complain).
  */
-async function getCLICompatibleDefaultRegion(profile: string | undefined): Promise<string | undefined> {
-  profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
+function getCLICompatibleDefaultRegionGetter(profile: string | undefined): () => Promise<string | undefined> {
+  let retrieved = false;
+  let region: string | undefined;
+  return async () => {
+    if (!retrieved) {
+      profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
-  // Defaults inside constructor
-  const toCheck = [
-    {filename: process.env.AWS_SHARED_CREDENTIALS_FILE },
-    {isConfig: true, filename: process.env.AWS_CONFIG_FILE},
-  ];
+      // Defaults inside constructor
+      const toCheck = [
+        {filename: process.env.AWS_SHARED_CREDENTIALS_FILE },
+        {isConfig: true, filename: process.env.AWS_CONFIG_FILE},
+      ];
 
-  let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
-    process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
+      region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
+        process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
 
-  while (!region && toCheck.length > 0) {
-    const configFile = new SharedIniFile(toCheck.shift());
-    const section = await configFile.getProfile(profile);
-    region = section && section.region;
-  }
+      while (!region && toCheck.length > 0) {
+        const configFile = new SharedIniFile(toCheck.shift());
+        const section = await configFile.getProfile(profile);
+        region = section && section.region;
+      }
 
-  return region;
+      if (!region) {
+        const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
+        debug(`Unable to determine AWS region from environment or AWS configuration${usedProfile}`);
+      }
+
+      retrieved = true;
+    }
+
+    return region;
+  };
 }
 
 /**

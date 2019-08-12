@@ -1,6 +1,6 @@
 import { expect } from '@aws-cdk/assert';
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { CloudFrontWebDistribution, ViewerProtocolPolicy } from '../lib';
 
@@ -119,6 +119,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -130,7 +131,7 @@ export = {
                   "DomainName": {
                     "Fn::GetAtt": [
                       "Bucket83908E77",
-                      "DomainName"
+                      "RegionalDomainName"
                     ]
                   },
                   "Id": "origin1",
@@ -194,6 +195,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -205,7 +207,7 @@ export = {
                   "DomainName": {
                     "Fn::GetAtt": [
                       "Bucket83908E77",
-                      "DomainName"
+                      "RegionalDomainName"
                     ]
                   },
                   "Id": "origin1",
@@ -252,7 +254,7 @@ export = {
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
-      viewerProtocolPolicy: ViewerProtocolPolicy.AllowAll,
+      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
       originConfigs: [
         {
           s3OriginSource: {
@@ -272,6 +274,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -283,7 +286,7 @@ export = {
                   "DomainName": {
                     "Fn::GetAtt": [
                       "Bucket83908E77",
-                      "DomainName"
+                      "RegionalDomainName"
                     ]
                   },
                   "Id": "origin1",

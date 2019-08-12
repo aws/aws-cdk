@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iotanalytics",
-  "version": "0.30.0",
+  "version": "1.3.0",
   "description": "The CDK Construct Library for AWS::IoTAnalytics",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,16 +11,17 @@
         "namespace": "Amazon.CDK.AWS.IoTAnalytics",
         "packageId": "Amazon.CDK.AWS.IoTAnalytics",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "java": {
         "package": "software.amazon.awscdk.services.iotanalytics",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iotanalytics"
+          "artifactId": "iotanalytics",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-iotanalytics",
         "module": "aws_cdk.aws_iotanalytics"
@@ -29,10 +30,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-iotanalytics"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
     "integ": "cdk-integ",
@@ -42,7 +43,9 @@
     "test": "cdk-test",
     "watch": "cdk-watch",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::IoTAnalytics"
@@ -61,18 +64,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cfn2ts": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^1.3.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/core": "^1.3.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/core": "^1.3.0"
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

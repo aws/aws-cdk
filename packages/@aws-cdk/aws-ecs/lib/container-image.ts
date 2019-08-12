@@ -1,5 +1,5 @@
 import ecr = require('@aws-cdk/aws-ecr');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
 
@@ -23,25 +23,32 @@ export abstract class ContainerImage {
 
   /**
    * Reference an image that's constructed directly from sources on disk
+   *
+   * @param directory The directory containing the Dockerfile
    */
-  public static fromAsset(scope: cdk.Construct, id: string, props: AssetImageProps) {
-    return new AssetImage(scope, id, props);
+  public static fromAsset(directory: string, props: AssetImageProps = {}) {
+    return new AssetImage(directory, props);
   }
-
-  /**
-   * Name of the image
-   */
-  public abstract readonly imageName: string;
 
   /**
    * Called when the image is used by a ContainerDefinition
    */
-  public abstract bind(containerDefinition: ContainerDefinition): void;
+  public abstract bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+}
+
+/**
+ * The configuration for creating a container image.
+ */
+export interface ContainerImageConfig {
+  /**
+   * Specifies the name of the container image.
+   */
+  readonly imageName: string;
 
   /**
-   * Render the Repository credentials to the CloudFormation object
+   * Specifies the credentials used to access the image repository.
    */
-  public abstract toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined;
+  readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
 }
 
 import { AssetImage, AssetImageProps } from './images/asset-image';

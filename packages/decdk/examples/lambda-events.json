@@ -9,16 +9,16 @@
       "Properties": {
         "partitionKey": {
           "name": "ID",
-          "type": "String"
+          "type": "STRING"
         },
-        "streamSpecification": "NewAndOldImages"
+        "stream": "NEW_AND_OLD_IMAGES"
       }
     },
     "HelloWorldFunction": {
       "Type": "@aws-cdk/aws-lambda.Function",
       "Properties": {
         "handler": "app.hello_handler",
-        "runtime": "Python36",
+        "runtime": "PYTHON_3_6",
         "code": {
           "asset": { "path": "." }
         },
@@ -26,7 +26,7 @@
           "Param": "f"
         },
         "events": [
-          { "@aws-cdk/aws-lambda-event-sources.DynamoEventSource": { "table": { "Ref": "Table" }, "startingPosition": "TrimHorizon" } },
+          { "@aws-cdk/aws-lambda-event-sources.DynamoEventSource": { "table": { "Ref": "Table" }, "startingPosition": "TRIM_HORIZON" } },
           { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "GET", "path": "/hello" } },
           { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "POST", "path": "/hello" } },
           { "@aws-cdk/aws-lambda-event-sources.SnsEventSource": { "topic": { "Ref": "MyTopic" } } }

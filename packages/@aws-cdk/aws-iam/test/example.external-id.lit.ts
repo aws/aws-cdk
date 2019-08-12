@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import iam = require('../lib');
 
 export class ExampleConstruct extends cdk.Construct {
@@ -8,7 +8,7 @@ export class ExampleConstruct extends cdk.Construct {
     /// !show
     const role = new iam.Role(this, 'MyRole', {
       assumedBy: new iam.AccountPrincipal('123456789012'),
-      externalId: 'SUPPLY-ME',
+      externalIds: ['SUPPLY-ME'],
     });
     /// !hide
 

@@ -1,32 +1,60 @@
-import { Construct, Resource, SecretValue } from '@aws-cdk/cdk';
-import { Group } from './group';
+import { Construct, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyStatement } from './policy-document';
-import { ArnPrincipal, PrincipalPolicyFragment } from './policy-document';
+import { PolicyStatement } from './policy-statement';
+import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
 import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
+
+export interface IUser extends IIdentity {
+  readonly userName: string;
+  addToGroup(group: IGroup): void;
+}
 
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
    * user to a group.
+   *
+   * @default - No groups.
    */
-  readonly groups?: Group[];
+  readonly groups?: IGroup[];
 
   /**
-   * A list of ARNs for managed policies attacherd to this user.
-   * You can use `addManagedPolicy(arn)` to attach a managed policy to this user.
-   * @default No managed policies.
+   * A list of managed policies associated with this role.
+   *
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
+   *
+   * @default - No managed policies.
    */
-  readonly managedPolicyArns?: any[];
+  readonly managedPolicies?: IManagedPolicy[];
 
   /**
    * The path for the user name. For more information about paths, see IAM
    * Identifiers in the IAM User Guide.
+   *
+   * @default /
    */
   readonly path?: string;
+
+  /**
+   * AWS supports permissions boundaries for IAM entities (users or roles).
+   * A permissions boundary is an advanced feature for using a managed policy
+   * to set the maximum permissions that an identity-based policy can grant to
+   * an IAM entity. An entity's permissions boundary allows it to perform only
+   * the actions that are allowed by both its identity-based policies and its
+   * permissions boundaries.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-permissionsboundary
+   * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+   *
+   * @default - No permissions boundary.
+   */
+  readonly permissionsBoundary?: IManagedPolicy;
 
   /**
    * A name for the IAM user. For valid values, see the UserName parameter for
@@ -51,7 +79,8 @@ export interface UserProps {
    * AWS Management Console.
    *
    * You can use `SecretValue.plainText` to specify a password in plain text or
-   * use `secretsmanager.Secret.import` to reference a secret in Secrets Manager.
+   * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
+   * Secrets Manager.
    *
    * @default User won't be able to access the management console without a password.
    */
@@ -74,34 +103,53 @@ export class User extends Resource implements IIdentity {
 
   /**
    * An attribute that represents the user name.
+   * @attribute
    */
   public readonly userName: string;
 
   /**
    * An attribute that represents the user's ARN.
+   * @attribute
    */
   public readonly userArn: string;
+
+  /**
+   * Returns the permissions boundary attached to this user
+   */
+  public readonly permissionsBoundary?: IManagedPolicy;
 
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly groups = new Array<any>();
-  private readonly managedPolicyArns = new Array<string>();
+  private readonly managedPolicies = new Array<IManagedPolicy>();
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 
   constructor(scope: Construct, id: string, props: UserProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.userName,
+    });
+
+    this.managedPolicies.push(...props.managedPolicies || []);
+    this.permissionsBoundary = props.permissionsBoundary;
 
     const user = new CfnUser(this, 'Resource', {
-      userName: props.userName,
+      userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
-      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
+      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
+      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       loginProfile: this.parseLoginProfile(props)
     });
 
-    this.userName = user.userName;
-    this.userArn = user.userArn;
+    this.userName = this.getResourceNameAttribute(user.ref);
+    this.userArn = this.getResourceArnAttribute(user.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'user',
+      resourceName: this.physicalName,
+    });
+
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
 
     if (props.groups) {
@@ -112,16 +160,17 @@ export class User extends Resource implements IIdentity {
   /**
    * Adds this user to a group.
    */
-  public addToGroup(group: Group) {
+  public addToGroup(group: IGroup) {
     this.groups.push(group.groupName);
   }
 
   /**
    * Attaches a managed policy to the user.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The managed policy to attach.
    */
-  public attachManagedPolicy(arn: string) {
-    this.managedPolicyArns.push(arn);
+  public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
+    this.managedPolicies.push(policy);
   }
 
   /**
@@ -143,7 +192,7 @@ export class User extends Resource implements IIdentity {
       this.defaultPolicy.attachToUser(this);
     }
 
-    this.defaultPolicy.addStatement(statement);
+    this.defaultPolicy.addStatements(statement);
     return true;
   }
 

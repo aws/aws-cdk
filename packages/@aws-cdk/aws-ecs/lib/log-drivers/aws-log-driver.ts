@@ -1,11 +1,10 @@
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
-import { LogDriver } from "./log-driver";
+import { LogDriver, LogDriverConfig } from "./log-driver";
 
 /**
- * Properties for defining a new AWS Log Driver
+ * Specifies the awslogs log driver configuration options.
  */
 export interface AwsLogDriverProps {
   /**
@@ -23,9 +22,17 @@ export interface AwsLogDriverProps {
   /**
    * The log group to log to
    *
-   * @default A log group is automatically created
+   * @default - A log group is automatically created.
    */
   readonly logGroup?: logs.ILogGroup;
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs when the log
+   * group is automatically created by this construct.
+   *
+   * @default - Logs never expire.
+   */
+  readonly logRetention?: logs.RetentionDays;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -33,6 +40,8 @@ export interface AwsLogDriverProps {
    * A log message consists of a line that matches the pattern and any
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
+   *
+   * @default - No multiline matching.
    */
   readonly datetimeFormat?: string;
 
@@ -42,43 +51,54 @@ export interface AwsLogDriverProps {
    * A log message consists of a line that matches the pattern and any
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
+   *
+   * This option is ignored if datetimeFormat is also configured.
+   *
+   * @default - No multiline matching.
    */
   readonly multilinePattern?: string;
 }
 
 /**
- * A log driver that will log to an AWS Log Group
+ * A log driver that sends log information to CloudWatch Logs.
  */
 export class AwsLogDriver extends LogDriver {
   /**
-   * The log group that the logs will be sent to
+   * The log group to send log streams to.
+   *
+   * Only available after the LogDriver has been bound to a ContainerDefinition.
    */
-  public readonly logGroup: logs.ILogGroup;
+  public logGroup?: logs.ILogGroup;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
-    super(scope, id);
-    this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
-        retentionDays: 365,
-    });
+  /**
+   * Constructs a new instance of the AwsLogDriver class.
+   *
+   * @param props the awslogs log driver configuration options.
+   */
+  constructor(private readonly props: AwsLogDriverProps) {
+    super();
+
+    if (props.logGroup && props.logRetention) {
+      throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
+    }
   }
 
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(containerDefinition: ContainerDefinition): void {
-    this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
-  }
+  public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
+    this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
+        retention: this.props.logRetention || Infinity,
+    });
 
-  /**
-   * Return the log driver CloudFormation JSON
-   */
-  public renderLogDriver(): CfnTaskDefinition.LogConfigurationProperty {
+    this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
+
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': this.node.stack.region,
+        'awslogs-region': Stack.of(containerDefinition).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

@@ -1,6 +1,7 @@
+import { expect, haveResource } from '@aws-cdk/assert';
 import { SynthUtils } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fc = require('fast-check');
 import { Test } from 'nodeunit';
 import appscaling = require('../lib');
@@ -116,6 +117,43 @@ export = {
 
     test.done();
   },
+
+  'test step scaling on metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: "StepScaling",
+      ScalingTargetId: {
+        Ref: "Target3191CF44"
+      },
+      StepScalingPolicyConfiguration: {
+        AdjustmentType: "ChangeInCapacity",
+        MetricAggregationType: "Average",
+        StepAdjustments: [
+          {
+            MetricIntervalUpperBound: 0,
+            ScalingAdjustment: -1
+          }
+        ]
+      }
+
+    }));
+
+    test.done();
+  }
 };
 
 /**
@@ -130,7 +168,7 @@ function setupStepScaling(intervals: appscaling.ScalingInterval[]) {
     scalingSteps: intervals
   });
 
-  return new ScalingStackTemplate(SynthUtils.toCloudFormation(stack));
+  return new ScalingStackTemplate(SynthUtils.synthesize(stack).template);
 }
 
 class ScalingStackTemplate {

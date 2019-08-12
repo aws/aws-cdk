@@ -4,7 +4,7 @@ import { AugmentationGenerator } from './augmentation-generator';
 import CodeGenerator from './codegen';
 import { packageName } from './genspec';
 
-export default async function(scopes: string | string[], outPath: string) {
+export default async function(scopes: string | string[], outPath: string): Promise<void> {
   if (outPath !== '.') { await fs.mkdirp(outPath); }
 
   if (typeof scopes === 'string') { scopes = [scopes]; }

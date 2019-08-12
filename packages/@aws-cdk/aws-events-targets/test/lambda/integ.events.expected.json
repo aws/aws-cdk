@@ -54,7 +54,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs6.10"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "MyFuncServiceRole54065130"
@@ -111,7 +111,7 @@
                 "Arn"
               ]
             },
-            "Id": "MyFunc"
+            "Id": "Target0"
           }
         ]
       }
@@ -129,7 +129,7 @@
                 "Arn"
               ]
             },
-            "Id": "MyFunc"
+            "Id": "Target0"
           }
         ]
       }

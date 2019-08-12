@@ -1,39 +1,62 @@
 ## AWS Step Functions Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+>
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
-serverless workflows. Using objects. Defining a workflow looks like this
-(for the [Step Functions Job Poller
+serverless workflows using objects. Use this in conjunction with the
+`@aws-cdk/aws-stepfunctions-tasks` package, which contains classes used
+to call other AWS services.
+
+Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
 ### TypeScript example
 
 ```ts
+import sfn = require('@aws-cdk/aws-stepfunctions');
+import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
+
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
-const submitJob = new stepfunctions.Task(this, 'Submit Job', {
-    resource: submitLambda,
+const submitJob = new sfn.Task(this, 'Submit Job', {
+    task: new tasks.InvokeFunction(submitLambda),
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
 
-const waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { secondsPath: '$.wait_time' });
+const waitX = new sfn.Wait(this, 'Wait X Seconds', {
+    duration: sfn.WaitDuration.secondsPath('$.wait_time'),
+});
 
-const getStatus = new stepfunctions.Task(this, 'Get Job Status', {
-    resource: getStatusLambda,
+const getStatus = new sfn.Task(this, 'Get Job Status', {
+    task: new tasks.InvokeFunction(getStatusLambda),
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
     inputPath: '$.guid',
     resultPath: '$.status',
 });
 
-const jobFailed = new stepfunctions.Fail(this, 'Job Failed', {
+const jobFailed = new sfn.Fail(this, 'Job Failed', {
     cause: 'AWS Batch Job Failed',
     error: 'DescribeJob returned FAILED',
 });
 
-const finalStatus = new stepfunctions.Task(this, 'Get Final Job Status', {
-    resource: getStatusLambda,
+const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
+    task: new tasks.InvokeFunction(getStatusLambda),
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
     inputPath: '$.guid',
@@ -42,75 +65,15 @@ const finalStatus = new stepfunctions.Task(this, 'Get Final Job Status', {
 const definition = submitJob
     .next(waitX)
     .next(getStatus)
-    .next(new stepfunctions.Choice(this, 'Job Complete?')
+    .next(new sfn.Choice(this, 'Job Complete?')
         // Look at the "status" field
-        .when(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-        .when(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+        .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
+        .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
         .otherwise(waitX));
 
-new stepfunctions.StateMachine(this, 'StateMachine', {
+new sfn.StateMachine(this, 'StateMachine', {
     definition,
-    timeoutSec: 300
-});
-```
-
-### .NET Example
-
-```csharp
-var submitLambda = new Function(this, "SubmitLambda", new FunctionProps
-{
-    // ...
-});
-
-var getStatusLambda = new Function(this, "CheckLambda", new FunctionProps
-{
-    // ...
-});
-
-var submitJob = new Task(this, "Submit Job", new TaskProps
-{
-    Resource = submitLambda,
-    ResultPath = "$.guid"
-});
-
-var waitX = new Wait(this, "Wait X Seconds", new WaitProps
-{
-    SecondsPath = "$.wait_time"
-});
-
-var getStatus = new Task(this, "Get Job Status", new TaskProps
-{
-    Resource = getStatusLambda,
-    InputPath = "$.guid",
-    ResultPath = "$.status"
-});
-
-var jobFailed = new Fail(this, "Job Failed", new FailProps
-{
-    Cause = "AWS Batch Job Failed",
-    Error = "DescribeJob returned FAILED"
-});
-
-var finalStatus = new Task(this, "Get Final Job Status", new TaskProps
-{
-    Resource = getStatusLambda,
-    // Use "guid" field as input, output of the Lambda becomes the
-    // entire state machine output.
-    InputPath = "$.guid"
-});
-
-var definition = submitJob
-    .Next(waitX)
-    .Next(getStatus)
-    .Next(new Choice(this, "Job Complete?", new ChoiceProps())
-        .When(Amazon.CDK.AWS.StepFunctions.Condition.StringEquals("$.status", "FAILED"), jobFailed)
-        .When(Amazon.CDK.AWS.StepFunctions.Condition.StringEquals("$.status", "SUCCEEDED"), finalStatus)
-        .Otherwise(waitX));
-
-new StateMachine(this, "StateMachine", new StateMachineProps
-{
-    Definition = definition,
-    TimeoutSec = 300
+    timeout: Duration.minutes(5)
 });
 ```
 
@@ -154,21 +117,50 @@ information, see the States Language spec.
 
 ### Task
 
-A `Task` represents some work that needs to be done. It takes a `resource`
-property that is either a Lambda `Function` or a Step Functions `Activity`
-(A Lambda Function runs your task's code on AWS Lambda, whereas an `Activity`
-is used to run your task's code on an arbitrary compute fleet you manage).
+A `Task` represents some work that needs to be done. The exact work to be
+done is determine by a class that implements `IStepFunctionsTask`, a collection
+of which can be found in the `@aws-cdk/aws-stepfunctions-tasks` package. A
+couple of the tasks available are:
+
+* `tasks.InvokeActivity` -- start an Activity (Activities represent a work
+  queue that you poll on a compute fleet you manage yourself)
+* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
+* `tasks.PublishToTopic` -- publish a message to an SNS topic
+* `tasks.SendToQueue` -- send a message to an SQS queue
+* `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
+  depending on the type of capacity.
+* `tasks.SagemakerTrainTask` -- run a SageMaker training job
+* `tasks.SagemakerTransformTask` -- run a SageMaker transform job
+* `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
+
+Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
+pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
+(`integrationPattern`) are supposed to be given as parameter when customers want
+to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
+
+#### Task parameters from the state json
+
+Many tasks take parameters. The values for those can either be supplied
+directly in the workflow definition (by specifying their values), or at
+runtime by passing a value obtained from the static functions on `Data`,
+such as `Data.stringAt()`.
+
+If so, the value is taken from the indicated location in the state JSON,
+similar to (for example) `inputPath`.
+
+#### Lambda example - InvokeFunction
 
 ```ts
-const task = new stepfunctions.Task(this, 'Invoke The Lambda', {
-    resource: myLambda,
+const task = new sfn.Task(this, 'Invoke1', {
+    task: new tasks.InvokeFunction(myLambda),
     inputPath: '$.input',
-    timeoutSeconds: 300,
+    timeout: Duration.minutes(5),
 });
 
 // Add a retry policy
 task.addRetry({
-    intervalSeconds: 5,
+    interval: Duration.seconds(5),
     maxAttempts: 10
 });
 
@@ -177,6 +169,164 @@ task.addCatch(errorHandlerState);
 
 // Set the next state
 task.next(nextState);
+```
+
+#### Lambda example - RunLambdaTask
+
+```ts
+  const task = new sfn.Task(stack, 'Invoke2', {
+    task: new tasks.RunLambdaTask(myLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      payload: {
+        token: sfn.Context.taskToken
+      }
+    })
+  });
+```
+
+#### SNS example
+
+```ts
+import sns = require('@aws-cdk/aws-sns');
+
+// ...
+
+const topic = new sns.Topic(this, 'Topic');
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Publish1', {
+    task: new tasks.PublishToTopic(topic, {
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+        message: TaskInput.fromDataAt('$.state.message'),
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Publish2', {
+    task: new tasks.PublishToTopic(topic, {
+        message: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        })
+    })
+});
+```
+
+#### SQS example
+
+```ts
+import sqs = require('@aws-cdk/aws-sqs');
+
+// ...
+
+const queue = new sns.Queue(this, 'Queue');
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Send1', {
+    task: new tasks.SendToQueue(queue, {
+        messageBody: TaskInput.fromDataAt('$.message'),
+        // Only for FIFO queues
+        messageGroupId: '1234'
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Send2', {
+    task: new tasks.SendToQueue(queue, {
+        messageBody: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        }),
+        // Only for FIFO queues
+        messageGroupId: '1234'
+    })
+});
+```
+
+#### ECS example
+
+```ts
+import ecs = require('@aws-cdk/aws-ecs');
+
+// See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
+
+const fargateTask = new ecs.RunEcsFargateTask({
+  cluster,
+  taskDefinition,
+  containerOverrides: [
+    {
+      containerName: 'TheContainer',
+      environment: [
+        {
+          name: 'CONTAINER_INPUT',
+          value: Data.stringAt('$.valueFromStateData')
+        }
+      ]
+    }
+  ]
+});
+
+fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
+
+const task = new sfn.Task(this, 'CallFargate', {
+    task: fargateTask
+});
+```
+
+#### SageMaker Transform example
+
+```ts
+const transformJob = new tasks.SagemakerTransformTask(
+    transformJobName: "MyTransformJob",
+    modelName: "MyModelName",
+    role,
+    transformInput: {
+        transformDataSource: {
+            s3DataSource: {
+                s3Uri: 's3://inputbucket/train',
+                s3DataType: S3DataType.S3Prefix,
+            }
+        }
+    },
+    transformOutput: {
+        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
+    },
+    transformResources: {
+        instanceCount: 1,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+});
+
+const task = new sfn.Task(this, 'Batch Inference', {
+    task: transformJob
+});
+```
+
+#### Step Functions example
+
+```ts
+// Define a state machine with one Pass state
+const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+});
+
+// Include the state machine in a Task state with callback pattern
+const task = new sfn.Task(stack, 'ChildTask', {
+  task: new tasks.ExecuteStateMachine(child, {
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    input: {
+      token: sfn.Context.taskToken,
+      foo: 'bar'
+    },
+    name: 'MyExecutionName'
+  })
+});
+
+// Define a second state machine with the Task state above
+new sfn.StateMachine(stack, 'ParentStateMachine', {
+  definition: task
+});
 ```
 
 ### Pass
@@ -205,7 +355,7 @@ state.
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
 const wait = new stepfunctions.Wait(this, 'Wait For Trigger Time', {
-    timestampPath: '$.triggerTime',
+    duration: stepfunctions.WaitDuration.timestampPath('$.triggerTime'),
 });
 
 // Set the next state
@@ -326,6 +476,7 @@ const definition = stepfunctions.Chain
     .next(step3)
     // ...
 ```
+
 
 ## State Machine Fragments
 

@@ -2,17 +2,19 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
+import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
+import { LaunchType } from '../../lib/base/base-service';
+import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
   "When creating an ECS Service": {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -24,7 +26,7 @@ export = {
 
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       // THEN
@@ -40,10 +42,8 @@ export = {
           MinimumHealthyPercent: 50
         },
         DesiredCount: 1,
-        LaunchType: "EC2",
+        LaunchType: LaunchType.EC2,
         LoadBalancers: [],
-        PlacementConstraints: [],
-        PlacementStrategies: [],
         SchedulingStrategy: "REPLICA"
       }));
 
@@ -53,7 +53,7 @@ export = {
     "errors if daemon and desiredCount both specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -78,7 +78,7 @@ export = {
     "errors if daemon and maximumPercent not 100"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -93,7 +93,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          maximumPercent: 300
+          maxHealthyPercent: 300
         });
       }, /Maximum percent must be 100 for daemon mode./);
 
@@ -103,7 +103,7 @@ export = {
     "errors if daemon and minimum not 0"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -118,7 +118,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          minimumHealthyPercent: 50
+          minHealthyPercent: 50
         });
       }, /Minimum healthy percent must be 0 for daemon mode./);
 
@@ -128,7 +128,7 @@ export = {
     'Output does not contain DesiredCount if daemon mode is set'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -146,7 +146,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::Service', (service: any) => {
-        return service.LaunchType === 'EC2' && service.DesiredCount === undefined;
+        return service.LaunchType === LaunchType.EC2 && service.DesiredCount === undefined;
       }));
 
       test.done();
@@ -155,7 +155,7 @@ export = {
     "errors if no container definitions"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -173,7 +173,7 @@ export = {
     "sets daemon scheduling strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -205,11 +205,11 @@ export = {
       "it errors if vpcSubnets is specified"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.Bridge
+          networkMode: NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -223,8 +223,36 @@ export = {
             cluster,
             taskDefinition,
             vpcSubnets: {
-              subnetType: ec2.SubnetType.Public
+              subnetType: ec2.SubnetType.PUBLIC
             }
+          });
+        });
+
+        // THEN
+        test.done();
+      },
+
+      "it errors if assignPublicIp is true"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: NetworkMode.BRIDGE
+        });
+
+        taskDefinition.addContainer("web", {
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+          memoryLimitMiB: 512
+        });
+
+      // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, "Ec2Service", {
+            cluster,
+            taskDefinition,
+            assignPublicIp: true
           });
         });
 
@@ -237,11 +265,11 @@ export = {
       "it creates a security group for the service"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AwsVpc
+          networkMode: NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -251,7 +279,7 @@ export = {
 
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // THEN
@@ -274,9 +302,6 @@ export = {
                 {
                   Ref: "MyVpcPrivateSubnet2Subnet0040C983"
                 },
-                {
-                  Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
-                }
               ]
             }
           }
@@ -288,11 +313,11 @@ export = {
       "it allows vpcSubnets"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AwsVpc
+          networkMode: NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -304,7 +329,7 @@ export = {
           cluster,
           taskDefinition,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.Public
+            subnetType: ec2.SubnetType.PUBLIC
           }
         });
 
@@ -316,7 +341,7 @@ export = {
     "with distinctInstance placement constraint"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -329,7 +354,7 @@ export = {
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        placeOnDistinctInstances: true
+        placementConstraints: [ecs.PlacementConstraint.distinctInstances()]
       });
 
       // THEN
@@ -345,7 +370,7 @@ export = {
     "with memberOf placement constraints"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -357,10 +382,10 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
-      service.placeOnMemberOf("attribute:ecs.instance-type =~ t2.*");
+      service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -373,10 +398,10 @@ export = {
       test.done();
     },
 
-    "with placeSpreadAcross placement strategy"(test: Test) {
+    "with spreadAcross placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -388,10 +413,10 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
-      service.placeSpreadAcross(BuiltInAttributes.AvailabilityZone);
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -404,10 +429,10 @@ export = {
       test.done();
     },
 
-    "errors with placeSpreadAcross placement strategy if daemon specified"(test: Test) {
+    "errors with spreadAcross placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -425,16 +450,16 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placeSpreadAcross(BuiltInAttributes.AvailabilityZone);
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
       });
 
       test.done();
     },
 
-    "with placeRandomly placement strategy"(test: Test) {
+    "with random placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+      const vpc = new ec2.Vpc(stack, 'MyVpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -446,10 +471,10 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
-      service.placeRandomly();
+      service.addPlacementStrategies(PlacementStrategy.randomly());
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -461,10 +486,10 @@ export = {
       test.done();
     },
 
-    "errors with placeRandomly placement strategy if daemon specified"(test: Test) {
+    "errors with random placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+      const vpc = new ec2.Vpc(stack, 'MyVpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -482,16 +507,16 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placeRandomly();
+        service.addPlacementStrategies(PlacementStrategy.randomly());
       });
 
       test.done();
     },
 
-    "with placePackedBy placement strategy"(test: Test) {
+    "with packedbyCpu placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -503,10 +528,41 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
-      service.placePackedBy(BinPackResource.Memory);
+      service.addPlacementStrategies(PlacementStrategy.packedByCpu());
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "cpu",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
+    "with packedbyMemory placement strategy"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedByMemory());
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -519,10 +575,41 @@ export = {
       test.done();
     },
 
-    "errors with placePackedBy placement strategy if daemon specified"(test: Test) {
+    "with packedBy placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        PlacementStrategies: [{
+          Field: "memory",
+          Type: "binpack"
+        }]
+      }));
+
+      test.done();
+    },
+
+    "errors with packedBy placement strategy if daemon specified"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -540,7 +627,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placePackedBy(BinPackResource.Memory);
+        service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
       });
 
       test.done();
@@ -551,16 +638,16 @@ export = {
     'can attach to classic ELB'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'VPC');
+      const vpc = new ec2.Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.HOST });
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
+      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition});
 
       // WHEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
@@ -574,18 +661,24 @@ export = {
             ContainerPort: 808,
             LoadBalancerName: { Ref: "LB8A12904C" }
           }
-        ],
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        // if any load balancer is configured and healthCheckGracePeriodSeconds is not
+        // set, then it should default to 60 seconds.
+        HealthCheckGracePeriodSeconds: 60
       }));
 
       test.done();
-    },
+    }
   },
 
   'When enabling service discovery': {
     'throws if namespace has not been added to cluster'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -602,7 +695,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -614,11 +707,11 @@ export = {
     'throws if network mode is none'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.None
+        networkMode: NetworkMode.NONE
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -633,7 +726,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -645,7 +738,7 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with bridge network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -660,13 +753,13 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -721,12 +814,12 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with host network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.Host
+        networkMode: NetworkMode.HOST
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -737,13 +830,13 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -798,7 +891,7 @@ export = {
     'throws if wrong DNS record type specified with bridge network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -819,7 +912,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
             dnsRecordType: cloudmap.DnsRecordType.A
           }
@@ -832,12 +925,12 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AwsVpc
+        networkMode: NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -848,13 +941,13 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -907,12 +1000,12 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode with SRV records'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AwsVpc
+        networkMode: NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -923,13 +1016,13 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
         }
@@ -981,5 +1074,48 @@ export = {
 
       test.done();
     },
+  },
+
+  'Metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('hello')
+    });
+
+    // WHEN
+    const service = new ecs.Ec2Service(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(service.metricMemoryUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'MemoryUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };

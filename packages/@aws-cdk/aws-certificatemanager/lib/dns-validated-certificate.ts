@@ -2,23 +2,37 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
-import { CertificateImportProps, CertificateProps, ICertificate } from './certificate';
+import { CertificateProps, ICertificate } from './certificate';
 
+/**
+ * @experimental
+ */
 export interface DnsValidatedCertificateProps extends CertificateProps {
     /**
      * Route 53 Hosted Zone used to perform DNS validation of the request.  The zone
      * must be authoritative for the domain name specified in the Certificate Request.
      */
     readonly hostedZone: route53.IHostedZone;
+    /**
+     * AWS region that will host the certificate. This is needed especially
+     * for certificates used for CloudFront distributions, which require the region
+     * to be us-east-1.
+     *
+     * @default the region the stack is deployed in.
+     */
+    readonly region?: string;
 }
 
 /**
  * A certificate managed by AWS Certificate Manager.  Will be automatically
  * validated using DNS validation against the specified Route 53 hosted zone.
+ *
+ * @resource AWS::CertificateManager::Certificate
+ * @experimental
  */
-export class DnsValidatedCertificate extends cdk.Construct implements ICertificate {
+export class DnsValidatedCertificate extends cdk.Resource implements ICertificate {
     public readonly certificateArn: string;
     private normalizedZoneName: string;
     private hostedZoneId: string;
@@ -40,44 +54,33 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
             code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: lambda.Runtime.NodeJS810,
-            timeout: 15 * 60 // 15 minutes
+            runtime: lambda.Runtime.NODEJS_8_10,
+            timeout: cdk.Duration.minutes(15)
         });
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate')
-                .addResource('*')
-        );
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('route53:GetChange')
-                .addResource('*')
-        );
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('route53:changeResourceRecordSets')
-                .addResource(`arn:aws:route53:::hostedzone/${this.hostedZoneId}`)
-        );
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate'],
+            resources: ['*'],
+        }));
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['route53:GetChange'],
+            resources: ['*'],
+        }));
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['route53:changeResourceRecordSets'],
+            resources: [`arn:aws:route53:::hostedzone/${this.hostedZoneId}`],
+        }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
                 SubjectAlternativeNames: props.subjectAlternativeNames,
-                HostedZoneId: this.hostedZoneId
+                HostedZoneId: this.hostedZoneId,
+                Region: props.region,
             }
         });
 
         this.certificateArn = certificate.getAtt('Arn').toString();
-    }
-
-    /**
-     * Export this certificate from the stack
-     */
-    public export(): CertificateImportProps {
-        return {
-            certificateArn: new cdk.CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
-        };
     }
 
     protected validate(): string[] {

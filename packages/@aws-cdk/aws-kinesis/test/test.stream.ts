@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 
@@ -9,7 +9,7 @@ import { Stream, StreamEncryption } from '../lib';
 
 export = {
   'default stream'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     new Stream(stack, 'MyStream');
 
@@ -27,8 +27,21 @@ export = {
 
     test.done();
   },
+
+  'stream from attributes'(test: Test) {
+    const stack = new Stack();
+
+    const s = Stream.fromStreamAttributes(stack, 'MyStream', {
+      streamArn: 'arn:aws:kinesis:region:account-id:stream/stream-name'
+    });
+
+    test.equals(s.streamArn, 'arn:aws:kinesis:region:account-id:stream/stream-name');
+
+    test.done();
+  },
+
   "uses explicit shard count"(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
       shardCount: 2
@@ -44,12 +57,12 @@ export = {
           }
         }
       }
-      });
+    });
 
     test.done();
   },
   "uses explicit retention period"(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
       retentionPeriodHours: 168
@@ -72,7 +85,7 @@ export = {
   "retention period must be between 24 and 168 hours"(test: Test) {
     test.throws({
       block: () => {
-        new Stream(new cdk.Stack(), 'MyStream', {
+        new Stream(new Stack(), 'MyStream', {
           retentionPeriodHours: 169
         });
       },
@@ -81,7 +94,7 @@ export = {
 
     test.throws({
       block: () => {
-        new Stream(new cdk.Stack(), 'MyStream', {
+        new Stream(new Stack(), 'MyStream', {
           retentionPeriodHours: 23
         });
       },
@@ -91,10 +104,10 @@ export = {
     test.done();
   },
   "auto-creates KMS key if encryption type is KMS but no key is provided"(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.Kms
+      encryption: StreamEncryption.KMS
     });
 
     expect(stack).toMatch({
@@ -106,46 +119,48 @@ export = {
             "KeyPolicy": {
               "Statement": [
                 {
-                "Action": [
-                  "kms:Create*",
-                  "kms:Describe*",
-                  "kms:Enable*",
-                  "kms:List*",
-                  "kms:Put*",
-                  "kms:Update*",
-                  "kms:Revoke*",
-                  "kms:Disable*",
-                  "kms:Get*",
-                  "kms:Delete*",
-                  "kms:ScheduleKeyDeletion",
-                  "kms:CancelKeyDeletion"
-                ],
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":iam::",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":root"
+                  "Action": [
+                    "kms:Create*",
+                    "kms:Describe*",
+                    "kms:Enable*",
+                    "kms:List*",
+                    "kms:Put*",
+                    "kms:Update*",
+                    "kms:Revoke*",
+                    "kms:Disable*",
+                    "kms:Get*",
+                    "kms:Delete*",
+                    "kms:ScheduleKeyDeletion",
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
+                  ],
+                  "Effect": "Allow",
+                  "Principal": {
+                    "AWS": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":iam::",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":root"
+                        ]
                       ]
-                    ]
-                  }
-                },
-                "Resource": "*"
+                    }
+                  },
+                  "Resource": "*"
                 }
               ],
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyStream5C050E93": {
           "Type": "AWS::Kinesis::Stream",
@@ -169,14 +184,14 @@ export = {
     test.done();
   },
   "uses explicit KMS key if encryption type is KMS and a key is provided"(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
-    const explicitKey = new kms.EncryptionKey(stack, 'ExplicitKey', {
+    const explicitKey = new kms.Key(stack, 'ExplicitKey', {
       description: `Explicit Key`
     });
 
     new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.Kms,
+      encryption: StreamEncryption.KMS,
       encryptionKey: explicitKey
     });
 
@@ -189,46 +204,48 @@ export = {
             "KeyPolicy": {
               "Statement": [
                 {
-                "Action": [
-                  "kms:Create*",
-                  "kms:Describe*",
-                  "kms:Enable*",
-                  "kms:List*",
-                  "kms:Put*",
-                  "kms:Update*",
-                  "kms:Revoke*",
-                  "kms:Disable*",
-                  "kms:Get*",
-                  "kms:Delete*",
-                  "kms:ScheduleKeyDeletion",
-                  "kms:CancelKeyDeletion"
-                ],
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":iam::",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":root"
+                  "Action": [
+                    "kms:Create*",
+                    "kms:Describe*",
+                    "kms:Enable*",
+                    "kms:List*",
+                    "kms:Put*",
+                    "kms:Update*",
+                    "kms:Revoke*",
+                    "kms:Disable*",
+                    "kms:Get*",
+                    "kms:Delete*",
+                    "kms:ScheduleKeyDeletion",
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
+                  ],
+                  "Effect": "Allow",
+                  "Principal": {
+                    "AWS": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":iam::",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":root"
+                        ]
                       ]
-                    ]
-                  }
-                },
-                "Resource": "*"
+                    }
+                  },
+                  "Resource": "*"
                 }
               ],
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyStream5C050E93": {
           "Type": "AWS::Kinesis::Stream",
@@ -254,9 +271,9 @@ export = {
   "permissions": {
     "with encryption": {
       "grantRead creates and attaches a policy with read only access to Stream and EncryptionKey"(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -283,7 +300,8 @@ export = {
                         "kms:Get*",
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:CancelKeyDeletion",
+                        "kms:GenerateDataKey"
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -323,7 +341,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
@@ -358,8 +377,8 @@ export = {
                       "Effect": "Allow",
                       "Resource": {
                         "Fn::GetAtt": [
-                        "MyStream5C050E93",
-                        "Arn"
+                          "MyStream5C050E93",
+                          "Arn"
                         ]
                       }
                     },
@@ -390,9 +409,9 @@ export = {
         test.done();
       },
       "grantWrite creates and attaches a policy with write only access to Stream and EncryptionKey"(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -419,7 +438,8 @@ export = {
                         "kms:Get*",
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:CancelKeyDeletion",
+                        "kms:GenerateDataKey"
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -463,7 +483,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
@@ -534,9 +555,9 @@ export = {
         test.done();
       },
       "grantReadWrite creates and attaches a policy with access to Stream and EncryptionKey"(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -563,7 +584,8 @@ export = {
                         "kms:Get*",
                         "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:CancelKeyDeletion",
+                        "kms:GenerateDataKey"
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -608,7 +630,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
@@ -684,7 +707,7 @@ export = {
     },
     "with no encryption": {
       "grantRead creates and associates a policy with read only access to Stream"(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
         const stream = new Stream(stack, 'MyStream');
 
         const user = new iam.User(stack, "MyUser");
@@ -738,7 +761,7 @@ export = {
         test.done();
       },
       "grantWrite creates and attaches a policy with write only access to Stream"(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
         const stream = new Stream(stack, 'MyStream');
 
         const user = new iam.User(stack, "MyUser");
@@ -792,7 +815,7 @@ export = {
         test.done();
       },
       "greatReadWrite creates and attaches a policy with write only access to Stream"(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
         const stream = new Stream(stack, 'MyStream');
 
         const user = new iam.User(stack, "MyUser");
@@ -851,14 +874,13 @@ export = {
   },
   "cross-stack permissions": {
     "no encryption"(test: Test) {
-      const stackA = new cdk.Stack();
+      const app = new App();
+      const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream');
-      const refToStreamFromStackA = streamFromStackA.export();
 
-      const stackB = new cdk.Stack();
+      const stackB = new Stack(app, 'stackB');
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-      const theStreamFromStackAAsARefInStackB = Stream.import(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
-      theStreamFromStackAAsARefInStackB.grantRead(user);
+      streamFromStackA.grantRead(user);
 
       expect(stackA).toMatch({
         "Resources": {
@@ -871,7 +893,7 @@ export = {
           }
         },
         "Outputs": {
-          "MyStreamStreamArn495BAFC1": {
+          "ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD": {
             "Value": {
               "Fn::GetAtt": [
                 "MyStream5C050E93",
@@ -879,149 +901,7 @@ export = {
               ]
             },
             "Export": {
-              "Name": "Stack:MyStreamStreamArn495BAFC1"
-            }
-          }
-        }
-      });
-
-      expect(stackB).toMatch({
-        "Resources": {
-          "UserWhoNeedsAccessF8959C3D": {
-            "Type": "AWS::IAM::User"
-          },
-          "UserWhoNeedsAccessDefaultPolicy6A9EB530": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "kinesis:DescribeStream",
-                    "kinesis:GetRecords",
-                    "kinesis:GetShardIterator"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": {
-                    "Fn::ImportValue": "Stack:MyStreamStreamArn495BAFC1"
-                  }
-                }
-              ],
-              "Version": "2012-10-17"
-              },
-              "PolicyName": "UserWhoNeedsAccessDefaultPolicy6A9EB530",
-              "Users": [
-                {
-                  "Ref": "UserWhoNeedsAccessF8959C3D"
-                }
-              ]
-            }
-          }
-        }
-      });
-
-      test.done();
-    },
-    "with encryption"(test: Test) {
-      const stackA = new cdk.Stack();
-      const streamFromStackA = new Stream(stackA, 'MyStream', {
-        encryption: StreamEncryption.Kms
-      });
-      const refToStreamFromStackA = streamFromStackA.export();
-
-      const stackB = new cdk.Stack();
-      const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-      const theStreamFromStackAAsARefInStackB = Stream.import(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
-      theStreamFromStackAAsARefInStackB.grantRead(user);
-
-      expect(stackA).toMatch({
-        "Resources": {
-          "MyStreamKey76F3300E": {
-            "Type": "AWS::KMS::Key",
-            "Properties": {
-              "Description": "Created by MyStream",
-              "KeyPolicy": {
-                "Statement": [
-                  {
-                    "Action": [
-                      "kms:Create*",
-                      "kms:Describe*",
-                      "kms:Enable*",
-                      "kms:List*",
-                      "kms:Put*",
-                      "kms:Update*",
-                      "kms:Revoke*",
-                      "kms:Disable*",
-                      "kms:Get*",
-                      "kms:Delete*",
-                      "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion"
-                    ],
-                    "Effect": "Allow",
-                    "Principal": {
-                      "AWS": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":root"
-                          ]
-                        ]
-                      }
-                    },
-                    "Resource": "*"
-                  }
-                ],
-                "Version": "2012-10-17"
-              }
-            },
-            "DeletionPolicy": "Retain"
-          },
-          "MyStream5C050E93": {
-          "Type": "AWS::Kinesis::Stream",
-          "Properties": {
-            "RetentionPeriodHours": 24,
-            "ShardCount": 1,
-            "StreamEncryption": {
-              "EncryptionType": "KMS",
-              "KeyId": {
-                "Fn::GetAtt": [
-                  "MyStreamKey76F3300E",
-                  "Arn"
-                ]
-              }
-            }
-          }
-          }
-        },
-        "Outputs": {
-          "MyStreamKeyKeyArn967BCB03": {
-            "Value": {
-              "Fn::GetAtt": [
-                "MyStreamKey76F3300E",
-                "Arn"
-              ]
-            },
-            "Export": {
-              "Name": "Stack:MyStreamKeyKeyArn967BCB03"
-            }
-          },
-          "MyStreamStreamArn495BAFC1": {
-            "Value": {
-              "Fn::GetAtt": [
-                "MyStream5C050E93",
-                "Arn"
-              ]
-            },
-            "Export": {
-              "Name": "Stack:MyStreamStreamArn495BAFC1"
+              "Name": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
             }
           }
         }
@@ -1045,14 +925,7 @@ export = {
                     ],
                     "Effect": "Allow",
                     "Resource": {
-                      "Fn::ImportValue": "Stack:MyStreamStreamArn495BAFC1"
-                    }
-                  },
-                  {
-                    "Action": "kms:Decrypt",
-                    "Effect": "Allow",
-                    "Resource": {
-                      "Fn::ImportValue": "Stack:MyStreamKeyKeyArn967BCB03"
+                      "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
                     }
                   }
                 ],
@@ -1069,6 +942,20 @@ export = {
         }
       });
 
+      test.done();
+    },
+    "fails with encryption due to cyclic dependency"(test: Test) {
+      const app = new App();
+      const stackA = new Stack(app, 'stackA');
+      const streamFromStackA = new Stream(stackA, 'MyStream', {
+        encryption: StreamEncryption.KMS
+      });
+
+      const stackB = new Stack(app, 'stackB');
+      const user = new iam.User(stackB, 'UserWhoNeedsAccess');
+      streamFromStackA.grantRead(user);
+
+      test.throws(() => app.synth(), /'stackB' depends on 'stackA'/);
       test.done();
     }
   }

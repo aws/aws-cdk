@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
 
@@ -44,9 +44,7 @@ export = {
     'can be imported'(test: Test) {
       const stack = new cdk.Stack();
 
-      const deploymentConfig = codedeploy.ServerDeploymentConfig.import(stack, 'MyDC', {
-        deploymentConfigName: 'MyDC',
-      });
+      const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentConfigName(stack, 'MyDC', 'MyDC');
 
       test.notEqual(deploymentConfig, undefined);
 

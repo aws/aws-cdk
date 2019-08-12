@@ -1,15 +1,42 @@
-import { Construct } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { Construct, Resource } from '@aws-cdk/core';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
-// tslint:disable:no-empty-interface
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
+export interface IHttpNamespace extends INamespace { }
+export interface HttpNamespaceAttributes {
+  /**
+   * A name for the Namespace.
+   */
+  readonly namespaceName: string;
+
+  /**
+   * Namespace Id for the Namespace.
+   */
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
+}
 
 /**
  * Define an HTTP Namespace
  */
-export class HttpNamespace extends NamespaceBase {
+export class HttpNamespace extends Resource implements IHttpNamespace {
+
+  public static fromHttpNamespaceAttributes(scope: Construct, id: string, attrs: HttpNamespaceAttributes): IHttpNamespace {
+    class Import extends Resource implements IHttpNamespace {
+      public namespaceName = attrs.namespaceName;
+      public namespaceId = attrs.namespaceId;
+      public namespaceArn = attrs.namespaceArn;
+      public type = NamespaceType.HTTP;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the namespace.
    */
@@ -39,10 +66,19 @@ export class HttpNamespace extends NamespaceBase {
     });
 
     this.namespaceName = props.name;
-    this.namespaceId = ns.httpNamespaceId;
-    this.namespaceArn = ns.httpNamespaceArn;
-    this.type = NamespaceType.Http;
+    this.namespaceId = ns.attrId;
+    this.namespaceArn = ns.attrArn;
+    this.type = NamespaceType.HTTP;
   }
+
+  /** @attribute */
+  public get httpNamespaceArn() { return this.namespaceArn; }
+
+  /** @attribute */
+  public get httpNamespaceName() { return this.namespaceName; }
+
+  /** @attribute */
+  public get httpNamespaceId() { return this.namespaceId; }
 
   /**
    * Creates a service within the namespace

@@ -1,4 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Integration, IntegrationOptions, IntegrationType } from '../integration';
 import { Method } from '../method';
 import { parseAwsApiCall } from '../util';
@@ -73,21 +74,21 @@ export class AwsIntegration extends Integration {
 
   constructor(props: AwsIntegrationProps) {
     const backend = props.subdomain ? `${props.subdomain}.${props.service}` : props.service;
-    const type = props.proxy ? IntegrationType.AwsProxy : IntegrationType.Aws;
+    const type = props.proxy ? IntegrationType.AWS_PROXY : IntegrationType.AWS;
     const { apiType, apiValue } = parseAwsApiCall(props.path, props.action, props.actionParameters);
     super({
       type,
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
-      uri: new cdk.Token(() => {
+      uri: cdk.Lazy.stringValue({ produce: () => {
         if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
-        return this.scope.node.stack.formatArn({
+        return Stack.of(this.scope).formatArn({
           service: 'apigateway',
           account: backend,
           resource: apiType,
           sep: '/',
           resourceName: apiValue,
         });
-      }),
+      }}),
       options: props.options,
     });
   }

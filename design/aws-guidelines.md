@@ -24,7 +24,7 @@ etc, `IFoo` would be `IBucket`, `ITopic` and so forth.
 The guidelines in this document use TypeScript (and npm package names) since
 this is the source programming language used to author the library, which is
 later packaged and published to all programming languages through
-[jsii](https://github.com/awslabs/jsii).
+[jsii](https://github.com/aws/jsii).
 
 ## Modules
 
@@ -143,7 +143,7 @@ into an `{ "Fn::Join" }` expression which includes the relevant intrinsic
 functions.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the `cdk.unresolved(x)` function.
+the `cdk.isToken(x)` function.
 
 Resource attributes should use a type that corresponds to the __resolved__ AWS
 CloudFormation type (e.g. `string`, `string[]`).

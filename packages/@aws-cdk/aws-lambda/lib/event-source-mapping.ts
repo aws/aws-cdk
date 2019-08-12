@@ -1,19 +1,14 @@
-import cdk = require('@aws-cdk/cdk');
-import { Resource } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Resource } from '@aws-cdk/core';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
-export interface EventSourceMappingProps {
+export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
    */
   readonly eventSourceArn: string;
-
-  /**
-   * The target AWS Lambda function.
-   */
-  readonly target: IFunction;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -22,7 +17,7 @@ export interface EventSourceMappingProps {
    *
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
-   * @default The default for Amazon Kinesis and Amazon DynamoDB is 100 records.
+   * @default - Amazon Kinesis and Amazon DynamoDB is 100 records.
    * Both the default and maximum for Amazon SQS are 10 messages.
    */
   readonly batchSize?: number;
@@ -39,8 +34,17 @@ export interface EventSourceMappingProps {
    * start reading.
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
+   *
+   * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
    */
   readonly startingPosition?: StartingPosition
+}
+
+export interface EventSourceMappingProps extends EventSourceMappingOptions {
+  /**
+   * The target AWS Lambda function.
+   */
+  readonly target: IFunction;
 }
 
 /**
@@ -78,11 +82,11 @@ export enum StartingPosition {
    * Start reading at the last untrimmed record in the shard in the system,
    * which is the oldest data record in the shard.
    */
-  TrimHorizon = 'TRIM_HORIZON',
+  TRIM_HORIZON = 'TRIM_HORIZON',
 
   /**
    * Start reading just after the most recent record in the shard, so that you
    * always read the most recent data in the shard
    */
-  Latest = 'LATEST',
+  LATEST = 'LATEST',
 }

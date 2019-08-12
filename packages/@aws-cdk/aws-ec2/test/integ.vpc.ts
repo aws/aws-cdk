@@ -1,25 +1,25 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ec2 = require('../lib');
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-vpc');
 
-const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+const vpc = new ec2.Vpc(stack, 'MyVpc');
 
 // Test Security Group Rules
 const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
 
 const rules = [
-  new ec2.IcmpPing(),
-  new ec2.IcmpAllTypeCodes(128),
-  new ec2.IcmpAllTypesAndCodes(),
-  new ec2.UdpAllPorts(),
-  new ec2.UdpPort(123),
-  new ec2.UdpPortRange(800, 801),
+  ec2.Port.icmpPing(),
+  ec2.Port.icmpType(128),
+  ec2.Port.allIcmp(),
+  ec2.Port.allUdp(),
+  ec2.Port.udp(123),
+  ec2.Port.udpRange(800, 801),
 ];
 
 for (const rule of rules) {
-  sg.addIngressRule(new ec2.AnyIPv4(), rule);
+  sg.addIngressRule(ec2.Peer.anyIpv4(), rule);
 }
 
-app.run();
+app.synth();

@@ -119,7 +119,7 @@
           ]
         },
         "Source": {
-          "Location": "https://github.com/awslabs/aws-cdk.git",
+          "Location": "https://github.com/aws/aws-cdk.git",
           "ReportBuildStatus": false,
           "Type": "GITHUB"
         }

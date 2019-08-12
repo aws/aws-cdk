@@ -1,34 +1,35 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
 import { IChainable, INextable } from '../types';
-import { State, StateType } from './state';
+import { StateType } from './private/state-type';
+import { State } from './state';
 
-export class WaitDuration {
+export class WaitTime {
     /**
-     * Wait a fixed number of seconds
+     * Wait a fixed amount of time.
      */
-    public static seconds(duration: number) { return new WaitDuration({ Seconds: duration }); }
+    public static duration(duration: cdk.Duration) { return new WaitTime({ Seconds: duration.toSeconds() }); }
 
     /**
      * Wait until the given ISO8601 timestamp
      *
      * @example 2016-03-14T01:59:00Z
      */
-    public static timestamp(timestamp: string) { return new WaitDuration({ Timestamp: timestamp }); }
+    public static timestamp(timestamp: string) { return new WaitTime({ Timestamp: timestamp }); }
 
     /**
      * Wait for a number of seconds stored in the state object.
      *
      * @example $.waitSeconds
      */
-    public static secondsPath(path: string) { return new WaitDuration({ SecondsPath: path }); }
+    public static secondsPath(path: string) { return new WaitTime({ SecondsPath: path }); }
 
     /**
      * Wait until a timestamp found in the state object.
      *
      * @example $.waitTimestamp
      */
-    public static timestampPath(path: string) { return new WaitDuration({ TimestampPath: path }); }
+    public static timestampPath(path: string) { return new WaitTime({ TimestampPath: path }); }
 
     private constructor(private readonly json: any) { }
 
@@ -54,7 +55,7 @@ export interface WaitProps {
     /**
      * Wait duration.
      */
-    readonly duration: WaitDuration;
+    readonly time: WaitTime;
 }
 
 /**
@@ -65,12 +66,12 @@ export interface WaitProps {
 export class Wait extends State implements INextable {
     public readonly endStates: INextable[];
 
-    private readonly duration: WaitDuration;
+    private readonly time: WaitTime;
 
     constructor(scope: cdk.Construct, id: string, props: WaitProps) {
         super(scope, id, props);
 
-        this.duration = props.duration;
+        this.time = props.time;
         this.endStates = [this];
     }
 
@@ -87,9 +88,9 @@ export class Wait extends State implements INextable {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Wait,
+            Type: StateType.WAIT,
             Comment: this.comment,
-            ...this.duration._json,
+            ...this.time._json,
             ...this.renderNextEnd(),
         };
     }

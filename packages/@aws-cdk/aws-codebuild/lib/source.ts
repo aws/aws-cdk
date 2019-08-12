@@ -1,13 +1,44 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
+import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
-import { Project } from './project';
+import { IProject } from './project';
+import {
+  BITBUCKET_SOURCE_TYPE,
+  CODECOMMIT_SOURCE_TYPE,
+  GITHUB_ENTERPRISE_SOURCE_TYPE,
+  GITHUB_SOURCE_TYPE,
+  S3_SOURCE_TYPE
+} from './source-types';
+
+/**
+ * The type returned from {@link ISource#bind}.
+ */
+export interface SourceConfig {
+  readonly sourceProperty: CfnProject.SourceProperty;
+
+  readonly buildTriggers?: CfnProject.ProjectTriggersProperty;
+}
+
+/**
+ * The abstract interface of a CodeBuild source.
+ * Implemented by {@link Source}.
+ */
+export interface ISource {
+  readonly identifier?: string;
+
+  readonly type: string;
+
+  readonly badgeSupported: boolean;
+
+  bind(scope: Construct, project: IProject): SourceConfig;
+}
 
 /**
  * Properties common to all Source classes.
  */
-export interface BuildSourceProps {
+export interface SourceProps {
   /**
    * The source identifier.
    * This property is required on secondary sources.
@@ -18,12 +49,32 @@ export interface BuildSourceProps {
 /**
  * Source provider definition for a CodeBuild Project.
  */
-export abstract class BuildSource {
+export abstract class Source implements ISource {
+  public static s3(props: S3SourceProps): ISource {
+    return new S3Source(props);
+  }
+
+  public static codeCommit(props: CodeCommitSourceProps): ISource {
+    return new CodeCommitSource(props);
+  }
+
+  public static gitHub(props: GitHubSourceProps): ISource {
+    return new GitHubSource(props);
+  }
+
+  public static gitHubEnterprise(props: GitHubEnterpriseSourceProps): ISource {
+    return new GitHubEnterpriseSource(props);
+  }
+
+  public static bitBucket(props: BitBucketSourceProps): ISource {
+    return new BitBucketSource(props);
+  }
+
   public readonly identifier?: string;
-  public abstract readonly type: SourceType;
+  public abstract readonly type: string;
   public readonly badgeSupported: boolean = false;
 
-  constructor(props: BuildSourceProps) {
+  protected constructor(props: SourceProps) {
     this.identifier = props.identifier;
   }
 
@@ -31,54 +82,21 @@ export abstract class BuildSource {
    * Called by the project when the source is added so that the source can perform
    * binding operations on the source. For example, it can grant permissions to the
    * code build project to read from the S3 bucket.
-   *
-   * @internal
    */
-  public _bind(_project: Project) {
-    // by default, do nothing
-    return;
-  }
-
-  /** @internal */
-  public _toSourceJSON(): CfnProject.SourceProperty {
-    const sourceProp = this.toSourceProperty();
+  public bind(_scope: Construct, _project: IProject): SourceConfig {
     return {
-      sourceIdentifier: this.identifier,
-      type: this.type,
-      ...sourceProp,
+      sourceProperty: {
+        sourceIdentifier: this.identifier,
+        type: this.type,
+      }
     };
-  }
-
-  /** @internal */
-  public _buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
-    return undefined;
-  }
-
-  protected toSourceProperty(): any {
-    return {
-    };
-  }
-}
-
-/**
- * A `NO_SOURCE` CodeBuild Project Source definition.
- * This is the default source type,
- * if none was specified when creating the Project.
- * *Note*: the `NO_SOURCE` type cannot be used as a secondary source,
- * and because of that, you're not allowed to specify an identifier for it.
- */
-export class NoSource extends BuildSource {
-  public readonly type: SourceType = SourceType.None;
-
-  constructor() {
-    super({});
   }
 }
 
 /**
  * The construction properties common to all build sources that are backed by Git.
  */
-export interface GitBuildSourceProps extends BuildSourceProps {
+interface GitSourceProps extends SourceProps {
   /**
    * The depth of history to download. Minimum value is 0.
    * If this value is 0, greater than 25, or not provided,
@@ -90,20 +108,22 @@ export interface GitBuildSourceProps extends BuildSourceProps {
 /**
  * A common superclass of all build sources that are backed by Git.
  */
-export abstract class GitBuildSource extends BuildSource {
+abstract class GitSource extends Source {
   private readonly cloneDepth?: number;
 
-  protected constructor(props: GitBuildSourceProps) {
+  protected constructor(props: GitSourceProps) {
     super(props);
 
     this.cloneDepth = props.cloneDepth;
   }
 
-  /** @internal */
-  public _toSourceJSON(): CfnProject.SourceProperty {
+  public bind(_scope: Construct, _project: IProject): SourceConfig {
+    const superConfig = super.bind(_scope, _project);
     return {
-      ...super._toSourceJSON(),
-      gitCloneDepth: this.cloneDepth
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        gitCloneDepth: this.cloneDepth,
+      },
     };
   }
 }
@@ -123,9 +143,14 @@ export enum EventAction {
   PULL_REQUEST_CREATED = 'PULL_REQUEST_CREATED',
 
   /**
-   * Updating an Pull Request.
+   * Updating a Pull Request.
    */
   PULL_REQUEST_UPDATED = 'PULL_REQUEST_UPDATED',
+
+  /**
+   * Merging a Pull Request.
+   */
+  PULL_REQUEST_MERGED = 'PULL_REQUEST_MERGED',
 
   /**
    * Re-opening a previously closed Pull Request.
@@ -381,7 +406,7 @@ export class FilterGroup {
 /**
  * The construction properties common to all third-party build sources that are backed by Git.
  */
-export interface ThirdPartyGitBuildSourceProps extends GitBuildSourceProps {
+interface ThirdPartyGitSourceProps extends GitSourceProps {
   /**
    * Whether to send notifications on your build's start and end.
    *
@@ -409,13 +434,13 @@ export interface ThirdPartyGitBuildSourceProps extends GitBuildSourceProps {
 /**
  * A common superclass of all third-party build sources that are backed by Git.
  */
-export abstract class ThirdPartyGitBuildSource extends GitBuildSource {
+abstract class ThirdPartyGitSource extends GitSource {
   public readonly badgeSupported: boolean = true;
   protected readonly webhookFilters: FilterGroup[];
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
 
-  protected constructor(props: ThirdPartyGitBuildSourceProps) {
+  protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);
 
     this.webhook = props.webhook;
@@ -423,21 +448,20 @@ export abstract class ThirdPartyGitBuildSource extends GitBuildSource {
     this.webhookFilters = props.webhookFilters || [];
   }
 
-  /** @internal */
-  public _buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+  public bind(_scope: Construct, _project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
     const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
-    return webhook === undefined ? undefined : {
-      webhook,
-      filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
-    };
-  }
 
-  /** @internal */
-  public _toSourceJSON(): CfnProject.SourceProperty {
+    const superConfig = super.bind(_scope, _project);
     return {
-      ...super._toSourceJSON(),
-      reportBuildStatus: this.reportBuildStatus,
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        reportBuildStatus: this.reportBuildStatus,
+      },
+      buildTriggers: webhook === undefined ? undefined : {
+        webhook,
+        filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
+      }
     };
   }
 }
@@ -445,15 +469,15 @@ export abstract class ThirdPartyGitBuildSource extends GitBuildSource {
 /**
  * Construction properties for {@link CodeCommitSource}.
  */
-export interface CodeCommitSourceProps extends GitBuildSourceProps {
+export interface CodeCommitSourceProps extends GitSourceProps {
   readonly repository: codecommit.IRepository;
 }
 
 /**
  * CodeCommit Source definition for a CodeBuild project.
  */
-export class CodeCommitSource extends GitBuildSource {
-  public readonly type: SourceType = SourceType.CodeCommit;
+class CodeCommitSource extends GitSource {
+  public readonly type = CODECOMMIT_SOURCE_TYPE;
   private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
@@ -461,27 +485,27 @@ export class CodeCommitSource extends GitBuildSource {
     this.repo = props.repository;
   }
 
-  /**
-   * @internal
-   */
-  public _bind(project: Project) {
+  public bind(_scope: Construct, project: IProject): SourceConfig {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
-    project.addToRolePolicy(new iam.PolicyStatement()
-      .addAction('codecommit:GitPull')
-      .addResource(this.repo.repositoryArn));
-  }
+    project.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['codecommit:GitPull'],
+      resources: [this.repo.repositoryArn]
+    }));
 
-  protected toSourceProperty(): any {
+    const superConfig = super.bind(_scope, project);
     return {
-      location: this.repo.repositoryCloneUrlHttp
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        location: this.repo.repositoryCloneUrlHttp,
+      },
     };
   }
 }
 
 /**
- * Construction properties for {@link S3BucketSource}.
+ * Construction properties for {@link S3Source}.
  */
-export interface S3BucketSourceProps extends BuildSourceProps {
+export interface S3SourceProps extends SourceProps {
   readonly bucket: s3.IBucket;
   readonly path: string;
 }
@@ -489,48 +513,34 @@ export interface S3BucketSourceProps extends BuildSourceProps {
 /**
  * S3 bucket definition for a CodeBuild project.
  */
-export class S3BucketSource extends BuildSource {
-  public readonly type: SourceType = SourceType.S3;
+class S3Source extends Source {
+  public readonly type = S3_SOURCE_TYPE;
   private readonly bucket: s3.IBucket;
   private readonly path: string;
 
-  constructor(props: S3BucketSourceProps) {
+  constructor(props: S3SourceProps) {
     super(props);
     this.bucket = props.bucket;
     this.path = props.path;
   }
 
-  /**
-   * @internal
-   */
-  public _bind(project: Project) {
+  public bind(_scope: Construct, project: IProject): SourceConfig {
     this.bucket.grantRead(project);
-  }
 
-  protected toSourceProperty(): any {
+    const superConfig = super.bind(_scope, project);
     return {
-      location: `${this.bucket.bucketName}/${this.path}`,
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        location: `${this.bucket.bucketName}/${this.path}`,
+      },
     };
-  }
-}
-
-/**
- * CodePipeline Source definition for a CodeBuild Project.
- * *Note*: this type cannot be used as a secondary source,
- * and because of that, you're not allowed to specify an identifier for it.
- */
-export class CodePipelineSource extends BuildSource {
-  public readonly type: SourceType = SourceType.CodePipeline;
-
-  constructor() {
-    super({});
   }
 }
 
 /**
  * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GitHubSourceProps extends ThirdPartyGitBuildSourceProps {
+export interface GitHubSourceProps extends ThirdPartyGitSourceProps {
   /**
    * The GitHub account/user that owns the repo.
    *
@@ -549,8 +559,8 @@ export interface GitHubSourceProps extends ThirdPartyGitBuildSourceProps {
 /**
  * GitHub Source definition for a CodeBuild project.
  */
-export class GitHubSource extends ThirdPartyGitBuildSource {
-  public readonly type: SourceType = SourceType.GitHub;
+class GitHubSource extends ThirdPartyGitSource {
+  public readonly type = GITHUB_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
 
   constructor(props: GitHubSourceProps) {
@@ -558,9 +568,14 @@ export class GitHubSource extends ThirdPartyGitBuildSource {
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
   }
 
-  protected toSourceProperty(): any {
+  public bind(_scope: Construct, project: IProject): SourceConfig {
+    const superConfig = super.bind(_scope, project);
     return {
-      location: this.httpsCloneUrl,
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        location: this.httpsCloneUrl,
+      },
+      buildTriggers: superConfig.buildTriggers,
     };
   }
 }
@@ -568,7 +583,7 @@ export class GitHubSource extends ThirdPartyGitBuildSource {
 /**
  * Construction properties for {@link GitHubEnterpriseSource}.
  */
-export interface GitHubEnterpriseSourceProps extends ThirdPartyGitBuildSourceProps {
+export interface GitHubEnterpriseSourceProps extends ThirdPartyGitSourceProps {
   /**
    * The HTTPS URL of the repository in your GitHub Enterprise installation.
    */
@@ -585,8 +600,8 @@ export interface GitHubEnterpriseSourceProps extends ThirdPartyGitBuildSourcePro
 /**
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
-export class GitHubEnterpriseSource extends ThirdPartyGitBuildSource {
-  public readonly type: SourceType = SourceType.GitHubEnterprise;
+class GitHubEnterpriseSource extends ThirdPartyGitSource {
+  public readonly type = GITHUB_ENTERPRISE_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
 
@@ -596,10 +611,15 @@ export class GitHubEnterpriseSource extends ThirdPartyGitBuildSource {
     this.ignoreSslErrors = props.ignoreSslErrors;
   }
 
-  protected toSourceProperty(): any {
+  public bind(_scope: Construct, _project: IProject): SourceConfig {
+    const superConfig = super.bind(_scope, _project);
     return {
-      location: this.httpsCloneUrl,
-      insecureSsl: this.ignoreSslErrors,
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        location: this.httpsCloneUrl,
+        insecureSsl: this.ignoreSslErrors,
+      },
+      buildTriggers: superConfig.buildTriggers,
     };
   }
 }
@@ -607,7 +627,7 @@ export class GitHubEnterpriseSource extends ThirdPartyGitBuildSource {
 /**
  * Construction properties for {@link BitBucketSource}.
  */
-export interface BitBucketSourceProps extends ThirdPartyGitBuildSourceProps {
+export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
   /**
    * The BitBucket account/user that owns the repo.
    *
@@ -626,8 +646,8 @@ export interface BitBucketSourceProps extends ThirdPartyGitBuildSourceProps {
 /**
  * BitBucket Source definition for a CodeBuild project.
  */
-export class BitBucketSource extends ThirdPartyGitBuildSource {
-  public readonly type: SourceType = SourceType.BitBucket;
+class BitBucketSource extends ThirdPartyGitSource {
+  public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
 
   constructor(props: BitBucketSourceProps) {
@@ -635,8 +655,7 @@ export class BitBucketSource extends ThirdPartyGitBuildSource {
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
   }
 
-  /** @internal */
-  public _buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+  public bind(_scope: Construct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
       throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
@@ -647,12 +666,13 @@ export class BitBucketSource extends ThirdPartyGitBuildSource {
       throw new Error('BitBucket sources do not support file path conditions for webhook filters');
     }
 
-    return super._buildTriggers();
-  }
-
-  protected toSourceProperty(): any {
+    const superConfig = super.bind(_scope, _project);
     return {
-      location: this.httpsCloneUrl
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        location: this.httpsCloneUrl,
+      },
+      buildTriggers: superConfig.buildTriggers,
     };
   }
 
@@ -667,19 +687,6 @@ export class BitBucketSource extends ThirdPartyGitBuildSource {
       return fg._filters.findIndex(f => f.type === FILE_PATH_WEBHOOK_COND) !== -1;
     }) !== -1;
   }
-}
-
-/**
- * Source types for CodeBuild Project
- */
-export enum SourceType {
-  None = 'NO_SOURCE',
-  CodeCommit = 'CODECOMMIT',
-  CodePipeline = 'CODEPIPELINE',
-  GitHub = 'GITHUB',
-  GitHubEnterprise = 'GITHUB_ENTERPRISE',
-  BitBucket = 'BITBUCKET',
-  S3 = 'S3',
 }
 
 function set2Array<T>(set: Set<T>): T[] {

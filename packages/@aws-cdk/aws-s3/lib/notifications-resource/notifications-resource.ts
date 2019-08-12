@@ -1,6 +1,6 @@
-import { BucketNotificationDestinationType, IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
+import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
 interface NotificationsProps {
@@ -53,7 +53,7 @@ export class BucketNotifications extends cdk.Construct {
 
     // resolve target. this also provides an opportunity for the target to e.g. update
     // policies to allow this notification to happen.
-    const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.node.uniqueId);
+    const targetProps = target.bind(this, this.bucket);
     const commonConfig: CommonConfiguration = {
       Events: [ event ],
       Filter: renderFilters(filters),
@@ -68,15 +68,15 @@ export class BucketNotifications extends cdk.Construct {
 
     // based on the target type, add the the correct configurations array
     switch (targetProps.type) {
-      case BucketNotificationDestinationType.Lambda:
+      case BucketNotificationDestinationType.LAMBDA:
         this.lambdaNotifications.push({ ...commonConfig, LambdaFunctionArn: targetProps.arn });
         break;
 
-      case BucketNotificationDestinationType.Queue:
+      case BucketNotificationDestinationType.QUEUE:
         this.queueNotifications.push({ ...commonConfig, QueueArn: targetProps.arn });
         break;
 
-      case BucketNotificationDestinationType.Topic:
+      case BucketNotificationDestinationType.TOPIC:
         this.topicNotifications.push({ ...commonConfig, TopicArn: targetProps.arn });
         break;
 
@@ -107,7 +107,7 @@ export class BucketNotifications extends cdk.Construct {
         properties: {
           ServiceToken: handlerArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: new cdk.Token(() => this.renderNotificationConfiguration())
+          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() })
         }
       });
     }
@@ -122,6 +122,8 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
   }
 
   const renderedRules = new Array<FilterRule>();
+  let hasPrefix = false;
+  let hasSuffix = false;
 
   for (const rule of filters) {
     if (!rule.suffix && !rule.prefix) {
@@ -129,11 +131,19 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
     }
 
     if (rule.suffix) {
+      if (hasSuffix) {
+        throw new Error('Cannot specify more than one suffix rule in a filter.');
+      }
       renderedRules.push({ Name: 'suffix', Value: rule.suffix });
+      hasSuffix = true;
     }
 
     if (rule.prefix) {
+      if (hasPrefix) {
+        throw new Error('Cannot specify more than one prefix rule in a filter.');
+      }
       renderedRules.push({ Name: 'prefix', Value: rule.prefix });
+      hasPrefix = true;
     }
   }
 

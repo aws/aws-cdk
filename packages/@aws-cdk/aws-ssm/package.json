@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ssm",
-  "version": "0.30.0",
+  "version": "1.3.0",
   "description": "The CDK Construct Library for AWS::SSM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,16 +11,17 @@
         "package": "software.amazon.awscdk.services.ssm",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ssm"
+          "artifactId": "ssm",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SSM",
         "packageId": "Amazon.CDK.AWS.SSM",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-ssm",
         "module": "aws_cdk.aws_ssm"
@@ -29,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-ssm"
   },
   "scripts": {
@@ -41,7 +42,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::SSM"
@@ -59,20 +62,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cdk-integ-tools": "^0.30.0",
-    "cfn2ts": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^1.3.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-iam": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0",
+    "@aws-cdk/cx-api": "^1.3.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-iam": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0",
+    "@aws-cdk/cx-api": "^1.3.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -81,7 +86,12 @@
     "exclude": [
       "export:@aws-cdk/aws-ssm.IParameter",
       "import-props-interface:@aws-cdk/aws-ssm.ParameterImportProps",
-      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue"
+      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue",
+      "from-attributes:fromStringParameterAttributes",
+      "from-attributes:fromStringListParameterAttributes",
+      "props-physical-name:@aws-cdk/aws-ssm.StringListParameterProps",
+      "props-physical-name:@aws-cdk/aws-ssm.StringParameterProps"
     ]
-  }
+  },
+  "stability": "stable"
 }

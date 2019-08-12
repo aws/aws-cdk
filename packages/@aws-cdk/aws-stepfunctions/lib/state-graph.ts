@@ -1,4 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
+import { Duration } from '@aws-cdk/core';
 import { State } from "./states/state";
 
 /**
@@ -32,7 +33,7 @@ export class StateGraph {
      *
      * @default No timeout
      */
-    public timeoutSeconds?: number;
+    public timeout?: Duration;
 
     /**
      * The accumulated policy statements
@@ -107,7 +108,7 @@ export class StateGraph {
         return {
             StartAt: this.startState.stateId,
             States: states,
-            TimeoutSeconds: this.timeoutSeconds
+            TimeoutSeconds: this.timeout && this.timeout.toSeconds()
         };
     }
 

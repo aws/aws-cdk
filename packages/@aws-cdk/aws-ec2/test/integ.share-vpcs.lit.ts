@@ -1,15 +1,21 @@
-import cdk = require('@aws-cdk/cdk');
+/// !cdk-integ *
+import cdk = require('@aws-cdk/core');
 import ec2 = require("../lib");
 
 const app = new cdk.App();
 
 interface ConstructThatTakesAVpcProps {
-  vpc: ec2.IVpcNetwork;
+  vpc: ec2.IVpc;
 }
 
 class ConstructThatTakesAVpc extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
     super(scope, id);
+
+    // new ec2.CfnInstance(this, 'Instance', {
+    //   subnetId: props.vpc.privateSubnets[0].subnetId,
+    //   imageId: new ec2.AmazonLinuxImage().getImage(this).imageId,
+    // });
   }
 }
 
@@ -18,17 +24,17 @@ class ConstructThatTakesAVpc extends cdk.Construct {
  * Stack1 creates the VPC
  */
 class Stack1 extends cdk.Stack {
-  public readonly vpc: ec2.VpcNetwork;
+  public readonly vpc: ec2.Vpc;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    this.vpc = new ec2.VpcNetwork(this, 'VPC');
+    this.vpc = new ec2.Vpc(this, 'VPC');
   }
 }
 
 interface Stack2Props extends cdk.StackProps {
-  vpc: ec2.IVpcNetwork;
+  vpc: ec2.IVpc;
 }
 
 /**
@@ -53,4 +59,4 @@ const stack2 = new Stack2(app, 'Stack2', {
 
 Array.isArray(stack2);
 
-app.run();
+app.synth();

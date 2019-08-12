@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Duration, IConstruct } from '@aws-cdk/core';
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
@@ -16,14 +16,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The protocol to use
    *
-   * @default Determined from port if known
+   * @default - Determined from port if known.
    */
   readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
-   * @default Determined from protocol if known
+   * @default - Determined from protocol if known.
    */
   readonly port?: number;
 
@@ -31,11 +31,11 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * The time period during which the load balancer sends a newly registered
    * target a linearly increasing share of the traffic to the target group.
    *
-   * The range is 30–900 seconds (15 minutes).
+   * The range is 30-900 seconds (15 minutes).
    *
    * @default 0
    */
-  readonly slowStartSec?: number;
+  readonly slowStart?: Duration;
 
   /**
    * The stickiness cookie expiration period.
@@ -45,9 +45,9 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default 86400 (1 day)
+   * @default Duration.days(1)
    */
-  readonly stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDuration?: Duration;
 
   /**
    * The targets to add to this target group.
@@ -55,6 +55,8 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
+   *
+   * @default - No targets.
    */
   readonly targets?: IApplicationLoadBalancerTarget[];
 }
@@ -66,14 +68,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Import an existing target group
    */
-  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
+  public static import(scope: Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
     return new ImportedApplicationTargetGroup(scope, id, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
 
-  constructor(scope: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
+  constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
     super(scope, id, props, {
@@ -84,11 +86,11 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.connectableMembers = [];
     this.listeners = [];
 
-    if (props.slowStartSec !== undefined) {
-      this.setAttribute('slow_start.duration_seconds', props.slowStartSec.toString());
+    if (props.slowStart !== undefined) {
+      this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
     }
-    if (props.stickinessCookieDurationSec !== undefined) {
-      this.enableCookieStickiness(props.stickinessCookieDurationSec);
+    if (props.stickinessCookieDuration !== undefined) {
+      this.enableCookieStickiness(props.stickinessCookieDuration);
     }
 
     this.addTarget(...(props.targets || []));
@@ -107,10 +109,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Enable sticky routing via a cookie to members of this target group
    */
-  public enableCookieStickiness(durationSec: number) {
+  public enableCookieStickiness(duration: Duration) {
     this.setAttribute('stickiness.enabled', 'true');
     this.setAttribute('stickiness.type', 'lb_cookie');
-    this.setAttribute('stickiness.lb_cookie.duration_seconds', durationSec.toString());
+    this.setAttribute('stickiness.lb_cookie.duration_seconds', duration.toSeconds().toString());
   }
 
   /**
@@ -118,14 +120,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * Don't call this directly. It will be called by load balancing targets.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.IPortRange) {
-    if (portRange === undefined) {
-      if (cdk.unresolved(this.defaultPort)) {
-        portRange = new ec2.TcpPortFromAttribute(this.defaultPort);
-      } else {
-        portRange = new ec2.TcpPort(parseInt(this.defaultPort, 10));
-      }
-    }
+  public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port) {
+    portRange = portRange || ec2.Port.tcp(this.defaultPort);
 
     // Notify all listeners that we already know about of this new connectable.
     // Then remember for new listeners that might get added later.
@@ -140,7 +136,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * Don't call this directly. It will be called by listeners.
    */
-  public registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct) {
+  public registerListener(listener: IApplicationListener, associatingConstruct?: IConstruct) {
     // Notify this listener of all connectables that we know about.
     // Then remember for new connectables that might get added later.
     for (const member of this.connectableMembers) {
@@ -187,7 +183,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
+  public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props
@@ -312,7 +308,7 @@ interface ConnectableMember {
   /**
    * The port (range) the member is listening on
    */
-  portRange: ec2.IPortRange;
+  portRange: ec2.Port;
 }
 
 /**
@@ -324,14 +320,14 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct): void;
+  registerListener(listener: IApplicationListener, associatingConstruct?: IConstruct): void;
 }
 
 /**
  * An imported application target group
  */
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
-  public registerListener(_listener: IApplicationListener, _associatingConstruct?: cdk.IConstruct) {
+  public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
   }
 }

@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { SDK } from '../api/util/sdk';
+import { ISDK } from '../api/util/sdk';
 import { debug } from '../logging';
 import { Context } from '../settings';
 import { AZContextProviderPlugin } from './availability-zones';
@@ -8,19 +8,18 @@ import { ContextProviderPlugin } from './provider';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
-type ProviderConstructor =  (new (sdk: SDK) => ContextProviderPlugin);
+type ProviderConstructor =  (new (sdk: ISDK) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ProviderConstructor};
 
 /**
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
  */
 export async function provideContextValues(
-  missingValues: { [key: string]: cxapi.MissingContext },
+  missingValues: cxapi.MissingContext[],
   context: Context,
-  sdk: SDK) {
-  for (const key of Object.keys(missingValues)) {
-    const missingContext = missingValues[key];
-
+  sdk: ISDK) {
+  for (const missingContext of missingValues) {
+    const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];
     if (!constructor) {
       // tslint:disable-next-line:max-line-length

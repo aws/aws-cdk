@@ -1,6 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, Resource } from '@aws-cdk/cdk';
-import { IStepFunctionsTaskResource, StepFunctionsTaskResourceProps, Task } from './states/task';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -15,29 +14,60 @@ export interface ActivityProps {
 /**
  * Define a new StepFunctions activity
  */
-export class Activity extends Resource implements IStepFunctionsTaskResource {
+export class Activity extends Resource implements IActivity {
+    /**
+     * Construct an Activity from an existing Activity ARN
+     */
+    public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
+        class Imported extends Resource implements IActivity {
+            public get activityArn() { return activityArn; }
+            public get activityName() {
+                return Stack.of(this).parseArn(activityArn, ':').resourceName || '';
+            }
+        }
+
+        return new Imported(scope, id);
+    }
+
+    /**
+     * Construct an Activity from an existing Activity Name
+     */
+    public static fromActivityName(scope: Construct, id: string, activityName: string): IActivity {
+        return Activity.fromActivityArn(scope, id, Stack.of(scope).formatArn({
+            service: 'states',
+            resource: 'activity',
+            resourceName: activityName,
+            sep: ':',
+        }));
+    }
+
+    /**
+     * @attribute
+     */
     public readonly activityArn: string;
+
+    /**
+     * @attribute
+     */
     public readonly activityName: string;
 
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {
-        super(scope, id);
-
-        const resource = new CfnActivity(this, 'Resource', {
-            name: props.activityName || this.generateName()
+        super(scope, id, {
+            physicalName: props.activityName ||
+                Lazy.stringValue({ produce: () => this.generateName() }),
         });
 
-        this.activityArn = resource.activityArn;
-        this.activityName = resource.activityName;
-    }
+        const resource = new CfnActivity(this, 'Resource', {
+            name: this.physicalName! // not null because of above call to `super`
+        });
 
-    public asStepFunctionsTaskResource(_callingTask: Task): StepFunctionsTaskResourceProps {
-        // No IAM permissions necessary, execution role implicitly has Activity permissions.
-        return {
-            resourceArn: this.activityArn,
-            metricPrefixSingular: 'Activity',
-            metricPrefixPlural: 'Activities',
-            metricDimensions: { ActivityArn: this.activityArn },
-        };
+        this.activityArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'activity',
+          resourceName: this.physicalName,
+          sep: ':',
+        });
+        this.activityName = this.getResourceNameAttribute(resource.attrName);
     }
 
     /**
@@ -143,4 +173,20 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
         }
         return name;
     }
+}
+
+export interface IActivity extends IResource {
+    /**
+     * The ARN of the activity
+     *
+     * @attribute
+     */
+    readonly activityArn: string;
+
+    /**
+     * The name of the activity
+     *
+     * @attribute
+     */
+    readonly activityName: string;
 }

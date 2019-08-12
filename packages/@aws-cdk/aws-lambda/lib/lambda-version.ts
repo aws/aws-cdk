@@ -1,6 +1,20 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
-import { IFunction } from './function-base';
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import { Construct } from '@aws-cdk/core';
+import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
+
+export interface IVersion extends IFunction {
+  /**
+   * The most recently deployed version of this function.
+   * @attribute
+   */
+  readonly version: string;
+
+  /**
+   * The underlying AWS Lambda function.
+   */
+  readonly lambda: IFunction;
+}
 
 /**
  * Properties for a new Lambda version
@@ -28,6 +42,18 @@ export interface VersionProps {
   readonly lambda: IFunction;
 }
 
+export interface VersionAttributes {
+  /**
+   * The version.
+   */
+  readonly version: string;
+
+  /**
+   * The lambda function.
+   */
+  readonly lambda: IFunction;
+}
+
 /**
  * A single newly-deployed version of a Lambda function.
  *
@@ -44,19 +70,33 @@ export interface VersionProps {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
-export class Version extends Resource {
-  /**
-   * The most recently deployed version of this function.
-   */
-  public readonly functionVersion: string;
+export class Version extends QualifiedFunctionBase implements IVersion {
 
-  /**
-   * Lambda object this version is associated with
-   */
+  public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
+    class Import extends QualifiedFunctionBase implements IVersion {
+      public readonly version = attrs.version;
+      public readonly lambda = attrs.lambda;
+      public readonly functionName = `${attrs.lambda.functionName}:${attrs.version}`;
+      public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
+      public readonly grantPrincipal = attrs.lambda.grantPrincipal;
+      public readonly role = attrs.lambda.role;
+
+      protected readonly canCreatePermissions = false;
+    }
+    return new Import(scope, id);
+  }
+
+  public readonly version: string;
   public readonly lambda: IFunction;
+  public readonly functionArn: string;
+  public readonly functionName: string;
+
+  protected readonly canCreatePermissions = true;
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
+
+    this.lambda = props.lambda;
 
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
@@ -64,7 +104,30 @@ export class Version extends Resource {
       functionName: props.lambda.functionName
     });
 
-    this.functionVersion = version.version;
-    this.lambda = props.lambda;
+    this.version = version.attrVersion;
+    this.functionArn = version.ref;
+    this.functionName = `${this.lambda.functionName}:${this.version}`;
+  }
+
+  public get grantPrincipal() {
+    return this.lambda.grantPrincipal;
+  }
+
+  public get role() {
+    return this.lambda.role;
+  }
+
+  public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
+    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
+    return super.metric(metricName, {
+      dimensions: {
+        FunctionName: this.lambda.functionName,
+        // construct the ARN from the underlying lambda so that alarms on an alias
+        // don't cause a circular dependency with CodeDeploy
+        // see: https://github.com/aws/aws-cdk/issues/2231
+        Resource: `${this.lambda.functionArn}:${this.version}`
+      },
+      ...props
+    });
   }
 }

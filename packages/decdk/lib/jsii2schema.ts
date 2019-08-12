@@ -439,6 +439,7 @@ export function isDataType(t: jsiiReflect.Type | undefined): t is jsiiReflect.In
 // Must only have properties, all of which are scalars,
 // lists or isSerializableInterface types.
 export function isSerializableTypeReference(type: jsiiReflect.TypeReference, errorPrefix?: string): boolean {
+
   if (type.primitive) {
     return true;
   }
@@ -463,6 +464,10 @@ export function isSerializableTypeReference(type: jsiiReflect.TypeReference, err
 }
 
 function isSerializableType(type: jsiiReflect.Type, errorPrefix?: string): boolean {
+  // if this is a cosntruct class, we can represent it as a "Ref"
+  if (isConstruct(type)) {
+    return true;
+  }
 
   if (isEnum(type)) {
     return true;
@@ -474,11 +479,6 @@ function isSerializableType(type: jsiiReflect.Type, errorPrefix?: string): boole
 
   // if this is a class that looks like an enum, we can represent it
   if (isEnumLikeClass(type)) {
-    return true;
-  }
-
-  // if this is a cosntruct class, we can represent it as a "Ref"
-  if (isConstruct(type)) {
     return true;
   }
 
@@ -559,13 +559,13 @@ export function isConstruct(typeOrTypeRef: jsiiReflect.TypeReference | jsiiRefle
 
   // if it is an interface, it should extend cdk.IConstruct
   if (type instanceof jsiiReflect.InterfaceType) {
-    const constructIface = type.system.findFqn('@aws-cdk/cdk.IConstruct');
+    const constructIface = type.system.findFqn('@aws-cdk/core.IConstruct');
     return type.extends(constructIface);
   }
 
   // if it is a class, it should extend cdk.Construct
   if (type instanceof jsiiReflect.ClassType) {
-    const constructClass = type.system.findFqn('@aws-cdk/cdk.Construct');
+    const constructClass = type.system.findFqn('@aws-cdk/core.Construct');
     return type.extends(constructClass);
   }
 
@@ -589,5 +589,5 @@ function allSubclasses(base: jsiiReflect.ClassType) {
 }
 
 function allImplementations(base: jsiiReflect.InterfaceType) {
-  return base.system.classes.filter(x => x.getInterfaces().some(i => i.extends(base)));
+  return base.system.classes.filter(x => x.getInterfaces(true).some(i => i.extends(base)));
 }

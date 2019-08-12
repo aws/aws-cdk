@@ -1,10 +1,17 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
+import { Subnet } from '@aws-cdk/aws-ec2';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/cdk';
+import lambda = require('@aws-cdk/aws-lambda');
+import { CfnOutput, Construct, Duration, IResource, Resource, Tag } from '@aws-cdk/core';
+import path = require('path');
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
-import { CfnCluster } from './eks.generated';
+import { AwsAuth } from './aws-auth';
+import { ClusterResource } from './cluster-resource';
+import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
+import { KubernetesResource } from './k8s-resource';
+import { KubectlLayer } from './kubectl-layer';
 
 /**
  * An EKS cluster
@@ -13,70 +20,39 @@ export interface ICluster extends IResource, ec2.IConnectable {
   /**
    * The VPC in which this Cluster was created
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The physical name of the Cluster
+   * @attribute
    */
   readonly clusterName: string;
 
   /**
    * The unique ARN assigned to the service by AWS
    * in the form of arn:aws:eks:
+   * @attribute
    */
   readonly clusterArn: string;
 
   /**
    * The API Server endpoint URL
+   * @attribute
    */
   readonly clusterEndpoint: string;
 
   /**
    * The certificate-authority-data for your cluster.
+   * @attribute
    */
   readonly clusterCertificateAuthorityData: string;
-
-  /**
-   * Export cluster references to use in other stacks
-   */
-  export(): ClusterImportProps;
 }
 
-/**
- * A SecurityGroup Reference, object not created with this template.
- */
-abstract class ClusterBase extends Resource implements ICluster {
-  public abstract readonly connections: ec2.Connections;
-  public abstract readonly vpc: ec2.IVpcNetwork;
-  public abstract readonly clusterName: string;
-  public abstract readonly clusterArn: string;
-  public abstract readonly clusterEndpoint: string;
-  public abstract readonly clusterCertificateAuthorityData: string;
-
-  /**
-   * Export cluster references to use in other stacks
-   */
-  public export(): ClusterImportProps {
-    return {
-      vpc: this.vpc.export(),
-      clusterName: this.makeOutput('ClusterNameExport', this.clusterName),
-      clusterArn: this.makeOutput('ClusterArn', this.clusterArn),
-      clusterEndpoint: this.makeOutput('ClusterEndpoint', this.clusterEndpoint),
-      clusterCertificateAuthorityData: this.makeOutput('ClusterCAData', this.clusterCertificateAuthorityData),
-      securityGroups: this.connections.securityGroups.map(sg => sg.export()),
-    };
-  }
-
-  private makeOutput(name: string, value: any): string {
-    return new CfnOutput(this, name, { value }).makeImportValue().toString();
-  }
-}
-
-export interface ClusterImportProps {
+export interface ClusterAttributes {
   /**
    * The VPC in which this Cluster was created
    */
-  readonly vpc: ec2.VpcNetworkImportProps;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The physical name of the Cluster
@@ -99,7 +75,10 @@ export interface ClusterImportProps {
    */
   readonly clusterCertificateAuthorityData: string;
 
-  readonly securityGroups: ec2.SecurityGroupImportProps[];
+  /**
+   * The security groups associated with this cluster.
+   */
+  readonly securityGroups: ec2.ISecurityGroup[];
 }
 
 /**
@@ -109,7 +88,7 @@ export interface ClusterProps {
   /**
    * The VPC in which to create the Cluster
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Where to place EKS Control Plane ENIs
@@ -124,37 +103,73 @@ export interface ClusterProps {
    * ]
    * ```
    *
-   * @default All public and private subnets
+   * @default - All public and private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection[];
 
   /**
    * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
    *
-   * @default A role is automatically created for you
+   * @default - A role is automatically created for you
    */
   readonly role?: iam.IRole;
 
   /**
    * Name for the cluster.
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name
    */
   readonly clusterName?: string;
 
   /**
    * Security Group to use for Control Plane ENIs
    *
-   * @default A security group is automatically created
+   * @default - A security group is automatically created
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The Kubernetes version to run in the cluster
    *
-   * @default If not supplied, will use Amazon default version
+   * @default - If not supplied, will use Amazon default version
    */
   readonly version?: string;
+
+  /**
+   * An IAM role that will be added to the `system:masters` Kubernetes RBAC
+   * group.
+   *
+   * @see https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings
+   *
+   * @default - By default, it will only possible to update this Kubernetes
+   *            system by adding resources to this cluster via `addResource` or
+   *            by defining `KubernetesResource` resources in your AWS CDK app.
+   *            Use this if you wish to grant cluster administration privileges
+   *            to another role.
+   */
+  readonly mastersRole?: iam.IRole;
+
+  /**
+   * Allows defining `kubectrl`-related resources on this cluster.
+   *
+   * If this is disabled, it will not be possible to use the following
+   * capabilities:
+   * - `addResource`
+   * - `addRoleMapping`
+   * - `addUserMapping`
+   * - `addMastersRole` and `props.mastersRole`
+   *
+   * If this is disabled, the cluster can only be managed by issuing `kubectl`
+   * commands from a session that uses the IAM role/user that created the
+   * account.
+   *
+   * _NOTE_: changing this value will destoy the cluster. This is because a
+   * managable cluster must be created using an AWS CloudFormation custom
+   * resource which executes with an IAM role owned by the CDK app.
+   *
+   * @default true The cluster can be managed by the AWS CDK application.
+   */
+  readonly kubectlEnabled?: boolean;
 }
 
 /**
@@ -163,22 +178,22 @@ export interface ClusterProps {
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
  */
-export class Cluster extends ClusterBase {
+export class Cluster extends Resource implements ICluster {
   /**
    * Import an existing cluster
    *
    * @param scope the construct scope, in most cases 'this'
    * @param id the id or name to import as
-   * @param props the cluster properties to use for importing information
+   * @param attrs the cluster properties to use for importing information
    */
-  public static import(scope: Construct, id: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(scope, id, props);
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    return new ImportedCluster(scope, id, attrs);
   }
 
   /**
    * The VPC in which this Cluster was created
    */
-  public readonly vpc: ec2.IVpcNetwork;
+  public readonly vpc: ec2.IVpc;
 
   /**
    * The Name of the created EKS Cluster
@@ -219,6 +234,32 @@ export class Cluster extends ClusterBase {
    */
   public readonly role: iam.IRole;
 
+  /**
+   * Indicates if `kubectl` related operations can be performed on this cluster.
+   */
+  public readonly kubectlEnabled: boolean;
+
+  /**
+   * The CloudFormation custom resource handler that can apply Kubernetes
+   * manifests to this cluster.
+   *
+   * @internal
+   */
+  public readonly _k8sResourceHandler?: lambda.Function;
+
+  /**
+   * The IAM role that was used to create this cluster. This role is
+   * automatically added by Amazon EKS to the `system:masters` RBAC group of the
+   * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
+   * IAM roles as administrators.
+   */
+  private readonly _defaultMastersRole?: iam.IRole;
+
+  /**
+   * Manages the aws-auth config map.
+   */
+  private _awsAuth?: AwsAuth;
+
   private readonly version: string | undefined;
 
   /**
@@ -229,7 +270,9 @@ export class Cluster extends ClusterBase {
    * @param props properties in the IClusterProps interface
    */
   constructor(scope: Construct, id: string, props: ClusterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.clusterName,
+    });
 
     this.vpc = props.vpc;
     this.version = props.version;
@@ -238,9 +281,9 @@ export class Cluster extends ClusterBase {
 
     this.role = props.role || new iam.Role(this, 'ClusterRole', {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
-      managedPolicyArns: [
-        new iam.AwsManagedPolicy('AmazonEKSClusterPolicy', this).policyArn,
-        new iam.AwsManagedPolicy('AmazonEKSServicePolicy', this).policyArn,
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSServicePolicy'),
       ],
     });
 
@@ -251,29 +294,57 @@ export class Cluster extends ClusterBase {
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPortRange: new ec2.TcpPort(443), // Control Plane has an HTTPS API
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // Get subnetIds for all selected subnets
-    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
+    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
     const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
-    const resource = new CfnCluster(this, 'Resource', {
-      name: props.clusterName,
+    const clusterProps: CfnClusterProps = {
+      name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds
       }
+    };
+
+    let resource;
+    this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
+    if (this.kubectlEnabled) {
+      resource = new ClusterResource(this, 'Resource', clusterProps);
+      this._defaultMastersRole = resource.creationRole;
+    } else {
+      resource = new CfnCluster(this, 'Resource', clusterProps);
+    }
+
+    this.clusterName = this.getResourceNameAttribute(resource.ref);
+    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'eks',
+      resource: 'cluster',
+      resourceName: this.physicalName,
     });
 
-    this.clusterName = resource.clusterName;
-    this.clusterArn = resource.clusterArn;
-    this.clusterEndpoint = resource.clusterEndpoint;
-    this.clusterCertificateAuthorityData = resource.clusterCertificateAuthorityData;
+    this.clusterEndpoint = resource.attrEndpoint;
+    this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
-    new CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
+    new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+
+    // we maintain a single manifest custom resource handler per cluster since
+    // permissions and role are scoped. This will return `undefined` if kubectl
+    // is not enabled for this cluster.
+    this._k8sResourceHandler = this.createKubernetesResourceHandler();
+
+    // map the IAM role to the `system:masters` group.
+    if (props.mastersRole) {
+      if (!this.kubectlEnabled) {
+        throw new Error(`Cannot specify a "masters" role if kubectl is disabled`);
+      }
+
+      this.awsAuth.addMastersRole(props.mastersRole);
+    }
   }
 
   /**
@@ -282,7 +353,7 @@ export class Cluster extends ClusterBase {
    * The nodes will automatically be configured with the right VPC and AMI
    * for the instance type and Kubernetes version.
    */
-  public addCapacity(id: string, options: AddWorkerNodesOptions): autoscaling.AutoScalingGroup {
+  public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
@@ -290,12 +361,13 @@ export class Cluster extends ClusterBase {
         nodeType: nodeTypeForInstanceType(options.instanceType),
         kubernetesVersion: this.version,
       }),
-      updateType: options.updateType || autoscaling.UpdateType.RollingUpdate,
+      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
       instanceType: options.instanceType,
     });
 
     this.addAutoScalingGroup(asg, {
       maxPods: maxPodsForInstanceType(options.instanceType),
+      mapRole: options.mapRole,
     });
 
     return asg;
@@ -313,41 +385,111 @@ export class Cluster extends ClusterBase {
    * the right AMI and the `maxPods` number based on your instance type.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
+   * @param autoScalingGroup [disable-awslint:ref-via-interface]
    */
-  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
+  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
     // self rules
-    autoScalingGroup.connections.allowInternally(new ec2.AllTraffic());
+    autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
     // Cluster to:nodes rules
-    autoScalingGroup.connections.allowFrom(this, new ec2.TcpPort(443));
-    autoScalingGroup.connections.allowFrom(this, new ec2.TcpPortRange(1025, 65535));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcp(443));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcpRange(1025, 65535));
 
     // Allow HTTPS from Nodes to Cluster
-    autoScalingGroup.connections.allowTo(this, new ec2.TcpPort(443));
+    autoScalingGroup.connections.allowTo(this, ec2.Port.tcp(443));
 
     // Allow all node outbound traffic
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.TcpAllPorts());
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.UdpAllPorts());
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.IcmpAllTypesAndCodes());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allTcp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
     autoScalingGroup.addUserData(
       'set -o xtrace',
       `/etc/eks/bootstrap.sh ${this.clusterName} --use-max-pods ${options.maxPods}`,
     );
     // FIXME: Add a cfn-signal call once we've sorted out UserData and can write reliable
-    // signaling scripts: https://github.com/awslabs/aws-cdk/issues/623
+    // signaling scripts: https://github.com/aws/aws-cdk/issues/623
 
-    autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEKSWorkerNodePolicy', this).policyArn);
-    autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEKS_CNI_Policy', this).policyArn);
-    autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEC2ContainerRegistryReadOnly', this).policyArn);
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    autoScalingGroup.node.apply(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
+    autoScalingGroup.node.applyAspect(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
     // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
     new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-      disableExport: true,
       value: autoScalingGroup.role.roleArn
+    });
+
+    if (options.mapRole === true && !this.kubectlEnabled) {
+      throw new Error(`Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster`);
+    }
+
+    // do not attempt to map the role if `kubectl` is not enabled for this
+    // cluster or if `mapRole` is set to false. By default this should happen.
+    const mapRole = options.mapRole === undefined ? true : options.mapRole;
+    if (mapRole && this.kubectlEnabled) {
+      // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
+      this.awsAuth.addRoleMapping(autoScalingGroup.role, {
+        username: 'system:node:{{EC2PrivateDNSName}}',
+        groups: [
+          'system:bootstrappers',
+          'system:nodes'
+        ]
+      });
+    }
+  }
+
+  /**
+   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
+   */
+  public get awsAuth() {
+    if (!this.kubectlEnabled) {
+      throw new Error(`Cannot define aws-auth mappings if kubectl is disabled`);
+    }
+
+    if (!this._awsAuth) {
+      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
+    }
+
+    return this._awsAuth;
+  }
+
+  /**
+   * Defines a Kubernetes resource in this cluster.
+   *
+   * The manifest will be applied/deleted using kubectl as needed.
+   *
+   * @param id logical id of this manifest
+   * @param manifest a list of Kubernetes resource specifications
+   * @returns a `KubernetesResource` object.
+   * @throws If `kubectlEnabled` is `false`
+   */
+  public addResource(id: string, ...manifest: any[]) {
+    return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
+  }
+
+  private createKubernetesResourceHandler() {
+    if (!this.kubectlEnabled) {
+      return undefined;
+    }
+
+    return new lambda.Function(this, 'KubernetesResourceHandler', {
+      code: lambda.Code.asset(path.join(__dirname, 'k8s-resource')),
+      runtime: lambda.Runtime.PYTHON_3_7,
+      handler: 'index.handler',
+      timeout: Duration.minutes(15),
+      layers: [ KubectlLayer.getOrCreate(this) ],
+      memorySize: 256,
+      environment: {
+        CLUSTER_NAME: this.clusterName,
+      },
+
+      // NOTE: we must use the default IAM role that's mapped to "system:masters"
+      // as the execution role of this custom resource handler. This is the only
+      // way to be able to interact with the cluster after it's been created.
+      role: this._defaultMastersRole,
     });
   }
 
@@ -360,35 +502,41 @@ export class Cluster extends ClusterBase {
    */
   private tagSubnets() {
     for (const subnet of this.vpc.privateSubnets) {
-      if (!isRealSubnetConstruct(subnet)) {
+      if (!Subnet.isVpcSubnet(subnet)) {
         // Just give up, all of them will be the same.
         this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
         return;
       }
 
-      subnet.node.apply(new Tag("kubernetes.io/role/internal-elb", "1"));
+      subnet.node.applyAspect(new Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
-}
-
-function isRealSubnetConstruct(subnet: ec2.IVpcSubnet): subnet is ec2.VpcSubnet {
-  return (subnet as any).addDefaultRouteToIGW !== undefined;
 }
 
 /**
  * Options for adding worker nodes
  */
-export interface AddWorkerNodesOptions extends autoscaling.CommonAutoScalingGroupProps {
+export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
    */
   readonly instanceType: ec2.InstanceType;
+
+  /**
+   * Will automatically update the aws-auth ConfigMap to map the IAM instance
+   * role to RBAC.
+   *
+   * This cannot be explicitly set to `true` if the cluster has kubectl disabled.
+   *
+   * @default - true if the cluster has kubectl enabled (which is the default).
+   */
+  readonly mapRole?: boolean;
 }
 
 /**
  * Options for adding an AutoScalingGroup as capacity
  */
-export interface AddAutoScalingGroupOptions {
+export interface AutoScalingGroupOptions {
   /**
    * How many pods to allow on this instance.
    *
@@ -396,23 +544,33 @@ export interface AddAutoScalingGroupOptions {
    * the instance type less one.
    */
   readonly maxPods: number;
+
+  /**
+   * Will automatically update the aws-auth ConfigMap to map the IAM instance
+   * role to RBAC.
+   *
+   * This cannot be explicitly set to `true` if the cluster has kubectl disabled.
+   *
+   * @default - true if the cluster has kubectl enabled (which is the default).
+   */
+  readonly mapRole?: boolean;
 }
 
 /**
  * Import a cluster to use in another stack
  */
-class ImportedCluster extends ClusterBase {
-  public readonly vpc: ec2.IVpcNetwork;
+class ImportedCluster extends Resource implements ICluster {
+  public readonly vpc: ec2.IVpc;
   public readonly clusterCertificateAuthorityData: string;
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: Construct, id: string, props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
-    this.vpc = ec2.VpcNetwork.import(this, "VPC", props.vpc);
+    this.vpc = ec2.Vpc.fromVpcAttributes(this, "VPC", props.vpc);
     this.clusterName = props.clusterName;
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
@@ -420,7 +578,7 @@ class ImportedCluster extends ClusterBase {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
       i++;
     }
   }

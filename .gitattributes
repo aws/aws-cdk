@@ -9,3 +9,5 @@
 *.zip binary
 *.png binary
 *.jpg binary
+*.tgz binary
+*.tar.gz binary

@@ -1,6 +1,7 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
+import { IStepFunctionsTask } from '../lib';
 
 export = {
     'Basic composition': {
@@ -101,7 +102,9 @@ export = {
 
             const task1 = new stepfunctions.Pass(stack, 'State One');
             const task2 = new stepfunctions.Pass(stack, 'State Two');
-            const task3 = new stepfunctions.Wait(stack, 'State Three', { duration: stepfunctions.WaitDuration.seconds(10) });
+            const task3 = new stepfunctions.Wait(stack, 'State Three', {
+                time: stepfunctions.WaitTime.duration(cdk.Duration.seconds(10))
+            });
 
             // WHEN
             const chain = stepfunctions.Chain
@@ -397,7 +400,7 @@ export = {
         'States can have error branches'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask()});
             const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
             // WHEN
@@ -429,7 +432,7 @@ export = {
         'Retries and errors with a result path'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
             const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
             // WHEN
@@ -462,8 +465,8 @@ export = {
             // GIVEN
             const stack = new cdk.Stack();
 
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
@@ -508,8 +511,8 @@ export = {
             // GIVEN
             const stack = new cdk.Stack();
 
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
@@ -539,9 +542,9 @@ export = {
             // GIVEN
             const stack = new cdk.Stack();
 
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
-            const task3 = new stepfunctions.Task(stack, 'Task3', { resource: new FakeResource() });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
+            const task3 = new stepfunctions.Task(stack, 'Task3', { task: new FakeTask() });
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
@@ -568,8 +571,8 @@ export = {
             // GIVEN
             const stack = new cdk.Stack();
 
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
@@ -584,8 +587,8 @@ export = {
             // GIVEN
             const stack = new cdk.Stack();
 
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
             const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
             // WHEN
@@ -705,8 +708,8 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
     constructor(scope: cdk.Construct, id: string) {
         super(scope, id);
 
-        const task1 = new stepfunctions.Task(this, 'Task1', { resource: new FakeResource() });
-        this.task2 = new stepfunctions.Task(this, 'Task2', { resource: new FakeResource() });
+        const task1 = new stepfunctions.Task(this, 'Task1', { task: new FakeTask() });
+        this.task2 = new stepfunctions.Task(this, 'Task2', { task: new FakeTask() });
 
         task1.next(this.task2);
 
@@ -720,14 +723,14 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
     }
 }
 
-class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
-    public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
+function render(sm: stepfunctions.IChainable) {
+    return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+}
+
+class FakeTask implements IStepFunctionsTask {
+    public bind(_task: stepfunctions.Task): stepfunctions.StepFunctionsTaskConfig {
         return {
             resourceArn: 'resource'
         };
     }
-}
-
-function render(sm: stepfunctions.IChainable) {
-    return new cdk.Stack().node.resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
 }

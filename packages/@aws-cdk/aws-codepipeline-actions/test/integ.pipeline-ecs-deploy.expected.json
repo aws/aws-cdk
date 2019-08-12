@@ -194,7 +194,9 @@
       "Type": "AWS::ECS::Cluster"
     },
     "EcrRepoBB83A592": {
-      "Type": "AWS::ECR::Repository"
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
@@ -230,20 +232,7 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
-            "MountPoints": [],
-            "Name": "Container",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "Container"
           }
         ],
         "Cpu": "256",
@@ -322,7 +311,9 @@
         "VersioningConfiguration": {
           "Status": "Enabled"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "EcsProjectRoleE2F0E9D2": {
       "Type": "AWS::IAM::Role",
@@ -540,7 +531,11 @@
                         }
                       ]
                     },
-                    ".amazonaws.com/",
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
                     {
                       "Ref": "EcrRepoBB83A592"
                     }
@@ -631,73 +626,34 @@
               ]
             },
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "EcsProject54EFDCA6",
+                  "MyPipelineSourceCodePipelineActionRoleAA05D76F",
                   "Arn"
                 ]
               }
             },
             {
-              "Action": [
-                "ecs:DescribeServices",
-                "ecs:DescribeTaskDefinition",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:RegisterTaskDefinition",
-                "ecs:UpdateService"
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
+                  "Arn"
+                ]
+              }
             },
             {
-              "Action": "iam:PassRole",
-              "Condition": {
-                "StringEqualsIfExists": {
-                  "iam:PassedToService": [
-                    "ec2.amazonaws.com",
-                    "ecs-tasks.amazonaws.com"
-                  ]
-                }
-              },
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineDeployDeployActionCodePipelineActionRole854184EF",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -742,6 +698,12 @@
                     "Name": "SourceArtifact"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceCodePipelineActionRoleAA05D76F",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -772,6 +734,12 @@
                     "Name": "Artifact_Build_CodeBuild"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -804,6 +772,12 @@
                 ],
                 "Name": "DeployAction",
                 "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineDeployDeployActionCodePipelineActionRole854184EF",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -821,6 +795,279 @@
         "MyPipelineRoleDefaultPolicy34F09EFA",
         "MyPipelineRoleC0D47CA4"
       ]
+    },
+    "MyPipelineSourceCodePipelineActionRoleAA05D76F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineSourceCodePipelineActionRoleDefaultPolicy10C831A9": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineSourceCodePipelineActionRoleDefaultPolicy10C831A9",
+        "Roles": [
+          {
+            "Ref": "MyPipelineSourceCodePipelineActionRoleAA05D76F"
+          }
+        ]
+      }
+    },
+    "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineBuildCodeBuildCodePipelineActionRoleDefaultPolicyD9654D9B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EcsProject54EFDCA6",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineBuildCodeBuildCodePipelineActionRoleDefaultPolicyD9654D9B",
+        "Roles": [
+          {
+            "Ref": "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA"
+          }
+        ]
+      }
+    },
+    "MyPipelineDeployDeployActionCodePipelineActionRole854184EF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineDeployDeployActionCodePipelineActionRoleDefaultPolicy8B712933": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecs:DescribeServices",
+                "ecs:DescribeTaskDefinition",
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:RegisterTaskDefinition",
+                "ecs:UpdateService"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "iam:PassRole",
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "iam:PassedToService": [
+                    "ec2.amazonaws.com",
+                    "ecs-tasks.amazonaws.com"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineDeployDeployActionCodePipelineActionRoleDefaultPolicy8B712933",
+        "Roles": [
+          {
+            "Ref": "MyPipelineDeployDeployActionCodePipelineActionRole854184EF"
+          }
+        ]
+      }
     }
   }
 }

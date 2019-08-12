@@ -2,33 +2,34 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
-
 import glue = require('../lib');
 
 export = {
   'unpartitioned JSON table'(test: Test) {
-    const dbStack = new cdk.Stack();
+    const app = new cdk.App();
+    const dbStack = new cdk.Stack(app, 'db');
     const database = new glue.Database(dbStack, 'Database', {
-      databaseName: 'database'
+      databaseName: 'database',
     });
 
-    const tableStack = new cdk.Stack();
+    const tableStack = new cdk.Stack(app, 'table');
     const table = new glue.Table(tableStack, 'Table', {
       database,
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       dataFormat: glue.DataFormat.Json,
     });
-    test.equals(table.encryption, glue.TableEncryption.Unencrypted);
+    test.equals(table.encryption, glue.TableEncryption.UNENCRYPTED);
 
     expect(tableStack).to(haveResource('AWS::S3::Bucket', {
       Type: "AWS::S3::Bucket",
-      DeletionPolicy: "Retain"
+      DeletionPolicy: "Retain",
+      UpdateReplacePolicy: "Retain"
     }, ResourcePart.CompleteDefinition));
 
     expect(tableStack).to(haveResource('AWS::Glue::Table', {
@@ -36,7 +37,7 @@ export = {
         Ref: "AWS::AccountId"
       },
       DatabaseName: {
-        "Fn::ImportValue": "Stack:ExportsOutputRefDatabaseB269D8BB88F4B1C4"
+        "Fn::ImportValue": "db:ExportsOutputRefDatabaseB269D8BB88F4B1C4"
       },
       TableInput: {
         Name: "table",
@@ -79,26 +80,27 @@ export = {
   },
 
   'partitioned JSON table'(test: Test) {
-    const dbStack = new cdk.Stack();
+    const app = new cdk.App();
+    const dbStack = new cdk.Stack(app, 'db');
     const database = new glue.Database(dbStack, 'Database', {
-      databaseName: 'database'
+      databaseName: 'database',
     });
 
-    const tableStack = new cdk.Stack();
+    const tableStack = new cdk.Stack(app, 'table');
     const table = new glue.Table(tableStack, 'Table', {
       database,
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       partitionKeys: [{
         name: 'year',
-        type: glue.Schema.smallint
+        type: glue.Schema.SMALL_INT
       }],
       dataFormat: glue.DataFormat.Json,
     });
-    test.equals(table.encryption, glue.TableEncryption.Unencrypted);
+    test.equals(table.encryption, glue.TableEncryption.UNENCRYPTED);
     test.equals(table.encryptionKey, undefined);
     test.equals(table.bucket.encryptionKey, undefined);
 
@@ -107,7 +109,7 @@ export = {
         Ref: "AWS::AccountId"
       },
       DatabaseName: {
-        "Fn::ImportValue": "Stack:ExportsOutputRefDatabaseB269D8BB88F4B1C4"
+        "Fn::ImportValue": "db:ExportsOutputRefDatabaseB269D8BB88F4B1C4"
       },
       TableInput: {
         Name: "table",
@@ -158,7 +160,7 @@ export = {
   'compressed table'(test: Test) {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database', {
-      databaseName: 'database'
+      databaseName: 'database',
     });
 
     const table = new glue.Table(stack, 'Table', {
@@ -166,7 +168,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       compressed: true,
       dataFormat: glue.DataFormat.Json,
@@ -225,7 +227,7 @@ export = {
     'SSE-S3'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
@@ -233,12 +235,12 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
-        encryption: glue.TableEncryption.S3Managed,
+        encryption: glue.TableEncryption.S3_MANAGED,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.S3Managed);
+      test.equals(table.encryption, glue.TableEncryption.S3_MANAGED);
       test.equals(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -304,7 +306,7 @@ export = {
     'SSE-KMS (implicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
@@ -312,12 +314,12 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
-        encryption: glue.TableEncryption.Kms,
+        encryption: glue.TableEncryption.KMS,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.Kms);
+      test.equals(table.encryption, glue.TableEncryption.KMS);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
 
       expect(stack).to(haveResource('AWS::KMS::Key', {
@@ -336,7 +338,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -433,22 +436,22 @@ export = {
     'SSE-KMS (explicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
-      const encryptionKey = new kms.EncryptionKey(stack, 'MyKey');
+      const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
-        encryption: glue.TableEncryption.Kms,
+        encryption: glue.TableEncryption.KMS,
         encryptionKey,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.Kms);
+      test.equals(table.encryption, glue.TableEncryption.KMS);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
       test.notEqual(table.encryptionKey, undefined);
 
@@ -468,7 +471,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -564,7 +568,7 @@ export = {
     'SSE-KMS_MANAGED'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
@@ -572,12 +576,12 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
-        encryption: glue.TableEncryption.KmsManaged,
+        encryption: glue.TableEncryption.KMS_MANAGED,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.KmsManaged);
+      test.equals(table.encryption, glue.TableEncryption.KMS_MANAGED);
       test.equals(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -643,7 +647,7 @@ export = {
     'CSE-KMS (implicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
@@ -651,12 +655,12 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
-        encryption: glue.TableEncryption.ClientSideKms,
+        encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.ClientSideKms);
+      test.equals(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
       test.notEqual(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -676,7 +680,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -754,22 +759,22 @@ export = {
     'CSE-KMS (explicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
-      const encryptionKey = new kms.EncryptionKey(stack, 'MyKey');
+      const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
-        encryption: glue.TableEncryption.ClientSideKms,
+        encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
         encryptionKey,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.ClientSideKms);
+      test.equals(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
       test.notEqual(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -789,7 +794,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -867,24 +873,24 @@ export = {
     'CSE-KMS (explicitly passed bucket and key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
       const bucket = new s3.Bucket(stack, 'Bucket');
-      const encryptionKey = new kms.EncryptionKey(stack, 'MyKey');
+      const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket,
-        encryption: glue.TableEncryption.ClientSideKms,
+        encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
         encryptionKey,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.ClientSideKms);
+      test.equals(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
       test.notEqual(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -904,7 +910,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -981,11 +988,12 @@ export = {
   },
 
   'explicit s3 bucket and prefix'(test: Test) {
-    const dbStack = new cdk.Stack();
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const dbStack = new cdk.Stack(app, 'db');
+    const stack = new cdk.Stack(app, 'app');
     const bucket = new s3.Bucket(stack, 'ExplicitBucket');
     const database = new glue.Database(dbStack, 'Database', {
-      databaseName: 'database'
+      databaseName: 'database',
     });
 
     new glue.Table(stack, 'Table', {
@@ -995,7 +1003,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       dataFormat: glue.DataFormat.Json,
     });
@@ -1005,7 +1013,7 @@ export = {
         Ref: "AWS::AccountId"
       },
       DatabaseName: {
-        "Fn::ImportValue": "Stack:ExportsOutputRefDatabaseB269D8BB88F4B1C4"
+        "Fn::ImportValue": "db:ExportsOutputRefDatabaseB269D8BB88F4B1C4"
       },
       TableInput: {
         Description: "table generated by CDK",
@@ -1052,7 +1060,7 @@ export = {
       const stack = new cdk.Stack();
       const user = new iam.User(stack, 'User');
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
@@ -1060,7 +1068,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         compressed: true,
         dataFormat: glue.DataFormat.Json,
@@ -1098,7 +1106,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },
@@ -1158,7 +1166,7 @@ export = {
       const stack = new cdk.Stack();
       const user = new iam.User(stack, 'User');
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
@@ -1166,7 +1174,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         compressed: true,
         dataFormat: glue.DataFormat.Json,
@@ -1202,7 +1210,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },
@@ -1262,7 +1270,7 @@ export = {
       const stack = new cdk.Stack();
       const user = new iam.User(stack, 'User');
       const database = new glue.Database(stack, 'Database', {
-        databaseName: 'database'
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
@@ -1270,7 +1278,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         compressed: true,
         dataFormat: glue.DataFormat.Json,
@@ -1313,7 +1321,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },
@@ -1391,10 +1399,10 @@ export = {
           tableName: 'name',
           columns: [{
             name: 'col1',
-            type: glue.Schema.string
+            type: glue.Schema.STRING
           }, {
             name: 'col1',
-            type: glue.Schema.string
+            type: glue.Schema.STRING
           }]
         });
       }, undefined, "column names and partition keys must be unique, but 'col1' is duplicated.");
@@ -1407,14 +1415,14 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         partitionKeys: [{
           name: 'p1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }, {
           name: 'p1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }]
       }), undefined, "column names and partition keys must be unique, but 'p1' is duplicated");
 
@@ -1426,11 +1434,11 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         partitionKeys: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }]
       }), "column names and partition keys must be unique, but 'col1' is duplicated");
 
@@ -1442,10 +1450,10 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-        encryption: glue.TableEncryption.Kms
+        encryption: glue.TableEncryption.KMS
       }), undefined, 'you can not specify encryption settings if you also provide a bucket');
       test.done();
     },
@@ -1455,7 +1463,7 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: undefined
@@ -1468,7 +1476,7 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: undefined
@@ -1481,13 +1489,26 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-        encryption: glue.TableEncryption.ClientSideKms
+        encryption: glue.TableEncryption.CLIENT_SIDE_KMS
       }));
       test.done();
     }
+  },
+
+  'Table.fromTableArn'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const table = glue.Table.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+
+    // THEN
+    test.deepEqual(table.tableArn, 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+    test.deepEqual(table.tableName, 'tbl1');
+    test.done();
   }
 };
 
@@ -1496,7 +1517,7 @@ function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps,
   new glue.Table(stack, 'table', {
     ...props,
     database: new glue.Database(stack, 'db', {
-      databaseName: 'database_name'
+      databaseName: 'database_name',
     }),
     dataFormat: glue.DataFormat.Json
   });

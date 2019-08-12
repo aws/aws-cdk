@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-servicediscovery",
-  "version": "0.30.0",
+  "version": "1.3.0",
   "description": "The CDK Construct Library for AWS::ServiceDiscovery",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,16 +11,17 @@
         "package": "software.amazon.awscdk.services.servicediscovery",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "servicediscovery"
+          "artifactId": "servicediscovery",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ServiceDiscovery",
         "packageId": "Amazon.CDK.AWS.ServiceDiscovery",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-servicediscovery",
         "module": "aws_cdk.aws_servicediscovery"
@@ -29,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-servicediscovery"
   },
   "scripts": {
@@ -41,7 +42,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::ServiceDiscovery"
@@ -59,37 +62,39 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cdk-integ-tools": "^0.30.0",
-    "cfn2ts": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^1.3.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^0.30.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.30.0",
-    "@aws-cdk/aws-route53": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-ec2": "^1.3.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.3.0",
+    "@aws-cdk/aws-route53": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "^0.30.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.30.0",
-    "@aws-cdk/aws-route53": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-ec2": "^1.3.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.3.0",
+    "@aws-cdk/aws-route53": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0"
   },
   "engines": {
     "node": ">= 8.10.0"
   },
   "awslint": {
     "exclude": [
-      "export:@aws-cdk/aws-servicediscovery.IService",
-      "export:@aws-cdk/aws-servicediscovery.IInstance",
-      "import-props-interface:@aws-cdk/aws-servicediscovery.ServiceImportProps",
-      "import-props-interface:@aws-cdk/aws-servicediscovery.InstanceImportProps",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IHttpNamespace",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IPublicDnsNamespace",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IPrivateDnsNamespace"
+      "props-physical-name:@aws-cdk/aws-servicediscovery.HttpNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.AliasTargetInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.CnameInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.IpInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.NonIpInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.ServiceProps"
     ]
-  }
+  },
+  "stability": "stable"
 }

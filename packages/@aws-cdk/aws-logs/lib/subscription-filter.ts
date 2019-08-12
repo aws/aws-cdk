@@ -1,8 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Resource } from '@aws-cdk/cdk';
-import { ILogGroup } from './log-group';
+import { Construct, Resource } from '@aws-cdk/core';
+import { ILogGroup, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
-import { IFilterPattern } from './pattern';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -18,13 +17,13 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  logSubscriptionDestination(sourceLogGroup: ILogGroup): LogSubscriptionDestination;
+  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig;
 }
 
 /**
  * Properties returned by a Subscription destination
  */
-export interface LogSubscriptionDestination {
+export interface LogSubscriptionDestinationConfig {
   /**
    * The ARN of the subscription's destination
    */
@@ -35,29 +34,17 @@ export interface LogSubscriptionDestination {
    *
    * @default No role assumed
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 }
 
 /**
  * Properties for a SubscriptionFilter
  */
-export interface SubscriptionFilterProps {
+export interface SubscriptionFilterProps extends SubscriptionFilterOptions {
   /**
    * The log group to create the subscription on.
    */
   readonly logGroup: ILogGroup;
-
-  /**
-   * The destination to send the filtered events to.
-   *
-   * For example, a Kinesis stream or a Lambda function.
-   */
-  readonly destination: ILogSubscriptionDestination;
-
-  /**
-   * Log events matching this pattern will be sent to the destination.
-   */
-  readonly filterPattern: IFilterPattern;
 }
 
 /**
@@ -67,7 +54,7 @@ export class SubscriptionFilter extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
     super(scope, id);
 
-    const destProps = props.destination.logSubscriptionDestination(props.logGroup);
+    const destProps = props.destination.bind(this, props.logGroup);
 
     new CfnSubscriptionFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,

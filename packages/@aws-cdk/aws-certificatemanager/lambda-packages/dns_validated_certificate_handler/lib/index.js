@@ -74,9 +74,9 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId) {
+const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
   const crypto = require('crypto');
-  const acm = new aws.ACM();
+  const acm = new aws.ACM({ region });
   const route53 = new aws.Route53();
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
@@ -96,18 +96,24 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for ACM to provide DNS records for validation...');
 
-  var describeCertResponse;
-  let attempt = 0;
-  do {
-    // Exponential backoff with jitter based on 100ms base
-    await sleep(Math.random() * (Math.pow(attempt, 2) * 100));
-    describeCertResponse = await acm.describeCertificate({
+  let record;
+  const maxAttempts = 6;
+  for (let attempt = 0; attempt < maxAttempts - 1 && !record; attempt++) {
+    const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
-  } while (describeCertResponse.Certificate.DomainValidationOptions < 1 ||
-    'ResourceRecord' in describeCertResponse.Certificate.DomainValidationOptions[0] === false);
+    const options = Certificate.DomainValidationOptions || [];
 
-  const record = describeCertResponse.Certificate.DomainValidationOptions[0].ResourceRecord;
+    if (options.length > 0 && options[0].ResourceRecord) {
+      record = options[0].ResourceRecord;
+    } else {
+      // Exponential backoff with jitter based on 200ms base
+      await sleep(Math.random() * (Math.pow(2, attempt) * 200));
+    }
+  }
+  if (!record) {
+    throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`)
+  }
 
   console.log(`Upserting DNS record into zone ${hostedZoneId}: ${record.Name} ${record.Type} ${record.Value}`);
 
@@ -140,10 +146,10 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for validation...');
   await acm.waitFor('certificateValidated', {
-    // Wait up to 5 minutes
+    // Wait up to 9 minutes and 30 seconds
     $waiter: {
       delay: 30,
-      maxAttempts: 10
+      maxAttempts: 19
     },
     CertificateArn: reqCertResponse.CertificateArn
   }).promise();
@@ -157,8 +163,8 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
  *
  * @param {string} arn The certificate ARN
  */
-const deleteCertificate = async function (arn) {
-  const acm = new aws.ACM();
+const deleteCertificate = async function (arn, region) {
+  const acm = new aws.ACM({ region });
 
   console.log(`Deleting certificate ${arn}`);
 
@@ -189,7 +195,8 @@ exports.certificateRequestHandler = async function (event, context) {
           event.RequestId,
           event.ResourceProperties.DomainName,
           event.ResourceProperties.SubjectAlternativeNames,
-          event.ResourceProperties.HostedZoneId
+          event.ResourceProperties.HostedZoneId,
+          event.ResourceProperties.Region,
         );
         responseData.Arn = physicalResourceId = certificateArn;
         break;
@@ -198,7 +205,7 @@ exports.certificateRequestHandler = async function (event, context) {
         // If the resource didn't create correctly, the physical resource ID won't be the
         // certificate ARN, so don't try to delete it in that case.
         if (physicalResourceId.startsWith('arn:')) {
-          await deleteCertificate(physicalResourceId);
+          await deleteCertificate(physicalResourceId, event.ResourceProperties.Region);
         }
         break;
       default:

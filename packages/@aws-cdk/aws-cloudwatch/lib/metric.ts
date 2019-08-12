@@ -1,55 +1,44 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { normalizeStatistic } from './util.statistic';
+import { Dimension, IMetric, MetricAlarmConfig, MetricGraphConfig, Unit } from './metric-types';
+import { normalizeStatistic, parseStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
 
 /**
- * Properties for a metric
+ * Options shared by most methods accepting metric options
  */
-export interface MetricProps {
-  /**
-   * Dimensions of the metric
-   *
-   * @default No dimensions
-   */
-  readonly dimensions?: DimensionHash;
-
-  /**
-   * Namespace of the metric.
-   */
-  readonly namespace: string;
-
-  /**
-   * Name of the metric.
-   */
-  readonly metricName: string;
-
+export interface CommonMetricOptions {
   /**
    * The period over which the specified statistic is applied.
    *
-   * Specify time in seconds, in multiples of 60.
-   *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly periodSec?: number;
+  readonly period?: cdk.Duration;
 
   /**
    * What function to use for aggregating.
    *
-   * Can be one of the following (case insensitive)
+   * Can be one of the following:
    *
-   * - "minimum" | "min"
-   * - "maximum" | "max"
-   * - "average" | "avg"
-   * - "sum"
-   * - "samplecount | "n"
+   * - "Minimum" | "min"
+   * - "Maximum" | "max"
+   * - "Average" | "avg"
+   * - "Sum" | "sum"
+   * - "SampleCount | "n"
    * - "pNN.NN"
    *
    * @default Average
    */
   readonly statistic?: string;
+
+  /**
+   * Dimensions of the metric
+   *
+   * @default - No dimensions.
+   */
+  readonly dimensions?: DimensionHash;
 
   /**
    * Unit for the metric that is associated with the alarm
@@ -68,6 +57,27 @@ export interface MetricProps {
 }
 
 /**
+ * Properties for a metric
+ */
+export interface MetricProps extends CommonMetricOptions {
+  /**
+   * Namespace of the metric.
+   */
+  readonly namespace: string;
+
+  /**
+   * Name of the metric.
+   */
+  readonly metricName: string;
+}
+
+/**
+ * Properties of a metric that can be changed
+ */
+export interface MetricOptions extends CommonMetricOptions {
+}
+
+/**
  * A metric emitted by a service
  *
  * The metric is a combination of a metric identifier (namespace, name and dimensions)
@@ -81,7 +91,7 @@ export interface MetricProps {
  * Metric is an abstraction that makes it easy to specify metrics for use in both
  * alarms and graphs.
  */
-export class Metric {
+export class Metric implements IMetric {
   /**
    * Grant permissions to the given identity to write metrics.
    *
@@ -98,23 +108,22 @@ export class Metric {
   public readonly dimensions?: DimensionHash;
   public readonly namespace: string;
   public readonly metricName: string;
-  public readonly periodSec: number;
+  public readonly period: cdk.Duration;
   public readonly statistic: string;
   public readonly unit?: Unit;
   public readonly label?: string;
   public readonly color?: string;
 
   constructor(props: MetricProps) {
-    if (props.periodSec !== undefined
-      && props.periodSec !== 1 && props.periodSec !== 5 && props.periodSec !== 10 && props.periodSec !== 30
-      && props.periodSec % 60 !== 0) {
-      throw new Error("'periodSec' must be 1, 5, 10, 30, or a multiple of 60");
+    this.period = props.period || cdk.Duration.minutes(5);
+    const periodSec = this.period.toSeconds();
+    if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
+      throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${props.period}`);
     }
 
     this.dimensions = props.dimensions;
     this.namespace = props.namespace;
     this.metricName = props.metricName;
-    this.periodSec = props.periodSec !== undefined ? props.periodSec : 300;
     // Try parsing, this will throw if it's not a valid stat
     this.statistic = normalizeStatistic(props.statistic || "Average");
     this.label = props.label;
@@ -134,7 +143,7 @@ export class Metric {
       dimensions: ifUndefined(props.dimensions, this.dimensions),
       namespace: this.namespace,
       metricName: this.metricName,
-      periodSec: ifUndefined(props.periodSec, this.periodSec),
+      period: ifUndefined(props.period, this.period),
       statistic: ifUndefined(props.statistic, this.statistic),
       unit: ifUndefined(props.unit, this.unit),
       label: ifUndefined(props.label, this.label),
@@ -148,11 +157,11 @@ export class Metric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public newAlarm(scope: cdk.Construct, id: string, props: MetricAlarmProps): Alarm {
+  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
-        periodSec: props.periodSec,
+        period: props.period,
       }),
       alarmName: props.alarmName,
       alarmDescription: props.alarmDescription,
@@ -166,10 +175,42 @@ export class Metric {
     });
   }
 
+  public toAlarmConfig(): MetricAlarmConfig {
+    const stat = parseStatistic(this.statistic);
+    const dims = this.dimensionsAsList();
+
+    return {
+      dimensions: dims.length > 0 ? dims : undefined,
+      namespace: this.namespace,
+      metricName: this.metricName,
+      period: this.period.toSeconds(),
+      statistic: stat.type === 'simple' ? stat.statistic : undefined,
+      extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
+      unit: this.unit
+    };
+  }
+
+  public toGraphConfig(): MetricGraphConfig {
+    return {
+      dimensions: this.dimensionsAsList(),
+      namespace: this.namespace,
+      metricName: this.metricName,
+      period: this.period.toSeconds(),
+      statistic: this.statistic,
+      unit: this.unit,
+      color: this.color,
+      label: this.label,
+    };
+  }
+
+  public toString() {
+    return this.label || this.metricName;
+  }
+
   /**
    * Return the dimensions of this Metric as a list of Dimension.
    */
-  public dimensionsAsList(): Dimension[] {
+  private dimensionsAsList(): Dimension[] {
     const dims = this.dimensions;
 
     if (dims === undefined) {
@@ -183,128 +224,15 @@ export class Metric {
 }
 
 /**
- * Metric dimension
- */
-export interface Dimension {
-  /**
-   * Name of the dimension
-   */
-  readonly name: string;
-
-  /**
-   * Value of the dimension
-   */
-  readonly value: any;
-}
-
-/**
- * Statistic to use over the aggregation period
- */
-export enum Statistic {
-  SampleCount = 'SampleCount',
-  Average = 'Average',
-  Sum = 'Sum',
-  Minimum = 'Minimum',
-  Maximum = 'Maximum',
-}
-
-/**
- * Unit for metric
- */
-export enum Unit {
-  Seconds = 'Seconds',
-  Microseconds = 'Microseconds',
-  Milliseconds = 'Milliseconds',
-  Bytes_ = 'Bytes',
-  Kilobytes = 'Kilobytes',
-  Megabytes = 'Megabytes',
-  Gigabytes = 'Gigabytes',
-  Terabytes = 'Terabytes',
-  Bits = 'Bits',
-  Kilobits = 'Kilobits',
-  Megabits = 'Megabits',
-  Gigabits = 'Gigabits',
-  Terabits = 'Terabits',
-  Percent = 'Percent',
-  Count = 'Count',
-  BytesPerSecond = 'Bytes/Second',
-  KilobytesPerSecond = 'Kilobytes/Second',
-  MegabytesPerSecond = 'Megabytes/Second',
-  GigabytesPerSecond = 'Gigabytes/Second',
-  TerabytesPerSecond = 'Terabytes/Second',
-  BitsPerSecond = 'Bits/Second',
-  KilobitsPerSecond = 'Kilobits/Second',
-  MegabitsPerSecond = 'Megabits/Second',
-  GigabitsPerSecond = 'Gigabits/Second',
-  TerabitsPerSecond = 'Terabits/Second',
-  CountPerSecond = 'Count/Second',
-  None = 'None'
-}
-
-/**
- * Properties of a metric that can be changed
- */
-export interface MetricOptions {
-  /**
-   * Dimensions of the metric
-   *
-   * @default No dimensions
-   */
-  readonly dimensions?: DimensionHash;
-
-  /**
-   * The period over which the specified statistic is applied.
-   *
-   * Specify time in seconds, in multiples of 60.
-   *
-   * @default 300
-   */
-  readonly periodSec?: number;
-
-  /**
-   * What function to use for aggregating.
-   *
-   * Can be one of the following:
-   *
-   * - "Minimum" | "min"
-   * - "Maximum" | "max"
-   * - "Average" | "avg"
-   * - "Sum" | "sum"
-   * - "SampleCount | "n"
-   * - "pNN.NN"
-   *
-   * @default Average
-   */
-  readonly statistic?: string;
-
-  /**
-   * Unit for the metric that is associated with the alarm
-   */
-  readonly unit?: Unit;
-
-  /**
-   * Label for this metric when added to a Graph in a Dashboard
-   */
-  readonly label?: string;
-
-  /**
-   * Color for this metric when added to a Graph in a Dashboard
-   */
-  readonly color?: string;
-}
-
-/**
  * Properties needed to make an alarm from a metric
  */
-export interface MetricAlarmProps {
+export interface CreateAlarmOptions {
   /**
    * The period over which the specified statistic is applied.
    *
-   * Specify time in seconds, in multiples of 60.
-   *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly periodSec?: number;
+  readonly period?: cdk.Duration;
 
   /**
    * What function to use for aggregating.
@@ -357,6 +285,8 @@ export interface MetricAlarmProps {
    * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
    *
    * Used only for alarms that are based on percentiles.
+   *
+   * @default - Not configured.
    */
   readonly evaluateLowSampleCountPercentile?: string;
 

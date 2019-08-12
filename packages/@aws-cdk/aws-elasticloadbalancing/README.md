@@ -1,6 +1,15 @@
-## AWS Elastic Load Balancing Construct Library
+## Amazon Elastic Load Balancing Construct Library
+<!--BEGIN STABILITY BANNER-->
 
-The `@aws-cdk/aws-ec2` package provides constructs for configuring
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
+
+The `@aws-cdk/aws-elasticloadbalancing` package provides constructs for configuring
 classic load balancers.
 
 ### Configuring a Load Balancer
@@ -27,7 +36,7 @@ lb.addListener({
 The load balancer allows all connections by default. If you want to change that,
 pass the `allowConnectionsFrom` property while setting up the listener:
 
-```
+```ts
 lb.addListener({
     externalPort: 80,
     allowConnectionsFrom: [mySecurityGroup]

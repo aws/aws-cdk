@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda-event-sources",
-  "version": "0.30.0",
+  "version": "1.3.0",
   "description": "Event sources for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,16 +11,17 @@
         "package": "software.amazon.awscdk.services.lambda.eventsources",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda-event-sources"
+          "artifactId": "lambda-event-sources",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Lambda.EventSources",
         "packageId": "Amazon.CDK.AWS.Lambda.EventSources",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-lambda-event-sources",
         "module": "aws_cdk.aws_lambda_event_sources"
@@ -29,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-lambda-event-sources"
   },
   "scripts": {
@@ -40,7 +41,9 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "keywords": [
     "aws",
@@ -55,37 +58,42 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cdk-integ-tools": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^1.3.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^0.30.0",
-    "@aws-cdk/aws-dynamodb": "^0.30.0",
-    "@aws-cdk/aws-events": "^0.30.0",
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/aws-kinesis": "^0.30.0",
-    "@aws-cdk/aws-lambda": "^0.30.0",
-    "@aws-cdk/aws-s3": "^0.30.0",
-    "@aws-cdk/aws-sns": "^0.30.0",
-    "@aws-cdk/aws-sqs": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-apigateway": "^1.3.0",
+    "@aws-cdk/aws-dynamodb": "^1.3.0",
+    "@aws-cdk/aws-events": "^1.3.0",
+    "@aws-cdk/aws-iam": "^1.3.0",
+    "@aws-cdk/aws-kinesis": "^1.3.0",
+    "@aws-cdk/aws-lambda": "^1.3.0",
+    "@aws-cdk/aws-s3": "^1.3.0",
+    "@aws-cdk/aws-s3-notifications": "^1.3.0",
+    "@aws-cdk/aws-sns": "^1.3.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.3.0",
+    "@aws-cdk/aws-sqs": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-apigateway": "^0.30.0",
-    "@aws-cdk/aws-dynamodb": "^0.30.0",
-    "@aws-cdk/aws-events": "^0.30.0",
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/aws-kinesis": "^0.30.0",
-    "@aws-cdk/aws-lambda": "^0.30.0",
-    "@aws-cdk/aws-s3": "^0.30.0",
-    "@aws-cdk/aws-sns": "^0.30.0",
-    "@aws-cdk/aws-sqs": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-apigateway": "^1.3.0",
+    "@aws-cdk/aws-dynamodb": "^1.3.0",
+    "@aws-cdk/aws-events": "^1.3.0",
+    "@aws-cdk/aws-iam": "^1.3.0",
+    "@aws-cdk/aws-kinesis": "^1.3.0",
+    "@aws-cdk/aws-lambda": "^1.3.0",
+    "@aws-cdk/aws-s3": "^1.3.0",
+    "@aws-cdk/aws-s3-notifications": "^1.3.0",
+    "@aws-cdk/aws-sns": "^1.3.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.3.0",
+    "@aws-cdk/aws-sqs": "^1.3.0",
+    "@aws-cdk/core": "^1.3.0"
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "stable"
 }

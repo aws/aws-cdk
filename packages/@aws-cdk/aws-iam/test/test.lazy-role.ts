@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import nodeunit = require('nodeunit');
 import iam = require('../lib');
 
@@ -52,7 +52,7 @@ export = nodeunit.testCase({
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(role.roleName),
+    test.deepEqual(stack.resolve(role.roleName),
                    { Ref: 'Lazy399F7F48'});
     test.done();
   }

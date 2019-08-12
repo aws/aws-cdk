@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { Group } from '../lib';
+import cdk = require('@aws-cdk/core');
+import { Group, ManagedPolicy } from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string) {
@@ -7,7 +7,7 @@ export class ExampleConstruct extends cdk.Construct {
 
     /// !show
     const group = new Group(this, 'MyGroup');
-    group.attachManagedPolicy('arn:aws:iam::aws:policy/AdministratorAccess');
+    group.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('policy/AdministratorAccess'));
     /// !hide
   }
 }

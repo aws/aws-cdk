@@ -3,6 +3,18 @@ import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
 /**
+ * Customize the SNS Topic Event Target
+ */
+export interface SnsTopicProps {
+  /**
+   * The message to send to the topic
+   *
+   * @default the entire CloudWatch event
+   */
+  readonly message?: events.RuleTargetInput;
+}
+
+/**
  * Use an SNS topic as a target for AWS CloudWatch event rules.
  *
  * @example
@@ -12,9 +24,8 @@ import sns = require('@aws-cdk/aws-sns');
  *    repository.onCommit(new targets.SnsTopic(topic));
  *
  */
-export class SnsTopic implements events.IEventRuleTarget {
-  constructor(public readonly topic: sns.ITopic) {
-
+export class SnsTopic implements events.IRuleTarget {
+  constructor(public readonly topic: sns.ITopic, private readonly props: SnsTopicProps = {}) {
   }
 
   /**
@@ -23,13 +34,15 @@ export class SnsTopic implements events.IEventRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
    */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
+  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // deduplicated automatically
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 
     return {
-      id: this.topic.node.id,
+      id: '',
       arn: this.topic.topicArn,
+      input: this.props.message,
+      targetResource: this.topic,
     };
   }
 }
