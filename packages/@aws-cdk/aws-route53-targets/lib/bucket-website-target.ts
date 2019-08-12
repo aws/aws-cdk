@@ -1,8 +1,7 @@
 import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
-import regionInfo = require('@aws-cdk/region-info');
 import {Stack, Token} from '@aws-cdk/core';
-
+import regionInfo = require('@aws-cdk/region-info');
 
 /**
  * Use a S3 as an alias record target
