@@ -144,6 +144,10 @@ export class InlineCode extends Code {
   constructor(private code: string) {
     super();
 
+    if (code.length === 0) {
+      throw new Error(`Lambda inline code cannot be empty`);
+    }
+
     if (code.length > 4096) {
       throw new Error("Lambda source is too large, must be <= 4096 but is " + code.length);
     }

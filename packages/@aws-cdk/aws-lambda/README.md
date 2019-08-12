@@ -13,11 +13,12 @@ This construct library allows you to define AWS Lambda Functions.
 
 ```ts
 import lambda = require('@aws-cdk/aws-lambda');
+import path = require('path');
 
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
-  code: lambda.Code.fromAsset('./lambda-handler'),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 ```
 
@@ -41,6 +42,12 @@ from the local directory `my-lambda-handler` to it:
 When deploying a stack that contains this code, the directory will be zip
 archived and then uploaded to an S3 bucket, then the exact location of the S3
 objects will be passed when the stack is deployed.
+
+During synthesis, the CDK expects to find a directory on disk at the asset
+directory specified. Note that we are referencing the asset directory relatively
+to our CDK project directory. This is especially important when we want to share
+this construct through a library. Different programming languages will have
+different techniques for bundling resources into libraries.
 
 ### Layers
 
