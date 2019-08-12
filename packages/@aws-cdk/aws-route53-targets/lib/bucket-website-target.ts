@@ -13,9 +13,12 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
     const {region} = Stack.of(this.bucket.stack);
 
-    // FIXME
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unresolved region token: ${region}`);
+      throw new Error([
+        'Cannot use an S3 record alias in region-agnostic stacks.',
+        'You must specify a specific region when you define the stack',
+        '(see https://docs.aws.amazon.com/cdk/latest/guide/environments.html)'
+      ].join(' '));
     }
 
     const hostedZoneId = regionInfo.Fact.find(region, regionInfo.FactName.S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID);
