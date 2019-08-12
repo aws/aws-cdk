@@ -97,6 +97,11 @@ export class FactName {
   public static readonly S3_STATIC_WEBSITE_ENDPOINT = 's3-static-website:endpoint';
 
   /**
+   * The endpoint used for aliasing S3 static websites in Route 53
+   */
+  public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID = 's3-static-website:route-53-hosted-zone-id';
+
+  /**
    * The name of the regional service principal for a given service.
    *
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).
