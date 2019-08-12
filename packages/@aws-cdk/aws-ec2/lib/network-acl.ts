@@ -1,8 +1,6 @@
-import {  Construct, IResource,  Resource } from '@aws-cdk/core';
-import { CfnNetworkAcl  } from './ec2.generated';
+import { Lazy, Construct, IResource,  Resource } from '@aws-cdk/core';
+import { CfnNetworkAcl, CfnNetworkAclEntry  } from './ec2.generated';
 import { IVpc } from './vpc';
-
-
 
 export interface INetworkACL extends IResource {
   /**
@@ -11,7 +9,6 @@ export interface INetworkACL extends IResource {
    */
   readonly NetworkAclId : string;
 }
-
 
 /**
  * A NetworkAclBase that is not created in this template
@@ -79,7 +76,6 @@ export class NetworkAcl extends NetworkAclBase {
   }
 }
 
-
 export interface icmp{
   /**
    * The Internet Control Message Protocol (ICMP) code. You can use -1 to specify all ICMP 
@@ -94,6 +90,7 @@ export interface icmp{
   readonly type?: number
 }
 
+
 export interface portRange{
   /**
    *The first port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
@@ -105,7 +102,7 @@ export interface portRange{
   readonly to?: number
 }
 
-export interface NetworkAclEntry {
+export interface INetworkAclEntry {
   /**
    * The IPv4 CIDR range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). 
    * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
@@ -131,7 +128,12 @@ export interface NetworkAclEntry {
    * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property. 
    */
   readonly ipv6CidrBlock?: string
-  
+
+  /**
+   * The ID of the network ACL.
+   */
+  readonly networkAclId: string
+
   /**
    * The range of port numbers for the UDP/TCP protocol. 
    * Conditional required if specifying 6 (TCP) or 17 (UDP) for the protocol parameter.
@@ -164,4 +166,136 @@ export interface NetworkAclEntry {
 
 }
 
+abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry {
+ 
+  public abstract readonly  cidrBlock: string;
+  public abstract readonly  egress: boolean;
+  public abstract readonly  icmp?: icmp;
+  public abstract readonly  ipv6CidrBlock?: string;
+  public abstract readonly  networkAclId: string;
+  public abstract readonly  portRange?: portRange;
+  public abstract readonly  protocol?: string;
+  public abstract readonly  ruleAction:string;
+  public abstract readonly  ruleNumber: number;
+  
+  constructor(scope: Construct, id: string, props?: ResourceProps) {
+    super(scope, id, props);
+
+  }
+
+  public get uniqueId() {
+    return this.node.uniqueId;
+  }
+}
+
+export interface NetworkAclEntryProps {
+ /**
+   * The IPv4 CIDR range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). 
+   * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
+   */
+  readonly cidrBlock: string;
+
+  /**
+   * Whether this rule applies to egress traffic from the subnet (true) or ingress traffic to the subnet (false).
+   * By default, AWS CloudFormation specifies false.
+   * 
+   * @default false
+   */
+  readonly egress: boolean;
+
+  /**
+   * The Internet Control Message Protocol (ICMP) code and type. 
+   * Requirement is conditional: Required if specifying 1 (ICMP) for the protocol parameter.
+   */
+  readonly icmp?: icmp
+
+  /**
+   * The IPv6 network range to allow or deny, in CIDR notation. 
+   * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property. 
+   */
+  readonly ipv6CidrBlock?: string
+
+  /**
+   * The ID of the network ACL.
+   */
+  readonly networkAcl: INetworkACL
+
+  /**
+   * The range of port numbers for the UDP/TCP protocol. 
+   * Conditional required if specifying 6 (TCP) or 17 (UDP) for the protocol parameter.
+   */
+  readonly portRange?: portRange
+
+  /**
+   * The protocol number. A value of "-1" means all protocols. If you specify "-1"
+   * or a protocol number other than "6" (TCP), "17" (UDP), or "1" (ICMP), traffic
+   * on all ports is allowed, regardless of any ports or ICMP types or codes that
+   * you specify. If you specify protocol "58" (ICMPv6) and specify an IPv4 CIDR 
+   * block, traffic for all ICMP types and codes allowed, regardless of any that 
+   * you specify. If you specify protocol "58" (ICMPv6) and specify an IPv6 CIDR 
+   * block, you must specify an ICMP type and code.
+   *
+   * @default 17
+   */
+  readonly protocol?: string;
+
+  /**
+   * Whether to allow or deny traffic that matches the rule; valid values are "allow" or "deny".
+   */
+  readonly ruleAction:string
+
+  /**
+   * Rule number to assign to the entry, such as 100. ACL entries are processed in ascending order by rule number.
+   * Entries can't use the same rule number unless one is an egress rule and the other is an ingress rule.
+   */
+  readonly ruleNumber: number
+}
+
+export class NetworkAclEntry extends NetworkAclEntryBase{
+ 
+  public readonly  cidrBlock: string;
+  public readonly  egress: boolean;
+  public readonly  icmp?: icmp;
+  public readonly  ipv6CidrBlock?: string;
+  public readonly  networkAclId: string;
+  public readonly  portRange?: portRange;
+  public readonly  protocol?: string;
+  public readonly  ruleAction:string;
+  public readonly  ruleNumber: number;
+  
+  private readonly NetworkAclEntry: CfnNetworkAclEntry;
+
+  constructor(scope: Construct, id: string, props?: NetworkAclEntryProps) {
+    super(scope, id, {
+      physicalName: cdk.PhysicalName.GENERATE_IF_NEEDED
+    });
+       
+    this.cidrBlock = props.cidrBlock;
+    this.egress = props.egress;
+    this.icmp = props.icmp;
+    this.ipv6CidrBlock = props.ipv6CidrBlock;
+    this.portRange = props.portRange;
+    this.protocol = props.protocol;
+    this.ruleAction = props.ruleAction;
+    this.ruleNumber = props.ruleNumber;
+
+    this.NetworkAclEntry = new CfnNetworkAclEntry(this, 'Resource', {
+      NetworkAclId: props.networkAcl.NetworkAclId,
+      RuleNumber: props.ruleNumber,
+      Protocol: props.protocol,
+      RuleAction: props.ruleAction,
+      Egress: props.egress,
+      CidrBlock: props.cidrBlock,
+      Icmp: props.icmp,
+      PortRange: props.portRange
+    });
+
+    this.networkAclId = this.NetworkAclEntry.attrNetworkAclId;
+    
+  }
+
+  public get uniqueId() {
+    return this.node.uniqueId;
+  }
+}
 
