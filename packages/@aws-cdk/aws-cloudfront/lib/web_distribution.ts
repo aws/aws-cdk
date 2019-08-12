@@ -481,6 +481,9 @@ interface BehaviorWithOrigin extends Behavior {
   readonly targetOriginId: string;
 }
 
+/**
+ * @resource AWS::CloudFront::Distribution
+ */
 abstract class CloudFrontWebDistributionBase extends cdk.Resource implements IDistribution {
   public abstract readonly distributionId: string;
   public abstract readonly domainName: string;
