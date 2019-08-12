@@ -30,7 +30,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
     instanceProps: {
         instanceType: ec2.InstanceType.of(InstanceClass.Burstable2, InstanceSize.Small),
         vpcSubnets: {
-            subnetType: ec2.SubnetType.Public,
+            subnetType: ec2.SubnetType.PUBLIC,
         },
         vpc
     }
