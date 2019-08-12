@@ -219,7 +219,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
    *
-   * @default Uses the block device mapping of the AMI
+   * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
 }
