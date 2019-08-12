@@ -1,7 +1,7 @@
 import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import {Stack, Token} from '@aws-cdk/core';
-import regionInfo = require('@aws-cdk/region-info');
+import {RegionInfo} from '@aws-cdk/region-info';
 
 /**
  * Use a S3 as an alias record target
@@ -21,7 +21,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
       ].join(' '));
     }
 
-    const hostedZoneId = regionInfo.Fact.find(region, regionInfo.FactName.S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID);
+    const hostedZoneId = RegionInfo.get(region).s3StaticWebsiteHostedZoneId;
 
     if (!hostedZoneId) {
       throw new Error(`Bucket website target is not supported for the "${region}" region`);
