@@ -929,7 +929,6 @@ export interface EbsDeviceOptionsBase {
   readonly deleteOnTermination?: boolean;
 
   /**
-   *
    * The number of I/O operations per second (IOPS) to provision for the volume.
    *
    * Must only be set for {@link volumeType}: {@link EbsDeviceVolumeType.IO1}
