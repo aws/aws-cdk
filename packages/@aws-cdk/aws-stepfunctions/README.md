@@ -132,6 +132,7 @@ couple of the tasks available are:
   depending on the type of capacity.
 * `tasks.SagemakerTrainTask` -- run a SageMaker training job
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
+* `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
 
 Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
@@ -299,6 +300,32 @@ const transformJob = new tasks.SagemakerTransformTask(
 
 const task = new sfn.Task(this, 'Batch Inference', {
     task: transformJob
+});
+```
+
+#### Step Functions example
+
+```ts
+// Define a state machine with one Pass state
+const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+});
+
+// Include the state machine in a Task state with callback pattern
+const task = new sfn.Task(stack, 'ChildTask', {
+  task: new tasks.ExecuteStateMachine(child, {
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    input: {
+      token: sfn.Context.taskToken,
+      foo: 'bar'
+    },
+    name: 'MyExecutionName'
+  })
+});
+
+// Define a second state machine with the Task state above
+new sfn.StateMachine(stack, 'ParentStateMachine', {
+  definition: task
 });
 ```
 
