@@ -14,12 +14,12 @@ export abstract class Code {
     return new S3Code(bucket, key, objectVersion);
   }
 
-  // /**
-  //  * @deprecated use `fromBucket`
-  //  */
-  // public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
-  //   return this.fromBucket(bucket, key, objectVersion);
-  // }
+  /**
+   * @deprecated use `fromBucket`
+   */
+  public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+    return this.fromBucket(bucket, key, objectVersion);
+  }
 
   /**
    * @returns `LambdaInlineCode` with inline code.
@@ -29,12 +29,12 @@ export abstract class Code {
     return new InlineCode(code);
   }
 
-  // /**
-  //  * @deprecated use `fromInline`
-  //  */
-  // public static inline(code: string): InlineCode {
-  //   return this.fromInline(code);
-  // }
+  /**
+   * @deprecated use `fromInline`
+   */
+  public static inline(code: string): InlineCode {
+    return this.fromInline(code);
+  }
 
   /**
    * Loads the function code from a local disk asset.
@@ -44,12 +44,12 @@ export abstract class Code {
     return new AssetCode(path);
   }
 
-  // /**
-  //  * @deprecated use `fromAsset`
-  //  */
-  // public static asset(path: string): AssetCode {
-  //   return this.fromAsset(path);
-  // }
+  /**
+   * @deprecated use `fromAsset`
+   */
+  public static asset(path: string): AssetCode {
+    return this.fromAsset(path);
+  }
 
   /**
    * Creates a new Lambda source defined using CloudFormation parameters.
@@ -61,12 +61,12 @@ export abstract class Code {
     return new CfnParametersCode(props);
   }
 
-  // /**
-  //  * @deprecated use `fromCfnParmaeters`
-  //  */
-  // public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
-  //   return this.fromCfnParameters(props);
-  // }
+  /**
+   * @deprecated use `fromCfnParmaeters`
+   */
+  public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
+    return this.fromCfnParameters(props);
+  }
 
   /**
    * Determines whether this Code is inline code or not.
