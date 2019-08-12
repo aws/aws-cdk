@@ -1003,7 +1003,7 @@ export class BlockDeviceVolume  {
     return new this(undefined, `ephemeral${volumeIndex}`);
   }
 
-  private constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
+  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
     if (ebsDevice) {
       const {iops, volumeType} = ebsDevice;
 
