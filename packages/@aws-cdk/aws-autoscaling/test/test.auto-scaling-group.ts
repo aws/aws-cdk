@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
+import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart} from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
@@ -662,6 +662,171 @@ export = {
 
     // THEN
     test.notEqual(asg.node.defaultChild, undefined);
+
+    test.done();
+  },
+
+  'can set blockDeviceMappings'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        noDevice: false,
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+          iops: 5000,
+        })
+      }, {
+        deviceName: 'ebs-snapshot',
+        noDevice: true,
+        volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+          volumeSize: 500,
+          deleteOnTermination: false,
+          volumeType: autoscaling.EbsDeviceVolumeType.SC1,
+        })
+      }, {
+        deviceName: 'ephemeral',
+        volume: autoscaling.BlockDeviceVolume.ephemeral(0)
+      }]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      BlockDeviceMappings: [
+        {
+          DeviceName: "ebs",
+          Ebs: {
+            DeleteOnTermination: true,
+            Encrypted: true,
+            Iops: 5000,
+            VolumeSize: 15,
+            VolumeType: "io1"
+          },
+          NoDevice: false
+        },
+        {
+          DeviceName: "ebs-snapshot",
+          Ebs: {
+            DeleteOnTermination: false,
+            SnapshotId: "snapshot-id",
+            VolumeSize: 500,
+            VolumeType: "sc1"
+          },
+          NoDevice: true
+        },
+        {
+          DeviceName: "ephemeral",
+          VirtualName: "ephemeral0"
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'throws if ephemeral volumeIndex < 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ephemeral',
+          volume: autoscaling.BlockDeviceVolume.ephemeral(-1)
+        }]
+      });
+    }, /volumeIndex must be a number starting from 0/);
+
+    test.done();
+  },
+
+  'throws if volumeType === IO1 without iops'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ebs',
+          noDevice: false,
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+          })
+        }]
+      });
+    }, /ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
+
+    test.done();
+  },
+
+  'throws if iops without volumeType'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ebs',
+          noDevice: false,
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            iops: 5000,
+          })
+        }]
+      });
+    }, /iops will be ignored without volumeType: EbsDeviceVolumeType.IO1/);
+
+    test.done();
+  },
+
+  'throws if iops and volumeType !== IO1'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ebs',
+          noDevice: false,
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: autoscaling.EbsDeviceVolumeType.GP2,
+            iops: 5000,
+          })
+        }]
+      });
+    }, /iops will be ignored without volumeType: EbsDeviceVolumeType.IO1/);
 
     test.done();
   },
