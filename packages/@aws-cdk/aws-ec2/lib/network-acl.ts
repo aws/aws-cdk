@@ -14,9 +14,9 @@ export interface INetworkACL extends IResource {
 
 
 /**
- * A NetworkACLBase that is not created in this template
+ * A NetworkAclBase that is not created in this template
  */
-abstract class NetworkACLBase extends Resource implements INetworkACL {
+abstract class NetworkAclBase extends Resource implements INetworkACL {
  
   public abstract readonly NetworkAclId: string;
   
@@ -30,24 +30,24 @@ abstract class NetworkACLBase extends Resource implements INetworkACL {
   }
 }
 
-export interface NetworkACLProps {
+export interface NetworkAclProps {
   /**
-   * The VPC in which to create the security group.
+   * The VPC in which to create the NetworkACL.
    */
   readonly vpc: IVpc;
 }
 
-export class NetworkACL extends NetworkACLBase {
+export class NetworkAcl extends NetworkAclBase {
 
   /**
-   * The ID of the security group
+   * The ID of the NetworkACL
    *
    * @attribute
    */
   public readonly NetworkAclId: string;
 
   /**
-   * The VPC ID this NetworkACL.
+   * The VPC ID for this NetworkACL
    *
    * @attribute
    */
