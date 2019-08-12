@@ -377,12 +377,6 @@ export = {
             ],
             "Effect": "Allow",
             "Principal": "*",
-            "Resource": {
-              "Fn::GetAtt": [
-                "TestHarnessRepoAA7E9724",
-                "Arn",
-              ]
-            },
           }
         ],
         "Version": "2012-10-17"
