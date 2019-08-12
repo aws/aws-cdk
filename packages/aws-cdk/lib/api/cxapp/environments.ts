@@ -49,6 +49,7 @@ export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environme
   }
 
   const ret = new Array<cxapi.Environment>();
+
   for (const spec of envSpecs) {
     const parts = spec.replace(/^aws:\/\//, '').split('/');
     if (parts.length !== 2) {
