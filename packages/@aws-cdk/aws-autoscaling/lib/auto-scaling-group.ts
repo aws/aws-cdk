@@ -924,7 +924,7 @@ export interface EbsDeviceOptionsBase {
   /**
    * Indicates whether to delete the volume when the instance is terminated.
    *
-   * @default true for Amazon EC2 Auto Scaling
+   * @default - true for Amazon EC2 Auto Scaling, false otherwise (e.g. EBS)
    */
   readonly deleteOnTermination?: boolean;
 
