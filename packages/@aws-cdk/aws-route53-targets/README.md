@@ -25,6 +25,13 @@ This library contains Route53 Alias Record targets for:
     target: route53.RecordTarget.fromAlias(new alias.CloudFrontTarget(distribution)),
   });
   ```
+* S3 Bucket WebSite
+  ```ts
+  new route53.ARecord(this, 'AliasRecord', {
+    zone,
+    target: route53.RecordTarget.fromAlias(new alias.BucketWebsiteTarget(bucket)),
+  });
+  ```
 * ELBv2 load balancers
   ```ts
   new route53.ARecord(this, 'AliasRecord', {
