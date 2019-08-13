@@ -209,7 +209,7 @@ export class Settings {
       toolkitStackName: argv.toolkitStackName,
       toolkitBucket: {
         bucketName: argv.toolkitBucketName,
-        kmsKeyId: argv.toolkitBucketKmsKeyId,
+        kmsKeyId: argv.bootstrapKmsKeyId,
       },
       versionReporting: argv.versionReporting,
       staging: argv.staging,
