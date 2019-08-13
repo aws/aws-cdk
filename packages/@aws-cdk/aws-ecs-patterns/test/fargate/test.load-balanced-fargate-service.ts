@@ -212,8 +212,7 @@ export = {
     });
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
-    console.log(serviceTaskDefinition);
-    test.deepEqual(serviceTaskDefinition.Properties.ServiceName, 'bob');
+    test.deepEqual(serviceTaskDefinition.Properties.HealthCheckGracePeriodSeconds, 600);
     test.done();
   },
 
