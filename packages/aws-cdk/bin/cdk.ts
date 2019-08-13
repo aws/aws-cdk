@@ -51,7 +51,7 @@ async function parseCommandLineArguments() {
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
-      .option('toolkit-bucket-name', { type: 'string', alias: 'b', desc: 'The name of the CDK toolkit bucket', default: undefined })
+      .option('toolkit-bucket-name', { type: 'string', alias: ['b', 'bootstrap-bucket-name'], desc: 'The name of the CDK toolkit bucket', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
