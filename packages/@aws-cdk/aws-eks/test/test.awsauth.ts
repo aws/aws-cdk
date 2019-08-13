@@ -1,20 +1,17 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
-import { testFixture } from './util';
+import { testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
 
 export = {
   'empty aws-auth'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const vpc = new ec2.Vpc(stack, 'vpc');
-    const cluster = new Cluster(stack, 'cluster', { vpc });
+    const { stack } = testFixtureNoVpc();
+    const cluster = new Cluster(stack, 'cluster');
 
     // WHEN
     new AwsAuth(stack, 'AwsAuth', { cluster });
@@ -33,8 +30,8 @@ export = {
 
   'addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap'(test: Test) {
     // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    const { stack } = testFixtureNoVpc();
+    const cluster = new Cluster(stack, 'Cluster');
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
     const user = new iam.User(stack, 'user');
 
@@ -54,6 +51,13 @@ export = {
           "",
           [
             "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "ClusterDefaultCapacityInstanceRole3E209969",
+                "Arn"
+              ]
+            },
+            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
             {
               "Fn::GetAtt": [
                 "roleC7B7E775",
@@ -96,7 +100,7 @@ export = {
         ]
       }
     }));
-    test.done();
-  },
 
+    test.done();
+  }
 };

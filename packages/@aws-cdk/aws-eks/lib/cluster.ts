@@ -13,6 +13,10 @@ import { maxPodsForInstanceType } from './instance-data';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 
+// defaults are based on https://eksctl.io
+const DEFAULT_CAPACITY_COUNT = 2;
+const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
+
 /**
  * An EKS cluster
  */
@@ -172,6 +176,26 @@ export interface ClusterProps {
    * @default true The cluster can be managed by the AWS CDK application.
    */
   readonly kubectlEnabled?: boolean;
+
+  /**
+   * Number of instances to allocate as an initial capacity for this cluster.
+   * Instance type can be configured through `defaultCapacityInstanceType`,
+   * which defaults to `m5.large`.
+   *
+   * Use `cluster.addCapacity` to add additional customized capacity. Set this
+   * to `0` is you wish to avoid the initial capacity allocation.
+   *
+   * @default 2
+   */
+  readonly defaultCapacity?: number;
+
+  /**
+   * The instance type to use for the default capacity. This will only be taken
+   * into account if `defaultCapacity` is > 0.
+   *
+   * @default m5.large
+   */
+  readonly defaultCapacityInstance?: ec2.InstanceType;
 }
 
 /**
@@ -248,6 +272,12 @@ export class Cluster extends Resource implements ICluster {
    * @internal
    */
   public readonly _k8sResourceHandler?: lambda.Function;
+
+  /**
+   * The auto scaling group that hosts the default capacity for this cluster.
+   * This will be `undefined` if the default capacity is set to 0.
+   */
+  public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
 
   /**
    * The IAM role that was used to create this cluster. This role is
@@ -346,6 +376,13 @@ export class Cluster extends Resource implements ICluster {
       }
 
       this.awsAuth.addMastersRole(props.mastersRole);
+    }
+
+    // allocate default capacity if non-zero (or default).
+    const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    if (desiredCapacity > 0) {
+      const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
+      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
     }
   }
 

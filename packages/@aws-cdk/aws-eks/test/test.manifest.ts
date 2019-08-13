@@ -1,17 +1,15 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Vpc } from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource } from '../lib';
+import { testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
 
 export = {
   'basic usage'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'vpc');
-    const cluster = new Cluster(stack, 'cluster', { vpc });
+    const { stack } = testFixtureNoVpc();
+    const cluster = new Cluster(stack, 'cluster');
 
     const manifest = [
       {

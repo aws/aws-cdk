@@ -38,6 +38,7 @@ class ClusterStack extends DevelopmentStack {
     // define the cluster. kubectl is enabled by default.
     this.cluster = new Cluster(this, 'cluster22', {
       vpc: props.vpc,
+      defaultCapacity: 0,
     });
 
     // define an IAM role assumable by anyone in the account and map it to the k8s
