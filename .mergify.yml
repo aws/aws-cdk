@@ -24,7 +24,7 @@ pull_request_rules:
   - name: comment checklist
     actions:
       label:
-        add: automerge-enabled
+        add: [ automerge-enabled ]
       comment:
         message: |
           ### Pull Request Checklist
