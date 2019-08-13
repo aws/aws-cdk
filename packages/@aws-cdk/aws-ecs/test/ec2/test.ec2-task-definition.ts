@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
+import { Repository } from '@aws-cdk/aws-ecr';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -51,7 +52,6 @@ export = {
         memoryLimitMiB: 512 // add validation?
       });
 
-      // TODO test other containerDefinition methods
       container.addPortMappings({
         containerPort: 3000
       });
@@ -61,6 +61,16 @@ export = {
         name: ecs.UlimitName.RSS,
         softLimit: 128
       });
+
+      container.addVolumesFrom({
+        sourceContainer: "foo",
+        readOnly: true
+      });
+
+      container.addToExecutionPolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['ecs:*'],
+      }));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
@@ -75,11 +85,105 @@ export = {
             HostPort: 0,
             Protocol: Protocol.TCP
           }],
-          Ulimits: [{
-            HardLimit: 128,
-            Name: "rss",
-            SoftLimit: 128
-          }],
+          Ulimits: [
+            {
+              HardLimit: 128,
+              Name: "rss",
+              SoftLimit: 128
+            }
+          ],
+          VolumesFrom: [
+            {
+              ReadOnly: true,
+              SourceContainer: "foo"
+            }
+          ]
+        }],
+      }));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: "ecs:*",
+              Effect: "Allow",
+              Resource: "*"
+            }
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    "correctly sets containers from ECR repository"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, "myECRImage")),
+        memoryLimitMiB: 512
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+        Family: "Ec2TaskDef",
+        ContainerDefinitions: [{
+          Essential: true,
+          Memory: 512,
+          Image: {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    4,
+                    {
+                      "Fn::Split": [
+                        ":",
+                        {
+                          "Fn::GetAtt": [
+                            "myECRImage7DEAE474",
+                            "Arn"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                ".dkr.ecr.",
+                {
+                  "Fn::Select": [
+                    3,
+                    {
+                      "Fn::Split": [
+                        ":",
+                        {
+                          "Fn::GetAtt": [
+                            "myECRImage7DEAE474",
+                            "Arn"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                ".",
+                {
+                  Ref: "AWS::URLSuffix"
+                },
+                "/",
+                {
+                  Ref: "myECRImage7DEAE474"
+                },
+                ":latest"
+              ]
+            ]
+          },
+          Name: "web"
         }],
       }));
 
@@ -205,19 +309,49 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        ContainerDefinitions: [{
-          Links: [
-            'linked1:linked',
-            'linked2'
+        ContainerDefinitions: [
+          {
+            Links: [
+              'linked1:linked',
+              'linked2'
+            ],
+            Name: "web"
+          },
+          {
+            Name: 'linked1'
+          },
+          {
+            Name: 'linked2'
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    "correctly set policy statement to the task IAM role"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      // WHEN
+      taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: ['test:SpecialName'],
+        resources: ['*']
+      }));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: "test:SpecialName",
+              Effect: "Allow",
+              Resource: "*"
+            }
           ],
-          Name: "web"
         },
-        {
-          Name: 'linked1'
-        },
-        {
-          Name: 'linked2'
-        }]
       }));
 
       test.done();
@@ -251,6 +385,35 @@ export = {
 
       test.done();
     },
+
+    "correctly set policy statement to the task execution IAM role"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      // WHEN
+      taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
+        actions: ['test:SpecialName'],
+        resources: ['*']
+      }));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: "test:SpecialName",
+              Effect: "Allow",
+              Resource: "*"
+            }
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
     "correctly sets volumes"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -357,7 +520,10 @@ export = {
         name: "scratch",
         dockerVolumeConfiguration: {
           driver: "local",
-          scope: ecs.Scope.TASK
+          scope: ecs.Scope.TASK,
+          driverOpts: {
+            key1: "value"
+          }
         }
       };
 
@@ -377,7 +543,10 @@ export = {
           Name: "scratch",
           DockerVolumeConfiguration: {
             Driver: "local",
-            Scope: 'task'
+            Scope: 'task',
+            DriverOpts: {
+              key1: "value"
+            }
           }
         }]
       }));

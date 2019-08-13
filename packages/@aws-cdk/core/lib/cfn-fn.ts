@@ -1,6 +1,7 @@
 import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
+import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
@@ -20,9 +21,9 @@ export class Fn {
    * @param attributeName The name of the resource-specific attribute whose
    * value you want. See the resource's reference page for details about the
    * attributes available for that resource type.
-   * @returns a CloudFormationToken object
+   * @returns an IResolvable object
    */
-  public static getAtt(logicalNameOfResource: string, attributeName: string): Token {
+  public static getAtt(logicalNameOfResource: string, attributeName: string): IResolvable {
     return new FnGetAtt(logicalNameOfResource, attributeName);
   }
 
@@ -637,8 +638,6 @@ class FnJoin implements IResolvable {
 
   private readonly delimiter: string;
   private readonly listOfValues: any[];
-  // Cache for the result of resolveValues() - since it otherwise would be computed several times
-  private _resolvedValues?: any[];
 
   /**
    * Creates an ``Fn::Join`` function.
@@ -682,9 +681,7 @@ class FnJoin implements IResolvable {
    * generate shorter output.
    */
   private resolveValues(context: IResolveContext) {
-    if (this._resolvedValues) { return this._resolvedValues; }
-
-    const resolvedValues = this.listOfValues.map(context.resolve);
-    return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
+    const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
+    return  minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }
