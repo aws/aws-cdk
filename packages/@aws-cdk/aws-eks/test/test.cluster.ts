@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
-import { CfnOutput } from '@aws-cdk/core';
+import { CfnOutput, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
 import { KubernetesResource } from '../lib';
@@ -30,6 +30,18 @@ export = {
       }
     }));
 
+    test.done();
+  },
+
+  'if "vpc" is not specified, vpc with default configuration will be created'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new eks.Cluster(stack, 'cluster');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::VPC'));
     test.done();
   },
 

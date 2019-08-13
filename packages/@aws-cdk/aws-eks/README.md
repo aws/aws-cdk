@@ -24,7 +24,7 @@ manifests within EKS clusters.
 This example defines an Amazon EKS cluster with a single pod:
 
 ```ts
-const cluster = new eks.Cluster(this, 'hello-eks', { vpc });
+const cluster = new eks.Cluster(this, 'hello-eks');
 
 cluster.addCapacity('default', {
   instanceType: new ec2.InstanceType('t2.medium'),
@@ -74,7 +74,6 @@ const clusterAdmin = new iam.Role(this, 'AdminRole', {
 
 // now define the cluster and map role to "masters" RBAC group
 new eks.Cluster(this, 'Cluster', {
-  vpc: vpc,
   mastersRole: clusterAdmin
 });
 ```
@@ -242,7 +241,6 @@ the cluster:
 
 ```ts
 new eks.Cluster(this, 'cluster', {
-  vpc: vpc,
   kubectlEnabled: false
 });
 ```
