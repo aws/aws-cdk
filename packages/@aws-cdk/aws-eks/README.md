@@ -73,7 +73,7 @@ To disable the default capacity, simply set `defaultCapacity` to `0`:
 
 
 ```ts
-new eks.Clsuter(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
+new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
 ```
 
 The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
