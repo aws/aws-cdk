@@ -1,10 +1,9 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
-import { testFixture, testFixtureNoVpc } from './util';
+import { testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
 

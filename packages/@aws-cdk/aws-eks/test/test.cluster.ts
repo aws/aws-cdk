@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
-import { CfnOutput, Stack } from '@aws-cdk/core';
+import { CfnOutput } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
 import { KubernetesResource } from '../lib';
