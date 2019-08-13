@@ -217,7 +217,9 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * You can use block device mappings to specify additional EBS volumes or
    * instance store volumes to attach to an instance when it is launched.
    *
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   * 
+   
+   https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
    *
    * @default - Uses the block device mapping of the AMI
    */
@@ -912,8 +914,6 @@ export interface BlockDevice {
    * If false, the device mapping will be suppressed.
    * If set to false for the root device, the instance might fail the Amazon EC2 health check.
    * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
-   *
-   * @see {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-mapping.html#cfn-as-launchconfig-blockdev-mapping-nodevice inverse of NoDevice property}
    *
    * @default true - device mapping is left untouched
    */
