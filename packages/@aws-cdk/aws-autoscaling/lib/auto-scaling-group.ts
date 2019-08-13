@@ -217,9 +217,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * You can use block device mappings to specify additional EBS volumes or
    * instance store volumes to attach to an instance when it is launched.
    *
-   * 
-   
-   https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
    *
    * @default - Uses the block device mapping of the AMI
    */
