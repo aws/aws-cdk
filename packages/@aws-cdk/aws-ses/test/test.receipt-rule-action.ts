@@ -133,7 +133,7 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline(''),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });

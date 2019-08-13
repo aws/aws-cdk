@@ -1,4 +1,5 @@
-import { Connections, IConnectable, ISecurityGroup, ISubnet, IVpc, Peer, Port, SecurityGroup  } from '@aws-cdk/aws-ec2';
+import { Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
+  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
 import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -57,6 +58,16 @@ export interface LoadBalancerProps {
    * @default true
    */
   readonly crossZone?: boolean;
+
+  /**
+   * Which subnets to deploy the load balancer
+   *
+   * Can be used to define a specific set of subnets to deploy the load balancer to.
+   * Useful multiple public or private subnets are covering the same availability zone.
+   *
+   * @default - Public subnets if internetFacing, Private subnets otherwise
+   */
+  readonly subnetSelection?: SubnetSelection;
 }
 
 /**
@@ -226,18 +237,18 @@ export class LoadBalancer extends Resource implements IConnectable {
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: ISubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
-      subnets: subnets.map(s => s.subnetId),
+      subnets: selectedSubnets.subnetIds,
       listeners: Lazy.anyValue({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: (props.crossZone === undefined || props.crossZone) ? true : false
     });
     if (props.internetFacing) {
-      this.elb.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
+      this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
     }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
@@ -425,4 +436,18 @@ function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthChec
     timeout: (healthCheck.timeout || Duration.seconds(5)).toSeconds().toString(),
     unhealthyThreshold: ifUndefined(healthCheck.unhealthyThreshold, 5).toString(),
   };
+}
+
+function loadBalancerSubnets(props: LoadBalancerProps): SelectedSubnets {
+  if (props.subnetSelection !== undefined) {
+    return props.vpc.selectSubnets(props.subnetSelection);
+  } else if (props.internetFacing) {
+    return props.vpc.selectSubnets({
+      subnetType: SubnetType.PUBLIC
+    });
+  } else {
+    return props.vpc.selectSubnets({
+      subnetType: SubnetType.PRIVATE
+    });
+  }
 }
