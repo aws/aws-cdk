@@ -76,7 +76,7 @@ export class NetworkAcl extends NetworkAclBase {
       vpcId: props.vpc.vpcId,
     });
 
-    this.networkAclId = this.networkACL.logicalId;
+    this.networkAclId = this.networkACL.ref;
     this.networkAclVpcId = this.networkACL.vpcId;
   }
 }
@@ -139,7 +139,7 @@ export interface INetworkAclEntry extends IResource {
   /**
    * The ID of the network ACL.
    */
-  readonly networkAclId: string
+  readonly networkAcl: INetworkACL
 
   /**
    * The range of port numbers for the UDP/TCP protocol.
@@ -180,7 +180,7 @@ abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry 
   public abstract readonly  egress: boolean;
   public abstract readonly  icmp?: Icmp;
   public abstract readonly  ipv6CidrBlock?: string;
-  public abstract readonly  networkAclId: string;
+  public abstract readonly  networkAcl: INetworkACL;
   public abstract readonly  portRange?: PortRange;
   public abstract readonly  protocol: number;
   public abstract readonly  ruleAction: string;
@@ -278,12 +278,11 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
   public readonly  egress: boolean;
   public readonly  icmp?: Icmp;
   public readonly  ipv6CidrBlock?: string;
-  public readonly  networkAclId: string;
+  public readonly  networkAcl: INetworkACL;
   public readonly  portRange?: PortRange;
   public readonly  protocol: number;
   public readonly  ruleAction: string;
   public readonly  ruleNumber: number;
-  private readonly networkAclEntry: CfnNetworkAclEntry;
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
     super(scope, id, {
@@ -293,14 +292,15 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
     this.cidrBlock = props.cidrBlock;
     this.egress = props.egress;
     this.icmp = props.icmp;
+    this.networkAcl = props.networkAcl;
     this.ipv6CidrBlock = props.ipv6CidrBlock;
     this.portRange = props.portRange;
     this.protocol = props.protocol;
     this.ruleAction = props.ruleAction;
     this.ruleNumber = props.ruleNumber;
 
-    this.networkAclEntry = new CfnNetworkAclEntry(this, 'Resource', {
-      networkAclId: props.networkAcl.networkAclId,
+    new CfnNetworkAclEntry(this, 'Resource', {
+      networkAclId: this.networkAcl.networkAclId,
       ruleNumber: props.ruleNumber,
       protocol: props.protocol,
       ruleAction: props.ruleAction,
@@ -310,7 +310,6 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
       portRange: props.portRange
     });
 
-    this.networkAclId = this.networkAclEntry.networkAclId;
   }
 
   public get uniqueId() {
