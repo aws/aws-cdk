@@ -88,7 +88,8 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
       desiredCount: this.desiredCount,
       taskDefinition,
       assignPublicIp: this.assignPublicIp,
-      serviceName: props.serviceName
+      serviceName: props.serviceName,
+      healthCheckGracePeriod: props.healthCheckGracePeriod,
     });
     this.addServiceAsTarget(this.service);
   }

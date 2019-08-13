@@ -198,6 +198,22 @@ export = {
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
     test.equal(serviceTaskDefinition.Properties.ServiceName, undefined);
     test.done();
-  }
+  },
+
+  'setting healthCheckGracePeriod works'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      loadBalancerType: ecsPatterns.LoadBalancerType.APPLICATION,
+      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      healthCheckGracePeriod: cdk.Duration.seconds(600),
+    });
+    // THEN
+    const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
+    test.deepEqual(serviceTaskDefinition.Properties.HealthCheckGracePeriodSeconds, 600);
+    test.done();
+  },
 
 };

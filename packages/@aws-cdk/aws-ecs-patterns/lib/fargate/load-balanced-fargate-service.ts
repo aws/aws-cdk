@@ -83,7 +83,8 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       desiredCount: this.desiredCount,
       taskDefinition,
       assignPublicIp: this.assignPublicIp,
-      serviceName: props.serviceName
+      serviceName: props.serviceName,
+      healthCheckGracePeriod: props.healthCheckGracePeriod,
     });
     this.addServiceAsTarget(this.service);
   }
