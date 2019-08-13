@@ -208,7 +208,7 @@ export class Settings {
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
       toolkitBucket: {
-        bucketName: argv.toolkitBucketName,
+        bucketName: argv.bootstrapBucketName,
         kmsKeyId: argv.bootstrapKmsKeyId,
       },
       versionReporting: argv.versionReporting,
