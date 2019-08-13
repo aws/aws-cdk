@@ -60,7 +60,7 @@
         "BooksHandlerServiceRole5B6A8847"
       ]
     },
-    "BooksHandlerApiPermissionGETbooksAB573150": {
+    "BooksHandlerApiPermissionrestapibooksexamplebooksapi4538F335GETbooks727D645E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -101,7 +101,7 @@
         }
       }
     },
-    "BooksHandlerApiPermissionTestGETbooksE0682829": {
+    "BooksHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksCC375808": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -138,7 +138,7 @@
         }
       }
     },
-    "BooksHandlerApiPermissionPOSTbooksC38F97D8": {
+    "BooksHandlerApiPermissionrestapibooksexamplebooksapi4538F335POSTbooksFDED8A87": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -179,7 +179,7 @@
         }
       }
     },
-    "BooksHandlerApiPermissionTestPOSTbooksCEEC4EF7": {
+    "BooksHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335POSTbooks4667899F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -276,7 +276,7 @@
         "BookHandlerServiceRole894768AD"
       ]
     },
-    "BookHandlerApiPermissionGETbooksbookid8BEBC7A6": {
+    "BookHandlerApiPermissionrestapibooksexamplebooksapi4538F335GETbooksbookidA10D3CE2": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -317,7 +317,7 @@
         }
       }
     },
-    "BookHandlerApiPermissionTestGETbooksbookid7E089259": {
+    "BookHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksbookidAB5191B6": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -354,7 +354,7 @@
         }
       }
     },
-    "BookHandlerApiPermissionDELETEbooksbookid56D0DC9D": {
+    "BookHandlerApiPermissionrestapibooksexamplebooksapi4538F335DELETEbooksbookidB3A85313": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -395,7 +395,7 @@
         }
       }
     },
-    "BookHandlerApiPermissionTestDELETEbooksbookid3E3975F4": {
+    "BookHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335DELETEbooksbookid9308C830": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -492,7 +492,7 @@
         "HelloServiceRole1E55EA16"
       ]
     },
-    "HelloApiPermissionANY16B11477": {
+    "HelloApiPermissionrestapibooksexamplebooksapi4538F335ANYE385693C": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -533,7 +533,7 @@
         }
       }
     },
-    "HelloApiPermissionTestANY9A757A77": {
+    "HelloApiPermissionTestrestapibooksexamplebooksapi4538F335ANY46B0DA7B": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
