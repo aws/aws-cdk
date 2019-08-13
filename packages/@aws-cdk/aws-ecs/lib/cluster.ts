@@ -20,9 +20,26 @@ export interface ClusterProps {
   readonly clusterName?: string;
 
   /**
-   * The VPC to associate with the cluster.
+   * The VPC where your ECS instances will be running or your ENIs will be deployed
+   *
+   * @default - creates a new VPC with two AZs
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * The service discovery namespace created in this cluster
+   *
+   * @default - no service discovery namespace created, you can use `addDefaultCloudMapNamespace` to add a
+   * default service discovery namespace later.
+   */
+  readonly defaultCloudMapNamespace?: CloudMapNamespaceOptions;
+
+  /**
+   * The ec2 capacity to add to the cluster
+   *
+   * @default - no EC2 capacity will be added, you can use `addCapacity` to add capacity later.
+   */
+  readonly capacity?: AddCapacityOptions;
 }
 
 /**
@@ -67,9 +84,14 @@ export class Cluster extends Resource implements ICluster {
   private _hasEc2Capacity: boolean = false;
 
   /**
+   * The autoscaling group for added Ec2 capacity
+   */
+  private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
    * Constructs a new instance of the Cluster class.
    */
-  constructor(scope: Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps = {}) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
@@ -85,7 +107,15 @@ export class Cluster extends Resource implements ICluster {
     });
     this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
-    this.vpc = props.vpc;
+    this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
+
+    this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
+      ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
+      : undefined;
+
+    this._autoscalingGroup = props.capacity !== undefined
+      ? this.addCapacity("DefaultAutoScalingGroup", props.capacity)
+      : undefined;
   }
 
   /**
@@ -191,6 +221,13 @@ export class Cluster extends Resource implements ICluster {
         drainTime: options.taskDrainTime
       });
     }
+  }
+
+  /**
+   * Getter for autoscaling group added to cluster
+   */
+  public get autoscalingGroup(): autoscaling.IAutoScalingGroup | undefined {
+    return this._autoscalingGroup;
   }
 
   /**
@@ -439,6 +476,11 @@ export interface ICluster extends IResource {
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+
+  /**
+   * The autoscaling group added to the cluster if capacity is associated to the cluster
+   */
+  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
 }
 
 /**
@@ -480,6 +522,13 @@ export interface ClusterAttributes {
    * @default - No default namespace
    */
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+
+  /**
+   * Autoscaling group added to the cluster if capacity is added
+   *
+   * @default - No default autoscaling group
+   */
+  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
 }
 
 /**

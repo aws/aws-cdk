@@ -111,7 +111,10 @@ export class Tokenization {
    * @param options Prefix key path components for diagnostics.
    */
   public static resolve(obj: any, options: ResolveOptions): any {
-    return resolve(obj, options);
+    return resolve(obj, {
+      ...options,
+      preparing: false
+    });
   }
 
   /**

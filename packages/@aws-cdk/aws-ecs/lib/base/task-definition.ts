@@ -376,7 +376,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       // Container sizes
       for (const container of this.containers) {
         if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.node.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
         }
       }
     }
@@ -484,7 +484,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No options
    */
-  readonly driverOpts?: string[];
+  readonly driverOpts?: {[key: string]: string};
   /**
    * Custom metadata to add to your Docker volume.
    *

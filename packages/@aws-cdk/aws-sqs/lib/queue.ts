@@ -277,10 +277,7 @@ export class Queue extends QueueBase {
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
-        const masterKey = kms.Key.fromKeyArn(this, 'Key', 'alias/aws/sqs');
-
         return {
-          encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: 'alias/aws/sqs',
             kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()

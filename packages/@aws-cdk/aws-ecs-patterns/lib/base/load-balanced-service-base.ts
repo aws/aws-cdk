@@ -1,8 +1,11 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
-import ecs = require('@aws-cdk/aws-ecs');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import { IVpc } from '@aws-cdk/aws-ec2';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup, BaseLoadBalancer, NetworkListener,
+  NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
-import route53targets = require('@aws-cdk/aws-route53-targets');
+import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import cdk = require('@aws-cdk/core');
 
 export enum LoadBalancerType {
@@ -11,18 +14,29 @@ export enum LoadBalancerType {
 }
 
 /**
- * Base properties for load-balanced Fargate and ECS services
+ * The properties for the base LoadBalancedEc2Service or LoadBalancedFargateService service.
  */
 export interface LoadBalancedServiceBaseProps {
   /**
    * The cluster where your service will be deployed
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well
    */
-  readonly cluster: ecs.ICluster;
+  readonly cluster?: ICluster;
+
+  /**
+   * VPC that the cluster instances or tasks are running in
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default - use vpc of cluster or create a new one
+   */
+  readonly vpc?: IVpc;
 
   /**
    * The image to start.
    */
-  readonly image: ecs.ContainerImage;
+  readonly image: ContainerImage;
 
   /**
    * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
@@ -72,7 +86,7 @@ export interface LoadBalancedServiceBaseProps {
    *
    * @default - No secret environment variables.
    */
-  readonly secrets?: { [key: string]: ecs.Secret };
+  readonly secrets?: { [key: string]: Secret };
 
   /**
    * Whether to create an AWS log driver
@@ -101,28 +115,80 @@ export interface LoadBalancedServiceBaseProps {
    * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
+
+  /**
+   * Override for the Fargate Task Definition execution role
+   *
+   * @default - No value
+   */
+  readonly executionRole?: IRole;
+
+  /**
+   * Override for the Fargate Task Definition task role
+   *
+   * @default - No value
+   */
+  readonly taskRole?: IRole;
+
+  /**
+   * Override value for the container name
+   *
+   * @default - No value
+   */
+  readonly containerName?: string;
+
+  /**
+   * Override value for the service name
+   *
+   * @default CloudFormation-generated name
+   */
+  readonly serviceName?: string;
+
+  /**
+   * The LogDriver to use for logging.
+   *
+   * @default - AwsLogDriver if enableLogging is true
+   */
+  readonly logDriver?: LogDriver;
 }
 
 /**
- * Base class for load-balanced Fargate and ECS services
+ * The base class for LoadBalancedEc2Service and LoadBalancedFargateService services.
  */
 export abstract class LoadBalancedServiceBase extends cdk.Construct {
+  public readonly assignPublicIp: boolean;
+
+  public readonly desiredCount: number;
+
   public readonly loadBalancerType: LoadBalancerType;
 
-  public readonly loadBalancer: elbv2.BaseLoadBalancer;
+  public readonly loadBalancer: BaseLoadBalancer;
 
-  public readonly listener: elbv2.ApplicationListener | elbv2.NetworkListener;
+  public readonly listener: ApplicationListener | NetworkListener;
 
-  public readonly targetGroup: elbv2.ApplicationTargetGroup | elbv2.NetworkTargetGroup;
+  public readonly targetGroup: ApplicationTargetGroup | NetworkTargetGroup;
 
-  public readonly logDriver?: ecs.LogDriver;
+  public readonly cluster: ICluster;
 
+  public readonly logDriver?: LogDriver;
+
+  /**
+   * Constructs a new instance of the LoadBalancedServiceBase class.
+   */
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceBaseProps) {
     super(scope, id);
 
+    if (props.cluster && props.vpc) {
+      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+    }
+    this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
-    this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
+    this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
+
+    this.assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
+    this.desiredCount = props.desiredCount || 1;
 
     // Load balancer
     this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.APPLICATION;
@@ -134,14 +200,14 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
 
     const lbProps = {
-      vpc: props.cluster.vpc,
+      vpc: this.cluster.vpc,
       internetFacing
     };
 
     if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
-      this.loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', lbProps);
+      this.loadBalancer = new ApplicationLoadBalancer(this, 'LB', lbProps);
     } else {
-      this.loadBalancer = new elbv2.NetworkLoadBalancer(this, 'LB', lbProps);
+      this.loadBalancer = new NetworkLoadBalancer(this, 'LB', lbProps);
     }
 
     const targetProps = {
@@ -154,7 +220,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     }
 
     if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
-      this.listener = (this.loadBalancer as elbv2.ApplicationLoadBalancer).addListener('PublicListener', {
+      this.listener = (this.loadBalancer as ApplicationLoadBalancer).addListener('PublicListener', {
         port: hasCertificate ? 443 : 80,
         open: true
       });
@@ -164,7 +230,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
         this.listener.addCertificateArns('Arns', [props.certificate.certificateArn]);
       }
     } else {
-      this.listener = (this.loadBalancer as elbv2.NetworkLoadBalancer).addListener('PublicListener', { port: 80 });
+      this.listener = (this.loadBalancer as NetworkLoadBalancer).addListener('PublicListener', { port: 80 });
       this.targetGroup = this.listener.addTargets('ECS', targetProps);
     }
 
@@ -176,22 +242,29 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: AddressRecordTarget.fromAlias(new route53targets.LoadBalancerTarget(this.loadBalancer)),
+        target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
       });
     }
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
   }
 
-  protected addServiceAsTarget(service: ecs.BaseService) {
+  protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
+    // magic string to avoid collision with user-defined constructs
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const stack = cdk.Stack.of(scope);
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+  }
+
+  protected addServiceAsTarget(service: BaseService) {
     if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
-      (this.targetGroup as elbv2.ApplicationTargetGroup).addTarget(service);
+      (this.targetGroup as ApplicationTargetGroup).addTarget(service);
     } else {
-      (this.targetGroup as elbv2.NetworkTargetGroup).addTarget(service);
+      (this.targetGroup as NetworkTargetGroup).addTarget(service);
     }
   }
 
-  private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver({ streamPrefix: prefix });
+  private createAWSLogDriver(prefix: string): AwsLogDriver {
+    return new AwsLogDriver({ streamPrefix: prefix });
   }
 }
