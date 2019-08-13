@@ -982,7 +982,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
   readonly volumeSize?: number;
 }
 
-export interface EbsDeviceProps extends EbsDeviceOptionsBase, EbsDeviceSnapshotOptions {
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
   readonly snapshotId?: string;
 }
 
