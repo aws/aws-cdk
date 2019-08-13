@@ -434,6 +434,18 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           ({deviceName, volume, mappingEnabled}) => {
             const {virtualName, ebsDevice: ebs} = volume;
 
+            if (ebs) {
+              const {iops, volumeType} = ebs;
+
+              if (!iops) {
+                if (volumeType === EbsDeviceVolumeType.IO1) {
+                  throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+                }
+              } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+                this.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+              }
+            }
+
             return {
               deviceName,
               ebs,
@@ -1013,18 +1025,6 @@ export class BlockDeviceVolume  {
   }
 
   protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
-    if (ebsDevice) {
-      const {iops, volumeType} = ebsDevice;
-
-      if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
-        }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        // FIXME won't cause a CloudFormation error, but a good user warning?
-        throw new Error('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-      }
-    }
   }
 }
 

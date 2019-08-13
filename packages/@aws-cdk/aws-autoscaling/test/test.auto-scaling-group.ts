@@ -2,6 +2,7 @@ import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart}
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -777,53 +778,55 @@ export = {
     test.done();
   },
 
-  'throws if iops without volumeType'(test: Test) {
+  'warning if iops without volumeType'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          iops: 5000,
+        })
+      }]
+    });
+
     // THEN
-    test.throws(() => {
-      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-        machineImage: new ec2.AmazonLinuxImage(),
-        vpc,
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: autoscaling.BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            iops: 5000,
-          })
-        }]
-      });
-    }, /iops will be ignored without volumeType: EbsDeviceVolumeType.IO1/);
+    test.deepEqual(asg.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();
   },
 
-  'throws if iops and volumeType !== IO1'(test: Test) {
+  'warning if iops and volumeType !== IO1'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          volumeType: autoscaling.EbsDeviceVolumeType.GP2,
+          iops: 5000,
+        })
+      }]
+    });
+
     // THEN
-    test.throws(() => {
-      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-        machineImage: new ec2.AmazonLinuxImage(),
-        vpc,
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: autoscaling.BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            volumeType: autoscaling.EbsDeviceVolumeType.GP2,
-            iops: 5000,
-          })
-        }]
-      });
-    }, /iops will be ignored without volumeType: EbsDeviceVolumeType.IO1/);
+    test.deepEqual(asg.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
     test.done();
   },
