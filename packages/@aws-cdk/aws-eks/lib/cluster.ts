@@ -87,8 +87,10 @@ export interface ClusterAttributes {
 export interface ClusterProps {
   /**
    * The VPC in which to create the Cluster
+   *
+   * @default - a VPC with default configuration will be created and can be accessed through `cluster.vpc`.
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place EKS Control Plane ENIs
@@ -269,12 +271,12 @@ export class Cluster extends Resource implements ICluster {
    * @param name the name of the Construct to create
    * @param props properties in the IClusterProps interface
    */
-  constructor(scope: Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps = { }) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
 
-    this.vpc = props.vpc;
+    this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
 
     this.tagSubnets();
@@ -288,7 +290,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-      vpc: props.vpc,
+      vpc: this.vpc,
       description: 'EKS Control Plane Security Group',
     });
 
@@ -299,7 +301,7 @@ export class Cluster extends Resource implements ICluster {
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
-    const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
+    const subnetIds = [...new Set(Array().concat(...placements.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
