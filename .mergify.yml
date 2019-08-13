@@ -19,11 +19,12 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
-      - "#commented-reviews-by=0"
       - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
       - status-success=Semantic Pull Request
   - name: comment checklist
     actions:
+      label:
+        add: automerge-enabled
       comment:
         message: |
           ### Pull Request Checklist
@@ -48,6 +49,7 @@ pull_request_rules:
             - EC2 security groups and ACLs (in @aws-cdk/aws-ec2)
             - Grant APIs (if not based on official documentation with a reference)
     conditions:
+      - -label~=^(automerge-enabled)
       - base=master
   - name: comment on CI fail
     actions:
