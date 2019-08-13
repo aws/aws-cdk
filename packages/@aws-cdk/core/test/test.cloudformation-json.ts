@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Fn, Lazy, Stack, Token } from '../lib';
+import { App, CfnOutput, Fn, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -197,6 +197,39 @@ export = {
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), '{"information":"Did you know that Fido says: \\"woof\\""}');
+
+    test.done();
+  },
+
+  'cross-stack references are also properly converted by toJsonString()'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN
+    new CfnOutput(stack2, 'Stack1Id', { value: stack2.toJsonString({
+      Stack1Id: stack1.stackId,
+      Stack2Id: stack2.stackId,
+    })});
+
+    // THEN
+    const asm = app.synth();
+    test.deepEqual(asm.getStack('Stack2').template, {
+      Outputs: {
+        Stack1Id: {
+          Value: {
+            'Fn::Join': [ '', [
+              '{"Stack1Id":"',
+              { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
+              '","Stack2Id":"',
+              { Ref: 'AWS::StackId' },
+              '"}'
+            ] ]
+          }
+        }
+      }
+    });
 
     test.done();
   },

@@ -8,7 +8,7 @@ class TestStack extends cdk.Stack {
 
     /// !show
     new lambda.Function(this, 'MyLambda', {
-      code: lambda.Code.asset(path.join(__dirname, 'handler.zip')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
       handler: 'index.main',
       runtime: lambda.Runtime.PYTHON_3_6
     });
