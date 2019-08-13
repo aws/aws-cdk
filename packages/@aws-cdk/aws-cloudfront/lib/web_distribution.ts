@@ -518,6 +518,7 @@ abstract class CloudFrontWebDistributionBase extends cdk.Resource implements IDi
  *
  * You can customize the distribution using additional properties from the CloudFrontWebDistributionProps interface.
  *
+ * @resource AWS::CloudFront::Distribution
  *
  */
 export class CloudFrontWebDistribution extends CloudFrontWebDistributionBase {
