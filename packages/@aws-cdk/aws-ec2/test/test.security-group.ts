@@ -217,7 +217,7 @@ export = {
     'passes with valid IPv6 CIDR block'(test: Test) {
       // GIVEN
       const cidrIps = [
-          '::/0',
+        '::/0',
         '2001:db8::/32',
         '2001:0db8:0000:0000:0000:8a2e:0370:7334/32',
         '2001:db8::8a2e:370:7334/32',
