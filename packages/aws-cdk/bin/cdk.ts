@@ -5,7 +5,7 @@ import colors = require('colors/safe');
 import path = require('path');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
+import { bootstrapEnvironment, BootstrapEnvironmentProps, destroyStack, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
@@ -51,13 +51,14 @@ async function parseCommandLineArguments() {
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
-      .option('toolkit-bucket-name', { type: 'string', alias: 'b', desc: 'The name of the CDK toolkit bucket', default: undefined }))
+      .option('toolkit-bucket-name', { type: 'string', alias: 'b', desc: 'The name of the CDK toolkit bucket', default: undefined })
+      .option('toolkit-bucket-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
-      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
+      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
-      .option('tags', { type: 'array', alias: 't', desc: 'tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
+      .option('tags', { type: 'array', alias: 't', desc: 'tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -186,7 +187,10 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, args.toolkitBucketName);
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, {
+          bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
+          kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+        });
 
       case 'deploy':
         return await cli.deploy({
@@ -236,7 +240,7 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<void> {
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
@@ -246,13 +250,10 @@ async function initCommandLine() {
 
     const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs, aws) : environmentsFromDescriptors(environmentGlobs);
 
-    // Bucket name can be passed using --toolkit-bucket-name or set in cdk.json
-    const bucketName = configuration.settings.get(['toolkitBucketName']) || toolkitBucketName;
-
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, bucketName);
+        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, props);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));
