@@ -1,5 +1,4 @@
 import { Construct, IResource,  Resource, ResourceProps } from '@aws-cdk/core';
-import cdk = require('@aws-cdk/core');
 import { CfnNetworkAcl, CfnNetworkAclEntry  } from './ec2.generated';
 import { IVpc } from './vpc';
 
@@ -8,14 +7,14 @@ export interface INetworkACL extends IResource {
    * ID for the current Network ACL
    * @attribute
    */
-  readonly NetworkAclId: string;
+  readonly networkAclId: string;
 }
 
 /**
  * A NetworkAclBase that is not created in this template
  */
 abstract class NetworkAclBase extends Resource implements INetworkACL {
-public abstract readonly NetworkAclId: string;
+public abstract readonly networkAclId: string;
 constructor(scope: Construct, id: string, props?: ResourceProps) {
     super(scope, id, props);
 
@@ -28,6 +27,15 @@ constructor(scope: Construct, id: string, props?: ResourceProps) {
 
 export interface NetworkAclProps {
   /**
+   * The name of the NetworkAcl.
+   *
+   * It is not recommended to use an explicit name.
+   *
+   * @default If you don't specify a networkAclName, AWS CloudFormation generates a
+   * unique physical ID and uses that ID for the group name.
+   */
+  readonly networkAclName?: string;
+  /**
    * The VPC in which to create the NetworkACL.
    */
   readonly vpc: IVpc;
@@ -39,7 +47,7 @@ export class NetworkAcl extends NetworkAclBase {
    */
   public static fromNetworkAclId(scope: Construct, id: string, networkAclId: string): INetworkACL {
   class Import extends NetworkAclBase {
-    public NetworkAclId = networkAclId;
+    public networkAclId = networkAclId;
     }
 
   return new Import(scope, id);
@@ -49,27 +57,27 @@ export class NetworkAcl extends NetworkAclBase {
    *
    * @attribute
    */
-  public readonly NetworkAclId: string;
+  public readonly networkAclId: string;
 
   /**
    * The VPC ID for this NetworkACL
    *
    * @attribute
    */
-  public readonly NetworkAclVpcId: string;
+  public readonly networkAclVpcId: string;
 
   private readonly networkACL: CfnNetworkAcl;
 
   constructor(scope: Construct, id: string, props: NetworkAclProps) {
     super(scope, id, {
-      physicalName: cdk.PhysicalName.GENERATE_IF_NEEDED
+      physicalName: props.networkAclName
     });
     this.networkACL = new CfnNetworkAcl(this, 'Resource', {
       vpcId: props.vpc.vpcId,
     });
 
-    this.NetworkAclId = this.networkACL.logicalId;
-    this.NetworkAclVpcId = this.networkACL.vpcId;
+    this.networkAclId = this.networkACL.logicalId;
+    this.networkAclVpcId = this.networkACL.vpcId;
   }
 }
 
@@ -98,7 +106,7 @@ export interface PortRange {
   readonly to?: number
 }
 
-export interface INetworkAclEntry {
+export interface INetworkAclEntry extends IResource {
   /**
    * The IPv4 CIDR range to allow or deny, in CIDR notation (for example, 172.16.0.0/24).
    * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
@@ -115,12 +123,16 @@ export interface INetworkAclEntry {
   /**
    * The Internet Control Message Protocol (ICMP) code and type.
    * Requirement is conditional: Required if specifying 1 (ICMP) for the protocol parameter.
+   *
+   * @default undefined
    */
   readonly icmp?: Icmp
 
   /**
    * The IPv6 network range to allow or deny, in CIDR notation.
    * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
+   *
+   * @default undefined
    */
   readonly ipv6CidrBlock?: string
 
@@ -132,6 +144,8 @@ export interface INetworkAclEntry {
   /**
    * The range of port numbers for the UDP/TCP protocol.
    * Conditional required if specifying 6 (TCP) or 17 (UDP) for the protocol parameter.
+   *
+   * @default undefined
    */
   readonly portRange?: PortRange
 
@@ -183,6 +197,15 @@ abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry 
 }
 
 export interface NetworkAclEntryProps {
+  /**
+   * The name of the NetworkAclEntry.
+   *
+   * It is not recommended to use an explicit group name.
+   *
+   * @default If you don't specify a NetworkAclName, AWS CloudFormation generates a
+   * unique physical ID and uses that ID for the group name.
+   */
+  readonly networkAclEntryName?: string;
  /**
   * The IPv4 CIDR range to allow or deny, in CIDR notation (for example, 172.16.0.0/24).
   * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
@@ -199,12 +222,16 @@ export interface NetworkAclEntryProps {
   /**
    * The Internet Control Message Protocol (ICMP) code and type.
    * Requirement is conditional: Required if specifying 1 (ICMP) for the protocol parameter.
+   *
+   * @default undefined
    */
   readonly icmp?: Icmp
 
   /**
    * The IPv6 network range to allow or deny, in CIDR notation.
    * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
+   *
+   * @default undefined
    */
   readonly ipv6CidrBlock?: string
 
@@ -216,6 +243,8 @@ export interface NetworkAclEntryProps {
   /**
    * The range of port numbers for the UDP/TCP protocol.
    * Conditional required if specifying 6 (TCP) or 17 (UDP) for the protocol parameter.
+   *
+   * @default undefined
    */
   readonly portRange?: PortRange
 
@@ -258,7 +287,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
     super(scope, id, {
-      physicalName: cdk.PhysicalName.GENERATE_IF_NEEDED
+      physicalName: props.networkAclEntryName
     });
 
     this.cidrBlock = props.cidrBlock;
@@ -271,7 +300,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
     this.ruleNumber = props.ruleNumber;
 
     this.networkAclEntry = new CfnNetworkAclEntry(this, 'Resource', {
-      networkAclId: props.networkAcl.NetworkAclId,
+      networkAclId: props.networkAcl.networkAclId,
       ruleNumber: props.ruleNumber,
       protocol: props.protocol,
       ruleAction: props.ruleAction,
