@@ -31,7 +31,7 @@ export interface IntegrationOptions {
    *
    * @default A role is not assumed
    */
-  readonly credentialsRole?: iam.Role;
+  readonly credentialsRole?: iam.IRole;
 
   /**
    * Requires that the caller's identity be passed through from the request.
@@ -139,7 +139,16 @@ export interface IntegrationProps {
  * or implement on your own by specifying the set of props.
  */
 export class Integration {
-  constructor(readonly props: IntegrationProps) { }
+  constructor(private readonly props: IntegrationProps) { }
+
+  /**
+   * Allows `Method` to access the integration props.
+   *
+   * @internal
+   */
+  public get _props() {
+    return this.props;
+  }
 
   /**
    * Can be overridden by subclasses to allow the integration to interact with the method
