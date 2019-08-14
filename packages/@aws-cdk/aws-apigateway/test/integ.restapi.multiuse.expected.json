@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "HandlerServiceRoleFCDC14AE": {
+    "HelloServiceRole1E55EA16": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -9,7 +9,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -31,32 +41,32 @@
         ]
       }
     },
-    "Handler886CB40B": {
+    "Hello4A628BD4": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async () => {\n        return {\n          statusCode: '200',\n          body: 'hello, world!'\n        };\n      };"
+          "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!'\n    });\n}"
         },
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "HandlerServiceRoleFCDC14AE",
+            "HelloServiceRole1E55EA16",
             "Arn"
           ]
         },
         "Runtime": "nodejs8.10"
       },
       "DependsOn": [
-        "HandlerServiceRoleFCDC14AE"
+        "HelloServiceRole1E55EA16"
       ]
     },
-    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANY133739C8": {
+    "HelloApiPermissionrestapimultiuseexamplehelloapi9FD0148DGEThello305E0522": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "Handler886CB40B",
+            "Hello4A628BD4",
             "Arn"
           ]
         },
@@ -79,25 +89,25 @@
               },
               ":",
               {
-                "Ref": "apiC8550315"
+                "Ref": "helloapi4446A35B"
               },
               "/",
               {
-                "Ref": "apiDeploymentStageprod896C8101"
+                "Ref": "helloapiDeploymentStageprod677E2C4F"
               },
-              "/*/"
+              "/GET/hello"
             ]
           ]
         }
       }
     },
-    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANY872335B7": {
+    "HelloApiPermissionTestrestapimultiuseexamplehelloapi9FD0148DGEThello8476E396": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "Handler886CB40B",
+            "Hello4A628BD4",
             "Arn"
           ]
         },
@@ -120,21 +130,21 @@
               },
               ":",
               {
-                "Ref": "apiC8550315"
+                "Ref": "helloapi4446A35B"
               },
-              "/test-invoke-stage/*/"
+              "/test-invoke-stage/GET/hello"
             ]
           ]
         }
       }
     },
-    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANYproxyD4D13682": {
+    "HelloApiPermissionrestapimultiuseexamplesecondapi5CB05B89GEThello268B558F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "Handler886CB40B",
+            "Hello4A628BD4",
             "Arn"
           ]
         },
@@ -157,25 +167,25 @@
               },
               ":",
               {
-                "Ref": "apiC8550315"
+                "Ref": "secondapi730EF3C7"
               },
               "/",
               {
-                "Ref": "apiDeploymentStageprod896C8101"
+                "Ref": "secondapiDeploymentStageprod40491DF0"
               },
-              "/*/{proxy+}"
+              "/GET/hello"
             ]
           ]
         }
       }
     },
-    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYproxyFF16208A": {
+    "HelloApiPermissionTestrestapimultiuseexamplesecondapi5CB05B89GEThelloFF28C5F8": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "Handler886CB40B",
+            "Hello4A628BD4",
             "Arn"
           ]
         },
@@ -198,47 +208,46 @@
               },
               ":",
               {
-                "Ref": "apiC8550315"
+                "Ref": "secondapi730EF3C7"
               },
-              "/test-invoke-stage/*/{proxy+}"
+              "/test-invoke-stage/GET/hello"
             ]
           ]
         }
       }
     },
-    "apiC8550315": {
+    "helloapi4446A35B": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "api"
+        "Name": "hello-api"
       }
     },
-    "apiDeployment149F12949ab8cbc5717926c7a1a01815778330c4": {
+    "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
-          "Ref": "apiC8550315"
+          "Ref": "helloapi4446A35B"
         },
         "Description": "Automatically created by the RestApi construct"
       },
       "DependsOn": [
-        "apiproxyANY7F13F09C",
-        "apiproxy4EA44110",
-        "apiANYB3DF8C3C"
+        "helloapihelloGETE6A58337",
+        "helloapihello4AA00177"
       ]
     },
-    "apiDeploymentStageprod896C8101": {
+    "helloapiDeploymentStageprod677E2C4F": {
       "Type": "AWS::ApiGateway::Stage",
       "Properties": {
         "RestApiId": {
-          "Ref": "apiC8550315"
+          "Ref": "helloapi4446A35B"
         },
         "DeploymentId": {
-          "Ref": "apiDeployment149F12949ab8cbc5717926c7a1a01815778330c4"
+          "Ref": "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2"
         },
         "StageName": "prod"
       }
     },
-    "apiCloudWatchRoleAC81D93E": {
+    "helloapiCloudWatchRoleD13E913E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -247,7 +256,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "apigateway.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "apigateway.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -269,44 +288,44 @@
         ]
       }
     },
-    "apiAccount57E28B43": {
+    "helloapiAccountD8C38BCE": {
       "Type": "AWS::ApiGateway::Account",
       "Properties": {
         "CloudWatchRoleArn": {
           "Fn::GetAtt": [
-            "apiCloudWatchRoleAC81D93E",
+            "helloapiCloudWatchRoleD13E913E",
             "Arn"
           ]
         }
       },
       "DependsOn": [
-        "apiC8550315"
+        "helloapi4446A35B"
       ]
     },
-    "apiproxy4EA44110": {
+    "helloapihello4AA00177": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
         "ParentId": {
           "Fn::GetAtt": [
-            "apiC8550315",
+            "helloapi4446A35B",
             "RootResourceId"
           ]
         },
-        "PathPart": "{proxy+}",
+        "PathPart": "hello",
         "RestApiId": {
-          "Ref": "apiC8550315"
+          "Ref": "helloapi4446A35B"
         }
       }
     },
-    "apiproxyANY7F13F09C": {
+    "helloapihelloGETE6A58337": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "HttpMethod": "ANY",
+        "HttpMethod": "GET",
         "ResourceId": {
-          "Ref": "apiproxy4EA44110"
+          "Ref": "helloapihello4AA00177"
         },
         "RestApiId": {
-          "Ref": "apiC8550315"
+          "Ref": "helloapi4446A35B"
         },
         "AuthorizationType": "NONE",
         "Integration": {
@@ -327,7 +346,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "Handler886CB40B",
+                    "Hello4A628BD4",
                     "Arn"
                   ]
                 },
@@ -338,18 +357,116 @@
         }
       }
     },
-    "apiANYB3DF8C3C": {
-      "Type": "AWS::ApiGateway::Method",
+    "secondapi730EF3C7": {
+      "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "HttpMethod": "ANY",
-        "ResourceId": {
+        "Name": "second-api"
+      }
+    },
+    "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "secondapi730EF3C7"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "secondapihelloGETDC5BBB18",
+        "secondapihello7264EB69"
+      ]
+    },
+    "secondapiDeploymentStageprod40491DF0": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "secondapi730EF3C7"
+        },
+        "DeploymentId": {
+          "Ref": "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70"
+        },
+        "StageName": "prod"
+      }
+    },
+    "secondapiCloudWatchRole7FEC1028": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "apigateway.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "secondapiAccountDF729874": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
           "Fn::GetAtt": [
-            "apiC8550315",
+            "secondapiCloudWatchRole7FEC1028",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "secondapi730EF3C7"
+      ]
+    },
+    "secondapihello7264EB69": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "secondapi730EF3C7",
             "RootResourceId"
           ]
         },
+        "PathPart": "hello",
         "RestApiId": {
-          "Ref": "apiC8550315"
+          "Ref": "secondapi730EF3C7"
+        }
+      }
+    },
+    "secondapihelloGETDC5BBB18": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "secondapihello7264EB69"
+        },
+        "RestApiId": {
+          "Ref": "secondapi730EF3C7"
         },
         "AuthorizationType": "NONE",
         "Integration": {
@@ -370,7 +487,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "Handler886CB40B",
+                    "Hello4A628BD4",
                     "Arn"
                   ]
                 },
@@ -379,66 +496,18 @@
             ]
           }
         }
-      }
-    },
-    "apiCustomDomain64773C4F": {
-      "Type": "AWS::ApiGateway::DomainName",
-      "Properties": {
-        "DomainName": "example.com",
-        "EndpointConfiguration": {
-          "Types": [
-            "REGIONAL"
-          ]
-        },
-        "RegionalCertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate"
-      }
-    },
-    "apiCustomDomainMapawscdkapigwaliasintegapiF4DF08ACCF365F22": {
-      "Type": "AWS::ApiGateway::BasePathMapping",
-      "Properties": {
-        "DomainName": {
-          "Ref": "apiCustomDomain64773C4F"
-        },
-        "RestApiId": {
-          "Ref": "apiC8550315"
-        },
-        "Stage": {
-          "Ref": "apiDeploymentStageprod896C8101"
-        }
-      }
-    },
-    "Alias325C5727": {
-      "Type": "AWS::Route53::RecordSet",
-      "Properties": {
-        "Name": "example.com.",
-        "Type": "A",
-        "AliasTarget": {
-          "DNSName": {
-            "Fn::GetAtt": [
-              "apiCustomDomain64773C4F",
-              "RegionalDomainName"
-            ]
-          },
-          "HostedZoneId": {
-            "Fn::GetAtt": [
-              "apiCustomDomain64773C4F",
-              "RegionalHostedZoneId"
-            ]
-          }
-        },
-        "HostedZoneId": "AAAAAAAAAAAAA"
       }
     }
   },
   "Outputs": {
-    "apiEndpoint9349E63C": {
+    "helloapiEndpoint0E4D8D32": {
       "Value": {
         "Fn::Join": [
           "",
           [
             "https://",
             {
-              "Ref": "apiC8550315"
+              "Ref": "helloapi4446A35B"
             },
             ".execute-api.",
             {
@@ -450,7 +519,33 @@
             },
             "/",
             {
-              "Ref": "apiDeploymentStageprod896C8101"
+              "Ref": "helloapiDeploymentStageprod677E2C4F"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "secondapiEndpoint89D0E02C": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "secondapi730EF3C7"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "secondapiDeploymentStageprod40491DF0"
             },
             "/"
           ]
