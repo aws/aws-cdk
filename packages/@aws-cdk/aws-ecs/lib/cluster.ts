@@ -47,7 +47,7 @@ export interface ClusterProps {
  */
 export class Cluster extends Resource implements ICluster {
   /**
-   * This method adds attributes from a specified cluster to this cluster.
+   * Import an existing cluster to the stack from its attributes.
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
