@@ -65,10 +65,22 @@ abstract class KeyBase extends Resource implements IKey {
   protected abstract readonly policy?: PolicyDocument;
 
   /**
+   * Collection of aliases added to the key
+   *
+   * Tracked to determine whether or not the aliasName should be added to the end of its ID
+   */
+  private readonly aliases: Alias[] = [];
+
+  /**
    * Defines a new alias for the key.
    */
-  public addAlias(alias: string): Alias {
-    return new Alias(this, `Alias${alias}`, { aliasName: alias, targetKey: this });
+  public addAlias(aliasName: string): Alias {
+    const aliasId = this.aliases.length > 0 ? `Alias${aliasName}` : 'Alias';
+
+    const alias = new Alias(this, aliasId, { aliasName, targetKey: this });
+    this.aliases.push(alias);
+
+    return alias;
   }
 
   /**
