@@ -17,19 +17,17 @@
 
 This construct library allows you to define [Amazon Elastic Container Service
 for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters programmatically.
-
 This library also supports programmatically defining Kubernetes resource
 manifests within EKS clusters.
 
-This example defines an Amazon EKS cluster with a single pod:
+This example defines an Amazon EKS cluster with the following configuration:
+
+- 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
+- Dedicated VPC with default configuration (see [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
+- A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-const cluster = new eks.Cluster(this, 'hello-eks', { vpc });
-
-cluster.addCapacity('default', {
-  instanceType: new ec2.InstanceType('t2.medium'),
-  desiredCapacity: 10,
-});
+const cluster = new eks.Cluster(this, 'hello-eks');
 
 cluster.addResource('mypod', {
   apiVersion: 'v1',
@@ -54,6 +52,51 @@ in the AWS CDK Developer Guide for more details.
 
 Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
 
+### Capacity
+
+By default, `eks.Cluster` is created with x2 `m5.large` instances.
+
+```ts
+new eks.Cluster(this, 'cluster-two-m5-large');
+```
+
+The quantity and instance type for the default capacity can be specified through
+the `defaultCapacity` and `defaultCapacityInstance` props:
+
+```ts
+new eks.Cluster(this, 'cluster', {
+  defaultCapacity: 10,
+  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+});
+```
+To disable the default capacity, simply set `defaultCapacity` to `0`:
+
+
+```ts
+new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
+```
+
+The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
+resource for the default capacity. It will be `undefined` if `defaultCapacity`
+is set to `0`:
+
+```ts
+const cluster = new eks.Cluster(this, 'my-cluster');
+cluster.defaultCapacity!.scaleOnCpuUtilization('up', {
+  targetUtilizationPercent: 80
+});
+```
+
+You can add customized capacity through `cluster.addCapacity()`:
+
+```ts
+cluster.addCapacity('frontend-nodes', {
+  instanceType: new ec2.InstanceType('t2.medium'),
+  desiredCapacity: 3,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+});
+```
+
 ### Interacting with Your Cluster
 
 The Amazon EKS construct library allows you to specify an IAM role that will be
@@ -74,7 +117,6 @@ const clusterAdmin = new iam.Role(this, 'AdminRole', {
 
 // now define the cluster and map role to "masters" RBAC group
 new eks.Cluster(this, 'Cluster', {
-  vpc: vpc,
   mastersRole: clusterAdmin
 });
 ```
@@ -242,7 +284,6 @@ the cluster:
 
 ```ts
 new eks.Cluster(this, 'cluster', {
-  vpc: vpc,
   kubectlEnabled: false
 });
 ```
