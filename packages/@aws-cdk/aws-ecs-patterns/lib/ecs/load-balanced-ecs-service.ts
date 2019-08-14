@@ -1,11 +1,26 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
- * Properties for a LoadBalancedEc2Service
+ * The properties for the LoadBalancedEc2Service service.
  */
 export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProps {
+
+  /**
+   * The number of cpu units used by the task.
+   * Valid values, which determines your range of valid values for the memory parameter:
+   * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
+   * 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
+   * 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
+   * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
+   * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
+   *
+   * This default is set in the underlying FargateTaskDefinition construct.
+   *
+   * @default none
+   */
+  readonly cpu?: number;
   /**
    * The hard limit (in MiB) of memory to present to the container.
    *
@@ -41,34 +56,41 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
   /**
    * The ECS service in this construct
    */
-  public readonly service: ecs.Ec2Service;
+  public readonly service: Ec2Service;
 
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
+  /**
+   * Constructs a new instance of the LoadBalancedEc2Service class.
+   */
+  constructor(scope: Construct, id: string, props: LoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {});
+    const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
+      executionRole: props.executionRole,
+      taskRole: props.taskRole
+    });
 
-    const container = taskDefinition.addContainer('web', {
+    const containerName = props.containerName !== undefined ? props.containerName : 'web';
+    const container = taskDefinition.addContainer(containerName, {
       image: props.image,
+      cpu: props.cpu,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       environment: props.environment,
+      secrets: props.secrets,
       logging: this.logDriver,
     });
-
     container.addPortMappings({
       containerPort: props.containerPort || 80
     });
 
-    const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
-    const service = new ecs.Ec2Service(this, "Service", {
-      cluster: props.cluster,
-      desiredCount: props.desiredCount || 1,
+    this.service = new Ec2Service(this, "Service", {
+      cluster: this.cluster,
+      desiredCount: this.desiredCount,
       taskDefinition,
-      assignPublicIp
+      assignPublicIp: this.assignPublicIp,
+      serviceName: props.serviceName,
+      healthCheckGracePeriod: props.healthCheckGracePeriod,
     });
-
-    this.service = service;
-    this.addServiceAsTarget(service);
+    this.addServiceAsTarget(this.service);
   }
 }

@@ -51,11 +51,29 @@ export = {
     test.done();
   },
 
+  'setting vpc and cluster throws error'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    test.throws(() => new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      vpc,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
+      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+    }));
+
+    test.done();
+  },
+
   'setting executionRole updated taskDefinition with given execution role'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
     const executionRole = new iam.Role(stack, 'ExecutionRole', {
       path: '/',
       assumedBy: new iam.CompositePrincipal(
@@ -180,5 +198,22 @@ export = {
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
     test.equal(serviceTaskDefinition.Properties.ServiceName, undefined);
     test.done();
-  }
+  },
+
+  'setting healthCheckGracePeriod works'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      loadBalancerType: ecsPatterns.LoadBalancerType.APPLICATION,
+      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      healthCheckGracePeriod: cdk.Duration.seconds(600),
+    });
+    // THEN
+    const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
+    test.deepEqual(serviceTaskDefinition.Properties.HealthCheckGracePeriodSeconds, 600);
+    test.done();
+  },
+
 };

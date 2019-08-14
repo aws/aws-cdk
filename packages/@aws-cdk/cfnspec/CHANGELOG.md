@@ -1,3 +1,98 @@
+# CloudFormation Resource Specification v5.0.0
+
+## New Resource Types
+
+* AWS::CodeStar::GitHubRepository
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeCommit::Repository Tags (__added__)
+* AWS::Cognito::UserPool UserPoolAddOns (__added__)
+* AWS::Cognito::UserPool VerificationMessageTemplate (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlows (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlowsUserPoolClient (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthScopes (__added__)
+* AWS::Cognito::UserPoolClient AnalyticsConfiguration (__added__)
+* AWS::Cognito::UserPoolClient CallbackURLs (__added__)
+* AWS::Cognito::UserPoolClient DefaultRedirectURI (__added__)
+* AWS::Cognito::UserPoolClient LogoutURLs (__added__)
+* AWS::Cognito::UserPoolClient SupportedIdentityProviders (__added__)
+* AWS::Glue::Job GlueVersion (__added__)
+* AWS::Glue::Job MaxCapacity (__added__)
+* AWS::Glue::Job NumberOfWorkers (__added__)
+* AWS::Glue::Job WorkerType (__added__)
+* AWS::SSM::MaintenanceWindowTask ServiceRoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask WindowId.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.Device (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters (__added__)
+* AWS::Cognito::UserPool.UserPoolAddOns (__added__)
+* AWS::Cognito::UserPool.VerificationMessageTemplate (__added__)
+* AWS::Cognito::UserPoolClient.AnalyticsConfiguration (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources SecurityGroupIds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::JobDefinition.ContainerProperties LinuxParameters (__added__)
+* AWS::CodeCommit::Repository.RepositoryTrigger DestinationArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeCommit::Repository.RepositoryTrigger Events.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeCommit::Repository.RepositoryTrigger Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Cognito::UserPool.LambdaConfig PreTokenGeneration (__added__)
+* AWS::Cognito::UserPool.LambdaConfig UserMigration (__added__)
+* AWS::Glue::Job.JobCommand PythonVersion (__added__)
+
+
+# CloudFormation Resource Specification v4.3.0
+
+## New Resource Types
+
+* AWS::IoTEvents::DetectorModel
+* AWS::IoTEvents::Input
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker EncryptionOptions (__added__)
+* AWS::Amplify::App AutoBranchCreationConfig (__added__)
+* AWS::Amplify::Branch EnableAutoBuild (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.EncryptionOptions (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig (__added__)
+* AWS::Amplify::App.BasicAuthConfig Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Amplify::App.BasicAuthConfig Username.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
 # CloudFormation Resource Specification v4.2.0
 
 ## New Resource Types

@@ -1,9 +1,14 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
 import { CfnOutput } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
+import { KubernetesResource } from '../lib';
+import { testFixture, testFixtureNoVpc } from './util';
+
+// tslint:disable:max-line-length
 
 export = {
   'a default cluster spans all subnets'(test: Test) {
@@ -11,7 +16,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Cluster', {
@@ -28,12 +33,72 @@ export = {
     test.done();
   },
 
+  'if "vpc" is not specified, vpc with default configuration will be created'(test: Test) {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'cluster');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::VPC'));
+    test.done();
+  },
+
+  'default capacity': {
+
+    'x2 m5.large by default'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'cluster');
+
+      // THEN
+      test.ok(cluster.defaultCapacity);
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '2' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' }));
+      test.done();
+    },
+
+    'quantity and type can be customized'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 10,
+        defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+      });
+
+      // THEN
+      test.ok(cluster.defaultCapacity);
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '10' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
+      test.done();
+    },
+
+    'defaultCapacity=0 will not allocate at all'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0 });
+
+      // THEN
+      test.ok(!cluster.defaultCapacity);
+      expect(stack).notTo(haveResource('AWS::AutoScaling::AutoScalingGroup'));
+      expect(stack).notTo(haveResource('AWS::AutoScaling::LaunchConfiguration'));
+      test.done();
+    }
+  },
+
   'creating a cluster tags the private VPC subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -51,7 +116,7 @@ export = {
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // WHEN
     cluster.addCapacity('Default', {
@@ -80,7 +145,7 @@ export = {
   'adding capacity correctly deduces maxPods and adds userdata'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // WHEN
     cluster.addCapacity('Default', {
@@ -110,7 +175,7 @@ export = {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
-    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc });
+    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // WHEN
     const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', {
@@ -137,12 +202,131 @@ export = {
     });
     test.done();
   },
+
+  'disabled features when kubectl is disabled'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+
+    test.throws(() => cluster.awsAuth, /Cannot define aws-auth mappings if kubectl is disabled/);
+    test.throws(() => cluster.addResource('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
+    test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
+      /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
+    test.done();
+  },
+
+  'mastersRole can be used to map an IAM role to "system:masters" (required kubectl)'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', { vpc, mastersRole: role, defaultCapacity: 0 });
+
+    // THEN
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+      Manifest: {
+        "Fn::Join": [
+          "",
+          [
+            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "roleC7B7E775",
+                "Arn"
+              ]
+            },
+            "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+          ]
+        ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+
+    // WHEN
+    cluster.addResource('manifest1', { foo: 123 });
+    cluster.addResource('manifest2', { bar: 123 }, { boor: [ 1, 2, 3 ] });
+
+    // THEN
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+      Manifest: "[{\"foo\":123}]"
+    }));
+
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+      Manifest: "[{\"bar\":123},{\"boor\":[1,2,3]}]"
+    }));
+
+    test.done();
+  },
+
+  'when kubectl is enabled (default) adding capacity will automatically map its IAM role'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+
+    // WHEN
+    cluster.addCapacity('default', {
+      instanceType: new ec2.InstanceType('t2.nano'),
+    });
+
+    // THEN
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+      Manifest: {
+        "Fn::Join": [
+          "",
+          [
+            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+            {
+              "Fn::GetAtt": [
+                "ClusterdefaultInstanceRoleF20A29CD",
+                "Arn"
+              ]
+            },
+            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+          ]
+        ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'addCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+
+    // WHEN
+    cluster.addCapacity('default', {
+      instanceType: new ec2.InstanceType('t2.nano'),
+      mapRole: false
+    });
+
+    // THEN
+    expect(stack).to(not(haveResource(KubernetesResource.RESOURCE_TYPE)));
+    test.done();
+  },
+
+  'addCapacity will *not* map the IAM role if kubectl is disabled'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+
+    // WHEN
+    cluster.addCapacity('default', {
+      instanceType: new ec2.InstanceType('t2.nano')
+    });
+
+    // THEN
+    expect(stack).to(not(haveResource(KubernetesResource.RESOURCE_TYPE)));
+    test.done();
+  }
+
 };
-
-function testFixture() {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1' }});
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
-  return { stack, vpc, app };
-}

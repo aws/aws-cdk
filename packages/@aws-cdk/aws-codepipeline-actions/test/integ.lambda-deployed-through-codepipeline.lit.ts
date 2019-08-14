@@ -10,7 +10,7 @@ const app = new cdk.App();
 
 /// !show
 const lambdaStack = new cdk.Stack(app, 'LambdaStack');
-const lambdaCode = lambda.Code.cfnParameters();
+const lambdaCode = lambda.Code.fromCfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
