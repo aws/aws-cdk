@@ -12,7 +12,7 @@ export interface CodeBuildProjectProps {
    *
    * This will be the payload for the StartBuild API.
    *
-   * @default the entire CloudWatch event
+   * @default - the entire CloudWatch event
    */
   readonly event?: events.RuleTargetInput;
 }
