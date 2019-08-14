@@ -5,8 +5,6 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
@@ -21,7 +19,7 @@ the policy either by calling `xxx.attachInlinePolicy(policy)` or `policy.attachT
 
 [attaching policies to user and group](test/example.attaching.lit.ts)
 
-Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
+Managed policies can be attached using `xxx.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`:
 
 [attaching managed policies](test/example.managedpolicy.lit.ts)
 

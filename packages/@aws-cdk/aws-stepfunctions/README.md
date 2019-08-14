@@ -122,15 +122,22 @@ done is determine by a class that implements `IStepFunctionsTask`, a collection
 of which can be found in the `@aws-cdk/aws-stepfunctions-tasks` package. A
 couple of the tasks available are:
 
-* `tasks.InvokeFunction` -- call a Lambda Function
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
+* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
 * `tasks.SagemakerTrainTask` -- run a SageMaker training job
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
+* `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
+
+Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
+pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
+(`integrationPattern`) are supposed to be given as parameter when customers want
+to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
 
 #### Task parameters from the state json
 
@@ -142,10 +149,10 @@ such as `Data.stringAt()`.
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
-#### Lambda example
+#### Lambda example - InvokeFunction
 
 ```ts
-const task = new sfn.Task(this, 'Invoke The Lambda', {
+const task = new sfn.Task(this, 'Invoke1', {
     task: new tasks.InvokeFunction(myLambda),
     inputPath: '$.input',
     timeout: Duration.minutes(5),
@@ -164,6 +171,19 @@ task.addCatch(errorHandlerState);
 task.next(nextState);
 ```
 
+#### Lambda example - RunLambdaTask
+
+```ts
+  const task = new sfn.Task(stack, 'Invoke2', {
+    task: new tasks.RunLambdaTask(myLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      payload: {
+        token: sfn.Context.taskToken
+      }
+    })
+  });
+```
+
 #### SNS example
 
 ```ts
@@ -176,6 +196,7 @@ const topic = new sns.Topic(this, 'Topic');
 // Use a field from the execution data as message.
 const task1 = new sfn.Task(this, 'Publish1', {
     task: new tasks.PublishToTopic(topic, {
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
         message: TaskInput.fromDataAt('$.state.message'),
     })
 });
@@ -279,6 +300,32 @@ const transformJob = new tasks.SagemakerTransformTask(
 
 const task = new sfn.Task(this, 'Batch Inference', {
     task: transformJob
+});
+```
+
+#### Step Functions example
+
+```ts
+// Define a state machine with one Pass state
+const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+});
+
+// Include the state machine in a Task state with callback pattern
+const task = new sfn.Task(stack, 'ChildTask', {
+  task: new tasks.ExecuteStateMachine(child, {
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    input: {
+      token: sfn.Context.taskToken,
+      foo: 'bar'
+    },
+    name: 'MyExecutionName'
+  })
+});
+
+// Define a second state machine with the Task state above
+new sfn.StateMachine(stack, 'ParentStateMachine', {
+  definition: task
 });
 ```
 

@@ -43,6 +43,17 @@ export interface ActionProperties {
   readonly region?: string;
 
   /**
+   * The account the Action is supposed to live in.
+   * For Actions backed by resources,
+   * this is inferred from the Stack {@link resource} is part of.
+   * However, some Actions, like the CloudFormation ones,
+   * are not backed by any resource, and they still might want to be cross-account.
+   * In general, a concrete Action class should specify either {@link resource},
+   * or {@link account} - but not both.
+   */
+  readonly account?: string;
+
+  /**
    * The optional resource that is backing this Action.
    * This is used for automatically handling Actions backed by
    * resources from a different account and/or region.

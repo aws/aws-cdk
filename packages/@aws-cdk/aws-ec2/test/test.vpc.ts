@@ -366,6 +366,9 @@ export = {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
           Key: 'Name',
           Value: `VPC/egressSubnet${i}`,
+        }, {
+            Key: 'aws-cdk:subnet-name',
+            Value: 'egress',
         }])));
       }
       test.done();
@@ -537,8 +540,18 @@ export = {
       }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
 
       test.done();
-    }
+    },
 
+    'Subnets have a defaultChild'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      test.notEqual(vpc.publicSubnets[0].node.defaultChild, undefined);
+
+      test.done();
+    },
   },
 
   "When creating a VPC with a custom CIDR range": {
@@ -674,6 +687,7 @@ export = {
         vpcId: 'vpc-1234',
         availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
         publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
       });
 
       test.throws(() => {

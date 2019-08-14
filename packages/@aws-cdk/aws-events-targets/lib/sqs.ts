@@ -48,7 +48,7 @@ export class SqsQueue implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sqs-permissions
    */
-  public bind(rule: events.IRule): events.RuleTargetConfig {
+  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // deduplicated automatically
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
       {
@@ -58,10 +58,11 @@ export class SqsQueue implements events.IRuleTarget {
       })
     );
 
-    const result = {
-      id: this.queue.node.uniqueId,
+    const result: events.RuleTargetConfig = {
+      id: '',
       arn: this.queue.queueArn,
       input: this.props.message,
+      targetResource: this.queue,
     };
     if (!!this.props.messageGroupId) {
       Object.assign(result, { sqsParameters: { messageGroupId: this.props.messageGroupId } });

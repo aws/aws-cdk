@@ -95,4 +95,4 @@ by a certain resource, and enable advanced local experiences.
 To add these metadata entries to a resource, use the
 `asset.addResourceMetadata(resource, property)` method.
 
-See https://github.com/awslabs/aws-cdk/issues/1432 for more details
+See https://github.com/aws/aws-cdk/issues/1432 for more details

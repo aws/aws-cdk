@@ -665,17 +665,12 @@
             "Cpu": 1,
             "Environment": [
               {
-                "Name": "name",
-                "Value": "TRIGGER"
-              },
-              {
-                "Name": "value",
+                "Name": "TRIGGER",
                 "Value": "CloudWatch Events"
               }
             ],
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -689,11 +684,7 @@
               }
             },
             "Memory": 512,
-            "MountPoints": [],
-            "Name": "ScheduledContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "ScheduledContainer"
           }
         ],
         "ExecutionRoleArn": {
@@ -866,7 +857,7 @@
                 "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
               }
             },
-            "Id": "awsecsintegecsScheduledEc2TaskScheduledTaskDef18FB4348",
+            "Id": "Target0",
             "Input": "{}",
             "RoleArn": {
               "Fn::GetAtt": [

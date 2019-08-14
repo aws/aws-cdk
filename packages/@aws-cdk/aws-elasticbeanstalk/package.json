@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticbeanstalk",
-  "version": "0.39.0",
+  "version": "1.4.0",
   "description": "The CDK Construct Library for AWS::ElasticBeanstalk",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,14 +26,11 @@
         "distName": "aws-cdk.aws-elasticbeanstalk",
         "module": "aws_cdk.aws_elasticbeanstalk"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Elastic Beanstalk"
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-elasticbeanstalk"
   },
   "scripts": {
@@ -65,17 +62,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.39.0",
-    "cdk-build-tools": "^0.39.0",
-    "cfn2ts": "^0.39.0",
-    "pkglint": "^0.39.0"
+    "@aws-cdk/assert": "^1.4.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.39.0"
+    "@aws-cdk/core": "^1.4.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "^0.39.0"
+    "@aws-cdk/core": "^1.4.0"
   },
   "engines": {
     "node": ">= 8.10.0"

@@ -207,6 +207,10 @@ export class Settings {
       plugin: argv.plugin,
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
+      toolkitBucket: {
+        bucketName: argv.bootstrapBucketName,
+        kmsKeyId: argv.bootstrapKmsKeyId,
+      },
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
@@ -270,7 +274,7 @@ export class Settings {
       this.settings = await fs.readJson(expanded);
     }
 
-    // See https://github.com/awslabs/aws-cdk/issues/59
+    // See https://github.com/aws/aws-cdk/issues/59
     this.prohibitContextKey('default-account', fileName);
     this.prohibitContextKey('default-region', fileName);
     this.warnAboutContextKey('aws:', fileName);

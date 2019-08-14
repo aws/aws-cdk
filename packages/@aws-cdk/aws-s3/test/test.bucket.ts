@@ -279,7 +279,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -423,6 +424,27 @@ export = {
             "PublicAccessBlockConfiguration": {
               "RestrictPublicBuckets": true,
             }
+          },
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
+  'bucket with custom canned access control'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "AccessControl": "LogDeliveryWrite"
           },
           "DeletionPolicy": "Retain",
           "UpdateReplacePolicy": "Retain",
@@ -807,7 +829,7 @@ export = {
           "Statement": [
             {
               "Action": ["kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
-                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion"],
+                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey"],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -861,7 +883,8 @@ export = {
                       "kms:Get*",
                       "kms:Delete*",
                       "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion"
+                      "kms:CancelKeyDeletion",
+                      "kms:GenerateDataKey"
                     ],
                     "Effect": "Allow",
                     "Principal": {
@@ -1524,7 +1547,94 @@ export = {
       });
       test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
-    }
+    },
+    'adds RedirectAllRequestsTo property'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteRedirect: {
+          hostName: 'www.example.com',
+          protocol: s3.RedirectProtocol.HTTPS
+        }
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          RedirectAllRequestsTo: {
+            HostName: 'www.example.com',
+            Protocol: 'https'
+          }
+        }
+      }));
+      test.done();
+    },
+    'fails if websiteRedirect and websiteIndex and websiteError are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteIndexDocument: 'index.html',
+          websiteErrorDocument: 'error.html',
+          websiteRedirect: {
+            hostName: 'www.example.com'
+          }
+        });
+      }, /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
+      test.done();
+    },
+    'fails if websiteRedirect and websiteRoutingRules are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteRoutingRules: [],
+          websiteRedirect: {
+            hostName: 'www.example.com'
+          }
+        });
+      }, /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
+      test.done();
+    },
+    'adds RedirectRules property'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteRoutingRules: [{
+          hostName: 'www.example.com',
+          httpRedirectCode: '302',
+          protocol: s3.RedirectProtocol.HTTPS,
+          replaceKey: s3.ReplaceKey.prefixWith('test/'),
+          condition: {
+            httpErrorCodeReturnedEquals: '200',
+            keyPrefixEquals: 'prefix',
+          }
+        }]
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          RoutingRules: [{
+            RedirectRule: {
+              HostName: 'www.example.com',
+              HttpRedirectCode: '302',
+              Protocol: 'https',
+              ReplaceKeyPrefixWith: 'test/'
+            },
+            RoutingRuleCondition: {
+              HttpErrorCodeReturnedEquals: '200',
+              KeyPrefixEquals: 'prefix'
+            }
+          }]
+        }
+      }));
+      test.done();
+    },
+    'fails if routingRule condition object is empty'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteRoutingRules: [{
+            httpRedirectCode: '303',
+            condition: {}
+          }]
+        });
+      }, /The condition property cannot be an empty object/);
+      test.done();
+    },
   },
 
   'Bucket.fromBucketArn'(test: Test) {

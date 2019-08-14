@@ -5,13 +5,11 @@
 
 ![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
 
 ---
 <!--END STABILITY BANNER-->
 
-This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
+This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
 AWS Construct Library.
 
 See the [AWS CDK Developer
