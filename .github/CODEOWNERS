@@ -8,7 +8,7 @@
 # @See https://help.github.com/articles/about-codeowners/
 
 *                               @aws/aws-cdk-team
-/packages/aws-cdk               @aws/aws-cdk-team @RomainMuller
+/packages/aws-cdk               @aws/aws-cdk-team @shivlaks
 /packages/@aws-cdk/aws-code*/   @aws/aws-cdk-team @skinny85
-/packages/@aws-cdk/aws-ecs/     @aws/aws-cdk-team @SoManyHs
+/packages/@aws-cdk/aws-ecs/     @aws/aws-cdk-team @aws-ecs-devx
 /packages/@aws-cdk/region-info/ @aws/aws-cdk-team @RomainMuller
