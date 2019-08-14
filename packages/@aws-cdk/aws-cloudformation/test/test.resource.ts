@@ -78,7 +78,7 @@ export = testCase({
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
             "Principal": {
-              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "lambda.amazonaws.com"
             }
             }
           ],

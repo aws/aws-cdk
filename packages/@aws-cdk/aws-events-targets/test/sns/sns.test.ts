@@ -23,7 +23,7 @@ test('sns topic as an event rule target', () => {
           Sid: "0",
           Action: "sns:Publish",
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
+          Principal: { Service: "events.amazonaws.com" },
           Resource: { Ref: "MyTopic86869434" }
         }
       ],
@@ -64,7 +64,7 @@ test('multiple uses of a topic as a target results in a single policy statement'
         {
           Action: "sns:Publish",
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": [ "", [ "events.", { Ref: "AWS::URLSuffix" } ] ] } },
+          Principal: { Service: "events.amazonaws.com" },
           Resource: { Ref: "MyTopic86869434" },
           Sid: "0"
         }

@@ -29,7 +29,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -169,7 +169,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -324,7 +324,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],

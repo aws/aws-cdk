@@ -60,7 +60,7 @@ export = {
                 {
                   Action: "sts:AssumeRole",
                   Effect: "Allow",
-                  Principal: { Service: { "Fn::Join": ["", ["apigateway.", { Ref: "AWS::URLSuffix" }]] } }
+                  Principal: { Service: "apigateway.amazonaws.com" }
                 }
               ],
               Version: "2012-10-17"

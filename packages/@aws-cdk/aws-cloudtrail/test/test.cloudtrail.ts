@@ -11,9 +11,7 @@ const ExpectedBucketPolicyProperties = {
         Action: "s3:GetBucketAcl",
         Effect: "Allow",
         Principal: {
-          Service: {
-            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
-          }
+          Service: "cloudtrail.amazonaws.com"
         },
         Resource: {
           "Fn::GetAtt": [
@@ -31,9 +29,7 @@ const ExpectedBucketPolicyProperties = {
         },
         Effect: "Allow",
         Principal: {
-          Service: {
-            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
-          }
+          Service: "cloudtrail.amazonaws.com"
         },
         Resource: {
           "Fn::Join": [

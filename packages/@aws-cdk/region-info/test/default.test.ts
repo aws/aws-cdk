@@ -15,17 +15,19 @@ describe('servicePrincipal', () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.${urlSuffix}`);
       });
     }
-    for (const service of ['sns', 'sqs']) {
+
+    for (const service of ['ec2']) {
+      test(`${service}${suffix}`, () => {
+        expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${urlSuffix}`);
+      });
+    }
+
+    for (const service of ['autoscaling', 'lambda', 'events', 'sns', 'sqs', 'foo-service']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.amazonaws.com`);
       });
     }
 
-    for (const service of ['application-autoscaling', 'autoscaling', 'ec2', 'events', 'lambda', 'foo-service']) {
-      test(`${service}${suffix}`, () => {
-        expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${urlSuffix}`);
-      });
-    }
   }
 
   test('with an "exotic" DNS suffix (.local)', () => {
