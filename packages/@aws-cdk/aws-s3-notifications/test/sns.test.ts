@@ -45,7 +45,7 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
                 },
                 Effect: "Allow",
                 Principal: {
-                  Service: { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
+                  Service: "s3.amazonaws.com"
                 },
                 Resource: {
                   Ref: "MyTopic86869434"
@@ -61,7 +61,7 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
                 },
                 Effect: "Allow",
                 Principal: {
-                  Service: { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
+                  Service: "s3.amazonaws.com"
                 },
                 Resource: {
                   Ref: "MyTopic86869434"
