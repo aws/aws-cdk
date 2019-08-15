@@ -29,7 +29,7 @@ cd ${staging}
 # platforms that have a default --prefix set.
 pip3 install --ignore-installed --prefix ${piptemp} -r ${staging}/requirements.txt
 mv ${piptemp}/lib/python*/*-packages/* .
-mv ${piptemp}/lib64/python*/*-packages/* .
+[ -d ${piptemp}/lib64 ] && mv ${piptemp}/lib64/python*/*-packages/* .
 rm -fr ./awscli/examples
 
 
