@@ -352,7 +352,7 @@ export = {
     };
 
     // THEN
-    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region, got 'eu-west-1'/);
+    test.throws(() => toThrow(), /acmCertificate must be in the 'us-east-1' region, got 'eu-west-1'/);
     test.done();
   },
 
@@ -382,7 +382,7 @@ export = {
     };
 
     // THEN
-    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region, got 'eu-west-3'/);
+    test.throws(() => toThrow(), /acmCertificate must be in the 'us-east-1' region, got 'eu-west-3'/);
     test.done();
   },
 
@@ -410,15 +410,15 @@ export = {
             behaviors: [{isDefaultBehavior: true}]
           }
         ],
-        aliasConfiguration: {
+        aliasConfig: {
           names: ['www.example.com'],
-          acmCertRef: certificate.certificateArn
+          acmCert: certificate
         }
       });
     };
 
     // THEN
-    test.throws(() => toThrow(), /acmCertificateArn must be in the 'us-east-1' region, got 'eu-west-3'/);
+    test.throws(() => toThrow(), /acmCertificate must be in the 'us-east-1' region, got 'eu-west-3'/);
     test.done();
   },
 

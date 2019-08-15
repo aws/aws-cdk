@@ -1,3 +1,4 @@
+import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -34,12 +35,56 @@ export enum ViewerProtocolPolicy {
  * "cloudfront.net" domain. To use this feature you must provide the list of
  * additional domains, and the ACM Certificate that CloudFront should use for
  * these additional domains.
+ *
+ * @deprecated see {@link AliasConfig}
  */
 export interface AliasConfiguration {
   /**
    * ARN of an AWS Certificate Manager (ACM) certificate.
    */
   readonly acmCertRef: string;
+
+  /**
+   * Domain names on the certificate
+   *
+   * Both main domain name and Subject Alternative Names.
+   */
+  readonly names: string[];
+
+  /**
+   * How CloudFront should serve HTTPS requests.
+   *
+   * See the notes on SSLMethod if you wish to use other SSL termination types.
+   *
+   * @default SSLMethod.SNI
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
+   */
+  readonly sslMethod?: SSLMethod;
+
+  /**
+   * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+   *
+   * CloudFront serves your objects only to browsers or devices that support at
+   * least the SSL version that you specify.
+   *
+   * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
+   */
+  readonly securityPolicy?: SecurityPolicyProtocol;
+}
+
+/**
+ * Configuration for custom domain names
+ *
+ * CloudFront can use a custom domain that you provide instead of a
+ * "cloudfront.net" domain. To use this feature you must provide the list of
+ * additional domains, and the ACM Certificate that CloudFront should use for
+ * these additional domains.
+ */
+export interface AliasConfig {
+  /**
+   * AWS Certificate Manager (ACM) certificate.
+   */
+  readonly acmCert: certificatemanager.ICertificate;
 
   /**
    * Domain names on the certificate
@@ -395,8 +440,17 @@ export interface CloudFrontWebDistributionProps {
    * AliasConfiguration is used to configured CloudFront to respond to requests on custom domain names.
    *
    * @default - None.
+   *
+   * @deprecated see {@link aliasConfig}
    */
   readonly aliasConfiguration?: AliasConfiguration;
+
+  /**
+   * AliasConfig is used to configured CloudFront to respond to requests on custom domain names.
+   *
+   * @default - None.
+   */
+  readonly aliasConfig?: AliasConfig;
 
   /**
    * A comment for this distribution in the CloudFront console.
@@ -651,10 +705,34 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
     distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors };
 
-    if (props.aliasConfiguration) {
-      const minimumProtocolVersion = props.aliasConfiguration.securityPolicy;
-      const sslSupportMethod = props.aliasConfiguration.sslMethod || SSLMethod.SNI;
-      const acmCertificateArn = props.aliasConfiguration.acmCertRef;
+    if (props.aliasConfig || props.aliasConfiguration) {
+      // TODO:v2 remove props.aliasConfiguration usage, cleanup
+      const {
+        names: aliases,
+        securityPolicy: minimumProtocolVersion,
+        sslMethod: sslSupportMethod = SSLMethod.SNI
+      } = props.aliasConfig || props.aliasConfiguration!;
+
+      if (props.aliasConfig) {
+        const {acmCert} = props.aliasConfig;
+
+        const isDnsCert = (cert: certificatemanager.ICertificate): cert is certificatemanager.DnsValidatedCertificate =>
+            cert.hasOwnProperty('domainName');
+
+        if(isDnsCert(acmCert)) {
+          const requestResource = acmCert.node.findChild('CertificateRequestorResource').node.defaultChild;
+
+          // @ts-ignore;
+          const {_cfnProperties: properties} = requestResource;
+          const {Region: region} = properties;
+
+          if (region && region !== 'us-east-1') {
+            throw new Error(`acmCertificate must be in the 'us-east-1' region, got '${region}'`);
+          }
+        }
+      }
+
+      const acmCertificateArn = props.aliasConfig ? props.aliasConfig.acmCert.certificateArn : props.aliasConfiguration!.acmCertRef;
 
       if (acmCertificateArn) {
         let {region} = cdk.Arn.parse(acmCertificateArn);
@@ -664,13 +742,13 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         }
 
         if (!cdk.Token.isUnresolved(region) && region !== 'us-east-1') {
-          throw new Error(`acmCertificateArn must be in the 'us-east-1' region, got '${region}'`);
+          throw new Error(`acmCertificate must be in the 'us-east-1' region, got '${region}'`);
         }
       }
 
       distributionConfig = {
         ...distributionConfig,
-        aliases: props.aliasConfiguration.names,
+        aliases,
         viewerCertificate: {
           acmCertificateArn,
           sslSupportMethod,
