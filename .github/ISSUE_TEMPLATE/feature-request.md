@@ -4,6 +4,8 @@ about: Request a new feature
 labels: feature-request, needs-triage
 ---
 
+<!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
+
 ## :rocket: Feature Request
 
 ### General Information

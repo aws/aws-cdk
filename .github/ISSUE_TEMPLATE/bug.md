@@ -4,6 +4,8 @@ about: Report a bug
 labels: bug, needs-triage
 ---
 
+<!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
+
 ## :bug: Bug Report
 
 ### What is the problem?

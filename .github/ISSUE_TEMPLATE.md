@@ -11,6 +11,7 @@ Note: for support questions, please first reference our [documentation](https://
   - [ ] :beetle: bug report
   - [ ] :rocket: feature request
   - [ ] :books: construct library gap
+  - [ ] 📕 documentation issue => If regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues)
   - [ ] :phone: security issue or vulnerability => Please see [policy](https://github.com/aws/aws-cdk/security/policy)
   - [ ] :question: support request => Please see note at the top of this template.
 

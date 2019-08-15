@@ -4,6 +4,8 @@ about: Create a new issue
 labels: needs-triage
 ---
 
+<!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
+
 ## :question: General Issue
 
 <!--
