@@ -149,7 +149,9 @@
     "jsii-reflect": "^0.14.3",
     "jsonschema": "^1.2.4",
     "yaml": "1.6.0",
-    "yargs": "^13.3.0"
+    "yargs": "^13.3.0",
+    "@aws-cdk/aws-lakeformation": "^1.4.0",
+    "@aws-cdk/aws-managedblockchain": "^1.4.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
