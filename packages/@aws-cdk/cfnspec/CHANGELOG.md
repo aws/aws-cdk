@@ -1,3 +1,55 @@
+# CloudFormation Resource Specification v5.1.0
+
+## New Resource Types
+
+* AWS::CodeBuild::SourceCredential
+* AWS::Glue::MLTransform
+* AWS::LakeFormation::DataLakeSettings
+* AWS::LakeFormation::Permissions
+* AWS::LakeFormation::Resource
+* AWS::ManagedBlockchain::Member
+* AWS::ManagedBlockchain::Node
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EC2::ClientVpnEndpoint SplitTunnel (__added__)
+* AWS::Greengrass::ConnectorDefinition Tags (__added__)
+* AWS::Greengrass::CoreDefinition Tags (__added__)
+* AWS::Greengrass::DeviceDefinition Tags (__added__)
+* AWS::Greengrass::FunctionDefinition Tags (__added__)
+* AWS::Greengrass::Group Tags (__added__)
+* AWS::Greengrass::LoggerDefinition Tags (__added__)
+* AWS::Greengrass::ResourceDefinition Tags (__added__)
+* AWS::Greengrass::SubscriptionDefinition Tags (__added__)
+
+## Property Type Changes
+
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api AccessLogSetting (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.AccessLogSetting (__added__)
+
 # CloudFormation Resource Specification v5.0.0
 
 ## New Resource Types
