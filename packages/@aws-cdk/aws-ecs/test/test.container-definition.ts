@@ -285,7 +285,7 @@ export = {
     test.done();
 
   },
-  
+
   'Given GPU count parameter': {
     'will add resource requirements to container definition'(test: Test) {
       // GIVEN
