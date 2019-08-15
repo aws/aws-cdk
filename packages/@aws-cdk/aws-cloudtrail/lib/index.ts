@@ -98,7 +98,7 @@ export interface TrailProps {
    *
    * @default - if not supplied a bucket will be created with all the correct permisions
    */
-  readonly s3Bucket?: s3.Bucket
+  readonly s3Bucket?: s3.IBucket
 }
 
 export enum ReadWriteType {
@@ -128,6 +128,7 @@ export class Trail extends Resource {
    */
   public readonly trailSnsTopicArn: string;
 
+  private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
@@ -135,27 +136,28 @@ export class Trail extends Resource {
       physicalName: props.trailName,
     });
 
-    let s3bucket = props.s3Bucket;
+    const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
+
     if (props.s3Bucket === undefined) {
 
-      s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
-      const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
+      this.s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
 
-      s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [s3bucket.bucketArn],
+      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.s3bucket.bucketArn],
         actions: ['s3:GetBucketAcl'],
         principals: [cloudTrailPrincipal],
       }));
 
-      s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
+      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
         actions: ["s3:PutObject"],
         principals: [cloudTrailPrincipal],
         conditions:  {
           StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
         }
       }));
-    }
+    } else {
+      this.s3bucket = props.s3Bucket; }
 
     let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
@@ -187,7 +189,7 @@ export class Trail extends Resource {
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
-      s3BucketName: s3bucket.bucketName,
+      s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
       cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
@@ -202,7 +204,7 @@ export class Trail extends Resource {
     });
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
-    const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
+    const s3BucketPolicy = this.s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.node.addDependency(s3BucketPolicy);
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
