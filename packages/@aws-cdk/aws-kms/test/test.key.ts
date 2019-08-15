@@ -311,7 +311,7 @@ export = {
           DeletionPolicy: "Retain",
           UpdateReplacePolicy: "Retain",
         },
-        MyKeyAliasaliasxoo9464EB1C: {
+        MyKeyAlias1B45D9DA: {
           Type: "AWS::KMS::Alias",
           Properties: {
             AliasName: "alias/xoo",
@@ -396,7 +396,7 @@ export = {
           DeletionPolicy: "Retain",
           UpdateReplacePolicy: "Retain",
         },
-        MyKeyAliasaliasalias1668D31D7: {
+        MyKeyAlias1B45D9DA: {
           Type: "AWS::KMS::Alias",
           Properties: {
             AliasName: "alias/alias1",
@@ -484,7 +484,7 @@ export = {
 
     expect(stack2).toMatch({
       Resources: {
-        MyKeyImportedAliasaliashelloD41FEB6C: {
+        MyKeyImportedAliasB1C5269F: {
           Type: "AWS::KMS::Alias",
           Properties: {
             AliasName: "alias/hello",

@@ -530,17 +530,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "eks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "eks.amazonaws.com"
               }
             }
           ],
@@ -621,17 +611,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -1212,16 +1192,16 @@
     }
   },
   "Outputs": {
-    "ClusterClusterNameEB26049E": {
+    "ClusterConfigCommand43AAE40F": {
       "Value": {
-        "Ref": "Cluster9EE0221C"
-      }
-    },
-    "ClusterDefaultCapacityInstanceRoleARN7DADF219": {
-      "Value": {
-        "Fn::GetAtt": [
-          "ClusterDefaultCapacityInstanceRole3E209969",
-          "Arn"
+        "Fn::Join": [
+          "",
+          [
+            "aws eks update-kubeconfig --name ",
+            {
+              "Ref": "Cluster9EE0221C"
+            }
+          ]
         ]
       }
     }

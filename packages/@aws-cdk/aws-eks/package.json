@@ -88,5 +88,10 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [ 
+      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn"
+    ]
+  },
   "stability": "experimental"
 }
