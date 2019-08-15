@@ -69,8 +69,8 @@ new eks.Cluster(this, 'cluster', {
   defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
 });
 ```
-To disable the default capacity, simply set `defaultCapacity` to `0`:
 
+To disable the default capacity, simply set `defaultCapacity` to `0`:
 
 ```ts
 new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
@@ -121,11 +121,22 @@ new eks.Cluster(this, 'Cluster', {
 });
 ```
 
-Now, given AWS credentials for a user that is trusted by the masters role, you
-will be able to interact with your cluster like this:
+When you `cdk deploy` this CDK app, you will notice that an output will be printed
+with the `update-kubeconfig` command:
 
 ```console
-$ aws eks update-kubeconfig --name CLUSTER-NAME
+aws eks update-kubeconfig --name CLUSTER-NAME --role-arn ROLE-ARN
+```
+
+Copy & paste this `aws eks` command to your shell in order to connect to your EKS
+cluster with the "masters" role.
+
+Now, given [AWS CLI](https://aws.amazon.com/cli/) is configured to use AWS
+credentials for a user that is trusted by the masters role, you should be able
+to interact with your cluster through `kubectl` (the above example will trust
+all users in the account):
+
+```console
 $ kubectl get all -n kube-system
 ...
 ```
@@ -274,7 +285,7 @@ not have administrative privileges on the EKS cluster.
    if you wish to be able to manually interact with your cluster, you will need
    to map an IAM role or user to the `system:masters` group. This can be either
    done by specifying a `mastersRole` when the cluster is defined, calling
-   `cluster.addMastersRole` or explicitly mapping an IAM role or IAM user to the
+   `cluster.awsAuth.addMastersRole` or explicitly mapping an IAM role or IAM user to the
    relevant Kubernetes RBAC groups using `cluster.addRoleMapping` and/or
    `cluster.addUserMapping`.
 
@@ -293,12 +304,13 @@ and a new cluster to be created.
 
 When kubectl is disabled, you should be aware of the following:
 
-1. When you log-in to your cluster, you don't need to specify `--role-arn` as long as you are using the same user that created
-   the cluster.
+1. When you log-in to your cluster, you don't need to specify `--role-arn` as
+   long as you are using the same user that created the cluster.
 2. As described in the Amazon EKS User Guide, you will need to manually
-   edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html) when you add capacity in order to map
-   the IAM instance role to RBAC to allow nodes to join the cluster.
-3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail with an error: `cluster.addResource`, `cluster.awsAuth`, `props.mastersRole`.
+   edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html)
+   when you add capacity in order to map the IAM instance role to RBAC to allow nodes to join the cluster.
+3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail
+   with an error: `cluster.addResource`, `cluster.awsAuth`, `props.mastersRole`.
 
 ### Roadmap
 
