@@ -416,17 +416,7 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "eks.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "eks.amazonaws.com"
                 }
               }
             ],
@@ -507,17 +497,7 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "lambda.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "lambda.amazonaws.com"
                 }
               }
             ],
