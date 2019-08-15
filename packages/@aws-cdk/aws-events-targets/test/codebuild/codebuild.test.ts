@@ -42,7 +42,7 @@ test('use codebuild project as an eventrule target', () => {
         {
           Action: "sts:AssumeRole",
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": [ "", [ "events.", { Ref: "AWS::URLSuffix" } ] ] } }
+          Principal: { Service: "events.amazonaws.com" }
         }
       ],
       Version: "2012-10-17"
