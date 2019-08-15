@@ -1118,16 +1118,16 @@
       }
     },
     "Outputs": {
-      "cluster22ClusterNameC4896469": {
+      "cluster22ConfigCommand96B20279": {
         "Value": {
-          "Ref": "cluster227BD1CB20"
-        }
-      },
-      "cluster22NodesInstanceRoleARNEE60B01D": {
-        "Value": {
-          "Fn::GetAtt": [
-            "cluster22NodesInstanceRole51CD052F",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "aws eks update-kubeconfig --name ",
+              {
+                "Ref": "cluster227BD1CB20"
+              }
+            ]
           ]
         }
       }

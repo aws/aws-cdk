@@ -1192,16 +1192,16 @@
     }
   },
   "Outputs": {
-    "EKSClusterClusterName2B056109": {
+    "EKSClusterConfigCommand3809C9C9": {
       "Value": {
-        "Ref": "EKSClusterE11008B6"
-      }
-    },
-    "EKSClusterNodesInstanceRoleARN10992C84": {
-      "Value": {
-        "Fn::GetAtt": [
-          "EKSClusterNodesInstanceRoleEE5595D6",
-          "Arn"
+        "Fn::Join": [
+          "",
+          [
+            "aws eks update-kubeconfig --name ",
+            {
+              "Ref": "EKSClusterE11008B6"
+            }
+          ]
         ]
       }
     }
