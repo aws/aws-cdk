@@ -13,6 +13,10 @@ import { maxPodsForInstanceType } from './instance-data';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 
+// defaults are based on https://eksctl.io
+const DEFAULT_CAPACITY_COUNT = 2;
+const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
+
 /**
  * An EKS cluster
  */
@@ -172,6 +176,51 @@ export interface ClusterProps {
    * @default true The cluster can be managed by the AWS CDK application.
    */
   readonly kubectlEnabled?: boolean;
+
+  /**
+   * Number of instances to allocate as an initial capacity for this cluster.
+   * Instance type can be configured through `defaultCapacityInstanceType`,
+   * which defaults to `m5.large`.
+   *
+   * Use `cluster.addCapacity` to add additional customized capacity. Set this
+   * to `0` is you wish to avoid the initial capacity allocation.
+   *
+   * @default 2
+   */
+  readonly defaultCapacity?: number;
+
+  /**
+   * The instance type to use for the default capacity. This will only be taken
+   * into account if `defaultCapacity` is > 0.
+   *
+   * @default m5.large
+   */
+  readonly defaultCapacityInstance?: ec2.InstanceType;
+
+  /**
+   * Determines whether a CloudFormation output with the name of the cluster
+   * will be synthesized.
+   *
+   * @default false
+   */
+  readonly outputClusterName?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the ARN of the "masters"
+   * IAM role will be synthesized (if `mastersRole` is specified).
+   *
+   * @default false
+   */
+  readonly outputMastersRoleArn?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the `aws eks
+   * update-kubeconfig` command will be synthesized. This command will include
+   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   *
+   * @default true
+   */
+  readonly outputConfigCommand?: boolean;
 }
 
 /**
@@ -248,6 +297,12 @@ export class Cluster extends Resource implements ICluster {
    * @internal
    */
   public readonly _k8sResourceHandler?: lambda.Function;
+
+  /**
+   * The auto scaling group that hosts the default capacity for this cluster.
+   * This will be `undefined` if the default capacity is set to 0.
+   */
+  public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
 
   /**
    * The IAM role that was used to create this cluster. This role is
@@ -332,7 +387,11 @@ export class Cluster extends Resource implements ICluster {
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
-    new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+    let configCommand = `aws eks update-kubeconfig --name ${this.clusterName}`;
+
+    if (props.outputClusterName) {
+      new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+    }
 
     // we maintain a single manifest custom resource handler per cluster since
     // permissions and role are scoped. This will return `undefined` if kubectl
@@ -346,6 +405,24 @@ export class Cluster extends Resource implements ICluster {
       }
 
       this.awsAuth.addMastersRole(props.mastersRole);
+
+      if (props.outputMastersRoleArn) {
+        new CfnOutput(this, 'MastersRoleArn', { value: props.mastersRole.roleArn });
+      }
+
+      configCommand += ` --role-arn ${props.mastersRole.roleArn}`;
+    }
+
+    // allocate default capacity if non-zero (or default).
+    const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    if (desiredCapacity > 0) {
+      const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
+      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
+    }
+
+    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    if (outputConfigCommand) {
+      new CfnOutput(this, 'ConfigCommand', { value: configCommand });
     }
   }
 
@@ -419,11 +496,6 @@ export class Cluster extends Resource implements ICluster {
     // EKS Required Tags
     autoScalingGroup.node.applyAspect(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
-    // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
-    new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-      value: autoScalingGroup.role.roleArn
-    });
-
     if (options.mapRole === true && !this.kubectlEnabled) {
       throw new Error(`Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster`);
     }
@@ -439,6 +511,12 @@ export class Cluster extends Resource implements ICluster {
           'system:bootstrappers',
           'system:nodes'
         ]
+      });
+    } else {
+      // since we are not mapping the instance role to RBAC, synthesize an
+      // output so it can be pasted into `aws-auth-cm.yaml`
+      new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+        value: autoScalingGroup.role.roleArn
       });
     }
   }
