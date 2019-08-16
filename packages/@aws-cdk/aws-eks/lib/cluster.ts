@@ -196,6 +196,31 @@ export interface ClusterProps {
    * @default m5.large
    */
   readonly defaultCapacityInstance?: ec2.InstanceType;
+
+  /**
+   * Determines whether a CloudFormation output with the name of the cluster
+   * will be synthesized.
+   *
+   * @default false
+   */
+  readonly outputClusterName?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the ARN of the "masters"
+   * IAM role will be synthesized (if `mastersRole` is specified).
+   *
+   * @default false
+   */
+  readonly outputMastersRoleArn?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the `aws eks
+   * update-kubeconfig` command will be synthesized. This command will include
+   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   *
+   * @default true
+   */
+  readonly outputConfigCommand?: boolean;
 }
 
 /**
@@ -362,7 +387,11 @@ export class Cluster extends Resource implements ICluster {
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
-    new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+    let configCommand = `aws eks update-kubeconfig --name ${this.clusterName}`;
+
+    if (props.outputClusterName) {
+      new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+    }
 
     // we maintain a single manifest custom resource handler per cluster since
     // permissions and role are scoped. This will return `undefined` if kubectl
@@ -376,6 +405,12 @@ export class Cluster extends Resource implements ICluster {
       }
 
       this.awsAuth.addMastersRole(props.mastersRole);
+
+      if (props.outputMastersRoleArn) {
+        new CfnOutput(this, 'MastersRoleArn', { value: props.mastersRole.roleArn });
+      }
+
+      configCommand += ` --role-arn ${props.mastersRole.roleArn}`;
     }
 
     // allocate default capacity if non-zero (or default).
@@ -383,6 +418,11 @@ export class Cluster extends Resource implements ICluster {
     if (desiredCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
+    }
+
+    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    if (outputConfigCommand) {
+      new CfnOutput(this, 'ConfigCommand', { value: configCommand });
     }
   }
 
@@ -456,11 +496,6 @@ export class Cluster extends Resource implements ICluster {
     // EKS Required Tags
     autoScalingGroup.node.applyAspect(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
-    // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
-    new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-      value: autoScalingGroup.role.roleArn
-    });
-
     if (options.mapRole === true && !this.kubectlEnabled) {
       throw new Error(`Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster`);
     }
@@ -476,6 +511,12 @@ export class Cluster extends Resource implements ICluster {
           'system:bootstrappers',
           'system:nodes'
         ]
+      });
+    } else {
+      // since we are not mapping the instance role to RBAC, synthesize an
+      // output so it can be pasted into `aws-auth-cm.yaml`
+      new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+        value: autoScalingGroup.role.roleArn
       });
     }
   }
