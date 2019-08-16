@@ -49,7 +49,7 @@ pipeline.addStage({
 To use GitHub as the source of a CodePipeline:
 
 ```typescript
-// Read the secret from ParameterStore
+// Read the secret from Secrets Manager
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
