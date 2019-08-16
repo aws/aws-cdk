@@ -1192,16 +1192,16 @@
     }
   },
   "Outputs": {
-    "ClusterClusterNameEB26049E": {
+    "ClusterConfigCommand43AAE40F": {
       "Value": {
-        "Ref": "Cluster9EE0221C"
-      }
-    },
-    "ClusterDefaultCapacityInstanceRoleARN7DADF219": {
-      "Value": {
-        "Fn::GetAtt": [
-          "ClusterDefaultCapacityInstanceRole3E209969",
-          "Arn"
+        "Fn::Join": [
+          "",
+          [
+            "aws eks update-kubeconfig --name ",
+            {
+              "Ref": "Cluster9EE0221C"
+            }
+          ]
         ]
       }
     }
