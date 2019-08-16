@@ -84,6 +84,100 @@ export = {
       test.done();
     },
 
+    "with all properties set"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      });
+
+      new ecs.FargateService(stack, "FargateService", {
+        cluster,
+        taskDefinition,
+        desiredCount: 2,
+        assignPublicIp: true,
+        cloudMapOptions: {
+          name: "myapp",
+          dnsRecordType: cloudmap.DnsRecordType.A,
+          dnsTtl: cdk.Duration.seconds(50),
+          failureThreshold: 20
+        },
+        healthCheckGracePeriod: cdk.Duration.seconds(60),
+        maxHealthyPercent: 150,
+        minHealthyPercent: 55,
+        securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          allowAllOutbound: true,
+          description: 'Example',
+          securityGroupName: 'Bob',
+          vpc,
+        }),
+        serviceName: "bonjour",
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        TaskDefinition: {
+          Ref: "FargateTaskDefC6FB60B4"
+        },
+        Cluster: {
+          Ref: "EcsCluster97242B84"
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 150,
+          MinimumHealthyPercent: 55
+        },
+        DesiredCount: 2,
+        HealthCheckGracePeriodSeconds: 60,
+        LaunchType: LaunchType.FARGATE,
+        LoadBalancers: [],
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: "ENABLED",
+            SecurityGroups: [
+              {
+                "Fn::GetAtt": [
+                  "SecurityGroup1F554B36F",
+                  "GroupId"
+                ]
+              }
+            ],
+            Subnets: [
+              {
+                Ref: "MyVpcPublicSubnet1SubnetF6608456"
+              },
+              {
+                Ref: "MyVpcPublicSubnet2Subnet492B6BFB"
+              }
+            ]
+          }
+        },
+        ServiceName: "bonjour",
+        ServiceRegistries: [
+          {
+            RegistryArn: {
+              "Fn::GetAtt": [
+                "FargateServiceCloudmapService9544B753",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
     "errors when no container specified on task definition"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
