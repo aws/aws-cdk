@@ -387,6 +387,7 @@ export = {
           {
             Action: [
               'ssm:DescribeParameters',
+              'ssm:GetParameters',
               'ssm:GetParameter',
               'ssm:GetParameterHistory'
             ],
@@ -733,6 +734,94 @@ export = {
 
       test.done();
     },
+
+    "with one or more host devices"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
+
+      // WHEN
+      linuxParameters.addDevices({
+        hostPath: "a/b/c",
+      });
+
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Devices: [
+                {
+                  HostPath: "a/b/c"
+                }
+              ],
+              Tmpfs: [],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    "with the tmpfs mount for a container"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
+
+      // WHEN
+      linuxParameters.addTmpfs({
+        containerPath: "a/b/c",
+        size: 1024
+      });
+
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Devices: [],
+              Tmpfs: [
+                {
+                  ContainerPath: "a/b/c",
+                  Size: 1024
+                }
+              ],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    }
   },
 
   // render extra hosts test

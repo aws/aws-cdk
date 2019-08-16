@@ -50,7 +50,7 @@ ssh -L 3000:<ELB ADDRESS>:3000 ssh-box-somewhere.example.com
 ```
 
 Clean the services before you stop the cluster to get rid of the load balancer
-(otherwise you won't be able to delet the stack):
+(otherwise you won't be able to delete the stack):
 
 ```
 kubectl delete --all services
