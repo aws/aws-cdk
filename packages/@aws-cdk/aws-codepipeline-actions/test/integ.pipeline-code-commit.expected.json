@@ -90,7 +90,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -189,17 +190,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -506,17 +497,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               }
             }
           ],

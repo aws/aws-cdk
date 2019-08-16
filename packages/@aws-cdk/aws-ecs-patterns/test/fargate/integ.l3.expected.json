@@ -455,17 +455,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -480,7 +470,6 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -493,16 +482,13 @@
                 }
               }
             },
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Cpu": "512",
@@ -536,17 +522,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],

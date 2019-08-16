@@ -355,17 +355,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -380,17 +370,13 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Cpu": "512",

@@ -363,17 +363,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -562,17 +552,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "autoscaling.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "autoscaling.amazonaws.com"
               }
             }
           ],
@@ -630,6 +610,37 @@
         "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
       ]
     },
+    "ScheduledEc2TaskScheduledEventRuleFE2376A2": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "ScheduleExpression": "rate(1 minute)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "EcsCluster97242B84",
+                "Arn"
+              ]
+            },
+            "EcsParameters": {
+              "TaskCount": 2,
+              "TaskDefinitionArn": {
+                "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
+              }
+            },
+            "Id": "Target0",
+            "Input": "{}",
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }
+    },
     "ScheduledEc2TaskScheduledTaskDefTaskRoleC3FA127C": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -639,17 +650,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -665,17 +666,12 @@
             "Cpu": 1,
             "Environment": [
               {
-                "Name": "name",
-                "Value": "TRIGGER"
-              },
-              {
-                "Name": "value",
+                "Name": "TRIGGER",
                 "Value": "CloudWatch Events"
               }
             ],
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -689,11 +685,7 @@
               }
             },
             "Memory": 512,
-            "MountPoints": [],
-            "Name": "ScheduledContainer",
-            "PortMappings": [],
-            "Ulimits": [],
-            "VolumesFrom": []
+            "Name": "ScheduledContainer"
           }
         ],
         "ExecutionRoleArn": {
@@ -718,8 +710,8 @@
     },
     "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "ScheduledEc2TaskScheduledTaskDefExecutionRole65A8CC6F": {
       "Type": "AWS::IAM::Role",
@@ -730,17 +722,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -786,17 +768,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               }
             }
           ],
@@ -843,37 +815,6 @@
         "Roles": [
           {
             "Ref": "ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F"
-          }
-        ]
-      }
-    },
-    "ScheduledEc2TaskScheduledEventRuleFE2376A2": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "ScheduleExpression": "rate(1 minute)",
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Fn::GetAtt": [
-                "EcsCluster97242B84",
-                "Arn"
-              ]
-            },
-            "EcsParameters": {
-              "TaskCount": 2,
-              "TaskDefinitionArn": {
-                "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
-              }
-            },
-            "Id": "Target0",
-            "Input": "{}",
-            "RoleArn": {
-              "Fn::GetAtt": [
-                "ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F",
-                "Arn"
-              ]
-            }
           }
         ]
       }

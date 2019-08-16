@@ -8,23 +8,23 @@ import lambda = require('../lib');
 // tslint:disable:no-string-literal
 
 export = {
-  'lambda.Code.inline': {
+  'lambda.Code.fromInline': {
     'fails if used with unsupported runtimes'(test: Test) {
-      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.GO_1_X), /Inline source not allowed for go1\.x/);
-      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.JAVA_8), /Inline source not allowed for java8/);
+      test.throws(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X), /Inline source not allowed for go1\.x/);
+      test.throws(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8), /Inline source not allowed for java8/);
       test.done();
     },
     'fails if larger than 4096 bytes'(test: Test) {
       test.throws(
-        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.NODEJS_8_10),
+        () => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_8_10),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
     }
   },
-  'lambda.Code.asset': {
+  'lambda.Code.fromAsset': {
     'fails if a non-zip asset is used'(test: Test) {
       // GIVEN
-      const fileAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
+      const fileAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
 
       // THEN
       test.throws(() => defineFunction(fileAsset), /Asset must be a \.zip file or a directory/);
@@ -35,7 +35,7 @@ export = {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'MyStack');
-      const directoryAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
+      const directoryAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
 
       // WHEN
       new lambda.Function(stack, 'Func1', {
@@ -73,7 +73,7 @@ export = {
 
       // WHEN
       new lambda.Function(stack, 'Func1', {
-        code: lambda.Code.asset(location),
+        code: lambda.Code.fromAsset(location),
         runtime: lambda.Runtime.NODEJS_8_10,
         handler: 'foom',
       });
@@ -89,7 +89,7 @@ export = {
     }
   },
 
-  'lambda.Code.cfnParameters': {
+  'lambda.Code.fromCfnParameters': {
     "automatically creates the Bucket and Key parameters when it's used in a Function"(test: Test) {
       const stack = new cdk.Stack();
       const code = new lambda.CfnParametersCode();
@@ -139,7 +139,7 @@ export = {
         type: 'String',
       });
 
-      const code = lambda.Code.cfnParameters({
+      const code = lambda.Code.fromCfnParameters({
         bucketNameParam,
         objectKeyParam: bucketKeyParam,
       });
