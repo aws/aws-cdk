@@ -92,10 +92,8 @@ export = {
 
       expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
       expect(stack).to(haveResource("AWS::S3::Bucket"));
-      expect(stack).to(haveResource("AWS::S3::BucketPolicy", ExpectedBucketPolicyProperties));
+      expect(stack).to(haveResource("AWS::S3::BucketPolicy"));
       expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
-      const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
-      test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
       test.done();
     },
     'with cloud watch logs': {
