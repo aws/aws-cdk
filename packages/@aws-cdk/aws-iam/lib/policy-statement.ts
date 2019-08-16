@@ -14,16 +14,20 @@ export class PolicyStatement {
   public effect: Effect;
 
   private action = new Array<any>();
+  private notaction = new Array<any>();
   private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
+  private notresource = new Array<any>();
   private condition: { [key: string]: any } = { };
 
   constructor(props: PolicyStatementProps = {}) {
     this.effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
+    this.addNotActions(...props.notactions || []);
     this.addPrincipals(...props.principals || []);
     this.addResources(...props.resources || []);
+    this.addNotResources(...props.notresources || []);
     if (props.conditions !== undefined) {
       this.addConditions(props.conditions);
     }
@@ -35,6 +39,10 @@ export class PolicyStatement {
 
   public addActions(...actions: string[]) {
     this.action.push(...actions);
+  }
+
+  public addNotActions(...notactions: string[]) {
+    this.notaction.push(...notactions);
   }
 
   //
@@ -98,6 +106,10 @@ export class PolicyStatement {
     this.resource.push(...arns);
   }
 
+  public addNotResources(...arns: string[]) {
+    this.notresource.push(...arns);
+  }
+
   /**
    * Adds a ``"*"`` resource to this statement.
    */
@@ -142,10 +154,12 @@ export class PolicyStatement {
   public toStatementJson(): any {
     return noUndef({
       Action: _norm(this.action),
+      NotAction: _norm(this.notaction),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
       Principal: _normPrincipal(this.principal),
       Resource: _norm(this.resource),
+      NotResource: _norm(this.notresource),
       Sid: _norm(this.sid),
     });
 
@@ -230,6 +244,13 @@ export interface PolicyStatementProps {
   readonly actions?: string[];
 
   /**
+   * List of not actions to add to the statement
+   *
+   * @default - no actions
+   */
+  readonly notactions?: string[];
+
+  /**
    * List of principals to add to the statement
    *
    * @default - no principals
@@ -239,9 +260,16 @@ export interface PolicyStatementProps {
   /**
    * Resource ARNs to add to the statement
    *
-   * @default - no principals
+   * @default - no resources
    */
   readonly resources?: string[];
+
+  /**
+   * NotResource ARNs to add to the statement
+   *
+   * @default - no resources
+   */
+  readonly notresources?: string[];
 
   /**
    * Conditions to add to the statement
