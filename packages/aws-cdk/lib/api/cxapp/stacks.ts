@@ -230,6 +230,15 @@ export class AppStacks {
                   Modules: modules
                 }
               };
+              if (stack.environment.region === cxapi.UNKNOWN_REGION) {
+                stack.template.Conditions = stack.template.Conditions || {};
+                if (!stack.template.Conditions.CDKMetadataAvailable) {
+                  stack.template.Conditions.CDKMetadataAvailable = _makeCdkMetadataAvailableCondition();
+                  stack.template.Resources.CDKMetadata.Condition = 'CDKMetadataAvailable';
+                } else {
+                  warning(`The stack ${stack.name} already includes a CDKMetadataAvailable condition`);
+                }
+              }
             } else {
               warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
             }
@@ -402,4 +411,40 @@ export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+function _makeCdkMetadataAvailableCondition() {
+  const options = new Array<any>();
+  // Find out all regions known to support AWS::CDK::Metadata from the RegionInfo facts database
+  for (const region of regionInfo.Fact.regions) {
+    if (regionInfo.Fact.find(region, regionInfo.FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES') {
+      options.push({ 'Fn::Equals': [{ Ref: 'AWS::Region' }, region] });
+    }
+  }
+  return _fnOr(options);
+}
+
+/**
+ * This takes a bunch of operands and crafts an `Fn::Or` for those. Funny thing is `Fn::Or` requires
+ * at least 2 operands and at most 10 operands, so we have to... do this.
+ */
+function _fnOr(operands: any[]): any {
+  if (operands.length === 0) {
+    throw new Error('Cannot build `Fn::Or` with zero operands!');
+  }
+  if (operands.length === 1) {
+    return operands[0];
+  }
+  if (operands.length <= 10) {
+    return { 'Fn::Or': operands };
+  }
+  return _fnOr(_inGroupsOf(operands, 10).map(group => _fnOr(group)));
+}
+
+function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
+  const result = new Array<T[]>();
+  for (let i = 0; i < array.length; i += maxGroup) {
+    result.push(array.slice(i, i + maxGroup));
+  }
+  return result;
 }
