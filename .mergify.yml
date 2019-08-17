@@ -56,7 +56,7 @@ pull_request_rules:
       comment:
         message: Codebuild (Continuous Integration) build failed for current commits. Please check log and resolve before PR is merged.
     conditions:
-      - -status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+      - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
