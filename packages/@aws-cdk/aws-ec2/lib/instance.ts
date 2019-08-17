@@ -19,90 +19,91 @@ const NAME_TAG: string = 'Name';
  */
 export interface InstanceProps {
 
-    /**
-     * Name of SSH keypair to grant access to instance
-     *
-     * @default - No SSH access will be possible.
-     */
-    readonly keyName?: string;
+  /**
+   * Name of SSH keypair to grant access to instance
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyName?: string;
 
-    /**
-     * Where to place the instance within the VPC
-     *
-     * @default - Private subnets.
-     */
-    readonly vpcSubnets?: SubnetSelection;
+  /**
+   * Where to place the instance within the VPC
+   *
+   * @default - Private subnets.
+   */
+  readonly vpcSubnets?: SubnetSelection;
 
-    /**
-     * In which AZ to place the instance within the VPC
-     *
-     * @default - Private subnets.
-     */
-    readonly availabilityZone?: string;
+  /**
+   * In which AZ to place the instance within the VPC
+   *
+   * @default - Random zone.
+   */
+  readonly availabilityZone?: string;
 
-    /**
-     * Whether the instance could initiate connections to anywhere by default
-     *
-     * @default true
-     */
-    readonly allowAllOutbound?: boolean;
+  /**
+   * Whether the instance could initiate connections to anywhere by default
+   *
+   * @default true
+   */
+  readonly allowAllOutbound?: boolean;
 
-    /**
-     * The length of time to wait for the resourceSignalCount
-     *
-     * The maximum value is 43200 (12 hours).
-     *
-     * @default Duration.minutes(5)
-     */
-    readonly resourceSignalTimeout?: Duration;
+  /**
+   * The length of time to wait for the resourceSignalCount
+   *
+   * The maximum value is 43200 (12 hours).
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly resourceSignalTimeout?: Duration;
 
-    /**
-     * VPC to launch the instance in.
-     */
-    readonly vpc: IVpc;
+  /**
+   * VPC to launch the instance in.
+   */
+  readonly vpc: IVpc;
 
-    /**
-     * Type of instance to launch
-     */
-    readonly instanceType: InstanceType;
+  /**
+   * Type of instance to launch
+   */
+  readonly instanceType: InstanceType;
 
-    /**
-     * AMI to launch
-     */
-    readonly machineImage: IMachineImage;
+  /**
+   * AMI to launch
+   */
+  readonly machineImage: IMachineImage;
 
-    /**
-     * Specific UserData to use
-     *
-     * The UserData may still be mutated after creation.
-     *
-     * @default - A UserData object appropriate for the MachineImage's
-     * Operating System is created.
-     */
-    readonly userData?: UserData;
+  /**
+   * Specific UserData to use
+   *
+   * The UserData may still be mutated after creation.
+   *
+   * @default - A UserData object appropriate for the MachineImage's
+   * Operating System is created.
+   */
+  readonly userData?: UserData;
 
-    /**
-     * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
-     *
-     * The role must be assumable by the service principal `ec2.amazonaws.com`:
-     *
-     * @example
-     *
-     *    const role = new iam.Role(this, 'MyRole', {
-     *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
-     *    });
-     *
-     * @default A role will automatically be created, it can be accessed via the `role` property
-     */
-    readonly role?: iam.IRole;
+  /**
+   * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
+   *
+   * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   *
+   * @example
+   *
+   *    const role = new iam.Role(this, 'MyRole', {
+   *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   *    });
+   *
+   * @default A role will automatically be created, it can be accessed via the `role` property
+   */
+  readonly role?: iam.IRole;
 
-    /**
-     * The name of the instance
-     *
-     * @default - CDK generated name
-     */
-    readonly instanceName?: string;
-  }
+  /**
+   * The name of the instance
+   *
+   * @default - CDK generated name
+   */
+  readonly instanceName?: string;
+
+}
 
 export class Instance extends Resource implements IConnectable {
 
@@ -175,7 +176,7 @@ export class Instance extends Resource implements IConnectable {
     });
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [ this.role.roleName ]
+      roles: [this.role.roleName]
     });
 
     // use delayed evaluation
@@ -187,25 +188,25 @@ export class Instance extends Resource implements IConnectable {
     const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
     if (props.availabilityZone) {
-        const selected = subnets.filter(sn => sn.availabilityZone === props.availabilityZone);
-        if (selected.length === 1) {
-            subnet = selected[0];
-        } else {
-            throw new Error('When specifying AZ there has to be exactly on subnet of the given type in this az');
-        }
+      const selected = subnets.filter(sn => sn.availabilityZone === props.availabilityZone);
+      if (selected.length === 1) {
+        subnet = selected[0];
+      } else {
+        throw new Error('When specifying AZ there has to be exactly on subnet of the given type in this az');
+      }
     } else {
-        subnet = subnets[0];
+      subnet = subnets[0];
     }
 
     this.instance = new CfnInstance(this, 'Instance', {
-        imageId: imageConfig.imageId,
-        keyName: props.keyName,
-        instanceType: props.instanceType.toString(),
-        securityGroupIds: securityGroupsToken,
-        iamInstanceProfile: iamProfile.ref,
-        userData: userDataToken,
-        subnetId: subnet.subnetId,
-        availabilityZone: subnet.availabilityZone,
+      imageId: imageConfig.imageId,
+      keyName: props.keyName,
+      instanceType: props.instanceType.toString(),
+      securityGroupIds: securityGroupsToken,
+      iamInstanceProfile: iamProfile.ref,
+      userData: userDataToken,
+      subnetId: subnet.subnetId,
+      availabilityZone: subnet.availabilityZone,
     });
     this.instance.node.addDependency(this.role);
 

@@ -1,3 +1,4 @@
+export * from './bastion-host';
 export * from './connections';
 export * from './instance-types';
 export * from './instance';
