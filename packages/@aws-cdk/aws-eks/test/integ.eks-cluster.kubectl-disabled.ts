@@ -11,7 +11,8 @@ class EksClusterStack extends cdk.Stack {
 
     const cluster = new eks.Cluster(this, 'EKSCluster', {
       vpc,
-      kubectlEnabled: false
+      kubectlEnabled: false,
+      defaultCapacity: 0,
     });
 
     cluster.addCapacity('Nodes', {
