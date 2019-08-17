@@ -67,4 +67,4 @@ pull_request_rules:
       comment:
         message: Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). Please adjust title before merge.
     conditions:
-      - -status-success=Semantic Pull Request
+      - status-failure=Semantic Pull Request
