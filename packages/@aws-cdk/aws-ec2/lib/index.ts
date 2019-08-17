@@ -1,5 +1,6 @@
 export * from './connections';
 export * from './instance-types';
+export * from './instance';
 export * from './machine-image';
 export * from './port';
 export * from './security-group';
