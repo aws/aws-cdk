@@ -1,3 +1,36 @@
+# CloudFormation Resource Specification v5.2.0
+
+## New Resource Types
+
+* AWS::SSM::MaintenanceWindowTarget
+* AWS::SageMaker::Workteam
+
+## Removed Resource Types
+
+* AWS::EC2::VPCEndpointConnectionNotification
+* AWS::ManagedBlockchain::Member
+* AWS::ManagedBlockchain::Node
+* AWS::PinpointEmail::DedicatedIpPool
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DMS::ReplicationTask CdcStartPosition (__added__)
+* AWS::DMS::ReplicationTask CdcStopPosition (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LogConfig ExcludeVerboseContent (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
 # CloudFormation Resource Specification v5.1.0
 
 ## New Resource Types

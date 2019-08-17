@@ -45,7 +45,7 @@ function update-spec() {
 
 update-spec \
     "CloudFormation Resource Specification" \
-    "https://d1uauaxba7bl26.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json" \
+    "https://d201a2mn26r7lk.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json" \
     spec-source/000_CloudFormationResourceSpecification.json \
     true
 
