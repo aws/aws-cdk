@@ -46,7 +46,13 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
                 KMSMasterKeyID: props.kmsKeyId,
               },
             }]
-          }
+          },
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+            BlockPublicPolicy: true,
+            IgnorePublicAcls: true,
+            RestrictPublicBuckets: true,
+          },
         }
       }
     },
