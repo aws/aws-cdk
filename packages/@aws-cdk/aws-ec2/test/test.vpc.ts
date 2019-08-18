@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import { Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { CfnVPC, DefaultInstanceTenancy, SubnetType, Vpc } from '../lib';
+import { CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetNetworkAclAssociation, SubnetType, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -103,6 +103,55 @@ export = {
       });
       expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       expect(stack).notTo(haveResource("AWS::EC2::NatGateway"));
+      test.done();
+    },
+    "with private subnets and custom networkAcl."(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'Public',
+          },
+          {
+            subnetType: SubnetType.PRIVATE,
+            name: 'private',
+          }
+        ]
+      });
+      const nacl1 = new NetworkAcl(stack, 'myNACL1', {vpc});
+
+      new NetworkAclEntry(stack, 'AllowDNSEgress', {
+            networkAcl: nacl1,
+            ruleNumber: 100,
+            protocol: 17,
+            ruleAction: 'allow',
+            egress: true,
+            cidrBlock: '10.0.0.0/16',
+            icmp: {code: -1, type: -1},
+            portRange: {from: 53, to: 53}
+            } );
+
+      new NetworkAclEntry(stack, 'AllowDNSIngress', {
+              networkAcl: nacl1,
+              ruleNumber: 100,
+              protocol: 17,
+              ruleAction: 'allow',
+              egress: false,
+              cidrBlock: '0.0.0.0/0',
+              icmp: {code: -1, type: -1},
+              portRange: {from: 53, to: 53}
+              } );
+
+      for (const subnet of vpc.privateSubnets) {
+          new SubnetNetworkAclAssociation(stack, 'AssociatePrivate' + subnet.node.uniqueId, {
+            networkAclId: nacl1.networkAclId, subnetId: subnet.subnetId,
+              });
+      }
+
+      expect(stack).to(countResources('AWS::EC2::NetworkAcl', 1));
+      expect(stack).to(countResources('AWS::EC2::NetworkAclEntry', 2));
+      expect(stack).to(countResources('AWS::EC2::SubnetNetworkAclAssociation', 3));
       test.done();
     },
 

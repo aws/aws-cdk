@@ -352,12 +352,6 @@ export interface SubnetNetworkAclAssociationProps {
   readonly subnetNetworkAclAssociationName?: string;
 
   /**
-   * ID for the current SubnetNetworkAclAssociation
-   * @attribute
-   */
-  readonly subnetNetworkAclAssociationId: string;
-
-  /**
    * ID for the current Network ACL
    * @attribute
    */
@@ -399,13 +393,19 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
    */
   public readonly subnetId: string;
 
+  private association: CfnSubnetNetworkAclAssociation;
   constructor(scope: Construct, id: string, props: SubnetNetworkAclAssociationProps) {
     super(scope, id, {
       physicalName: props.subnetNetworkAclAssociationName
     });
-    new CfnSubnetNetworkAclAssociation(this, 'Resource', {
-      networkAclId: props.networkAclId,
-      subnetId: props.subnetId,
+
+    this.association = new CfnSubnetNetworkAclAssociation(this, 'Resource', {
+       networkAclId: props.networkAclId,
+       subnetId: props.subnetId,
     });
+
+    this.networkAclId = this.association.networkAclId;
+    this.subnetId = this.association.subnetId;
+    this.subnetNetworkAclAssociationAssociationId = this.association.ref;
   }
 }
