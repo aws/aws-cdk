@@ -41,10 +41,10 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
   /**
    * A GitHub OAuth token to use for authentication.
    *
-   * It is recommended to use a Secrets Manager `SecretString` to obtain the token:
+   * It is recommended to use a Secrets Manager `Secret` to obtain the token:
    *
-   *   const oauth = new secretsmanager.SecretString(this, 'GitHubOAuthToken', { secretId: 'my-github-token' });
-   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
+   *   const oauth = cdk.SecretValue.secretsManager('my-github-token');
+   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth, ... });
    */
   readonly oauthToken: SecretValue;
 
