@@ -8,7 +8,7 @@ import { IVpc, SubnetType } from "./vpc";
 /**
  * Properties of the bastion host
  */
-export interface BastionHostProps {
+export interface BastionHostLinuxProps {
 
     /**
      * In which AZ to place the instance within the VPC
@@ -44,8 +44,8 @@ export interface BastionHostProps {
     readonly securityGroup?: ISecurityGroup;
 }
 
-export class BastionHost extends Instance {
-    constructor(scope: Construct, id: string, props: BastionHostProps) {
+export class BastionHostLinux extends Instance {
+    constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
         super(scope, id, {
             vpc: props.vpc,
             availabilityZone: props.availabilityZone,

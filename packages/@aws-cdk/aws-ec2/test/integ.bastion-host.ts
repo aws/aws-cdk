@@ -10,7 +10,7 @@ class TestStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC');
 
-    new ec2.BastionHost(this, 'BastionHost', { vpc });
+    new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
   }
 }
 
