@@ -99,7 +99,7 @@ export interface InstanceProps {
    *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    *    });
    *
-   * @default A role will automatically be created, it can be accessed via the `role` property
+   * @default - A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
 
@@ -180,7 +180,7 @@ export class Instance extends Resource implements IConnectable {
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.applyAspect(new Tag(NAME_TAG, props.instanceName || this.node.path));
+    Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
