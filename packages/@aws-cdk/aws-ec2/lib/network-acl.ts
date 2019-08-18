@@ -1,5 +1,5 @@
 import { Construct, IResource,  Resource, ResourceProps } from '@aws-cdk/core';
-import { CfnNetworkAcl, CfnNetworkAclEntry  } from './ec2.generated';
+import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation  } from './ec2.generated';
 import { IVpc } from './vpc';
 
 export interface INetworkACL extends IResource {
@@ -314,5 +314,98 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
 
   public get uniqueId() {
     return this.node.uniqueId;
+  }
+}
+
+export interface ISubnetNetworkAclAssociation extends IResource {
+  /**
+   * ID for the current SubnetNetworkAclAssociation
+   * @attribute
+   */
+  readonly subnetNetworkAclAssociationAssociationId: string;
+}
+
+/**
+ * A SubnetNetworkAclAssociationBase that is not created in this template
+ */
+abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
+public abstract readonly subnetNetworkAclAssociationAssociationId: string;
+constructor(scope: Construct, id: string, props?: ResourceProps) {
+    super(scope, id, props);
+
+  }
+
+  public get uniqueId() {
+    return this.node.uniqueId;
+  }
+}
+
+export interface SubnetNetworkAclAssociationProps {
+  /**
+   * The name of the SubnetNetworkAclAssociation.
+   *
+   * It is not recommended to use an explicit name.
+   *
+   * @default If you don't specify a SubnetNetworkAclAssociationName, AWS CloudFormation generates a
+   * unique physical ID and uses that ID for the group name.
+   */
+  readonly subnetNetworkAclAssociationName?: string;
+
+  /**
+   * ID for the current SubnetNetworkAclAssociation
+   * @attribute
+   */
+  readonly subnetNetworkAclAssociationId: string;
+
+  /**
+   * ID for the current Network ACL
+   * @attribute
+   */
+  readonly networkAclId: string;
+  /**
+   * ID of the Subnet
+   * @attribute
+   */
+  readonly subnetId: string;
+}
+
+export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
+  /**
+   * Import an existing NetworkAcl into this app.
+   */
+  public static fromSubnetNetworkAclAssociationId(scope: Construct, id: string,
+                                                  subnetNetworkAclAssociationId: string): ISubnetNetworkAclAssociation {
+  class Import extends SubnetNetworkAclAssociationBase {
+    public subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationId;
+
+    }
+
+  return new Import(scope, id);
+  }
+  /**
+   * ID for the current SubnetNetworkAclAssociation
+   * @attribute
+   */
+
+  public readonly subnetNetworkAclAssociationAssociationId: string;
+  /**
+   * ID for the current Network ACL
+   * @attribute
+   */
+  public readonly networkAclId: string;
+  /**
+   * ID of the Subnet
+   * @attribute
+   */
+  public readonly subnetId: string;
+
+  constructor(scope: Construct, id: string, props: SubnetNetworkAclAssociationProps) {
+    super(scope, id, {
+      physicalName: props.subnetNetworkAclAssociationName
+    });
+    new CfnSubnetNetworkAclAssociation(this, 'Resource', {
+      networkAclId: props.networkAclId,
+      subnetId: props.subnetId,
+    });
   }
 }
