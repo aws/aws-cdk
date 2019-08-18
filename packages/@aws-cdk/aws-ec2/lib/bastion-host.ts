@@ -2,7 +2,7 @@ import { PolicyStatement } from "@aws-cdk/aws-iam";
 import { CfnOutput, Construct } from "@aws-cdk/core";
 import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from ".";
 import { Instance } from "./instance";
-import { Port } from "./port";
+import { ISecurityGroup } from "./security-group";
 import { IVpc, SubnetType } from "./vpc";
 
 /**
@@ -37,11 +37,11 @@ export interface BastionHostProps {
     readonly publicSubnets?: boolean;
 
     /**
-     * Allow classic SSH access via port 22 instead of SSM
+     * Security Group to assign to this instance
      *
-     * @default - false
+     * @default - create new security group
      */
-    readonly allowClassicSSH?: boolean;
+    readonly securityGroup?: ISecurityGroup;
 }
 
 export class BastionHost extends Instance {
@@ -49,6 +49,7 @@ export class BastionHost extends Instance {
         super(scope, id, {
             vpc: props.vpc,
             availabilityZone: props.availabilityZone,
+            securityGroup: props.securityGroup,
             instanceName: props.instanceName || 'BastionHost',
             instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
             machineImage: new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
@@ -63,10 +64,6 @@ export class BastionHost extends Instance {
             resources: ['*'],
         }));
         this.addUserData('yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm');
-
-        if (props.allowClassicSSH) {
-            this.connections.allowFromAnyIpv4(Port.tcp(22), 'Allow SSH access from everywhere');
-        }
 
         new CfnOutput(this, 'BastionHostId', {
             description: 'Instance ID of the bastion host. Use this to connect via SSM',

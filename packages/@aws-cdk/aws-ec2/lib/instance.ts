@@ -62,6 +62,13 @@ export interface InstanceProps {
   readonly vpc: IVpc;
 
   /**
+   * Security Group to assign to this instance
+   *
+   * @default - create new security group
+   */
+  readonly securityGroup?: ISecurityGroup;
+
+  /**
    * Type of instance to launch
    */
   readonly instanceType: InstanceType;
@@ -163,10 +170,14 @@ export class Instance extends Resource implements IConnectable {
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
 
-    this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
-      vpc: props.vpc,
-      allowAllOutbound: props.allowAllOutbound !== false
-    });
+    if (props.securityGroup) {
+      this.securityGroup = props.securityGroup;
+    } else {
+      this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
+        vpc: props.vpc,
+        allowAllOutbound: props.allowAllOutbound !== false
+      });
+    }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
     this.node.applyAspect(new Tag(NAME_TAG, props.instanceName || this.node.path));
