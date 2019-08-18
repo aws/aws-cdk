@@ -13,7 +13,7 @@ export = {
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_8_10,
     });
 
@@ -77,7 +77,7 @@ export = {
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_8_10,
     });
     const alias = new lambda.Alias(stack, 'alias', {
@@ -144,7 +144,7 @@ export = {
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_8_10,
     });
 
@@ -183,7 +183,7 @@ export = {
 
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_8_10,
     });
 
