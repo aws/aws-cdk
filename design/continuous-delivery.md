@@ -19,7 +19,8 @@ bootstrapped in advance in order to establish trust with the central pipeline
 environment and set-up resources needed for deployment such as the assets S3
 bucket.
 
-Prototype: https://github.com/eladb/cdkcd-test
+- App Prototype: https://github.com/eladb/cdkcd-test
+- Toolchain Prototype: https://github.com/eladb/cdk-toolchain-prototype
 
 ## Requirements
 
@@ -27,8 +28,8 @@ This list describes only the minimal set of requirements from this feature.
 After we release these building blocks, we will look into vending higher-level
 "one liner" APIs that will make it very easy to get started.
 
-1. **Assets**: Support apps that include all supported kinds of assets (S3
-   files, ECR images)
+1. **Assets**: Support apps that include all kinds of assets (S3 files, ECR
+   images)
 2. **Multiple-environments**: Support apps that have stacks that target multiple
    environments (accounts/regions)
 3. **Orchestration**: Allow developers to express complex deployment
@@ -36,30 +37,33 @@ After we release these building blocks, we will look into vending higher-level
 4. **User defined build + synth environment**: the runtime environment in which
    the code is built and the CDK app is synthesized should be fully customizable
    by the user
-5. **Controlled deployment environment**: for security reasons, the runtime
+5. **Controlled deployment runtime environment**: for security reasons, the runtime
    environment in which deployment is executed will be fully controlled and will
    not allow running user code or user-defined image
 
+_Considerations:_
+
+* Support for deployment across partitions and into air-gapped regions.
+* Prefer to use stock CloudFormation pipeline actions to reduce costs, leverage
+  UI and allow restriction of the deployment role to the CloudFormation service
+  principal.
+* Execution of `cdk synth` or `docker build` should not be done in a context
+  with administrative privileges
+
 _Non-requirements/assumptions:_
 
-1. Bundling assets (creating Lambda zip files, building docker images) and
-   publishing them (upload to S3, push to ECR) is currently coupled with the
-   deployment of each stack that uses them. This means, for example, that if a
-   docker image is used in 3 stacks, it will be built 3 times, and this could
-   lead to different images (for example, “apt get install” can install a
-   different version of a dependency each time). We are assuming that this is
-   good enough for the first version of this feature.
-2. We assume that **cdk.context.json** is committed into the repo. Any
+1. We assume that **cdk.context.json** is committed into the repo. Any
    context-fetching will be done manually by users and committed to the
    repository.
-3. There’s a one-to-one mapping between an app and a pipeline. We are not
+2. There’s a one-to-one mapping between an app and a pipeline. We are not
    optimizing the experience for multiple apps per pipeline (although
    technically it should be possible to do it, but it’s not a use case we are
    focused on).
-4. We are not optimizing this experience to support any CD tool (e.g. Jenkins)
-   but we should provide guidance on how to use “cdk synth” and “cdk deploy” so
-   that users will be able to implement CI/CD through their tools.
-5. Dependency management, repository and project structure are out of scope: we
+3. We are not optimizing this experience to support any CD tool (e.g. Jenkins)
+   but we should provide guidance on how to use `cdk synth`, `cdk package` and
+   `cdk deploy` so that users will be able to implement CI/CD through their
+   tools.
+4. Dependency management, repository and project structure are out of scope: we
    don’t want to be opinionated about how users should structure their projects.
    They should be able to use the tools they are familiar with and are available
    to their teams to structure and modularize their applications.
@@ -67,13 +71,21 @@ _Non-requirements/assumptions:_
 ## Approach
 
 At a high-level, we will model the deployment process of a CDK app as follows:
-**source** => **build** => **pipeline => deploy:**
+
+```
+source => build => package => pipeline => deploy
+```
 
 1. In the *source* stage the code is pulled from a source repository (e.g.
    CodeCommit, GitHub or S3), like any other app.
 2. In the *build* stage, the application is compiled (if required) **and
    synthesized** to a [cloud assembly](https://github.com/aws/aws-cdk/blob/master/design/cloud-assembly.md).
    The only artifact of the build stage is the cloud assembly directory.
+2. In the *package* stage, we build and publish all assets needed by the
+   app to all target environments. The output of this stage is a set of
+   CloudFormation templates (one for each stack) with the asset parameters
+   resolved to their published location (by assigning default values to the
+   CloudFormation parameters).
 3. In the *pipeline* stage, we update the deployment pipeline itself. For
    example, if stacks were added to the app, we need the pipeline to include
    additional deployment actions for those stacks. In this stage we basically
@@ -98,7 +110,13 @@ NOTES:
   deployment action is responsible deploy a single stack, along with any assets
   it references.
 
+## Packaging Action
+
+TODO, see prototype `cdk-package`
+
 ## Stack Deployment Action
+
+TODO: change this to use the stock CloudFormation action
 
 Given the approach above, the *source* and *build* stages are completely
 standard. The only requirement is that the build stage will have the cloud
@@ -180,6 +198,11 @@ NOTES:
   the chance for mistakes.
 
 ## Bootstrapping
+
+ - TODO: update based on `cdk-boostrap` prototype:
+ - TODO: IAM role for publishing
+ - TODO: IAM role for manual deployment (through `cdk deploy` with permissions only for developers as needed).
+ - TODO: IAM role that allows only CFN to assume it and used for actual deployments
 
 Based on this model, in order to be able to deploy CDK stacks to an environment
 we need two resources:
