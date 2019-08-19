@@ -46,7 +46,9 @@ export = {
           {
             Action: "sts:AssumeRole",
             Effect: "Allow",
-            Principal: { Service: { "Fn::Join": ["", ["autoscaling.", { Ref: "AWS::URLSuffix" }]] } }
+            Principal: {
+              Service: "autoscaling.amazonaws.com"
+            }
           }
         ],
       }

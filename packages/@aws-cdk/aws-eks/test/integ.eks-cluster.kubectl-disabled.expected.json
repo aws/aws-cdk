@@ -529,17 +529,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "eks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "eks.amazonaws.com"
               }
             }
           ],
@@ -922,9 +912,17 @@
     }
   },
   "Outputs": {
-    "EKSClusterClusterName2B056109": {
+    "EKSClusterConfigCommand3809C9C9": {
       "Value": {
-        "Ref": "EKSClusterBA6ECF8F"
+        "Fn::Join": [
+          "",
+          [
+            "aws eks update-kubeconfig --name ",
+            {
+              "Ref": "EKSClusterBA6ECF8F"
+            }
+          ]
+        ]
       }
     },
     "EKSClusterNodesInstanceRoleARN10992C84": {
