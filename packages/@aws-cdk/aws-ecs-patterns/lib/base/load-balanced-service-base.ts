@@ -18,49 +18,56 @@ export enum LoadBalancerType {
  */
 export interface LoadBalancedServiceBaseProps {
   /**
-   * The cluster where your service will be deployed
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   * The name of the cluster that hosts the service.
    *
-   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
+   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well.
    */
   readonly cluster?: ICluster;
 
   /**
-   * VPC that the cluster instances or tasks are running in
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   * The VPC where the ECS instances will be running or the ENIs will be deployed.
    *
-   * @default - use vpc of cluster or create a new one
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
+   * @default - uses the vpc defined in the cluster or creates a new one.
    */
   readonly vpc?: IVpc;
 
   /**
-   * The image to start.
+   * The image used to start a container.
    */
   readonly image: ContainerImage;
 
   /**
-   * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
+   * The port number on the container that is bound to the user-specified or automatically assigned host port.
+   *
+   * If you are using containers in a task with the awsvpc or host network mode, exposed ports should be specified using containerPort.
+   * If you are using containers in a task with the bridge network mode and you specify a container port and not a host port,
+   * your container automatically receives a host port in the ephemeral port range.
+   *
+   * For more information, see hostPort.
+   * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    *
    * @default 80
    */
   readonly containerPort?: number;
 
   /**
-   * Determines whether the Application Load Balancer will be internet-facing
+   * Determines whether the Load Balancer will be internet-facing.
    *
    * @default true
    */
   readonly publicLoadBalancer?: boolean;
 
   /**
-   * Number of desired copies of running tasks
+   * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
   readonly desiredCount?: number;
 
   /**
-   * Whether to create an application load balancer or a network load balancer
+   * The type of the load balancer to be used.
    *
    * @default application
    */
@@ -75,28 +82,28 @@ export interface LoadBalancedServiceBaseProps {
   readonly certificate?: ICertificate;
 
   /**
-   * Environment variables to pass to the container
+   * The environment variables to pass to the container.
    *
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
 
   /**
-   * Secret environment variables to pass to the container
+   * The secret environment variables to pass to the container
    *
    * @default - No secret environment variables.
    */
   readonly secrets?: { [key: string]: Secret };
 
   /**
-   * Whether to create an AWS log driver
+   * Flag to indicate whether to enable logging.
    *
    * @default true
    */
   readonly enableLogging?: boolean;
 
   /**
-   * Determines whether your Fargate Service will be assigned a public IP address.
+   * Determines whether the Service will be assigned a public IP address.
    *
    * @default false
    */
@@ -124,23 +131,23 @@ export interface LoadBalancedServiceBaseProps {
   readonly executionRole?: IRole;
 
   /**
-   * Override for the Fargate Task Definition task role
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
-   * @default - No value
+   * @default - A task role is automatically created for you.
    */
   readonly taskRole?: IRole;
 
   /**
-   * Override value for the container name
+   * The container name value to be specified in the task definition.
    *
-   * @default - No value
+   * @default - none
    */
   readonly containerName?: string;
 
   /**
-   * Override value for the service name
+   * The name of the service.
    *
-   * @default CloudFormation-generated name
+   * @default - CloudFormation-generated name.
    */
   readonly serviceName?: string;
 
@@ -166,7 +173,9 @@ export interface LoadBalancedServiceBaseProps {
  */
 export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly assignPublicIp: boolean;
-
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   */
   public readonly desiredCount: number;
 
   public readonly loadBalancerType: LoadBalancerType;
@@ -176,7 +185,9 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly listener: ApplicationListener | NetworkListener;
 
   public readonly targetGroup: ApplicationTargetGroup | NetworkTargetGroup;
-
+  /**
+   * The cluster that hosts the service.
+   */
   public readonly cluster: ICluster;
 
   public readonly logDriver?: LogDriver;
