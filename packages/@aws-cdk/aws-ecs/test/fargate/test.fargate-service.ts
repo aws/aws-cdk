@@ -178,6 +178,29 @@ export = {
       test.done();
     },
 
+    "throws when task definition is not EC2 compatible"(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.TaskDefinition(stack, 'Ec2TaskDef', {
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryReservationMiB: 10,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.FargateService(stack, "FargateService", {
+          cluster,
+          taskDefinition,
+        });
+      }, /Supplied TaskDefinition is not configured for compatibility with Fargate/);
+
+      test.done();
+    },
+
     "errors when no container specified on task definition"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -604,64 +627,6 @@ export = {
         },
         TargetValue: 5
       }
-    }));
-
-    test.done();
-  },
-
-  "allow adding a load balancing target to an application target group"(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-    const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
-    });
-    container.addPortMappings({ containerPort: 8000 });
-
-    const service = new ecs.FargateService(stack, 'Service', {
-      cluster,
-      taskDefinition
-    });
-
-    const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    const targetGroup = listener.addTargets("target", {
-      port: 80,
-    });
-
-    // WHEN
-    targetGroup.addTarget(service);
-
-    const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
-    capacity.scaleOnRequestCount("ScaleOnRequests", {
-      requestsPerTarget: 1000,
-      targetGroup
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
-      MaxCapacity: 10,
-      MinCapacity: 1,
-      ResourceId: {
-        "Fn::Join": [
-          "",
-          [
-            "service/",
-            {
-              Ref: "EcsCluster97242B84"
-            },
-            "/",
-            {
-              "Fn::GetAtt": [
-                "ServiceD69D759B",
-                "Name"
-              ]
-            }
-          ]
-        ]
-      },
     }));
 
     test.done();

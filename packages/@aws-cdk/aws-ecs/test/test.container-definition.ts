@@ -7,8 +7,7 @@ import ecs = require('../lib');
 
 export = {
   "When creating a Task Definition": {
-    // Validating portMapping inputs
-    "add a container using minimum set of ContainerDefinitionProps"(test: Test) {
+    "add a container using default props"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -402,29 +401,7 @@ export = {
         const expected = 8080;
         test.equal(actual, expected);
         test.done();
-      },
-
-      "throws when calling ingressPort with no PortMappings"(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.HOST,
-        });
-
-        const container = taskDefinition.addContainer("MyContainer", {
-          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-          memoryLimitMiB: 2048
-        });
-
-        // THEN
-        test.throws(() => {
-          const actual = container.ingressPort;
-          const expected = 8080;
-          test.equal(actual, expected);
-        }, /Container MyContainer hasn't defined any ports. Call addPortMappings()./);
-
-        test.done();
-      },
+      }
     },
 
     "With network mode Bridge": {
@@ -475,29 +452,7 @@ export = {
         const expected = 0;
         test.equal(actual, expected);
         test.done();
-      },
-
-      "throws when calling ingressPort with no PortMappings"(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.BRIDGE,
-        });
-
-        const container = taskDefinition.addContainer("MyContainer", {
-          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-          memoryLimitMiB: 2048
-        });
-
-        // THEN
-        test.throws(() => {
-          const actual = container.ingressPort;
-          const expected = 8080;
-          test.equal(actual, expected);
-        }, /Container MyContainer hasn't defined any ports. Call addPortMappings()./);
-
-        test.done();
-      },
+      }
     },
   },
 
