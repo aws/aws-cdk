@@ -19,8 +19,6 @@ export = {
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
-        ContainerDefinitions: [],
-        Volumes: [],
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ["EC2"]
       }));
@@ -56,7 +54,6 @@ export = {
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        ContainerDefinitions: [],
         ExecutionRoleArn: {
           "Fn::GetAtt": [
             "ExecutionRole605A040B",
@@ -305,14 +302,9 @@ export = {
             Hostname: "webHost",
             Image: "amazon/amazon-ecs-sample",
             LinuxParameters: {
-              Capabilities: {
-                Add: [],
-                Drop: []
-              },
-              Devices: [],
+              Capabilities: {},
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
-              Tmpfs: []
             },
             LogConfiguration: {
               LogDriver: "awslogs",

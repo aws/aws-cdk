@@ -42,7 +42,6 @@ export = {
         },
         DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
-        LoadBalancers: [],
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: "DISABLED",
@@ -75,7 +74,6 @@ export = {
             IpProtocol: "-1"
           }
         ],
-        SecurityGroupIngress: [],
         VpcId: {
           Ref: "MyVpcF9F0CA6F"
         }
@@ -140,7 +138,6 @@ export = {
         DesiredCount: 2,
         HealthCheckGracePeriodSeconds: 60,
         LaunchType: LaunchType.FARGATE,
-        LoadBalancers: [],
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: "ENABLED",
