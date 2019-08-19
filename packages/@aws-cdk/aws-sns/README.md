@@ -69,7 +69,8 @@ topic.subscribeLambda(new subs.LambdaSubscription(fn, {
         price: sns.SubscriptionFilter.numericFilter({
             between: { start: 100, stop: 200 },
             greaterThan: 300
-        })
+        }),
+        store: sns.SubscriptionFilter.existsFilter(),
     }
 }));
 ```
