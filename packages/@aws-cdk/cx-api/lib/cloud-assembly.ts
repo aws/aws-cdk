@@ -134,7 +134,7 @@ export class CloudAssembly {
   private renderArtifacts() {
     const result = new Array<CloudArtifact>();
     for (const [ name, artifact ] of Object.entries(this.manifest.artifacts || { })) {
-      result.push(CloudArtifact.from(this, name, artifact));
+      result.push(CloudArtifact.fromManifest(this, name, artifact));
     }
 
     return topologicalSort(result, x => x.id, x => x._dependencyIDs);
@@ -196,7 +196,7 @@ export class CloudAssemblyBuilder {
    * `CloudAssembly` object that can be used to inspect the assembly.
    * @param options
    */
-  public build(options: AssemblyBuildOptions = { }): CloudAssembly {
+  public buildAssembly(options: AssemblyBuildOptions = { }): CloudAssembly {
     const manifest: AssemblyManifest = filterUndefined({
       version: CLOUD_ASSEMBLY_VERSION,
       artifacts: this.artifacts,

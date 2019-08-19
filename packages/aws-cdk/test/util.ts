@@ -38,7 +38,7 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
     });
   }
 
-  return builder.build();
+  return builder.buildAssembly();
 }
 
 export function testStack(stack: TestStackArtifact) {
