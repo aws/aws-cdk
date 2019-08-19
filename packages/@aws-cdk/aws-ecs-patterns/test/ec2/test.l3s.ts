@@ -17,7 +17,7 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry('test'),
@@ -63,7 +63,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       vpc,
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry('test'),
@@ -89,10 +89,9 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    test.throws(() => new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
+    test.throws(() => new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       vpc,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
     }));
 
@@ -107,7 +106,7 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryReservationMiB: 1024,
       image: ecs.ContainerImage.fromRegistry('test')
@@ -134,7 +133,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
@@ -190,7 +189,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
@@ -237,7 +236,7 @@ export = {
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       domainName: 'api.example.com',
@@ -283,7 +282,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
         cluster,
         image: ecs.ContainerImage.fromRegistry('test'),
         domainName: 'api.example.com'
@@ -299,7 +298,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
@@ -348,7 +347,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,

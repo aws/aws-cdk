@@ -17,10 +17,9 @@ export = {
     // WHEN
     const cert = new Certificate(stack, 'Cert', { domainName: '*.example.com' });
     const toThrow = () => {
-      new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
         cluster,
         certificate: cert,
-        loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
         image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
       });
     };
@@ -37,9 +36,8 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
     });
 
@@ -58,10 +56,9 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    test.throws(() => new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    test.throws(() => new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
       vpc,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
     }));
 
@@ -83,9 +80,8 @@ export = {
     });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       executionRole
     });
@@ -110,9 +106,8 @@ export = {
     });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       taskRole
     });
@@ -130,9 +125,8 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       containerName: 'bob'
     });
@@ -150,9 +144,8 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
     });
 
@@ -169,9 +162,8 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       serviceName: 'bob',
     });
@@ -188,9 +180,8 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
     });
 
@@ -205,8 +196,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
-      loadBalancerType: ecsPatterns.LoadBalancerType.APPLICATION,
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       healthCheckGracePeriod: cdk.Duration.seconds(600),
     });

@@ -1,11 +1,11 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
-import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
+import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
 /**
- * The properties for the LoadBalancedEc2Service service.
+ * The properties for the ApplicationLoadBalancedEc2Service service.
  */
-export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProps {
+export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadBalancedServiceBaseProps {
 
   /**
    * The number of cpu units used by the task.
@@ -54,9 +54,9 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
 }
 
 /**
- * An EC2 service running on an ECS cluster fronted by a load balancer.
+ * An EC2 service running on an ECS cluster fronted by an application load balancer.
  */
-export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
+export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedServiceBase {
 
   /**
    * The ECS service in this construct
@@ -64,9 +64,9 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
   public readonly service: Ec2Service;
 
   /**
-   * Constructs a new instance of the LoadBalancedEc2Service class.
+   * Constructs a new instance of the ApplicationLoadBalancedEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: LoadBalancedEc2ServiceProps) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
     const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {

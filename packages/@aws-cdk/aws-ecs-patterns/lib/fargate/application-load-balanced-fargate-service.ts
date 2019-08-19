@@ -1,11 +1,11 @@
 import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
-import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
+import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
 /**
- * The properties for the LoadBalancedFargateService service.
+ * The properties for the ApplicationLoadBalancedFargateService service.
  */
-export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
+export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationLoadBalancedServiceBaseProps {
   /**
    * The number of cpu units used by the task.
    *
@@ -51,9 +51,9 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
 }
 
 /**
- * A Fargate service running on an ECS cluster fronted by a load balancer.
+ * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
-export class LoadBalancedFargateService extends LoadBalancedServiceBase {
+export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalancedServiceBase {
 
   /**
    * The Fargate service in this construct.
@@ -61,9 +61,9 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
   public readonly service: FargateService;
 
   /**
-   * Constructs a new instance of the LoadBalancedFargateService class.
+   * Constructs a new instance of the ApplicationLoadBalancedFargateService class.
    */
-  constructor(scope: Construct, id: string, props: LoadBalancedFargateServiceProps) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedFargateServiceProps) {
     super(scope, id, props);
 
     const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
