@@ -96,6 +96,7 @@
   },
   "awslint": {
     "exclude": [
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy"
     ]
