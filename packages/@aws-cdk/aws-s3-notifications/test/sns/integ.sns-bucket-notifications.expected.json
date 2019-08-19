@@ -22,17 +22,7 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "s3.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "s3.amazonaws.com"
               },
               "Resource": {
                 "Ref": "ObjectCreatedTopic92F47E19"
@@ -71,17 +61,7 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "s3.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "s3.amazonaws.com"
               },
               "Resource": {
                 "Ref": "ObjectDeletedTopic2A914EC0"
@@ -99,9 +79,9 @@
       }
     },
     "MyBucketF68F3FF0": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "MyBucketNotifications46AC0CD2": {
       "Type": "Custom::S3BucketNotifications",
@@ -166,17 +146,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
