@@ -184,5 +184,70 @@ test("Can use Fargate taskdef as EventRule target", () => {
       }
     ]
   });
+});
 
+test("Can use same fargate taskdef with multiple rules", () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const scheduledRule = new events.Rule(stack, 'ScheduleRule', {
+    schedule: events.Schedule.expression('rate(1 min)')
+  });
+
+  const patternRule = new events.Rule(stack, 'PatternRule', {
+    eventPattern: {
+      detail: ['test']
+    }
+  });
+
+  scheduledRule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+  }));
+
+  expect(() => patternRule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition
+  }))).not.toThrow();
+});
+
+test("Can use same fargate taskdef multiple times in a rule", () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'ScheduleRule', {
+    schedule: events.Schedule.expression('rate(1 min)')
+  });
+
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.a')],
+    }]
+  }));
+
+  expect(() => rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.b')],
+    }]
+  }))).not.toThrow();
 });
