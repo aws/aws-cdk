@@ -377,7 +377,6 @@ export = {
             ],
             "Effect": "Allow",
             "Principal": "*",
-            "Resource": "*",
           }
         ],
         "Version": "2012-10-17"
