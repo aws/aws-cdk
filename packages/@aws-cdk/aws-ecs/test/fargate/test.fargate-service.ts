@@ -178,7 +178,7 @@ export = {
       test.done();
     },
 
-    "throws when task definition is not EC2 compatible"(test: Test) {
+    "throws when task definition is not Fargate compatible"(test: Test) {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });

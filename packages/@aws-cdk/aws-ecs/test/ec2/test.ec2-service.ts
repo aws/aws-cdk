@@ -1009,120 +1009,120 @@ export = {
   "attachToApplicationTargetGroup": {
     "allows network mode of task definition to be other than none"(test: Test) {
       // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
-    const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
-    });
-    container.addPortMappings({ containerPort: 8000 });
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
 
-    const service = new ecs.Ec2Service(stack, 'Service', {
-      cluster,
-      taskDefinition
-    });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
 
-    const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    const targetGroup = listener.addTargets("target", {
-      port: 80,
-    });
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
 
-    // THEN
-    service.attachToApplicationTargetGroup(targetGroup);
+      // THEN
+      service.attachToApplicationTargetGroup(targetGroup);
 
-    test.done();
-    },
+      test.done();
+      },
 
     "throws when network mode of task definition is none"(test: Test) {
       // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
-    const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
-    });
-    container.addPortMappings({ containerPort: 8000 });
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
 
-    const service = new ecs.Ec2Service(stack, 'Service', {
-      cluster,
-      taskDefinition
-    });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
 
-    const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    const targetGroup = listener.addTargets("target", {
-      port: 80,
-    });
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
 
-    // THEN
-    test.throws(() => {
-      service.attachToApplicationTargetGroup(targetGroup);
-    }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+      // THEN
+      test.throws(() => {
+        service.attachToApplicationTargetGroup(targetGroup);
+      }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
-    test.done();
+      test.done();
     }
   },
 
   "attachToNetworkTargetGroup": {
     "allows network mode of task definition to be other than none"(test: Test) {
       // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
-    const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
-    });
-    container.addPortMappings({ containerPort: 8000 });
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
 
-    const service = new ecs.Ec2Service(stack, 'Service', {
-      cluster,
-      taskDefinition
-    });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
 
-    const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    const targetGroup = listener.addTargets("target", {
-      port: 80,
-    });
+      const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
 
-    // THEN
-    service.attachToNetworkTargetGroup(targetGroup);
+      // THEN
+      service.attachToNetworkTargetGroup(targetGroup);
 
-    test.done();
+      test.done();
     },
 
     "throws when network mode of task definition is none"(test: Test) {
       // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
-    const container = taskDefinition.addContainer('MainContainer', {
-      image: ContainerImage.fromRegistry('hello'),
-    });
-    container.addPortMappings({ containerPort: 8000 });
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
 
-    const service = new ecs.Ec2Service(stack, 'Service', {
-      cluster,
-      taskDefinition
-    });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
 
-    const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
-    const listener = lb.addListener("listener", { port: 80 });
-    const targetGroup = listener.addTargets("target", {
-      port: 80,
-    });
+      const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+      });
 
-    // THEN
-    test.throws(() => {
-      service.attachToNetworkTargetGroup(targetGroup);
-    }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+      // THEN
+      test.throws(() => {
+        service.attachToNetworkTargetGroup(targetGroup);
+      }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
-    test.done();
+      test.done();
     }
   },
 
