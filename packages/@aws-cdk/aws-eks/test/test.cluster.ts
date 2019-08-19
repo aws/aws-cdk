@@ -6,7 +6,7 @@ import { CfnOutput } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
 import { KubernetesResource } from '../lib';
-import { testFixture } from './util';
+import { testFixture, testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
 
@@ -16,7 +16,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Cluster', {
@@ -33,12 +33,72 @@ export = {
     test.done();
   },
 
+  'if "vpc" is not specified, vpc with default configuration will be created'(test: Test) {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'cluster');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::VPC'));
+    test.done();
+  },
+
+  'default capacity': {
+
+    'x2 m5.large by default'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'cluster');
+
+      // THEN
+      test.ok(cluster.defaultCapacity);
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '2' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' }));
+      test.done();
+    },
+
+    'quantity and type can be customized'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 10,
+        defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+      });
+
+      // THEN
+      test.ok(cluster.defaultCapacity);
+      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '10' }));
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' }));
+      test.done();
+    },
+
+    'defaultCapacity=0 will not allocate at all'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0 });
+
+      // THEN
+      test.ok(!cluster.defaultCapacity);
+      expect(stack).notTo(haveResource('AWS::AutoScaling::AutoScalingGroup'));
+      expect(stack).notTo(haveResource('AWS::AutoScaling::LaunchConfiguration'));
+      test.done();
+    }
+  },
+
   'creating a cluster tags the private VPC subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -56,7 +116,7 @@ export = {
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // WHEN
     cluster.addCapacity('Default', {
@@ -85,7 +145,7 @@ export = {
   'adding capacity correctly deduces maxPods and adds userdata'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // WHEN
     cluster.addCapacity('Default', {
@@ -115,7 +175,7 @@ export = {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
-    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc, kubectlEnabled: false });
+    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // WHEN
     const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', {
@@ -146,7 +206,7 @@ export = {
   'disabled features when kubectl is disabled'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     test.throws(() => cluster.awsAuth, /Cannot define aws-auth mappings if kubectl is disabled/);
     test.throws(() => cluster.addResource('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
@@ -161,7 +221,7 @@ export = {
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, mastersRole: role });
+    new eks.Cluster(stack, 'Cluster', { vpc, mastersRole: role, defaultCapacity: 0 });
 
     // THEN
     expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
@@ -188,7 +248,7 @@ export = {
   'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
 
     // WHEN
     cluster.addResource('manifest1', { foo: 123 });
@@ -209,7 +269,7 @@ export = {
   'when kubectl is enabled (default) adding capacity will automatically map its IAM role'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
 
     // WHEN
     cluster.addCapacity('default', {
@@ -241,7 +301,7 @@ export = {
   'addCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
 
     // WHEN
     cluster.addCapacity('default', {
@@ -257,7 +317,7 @@ export = {
   'addCapacity will *not* map the IAM role if kubectl is disabled'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false });
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // WHEN
     cluster.addCapacity('default', {
@@ -267,6 +327,129 @@ export = {
     // THEN
     expect(stack).to(not(haveResource(KubernetesResource.RESOURCE_TYPE)));
     test.done();
+  },
+
+  'outputs': {
+    'aws eks update-kubeconfig is the only output synthesized by default'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster');
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStack(stack.stackName).template;
+      test.deepEqual(template.Outputs, {
+        ClusterConfigCommand43AAE40F: {
+          Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' } ] ] }
+        }
+      });
+      test.done();
+    },
+
+    'if masters role is defined, it should be included in the config command'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      const mastersRole = new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() });
+      new eks.Cluster(stack, 'Cluster', { mastersRole });
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStack(stack.stackName).template;
+      test.deepEqual(template.Outputs, {
+        ClusterConfigCommand43AAE40F: {
+          Value: { 'Fn::Join': [ '', [
+            'aws eks update-kubeconfig --name ',
+            { Ref: 'Cluster9EE0221C' },
+            ' --role-arn ',
+            { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] }
+          ] ] }
+        }
+      });
+      test.done();
+    },
+
+    'if `outputConfigCommand=false` will disabled the output'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      const mastersRole = new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() });
+      new eks.Cluster(stack, 'Cluster', {
+        mastersRole,
+        outputConfigCommand: false,
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStack(stack.stackName).template;
+      test.ok(!template.Outputs); // no outputs
+      test.done();
+    },
+
+    '`outputClusterName` can be used to synthesize an output with the cluster name'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        outputConfigCommand: false,
+        outputClusterName: true
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStack(stack.stackName).template;
+      test.deepEqual(template.Outputs, {
+        ClusterClusterNameEB26049E: { Value: { Ref: 'Cluster9EE0221C' } }
+      });
+      test.done();
+    },
+
+    '`outputMastersRoleArn` can be used to synthesize an output with the arn of the masters role if defined'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        outputConfigCommand: false,
+        outputMastersRoleArn: true,
+        mastersRole: new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() })
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStack(stack.stackName).template;
+      test.deepEqual(template.Outputs, {
+        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } }
+      });
+      test.done();
+    },
+
+    'when adding capacity, instance role ARN will not be outputed only if we do not auto-map aws-auth'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        outputConfigCommand: false,
+        kubectlEnabled: false
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStack(stack.stackName).template;
+      test.deepEqual(template.Outputs, {
+        ClusterDefaultCapacityInstanceRoleARN7DADF219: {
+          Value: { 'Fn::GetAtt': [ 'ClusterDefaultCapacityInstanceRole3E209969', 'Arn' ] }
+        }
+      });
+      test.done();
+    }
+
   }
 
 };

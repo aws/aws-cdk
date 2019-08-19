@@ -92,7 +92,7 @@ export class StateMachine extends StateMachineBase {
         });
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${Stack.of(this).region}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
