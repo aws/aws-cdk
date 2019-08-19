@@ -104,6 +104,10 @@ export = {
     });
 
     // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: logs.RetentionDays.TWO_YEARS
+    }));
+
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
@@ -118,6 +122,21 @@ export = {
         }
       ]
     }));
+
+    test.done();
+  },
+
+  'without a defined log group'(test: Test) {
+    // GIVEN
+    td.addContainer('Container', {
+      image,
+      logging: new ecs.AwsLogDriver({
+        streamPrefix: 'hello',
+      })
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::Logs::LogGroup', {}));
 
     test.done();
   },
