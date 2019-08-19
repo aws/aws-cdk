@@ -24,9 +24,10 @@ export interface UserProps {
   readonly groups?: IGroup[];
 
   /**
-   * A list managed policies associated with this role.
+   * A list of managed policies associated with this role.
    *
-   * You can add managed policies later using `attachManagedPolicy(policy)`.
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */
@@ -39,6 +40,21 @@ export interface UserProps {
    * @default /
    */
   readonly path?: string;
+
+  /**
+   * AWS supports permissions boundaries for IAM entities (users or roles).
+   * A permissions boundary is an advanced feature for using a managed policy
+   * to set the maximum permissions that an identity-based policy can grant to
+   * an IAM entity. An entity's permissions boundary allows it to perform only
+   * the actions that are allowed by both its identity-based policies and its
+   * permissions boundaries.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-permissionsboundary
+   * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+   *
+   * @default - No permissions boundary.
+   */
+  readonly permissionsBoundary?: IManagedPolicy;
 
   /**
    * A name for the IAM user. For valid values, see the UserName parameter for
@@ -97,6 +113,11 @@ export class User extends Resource implements IIdentity {
    */
   public readonly userArn: string;
 
+  /**
+   * Returns the permissions boundary attached to this user
+   */
+  public readonly permissionsBoundary?: IManagedPolicy;
+
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly groups = new Array<any>();
@@ -110,12 +131,14 @@ export class User extends Resource implements IIdentity {
     });
 
     this.managedPolicies.push(...props.managedPolicies || []);
+    this.permissionsBoundary = props.permissionsBoundary;
 
     const user = new CfnUser(this, 'Resource', {
       userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
+      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       loginProfile: this.parseLoginProfile(props)
     });
 
@@ -146,6 +169,7 @@ export class User extends Resource implements IIdentity {
    * @param policy The managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
   }
 
