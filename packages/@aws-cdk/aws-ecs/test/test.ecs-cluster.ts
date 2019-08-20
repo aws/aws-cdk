@@ -338,6 +338,109 @@ export = {
         RoleARN: { "Fn::GetAtt": [ "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B", "Arn" ] }
       }));
 
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        Timeout: 310,
+        Environment: {
+          Variables: {
+            CLUSTER: {
+              Ref: "EcsCluster97242B84"
+            }
+          }
+        },
+        Handler: "index.lambda_handler"
+      }));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceAttribute",
+                "ec2:DescribeInstanceStatus",
+                "ec2:DescribeHosts"
+              ],
+              Effect: "Allow",
+              Resource: "*"
+            },
+            {
+              Action: "autoscaling:CompleteLifecycleAction",
+              Effect: "Allow",
+              Resource: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      Ref: "AWS::Partition"
+                    },
+                    ":autoscaling:",
+                    {
+                      Ref: "AWS::Region"
+                    },
+                    ":",
+                    {
+                      Ref: "AWS::AccountId"
+                    },
+                    ":autoScalingGroup:*:autoScalingGroupName/",
+                    {
+                      Ref: "EcsClusterDefaultAutoScalingGroupASGC1A785DB"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              Action: [
+                "ecs:DescribeContainerInstances",
+                "ecs:DescribeTasks"
+              ],
+              Effect: "Allow",
+              Resource: "*"
+            },
+            {
+              Action: [
+                "ecs:ListContainerInstances",
+                "ecs:SubmitContainerStateChange",
+                "ecs:SubmitTaskStateChange"
+              ],
+              Effect: "Allow",
+              Resource: {
+                "Fn::GetAtt": [
+                  "EcsCluster97242B84",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              Action: [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              Condition: {
+                ArnEquals: {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              Effect: "Allow",
+              Resource: "*"
+            }
+          ],
+          Version: "2012-10-17"
+        },
+        PolicyName: "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396",
+        Roles: [
+          {
+            Ref: "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
+          }
+        ]
+      }));
+
       test.done();
     },
 
@@ -833,6 +936,57 @@ export = {
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
       SpotPrice: "0.31"
+    }));
+
+    test.done();
+  },
+
+  "allows specifying drain time"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      taskDrainTime: cdk.Duration.minutes(1)
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LifecycleHook", {
+      HeartbeatTimeout: 60
+    }));
+
+    test.done();
+  },
+
+  "allows containers access to instance metadata service"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      canContainersAccessInstanceRole: true
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      UserData: {
+        "Fn::Base64": {
+          "Fn::Join": [
+            "",
+            [
+              "#!/bin/bash\necho ECS_CLUSTER=",
+              {
+                Ref: "EcsCluster97242B84"
+              },
+              " >> /etc/ecs/ecs.config"
+            ]
+          ]
+        }
+      }
     }));
 
     test.done();
