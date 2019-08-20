@@ -42,7 +42,6 @@ export = {
     const doc = new PolicyDocument();
     const p1 = new PolicyStatement();
     p1.addActions('sqs:SendMessage');
-    p1.addResources('*');
     p1.addNotResources('arn:aws:sqs:us-east-1:123456789012:forbidden_queue');
 
     const p2 = new PolicyStatement();
@@ -60,9 +59,31 @@ export = {
     test.deepEqual(stack.resolve(doc), {
       Version: '2012-10-17',
       Statement:
-        [{ Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
+        [{ Effect: 'Allow', Action: 'sqs:SendMessage', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
           { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
           { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' } ] });
+
+    test.done();
+  },
+
+  'Cannot combine Actions and NotActions'(test: Test) {
+    test.throws(() => {
+      new PolicyStatement({
+        actions: ['abc'],
+        notActions: ['def'],
+      });
+    }, /Cannot add 'NotActions' to policy statement if 'Actions' have been added/);
+
+    test.done();
+  },
+
+  'Cannot combine Resources and NotResources'(test: Test) {
+    test.throws(() => {
+      new PolicyStatement({
+        resources: ['abc'],
+        notResources: ['def'],
+      });
+    }, /Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
 
     test.done();
   },

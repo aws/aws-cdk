@@ -13,21 +13,21 @@ export class PolicyStatement {
   public sid?: string;
   public effect: Effect;
 
-  private action = new Array<any>();
-  private notaction = new Array<any>();
-  private principal: { [key: string]: any[] } = {};
-  private resource = new Array<any>();
-  private notresource = new Array<any>();
-  private condition: { [key: string]: any } = { };
+  private readonly action = new Array<any>();
+  private readonly notAction = new Array<any>();
+  private readonly principal: { [key: string]: any[] } = {};
+  private readonly resource = new Array<any>();
+  private readonly notResource = new Array<any>();
+  private readonly condition: { [key: string]: any } = { };
 
   constructor(props: PolicyStatementProps = {}) {
     this.effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
-    this.addNotActions(...props.notactions || []);
+    this.addNotActions(...props.notActions || []);
     this.addPrincipals(...props.principals || []);
     this.addResources(...props.resources || []);
-    this.addNotResources(...props.notresources || []);
+    this.addNotResources(...props.notResources || []);
     if (props.conditions !== undefined) {
       this.addConditions(props.conditions);
     }
@@ -38,11 +38,17 @@ export class PolicyStatement {
   //
 
   public addActions(...actions: string[]) {
+    if (actions.length > 0 && this.notAction.length > 0) {
+      throw new Error(`Cannot add 'Actions' to policy statement if 'NotActions' have been added`);
+    }
     this.action.push(...actions);
   }
 
-  public addNotActions(...notactions: string[]) {
-    this.notaction.push(...notactions);
+  public addNotActions(...notActions: string[]) {
+    if (notActions.length > 0 && this.action.length > 0) {
+      throw new Error(`Cannot add 'NotActions' to policy statement if 'Actions' have been added`);
+    }
+    this.notAction.push(...notActions);
   }
 
   //
@@ -103,11 +109,17 @@ export class PolicyStatement {
   //
 
   public addResources(...arns: string[]) {
+    if (arns.length > 0 && this.notResource.length > 0) {
+      throw new Error(`Cannot add 'Resources' to policy statement if 'NotResources' have been added`);
+    }
     this.resource.push(...arns);
   }
 
   public addNotResources(...arns: string[]) {
-    this.notresource.push(...arns);
+    if (arns.length > 0 && this.resource.length > 0) {
+      throw new Error(`Cannot add 'NotResources' to policy statement if 'Resources' have been added`);
+    }
+    this.notResource.push(...arns);
   }
 
   /**
@@ -154,12 +166,12 @@ export class PolicyStatement {
   public toStatementJson(): any {
     return noUndef({
       Action: _norm(this.action),
-      NotAction: _norm(this.notaction),
+      NotAction: _norm(this.notAction),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
       Principal: _normPrincipal(this.principal),
       Resource: _norm(this.resource),
-      NotResource: _norm(this.notresource),
+      NotResource: _norm(this.notResource),
       Sid: _norm(this.sid),
     });
 
@@ -246,9 +258,9 @@ export interface PolicyStatementProps {
   /**
    * List of not actions to add to the statement
    *
-   * @default - no actions
+   * @default - no not-actions
    */
-  readonly notactions?: string[];
+  readonly notActions?: string[];
 
   /**
    * List of principals to add to the statement
@@ -267,9 +279,9 @@ export interface PolicyStatementProps {
   /**
    * NotResource ARNs to add to the statement
    *
-   * @default - no resources
+   * @default - no not-resources
    */
-  readonly notresources?: string[];
+  readonly notResources?: string[];
 
   /**
    * Conditions to add to the statement
