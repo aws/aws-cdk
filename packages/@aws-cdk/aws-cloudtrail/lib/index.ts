@@ -98,7 +98,7 @@ export interface TrailProps {
    *
    * @default - if not supplied a bucket will be created with all the correct permisions
    */
-  readonly s3Bucket?: s3.IBucket
+  readonly bucket?: s3.IBucket
 }
 
 export enum ReadWriteType {
@@ -138,7 +138,7 @@ export class Trail extends Resource {
 
     const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
-    if (props.s3Bucket === undefined) {
+    if (props.bucket === undefined) {
 
       this.s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
 
@@ -157,7 +157,7 @@ export class Trail extends Resource {
         }
       }));
     } else {
-      this.s3bucket = props.s3Bucket; }
+      this.s3bucket = props.bucket; }
 
     let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;

@@ -30,7 +30,7 @@ Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
         }
       }));
 
-const trail = new cloudtrail.Trail(stack, 'Trail', {s3Bucket: Trailbucket});
+const trail = new cloudtrail.Trail(stack, 'Trail', {bucket: Trailbucket});
 
 trail.addS3EventSelector([bucket.arnForObjects('')]);
 

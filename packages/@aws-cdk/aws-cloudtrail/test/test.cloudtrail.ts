@@ -88,7 +88,7 @@ export = {
         }
       }));
 
-      new Trail(stack, 'Trail', {s3Bucket: Trailbucket});
+      new Trail(stack, 'Trail', {bucket: Trailbucket});
 
       expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
       expect(stack).to(haveResource("AWS::S3::Bucket"));
