@@ -31,6 +31,8 @@ export interface AwsApiProps {
    * The parameters for the service action
    *
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
+   *
+   * @default - no parameters
    */
   readonly parameters?: any;
 
@@ -39,7 +41,7 @@ export interface AwsApiProps {
    * `Error` object will be tested against this pattern. If there is a match an
    * error will not be thrown.
    *
-   * @default do not catch errors
+   * @default - do not catch errors
    */
   readonly catchErrorPattern?: string;
 
@@ -47,7 +49,7 @@ export interface AwsApiProps {
    * API version to use for the service
    *
    * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html
-   * @default use latest available API version
+   * @default - use latest available API version
    */
   readonly apiVersion?: string;
 
