@@ -1,3 +1,23 @@
+# CloudFormation Resource Specification v5.2.0
+
+## New Resource Types
+
+* AWS::SSM::MaintenanceWindowTarget
+* AWS::SageMaker::Workteam
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DMS::ReplicationTask CdcStartPosition (__added__)
+* AWS::DMS::ReplicationTask CdcStopPosition (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LogConfig ExcludeVerboseContent (__added__)
+
+
 # CloudFormation Resource Specification v5.1.0
 
 ## New Resource Types

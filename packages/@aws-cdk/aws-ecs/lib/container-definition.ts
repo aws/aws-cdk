@@ -330,6 +330,11 @@ export class ContainerDefinition extends cdk.Construct {
    */
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
+    if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
+      if (props.memoryLimitMiB < props.memoryReservationMiB) {
+        throw new Error(`MemoryLimitMiB should not be less than MemoryReservationMiB.`);
+      }
+    }
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
