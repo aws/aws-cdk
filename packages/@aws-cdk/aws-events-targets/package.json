@@ -46,6 +46,11 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "pre": [
+      "cp -f node_modules/aws-sdk/apis/metadata.json lib/sdk-api-metadata.json"
+    ]
+  },
   "jest": {
     "moduleFileExtensions": [
       "js"
