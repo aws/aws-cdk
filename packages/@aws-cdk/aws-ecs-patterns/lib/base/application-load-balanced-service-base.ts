@@ -90,14 +90,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
-   * Determines whether the service will be assigned a public IP address.
-   *
-   * @default false
-   */
-  readonly publicTasks?: boolean;
-
-  /**
-   * The domain name for the service, e.g. "api.example.com."
+   * The domain name for the service, e.g. "api.example.com"
    *
    * @default - No domain name.
    */
@@ -159,7 +152,6 @@ export interface ApplicationLoadBalancedServiceBaseProps {
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
-  public readonly assignPublicIp: boolean;
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
@@ -192,7 +184,6 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
     this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
-    this.assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     this.desiredCount = props.desiredCount || 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;

@@ -81,21 +81,14 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
-   * Determines whether the Service will be assigned a public IP address.
-   *
-   * @default false
-   */
-  readonly publicTasks?: boolean;
-
-  /**
-   * Domain name for the service, e.g. api.example.com
+   * The domain name for the service, e.g. "api.example.com"
    *
    * @default - No domain name.
    */
   readonly domainName?: string;
 
   /**
-   * Route53 hosted zone for the domain, e.g. "example.com."
+   * The Route53 hosted zone for the domain, e.g. "example.com."
    *
    * @default - No Route53 hosted domain zone.
    */
@@ -150,7 +143,6 @@ export interface NetworkLoadBalancedServiceBaseProps {
  * The base class for NetworkLoadBalancedEc2Service and NetworkLoadBalancedFargateService services.
  */
 export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
-  public readonly assignPublicIp: boolean;
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
@@ -183,7 +175,6 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
     this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
-    this.assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     this.desiredCount = props.desiredCount || 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;

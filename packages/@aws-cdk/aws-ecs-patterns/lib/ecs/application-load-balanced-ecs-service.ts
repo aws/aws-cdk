@@ -96,7 +96,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
-      assignPublicIp: this.assignPublicIp,
+      assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
     });

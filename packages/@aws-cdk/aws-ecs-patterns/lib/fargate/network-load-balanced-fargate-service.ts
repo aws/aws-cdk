@@ -48,6 +48,13 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
+  /**
+   * Determines whether the Service will be assigned a public IP address.
+   *
+   * @default false
+   */
+  readonly assignPublicIp?: boolean;
 }
 
 /**
@@ -55,6 +62,7 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
  */
 export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServiceBase {
 
+  public readonly assignPublicIp: boolean;
   /**
    * The Fargate service in this construct.
    */
@@ -69,6 +77,8 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
    */
   constructor(scope: Construct, id: string, props: NetworkLoadBalancedFargateServiceProps) {
     super(scope, id, props);
+
+    this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
 
     this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryLimitMiB: props.memoryLimitMiB,
