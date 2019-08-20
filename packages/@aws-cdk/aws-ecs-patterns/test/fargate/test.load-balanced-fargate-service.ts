@@ -1,5 +1,4 @@
 import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
-import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
@@ -8,27 +7,6 @@ import { Test } from 'nodeunit';
 import ecsPatterns = require('../../lib');
 
 export = {
-  'certificate requires an application load balancer'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    // WHEN
-    const cert = new Certificate(stack, 'Cert', { domainName: '*.example.com' });
-    const toThrow = () => {
-      new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
-        cluster,
-        certificate: cert,
-        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
-      });
-    };
-
-    // THEN
-    test.throws(() => toThrow(), /Cannot add certificate to an NLB/);
-    test.done();
-  },
-
   'setting loadBalancerType to Network creates an NLB'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

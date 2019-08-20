@@ -1,4 +1,3 @@
-import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
 import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -59,14 +58,6 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default 1
    */
   readonly desiredCount?: number;
-
-  /**
-   * Certificate Manager certificate to associate with the load balancer.
-   * Setting this option will set the load balancer port to 443.
-   *
-   * @default - No certificate associated with the load balancer.
-   */
-  readonly certificate?: ICertificate;
 
   /**
    * The environment variables to pass to the container.
@@ -207,10 +198,6 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     const targetProps = {
       port: 80
     };
-
-    if (props.certificate !== undefined) {
-      throw new Error("Cannot add certificate to an NLB");
-    }
 
     this.listener = this.loadBalancer.addListener('PublicListener', { port: 80 });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
