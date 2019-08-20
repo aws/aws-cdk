@@ -59,9 +59,13 @@ export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadB
 export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedServiceBase {
 
   /**
-   * The ECS service in this construct
+   * The EC2 service in this construct.
    */
   public readonly service: Ec2Service;
+  /**
+   * The EC2 Task Definition in this construct.
+   */
+  public readonly taskDefinition: Ec2TaskDefinition;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedEc2Service class.
@@ -69,13 +73,13 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
+    this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
       executionRole: props.executionRole,
       taskRole: props.taskRole
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = taskDefinition.addContainer(containerName, {
+    const container = this.taskDefinition.addContainer(containerName, {
       image: props.image,
       cpu: props.cpu,
       memoryLimitMiB: props.memoryLimitMiB,
@@ -91,7 +95,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
     this.service = new Ec2Service(this, "Service", {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition,
+      taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,

@@ -59,9 +59,13 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
 export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBase {
 
   /**
-   * The ECS service in this construct
+   * The ECS service in this construct.
    */
   public readonly service: Ec2Service;
+  /**
+   * The EC2 Task Definition in this construct.
+   */
+  public readonly taskDefinition: Ec2TaskDefinition;
 
   /**
    * Constructs a new instance of the NetworkLoadBalancedEc2Service class.
@@ -69,13 +73,13 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
   constructor(scope: Construct, id: string, props: NetworkLoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
+    this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
       executionRole: props.executionRole,
       taskRole: props.taskRole
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = taskDefinition.addContainer(containerName, {
+    const container = this.taskDefinition.addContainer(containerName, {
       image: props.image,
       cpu: props.cpu,
       memoryLimitMiB: props.memoryLimitMiB,
@@ -91,7 +95,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
     this.service = new Ec2Service(this, "Service", {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition,
+      taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,

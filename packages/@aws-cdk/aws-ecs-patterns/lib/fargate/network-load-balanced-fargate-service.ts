@@ -59,6 +59,10 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
    * The Fargate service in this construct.
    */
   public readonly service: FargateService;
+  /**
+   * The Fargate task definition in this construct.
+   */
+  public readonly taskDefinition: FargateTaskDefinition;
 
   /**
    * Constructs a new instance of the NetworkLoadBalancedFargateService class.
@@ -66,7 +70,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
   constructor(scope: Construct, id: string, props: NetworkLoadBalancedFargateServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
+    this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryLimitMiB: props.memoryLimitMiB,
       cpu: props.cpu,
       executionRole: props.executionRole,
@@ -74,7 +78,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = taskDefinition.addContainer(containerName, {
+    const container = this.taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
       environment: props.environment,
@@ -87,7 +91,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
     this.service = new FargateService(this, "Service", {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition,
+      taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
