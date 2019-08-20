@@ -145,7 +145,7 @@ export = {
 
       for (const subnet of vpc.privateSubnets) {
           new SubnetNetworkAclAssociation(stack, 'AssociatePrivate' + subnet.node.uniqueId, {
-            networkAclId: nacl1.networkAclId, subnetId: subnet.subnetId,
+            networkAcl: nacl1, subnet,
               });
       }
 

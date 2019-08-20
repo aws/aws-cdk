@@ -1,7 +1,10 @@
 import { Construct, IResource,  Resource, ResourceProps } from '@aws-cdk/core';
 import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation  } from './ec2.generated';
-import { IVpc } from './vpc';
+import { ISubnet, IVpc } from './vpc';
 
+/**
+ * A NetworkAcl
+ */
 export interface INetworkACL extends IResource {
   /**
    * ID for the current Network ACL
@@ -15,16 +18,12 @@ export interface INetworkACL extends IResource {
  */
 abstract class NetworkAclBase extends Resource implements INetworkACL {
 public abstract readonly networkAclId: string;
-constructor(scope: Construct, id: string, props?: ResourceProps) {
-    super(scope, id, props);
 
-  }
-
-  public get uniqueId() {
-    return this.node.uniqueId;
-  }
 }
 
+/**
+ * Properties to create NetworkAcl
+ */
 export interface NetworkAclProps {
   /**
    * The name of the NetworkAcl.
@@ -35,6 +34,7 @@ export interface NetworkAclProps {
    * unique physical ID and uses that ID for the group name.
    */
   readonly networkAclName?: string;
+
   /**
    * The VPC in which to create the NetworkACL.
    */
@@ -52,6 +52,7 @@ export class NetworkAcl extends NetworkAclBase {
 
   return new Import(scope, id);
   }
+
   /**
    * The ID of the NetworkACL
    *
@@ -81,6 +82,9 @@ export class NetworkAcl extends NetworkAclBase {
   }
 }
 
+/**
+ * Properties to create Icmp
+ */
 export interface Icmp {
   /**
    * The Internet Control Message Protocol (ICMP) code. You can use -1 to specify all ICMP
@@ -95,6 +99,9 @@ export interface Icmp {
   readonly type?: number
 }
 
+/**
+ * Properties to create PortRange
+ */
 export interface PortRange {
   /**
    * The first port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
@@ -106,6 +113,9 @@ export interface PortRange {
   readonly to?: number
 }
 
+/**
+ * A NetworkAclEntry
+ */
 export interface INetworkAclEntry extends IResource {
   /**
    * The IPv4 CIDR range to allow or deny, in CIDR notation (for example, 172.16.0.0/24).
@@ -196,6 +206,9 @@ abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry 
   }
 }
 
+/**
+ * Properties to create NetworkAclEntry
+ */
 export interface NetworkAclEntryProps {
   /**
    * The name of the NetworkAclEntry.
@@ -206,10 +219,11 @@ export interface NetworkAclEntryProps {
    * unique physical ID and uses that ID for the group name.
    */
   readonly networkAclEntryName?: string;
- /**
-  * The IPv4 CIDR range to allow or deny, in CIDR notation (for example, 172.16.0.0/24).
-  * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
-  */
+
+  /**
+   * The IPv4 CIDR range to allow or deny, in CIDR notation (for example, 172.16.0.0/24).
+   * Requirement is conditional: You must specify the CidrBlock or Ipv6CidrBlock property.
+   */
   readonly cidrBlock: string;
 
   /**
@@ -317,11 +331,14 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
   }
 }
 
+/**
+ * A SubnetNetworkAclAssociation
+ */
 export interface ISubnetNetworkAclAssociation extends IResource {
-  /**
-   * ID for the current SubnetNetworkAclAssociation
-   * @attribute
-   */
+ /**
+  * ID for the current SubnetNetworkAclAssociation
+  * @attribute
+  */
   readonly subnetNetworkAclAssociationAssociationId: string;
 }
 
@@ -340,6 +357,9 @@ constructor(scope: Construct, id: string, props?: ResourceProps) {
   }
 }
 
+/**
+ * Properties to create a SubnetNetworkAclAssociation
+ */
 export interface SubnetNetworkAclAssociationProps {
   /**
    * The name of the SubnetNetworkAclAssociation.
@@ -355,12 +375,12 @@ export interface SubnetNetworkAclAssociationProps {
    * ID for the current Network ACL
    * @attribute
    */
-  readonly networkAclId: string;
+  readonly networkAcl: INetworkACL;
   /**
    * ID of the Subnet
    * @attribute
    */
-  readonly subnetId: string;
+  readonly subnet: ISubnet;
 }
 
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
@@ -386,12 +406,12 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
    * ID for the current Network ACL
    * @attribute
    */
-  public readonly networkAclId: string;
+  public readonly networkAcl: INetworkACL;
   /**
    * ID of the Subnet
    * @attribute
    */
-  public readonly subnetId: string;
+  public readonly subnet: ISubnet;
 
   private association: CfnSubnetNetworkAclAssociation;
   constructor(scope: Construct, id: string, props: SubnetNetworkAclAssociationProps) {
@@ -400,12 +420,12 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
     });
 
     this.association = new CfnSubnetNetworkAclAssociation(this, 'Resource', {
-       networkAclId: props.networkAclId,
-       subnetId: props.subnetId,
+       networkAclId: props.networkAcl.networkAclId,
+       subnetId: props.subnet.subnetId
     });
 
-    this.networkAclId = this.association.networkAclId;
-    this.subnetId = this.association.subnetId;
-    this.subnetNetworkAclAssociationAssociationId = this.association.ref;
+    this.networkAcl = props.networkAcl;
+    this.subnet = props.subnet;
+    this.subnetNetworkAclAssociationAssociationId = this.association.attrAssociationId;
   }
 }

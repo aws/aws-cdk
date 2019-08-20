@@ -34,7 +34,7 @@ new ec2.NetworkAclEntry(stack, 'AllowDNSIngress', {
 
 for (const subnet of vpc.privateSubnets) {
     new ec2.SubnetNetworkAclAssociation(stack, 'AssociatePrivate' + subnet.node.uniqueId, {
-      networkAclId: nacl1.networkAclId, subnetId: subnet.subnetId,
+      networkAcl: nacl1, subnet,
         });
 }
 
