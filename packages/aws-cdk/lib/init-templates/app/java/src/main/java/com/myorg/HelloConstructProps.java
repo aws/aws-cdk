@@ -26,7 +26,7 @@ public class HelloConstructProps {
             return new HelloConstructPropsBuilder();
         }
 
-        public HelloConstructPropsBuilder withBucketCount(int bucketCount) {
+        public HelloConstructPropsBuilder bucketCount(int bucketCount) {
             this.bucketCount = bucketCount;
             return this;
         }

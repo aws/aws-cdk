@@ -21,17 +21,17 @@ public class HelloStack extends Stack {
         super(parent, id, props);
 
         Queue queue = new Queue(this, "MyFirstQueue", QueueProps.builder()
-                .withVisibilityTimeout(Duration.seconds(300))
+                .visibilityTimeout(Duration.seconds(300))
                 .build());
 
         Topic topic = new Topic(this, "MyFirstTopic", TopicProps.builder()
-                .withDisplayName("My First Topic Yeah")
+                .displayName("My First Topic Yeah")
                 .build());
 
         topic.addSubscription(new SqsSubscription(queue));
 
         HelloConstruct hello = new HelloConstruct(this, "Buckets", HelloConstructProps.builder()
-                .withBucketCount(5)
+                .bucketCount(5)
                 .build());
 
         User user = new User(this, "MyUser", UserProps.builder().build());
