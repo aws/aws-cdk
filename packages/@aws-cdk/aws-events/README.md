@@ -80,6 +80,7 @@ interface for various AWS services.
 
 The following targets are supported:
 
+* `targets.AwsApi`: Invoke an AWS Lambda function that makes API calls
 * `targets.CodeBuildProject`: Start an AWS CodeBuild build
 * `targets.CodePipeline`: Start an AWS CodePipeline pipeline execution
 * `targets.EcsTask`: Start a task on an Amazon ECS cluster
@@ -113,7 +114,7 @@ const project = new codebuild.Project(stack2, 'Project', {
 repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
 });
-``` 
+```
 
 In this situation, the CDK will wire the 2 accounts together:
 
