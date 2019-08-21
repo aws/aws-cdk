@@ -115,7 +115,6 @@
                     "Ref": "MyEcrRepo767466D0"
                   }
                 },
-                "InputArtifacts": [],
                 "Name": "ECR_Source",
                 "OutputArtifacts": [
                   {
@@ -142,9 +141,7 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "ManualApproval",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "MyPipelineApproveManualApprovalCodePipelineActionRole9E338F01",
