@@ -461,7 +461,6 @@
               "IpProtocol": "-1"
             }
           ],
-          "SecurityGroupIngress": [],
           "VpcId": {
             "Fn::ImportValue": "k8s-vpc:ExportsOutputRefvpcA2121C384D1B3CDE"
           }
@@ -782,7 +781,6 @@
               "IpProtocol": "-1"
             }
           ],
-          "SecurityGroupIngress": [],
           "Tags": [
             {
               "Key": "Name",

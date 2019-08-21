@@ -98,7 +98,6 @@ export = {
             IpProtocol: "-1"
           }
         ],
-        SecurityGroupIngress: [],
         Tags: [
           {
             Key: "Name",
@@ -245,7 +244,6 @@ export = {
             IpProtocol: "-1"
           }
         ],
-        SecurityGroupIngress: [],
         Tags: [
           {
             Key: "Name",
@@ -547,7 +545,6 @@ export = {
             IpProtocol: "-1"
           }
         ],
-        SecurityGroupIngress: [],
         Tags: [
           {
             Key: "Name",

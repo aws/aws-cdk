@@ -44,7 +44,6 @@ export = {
         },
         DesiredCount: 1,
         LaunchType: LaunchType.EC2,
-        LoadBalancers: [],
         SchedulingStrategy: "REPLICA"
       }));
 
@@ -114,7 +113,6 @@ export = {
         },
         DesiredCount: 2,
         LaunchType: LaunchType.EC2,
-        LoadBalancers: [],
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: "ENABLED",
@@ -693,7 +691,7 @@ export = {
 
       // THEN
       expect(stack).notTo(haveResource("AWS::ECS::Service", {
-        PlacementConstraints: []
+        PlacementConstraints: undefined
       }));
 
       test.done();
@@ -720,7 +718,7 @@ export = {
 
       // THEN
       expect(stack).notTo(haveResource("AWS::ECS::Service", {
-        PlacementStrategies: []
+        PlacementStrategies: undefined
       }));
 
       test.done();

@@ -204,7 +204,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -704,8 +703,7 @@
             "ScheduledEc2TaskScheduledTaskDefTaskRoleC3FA127C",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {

@@ -259,7 +259,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": true
                 },
-                "InputArtifacts": [],
                 "Name": "CodeCommitSource",
                 "OutputArtifacts": [
                   {
@@ -677,8 +676,7 @@
     "CodeCommitRepoDC6A41F9": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "foo",
-        "Triggers": []
+        "RepositoryName": "foo"
       }
     },
     "BuildProjectRoleAA92C755": {

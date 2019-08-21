@@ -36,7 +36,6 @@ export = {
             "Type": "AWS::CloudFront::Distribution",
             "Properties": {
               "DistributionConfig": {
-                "CacheBehaviors": [],
                 "DefaultCacheBehavior": {
                   "AllowedMethods": [
                     "GET",
@@ -160,8 +159,7 @@ export = {
               },
               "Enabled": true,
               "IPV6Enabled": true,
-              "HttpVersion": "http2",
-              "CacheBehaviors": []
+              "HttpVersion": "http2"
             }
           }
         }
@@ -239,8 +237,7 @@ export = {
               },
               "Enabled": true,
               "IPV6Enabled": true,
-              "HttpVersion": "http2",
-              "CacheBehaviors": []
+              "HttpVersion": "http2"
             }
           }
         }
@@ -315,8 +312,7 @@ export = {
               },
               "Enabled": true,
               "IPV6Enabled": true,
-              "HttpVersion": "http2",
-              "CacheBehaviors": []
+              "HttpVersion": "http2"
             }
           }
         }

@@ -213,9 +213,9 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
+      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true}),
       targetType: cdk.Lazy.stringValue({ produce: () => this.targetType }),
-      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson }),
+      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson}, { omitEmptyArray: true}),
       vpcId: baseProps.vpc.vpcId,
 
       // HEALTH CHECK

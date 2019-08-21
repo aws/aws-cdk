@@ -3,8 +3,7 @@
     "Repo02AC86CF": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "TestRepository",
-        "Triggers": []
+        "RepositoryName": "TestRepository"
       }
     },
     "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2": {
@@ -227,7 +226,6 @@
                   },
                   "BranchName": "master"
                 },
-                "InputArtifacts": [],
                 "Name": "CodeCommit",
                 "OutputArtifacts": [
                   {
@@ -254,9 +252,7 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "Hello",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",

@@ -343,7 +343,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": false
                 },
-                "InputArtifacts": [],
                 "Name": "CdkCode_Source",
                 "OutputArtifacts": [
                   {
@@ -375,7 +374,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": false
                 },
-                "InputArtifacts": [],
                 "Name": "LambdaCode_Source",
                 "OutputArtifacts": [
                   {
@@ -491,7 +489,6 @@
                   }
                 ],
                 "Name": "Lambda_CFN_Deploy",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineDeployLambdaCFNDeployCodePipelineActionRoleF8A74488",
@@ -1109,8 +1106,7 @@
     "CdkCodeRepo7D2EC742": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "CdkCodeRepo",
-        "Triggers": []
+        "RepositoryName": "CdkCodeRepo"
       }
     },
     "CdkCodeRepoPipelineStackPipeline9DB740AFEventRule97707F9A": {
@@ -1181,8 +1177,7 @@
     "LambdaCodeRepoE08DD409": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "LambdaCodeRepo",
-        "Triggers": []
+        "RepositoryName": "LambdaCodeRepo"
       }
     },
     "LambdaCodeRepoPipelineStackPipeline9DB740AFEventRule2C34743D": {

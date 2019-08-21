@@ -207,7 +207,6 @@ export = {
           "Actions": [
             {
               "Name": "CodeCommit",
-              "InputArtifacts": [],
               "OutputArtifacts": [
                 {
                   "Name": "Artifact_Source_CodeCommit",

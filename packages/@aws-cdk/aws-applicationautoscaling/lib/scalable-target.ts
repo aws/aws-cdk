@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -116,7 +116,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: this.actions,
+      scheduledActions: Lazy.anyValue({ produce: () => this.actions}, { omitEmptyArray: true}),
       serviceNamespace: props.serviceNamespace
     });
 

@@ -117,7 +117,6 @@
                   "OAuthToken": "DummyToken",
                   "PollForSourceChanges": true
                 },
-                "InputArtifacts": [],
                 "Name": "GitHub",
                 "OutputArtifacts": [
                   {
@@ -156,7 +155,6 @@
                   }
                 ],
                 "Name": "ChangeSet",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "CodePipelineDeployChangeSetCodePipelineActionRoleB3BCDD8A",
@@ -177,9 +175,7 @@
                   "ActionMode": "CHANGE_SET_EXECUTE",
                   "ChangeSetName": "CICD-ChangeSet"
                 },
-                "InputArtifacts": [],
                 "Name": "Execute",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "CodePipelineDeployExecuteCodePipelineActionRoleAE36AF49",

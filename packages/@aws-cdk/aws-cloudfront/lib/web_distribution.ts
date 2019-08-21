@@ -649,7 +649,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
 
-    distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors };
+    distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors.length > 0 ? otherBehaviors : undefined };
 
     if (props.aliasConfiguration) {
       const minimumProtocolVersion = props.aliasConfiguration.securityPolicy;

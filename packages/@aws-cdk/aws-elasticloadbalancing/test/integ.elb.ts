@@ -19,8 +19,7 @@ new elb.LoadBalancer(stack, 'LB', {
   }],
   healthCheck: {
     port: 80
-  },
-  targets: []
+  }
 });
 
 app.synth();

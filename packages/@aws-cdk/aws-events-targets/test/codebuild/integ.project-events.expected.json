@@ -3,8 +3,7 @@
     "MyRepoF4F48043": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "aws-cdk-codebuild-events",
-        "Triggers": []
+        "RepositoryName": "aws-cdk-codebuild-events"
       }
     },
     "MyRepoOnCommit0E80B304": {

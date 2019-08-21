@@ -110,7 +110,6 @@ export = {
         "BranchName": "master",
         "PollForSourceChanges": true
       },
-      "InputArtifacts": [],
       "Name": "source",
       "OutputArtifacts": [
         {
@@ -176,7 +175,6 @@ export = {
       },
       "InputArtifacts": [{"Name": "OutputYo"}],
       "Name": "BuildChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       },
       {
@@ -190,9 +188,7 @@ export = {
         "ActionMode": "CHANGE_SET_EXECUTE",
         "ChangeSetName": "MyMagicalChangeSet"
       },
-      "InputArtifacts": [],
       "Name": "ExecuteChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       }
     ],

@@ -206,7 +206,6 @@
                   },
                   "S3ObjectKey": "application.zip"
                 },
-                "InputArtifacts": [],
                 "Name": "S3Source",
                 "OutputArtifacts": [
                   {
@@ -247,7 +246,6 @@
                   }
                 ],
                 "Name": "CodeDeploy",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineDeployCodeDeployCodePipelineActionRoleFA7F8EEF",
