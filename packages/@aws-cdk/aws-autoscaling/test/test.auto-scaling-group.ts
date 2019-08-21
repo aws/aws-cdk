@@ -38,7 +38,6 @@ export = {
                 "IpProtocol": "-1",
               }
             ],
-            "SecurityGroupIngress": [],
             "Tags": [
               {
                 "Key": "Name",

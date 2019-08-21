@@ -156,8 +156,7 @@ export = {
         "MyRepoF4F48043": {
           "Type": "AWS::CodeCommit::Repository",
           "Properties": {
-          "RepositoryName": "hello-cdk",
-          "Triggers": []
+          "RepositoryName": "hello-cdk"
           }
         },
         "MyProjectRole9BBE5233": {
