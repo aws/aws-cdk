@@ -41,7 +41,8 @@ export interface InstanceProps {
   readonly availabilityZone?: string;
 
   /**
-   * Whether the instance could initiate connections to anywhere by default
+   * Whether the instance could initiate connections to anywhere by default.
+   * This property is only used when you do not provide a security group.
    *
    * @default true
    */
@@ -112,6 +113,9 @@ export interface InstanceProps {
 
 }
 
+/**
+ * This represents a single EC2 instance
+ */
 export class Instance extends Resource implements IConnectable {
 
   /**

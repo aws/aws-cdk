@@ -507,7 +507,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -621,7 +620,7 @@
   },
   "Outputs": {
     "BastionHostBastionHostIdC743CBD6": {
-      "Description": "Instance ID of the bastion host. Use this to connect via SSM",
+      "Description": "Instance ID of the bastion host. Use this to connect via SSM Session Manager",
       "Value": {
         "Ref": "BastionHostInstance8844AF83"
       }
