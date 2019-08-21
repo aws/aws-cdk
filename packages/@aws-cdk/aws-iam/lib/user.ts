@@ -97,7 +97,7 @@ export interface UserProps {
   readonly passwordResetRequired?: boolean;
 }
 
-export class User extends Resource implements IIdentity {
+export class User extends Resource implements IIdentity, IUser {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
