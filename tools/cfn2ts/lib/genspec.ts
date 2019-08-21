@@ -57,7 +57,7 @@ export class CodeName {
    * Simply returns the top-level declaration name,  but reads better at the call site if
    * we're generating a function instead of a class.
    */
-  public get functionName() {
+  public get functionName(): string {
     return this.className;
   }
 
@@ -66,7 +66,7 @@ export class CodeName {
    *
    * (When referred to it from the same package)
    */
-  public get fqn() {
+  public get fqn(): string {
     return util.joinIf(this.namespace, '.', util.joinIf(this.className, '.', this.methodName));
   }
 
@@ -125,7 +125,7 @@ export function packageName(module: SpecName | string): string {
 /**
  * Overrides special-case namespaces like serverless=>sam
  */
-function overridePackageName(name: string) {
+function overridePackageName(name: string): string {
   if (name === 'serverless') {
     return 'sam';
   }
@@ -141,7 +141,8 @@ function overridePackageName(name: string) {
 export function cfnMapperName(typeName: CodeName): CodeName {
   if (!typeName.packageName) {
     // Built-in or intrinsic type, built-in mappers
-    return new CodeName('', CORE_NAMESPACE, '', undefined, util.downcaseFirst(`${typeName.className}ToCloudFormation`));
+    const mappedType = typeName.className === 'any' ? 'object' : typeName.className;
+    return new CodeName('', CORE_NAMESPACE, '', undefined, util.downcaseFirst(`${mappedType}ToCloudFormation`));
   }
 
   return new CodeName(typeName.packageName, '', util.downcaseFirst(`${typeName.namespace}${typeName.className}ToCloudFormation`));
@@ -153,7 +154,8 @@ export function cfnMapperName(typeName: CodeName): CodeName {
 export function validatorName(typeName: CodeName): CodeName {
   if (typeName.packageName === '') {
     // Built-in or intrinsic type, built-in validators
-    return new CodeName('', CORE_NAMESPACE, '', undefined, `validate${codemaker.toPascalCase(typeName.className)}`);
+    const validatedType = typeName.className === 'any' ? 'Object' : codemaker.toPascalCase(typeName.className);
+    return new CodeName('', CORE_NAMESPACE, '', undefined, `validate${validatedType}`);
   }
 
   return new CodeName(typeName.packageName, '', `${util.joinIf(typeName.namespace, '_', typeName.className)}Validator`);
@@ -218,7 +220,7 @@ function specPrimitiveToCodePrimitive(type: schema.PrimitiveType): CodeName {
     case 'Boolean': return CodeName.forPrimitive('boolean');
     case 'Double': return CodeName.forPrimitive('number');
     case 'Integer': return CodeName.forPrimitive('number');
-    case 'Json': return CodeName.forPrimitive('object');
+    case 'Json': return CodeName.forPrimitive('any');
     case 'Long': return CodeName.forPrimitive('number');
     case 'String': return CodeName.forPrimitive('string');
     case 'Timestamp': return CodeName.forPrimitive('Date');
@@ -229,7 +231,7 @@ function specPrimitiveToCodePrimitive(type: schema.PrimitiveType): CodeName {
 export function isPrimitive(type: CodeName): boolean {
   return type.className === 'boolean'
     || type.className === 'number'
-    || type.className === 'object'
+    || type.className === 'any'
     || type.className === 'string'
     || type.className === 'Date';
 }

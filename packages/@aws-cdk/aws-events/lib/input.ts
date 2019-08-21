@@ -1,5 +1,5 @@
 import { captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/cdk';
+  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/core';
 import { IRule } from './rule-ref';
 
 /**
@@ -148,7 +148,7 @@ class FieldAwareEventInput extends RuleTargetInput {
       }
 
       public resolveToken(t: Token, _context: IResolveContext) {
-        if (!isEventField(t)) { return t; }
+        if (!isEventField(t)) { return Token.asString(t); }
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {

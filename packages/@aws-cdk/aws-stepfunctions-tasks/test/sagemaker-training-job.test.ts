@@ -2,9 +2,11 @@ import '@aws-cdk/assert/jest';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import s3 = require('@aws-cdk/aws-s3');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import tasks = require('../lib');
+import { S3Location } from '../lib';
 
 let stack: cdk.Stack;
 
@@ -25,13 +27,13 @@ test('create basic training job', () => {
                 channelName: 'train',
                 dataSource: {
                     s3DataSource: {
-                        s3Uri: "s3://mybucket/mytrainpath"
+                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputPath: 's3://mybucket/myoutputpath'
+            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
         },
     })});
 
@@ -51,13 +53,17 @@ test('create basic training job', () => {
                 DataSource: {
                     S3DataSource: {
                         S3DataType: 'S3Prefix',
-                        S3Uri: 's3://mybucket/mytrainpath'
+                        S3Uri: {
+                            'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region'}, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']]
+                        }
                     }
                 }
             }
         ],
         OutputDataConfig: {
-            S3OutputPath: 's3://mybucket/myoutputpath'
+            S3OutputPath: {
+                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']]
+            }
         },
         ResourceConfig: {
             InstanceCount: 1,
@@ -73,12 +79,37 @@ test('create basic training job', () => {
     });
 });
 
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+    expect(() => {
+        new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+            integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+            trainingJobName: "MyTrainJob",
+            algorithmSpecification: {
+                algorithmName: "BlazingText",
+            },
+            inputDataConfig: [
+                {
+                    channelName: 'train',
+                    dataSource: {
+                        s3DataSource: {
+                            s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
+                        }
+                    }
+                }
+            ],
+            outputDataConfig: {
+                s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
+            },
+        })});
+    }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call SageMaker./i);
+  });
+
 test('create complex training job', () => {
     // WHEN
     const kmsKey = new kms.Key(stack, 'Key');
     const vpc = new ec2.Vpc(stack, "VPC");
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'My SG' });
-    securityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
+    securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
 
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
@@ -89,7 +120,7 @@ test('create complex training job', () => {
 
     const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
         trainingJobName: "MyTrainJob",
-        synchronous: true,
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
         role,
         algorithmSpecification: {
             algorithmName: "BlazingText",
@@ -112,7 +143,7 @@ test('create complex training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Uri: "s3://mybucket/mytrainpath",
+                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'), 'mytrainpath'),
                     }
                 }
             },
@@ -124,20 +155,20 @@ test('create complex training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Uri: "s3://mybucket/mytestpath",
+                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'), 'mytestpath'),
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputPath: 's3://mybucket/myoutputpath',
+            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
             encryptionKey: kmsKey
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50,
-            volumeKmsKeyId: kmsKey,
+            volumeEncryptionKey: kmsKey,
         },
         stoppingCondition: {
             maxRuntime: cdk.Duration.hours(1)
@@ -179,7 +210,9 @@ test('create complex training job', () => {
                 DataSource: {
                     S3DataSource: {
                         S3DataType: 'S3Prefix',
-                        S3Uri: 's3://mybucket/mytrainpath'
+                        S3Uri: {
+                            'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region'}, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']]
+                        }
                     }
                 }
             },
@@ -191,13 +224,17 @@ test('create complex training job', () => {
                 DataSource: {
                     S3DataSource: {
                         S3DataType: 'S3Prefix',
-                        S3Uri: 's3://mybucket/mytestpath'
+                        S3Uri: {
+                            'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region'}, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytestpath']]
+                        }
                     }
                 }
             }
         ],
         OutputDataConfig: {
-            S3OutputPath: 's3://mybucket/myoutputpath',
+            S3OutputPath: {
+                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']]
+            },
             KmsKeyId: { "Fn::GetAtt": [ "Key961B73FD", "Arn" ] },
         },
         ResourceConfig: {
@@ -245,17 +282,17 @@ test('pass param to training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Uri: sfn.Data.stringAt('$.S3Bucket')
+                        s3Location: S3Location.fromJsonExpression('$.S3Bucket')
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputPath: 's3://mybucket/myoutputpath'
+            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50
         },
         stoppingCondition: {
@@ -287,7 +324,9 @@ test('pass param to training job', () => {
             }
         ],
         'OutputDataConfig': {
-            S3OutputPath: 's3://mybucket/myoutputpath'
+            S3OutputPath: {
+                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']]
+            }
         },
         'ResourceConfig': {
             InstanceCount: 1,

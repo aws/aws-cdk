@@ -18,7 +18,7 @@
       "Type": "@aws-cdk/aws-lambda.Function",
       "Properties": {
         "handler": "app.hello_handler",
-        "runtime": "Python36",
+        "runtime": "PYTHON_3_6",
         "code": {
           "asset": { "path": "." }
         },

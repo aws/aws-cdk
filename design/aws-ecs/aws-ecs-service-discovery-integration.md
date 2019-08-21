@@ -1,6 +1,6 @@
 # AWS ECS - Support for AWS Cloud Map (Service Discovery) Integration
 
-To address issue [#1554](https://github.com/awslabs/aws-cdk/issues/1554), the
+To address issue [#1554](https://github.com/aws/aws-cdk/issues/1554), the
 ECS construct library should provide a way to set
 [`serviceRegistries`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html#ECS-CreateService-request-serviceRegistries)
 on their ECS service at the L1 level.
@@ -122,7 +122,7 @@ export interface ServiceDiscoveryOptions {
 A full example would look like the following:
 
 ```
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 // Cloud Map Namespace
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {

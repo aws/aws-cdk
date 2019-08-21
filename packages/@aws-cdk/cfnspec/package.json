@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/cfnspec",
   "description": "The CloudFormation resource specification used by @aws-cdk packages",
-  "version": "0.35.0",
+  "version": "1.4.0",
   "scripts": {
     "update": "cdk-build && /bin/bash build-tools/update.sh",
     "build": "cdk-build && node build-tools/build",
@@ -22,20 +22,20 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "devDependencies": {
-    "@types/fs-extra": "^7.0.0",
+    "@types/fs-extra": "^8.0.0",
     "@types/md5": "^2.1.33",
-    "cdk-build-tools": "^0.35.0",
-    "fast-json-patch": "^2.1.0",
-    "fs-extra": "^8.0.1",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "fast-json-patch": "^2.2.1",
+    "fs-extra": "^8.1.0",
     "json-diff": "^0.5.4",
-    "pkglint": "^0.35.0",
+    "pkglint": "file:../../../tools/pkglint",
     "sort-json": "^2.0.0"
   },
   "dependencies": {
     "md5": "^2.2.1"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "type": "git"
   },
   "license": "Apache-2.0",
@@ -48,5 +48,5 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk"
 }

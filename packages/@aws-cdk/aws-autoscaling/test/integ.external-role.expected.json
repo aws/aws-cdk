@@ -540,7 +540,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -581,7 +580,7 @@
           }
         ],
         "UserData": {
-          "Fn::Base64": "#!/bin/bash\n"
+          "Fn::Base64": "#!/bin/bash"
         }
       },
       "DependsOn": [

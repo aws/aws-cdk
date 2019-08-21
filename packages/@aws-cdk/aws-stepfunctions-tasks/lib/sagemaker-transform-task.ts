@@ -1,7 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/core';
+import { resourceArnSuffix } from './resource-arn-suffix';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
 /**
@@ -20,9 +21,13 @@ export interface SagemakerTransformProps {
     readonly role?: iam.IRole;
 
     /**
-     * Specify if the task is synchronous or asychronous.
+     * The service integration pattern indicates different ways to call SageMaker APIs.
+     *
+     * The valid value is either FIRE_AND_FORGET or SYNC.
+     *
+     * @default FIRE_AND_FORGET
      */
-    readonly synchronous?: boolean;
+    readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
     /**
      * Number of records to include in a mini-batch for an HTTP inference request.
@@ -94,7 +99,19 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
      */
     private readonly transformResources: TransformResources;
 
+    private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+
     constructor(scope: Construct, private readonly props: SagemakerTransformProps) {
+        this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+        const supportedPatterns = [
+            sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+            sfn.ServiceIntegrationPattern.SYNC
+        ];
+
+        if (!supportedPatterns.includes(this.integrationPattern)) {
+            throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SageMaker.`);
+        }
 
         // set the sagemaker role or create new one
         this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
@@ -118,13 +135,13 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         // set the default value for the transform resources
         this.transformResources = props.transformResources || {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
         };
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + (this.props.synchronous ? '.sync' : ''),
+          resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + resourceArnSuffix.get(this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
@@ -216,7 +233,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
             })
         ];
 
-        if (this.props.synchronous) {
+        if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
             policyStatements.push(new iam.PolicyStatement({
                 actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
                 resources: [stack.formatArn({

@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
@@ -14,13 +14,13 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -52,14 +52,14 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -86,14 +86,14 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
         securityGroup: sg
       }
@@ -125,13 +125,13 @@ export = {
       }
     });
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
       parameterGroup: group
@@ -152,12 +152,12 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -209,12 +209,12 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
       kmsKey: new kms.Key(stack, 'Key')
@@ -246,12 +246,12 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         parameterGroup,
         vpc
       }
@@ -274,13 +274,13 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       engineVersion: "5.7.mysql_aurora.2.04.4",
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
     });
@@ -301,13 +301,13 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraPostgresql,
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       engineVersion: "10.7",
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
     });
@@ -317,6 +317,32 @@ export = {
       Engine: "aurora-postgresql",
       EngineVersion: "10.7",
     }));
+
+    test.done();
+  },
+
+  'cluster exposes different read and write endpoints'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // THEN
+    test.notDeepEqual(
+      stack.resolve(cluster.clusterEndpoint),
+      stack.resolve(cluster.clusterReadEndpoint)
+    );
 
     test.done();
   }

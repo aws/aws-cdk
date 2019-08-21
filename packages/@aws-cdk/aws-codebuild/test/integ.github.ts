@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import codebuild = require('../lib');
 
 class TestStack extends cdk.Stack {
@@ -6,7 +6,7 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     const source = codebuild.Source.gitHub({
-      owner: 'awslabs',
+      owner: 'aws',
       repo: 'aws-cdk',
       reportBuildStatus: false,
     });

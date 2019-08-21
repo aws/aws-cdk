@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -25,13 +25,27 @@ export interface RoleProps {
    * If the configured and provided external IDs do not match, the
    * AssumeRole operation will fail.
    *
+   * @deprecated see {@link externalIds}
+   *
    * @default No external ID required
    */
   readonly externalId?: string;
 
   /**
-   * A list of ARNs for managed policies associated with this role.
-   * You can add managed policies later using `attachManagedPolicy(arn)`.
+   * List of IDs that the role assumer needs to provide one of when assuming this role
+   *
+   * If the configured and provided external IDs do not match, the
+   * AssumeRole operation will fail.
+   *
+   * @default No external ID required
+   */
+  readonly externalIds?: string[];
+
+  /**
+   * A list of managed policies associated with this role.
+   *
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */
@@ -56,6 +70,21 @@ export interface RoleProps {
   readonly path?: string;
 
   /**
+   * AWS supports permissions boundaries for IAM entities (users or roles).
+   * A permissions boundary is an advanced feature for using a managed policy
+   * to set the maximum permissions that an identity-based policy can grant to
+   * an IAM entity. An entity's permissions boundary allows it to perform only
+   * the actions that are allowed by both its identity-based policies and its
+   * permissions boundaries.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-permissionsboundary
+   * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+   *
+   * @default - No permissions boundary.
+   */
+  readonly permissionsBoundary?: IManagedPolicy;
+
+  /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
    * the CreateRole action in the IAM API Reference.
    *
@@ -70,7 +99,7 @@ export interface RoleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the group name.
    */
-  readonly roleName?: PhysicalName;
+  readonly roleName?: string;
 
   /**
    * The maximum session duration that you want to set for the specified role.
@@ -194,6 +223,11 @@ export class Role extends Resource implements IRole {
    */
   public readonly policyFragment: PrincipalPolicyFragment;
 
+  /**
+   * Returns the permissions boundary attached to this role
+   */
+  public readonly permissionsBoundary?: IManagedPolicy;
+
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -203,9 +237,14 @@ export class Role extends Resource implements IRole {
       physicalName: props.roleName,
     });
 
-    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
-    this.managedPolicies.push(...props.managedPolicies || []);
+    const externalIds = props.externalIds || [];
+    if (props.externalId) {
+      externalIds.push(props.externalId);
+    }
 
+    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, externalIds);
+    this.managedPolicies.push(...props.managedPolicies || []);
+    this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
 
@@ -214,23 +253,19 @@ export class Role extends Resource implements IRole {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
+      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
     });
 
     this.roleId = role.attrRoleId;
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: role.attrArn,
-      name: role.ref,
-      arnComponents: {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'role',
-        resourceName: this.physicalName,
-      },
+    this.roleArn = this.getResourceArnAttribute(role.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'role',
+      resourceName: this.physicalName,
     });
-    this.roleArn = resourceIdentifiers.arn;
-    this.roleName = resourceIdentifiers.name;
+    this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
@@ -265,6 +300,7 @@ export class Role extends Resource implements IRole {
    * @param policy The the managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
   }
 
@@ -326,13 +362,13 @@ export interface IRole extends IIdentity {
   grantPassRole(grantee: IPrincipal): Grant;
 }
 
-function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
+function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   const statement = new PolicyStatement();
   statement.addPrincipals(principal);
   statement.addActions(principal.assumeRoleAction);
 
-  if (externalId !== undefined) {
-    statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });
+  if (externalIds.length) {
+    statement.addCondition('StringEquals', { 'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds });
   }
 
   const doc = new PolicyDocument();

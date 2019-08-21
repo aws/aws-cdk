@@ -2,6 +2,7 @@
 # Check API compatibility of all packages
 set -eu
 
+repo_root="$(cd $(dirname $0)/.. && pwd)"
 tmpdir=/tmp/compat-check
 
 package_name() {
@@ -44,12 +45,20 @@ fi
 
 #----------------------------------------------------------------------
 
+# get the current version from Lerna
+current_version=$(npx lerna ls -pl | head -n 1 | cut -d ':' -f 3)
+
 echo "Checking compatibility..." >&2
 success=true
 for i in ${!package_dirs[*]}; do
     if [[ ! -d $tmpdir/node_modules/${package_names[$i]} ]]; then continue; fi
     echo -n "${package_names[$i]}... "
-    if npx jsii-diff $tmpdir/node_modules/${package_names[$i]} ${package_dirs[$i]} 2>$tmpdir/output.txt; then
+    if npx jsii-diff \
+        --keys \
+        --ignore-file ${repo_root}/allowed-breaking-changes.txt \
+        $tmpdir/node_modules/${package_names[$i]} \
+        ${package_dirs[$i]} \
+        2>$tmpdir/output.txt; then
         echo "OK."
     else
         success=false

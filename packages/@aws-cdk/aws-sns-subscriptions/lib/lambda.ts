@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -24,13 +24,14 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       throw new Error(`The supplied lambda Function object must be an instance of Construct`);
     }
 
-    this.fn.addPermission(topic.node.id, {
+    this.fn.addPermission(`AllowInvoke:${topic.node.uniqueId}`, {
       sourceArn: topic.topicArn,
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
 
     return {
-      subscriberId: this.fn.node.id,
+      subscriberScope: this.fn,
+      subscriberId: topic.node.id,
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,

@@ -1,5 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import codecommit = require('../lib');
 
 const app = new cdk.App();
@@ -16,7 +16,7 @@ repo.onReferenceCreated('OnReferenceCreated', {
   target: {
     bind: () => ({
       arn: topic.topicArn,
-      id: 'MyTopic'
+      id: ''
     })
   }
 });

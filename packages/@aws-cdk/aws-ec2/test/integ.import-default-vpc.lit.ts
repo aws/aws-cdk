@@ -1,5 +1,5 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ec2 = require("../lib");
 
 const app = new cdk.App();
@@ -31,5 +31,8 @@ new ec2.SecurityGroup(stack, 'SecurityGroup', {
 // Try subnet selection
 new cdk.CfnOutput(stack, 'PublicSubnets', { value: 'ids:' + vpc.publicSubnets.map(s => s.subnetId).join(',') });
 new cdk.CfnOutput(stack, 'PrivateSubnets', { value: 'ids:' + vpc.privateSubnets.map(s => s.subnetId).join(',') });
+
+// Route table IDs
+new cdk.CfnOutput(stack, 'PublicRouteTables', { value: 'ids: ' + vpc.publicSubnets.map(s => s.routeTable.routeTableId).join(', ') });
 
 app.synth();

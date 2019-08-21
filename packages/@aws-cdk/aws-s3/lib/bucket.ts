@@ -1,8 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Lazy, PhysicalName,
-  RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -175,7 +174,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -187,7 +186,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -588,14 +587,14 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
-  public static readonly BlockAll = new BlockPublicAccess({
+  public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
     restrictPublicBuckets: true
   });
 
-  public static readonly BlockAcls = new BlockPublicAccess({
+  public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true
   });
@@ -696,6 +695,31 @@ export interface CorsRule {
   readonly exposedHeaders?: string[];
 }
 
+/**
+ * All http request methods
+ */
+export enum RedirectProtocol {
+  HTTP = 'http',
+  HTTPS = 'https',
+}
+
+/**
+ * Specifies a redirect behavior of all requests to a website endpoint of a bucket.
+ */
+export interface RedirectTarget {
+  /**
+   * Name of the host where requests are redirected
+   */
+  readonly hostName: string;
+
+  /**
+   * Protocol to use when redirecting requests
+   *
+   * @default - The protocol used in the original request.
+   */
+  readonly protocol?: RedirectProtocol;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -724,7 +748,7 @@ export interface BucketProps {
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly bucketName?: PhysicalName;
+  readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
@@ -762,6 +786,29 @@ export interface BucketProps {
    * @default - No error document.
    */
   readonly websiteErrorDocument?: string;
+
+  /**
+   * Specifies the redirect behavior of all requests to a website endpoint of a bucket.
+   *
+   * If you specify this property, you can't specify "websiteIndexDocument", "websiteErrorDocument" nor , "websiteRoutingRules".
+   *
+   * @default - No redirection.
+   */
+  readonly websiteRedirect?: RedirectTarget;
+
+  /**
+   * Rules that define when a redirect is applied and the redirect behavior
+   *
+   * @default - No redirection rules.
+   */
+  readonly websiteRoutingRules?: RoutingRule[];
+
+  /**
+   * Specifies a canned ACL that grants predefined permissions to the bucket.
+   *
+   * @default BucketAccessControl.PRIVATE
+   */
+  readonly accessControl?: BucketAccessControl;
 
   /**
    * Grants public read access to all objects in the bucket.
@@ -900,7 +947,8 @@ export class Bucket extends BucketBase {
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
+      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: props.accessControl,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -908,18 +956,14 @@ export class Bucket extends BucketBase {
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        region: '',
-        account: '',
-        service: 's3',
-        resource: this.physicalName,
-      },
+    this.bucketName = this.getResourceNameAttribute(resource.ref);
+    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
     });
-    this.bucketArn = resourceIdentifiers.arn;
-    this.bucketName = resourceIdentifiers.name;
+
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
@@ -1219,7 +1263,7 @@ export class Bucket extends BucketBase {
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
-    if (!props.websiteErrorDocument && !props.websiteIndexDocument) {
+    if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect && !props.websiteRoutingRules) {
       return undefined;
     }
 
@@ -1227,9 +1271,32 @@ export class Bucket extends BucketBase {
       throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
     }
 
+    if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules)) {
+        throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
+    }
+
+    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
+      if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
+        throw new Error('The condition property cannot be an empty object');
+      }
+
+      return {
+        redirectRule: {
+          hostName: rule.hostName,
+            httpRedirectCode: rule.httpRedirectCode,
+            protocol: rule.protocol,
+            replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
+            replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
+        },
+        routingRuleCondition: rule.condition
+      };
+    }) : undefined;
+
     return {
       indexDocument: props.websiteIndexDocument,
-      errorDocument: props.websiteErrorDocument
+      errorDocument: props.websiteErrorDocument,
+      redirectAllRequestsTo: props.websiteRedirect,
+      routingRules
     };
   }
 }
@@ -1390,6 +1457,140 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    * @default - Watch changes to all objects
    */
   readonly paths?: string[];
+}
+
+/**
+ * Default bucket access control types.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html
+ */
+export enum BucketAccessControl {
+  /**
+   * Owner gets FULL_CONTROL. No one else has access rights.
+   */
+  PRIVATE = 'Private',
+
+  /**
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ access.
+   */
+  PUBLIC_READ = 'PublicRead',
+
+  /**
+   * Owner gets FULL_CONTROL. The AllUsers group gets READ and WRITE access.
+   * Granting this on a bucket is generally not recommended.
+   */
+  PUBLIC_READ_WRITE = 'PublicReadWrite',
+
+  /**
+   * Owner gets FULL_CONTROL. The AuthenticatedUsers group gets READ access.
+   */
+  AUTHENTICATED_READ = 'AuthenticatedRead',
+
+  /**
+   * The LogDelivery group gets WRITE and READ_ACP permissions on the bucket.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+   */
+  LOG_DELIVERY_WRITE = 'LogDeliveryWrite',
+
+  /**
+   * Object owner gets FULL_CONTROL. Bucket owner gets READ access.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_READ = 'BucketOwnerRead',
+
+  /**
+   * Both the object owner and the bucket owner get FULL_CONTROL over the object.
+   * If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   */
+  BUCKET_OWNER_FULL_CONTROL = 'BucketOwnerFullControl',
+
+  /**
+   * Owner gets FULL_CONTROL. Amazon EC2 gets READ access to GET an Amazon Machine Image (AMI) bundle from Amazon S3.
+   */
+  AWS_EXEC_READ = 'AwsExecRead',
+}
+
+export interface RoutingRuleCondition {
+  /**
+   * The HTTP error code when the redirect is applied
+   *
+   * In the event of an error, if the error code equals this value, then the specified redirect is applied.
+   *
+   * If both condition properties are specified, both must be true for the redirect to be applied.
+   *
+   * @default - The HTTP error code will not be verified
+   */
+  readonly httpErrorCodeReturnedEquals?: string;
+
+  /**
+   * The object key name prefix when the redirect is applied
+   *
+   * If both condition properties are specified, both must be true for the redirect to be applied.
+   *
+   * @default - The object key name will not be verified
+   */
+  readonly keyPrefixEquals?: string;
+}
+
+export class ReplaceKey {
+  /**
+   * The specific object key to use in the redirect request
+   */
+  public static with(keyReplacement: string) {
+    return new this(keyReplacement);
+  }
+
+  /**
+   * The object key prefix to use in the redirect request
+   */
+  public static prefixWith(keyReplacement: string) {
+    return new this(undefined, keyReplacement);
+  }
+
+  private constructor(public readonly withKey?: string, public readonly prefixWithKey?: string) {
+  }
+}
+
+/**
+ * Rule that define when a redirect is applied and the redirect behavior.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html
+ */
+export interface RoutingRule {
+  /**
+   * The host name to use in the redirect request
+   *
+   * @default - The host name used in the original request.
+   */
+  readonly hostName?: string;
+
+  /**
+   * The HTTP redirect code to use on the response
+   *
+   * @default "301" - Moved Permanently
+   */
+  readonly httpRedirectCode?: string;
+
+  /**
+   * Protocol to use when redirecting requests
+   *
+   * @default - The protocol used in the original request.
+   */
+  readonly protocol?: RedirectProtocol;
+
+  /**
+   * Specifies the object key prefix to use in the redirect request
+   *
+   * @default - The key will not be replaced
+   */
+  readonly replaceKey?: ReplaceKey;
+
+  /**
+   * Specifies a condition that must be met for the specified redirect to apply.
+   *
+   * @default - No condition
+   */
+  readonly condition?: RoutingRuleCondition;
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {

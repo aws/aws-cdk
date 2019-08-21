@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, PhysicalName, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -259,7 +259,12 @@ export enum RetentionDays {
   /**
    * 10 years
    */
-  TEN_YEARS = 3653
+  TEN_YEARS = 3653,
+
+  /**
+   * Retain logs forever
+   */
+  INFINITE = 9999,
 }
 
 /**
@@ -271,14 +276,14 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  readonly logGroupName?: PhysicalName;
+  readonly logGroupName?: string;
 
   /**
    * How long, in days, the log contents will be retained.
    *
-   * To retain all logs, set this value to Infinity.
+   * To retain all logs, set this value to RetentionDays.INFINITE.
    *
-   * @default RetentionDays.TwoYears
+   * @default RetentionDays.TWO_YEARS
    */
   readonly retention?: RetentionDays;
 
@@ -328,7 +333,7 @@ export class LogGroup extends LogGroupBase {
 
     let retentionInDays = props.retention;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
-    if (retentionInDays === Infinity) { retentionInDays = undefined; }
+    if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
@@ -341,18 +346,13 @@ export class LogGroup extends LogGroupBase {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'logs',
-        resource: 'log-group',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.logGroupArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.logGroupArn = resourceIdentifiers.arn;
-    this.logGroupName = resourceIdentifiers.name;
+    this.logGroupName = this.getResourceNameAttribute(resource.ref);
   }
 }
 
@@ -367,7 +367,7 @@ export interface StreamOptions {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: PhysicalName;
+  readonly logStreamName?: string;
 }
 
 /**

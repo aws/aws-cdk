@@ -1,5 +1,5 @@
-import { Lazy, Token } from '@aws-cdk/cdk';
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Lazy, Token } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
@@ -78,8 +78,8 @@ export interface ThrottlingPerMethod {
 /**
  * Type of Usage Plan Key. Currently the only supported type is 'ApiKey'
  */
-export enum UsagePlanKeyType {
-  ApiKey = 'API_KEY'
+const enum UsagePlanKeyType {
+  API_KEY = 'API_KEY'
 }
 
 /**
@@ -181,7 +181,7 @@ export class UsagePlan extends Resource {
   public addApiKey(apiKey: IApiKey): void {
     new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
       keyId: apiKey.keyId,
-      keyType: UsagePlanKeyType.ApiKey,
+      keyType: UsagePlanKeyType.API_KEY,
       usagePlanId: this.usagePlanId
     });
   }

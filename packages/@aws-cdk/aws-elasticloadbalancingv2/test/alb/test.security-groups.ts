@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -248,7 +248,7 @@ class TestFixture {
     this.app = new cdk.App();
     this.stack = new cdk.Stack(this.app, 'Stack');
     this.vpc = new ec2.Vpc(this.stack, 'VPC', {
-      maxAZs: 2
+      maxAzs: 2
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
 

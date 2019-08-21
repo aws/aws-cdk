@@ -1,5 +1,5 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ssm = require('../lib');
 
 class CreatingStack extends cdk.Stack {
@@ -7,7 +7,7 @@ class CreatingStack extends cdk.Stack {
     super(scope, id);
 
     new ssm.StringParameter(this, 'String', {
-      parameterName: cdk.PhysicalName.of('/My/Public/Parameter'),
+      parameterName: '/My/Public/Parameter',
       stringValue: 'abcdef'
     });
   }

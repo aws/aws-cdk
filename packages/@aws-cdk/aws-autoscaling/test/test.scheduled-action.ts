@@ -1,6 +1,6 @@
 import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -96,6 +96,12 @@ export = {
           },
         }
       },
+      Parameters: {
+        SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
+          Type: "AWS::SSM::Parameter::Value<String>",
+          Default: "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+        }
+      }
     }, MatchStyle.SUPERSET);
 
     test.done();

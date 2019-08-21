@@ -134,7 +134,7 @@ export class CloudAssembly {
   private renderArtifacts() {
     const result = new Array<CloudArtifact>();
     for (const [ name, artifact ] of Object.entries(this.manifest.artifacts || { })) {
-      result.push(CloudArtifact.from(this, name, artifact));
+      result.push(CloudArtifact.fromManifest(this, name, artifact));
     }
 
     return topologicalSort(result, x => x.id, x => x._dependencyIDs);
@@ -196,7 +196,7 @@ export class CloudAssemblyBuilder {
    * `CloudAssembly` object that can be used to inspect the assembly.
    * @param options
    */
-  public build(options: AssemblyBuildOptions = { }): CloudAssembly {
+  public buildAssembly(options: AssemblyBuildOptions = { }): CloudAssembly {
     const manifest: AssemblyManifest = filterUndefined({
       version: CLOUD_ASSEMBLY_VERSION,
       artifacts: this.artifacts,
@@ -209,7 +209,7 @@ export class CloudAssemblyBuilder {
 
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
-    // this will result in an error "CDK Toolkit >= 0.34.0 is required in order to interact with this program."
+    // this will result in an error "CDK Toolkit >= CLOUD_ASSEMBLY_VERSION is required in order to interact with this program."
     fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: CLOUD_ASSEMBLY_VERSION }));
 
     return new CloudAssembly(this.outdir);

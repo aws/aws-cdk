@@ -1,7 +1,6 @@
-import {
-  AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
-  ISubnet, IVpc, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
-import { Construct, Duration, Lazy, Resource } from '@aws-cdk/cdk';
+import { Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
+  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
+import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
@@ -59,6 +58,16 @@ export interface LoadBalancerProps {
    * @default true
    */
   readonly crossZone?: boolean;
+
+  /**
+   * Which subnets to deploy the load balancer
+   *
+   * Can be used to define a specific set of subnets to deploy the load balancer to.
+   * Useful multiple public or private subnets are covering the same availability zone.
+   *
+   * @default - Public subnets if internetFacing, Private subnets otherwise
+   */
+  readonly subnetSelection?: SubnetSelection;
 }
 
 /**
@@ -228,18 +237,18 @@ export class LoadBalancer extends Resource implements IConnectable {
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: ISubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
-      subnets: subnets.map(s => s.subnetId),
+      subnets: selectedSubnets.subnetIds,
       listeners: Lazy.anyValue({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: (props.crossZone === undefined || props.crossZone) ? true : false
     });
     if (props.internetFacing) {
-      this.elb.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
+      this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
     }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
@@ -267,10 +276,10 @@ export class LoadBalancer extends Resource implements IConnectable {
       policyNames: listener.policyNames
     });
 
-    const port = new ListenerPort(this.securityGroup, new TcpPort(listener.externalPort));
+    const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
 
     // Allow connections on the public port for all supplied peers (default: everyone)
-    ifUndefined(listener.allowConnectionsFrom, [new AnyIPv4()]).forEach(peer => {
+    ifUndefined(listener.allowConnectionsFrom, [Peer.anyIpv4()]).forEach(peer => {
       port.connections.allowDefaultPortFrom(peer, `Default rule allow on ${listener.externalPort}`);
     });
 
@@ -356,7 +365,7 @@ export class LoadBalancer extends Resource implements IConnectable {
   private allowTargetConnection(instancePort: number, target: ILoadBalancerTarget) {
     this.connections.allowTo(
       target,
-      new TcpPort(instancePort),
+      Port.tcp(instancePort),
       `Port ${instancePort} LB to fleet`);
   }
 }
@@ -377,8 +386,8 @@ export class LoadBalancer extends Resource implements IConnectable {
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: ISecurityGroup, defaultPortRange: IPortRange) {
-    this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
+  constructor(securityGroup: ISecurityGroup, defaultPort: Port) {
+    this.connections = new Connections({ securityGroups: [securityGroup], defaultPort });
   }
 }
 
@@ -427,4 +436,18 @@ function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthChec
     timeout: (healthCheck.timeout || Duration.seconds(5)).toSeconds().toString(),
     unhealthyThreshold: ifUndefined(healthCheck.unhealthyThreshold, 5).toString(),
   };
+}
+
+function loadBalancerSubnets(props: LoadBalancerProps): SelectedSubnets {
+  if (props.subnetSelection !== undefined) {
+    return props.vpc.selectSubnets(props.subnetSelection);
+  } else if (props.internetFacing) {
+    return props.vpc.selectSubnets({
+      subnetType: SubnetType.PUBLIC
+    });
+  } else {
+    return props.vpc.selectSubnets({
+      subnetType: SubnetType.PRIVATE
+    });
+  }
 }

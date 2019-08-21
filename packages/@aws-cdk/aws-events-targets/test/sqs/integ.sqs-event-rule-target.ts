@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 // ---------------------------------
@@ -13,7 +13,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sqs-event-target');
 
 const event = new events.Rule(stack, 'MyRule', {
-  schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');

@@ -6,12 +6,12 @@ import contextproviders = require('../../context-providers');
 import { debug, error, print, warning } from '../../logging';
 import { Configuration } from '../../settings';
 import { flatMap } from '../../util/arrays';
-import { SDK } from '../util/sdk';
+import { ISDK } from '../util/sdk';
 
 /**
  * @returns output directory
  */
-type Synthesizer = (aws: SDK, config: Configuration) => Promise<cxapi.CloudAssembly>;
+type Synthesizer = (aws: ISDK, config: Configuration) => Promise<cxapi.CloudAssembly>;
 
 export interface AppStacksProps {
   /**
@@ -43,7 +43,7 @@ export interface AppStacksProps {
   /**
    * AWS object (used by synthesizer and contextprovider)
    */
-  aws: SDK;
+  aws: ISDK;
 
   /**
    * Callback invoked to synthesize the actual stacks
@@ -164,9 +164,6 @@ export class AppStacks {
     // Filter original array because it is in the right order
     const selectedList = stacks.filter(s => selectedStacks.has(s.name));
 
-    // Only check selected stacks for errors
-    this.processMessages(selectedList);
-
     return selectedList;
   }
 
@@ -223,8 +220,8 @@ export class AppStacks {
           if (!stack.template.Resources) {
             stack.template.Resources = {};
           }
-          const resourcePresent = stack.environment.region === 'default-region'
-            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.cdkMetadataResourceAvailable) === 'YES';
+          const resourcePresent = stack.environment.region === cxapi.UNKNOWN_REGION
+            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES';
           if (resourcePresent) {
             if (!stack.template.Resources.CDKMetadata) {
               stack.template.Resources.CDKMetadata = {
@@ -269,7 +266,7 @@ export class AppStacks {
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  private processMessages(stacks: cxapi.CloudFormationStackArtifact[]) {
+  public processMetadata(stacks: cxapi.CloudFormationStackArtifact[]) {
     let warnings = false;
     let errors = false;
 

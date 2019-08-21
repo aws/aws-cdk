@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { RemovalPolicy } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
 
@@ -20,7 +20,8 @@ export = {
       Resources: {
         Repo02AC86CF: {
           Type: "AWS::ECR::Repository",
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
     });
@@ -164,7 +165,9 @@ export = {
       { 'Fn::Select': [ 4, arnSplit ] },
       '.dkr.ecr.',
       { 'Fn::Select': [ 3, arnSplit ] },
-      '.amazonaws.com/',
+      '.',
+      { Ref: 'AWS::URLSuffix' },
+      '/',
       { Ref: 'Repo02AC86CF' }
     ]]});
 
@@ -293,7 +296,7 @@ export = {
 
       repo.onCloudTrailImagePushed('EventRule', {
         target: {
-          bind: () => ({ arn: 'ARN', id: 'ID' })
+          bind: () => ({ arn: 'ARN', id: '' })
         }
       });
 
@@ -343,7 +346,7 @@ export = {
 
     // WHEN
     new ecr.Repository(stack, 'Repo', {
-      removalPolicy: RemovalPolicy.Destroy
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     // THEN
@@ -352,6 +355,34 @@ export = {
       "DeletionPolicy": "Delete"
     }, ResourcePart.CompleteDefinition));
     test.done();
-  }
+  },
 
+  'grant adds appropriate resource-*'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+    // WHEN
+    repo.grantPull(new iam.AnyPrincipal());
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      "RepositoryPolicyText": {
+        "Statement": [
+          {
+            "Action": [
+              "ecr:BatchCheckLayerAvailability",
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:BatchGetImage"
+            ],
+            "Effect": "Allow",
+            "Principal": "*",
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
 };

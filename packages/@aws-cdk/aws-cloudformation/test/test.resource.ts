@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -30,7 +30,7 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.Destroy });
+      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition));
@@ -45,11 +45,12 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.Retain });
+      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.RETAIN });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -77,7 +78,7 @@ export = testCase({
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
             "Principal": {
-              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "lambda.amazonaws.com"
             }
             }
           ],
@@ -112,6 +113,7 @@ export = testCase({
         "Custom1D319B237": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [
@@ -124,6 +126,7 @@ export = testCase({
         "Custom2DD5FB44D": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [
@@ -193,21 +196,33 @@ export = testCase({
     },
 
   },
+
+  '.ref returns the intrinsic reference (physical name)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const res = new TestCustomResource(stack, 'myResource');
+
+    // THEN
+    test.deepEqual(stack.resolve(res.resource.ref), { Ref: 'myResourceC6A188A9' });
+    test.done();
+  }
 });
 
 class TestCustomResource extends cdk.Construct {
+  public readonly resource: CustomResource;
+
   constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.Python27,
+      runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });
 
-    new CustomResource(this, 'Resource', {
+    this.resource = new CustomResource(this, 'Resource', {
       ...opts,
       provider: CustomResourceProvider.lambda(singletonLambda),
     });

@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { ScheduledEc2Task } from '../../lib';
 
@@ -10,7 +10,7 @@ export = {
   "Can create a scheduled Ec2 Task - with only required props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -32,7 +32,7 @@ export = {
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledEc2TaskScheduledTaskDef1EA607E3",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }
@@ -44,12 +44,11 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -58,11 +57,7 @@ export = {
             }
           },
           Memory: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -73,7 +68,7 @@ export = {
   "Can create a scheduled Ec2 Task - with optional props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -85,7 +80,7 @@ export = {
       desiredTaskCount: 2,
       memoryLimitMiB: 512,
       cpu: 2,
-      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -98,7 +93,7 @@ export = {
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledEc2TaskScheduledTaskDef1EA607E3",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }
@@ -111,22 +106,17 @@ export = {
           Cpu: 2,
           Environment: [
             {
-              Name: "name",
-              Value: "TRIGGER"
-            },
-            {
-              Name: "value",
+              Name: "TRIGGER",
               Value: "CloudWatch Events"
             }
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -135,11 +125,7 @@ export = {
             }
           },
           Memory: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -150,7 +136,7 @@ export = {
   "Scheduled Ec2 Task - with MemoryReservation defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -169,12 +155,11 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -183,11 +168,7 @@ export = {
             }
           },
           MemoryReservation: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -198,7 +179,7 @@ export = {
   "Scheduled Ec2 Task - with Command defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -223,12 +204,11 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -237,11 +217,7 @@ export = {
             }
           },
           MemoryReservation: 512,
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));

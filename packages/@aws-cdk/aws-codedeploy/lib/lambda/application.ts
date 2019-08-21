@@ -1,4 +1,4 @@
-import { Construct, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApplication } from "../codedeploy.generated";
 import { arnForApplication } from "../utils";
 
@@ -10,7 +10,7 @@ import { arnForApplication } from "../utils";
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link LambdaApplication#import} method.
+ * use the {@link LambdaApplication#fromLambdaApplicationName} method.
  */
 export interface ILambdaApplication extends IResource {
   /** @attribute */
@@ -29,7 +29,7 @@ export interface LambdaApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  readonly applicationName?: PhysicalName;
+  readonly applicationName?: string;
 }
 
 /**
@@ -39,8 +39,7 @@ export interface LambdaApplicationProps {
  */
 export class LambdaApplication extends Resource implements ILambdaApplication {
   /**
-   * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link ILambdaApplication#export} method.
+   * Import an Application defined either outside the CDK, or in a different CDK Stack.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -69,17 +68,12 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
       computePlatform: 'Lambda'
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: arnForApplication(resource.ref),
-      name: resource.ref,
-      arnComponents: {
-        service: 'codedeploy',
-        resource: 'application',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.applicationName = this.getResourceNameAttribute(resource.ref);
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.applicationName = resourceIdentifiers.name;
-    this.applicationArn = resourceIdentifiers.arn;
   }
 }

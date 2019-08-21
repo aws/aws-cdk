@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptRule, ReceiptRuleSet, TlsPolicy } from '../lib';
 
@@ -14,11 +14,11 @@ export = {
     new ReceiptRuleSet(stack, 'RuleSet', {
       rules: [
         {
-          receiptRuleName: PhysicalName.of('FirstRule'),
+          receiptRuleName: 'FirstRule',
         },
         {
           enabled: false,
-          receiptRuleName: PhysicalName.of('SecondRule'),
+          receiptRuleName: 'SecondRule',
           recipients: ['hello@aws.com'],
           scanEnabled: true,
           tlsPolicy: TlsPolicy.REQUIRE

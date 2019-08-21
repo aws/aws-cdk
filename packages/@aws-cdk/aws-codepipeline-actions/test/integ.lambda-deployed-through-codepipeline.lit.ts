@@ -3,18 +3,18 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import codepipeline_actions = require('../lib');
 
 const app = new cdk.App();
 
 /// !show
 const lambdaStack = new cdk.Stack(app, 'LambdaStack');
-const lambdaCode = lambda.Code.cfnParameters();
+const lambdaCode = lambda.Code.fromCfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.Nodejs810,
+  runtime: lambda.Runtime.NODEJS_8_10,
 });
 // other resources that your Lambda needs, added to the lambdaStack...
 

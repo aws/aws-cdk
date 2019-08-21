@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecsPatterns = require('../../lib');
 
@@ -47,7 +47,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ServiceProcessingContainerLoggingLogGroupF40B9C5D"
+                Ref: "ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1"
               },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": {
@@ -72,7 +72,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
     const queue = new sqs.Queue(stack, 'ecs-test-queue', {
-      queueName: cdk.PhysicalName.of('ecs-test-sqs-queue'),
+      queueName: 'ecs-test-sqs-queue',
     });
 
     // WHEN

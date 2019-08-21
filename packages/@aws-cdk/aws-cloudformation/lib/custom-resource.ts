@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { CfnCustomResource } from './cloudformation.generated';
 
 /**
@@ -97,9 +97,20 @@ export class CustomResource extends Resource {
       }
     });
 
-    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.Destroy });
+    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
   }
 
+  /**
+   * The physical name of this custom resource.
+   */
+  public get ref() {
+    return this.resource.ref;
+  }
+
+  /**
+   * An attribute of this custom resource
+   * @param attributeName the attribute name
+   */
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
   }
@@ -123,7 +134,7 @@ function uppercaseProperties(props: Properties): Properties {
 
 function renderResourceType(resourceType?: string) {
   if (!resourceType) {
-    return CfnCustomResource.cfnResourceTypeName;
+    return CfnCustomResource.CFN_RESOURCE_TYPE_NAME;
   }
 
   if (!resourceType.startsWith('Custom::')) {

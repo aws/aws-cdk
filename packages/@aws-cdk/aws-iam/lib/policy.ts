@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -23,7 +23,7 @@ export interface PolicyProps {
    * @default - Uses the logical ID of the policy resource, which is ensured
    * to be unique within the stack.
    */
-  readonly policyName?: PhysicalName;
+  readonly policyName?: string;
 
   /**
    * Users to attach this policy to.
@@ -96,12 +96,12 @@ export class Policy extends Resource implements IPolicy {
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
-        PhysicalName.of(Lazy.stringValue({ produce: () => generatePolicyName(resource.logicalId) }).toString()),
+        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) })
     });
 
     const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
-      policyName: this.physicalName, // guaranteed to be not null because of above `super` call
+      policyName: this.physicalName,
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),

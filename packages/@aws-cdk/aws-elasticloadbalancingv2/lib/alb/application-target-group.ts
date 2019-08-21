@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Duration, IConstruct } from '@aws-cdk/cdk';
+import { Construct, Duration, IConstruct } from '@aws-cdk/core';
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
@@ -120,8 +120,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * Don't call this directly. It will be called by load balancing targets.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.IPortRange) {
-    portRange = portRange || new ec2.TcpPort(this.defaultPort);
+  public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port) {
+    portRange = portRange || ec2.Port.tcp(this.defaultPort);
 
     // Notify all listeners that we already know about of this new connectable.
     // Then remember for new listeners that might get added later.
@@ -183,7 +183,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
+  public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props
@@ -308,7 +308,7 @@ interface ConnectableMember {
   /**
    * The port (range) the member is listening on
    */
-  portRange: ec2.IPortRange;
+  portRange: ec2.Port;
 }
 
 /**

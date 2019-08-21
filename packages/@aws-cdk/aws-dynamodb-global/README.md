@@ -7,7 +7,7 @@
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
+>
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -22,7 +22,7 @@ Here is a minimal deployable Global DynamoDB tables definition:
 ```typescript
 import { AttributeType } from '@aws-cdk/aws-dynamodb';
 import { GlobalTable } from '@aws-cdk/aws-dynamodb-global';
-import { App } from '@aws-cdk/cdk';
+import { App } from '@aws-cdk/core';
 
 const app = new App();
 new GlobalTable(app, 'globdynamodb', {

@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import config = require('../lib');
 
@@ -18,7 +18,7 @@ export = {
         key: 'value'
       },
       maximumExecutionFrequency: config.MaximumExecutionFrequency.THREE_HOURS,
-      configRuleName: cdk.PhysicalName.of('cool rule'),
+      configRuleName: 'cool rule',
     });
 
     // THEN
@@ -42,9 +42,9 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.inline('foo'),
+      code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // WHEN
@@ -56,7 +56,7 @@ export = {
       },
       lambdaFunction: fn,
       maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
-      configRuleName: cdk.PhysicalName.of('cool rule'),
+      configRuleName: 'cool rule',
       periodic: true
     });
 
@@ -208,9 +208,9 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.inline('foo'),
+      code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // WHEN
@@ -229,9 +229,9 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.inline('foo'),
+      code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // THEN
@@ -250,9 +250,9 @@ export = {
     });
 
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('dummy'),
+      code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // WHEN

@@ -11,22 +11,24 @@ import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 import { StackStatus } from './util/cloudformation/stack-status';
-import { SDK } from './util/sdk';
+import { ISDK } from './util/sdk';
 
 type TemplateBodyParameter = {
   TemplateBody?: string
   TemplateURL?: string
 };
 
+/** @experimental */
 export interface DeployStackResult {
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
   readonly stackArn: string;
 }
 
+/** @experimental */
 export interface DeployStackOptions {
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: SDK;
+  sdk: ISDK;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
   deployName?: string;
@@ -38,6 +40,7 @@ export interface DeployStackOptions {
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
 
+/** @experimental */
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
   if (!options.stack.environment) {
     throw new Error(`The stack ${options.stack.name} does not have an environment`);
@@ -98,6 +101,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
 
+/** @experimental */
 async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Promise<{ [name: string]: string }> {
   const description = await describeStack(cfn, stackName);
   const result: { [name: string]: string } = {};
@@ -142,14 +146,16 @@ async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolk
   }
 }
 
+/** @experimental */
 export interface DestroyStackOptions {
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: SDK;
+  sdk: ISDK;
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;
 }
 
+/** @experimental */
 export async function destroyStack(options: DestroyStackOptions) {
   if (!options.stack.environment) {
     throw new Error(`The stack ${options.stack.name} does not have an environment`);

@@ -356,28 +356,8 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": [
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "ecs.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  },
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "ecs-tasks.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "ecs.amazonaws.com",
+                  "ecs-tasks.amazonaws.com"
                 ]
               }
             }
@@ -399,7 +379,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "L3LoggingLogGroupBD1F02DD",
+                  "L3TaskDefwebLogGroupC6E4A38A",
                   "Arn"
                 ]
               }
@@ -418,7 +398,6 @@
     "L3LB212FC0E0": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "LoadBalancerAttributes": [],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -447,7 +426,6 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awsecsintegL3LB6453BA0A",
-        "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -498,8 +476,7 @@
           "Ref": "L3LB212FC0E0"
         },
         "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
+        "Protocol": "HTTP"
       }
     },
     "L3LBPublicListenerECSGroup648EEA11": {
@@ -507,8 +484,6 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "Vpc8378EB38"
@@ -524,17 +499,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -549,12 +514,11 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "L3LoggingLogGroupBD1F02DD"
+                  "Ref": "L3TaskDefwebLogGroupC6E4A38A"
                 },
                 "awslogs-stream-prefix": "L3",
                 "awslogs-region": {
@@ -562,16 +526,13 @@
                 }
               }
             },
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Cpu": "512",
@@ -592,13 +553,13 @@
             "L3TaskDefTaskRole21C75D10",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
-    "L3LoggingLogGroupBD1F02DD": {
+    "L3TaskDefwebLogGroupC6E4A38A": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "L3Service616D5A93": {
       "Type": "AWS::ECS::Service",
@@ -615,6 +576,7 @@
         },
         "DesiredCount": 1,
         "LaunchType": "FARGATE",
+        "HealthCheckGracePeriodSeconds": 60,
         "LoadBalancers": [
           {
             "ContainerName": "web",
@@ -644,8 +606,7 @@
               }
             ]
           }
-        },
-        "ServiceRegistries": []
+        }
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",
@@ -663,7 +624,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }

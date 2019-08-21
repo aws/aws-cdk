@@ -3,7 +3,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable:max-line-length
 import { EmailEncoding, LambdaInvocationType, ReceiptRuleAddHeaderAction, ReceiptRuleBounceAction, ReceiptRuleBounceActionTemplate, ReceiptRuleLambdaAction, ReceiptRuleS3Action, ReceiptRuleSet, ReceiptRuleSnsAction, ReceiptRuleStopAction } from '../lib';
@@ -95,7 +95,7 @@ export = {
           actions: [
             new ReceiptRuleBounceAction({
               sender: 'noreply@aws.com',
-              template: ReceiptRuleBounceActionTemplate.MessageContentRejected,
+              template: ReceiptRuleBounceActionTemplate.MESSAGE_CONTENT_REJECTED,
               topic
             })
           ]
@@ -133,9 +133,9 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline(''),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // WHEN
@@ -262,17 +262,7 @@ export = {
             },
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'ses.',
-                    {
-                      Ref: 'AWS::URLSuffix'
-                    }
-                  ]
-                ]
-              }
+              Service: "ses.amazonaws.com"
             },
             Resource: {
               'Fn::Join': [
@@ -310,7 +300,8 @@ export = {
               'kms:Get*',
               'kms:Delete*',
               'kms:ScheduleKeyDeletion',
-              'kms:CancelKeyDeletion'
+              'kms:CancelKeyDeletion',
+              "kms:GenerateDataKey"
             ],
             Effect: 'Allow',
             Principal: {
@@ -351,17 +342,7 @@ export = {
             },
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'ses.',
-                    {
-                      Ref: 'AWS::URLSuffix'
-                    }
-                  ]
-                ]
-              }
+              Service: "ses.amazonaws.com"
             },
             Resource: '*'
           }

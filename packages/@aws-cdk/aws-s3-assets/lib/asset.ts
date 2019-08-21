@@ -1,28 +1,12 @@
 import assets = require('@aws-cdk/assets');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
-
-/**
- * Defines the way an asset is packaged before it is uploaded to S3.
- */
-export enum AssetPackaging {
-  /**
-   * Path refers to a directory on disk, the contents of the directory is
-   * archived into a .zip.
-   */
-  ZipDirectory = 'zip',
-
-  /**
-   * Path refers to a single file on disk. The file is uploaded as-is.
-   */
-  File = 'file',
-}
 
 export interface AssetProps extends assets.CopyOptions {
   /**
@@ -106,7 +90,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     const packaging = determinePackaging(staging.sourcePath);
 
     // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === AssetPackaging.ZipDirectory
+    this.isZipArchive = packaging === AssetPackaging.ZIP_DIRECTORY
       ? true
       : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
@@ -172,7 +156,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
    * "aws:cdk:enable-asset-metadata" context key defined, which is the default
    * behavior when synthesizing via the CDK Toolkit.
    *
-   * @see https://github.com/awslabs/aws-cdk/issues/1432
+   * @see https://github.com/aws/aws-cdk/issues/1432
    *
    * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
    * @param resourceProperty The property name where this asset is referenced
@@ -185,9 +169,9 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
     // tell tools such as SAM CLI that the "Code" property of this resource
     // points to a local path in order to enable local invocation of this function.
-    resource.options.metadata = resource.options.metadata || { };
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 
   /**
@@ -208,12 +192,28 @@ function determinePackaging(assetPath: string): AssetPackaging {
   }
 
   if (fs.statSync(assetPath).isDirectory()) {
-    return AssetPackaging.ZipDirectory;
+    return AssetPackaging.ZIP_DIRECTORY;
   }
 
   if (fs.statSync(assetPath).isFile()) {
-    return AssetPackaging.File;
+    return AssetPackaging.FILE;
   }
 
   throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
+}
+
+/**
+ * Defines the way an asset is packaged before it is uploaded to S3.
+ */
+enum AssetPackaging {
+  /**
+   * Path refers to a directory on disk, the contents of the directory is
+   * archived into a .zip.
+   */
+  ZIP_DIRECTORY = 'zip',
+
+  /**
+   * Path refers to a single file on disk. The file is uploaded as-is.
+   */
+  FILE = 'file',
 }

@@ -3,16 +3,24 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
 
-See the README of the `@aws-cdk/aws-autoscaling` library.
+This library contains integration classes for AutoScaling lifecycle hooks.
+Instances of these classes should be passed to the
+`autoScalingGroup.addLifecycleHook()` method.
+
+Lifecycle hooks can be activated in one of the following ways:
+
+* Invoke a Lambda function
+* Publish to an SNS topic
+* Send to an SQS queue
+
+For more information on using this library, see the README of the
+`@aws-cdk/aws-autoscaling` library.
+
+For more information about lifecycle hooks, see
+[Amazon EC2 AutoScaling Lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html) in the Amazon EC2 User Guide.

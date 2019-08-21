@@ -1,8 +1,9 @@
 {
   "Resources": {
     "Bucket12520700A": {
-      "DeletionPolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Bucket1NotificationsBC5D9A45": {
       "Type": "Custom::S3BucketNotifications",
@@ -77,17 +78,7 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "s3.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "s3.amazonaws.com"
               },
               "Resource": {
                 "Fn::GetAtt": [
@@ -114,17 +105,7 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "s3.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "s3.amazonaws.com"
               },
               "Resource": {
                 "Fn::GetAtt": [
@@ -152,17 +133,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -224,8 +195,9 @@
       }
     },
     "Bucket25524B414": {
-      "DeletionPolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Bucket2NotificationsD9BA2A77": {
       "Type": "Custom::S3BucketNotifications",
@@ -288,7 +260,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -329,17 +302,7 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "s3.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "s3.amazonaws.com"
               },
               "Resource": "*"
             },
@@ -350,17 +313,7 @@
               ],
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "s3.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "s3.amazonaws.com"
               },
               "Resource": "*"
             }
@@ -369,6 +322,7 @@
         },
         "Description": "Created by sqs-bucket-notifications/EncryptedQueue"
       },
+      "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
     "EncryptedQueue0428C61A": {
@@ -405,17 +359,7 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "s3.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "s3.amazonaws.com"
               },
               "Resource": {
                 "Fn::GetAtt": [

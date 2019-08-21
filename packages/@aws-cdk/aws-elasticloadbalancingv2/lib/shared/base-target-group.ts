@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
@@ -205,7 +205,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     super(scope, id);
 
     if (baseProps.deregistrationDelay !== undefined) {
-      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toString());
+      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toSeconds().toString());
     }
 
     this.healthCheck = baseProps.healthCheck || {};
@@ -213,9 +213,9 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
+      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true}),
       targetType: cdk.Lazy.stringValue({ produce: () => this.targetType }),
-      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson }),
+      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson}, { omitEmptyArray: true}),
       vpcId: baseProps.vpc.vpcId,
 
       // HEALTH CHECK

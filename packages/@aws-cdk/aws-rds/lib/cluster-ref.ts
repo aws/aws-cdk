@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { IResource } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/core';
 import { Endpoint } from './endpoint';
 
 /**
@@ -19,13 +19,13 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
 
   /**
    * The endpoint to use for read/write operations
-   * @attribute dbClusterEndpointAddress,dbClusterEndpointPort
+   * @attribute EndpointAddress,EndpointPort
    */
   readonly clusterEndpoint: Endpoint;
 
   /**
    * Endpoint to use for load-balanced read-only operations.
-   * @attribute dbClusterReadEndpointAddress
+   * @attribute ReadEndpointAddress
    */
   readonly clusterReadEndpoint: Endpoint;
 

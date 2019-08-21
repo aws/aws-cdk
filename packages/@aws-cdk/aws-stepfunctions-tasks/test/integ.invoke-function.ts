@@ -1,5 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { Code, Function, Runtime } from '../../aws-lambda/lib';
 import tasks = require('../lib');
@@ -8,9 +8,9 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const handler = new Function(stack, 'Handler', {
-  code: Code.asset(path.join(__dirname, 'my-lambda-handler')),
+  code: Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
-  runtime: Runtime.Python36
+  runtime: Runtime.PYTHON_3_6
 });
 
 const submitJob = new sfn.Task(stack, 'Invoke Handler', {
@@ -18,14 +18,14 @@ const submitJob = new sfn.Task(stack, 'Invoke Handler', {
 });
 
 const callbackHandler = new Function(stack, 'CallbackHandler', {
-  code: Code.asset(path.join(__dirname, 'my-lambda-handler')),
+  code: Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
-  runtime: Runtime.Python36
+  runtime: Runtime.PYTHON_3_6
 });
 
 const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
   task: new tasks.RunLambdaTask(callbackHandler, {
-    waitForTaskToken: true,
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     payload: {
       token: sfn.Context.taskToken
     }

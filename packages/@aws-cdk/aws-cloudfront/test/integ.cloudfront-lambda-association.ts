@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cloudfront = require('../lib');
 
 const app = new cdk.App();
@@ -8,13 +8,13 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront');
 
 const sourceBucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 
 const lambdaFunction = new lambda.Function(stack, 'Lambda', {
-  code: lambda.Code.inline('foo'),
+  code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.Nodejs810
+  runtime: lambda.Runtime.NODEJS_8_10
 });
 
 const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {

@@ -1,5 +1,5 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
-import { App, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
 
@@ -85,7 +85,7 @@ export = {
       DashboardBody: { "Fn::Join": [ "", [
         "{\"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
         { Ref: "AWS::Region" },
-        "\",\"metrics\":[],\"annotations\":{\"horizontal\":[]},\"yAxis\":{}}}]}"
+        "\",\"yAxis\":{}}}]}"
       ]]}
     }));
 
@@ -113,7 +113,7 @@ export = {
         "{\"start\":\"-9H\",\"end\":\"2018-12-17T06:00:00.000Z\",\"periodOverride\":\"inherit\",\
 \"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
         { Ref: "AWS::Region" },
-        "\",\"metrics\":[],\"annotations\":{\"horizontal\":[]},\"yAxis\":{}}}]}"
+        "\",\"yAxis\":{}}}]}"
       ]]}
     }));
 
@@ -127,7 +127,7 @@ export = {
 
     // WHEN
     new Dashboard(stack, 'MyDashboard', {
-      dashboardName: PhysicalName.of('MyCustomDashboardName'),
+      dashboardName: 'MyCustomDashboardName',
     });
 
     // THEN
@@ -148,6 +148,24 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {}));
+
+    test.done();
+  },
+
+  'throws if DashboardName is not valid'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const toThrow = () => {
+      new Dashboard(stack, 'MyDashboard', {
+        dashboardName: 'My Invalid Dashboard Name',
+      });
+    };
+
+    // THEN
+    test.throws(() => toThrow(), /field dashboardName contains invalid characters/);
 
     test.done();
   }

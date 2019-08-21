@@ -1,6 +1,6 @@
 import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
 import { RetentionDays } from '@aws-cdk/aws-logs';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReadWriteType, Trail } from '../lib';
 
@@ -11,9 +11,7 @@ const ExpectedBucketPolicyProperties = {
         Action: "s3:GetBucketAcl",
         Effect: "Allow",
         Principal: {
-          Service: {
-            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
-          }
+          Service: "cloudtrail.amazonaws.com"
         },
         Resource: {
           "Fn::GetAtt": [
@@ -31,9 +29,7 @@ const ExpectedBucketPolicyProperties = {
         },
         Effect: "Allow",
         Principal: {
-          Service: {
-            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
-          }
+          Service: "cloudtrail.amazonaws.com"
         },
         Resource: {
           "Fn::Join": [
@@ -200,8 +196,8 @@ export = {
     trail.onCloudTrailEvent('DoEvents', {
       target: {
         bind: () => ({
+          id: '',
           arn: 'arn',
-          id: 'myid'
         })
       }
     });
@@ -217,7 +213,7 @@ export = {
       Targets: [
         {
           Arn: "arn",
-          Id: "myid"
+          Id: "Target0"
         }
       ]
     }));

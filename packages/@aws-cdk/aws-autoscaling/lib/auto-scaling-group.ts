@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
+import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -156,6 +156,13 @@ export interface CommonAutoScalingGroupProps {
    * @default none
    */
   readonly spotPrice?: string;
+
+  /**
+   * Configuration for health checks
+   *
+   * @default - HealthCheck.ec2 with no grace period
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -175,7 +182,17 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * AMI to launch
    */
-  readonly machineImage: ec2.IMachineImageSource;
+  readonly machineImage: ec2.IMachineImage;
+
+  /**
+   * Specific UserData to use
+   *
+   * The UserData may still be mutated after creation.
+   *
+   * @default - A UserData object appropriate for the MachineImage's
+   * Operating System is created.
+   */
+  readonly userData?: ec2.UserData;
 
   /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
@@ -191,6 +208,20 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
@@ -354,7 +385,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public readonly autoScalingGroupArn: string;
 
-  private readonly userDataLines = new Array<string>();
+  /**
+   * UserData for the instances
+   */
+  public readonly userData: ec2.UserData;
+
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -381,12 +416,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     // use delayed evaluation
-    const machineImage = props.machineImage.getImage(this);
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64((machineImage.os.createUserData(this.userDataLines))) });
+    const imageConfig = props.machineImage.getImage(this);
+    this.userData = props.userData || imageConfig.userData || ec2.UserData.forOperatingSystem(imageConfig.osType);
+    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-      imageId: machineImage.imageId,
+      imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
       securityGroups: securityGroupsToken,
@@ -394,6 +430,29 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
+      blockDeviceMappings: (props.blockDevices !== undefined ? props.blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+          ({deviceName, volume, mappingEnabled}) => {
+            const {virtualName, ebsDevice: ebs} = volume;
+
+            if (ebs) {
+              const {iops, volumeType} = ebs;
+
+              if (!iops) {
+                if (volumeType === EbsDeviceVolumeType.IO1) {
+                  throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+                }
+              } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+                this.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+              }
+            }
+
+            return {
+              deviceName,
+              ebs,
+              virtualName,
+              noDevice: mappingEnabled !== undefined ? !mappingEnabled : undefined,
+            };
+          }) : undefined),
     });
 
     launchConfig.node.addDependency(this.role);
@@ -409,7 +468,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
     }
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
       minSize: minCapacity.toString(),
@@ -429,21 +488,24 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           ],
         }
       ],
-      vpcZoneIdentifier: subnetIds
+      vpcZoneIdentifier: subnetIds,
+      healthCheckType: props.healthCheck && props.healthCheck.type,
+      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
     };
 
-    if (!props.vpc.isPublicSubnets(subnetIds) && props.associatePublicIpAddress) {
-      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+    if (!hasPublic && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
-    this.osType = machineImage.os.type;
+    this.osType = imageConfig.osType;
     this.autoScalingGroupName = this.autoScalingGroup.ref;
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',
       resourceName: this.autoScalingGroupName
     });
+    this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
   }
@@ -472,7 +534,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     this.albTargetGroup = targetGroup;
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**
@@ -480,15 +542,15 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**
    * Add command to the startup script of fleet instances.
    * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
    */
-  public addUserData(...scriptLines: string[]) {
-    scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
+  public addUserData(...commands: string[]) {
+    this.userData.addCommands(...commands);
   }
 
   /**
@@ -503,8 +565,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   private applyUpdatePolicies(props: AutoScalingGroupProps) {
     if (props.updateType === UpdateType.REPLACING_UPDATE) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingReplacingUpdate: {
           willReplace: true
         }
@@ -516,31 +578,31 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         // during the update?
         //
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
-        this.autoScalingGroup.options.creationPolicy = {
-          ...this.autoScalingGroup.options.creationPolicy,
+        this.autoScalingGroup.cfnOptions.creationPolicy = {
+          ...this.autoScalingGroup.cfnOptions.creationPolicy,
           autoScalingCreationPolicy: {
             minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
           }
         };
       }
     } else if (props.updateType === UpdateType.ROLLING_UPDATE) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
       };
     }
 
     // undefined is treated as 'true'
     if (props.ignoreUnmodifiedSizeProperties !== false) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true }
       };
     }
 
     if (props.resourceSignalCount !== undefined || props.resourceSignalTimeout !== undefined) {
-      this.autoScalingGroup.options.creationPolicy = {
-        ...this.autoScalingGroup.options.creationPolicy,
+      this.autoScalingGroup.cfnOptions.creationPolicy = {
+        ...this.autoScalingGroup.cfnOptions.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
@@ -656,6 +718,61 @@ export enum ScalingProcess {
   ALARM_NOTIFICATION = 'AlarmNotification',
   SCHEDULED_ACTIONS = 'ScheduledActions',
   ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
+}
+
+/**
+ * EC2 Heath check options
+ */
+export interface Ec2HealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly grace?: Duration;
+}
+
+/**
+ * ELB Heath check options
+ */
+export interface ElbHealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * This option is required for ELB health checks.
+   */
+  readonly grace: Duration;
+}
+
+/**
+ * Health check settings
+ */
+export class HealthCheck {
+  /**
+   * Use EC2 for health checks
+   *
+   * @param options EC2 health check options
+   */
+  public static ec2(options: Ec2HealthCheckOptions = {}): HealthCheck {
+    return new HealthCheck(HealthCheckType.EC2, options.grace);
+  }
+
+  /**
+   * Use ELB for health checks.
+   * It considers the instance unhealthy if it fails either the EC2 status checks or the load balancer health checks.
+   *
+   * @param options ELB health check options
+   */
+  public static elb(options: ElbHealthCheckOptions): HealthCheck {
+    return new HealthCheck(HealthCheckType.ELB, options.grace);
+  }
+
+  private constructor(public readonly type: string, public readonly gracePeriod?: Duration) { }
+}
+
+enum HealthCheckType {
+  EC2 = 'EC2',
+  ELB = 'ELB',
 }
 
 /**
@@ -783,4 +900,160 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * Value to keep the metric around
    */
   readonly targetValue: number;
+}
+
+export interface BlockDevice {
+  /**
+   * The device name exposed to the EC2 instance
+   *
+   * @example '/dev/sdh', 'xvdh'
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
+   */
+  readonly deviceName: string;
+
+  /**
+   * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
+   *
+   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
+   *
+   */
+  readonly volume: BlockDeviceVolume;
+
+  /**
+   * If false, the device mapping will be suppressed.
+   * If set to false for the root device, the instance might fail the Amazon EC2 health check.
+   * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
+   *
+   * @default true - device mapping is left untouched
+   */
+  readonly mappingEnabled?: boolean;
+}
+
+export interface EbsDeviceOptionsBase {
+  /**
+   * Indicates whether to delete the volume when the instance is terminated.
+   *
+   * @default - true for Amazon EC2 Auto Scaling, false otherwise (e.g. EBS)
+   */
+  readonly deleteOnTermination?: boolean;
+
+  /**
+   * The number of I/O operations per second (IOPS) to provision for the volume.
+   *
+   * Must only be set for {@link volumeType}: {@link EbsDeviceVolumeType.IO1}
+   *
+   * The maximum ratio of IOPS to volume size (in GiB) is 50:1, so for 5,000 provisioned IOPS,
+   * you need at least 100 GiB storage on the volume.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   */
+  readonly iops?: number;
+
+  /**
+   * The EBS volume type
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   *
+   * @default {@link EbsDeviceVolumeType.GP2}
+   */
+  readonly volumeType?: EbsDeviceVolumeType;
+}
+
+export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
+  /**
+   * Specifies whether the EBS volume is encrypted.
+   * Encrypted EBS volumes can only be attached to instances that support Amazon EBS encryption
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances
+   *
+   * @default false
+   */
+  readonly encrypted?: boolean;
+}
+
+export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
+  /**
+   * The volume size, in Gibibytes (GiB)
+   *
+   * If you specify volumeSize, it must be equal or greater than the size of the snapshot.
+   *
+   * @default - The snapshot size
+   */
+  readonly volumeSize?: number;
+}
+
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+  readonly snapshotId?: string;
+}
+
+/**
+ * Describes a block device mapping for an Auto Scaling group.
+ */
+export class BlockDeviceVolume  {
+  /**
+   * Creates a new Elastic Block Storage device
+   *
+   * @param volumeSize The volume size, in Gibibytes (GiB)
+   * @param options additional device options
+   */
+  public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
+    return new this({...options, volumeSize});
+  }
+
+  /**
+   * Creates a new Elastic Block Storage device from an existing snapshot
+   *
+   * @param snapshotId The snapshot ID of the volume to use
+   * @param options additional device options
+   */
+  public static ebsFromSnapshot(snapshotId: string, options: EbsDeviceSnapshotOptions = {}): BlockDeviceVolume {
+    return new this({...options, snapshotId});
+  }
+
+  /**
+   * Creates a virtual, ephemeral device.
+   * The name will be in the form ephemeral{volumeIndex}.
+   *
+   * @param volumeIndex the volume index. Must be equal or greater than 0
+   */
+  public static ephemeral(volumeIndex: number) {
+    if (volumeIndex < 0) {
+      throw new Error(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+    }
+
+    return new this(undefined, `ephemeral${volumeIndex}`);
+  }
+
+  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
+  }
+}
+
+/**
+ * Supported EBS volume types for {@link AutoScalingGroupProps.blockDevices}
+ */
+export enum EbsDeviceVolumeType {
+  /**
+   * Magnetic
+   */
+  STANDARD = 'standard',
+
+  /**
+   *  Provisioned IOPS SSD
+   */
+  IO1 = 'io1',
+
+  /**
+   * General Purpose SSD
+   */
+  GP2 = 'gp2',
+
+  /**
+   * Throughput Optimized HDD
+   */
+  ST1 = 'st1',
+
+  /**
+   * Cold HDD
+   */
+  SC1 = 'sc1',
 }

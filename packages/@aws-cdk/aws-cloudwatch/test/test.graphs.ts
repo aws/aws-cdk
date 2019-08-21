@@ -1,6 +1,6 @@
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add metrics to graphs on either axis'(test: Test) {
@@ -29,7 +29,6 @@ export = {
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
           ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
         ],
-        annotations: { horizontal: [] },
         yAxis: {}
       }
     }]);
@@ -55,7 +54,6 @@ export = {
         metrics: [
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average', label: 'MyMetric', color: '000000' }],
         ],
-        annotations: { horizontal: [] },
         yAxis: {}
       }
     }]);
@@ -241,12 +239,27 @@ export = {
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
           ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
         ],
-        annotations: { horizontal: [] },
         yAxis: {
           left: { label: "Left yAxis", max: 100 },
           right: { label: "Right yAxis", min: 10, showUnits: false } }
       }
     }]);
+
+    test.done();
+  },
+
+  'can use imported alarm with graph'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const alarm = Alarm.fromAlarmArn(stack, 'Alarm', 'arn:aws:cloudwatch:region:account-id:alarm:alarm-name');
+
+    // WHEN
+    new AlarmWidget({
+      title: 'My fancy graph',
+      alarm
+    });
+
+    // THEN: Compiles
 
     test.done();
   },

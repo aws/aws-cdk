@@ -1,8 +1,9 @@
-import { expect } from '@aws-cdk/assert';
-import { App, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
-import { generatePolicyName } from '../lib/util';
+import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+
+// tslint:disable:object-literal-key-quotes
 
 export = {
   'fails when policy is empty'(test: Test) {
@@ -18,7 +19,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
 
-    const policy = new Policy(stack, 'MyPolicy', { policyName: PhysicalName.of('MyPolicyName') });
+    const policy = new Policy(stack, 'MyPolicy', { policyName: 'MyPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
     policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
 
@@ -78,7 +79,7 @@ export = {
     });
 
     new Policy(stack, 'MyTestPolicy', {
-      policyName: PhysicalName.of('Foo'),
+      policyName: 'Foo',
       users: [ user1 ],
       groups: [ group1 ],
       roles: [ role1 ],
@@ -141,7 +142,7 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     const p = new Policy(stack, 'MyTestPolicy', {
-      policyName: PhysicalName.of('Foo'),
+      policyName: 'Foo',
     });
 
     p.attachToUser(new User(stack, 'User1'));
@@ -222,8 +223,8 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     // create two policies named Foo and attach them both to the same user/group/role
-    const p1 = new Policy(stack, 'P1', { policyName: PhysicalName.of('Foo') });
-    const p2 = new Policy(stack, 'P2', { policyName: PhysicalName.of('Foo') });
+    const p1 = new Policy(stack, 'P1', { policyName: 'Foo' });
+    const p2 = new Policy(stack, 'P2', { policyName: 'Foo' });
     const p3 = new Policy(stack, 'P3'); // uses logicalID as name
 
     const user = new User(stack, 'MyUser');
@@ -254,17 +255,29 @@ export = {
     test.done();
   },
 
+  "generated policy name is the same as the logical id if it's shorter than 128 characters"(test: Test) {
+    const stack = new Stack();
+
+    createPolicyWithLogicalId(stack, 'Foo');
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      "PolicyName": "Foo",
+    }));
+
+    test.done();
+  },
+
   'generated policy name only uses the last 128 characters of the logical id'(test: Test) {
-    test.equal(generatePolicyName('Foo'), 'Foo');
+    const stack = new Stack();
 
-    const logicalId50 = '[' + dup(50 - 2) + ']';
-    test.equal(generatePolicyName(logicalId50), logicalId50);
+    const logicalId128 = 'a' + dup(128 - 2) + 'a';
+    const logicalIdOver128 = 'PREFIX' + logicalId128;
 
-    const logicalId128 = '[' + dup(128 - 2) + ']';
-    test.equal(generatePolicyName(logicalId128), logicalId128);
+    createPolicyWithLogicalId(stack, logicalIdOver128);
 
-    const withPrefix = 'PREFIX' + logicalId128;
-    test.equal(generatePolicyName(withPrefix), logicalId128, 'ensure prefix is omitted');
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      "PolicyName": logicalId128,
+    }));
 
     test.done();
 
@@ -275,5 +288,18 @@ export = {
       }
       return r;
     }
-  }
+  },
 };
+
+function createPolicyWithLogicalId(stack: Stack, logicalId: string): void {
+  const policy = new Policy(stack, logicalId);
+  const cfnPolicy = policy.node.defaultChild as CfnPolicy;
+  cfnPolicy.overrideLogicalId(logicalId); // force a particular logical ID
+
+  // add statements & principal to satisfy validation
+  policy.addStatements(new PolicyStatement({
+    actions: ['*'],
+    resources: ['*'],
+  }));
+  policy.attachToRole(new Role(stack, 'Role', { assumedBy: new AnyPrincipal() }));
+}

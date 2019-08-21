@@ -33,6 +33,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Adding Dependencies](#adding-dependencies)
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
+  - [Running CLI integration tests](#running-cli-integration-tests)
 - [Troubleshooting](#troubleshooting)
 - [Related Repositories](#related-repositories)
 
@@ -42,7 +43,7 @@ For day-to-day development and normal contributions, [Node.js 8.11](https://node
 should be sufficient.
 
 ```console
-$ git clone git@github.com:awslabs/aws-cdk.git
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 $ ./build.sh
 ```
@@ -57,6 +58,28 @@ installed, or use the Docker workflow.
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
 ## Pull Requests
+
+### Pull Request Checklist
+
+* [ ] Testing
+  - Unit test added (prefer not to modify an existing test, otherwise, it's probably a breaking change)
+  - __CLI change?:__ coordinate update of integration tests with team
+  - __cdk-init template change?:__ coordinated update of integration tests with team
+* [ ] Docs
+  - __jsdocs__: All public APIs documented
+  - __README__: README and/or documentation topic updated
+  - __Design__: For significant features, design document added to `design` folder
+* [ ] Title and Description
+  - __Change type__: title prefixed with **fix**, **feat** and module name in parens, which will appear in changelog
+  - __Title__: use lower-case and doesn't end with a period
+  - __Breaking?__: last paragraph: "BREAKING CHANGE: <describe what changed + link for details>"
+  - __Issues__: Indicate issues fixed via: "**Fixes #xxx**" or "**Closes #xxx**"
+* [ ] Sensitive Modules (requires 2 PR approvers)
+  - IAM Policy Document (in @aws-cdk/aws-iam)
+  - EC2 Security Groups and ACLs (in @aws-cdk/aws-ec2)
+  - Grant APIs (only if not based on official documentation with a reference)
+
+---
 
 ### Step 1: Open Issue
 
@@ -130,11 +153,14 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
 * Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+
+
 
 ### Step 6: Merge
 
@@ -149,7 +175,7 @@ The CDK is a big project, and, at the moment, all of the CDK modules are mastere
 to maintain integrity in the early stage of the project where things constantly change across the stack. In the future
 we believe many of these modules will be extracted to their own repositories.
 
-Another complexity is that the CDK is packaged using [jsii](https://github.com/awslabs/jsii) to multiple programming
+Another complexity is that the CDK is packaged using [jsii](https://github.com/aws/jsii) to multiple programming
 languages. This means that when a full build is complete, there will be a version of each module for each supported
 language.
 
@@ -290,7 +316,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com/awslabs/aws-cdk
+$ git clone git@github.com/aws/aws-cdk
 $ cd aws-cdk
 ```
 
@@ -314,7 +340,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com/awslabs/aws-cdk
+$ git clone git@github.com/aws/aws-cdk
 $ cd aws-cdk
 ```
 
@@ -445,6 +471,13 @@ To update all dependencies (without bumping major versions):
 3. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
 4. Submit a Pull Request.
 
+### Running CLI integration tests
+
+The CLI package (`packages/aws-cdk`) has some integration tests that aren't
+run as part of the regular build, since they have some particular requirements.
+See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
+more information on running those tests.
+
 ## Troubleshooting
 
 Most build issues can be solved by doing a full clean rebuild:
@@ -518,5 +551,5 @@ $ CDK_TEST_BUILD=false lr test
 * [Samples](https://github.com/aws-samples/aws-cdk-examples): includes sample code in multiple languages
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
-* [jsii](https://github.com/awslabs/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
+* [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
 

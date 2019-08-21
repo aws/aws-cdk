@@ -3,7 +3,7 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
 import { CodePipelineSource } from '../lib/codepipeline-source';
@@ -29,7 +29,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -156,8 +156,7 @@ export = {
         "MyRepoF4F48043": {
           "Type": "AWS::CodeCommit::Repository",
           "Properties": {
-          "RepositoryName": "hello-cdk",
-          "Triggers": []
+          "RepositoryName": "hello-cdk"
           }
         },
         "MyProjectRole9BBE5233": {
@@ -169,7 +168,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -312,7 +311,8 @@ export = {
         "Resources": {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyProjectRole9BBE5233": {
           "Type": "AWS::IAM::Role",
@@ -323,7 +323,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -580,6 +580,7 @@ export = {
             codebuild.FilterGroup.inEventOf(
               codebuild.EventAction.PULL_REQUEST_CREATED,
               codebuild.EventAction.PULL_REQUEST_UPDATED,
+              codebuild.EventAction.PULL_REQUEST_MERGED,
             ).andTagIs('v.*'),
             // duplicate event actions are fine
             codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
@@ -601,7 +602,7 @@ export = {
           Webhook: true,
           FilterGroups: [
             [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED' },
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_MERGED' },
               { Type: 'HEAD_REF', Pattern: 'refs/tags/v.*' },
             ],
             [
@@ -630,7 +631,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          securityGroupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -677,7 +678,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          securityGroupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -699,7 +700,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          securityGroupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -926,6 +927,36 @@ export = {
           {
             "ArtifactIdentifier": "artifact1",
             "Type": "S3",
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'disabledEncryption is set'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondaryArtifact(codebuild.Artifacts.s3({
+        bucket,
+        path: 'another/path',
+        name: 'name',
+        identifier: 'artifact1',
+        encryption: false,
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondaryArtifacts": [
+          {
+            "ArtifactIdentifier": "artifact1",
+            "EncryptionDisabled": true,
           },
         ],
       }));

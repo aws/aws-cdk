@@ -2,8 +2,8 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
 
@@ -105,7 +105,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -204,7 +205,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -346,8 +348,8 @@ export = {
     };
     const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.Nodejs810,
-      code: lambda.Code.inline('export.handler = event => event;'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+      code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler'
     });
 
@@ -394,7 +396,7 @@ export = {
     test.done();
   },
 
-  'equivalence of SecretValue and Secret.import'(test: Test) {
+  'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
     const stack = new Stack();
 

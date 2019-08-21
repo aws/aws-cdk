@@ -2,7 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import glue = require('../lib');
 
@@ -20,7 +20,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       dataFormat: glue.DataFormat.Json,
     });
@@ -28,7 +28,8 @@ export = {
 
     expect(tableStack).to(haveResource('AWS::S3::Bucket', {
       Type: "AWS::S3::Bucket",
-      DeletionPolicy: "Retain"
+      DeletionPolicy: "Retain",
+      UpdateReplacePolicy: "Retain"
     }, ResourcePart.CompleteDefinition));
 
     expect(tableStack).to(haveResource('AWS::Glue::Table', {
@@ -91,11 +92,11 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       partitionKeys: [{
         name: 'year',
-        type: glue.Schema.smallint
+        type: glue.Schema.SMALL_INT
       }],
       dataFormat: glue.DataFormat.Json,
     });
@@ -167,7 +168,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       compressed: true,
       dataFormat: glue.DataFormat.Json,
@@ -234,7 +235,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         encryption: glue.TableEncryption.S3_MANAGED,
         dataFormat: glue.DataFormat.Json,
@@ -313,7 +314,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         encryption: glue.TableEncryption.KMS,
         dataFormat: glue.DataFormat.Json,
@@ -337,7 +338,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -443,7 +445,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         encryption: glue.TableEncryption.KMS,
         encryptionKey,
@@ -469,7 +471,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -573,7 +576,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         encryption: glue.TableEncryption.KMS_MANAGED,
         dataFormat: glue.DataFormat.Json,
@@ -652,7 +655,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
         dataFormat: glue.DataFormat.Json,
@@ -677,7 +680,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -764,7 +768,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
         encryptionKey,
@@ -790,7 +794,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -878,7 +883,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket,
         encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
@@ -905,7 +910,8 @@ export = {
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               Effect: "Allow",
               Principal: {
@@ -997,7 +1003,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: glue.Schema.string
+        type: glue.Schema.STRING
       }],
       dataFormat: glue.DataFormat.Json,
     });
@@ -1062,7 +1068,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         compressed: true,
         dataFormat: glue.DataFormat.Json,
@@ -1168,7 +1174,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         compressed: true,
         dataFormat: glue.DataFormat.Json,
@@ -1272,7 +1278,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         compressed: true,
         dataFormat: glue.DataFormat.Json,
@@ -1393,10 +1399,10 @@ export = {
           tableName: 'name',
           columns: [{
             name: 'col1',
-            type: glue.Schema.string
+            type: glue.Schema.STRING
           }, {
             name: 'col1',
-            type: glue.Schema.string
+            type: glue.Schema.STRING
           }]
         });
       }, undefined, "column names and partition keys must be unique, but 'col1' is duplicated.");
@@ -1409,14 +1415,14 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         partitionKeys: [{
           name: 'p1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }, {
           name: 'p1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }]
       }), undefined, "column names and partition keys must be unique, but 'p1' is duplicated");
 
@@ -1428,11 +1434,11 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         partitionKeys: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }]
       }), "column names and partition keys must be unique, but 'col1' is duplicated");
 
@@ -1444,7 +1450,7 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: glue.TableEncryption.KMS
@@ -1457,7 +1463,7 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: undefined
@@ -1470,7 +1476,7 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: undefined
@@ -1483,7 +1489,7 @@ export = {
         tableName: 'name',
         columns: [{
           name: 'col1',
-          type: glue.Schema.string
+          type: glue.Schema.STRING
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: glue.TableEncryption.CLIENT_SIDE_KMS

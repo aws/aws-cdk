@@ -1,3 +1,250 @@
+# CloudFormation Resource Specification v5.2.0
+
+## New Resource Types
+
+* AWS::SSM::MaintenanceWindowTarget
+* AWS::SageMaker::Workteam
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DMS::ReplicationTask CdcStartPosition (__added__)
+* AWS::DMS::ReplicationTask CdcStopPosition (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LogConfig ExcludeVerboseContent (__added__)
+
+
+# CloudFormation Resource Specification v5.1.0
+
+## New Resource Types
+
+* AWS::CodeBuild::SourceCredential
+* AWS::Glue::MLTransform
+* AWS::LakeFormation::DataLakeSettings
+* AWS::LakeFormation::Permissions
+* AWS::LakeFormation::Resource
+* AWS::ManagedBlockchain::Member
+* AWS::ManagedBlockchain::Node
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EC2::ClientVpnEndpoint SplitTunnel (__added__)
+* AWS::Greengrass::ConnectorDefinition Tags (__added__)
+* AWS::Greengrass::CoreDefinition Tags (__added__)
+* AWS::Greengrass::DeviceDefinition Tags (__added__)
+* AWS::Greengrass::FunctionDefinition Tags (__added__)
+* AWS::Greengrass::Group Tags (__added__)
+* AWS::Greengrass::LoggerDefinition Tags (__added__)
+* AWS::Greengrass::ResourceDefinition Tags (__added__)
+* AWS::Greengrass::SubscriptionDefinition Tags (__added__)
+
+## Property Type Changes
+
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api AccessLogSetting (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.AccessLogSetting (__added__)
+
+# CloudFormation Resource Specification v5.0.0
+
+## New Resource Types
+
+* AWS::CodeStar::GitHubRepository
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeCommit::Repository Tags (__added__)
+* AWS::Cognito::UserPool UserPoolAddOns (__added__)
+* AWS::Cognito::UserPool VerificationMessageTemplate (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlows (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlowsUserPoolClient (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthScopes (__added__)
+* AWS::Cognito::UserPoolClient AnalyticsConfiguration (__added__)
+* AWS::Cognito::UserPoolClient CallbackURLs (__added__)
+* AWS::Cognito::UserPoolClient DefaultRedirectURI (__added__)
+* AWS::Cognito::UserPoolClient LogoutURLs (__added__)
+* AWS::Cognito::UserPoolClient SupportedIdentityProviders (__added__)
+* AWS::Glue::Job GlueVersion (__added__)
+* AWS::Glue::Job MaxCapacity (__added__)
+* AWS::Glue::Job NumberOfWorkers (__added__)
+* AWS::Glue::Job WorkerType (__added__)
+* AWS::SSM::MaintenanceWindowTask ServiceRoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask WindowId.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.Device (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters (__added__)
+* AWS::Cognito::UserPool.UserPoolAddOns (__added__)
+* AWS::Cognito::UserPool.VerificationMessageTemplate (__added__)
+* AWS::Cognito::UserPoolClient.AnalyticsConfiguration (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources SecurityGroupIds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::JobDefinition.ContainerProperties LinuxParameters (__added__)
+* AWS::CodeCommit::Repository.RepositoryTrigger DestinationArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeCommit::Repository.RepositoryTrigger Events.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeCommit::Repository.RepositoryTrigger Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Cognito::UserPool.LambdaConfig PreTokenGeneration (__added__)
+* AWS::Cognito::UserPool.LambdaConfig UserMigration (__added__)
+* AWS::Glue::Job.JobCommand PythonVersion (__added__)
+
+
+# CloudFormation Resource Specification v4.3.0
+
+## New Resource Types
+
+* AWS::IoTEvents::DetectorModel
+* AWS::IoTEvents::Input
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker EncryptionOptions (__added__)
+* AWS::Amplify::App AutoBranchCreationConfig (__added__)
+* AWS::Amplify::Branch EnableAutoBuild (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.EncryptionOptions (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig (__added__)
+* AWS::Amplify::App.BasicAuthConfig Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Amplify::App.BasicAuthConfig Username.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v4.2.0
+
+## New Resource Types
+
+* AWS::Backup::BackupPlan
+* AWS::Backup::BackupSelection
+* AWS::Backup::BackupVault
+* AWS::CloudWatch::AnomalyDetector
+* AWS::Config::RemediationConfiguration
+* AWS::MediaLive::Channel
+* AWS::MediaLive::Input
+* AWS::MediaLive::InputSecurityGroup
+* AWS::SecurityHub::Hub
+* AWS::ServiceCatalog::StackSetConstraint
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Amplify::App Repository.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Api Tags (__added__)
+* AWS::ApiGatewayV2::DomainName Tags (__added__)
+* AWS::ApiGatewayV2::Stage Tags (__added__)
+* AWS::AppMesh::Mesh Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::Route Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualNode Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualRouter Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualService Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppStream::Fleet IdleDisconnectTimeoutInSeconds (__added__)
+* AWS::IoTAnalytics::Channel ChannelStorage (__added__)
+* AWS::IoTAnalytics::Datastore DatastoreStorage (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProvisioningPreferences (__added__)
+
+## Property Type Changes
+
+* AWS::Amplify::App.Token (__removed__)
+* AWS::AppMesh::Mesh.TagRef (__removed__)
+* AWS::AppMesh::Route.TagRef (__removed__)
+* AWS::AppMesh::VirtualNode.TagRef (__removed__)
+* AWS::AppMesh::VirtualRouter.TagRef (__removed__)
+* AWS::AppMesh::VirtualService.TagRef (__removed__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapInstanceAttribute (__added__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapServiceDiscovery (__added__)
+* AWS::IoTAnalytics::Channel.ChannelStorage (__added__)
+* AWS::IoTAnalytics::Channel.CustomerManagedS3 (__added__)
+* AWS::IoTAnalytics::Channel.ServiceManagedS3 (__added__)
+* AWS::IoTAnalytics::Datastore.CustomerManagedS3 (__added__)
+* AWS::IoTAnalytics::Datastore.DatastoreStorage (__added__)
+* AWS::IoTAnalytics::Datastore.ServiceManagedS3 (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct.ProvisioningPreferences (__added__)
+* AWS::AppMesh::VirtualNode.ServiceDiscovery AWSCloudMap (__added__)
+* AWS::EC2::LaunchTemplate.SpotOptions BlockDurationMinutes (__added__)
+* AWS::EC2::LaunchTemplate.SpotOptions ValidUntil (__added__)
+* AWS::Route53Resolver::ResolverRule.TargetAddress Port.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-branch-tag.html#cfn-amplify-branch-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-branch-tag.html#cfn-amplify-branch-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 

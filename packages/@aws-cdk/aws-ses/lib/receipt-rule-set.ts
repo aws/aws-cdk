@@ -1,4 +1,4 @@
-import { Construct, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 
@@ -28,7 +28,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default - A CloudFormation generated name.
    */
-  readonly receiptRuleSetName?: PhysicalName;
+  readonly receiptRuleSetName?: string;
 
   /**
    * The list of rules to add to this rule set. Rules are added in the same

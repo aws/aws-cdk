@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 
@@ -225,13 +225,13 @@ export = {
     metrics.push(lb.metricElbAuthFailure());
     metrics.push(lb.metricElbAuthLatency());
     metrics.push(lb.metricElbAuthSuccess());
-    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.Elb3xxCount));
-    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
+    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.ELB_3XX_COUNT));
+    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
     metrics.push(lb.metricHttpFixedResponseCount());
     metrics.push(lb.metricHttpRedirectCount());
     metrics.push(lb.metricHttpRedirectUrlLimitExceededCount());
-    metrics.push(lb.metricIPv6ProcessedBytes());
-    metrics.push(lb.metricIPv6RequestCount());
+    metrics.push(lb.metricIpv6ProcessedBytes());
+    metrics.push(lb.metricIpv6RequestCount());
     metrics.push(lb.metricNewConnectionCount());
     metrics.push(lb.metricProcessedBytes());
     metrics.push(lb.metricRejectedConnectionCount());
@@ -258,7 +258,7 @@ export = {
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
-      loadBalancerName: PhysicalName.of('myLoadBalancer'),
+      loadBalancerName: 'myLoadBalancer',
       vpc
     });
 

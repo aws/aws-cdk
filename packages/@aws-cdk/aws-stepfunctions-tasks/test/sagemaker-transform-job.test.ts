@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import tasks = require('../lib');
 import { BatchStrategy, S3DataType } from '../lib';
 
@@ -65,13 +65,33 @@ test('create basic transform job', () => {
     });
 });
 
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+    expect(() => {
+        new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+            integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+            transformJobName: "MyTransformJob",
+            modelName: "MyModelName",
+            transformInput: {
+                transformDataSource: {
+                    s3DataSource: {
+                        s3Uri: 's3://inputbucket/prefix',
+                    }
+                }
+            },
+            transformOutput: {
+                s3OutputPath: 's3://outputbucket/prefix',
+            },
+        }) });
+    }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call SageMaker./i);
+  });
+
 test('create complex transform job', () => {
     // WHEN
     const kmsKey = new kms.Key(stack, 'Key');
     const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
         transformJobName: "MyTransformJob",
         modelName: "MyModelName",
-        synchronous: true,
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
         role,
         transformInput: {
             transformDataSource: {
@@ -87,7 +107,7 @@ test('create complex transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeKmsKeyId: kmsKey,
         },
         tags: {
@@ -158,7 +178,7 @@ test('pass param to transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
         }
     }) });
 

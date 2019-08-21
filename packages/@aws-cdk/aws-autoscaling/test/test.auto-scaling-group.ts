@@ -1,7 +1,8 @@
-import { expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
+import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart} from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -13,7 +14,7 @@ export = {
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc
     });
@@ -37,7 +38,6 @@ export = {
                 "IpProtocol": "-1",
               }
             ],
-            "SecurityGroupIngress": [],
             "Tags": [
               {
                 "Key": "Name",
@@ -92,7 +92,7 @@ export = {
               }
             ],
             "UserData": {
-              "Fn::Base64": "#!/bin/bash\n"
+              "Fn::Base64": "#!/bin/bash"
             }
           },
           "DependsOn": [
@@ -137,7 +137,7 @@ export = {
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -155,6 +155,56 @@ export = {
     test.done();
   },
 
+  'userdata can be overriden by image'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    const ud = ec2.UserData.forLinux();
+    ud.addCommands('it me!');
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage({
+        userData: ud
+      }),
+      vpc,
+    });
+
+    // THEN
+    test.equals(asg.userData.render(), '#!/bin/bash\nit me!');
+
+    test.done();
+  },
+
+  'userdata can be overriden at ASG directly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    const ud1 = ec2.UserData.forLinux();
+    ud1.addCommands('it me!');
+
+    const ud2 = ec2.UserData.forLinux();
+    ud2.addCommands('no me!');
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage({
+        userData: ud1
+      }),
+      vpc,
+      userData: ud2
+    });
+
+    // THEN
+    test.equals(asg.userData.render(), '#!/bin/bash\nno me!');
+
+    test.done();
+  },
+
   'can specify only min capacity'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -162,7 +212,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 10
@@ -186,7 +236,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       maxCapacity: 10
@@ -210,7 +260,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       desiredCapacity: 10
@@ -232,7 +282,7 @@ export = {
     const vpc = mockVpc(stack);
 
     const fleet = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc
     });
@@ -264,7 +314,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       updateType: autoscaling.UpdateType.REPLACING_UPDATE,
@@ -295,7 +345,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
@@ -327,7 +377,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       resourceSignalCount: 5,
@@ -347,6 +397,49 @@ export = {
     test.done();
   },
 
+  'can configure EC2 health check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthCheck: autoscaling.HealthCheck.ec2()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      HealthCheckType: 'EC2',
+    }));
+
+    test.done();
+  },
+
+  'can configure EBS health check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthCheck: autoscaling.HealthCheck.elb({grace: cdk.Duration.minutes(15)})
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      HealthCheckType: 'ELB',
+      HealthCheckGracePeriod: 900
+    }));
+
+    test.done();
+  },
+
   'can add Security Group to Fleet'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
@@ -354,7 +447,7 @@ export = {
 
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
     });
@@ -380,7 +473,7 @@ export = {
 
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
@@ -422,7 +515,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
 
@@ -444,7 +537,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -471,7 +564,7 @@ export = {
     // WHEN
     test.throws(() => {
       new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc,
         minCapacity: 0,
@@ -490,7 +583,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -514,7 +607,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -544,7 +637,7 @@ export = {
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
       vpc,
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       role: importedRole
     });
@@ -555,7 +648,187 @@ export = {
       "Roles": ["HelloDude"]
     }));
     test.done();
-  }
+  },
+
+  'defaultChild is available on an ASG'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // THEN
+    test.notEqual(asg.node.defaultChild, undefined);
+
+    test.done();
+  },
+
+  'can set blockDeviceMappings'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        mappingEnabled: true,
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+          iops: 5000,
+        })
+      }, {
+        deviceName: 'ebs-snapshot',
+        mappingEnabled: false,
+        volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+          volumeSize: 500,
+          deleteOnTermination: false,
+          volumeType: autoscaling.EbsDeviceVolumeType.SC1,
+        })
+      }, {
+        deviceName: 'ephemeral',
+        volume: autoscaling.BlockDeviceVolume.ephemeral(0)
+      }]
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      BlockDeviceMappings: [
+        {
+          DeviceName: "ebs",
+          Ebs: {
+            DeleteOnTermination: true,
+            Encrypted: true,
+            Iops: 5000,
+            VolumeSize: 15,
+            VolumeType: "io1"
+          },
+          NoDevice: false
+        },
+        {
+          DeviceName: "ebs-snapshot",
+          Ebs: {
+            DeleteOnTermination: false,
+            SnapshotId: "snapshot-id",
+            VolumeSize: 500,
+            VolumeType: "sc1"
+          },
+          NoDevice: true
+        },
+        {
+          DeviceName: "ephemeral",
+          VirtualName: "ephemeral0"
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'throws if ephemeral volumeIndex < 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ephemeral',
+          volume: autoscaling.BlockDeviceVolume.ephemeral(-1)
+        }]
+      });
+    }, /volumeIndex must be a number starting from 0/);
+
+    test.done();
+  },
+
+  'throws if volumeType === IO1 without iops'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+          })
+        }]
+      });
+    }, /ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
+
+    test.done();
+  },
+
+  'warning if iops without volumeType'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          iops: 5000,
+        })
+      }]
+    });
+
+    // THEN
+    test.deepEqual(asg.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+
+    test.done();
+  },
+
+  'warning if iops and volumeType !== IO1'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          volumeType: autoscaling.EbsDeviceVolumeType.GP2,
+          iops: 5000,
+        })
+      }]
+    });
+
+    // THEN
+    test.deepEqual(asg.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+    test.deepEqual(asg.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+
+    test.done();
+  },
 };
 
 function mockVpc(stack: cdk.Stack) {

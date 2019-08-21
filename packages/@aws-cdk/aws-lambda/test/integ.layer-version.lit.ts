@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import lambda = require('../lib');
 
@@ -11,8 +11,8 @@ const awsAccountId = stack.account;
 
 /// !show
 const layer = new lambda.LayerVersion(stack, 'MyLayer', {
-  code: lambda.Code.asset(path.join(__dirname, 'layer-code')),
-  compatibleRuntimes: [lambda.Runtime.Nodejs810],
+  code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+  compatibleRuntimes: [lambda.Runtime.NODEJS_8_10],
   license: 'Apache-2.0',
   description: 'A layer to test the L2 construct',
 });
@@ -26,7 +26,7 @@ layer.addPermission('remote-account-grant', { accountId: awsAccountId });
 new lambda.Function(stack, 'MyLayeredLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.Nodejs810,
+  runtime: lambda.Runtime.NODEJS_8_10,
   layers: [layer],
 });
 /// !hide

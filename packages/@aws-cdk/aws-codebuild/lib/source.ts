@@ -1,7 +1,7 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
 import {
@@ -50,23 +50,23 @@ export interface SourceProps {
  * Source provider definition for a CodeBuild Project.
  */
 export abstract class Source implements ISource {
-  public static s3(props: S3SourceProps): Source {
+  public static s3(props: S3SourceProps): ISource {
     return new S3Source(props);
   }
 
-  public static codeCommit(props: CodeCommitSourceProps): Source {
+  public static codeCommit(props: CodeCommitSourceProps): ISource {
     return new CodeCommitSource(props);
   }
 
-  public static gitHub(props: GitHubSourceProps): Source {
+  public static gitHub(props: GitHubSourceProps): ISource {
     return new GitHubSource(props);
   }
 
-  public static gitHubEnterprise(props: GitHubEnterpriseSourceProps): Source {
+  public static gitHubEnterprise(props: GitHubEnterpriseSourceProps): ISource {
     return new GitHubEnterpriseSource(props);
   }
 
-  public static bitBucket(props: BitBucketSourceProps): Source {
+  public static bitBucket(props: BitBucketSourceProps): ISource {
     return new BitBucketSource(props);
   }
 
@@ -143,9 +143,14 @@ export enum EventAction {
   PULL_REQUEST_CREATED = 'PULL_REQUEST_CREATED',
 
   /**
-   * Updating an Pull Request.
+   * Updating a Pull Request.
    */
   PULL_REQUEST_UPDATED = 'PULL_REQUEST_UPDATED',
+
+  /**
+   * Merging a Pull Request.
+   */
+  PULL_REQUEST_MERGED = 'PULL_REQUEST_MERGED',
 
   /**
    * Re-opening a previously closed Pull Request.

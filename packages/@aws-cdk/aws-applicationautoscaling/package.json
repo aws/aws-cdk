@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-applicationautoscaling",
-  "version": "0.35.0",
+  "version": "1.4.0",
   "description": "The CDK Construct Library for AWS::ApplicationAutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,27 +11,26 @@
         "package": "software.amazon.awscdk.services.applicationautoscaling",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "applicationautoscaling"
+          "artifactId": "applicationautoscaling",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
         "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-applicationautoscaling",
         "module": "aws_cdk.aws_applicationautoscaling"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "AWS Auto Scaling"
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-applicationautoscaling"
   },
   "scripts": {
@@ -63,24 +62,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cfn2ts": "^0.35.0",
-    "fast-check": "^1.15.1",
-    "pkglint": "^0.35.0"
+    "@aws-cdk/assert": "^1.4.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "fast-check": "^1.16.0",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-common": "^0.35.0",
-    "@aws-cdk/aws-cloudwatch": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-autoscaling-common": "^1.4.0",
+    "@aws-cdk/aws-cloudwatch": "^1.4.0",
+    "@aws-cdk/aws-iam": "^1.4.0",
+    "@aws-cdk/core": "^1.4.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling-common": "^0.35.0",
-    "@aws-cdk/aws-cloudwatch": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-autoscaling-common": "^1.4.0",
+    "@aws-cdk/aws-cloudwatch": "^1.4.0",
+    "@aws-cdk/aws-iam": "^1.4.0",
+    "@aws-cdk/core": "^1.4.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -90,5 +89,5 @@
       "props-physical-name:@aws-cdk/aws-applicationautoscaling.ScalableTargetProps"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

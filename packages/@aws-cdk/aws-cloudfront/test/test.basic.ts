@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as cloudformation from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/cdk';
+import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { CloudFrontWebDistribution, LambdaEdgeEventType, ViewerProtocolPolicy } from '../lib';
 
@@ -38,7 +38,6 @@ export = {
             "Type": "AWS::CloudFront::Distribution",
             "Properties": {
               "DistributionConfig": {
-                "CacheBehaviors": [],
                 "DefaultCacheBehavior": {
                   "AllowedMethods": [
                     "GET",
@@ -121,6 +120,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -161,8 +161,7 @@ export = {
               },
               "Enabled": true,
               "IPV6Enabled": true,
-              "HttpVersion": "http2",
-              "CacheBehaviors": []
+              "HttpVersion": "http2"
             }
           }
         }
@@ -196,6 +195,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -239,8 +239,7 @@ export = {
               },
               "Enabled": true,
               "IPV6Enabled": true,
-              "HttpVersion": "http2",
-              "CacheBehaviors": []
+              "HttpVersion": "http2"
             }
           }
         }
@@ -274,6 +273,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -314,8 +314,7 @@ export = {
               },
               "Enabled": true,
               "IPV6Enabled": true,
-              "HttpVersion": "http2",
-              "CacheBehaviors": []
+              "HttpVersion": "http2"
             }
           }
         }

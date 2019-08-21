@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, Stack } from "@aws-cdk/cdk";
+import { Construct, Lazy, Resource, Stack, Token } from "@aws-cdk/core";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -10,11 +10,13 @@ export enum PeriodOverride {
 
 export interface DashboardProps {
   /**
-   * Name of the dashboard
+   * Name of the dashboard.
    *
-   * @default Automatically generated name
+   * If set, must only contain alphanumerics, dash (-) and underscore (_)
+   *
+   * @default - automatically generated name
    */
-  readonly dashboardName?: PhysicalName;
+  readonly dashboardName?: string;
 
   /**
    * The start of the time range to use for each widget on the dashboard.
@@ -66,6 +68,16 @@ export class Dashboard extends Resource {
     super(scope, id, {
       physicalName: props.dashboardName,
     });
+
+    {
+      const {dashboardName} = props;
+      if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
+        throw new Error([
+          `The value ${dashboardName} for field dashboardName contains invalid characters.`,
+          'It can only contain alphanumerics, dash (-) and underscore (_).'
+        ].join(' '));
+      }
+    }
 
     new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,

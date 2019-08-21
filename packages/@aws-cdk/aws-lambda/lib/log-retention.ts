@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { Code } from './code';
 import { Runtime } from './runtime';
@@ -32,8 +32,8 @@ export class LogRetention extends cdk.Construct {
 
     // Custom resource provider
     const provider = new SingletonFunction(this, 'Provider', {
-      code: Code.asset(path.join(__dirname, 'log-retention-provider')),
-      runtime: Runtime.Nodejs810,
+      code: Code.fromAsset(path.join(__dirname, 'log-retention-provider')),
+      runtime: Runtime.NODEJS_8_10,
       handler: 'index.handler',
       uuid: 'aae0aa3c-5b4d-4f87-b02d-85b201efdd8a',
       lambdaPurpose: 'LogRetention',

@@ -2,8 +2,8 @@ import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
-import { ConstructNode, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { ConstructNode, Stack } from '@aws-cdk/core';
 import s3n = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
@@ -18,7 +18,8 @@ test('bucket without notifications', () => {
     "Resources": {
       "MyBucketF68F3FF0": {
         "Type": "AWS::S3::Bucket",
-        "DeletionPolicy": "Retain"
+        "DeletionPolicy": "Retain",
+        "UpdateReplacePolicy": "Retain"
       }
     }
   });
@@ -87,7 +88,7 @@ test('bucketNotificationTarget is not called during synthesis', () => {
       },
       "Effect": "Allow",
       "Principal": {
-        "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
+        "Service": "s3.amazonaws.com"
       },
       "Resource": {
         "Ref": "TopicBFC7AF6E"
@@ -311,7 +312,7 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: 'ID' })
+        bind: () => ({ arn: 'ARN', id: '' })
       }
     });
 
@@ -353,7 +354,7 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: 'ID' })
+        bind: () => ({ arn: 'ARN', id: '' })
       },
       paths: ['my/path.zip']
     });

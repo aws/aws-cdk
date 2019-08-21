@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3",
-  "version": "0.35.0",
+  "version": "1.4.0",
   "description": "CDK Constructs for AWS S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,27 +11,26 @@
         "package": "software.amazon.awscdk.services.s3",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3"
+          "artifactId": "s3",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3",
         "packageId": "Amazon.CDK.AWS.S3",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-s3",
         "module": "aws_cdk.aws_s3"
       }
-    },
-    "metadata": {
-      "awsdocs:title": "Amazon S3"
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-s3"
   },
   "scripts": {
@@ -63,32 +62,33 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cdk-integ-tools": "^0.35.0",
-    "cfn2ts": "^0.35.0",
-    "pkglint": "^0.35.0"
+    "@aws-cdk/assert": "^1.4.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-kms": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-events": "^1.4.0",
+    "@aws-cdk/aws-iam": "^1.4.0",
+    "@aws-cdk/aws-kms": "^1.4.0",
+    "@aws-cdk/core": "^1.4.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-kms": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-events": "^1.4.0",
+    "@aws-cdk/aws-iam": "^1.4.0",
+    "@aws-cdk/aws-kms": "^1.4.0",
+    "@aws-cdk/core": "^1.4.0"
   },
   "engines": {
     "node": ">= 8.10.0"
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-s3.BucketPolicyProps"
+      "props-physical-name:@aws-cdk/aws-s3.BucketPolicyProps",
+      "no-unused-type:@aws-cdk/aws-s3.Location"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

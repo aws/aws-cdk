@@ -1,8 +1,8 @@
 import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EOL } from 'os';
 import s3 = require('../lib');
@@ -22,6 +22,7 @@ export = {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -32,7 +33,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.PhysicalName.of(cdk.Token.asString(5))  // Oh no
+      bucketName: cdk.Token.asString(5)  // Oh no
     });
 
     test.throws(() => {
@@ -53,6 +54,7 @@ export = {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -82,6 +84,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -92,11 +95,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('abc.xyz-34ab'),
+      bucketName: 'abc.xyz-34ab',
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('124.pp--33'),
+      bucketName: '124.pp--33',
     }));
 
     test.done();
@@ -106,7 +109,7 @@ export = {
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.PhysicalName.of(cdk.Lazy.stringValue({ produce: () => '_BUCKET' })),
+      bucketName: cdk.Lazy.stringValue({ produce: () => '_BUCKET' }),
     }));
 
     test.done();
@@ -125,7 +128,7 @@ export = {
     ].join(EOL);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.PhysicalName.of(bucket),
+      bucketName: bucket,
       // tslint:disable-next-line:only-arrow-functions
     }), function(err: Error) {
       return expectedErrors === err.message;
@@ -138,11 +141,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('a'),
+      bucketName: 'a',
     }), /at least 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of(new Array(65).join('x')),
+      bucketName: new Array(65).join('x'),
     }), /no more than 63/);
 
     test.done();
@@ -152,15 +155,15 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('b@cket'),
+      bucketName: 'b@cket',
     }), /offset: 1/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('bucKet'),
+      bucketName: 'bucKet',
     }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: cdk.PhysicalName.of('bučket'),
+      bucketName: 'bučket',
     }), /offset: 2/);
 
     test.done();
@@ -170,11 +173,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('-ucket'),
+      bucketName: '-ucket',
     }), /offset: 0/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('bucke.'),
+      bucketName: 'bucke.',
     }), /offset: 5/);
 
     test.done();
@@ -184,19 +187,19 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('buc..ket'),
+      bucketName: 'buc..ket',
     }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('buck.-et'),
+      bucketName: 'buck.-et',
     }), /offset: 4/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: cdk.PhysicalName.of('b-.ucket'),
+      bucketName: 'b-.ucket',
     }), /offset: 1/);
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: cdk.PhysicalName.of('bu--cket'),
+      bucketName: 'bu--cket',
     }));
 
     test.done();
@@ -206,19 +209,19 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('1.2.3.4'),
+      bucketName: '1.2.3.4',
     }), /must not resemble an IP address/);
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('1.2.3'),
+      bucketName: '1.2.3',
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: cdk.PhysicalName.of('1.2.3.a'),
+      bucketName: '1.2.3.a',
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: cdk.PhysicalName.of('1000.2.3.4'),
+      bucketName: '1000.2.3.4',
     }));
 
     test.done();
@@ -276,7 +279,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   "Effect": "Allow",
                   "Principal": {
@@ -303,7 +307,8 @@ export = {
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
@@ -325,6 +330,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -347,6 +353,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -356,7 +363,7 @@ export = {
   'bucket with block public access set to BlockAll'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BlockAll,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
     expect(stack).toMatch({
@@ -372,6 +379,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -381,7 +389,7 @@ export = {
   'bucket with block public access set to BlockAcls'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BlockAcls,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
     });
 
     expect(stack).toMatch({
@@ -395,6 +403,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -417,6 +426,28 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
+  'bucket with custom canned access control'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "AccessControl": "LogDeliveryWrite"
+          },
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -436,6 +467,7 @@ export = {
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain",
           },
           "MyBucketPolicyE7FBAC7B": {
             "Type": "AWS::S3::BucketPolicy",
@@ -535,7 +567,7 @@ export = {
   'removal policy can be used to specify behavior upon delete'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.Retain,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
       encryption: s3.BucketEncryption.UNENCRYPTED
     });
 
@@ -543,7 +575,8 @@ export = {
       Resources: {
         MyBucketF68F3FF0: {
           Type: 'AWS::S3::Bucket',
-          DeletionPolicy: 'Retain'
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain'
         }
       }
     });
@@ -684,7 +717,8 @@ export = {
         },
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
       }
     });
@@ -703,6 +737,7 @@ export = {
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain",
           },
           "MyUserDC45028B": {
             "Type": "AWS::IAM::User"
@@ -794,7 +829,7 @@ export = {
           "Statement": [
             {
               "Action": ["kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
-                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion"],
+                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey"],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -848,7 +883,8 @@ export = {
                       "kms:Get*",
                       "kms:Delete*",
                       "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion"
+                      "kms:CancelKeyDeletion",
+                      "kms:GenerateDataKey"
                     ],
                     "Effect": "Allow",
                     "Principal": {
@@ -894,11 +930,13 @@ export = {
                 "Version": "2012-10-17"
               }
             },
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
           },
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain",
             "Properties": {
               "BucketEncryption": {
                 "ServerSideEncryptionConfiguration": [
@@ -1026,7 +1064,8 @@ export = {
         "Resources": {
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
           }
         },
         "Outputs": {
@@ -1099,13 +1138,13 @@ export = {
       // given
       const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
-        bucketName: cdk.PhysicalName.of('my-bucket-physical-name'),
+        bucketName: 'my-bucket-physical-name',
       });
 
       const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
-        roleName: cdk.PhysicalName.of('MyRolePhysicalName'),
+        roleName: 'MyRolePhysicalName',
       });
 
       // when
@@ -1190,7 +1229,7 @@ export = {
       const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
       const key = new kms.Key(stackA, 'MyKey');
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
-        bucketName: cdk.PhysicalName.of('my-bucket-physical-name'),
+        bucketName: 'my-bucket-physical-name',
         encryptionKey: key,
         encryption: s3.BucketEncryption.KMS,
       });
@@ -1198,7 +1237,7 @@ export = {
       const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
-        roleName: cdk.PhysicalName.of('MyRolePhysicalName'),
+        roleName: 'MyRolePhysicalName',
       });
 
       // when
@@ -1270,7 +1309,8 @@ export = {
       "Resources": {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         }
       },
       "Outputs": {
@@ -1507,7 +1547,94 @@ export = {
       });
       test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
-    }
+    },
+    'adds RedirectAllRequestsTo property'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteRedirect: {
+          hostName: 'www.example.com',
+          protocol: s3.RedirectProtocol.HTTPS
+        }
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          RedirectAllRequestsTo: {
+            HostName: 'www.example.com',
+            Protocol: 'https'
+          }
+        }
+      }));
+      test.done();
+    },
+    'fails if websiteRedirect and websiteIndex and websiteError are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteIndexDocument: 'index.html',
+          websiteErrorDocument: 'error.html',
+          websiteRedirect: {
+            hostName: 'www.example.com'
+          }
+        });
+      }, /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
+      test.done();
+    },
+    'fails if websiteRedirect and websiteRoutingRules are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteRoutingRules: [],
+          websiteRedirect: {
+            hostName: 'www.example.com'
+          }
+        });
+      }, /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
+      test.done();
+    },
+    'adds RedirectRules property'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteRoutingRules: [{
+          hostName: 'www.example.com',
+          httpRedirectCode: '302',
+          protocol: s3.RedirectProtocol.HTTPS,
+          replaceKey: s3.ReplaceKey.prefixWith('test/'),
+          condition: {
+            httpErrorCodeReturnedEquals: '200',
+            keyPrefixEquals: 'prefix',
+          }
+        }]
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          RoutingRules: [{
+            RedirectRule: {
+              HostName: 'www.example.com',
+              HttpRedirectCode: '302',
+              Protocol: 'https',
+              ReplaceKeyPrefixWith: 'test/'
+            },
+            RoutingRuleCondition: {
+              HttpErrorCodeReturnedEquals: '200',
+              KeyPrefixEquals: 'prefix'
+            }
+          }]
+        }
+      }));
+      test.done();
+    },
+    'fails if routingRule condition object is empty'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteRoutingRules: [{
+            httpRedirectCode: '303',
+            condition: {}
+          }]
+        });
+      }, /The condition property cannot be an empty object/);
+      test.done();
+    },
   },
 
   'Bucket.fromBucketArn'(test: Test) {

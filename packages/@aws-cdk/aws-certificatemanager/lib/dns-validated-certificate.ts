@@ -2,10 +2,13 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { CertificateProps, ICertificate } from './certificate';
 
+/**
+ * @experimental
+ */
 export interface DnsValidatedCertificateProps extends CertificateProps {
     /**
      * Route 53 Hosted Zone used to perform DNS validation of the request.  The zone
@@ -27,6 +30,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * validated using DNS validation against the specified Route 53 hosted zone.
  *
  * @resource AWS::CertificateManager::Certificate
+ * @experimental
  */
 export class DnsValidatedCertificate extends cdk.Resource implements ICertificate {
     public readonly certificateArn: string;
@@ -48,9 +52,9 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
 
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
-            code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
+            code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: lambda.Runtime.Nodejs810,
+            runtime: lambda.Runtime.NODEJS_8_10,
             timeout: cdk.Duration.minutes(15)
         });
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({
@@ -70,7 +74,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
-                SubjectAlternativeNames: props.subjectAlternativeNames,
+                SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames}, { omitEmpty: true}),
                 HostedZoneId: this.hostedZoneId,
                 Region: props.region,
             }

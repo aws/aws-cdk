@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -55,17 +49,16 @@ pipeline.addStage({
 To use GitHub as the source of a CodePipeline:
 
 ```typescript
-// Read the secret from ParameterStore
-const token = new cdk.SecretParameter(this, 'GitHubToken', { ssmParameter: 'my-github-token' });
+// Read the secret from Secrets Manager
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: token.value,
+  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
-  trigger: codepipeline_actions.GitHubTrigger.Poll // default: 'WebHook', 'None' is also possible for no Source trigger
+  trigger: codepipeline_actions.GitHubTrigger.POLL // default: 'WEBHOOK', 'NONE' is also possible for no Source trigger
 });
 pipeline.addStage({
   stageName: 'Source',
@@ -99,8 +92,8 @@ pipeline.addStage({
 ```
 
 By default, the Pipeline will poll the Bucket to detect changes.
-You can change that behavior to use CloudWatch Events by setting the `pollForSourceChanges`
-property to `false` (it's `true` by default).
+You can change that behavior to use CloudWatch Events by setting the `trigger`
+property to `S3Trigger.EVENTS` (it's `S3Trigger.POLL` by default).
 If you do that, make sure the source Bucket is part of an AWS CloudTrail Trail -
 otherwise, the CloudWatch Events will not be emitted,
 and your Pipeline will not react to changes in the Bucket.
@@ -112,14 +105,14 @@ import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 const key = 'some/key.zip';
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
 trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
-  readWriteType: cloudtrail.ReadWriteType.WriteOnly,
+  readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY,
 });
 const sourceAction = new codepipeline_actions.S3SourceAction({
   actionName: 'S3Source',
   bucketKey: key,
   bucket: sourceBucket,
   output: sourceOutput,
-  pollForSourceChanges: false, // default: true
+  trigger: codepipeline_actions.S3Trigger.EVENTS, // default: S3Trigger.POLL
 });
 ```
 
@@ -245,7 +238,7 @@ Example buildspec for the above project:
 
 ```ts
 const project = new codebuild.PipelineProject(this, 'MyProject', {
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       build: {
@@ -268,7 +261,7 @@ const project = new codebuild.PipelineProject(this, 'MyProject', {
         },
       },
     },
-  },
+  }),
   // ...
 });
 ```
@@ -353,6 +346,43 @@ using a CloudFormation CodePipeline Action. Example:
 
 [Example of deploying a Lambda through CodePipeline](test/integ.lambda-deployed-through-codepipeline.lit.ts)
 
+##### Cross-account actions
+
+If you want to update stacks in a different account,
+pass the `account` property when creating the action:
+
+```typescript
+new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  account: '123456789012',
+});
+```
+
+This will create a new stack, called `<PipelineStackName>-support-123456789012`, in your `App`,
+that will contain the role that the pipeline will assume in account 123456789012 before executing this action.
+This support stack will automatically be deployed before the stack containing the pipeline.
+
+You can also pass a role explicitly when creating the action -
+in that case, the `account` property is ignored,
+and the action will operate in the same account the role belongs to:
+
+```typescript
+import { PhysicalName } from '@aws-cdk/core';
+
+// in stack for account 123456789012...
+const actionRole = new iam.Role(otherAccountStack, 'ActionRole', {
+  assumedBy: new iam.AccountPrincipal(pipelineAccount),
+  // the role has to have a physical name set
+  roleName: PhysicalName.GENERATE_IF_NEEDED,
+});
+
+// in the pipeline stack...
+new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  role: actionRole, // this action will be cross-account as well
+});
+```
+
 #### AWS CodeDeploy
 
 ##### Server deployments
@@ -384,14 +414,14 @@ pipeline.addStage({
 To use CodeDeploy for blue-green Lambda deployments in a Pipeline:
 
 ```typescript
-const lambdaCode = lambda.Code.cfnParameters(); 
+const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.Nodejs810,
+  runtime: lambda.Runtime.NODEJS_8_10,
 });
 // used to make sure each CDK synthesis produces a different Version
-const version = func.newVersion();
+const version = func.addVersion('NewVersion')
 const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
   aliasName: 'Prod',
   version,
@@ -399,7 +429,7 @@ const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
 
 new codedeploy.LambdaDeploymentGroup(lambdaStack, 'DeploymentGroup', {
   alias,
-  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
 });
 ```
 
@@ -461,18 +491,18 @@ You can deploy to Alexa using CodePipeline with the following Action:
 
 ```ts
 // Read the secrets from ParameterStore
-const clientId = new cdk.SecretParameter(this, 'AlexaClientId', { ssmParameter: '/Alexa/ClientId' });
-const clientSecret = new cdk.SecretParameter(this, 'AlexaClientSecret', { ssmParameter: '/Alexa/ClientSecret' });
-const refreshToken = new cdk.SecretParameter(this, 'AlexaRefreshToken', { ssmParameter: '/Alexa/RefreshToken' });
+const clientId = cdk.SecretValue.secretsManager('AlexaClientId');
+const clientSecret = cdk.SecretValue.secretsManager('AlexaClientSecret');
+const refreshToken = cdk.SecretValue.secretsManager('AlexaRefreshToken');
 
 // Add deploy action
 new codepipeline_actions.AlexaSkillDeployAction({
   actionName: 'DeploySkill',
   runOrder: 1,
   input: sourceOutput,
-  clientId: clientId.value,
-  clientSecret: clientSecret.value,
-  refreshToken: refreshToken.value,
+  clientId: clientId.toString(),
+  clientSecret: clientSecret,
+  refreshToken: refreshToken,
   skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-123456789012',
 });
 ```
@@ -499,9 +529,9 @@ new codepipeline_actions.AlexaSkillDeployAction({
   runOrder: 1,
   input: sourceOutput,
   parameterOverridesArtifact: executeOutput,
-  clientId: clientId.value,
-  clientSecret: clientSecret.value,
-  refreshToken: refreshToken.value,
+  clientId: clientId.toString(),
+  clientSecret: clientSecret,
+  refreshToken: refreshToken,
   skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-123456789012',
 });
 ```
@@ -513,7 +543,7 @@ new codepipeline_actions.AlexaSkillDeployAction({
 This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
 
 ```typescript
-const manualApprovalAction = new codepipeline.ManualApprovalAction({
+const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
   actionName: 'Approve',
   notificationTopic: new sns.Topic(this, 'Topic'), // optional
   notifyEmails: [
@@ -553,6 +583,7 @@ The Lambda Action can have up to 5 inputs,
 and up to 5 outputs:
 
 ```typescript
+
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   inputs: [
@@ -563,6 +594,7 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
     new codepipeline.Artifact('Out1'),
     new codepipeline.Artifact('Out2'),
   ],
+  lambda: fn
 });
 ```
 

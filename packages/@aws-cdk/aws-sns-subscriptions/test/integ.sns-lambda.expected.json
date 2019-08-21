@@ -3,65 +3,6 @@
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
     },
-    "MyTopicEchoD1E0EE5C": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "Echo11F3FB29",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "MyTopicFiltered55457D11": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "Filtered186C0D0A",
-            "Arn"
-          ]
-        },
-        "FilterPolicy": {
-          "color": [
-            "red",
-            {
-              "prefix": "bl"
-            },
-            {
-              "prefix": "ye"
-            }
-          ],
-          "size": [
-            {
-              "anything-but": [
-                "small",
-                "medium"
-              ]
-            }
-          ],
-          "price": [
-            {
-              "numeric": [
-                ">=",
-                100,
-                "<=",
-                200
-              ]
-            }
-          ]
-        }
-      }
-    },
     "EchoServiceRoleBE28060B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -71,17 +12,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -122,7 +53,7 @@
         "EchoServiceRoleBE28060B"
       ]
     },
-    "EchoMyTopicF6EBB45F": {
+    "EchoAllowInvokeawscdksnslambdaMyTopic6C62AB907F727CDA": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -138,6 +69,21 @@
         }
       }
     },
+    "EchoMyTopic4CB8819E": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
+        }
+      }
+    },
     "FilteredServiceRole16D9DDC1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -147,17 +93,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -198,7 +134,7 @@
         "FilteredServiceRole16D9DDC1"
       ]
     },
-    "FilteredMyTopic804BCBC3": {
+    "FilteredAllowInvokeawscdksnslambdaMyTopic6C62AB90A2EA1666": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -211,6 +147,50 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "MyTopic86869434"
+        }
+      }
+    },
+    "FilteredMyTopicC8395C27": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "Filtered186C0D0A",
+            "Arn"
+          ]
+        },
+        "FilterPolicy": {
+          "color": [
+            "red",
+            {
+              "prefix": "bl"
+            },
+            {
+              "prefix": "ye"
+            }
+          ],
+          "size": [
+            {
+              "anything-but": [
+                "small",
+                "medium"
+              ]
+            }
+          ],
+          "price": [
+            {
+              "numeric": [
+                ">=",
+                100,
+                "<=",
+                200
+              ]
+            }
+          ]
         }
       }
     }
