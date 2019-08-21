@@ -130,7 +130,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     });
 
     this.version = version.attrVersion;
-    this.functionArn = `${this.lambda.functionArn}:${this.version}`;
+    this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
   }
 

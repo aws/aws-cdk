@@ -1,5 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -331,11 +330,7 @@ export = {
       uuid: 'xxxx-xxxx-xxxx-xxxx',
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
-    });
-
-    const customResource = new cloudformation.CustomResource(stack, 'CustomResource', {
-      provider: cloudformation.CustomResourceProvider.lambda(lambdaFunction)
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -348,12 +343,8 @@ export = {
             {
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
-                eventType: LambdaEdgeEventType.OriginRequest,
-                lambdaFunction: lambda.Version.fromVersionArn(
-                  stack,
-                  'LambdaEdgeVersion',
-                  customResource.getAtt('Output').toString()
-                )
+                eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                lambdaFunction: lambdaFunction.latestVersion
               }]
             }
           ]
@@ -361,40 +352,9 @@ export = {
       ]
     });
 
-    expect(stack).to(haveResource('AWS::CloudFront::Distribution', {
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
       "DistributionConfig": {
-        "DefaultRootObject": "index.html",
-        "Origins": [
-          {
-            "DomainName": {
-              "Fn::GetAtt": [
-                "Bucket83908E77",
-                "RegionalDomainName"
-              ]
-            },
-            "Id": "origin1",
-            "S3OriginConfig": {}
-          }
-        ],
-        "ViewerCertificate": {
-          "CloudFrontDefaultCertificate": true
-        },
-        "PriceClass": "PriceClass_100",
         "DefaultCacheBehavior": {
-          "AllowedMethods": [
-            "GET",
-            "HEAD"
-          ],
-          "CachedMethods": [
-            "GET",
-            "HEAD"
-          ],
-          "TargetOriginId": "origin1",
-          "ViewerProtocolPolicy": "redirect-to-https",
-          "ForwardedValues": {
-            "QueryString": false,
-            "Cookies": { "Forward": "none" }
-          },
           "LambdaFunctionAssociations": [
             {
               "EventType": "origin-request",
@@ -402,152 +362,14 @@ export = {
                 "Fn::Join": [
                   "",
                   [
-                    {
-                      "Fn::Join": [
-                        ":",
-                        [
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "CustomResource",
-                                      "Output"
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "CustomResource",
-                                      "Output"
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              2,
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "CustomResource",
-                                      "Output"
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              3,
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "CustomResource",
-                                      "Output"
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              4,
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "CustomResource",
-                                      "Output"
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              5,
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "CustomResource",
-                                      "Output"
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              6,
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "CustomResource",
-                                      "Output"
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      ]
-                    },
-                    ":",
-                    {
-                      "Fn::Select": [
-                        7,
-                        {
-                          "Fn::Split": [
-                            ":",
-                            {
-                              "Fn::GetAtt": [
-                                "CustomResource",
-                                "Output"
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
+                    { "Fn::GetAtt": [ "SingletonLambdaxxxxxxxxxxxxxxxx69D4268A", "Arn" ] },
+                    ":$LATEST"
                   ]
                 ]
               }
             }
-          ]
+          ],
         },
-        "Enabled": true,
-        "IPV6Enabled": true,
-        "HttpVersion": "http2",
-        "CacheBehaviors": []
       }
     }));
 
