@@ -70,7 +70,7 @@ test('create basic training job', () => {
             InstanceType: 'ml.m4.xlarge',
             VolumeSizeInGB: 10
         },
-        RoleArn: { "Fn::GetAtt": [ "TrainSagemakerSagemakerTrainRole86DF0D73", "Arn" ] },
+        RoleArn: { "Fn::GetAtt": [ "TrainSagemakerSagemakerRole89E8C593", "Arn" ] },
         StoppingCondition: {
             MaxRuntimeInSeconds: 3600
         },
@@ -81,7 +81,7 @@ test('create basic training job', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
     expect(() => {
-        new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+        new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
             integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
             trainingJobName: "MyTrainJob",
             algorithmSpecification: {
@@ -354,13 +354,13 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Uri: sfn.Data.stringAt('$.S3Bucket')
+                        s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket')
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputPath: 's3://mybucket/myoutputpath'
+            s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/')
         },
     }))
       .toThrowError(/Must define either an algorithm name or training image URI in the algorithm specification/);

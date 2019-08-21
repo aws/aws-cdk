@@ -67,7 +67,7 @@ test('create basic transform job', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
     expect(() => {
-        new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+        new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
             integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
             transformJobName: "MyTransformJob",
             modelName: "MyModelName",
