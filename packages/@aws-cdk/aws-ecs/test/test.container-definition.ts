@@ -945,12 +945,7 @@ export = {
           {
             Image: 'test',
             LinuxParameters: {
-              Capabilities: {
-                Add: [],
-                Drop: []
-              },
-              Devices: [],
-              Tmpfs: []
+              Capabilities: {},
             }
           }
         ]
@@ -989,8 +984,6 @@ export = {
                 Add: ["ALL"],
                 Drop: ["KILL"]
               },
-              Devices: [],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -1033,8 +1026,6 @@ export = {
                 Add: ["ALL"],
                 Drop: ["SETUID"]
               },
-              Devices: [],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -1077,7 +1068,6 @@ export = {
                   HostPath: "a/b/c"
                 }
               ],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -1116,7 +1106,6 @@ export = {
           {
             Image: 'test',
             LinuxParameters: {
-              Devices: [],
               Tmpfs: [
                 {
                   ContainerPath: "a/b/c",
