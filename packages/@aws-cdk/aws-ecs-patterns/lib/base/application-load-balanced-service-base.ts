@@ -90,7 +90,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
-   * The domain name for the service, e.g. "api.example.com"
+   * The domain name for the service, e.g. "api.example.com."
    *
    * @default - No domain name.
    */

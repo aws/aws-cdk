@@ -50,7 +50,7 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
   readonly memoryLimitMiB?: number;
 
   /**
-   * Determines whether the Service will be assigned a public IP address.
+   * Determines whether the service will be assigned a public IP address.
    *
    * @default false
    */

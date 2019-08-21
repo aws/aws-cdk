@@ -13,16 +13,16 @@ export interface NetworkLoadBalancedServiceBaseProps {
   /**
    * The name of the cluster that hosts the service.
    *
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
-   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well.
+   * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
+   * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
   readonly cluster?: ICluster;
 
   /**
-   * The VPC where the ECS instances will be running or the ENIs will be deployed.
+   * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
    *
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
-   * @default - uses the vpc defined in the cluster or creates a new one.
+   * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
+   * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
   readonly vpc?: IVpc;
 
@@ -67,7 +67,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * The secret environment variables to pass to the container
+   * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
@@ -81,7 +81,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
-   * The domain name for the service, e.g. "api.example.com"
+   * The domain name for the service, e.g. "api.example.com."
    *
    * @default - No domain name.
    */
@@ -95,7 +95,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly domainZone?: IHostedZone;
 
   /**
-   * Override for the Fargate Task Definition execution role
+   * The name of the task execution IAM role that grants the Amazon ECS container agent permission to call AWS APIs on your behalf.
    *
    * @default - No value
    */
@@ -123,7 +123,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly serviceName?: string;
 
   /**
-   * The LogDriver to use for logging.
+   * The log driver to use.
    *
    * @default - AwsLogDriver if enableLogging is true
    */
