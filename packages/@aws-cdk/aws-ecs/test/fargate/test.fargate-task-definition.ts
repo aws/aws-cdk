@@ -14,8 +14,6 @@ export = {
       // THEN
       expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
         Family: "FargateTaskDef",
-        ContainerDefinitions: [],
-        Volumes: [],
         NetworkMode: ecs.NetworkMode.AWS_VPC,
         RequiresCompatibilities: ["FARGATE"],
         Cpu: "256",
@@ -53,7 +51,6 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        ContainerDefinitions: [],
         Cpu: "128",
         ExecutionRoleArn: {
           "Fn::GetAtt": [

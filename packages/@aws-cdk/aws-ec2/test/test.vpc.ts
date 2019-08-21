@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { Stack, Tag } from '@aws-cdk/core';
+import { Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, SubnetType, Vpc } from '../lib';
 
@@ -549,6 +549,17 @@ export = {
       const vpc = new Vpc(stack, 'VpcNetwork');
 
       test.notEqual(vpc.publicSubnets[0].node.defaultChild, undefined);
+
+      test.done();
+    },
+
+    'CIDR cannot be a Token'(test: Test) {
+      const stack = new Stack();
+      test.throws(() => {
+        new Vpc(stack, 'Vpc', {
+          cidr: Lazy.stringValue({ produce: () => 'abc' })
+        });
+      }, /property must be a concrete CIDR string/);
 
       test.done();
     },
