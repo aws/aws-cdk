@@ -13,11 +13,11 @@ let stack: cdk.Stack;
 beforeEach(() => {
     // GIVEN
     stack = new cdk.Stack();
-  });
+});
 
 test('create basic training job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
         trainingJobName: "MyTrainJob",
         algorithmSpecification: {
             algorithmName: "BlazingText",
@@ -70,7 +70,7 @@ test('create basic training job', () => {
             InstanceType: 'ml.m4.xlarge',
             VolumeSizeInGB: 10
         },
-        RoleArn: { "Fn::GetAtt": [ "SagemakerRole5FDB64E1", "Arn" ] },
+        RoleArn: { "Fn::GetAtt": [ "TrainSagemakerSagemakerRole89E8C593", "Arn" ] },
         StoppingCondition: {
             MaxRuntimeInSeconds: 3600
         },
@@ -81,7 +81,7 @@ test('create basic training job', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
     expect(() => {
-        new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+        new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
             integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
             trainingJobName: "MyTrainJob",
             algorithmSpecification: {
@@ -118,7 +118,7 @@ test('create complex training job', () => {
         ],
     });
 
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+    const trainTask = new tasks.SagemakerTrainTask({
         trainingJobName: "MyTrainJob",
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
         role,
@@ -178,10 +178,10 @@ test('create complex training job', () => {
         },
         vpcConfig: {
             vpc,
-            subnets: vpc.privateSubnets,
-            securityGroups: [ securityGroup ]
         }
-    })});
+    });
+    trainTask.addSecurityGroup(securityGroup);
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: trainTask });
 
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -250,7 +250,10 @@ test('create complex training job', () => {
             { Key: "Project", Value: "MyProject" }
         ],
         VpcConfig: {
-            SecurityGroupIds: [ { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] } ],
+            SecurityGroupIds: [
+                { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+                { "Fn::GetAtt": [ "TrainSagemakerTrainJobSecurityGroup7C858EB9", "GroupId" ] },
+            ],
             Subnets: [
                 { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
                 { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
@@ -269,7 +272,7 @@ test('pass param to training job', () => {
         ],
     });
 
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
         trainingJobName: sfn.Data.stringAt('$.JobName'),
         role,
         algorithmSpecification: {
@@ -338,4 +341,27 @@ test('pass param to training job', () => {
         }
       },
     });
+});
+
+test('Cannot create a SageMaker train task with both algorithm name and image name missing', () => {
+
+    expect(() => new tasks.SagemakerTrainTask({
+        trainingJobName: 'myTrainJob',
+        algorithmSpecification: {},
+        inputDataConfig: [
+            {
+                channelName: 'train',
+                dataSource: {
+                    s3DataSource: {
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
+                        s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket')
+                    }
+                }
+            }
+        ],
+        outputDataConfig: {
+            s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/')
+        },
+    }))
+      .toThrowError(/Must define either an algorithm name or training image URI in the algorithm specification/);
 });
