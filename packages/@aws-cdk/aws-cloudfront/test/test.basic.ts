@@ -1,8 +1,9 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
+import * as lambda from '@aws-cdk/aws-lambda';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
-import { CloudFrontWebDistribution, ViewerProtocolPolicy } from '../lib';
+import { CloudFrontWebDistribution, LambdaEdgeEventType, ViewerProtocolPolicy } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -318,6 +319,60 @@ export = {
         }
       }
     });
+    test.done();
+  },
+
+  'distribution with resolvable lambda-association'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const lambdaFunction = new lambda.SingletonFunction(stack, 'Lambda', {
+      uuid: 'xxxx-xxxx-xxxx-xxxx',
+      code: lambda.Code.inline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10
+    });
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [{
+                eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                lambdaFunction: lambdaFunction.latestVersion
+              }]
+            }
+          ]
+        }
+      ]
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      "DistributionConfig": {
+        "DefaultCacheBehavior": {
+          "LambdaFunctionAssociations": [
+            {
+              "EventType": "origin-request",
+              "LambdaFunctionARN": {
+                "Fn::Join": [
+                  "",
+                  [
+                    { "Fn::GetAtt": [ "SingletonLambdaxxxxxxxxxxxxxxxx69D4268A", "Arn" ] },
+                    ":$LATEST"
+                  ]
+                ]
+              }
+            }
+          ],
+        },
+      }
+    }));
+
     test.done();
   },
 
