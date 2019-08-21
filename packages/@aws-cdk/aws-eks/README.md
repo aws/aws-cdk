@@ -17,19 +17,17 @@
 
 This construct library allows you to define [Amazon Elastic Container Service
 for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters programmatically.
-
 This library also supports programmatically defining Kubernetes resource
 manifests within EKS clusters.
 
-This example defines an Amazon EKS cluster with a single pod:
+This example defines an Amazon EKS cluster with the following configuration:
+
+- 2x **m5.large** instances (this instance type suits most common use-cases, and is good value for money)
+- Dedicated VPC with default configuration (see [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
+- A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-const cluster = new eks.Cluster(this, 'hello-eks', { vpc });
-
-cluster.addCapacity('default', {
-  instanceType: new ec2.InstanceType('t2.medium'),
-  desiredCapacity: 10,
-});
+const cluster = new eks.Cluster(this, 'hello-eks');
 
 cluster.addResource('mypod', {
   apiVersion: 'v1',
@@ -54,6 +52,51 @@ in the AWS CDK Developer Guide for more details.
 
 Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
 
+### Capacity
+
+By default, `eks.Cluster` is created with x2 `m5.large` instances.
+
+```ts
+new eks.Cluster(this, 'cluster-two-m5-large');
+```
+
+The quantity and instance type for the default capacity can be specified through
+the `defaultCapacity` and `defaultCapacityInstance` props:
+
+```ts
+new eks.Cluster(this, 'cluster', {
+  defaultCapacity: 10,
+  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+});
+```
+
+To disable the default capacity, simply set `defaultCapacity` to `0`:
+
+```ts
+new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
+```
+
+The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
+resource for the default capacity. It will be `undefined` if `defaultCapacity`
+is set to `0`:
+
+```ts
+const cluster = new eks.Cluster(this, 'my-cluster');
+cluster.defaultCapacity!.scaleOnCpuUtilization('up', {
+  targetUtilizationPercent: 80
+});
+```
+
+You can add customized capacity through `cluster.addCapacity()`:
+
+```ts
+cluster.addCapacity('frontend-nodes', {
+  instanceType: new ec2.InstanceType('t2.medium'),
+  desiredCapacity: 3,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+});
+```
+
 ### Interacting with Your Cluster
 
 The Amazon EKS construct library allows you to specify an IAM role that will be
@@ -74,18 +117,60 @@ const clusterAdmin = new iam.Role(this, 'AdminRole', {
 
 // now define the cluster and map role to "masters" RBAC group
 new eks.Cluster(this, 'Cluster', {
-  vpc: vpc,
   mastersRole: clusterAdmin
 });
 ```
 
-Now, given AWS credentials for a user that is trusted by the masters role, you
-will be able to interact with your cluster like this:
+When you `cdk deploy` this CDK app, you will notice that an output will be printed
+with the `update-kubeconfig` command.
+
+Something like this:
+
+```
+Outputs:
+eks-integ-defaults.ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-ba7c166b-c4f3-421c-bf8a-6812e4036a33 --role-arn arn:aws:iam::112233445566:role/eks-integ-defaults-Role1ABCC5F0-1EFK2W5ZJD98Y
+```
+
+Copy & paste the "`aws eks update-kubeconfig ...`" command to your shell in
+order to connect to your EKS cluster with the "masters" role.
+
+Now, given [AWS CLI](https://aws.amazon.com/cli/) is configured to use AWS
+credentials for a user that is trusted by the masters role, you should be able
+to interact with your cluster through `kubectl` (the above example will trust
+all users in the account).
+
+For example:
 
 ```console
-$ aws eks update-kubeconfig --name CLUSTER-NAME
+$ aws eks update-kubeconfig --name cluster-ba7c166b-c4f3-421c-bf8a-6812e4036a33 --role-arn arn:aws:iam::112233445566:role/eks-integ-defaults-Role1ABCC5F0-1EFK2W5ZJD98Y
+Added new context arn:aws:eks:eu-west-2:112233445566:cluster/cluster-ba7c166b-c4f3-421c-bf8a-6812e4036a33 to /Users/boom/.kube/config
+
+$ kubectl get nodes # list all nodes
+NAME                                         STATUS   ROLES    AGE   VERSION
+ip-10-0-147-66.eu-west-2.compute.internal    Ready    <none>   21m   v1.13.7-eks-c57ff8
+ip-10-0-169-151.eu-west-2.compute.internal   Ready    <none>   21m   v1.13.7-eks-c57ff8
+
 $ kubectl get all -n kube-system
-...
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/aws-node-fpmwv             1/1     Running   0          21m
+pod/aws-node-m9htf             1/1     Running   0          21m
+pod/coredns-5cb4fb54c7-q222j   1/1     Running   0          23m
+pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
+pod/kube-proxy-d4jrh           1/1     Running   0          21m
+pod/kube-proxy-q7hh7           1/1     Running   0          21m
+
+NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)         AGE
+service/kube-dns   ClusterIP   172.20.0.10   <none>        53/UDP,53/TCP   23m
+
+NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+daemonset.apps/aws-node     2         2         2       2            2           <none>          23m
+daemonset.apps/kube-proxy   2         2         2       2            2           <none>          23m
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/coredns   2/2     2            2           23m
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/coredns-5cb4fb54c7   2         2         2       23m
 ```
 
 For your convenience, an AWS CloudFormation output will automatically be
@@ -232,7 +317,7 @@ not have administrative privileges on the EKS cluster.
    if you wish to be able to manually interact with your cluster, you will need
    to map an IAM role or user to the `system:masters` group. This can be either
    done by specifying a `mastersRole` when the cluster is defined, calling
-   `cluster.addMastersRole` or explicitly mapping an IAM role or IAM user to the
+   `cluster.awsAuth.addMastersRole` or explicitly mapping an IAM role or IAM user to the
    relevant Kubernetes RBAC groups using `cluster.addRoleMapping` and/or
    `cluster.addUserMapping`.
 
@@ -242,7 +327,6 @@ the cluster:
 
 ```ts
 new eks.Cluster(this, 'cluster', {
-  vpc: vpc,
   kubectlEnabled: false
 });
 ```
@@ -252,12 +336,13 @@ and a new cluster to be created.
 
 When kubectl is disabled, you should be aware of the following:
 
-1. When you log-in to your cluster, you don't need to specify `--role-arn` as long as you are using the same user that created
-   the cluster.
+1. When you log-in to your cluster, you don't need to specify `--role-arn` as
+   long as you are using the same user that created the cluster.
 2. As described in the Amazon EKS User Guide, you will need to manually
-   edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html) when you add capacity in order to map
-   the IAM instance role to RBAC to allow nodes to join the cluster.
-3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail with an error: `cluster.addResource`, `cluster.awsAuth`, `props.mastersRole`.
+   edit the [aws-auth ConfigMap](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html)
+   when you add capacity in order to map the IAM instance role to RBAC to allow nodes to join the cluster.
+3. Any `eks.Cluster` APIs that depend on programmatic kubectl support will fail
+   with an error: `cluster.addResource`, `cluster.awsAuth`, `props.mastersRole`.
 
 ### Roadmap
 

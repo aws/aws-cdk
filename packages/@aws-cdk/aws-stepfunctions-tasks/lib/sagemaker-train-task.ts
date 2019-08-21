@@ -1,7 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { resourceArnSuffix } from './resource-arn-suffix';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -26,11 +27,13 @@ export interface SagemakerTrainTaskProps {
     readonly role?: iam.IRole;
 
     /**
-     * Specify if the task is synchronous or asychronous.
+     * The service integration pattern indicates different ways to call SageMaker APIs.
      *
-     * @default false
+     * The valid value is either FIRE_AND_FORGET or SYNC.
+     *
+     * @default FIRE_AND_FORGET
      */
-    readonly synchronous?: boolean;
+    readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
     /**
      * Identifies the training algorithm to use.
@@ -50,7 +53,7 @@ export interface SagemakerTrainTaskProps {
     /**
      * Tags to be applied to the train job.
      */
-    readonly tags?: {[key: string]: any};
+    readonly tags?: {[key: string]: string};
 
     /**
      * Identifies the Amazon S3 location where you want Amazon SageMaker to save the results of model training.
@@ -86,15 +89,6 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
     public readonly connections: ec2.Connections = new ec2.Connections();
 
     /**
-     * The execution role for the Sagemaker training job.
-     *
-     * @default new role for Amazon SageMaker to assume is automatically created.
-     */
-    public readonly role: iam.IRole;
-
-    public readonly grantPrincipal: iam.IPrincipal;
-
-    /**
      * The Algorithm Specification
      */
     private readonly algorithmSpecification: AlgorithmSpecification;
@@ -114,7 +108,25 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
      */
     private readonly stoppingCondition: StoppingCondition;
 
-    constructor(scope: Construct, private readonly props: SagemakerTrainTaskProps) {
+    private readonly vpc: ec2.IVpc;
+    private securityGroup: ec2.ISecurityGroup;
+    private readonly securityGroups: ec2.ISecurityGroup[] = [];
+    private readonly subnets: string[];
+    private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+    private _role?: iam.IRole;
+    private _grantPrincipal?: iam.IPrincipal;
+
+    constructor(private readonly props: SagemakerTrainTaskProps) {
+        this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+        const supportedPatterns = [
+            sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+            sfn.ServiceIntegrationPattern.SYNC
+        ];
+
+        if (!supportedPatterns.includes(this.integrationPattern)) {
+            throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SageMaker.`);
+        }
 
         // set the default resource config if not defined.
         this.resourceConfig = props.resourceConfig || {
@@ -128,8 +140,66 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
             maxRuntime: Duration.hours(1)
         };
 
+        // check that either algorithm name or image is defined
+        if ((!props.algorithmSpecification.algorithmName) && (!props.algorithmSpecification.trainingImage)) {
+            throw new Error("Must define either an algorithm name or training image URI in the algorithm specification");
+        }
+
+        // set the input mode to 'File' if not defined
+        this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
+            ( props.algorithmSpecification ) :
+            ( { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE } );
+
+        // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
+        this.inputDataConfig = props.inputDataConfig.map(config => {
+            if (!config.dataSource.s3DataSource.s3DataType) {
+                return Object.assign({}, config, { dataSource: { s3DataSource:
+                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } } });
+            } else {
+                return config;
+            }
+        });
+
+        // add the security groups to the connections object
+        if (props.vpcConfig) {
+            this.vpc = props.vpcConfig.vpc;
+            this.subnets = (props.vpcConfig.subnets) ?
+                (this.vpc.selectSubnets(props.vpcConfig.subnets).subnetIds) : this.vpc.selectSubnets().subnetIds;
+        }
+    }
+
+    /**
+     * The execution role for the Sagemaker training job.
+     *
+     * Only available after task has been added to a state machine.
+     */
+    public get role(): iam.IRole {
+        if (this._role === undefined) {
+            throw new Error(`role not available yet--use the object in a Task first`);
+        }
+        return this._role;
+    }
+
+    public get grantPrincipal(): iam.IPrincipal {
+        if (this._grantPrincipal === undefined) {
+            throw new Error(`Principal not available yet--use the object in a Task first`);
+        }
+        return this._grantPrincipal;
+    }
+
+    /**
+     * Add the security group to all instances via the launch configuration
+     * security groups array.
+     *
+     * @param securityGroup: The security group to add
+     */
+    public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
+        this.securityGroups.push(securityGroup);
+    }
+
+    public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         // set the sagemaker role or create new one
-        this.grantPrincipal = this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
+        this._grantPrincipal = this._role = this.props.role || new iam.Role(task, 'SagemakerRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
             inlinePolicies: {
                 CreateTrainingJob: new iam.PolicyDocument({
@@ -142,7 +212,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
                                 'logs:CreateLogGroup',
                                 'logs:DescribeLogStreams',
                                 'ecr:GetAuthorizationToken',
-                                ...props.vpcConfig
+                                ...this.props.vpcConfig
                                     ? [
                                         'ec2:CreateNetworkInterface',
                                         'ec2:CreateNetworkInterfacePermission',
@@ -163,38 +233,25 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
             }
         });
 
-        if (props.outputDataConfig.encryptionKey) {
-            props.outputDataConfig.encryptionKey.grantEncrypt(this.role);
+        if (this.props.outputDataConfig.encryptionKey) {
+            this.props.outputDataConfig.encryptionKey.grantEncrypt(this._role);
         }
 
-        if (props.resourceConfig && props.resourceConfig.volumeEncryptionKey) {
-            props.resourceConfig.volumeEncryptionKey.grant(this.role, 'kms:CreateGrant');
+        if (this.props.resourceConfig && this.props.resourceConfig.volumeEncryptionKey) {
+            this.props.resourceConfig.volumeEncryptionKey.grant(this._role, 'kms:CreateGrant');
         }
 
-        // set the input mode to 'File' if not defined
-        this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
-            ( props.algorithmSpecification ) :
-            ( { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE } );
-
-        // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
-        this.inputDataConfig = props.inputDataConfig.map(config => {
-            if (!config.dataSource.s3DataSource.s3DataType) {
-                return Object.assign({}, config, { dataSource: { s3DataSource:
-                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } } });
-            } else {
-                return config;
-            }
-        });
-
-        // add the security groups to the connections object
-        if (this.props.vpcConfig) {
-            this.props.vpcConfig.securityGroups.forEach(sg => this.connections.addSecurityGroup(sg));
+        // create a security group if not defined
+        if (this.vpc && this.securityGroup === undefined) {
+            this.securityGroup = new ec2.SecurityGroup(task, 'TrainJobSecurityGroup', {
+                vpc: this.vpc
+            });
+            this.connections.addSecurityGroup(this.securityGroup);
+            this.securityGroups.push(this.securityGroup);
         }
-    }
 
-    public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + (this.props.synchronous ? '.sync' : ''),
+          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + resourceArnSuffix.get(this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
@@ -203,7 +260,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
     private renderParameters(): {[key: string]: any} {
         return {
             TrainingJobName: this.props.trainingJobName,
-            RoleArn: this.role.roleArn,
+            RoleArn: this._role!.roleArn,
             ...(this.renderAlgorithmSpecification(this.algorithmSpecification)),
             ...(this.renderInputDataConfig(this.inputDataConfig)),
             ...(this.renderOutputDataConfig(this.props.outputDataConfig)),
@@ -288,8 +345,8 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
 
     private renderVpcConfig(config: VpcConfig | undefined): {[key: string]: any} {
         return (config) ? { VpcConfig: {
-            SecurityGroupIds: config.securityGroups.map(sg => ( sg.securityGroupId )),
-            Subnets: config.subnets.map(subnet => ( subnet.subnetId )),
+            SecurityGroupIds: Lazy.listValue({ produce: () => (this.securityGroups.map(sg => (sg.securityGroupId))) }),
+            Subnets: this.subnets,
         }} : {};
     }
 
@@ -315,14 +372,14 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
             }),
             new iam.PolicyStatement({
                 actions: ['iam:PassRole'],
-                resources: [this.role.roleArn],
+                resources: [this._role!.roleArn],
                 conditions: {
                     StringEquals: { "iam:PassedToService": "sagemaker.amazonaws.com" }
                 }
             })
         ];
 
-        if (this.props.synchronous) {
+        if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
             policyStatements.push(new iam.PolicyStatement({
                 actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
                 resources: [stack.formatArn({

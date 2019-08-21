@@ -14,7 +14,7 @@ const bucketA = new s3.Bucket(stack, 'MyBucket', {
 const fn = new lambda.Function(stack, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_8_10,
   handler: 'index.handler',
-  code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
+  code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
 });
 
 const bucketB = new s3.Bucket(stack, 'YourBucket', {

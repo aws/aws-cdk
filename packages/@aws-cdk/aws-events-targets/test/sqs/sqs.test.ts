@@ -36,7 +36,7 @@ test('sns topic as an event rule target', () => {
             }
           },
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
+          Principal: { Service: "events.amazonaws.com" },
           Resource: {
             "Fn::GetAtt": [
               "MyQueueE6CA6235",
@@ -101,7 +101,7 @@ test('multiple uses of a queue as a target results in multi policy statement bec
             }
           },
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
+          Principal: { Service: "events.amazonaws.com" },
           Resource: {
             "Fn::GetAtt": [
               "MyQueueE6CA6235",
@@ -126,7 +126,7 @@ test('multiple uses of a queue as a target results in multi policy statement bec
             }
           },
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
+          Principal: { Service: "events.amazonaws.com" },
           Resource: {
             "Fn::GetAtt": [
               "MyQueueE6CA6235",

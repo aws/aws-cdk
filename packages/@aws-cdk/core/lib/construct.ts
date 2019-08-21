@@ -63,7 +63,7 @@ export class ConstructNode {
     }
 
     // write session manifest and lock store
-    return builder.build(options);
+    return builder.buildAssembly(options);
   }
 
   /**
@@ -125,6 +125,7 @@ export class ConstructNode {
   private readonly _references = new Set<Reference>();
   private readonly _dependencies = new Set<IDependable>();
   private readonly invokedAspects: IAspect[] = [];
+  private _defaultChild: IConstruct | undefined;
 
   constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
@@ -202,6 +203,10 @@ export class ConstructNode {
    * @returns a construct or undefined if there is no default child
    */
   public get defaultChild(): IConstruct | undefined {
+    if (this._defaultChild !== undefined) {
+      return this._defaultChild;
+    }
+
     const resourceChild = this.tryFindChild('Resource');
     const defaultChild = this.tryFindChild('Default');
     if (resourceChild && defaultChild) {
@@ -209,6 +214,20 @@ export class ConstructNode {
     }
 
     return defaultChild || resourceChild;
+  }
+
+  /**
+   * Override the defaultChild property.
+   *
+   * This should only be used in the cases where the correct
+   * default child is not named 'Resource' or 'Default' as it
+   * should be.
+   *
+   * If you set this to undefined, the default behavior of finding
+   * the child named 'Resource' or 'Default' will be used.
+   */
+  public set defaultChild(value: IConstruct | undefined) {
+    this._defaultChild = value;
   }
 
   /**

@@ -158,7 +158,7 @@ export interface SubnetSelection {
    *
    * At most one of `subnetType` and `subnetName` can be supplied.
    *
-   * @default SubnetType.Private
+   * @default SubnetType.PRIVATE
    */
   readonly subnetType?: SubnetType;
 
@@ -528,17 +528,17 @@ export interface VpcProps {
    *    {
    *      cidrMask: 24,
    *      name: 'ingress',
-   *      subnetType: SubnetType.Public,
+   *      subnetType: SubnetType.PUBLIC,
    *    },
    *    {
    *      cidrMask: 24,
    *      name: 'application',
-   *      subnetType: SubnetType.Private,
+   *      subnetType: SubnetType.PRIVATE,
    *    },
    *    {
    *      cidrMask: 28,
    *      name: 'rds',
-   *      subnetType: SubnetType.Isolated,
+   *      subnetType: SubnetType.ISOLATED,
    *    }
    * ]
    *
@@ -825,6 +825,10 @@ export class Vpc extends VpcBase {
     }
 
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
+    if (Token.isUnresolved(cidrBlock)) {
+      throw new Error(`'cidr' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)`);
+    }
+
     this.networkBuilder = new NetworkBuilder(cidrBlock);
 
     const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
@@ -1175,6 +1179,7 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
     this.subnetNetworkAclAssociationId = subnet.attrNetworkAclAssociationId;
+    this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
