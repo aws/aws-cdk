@@ -277,7 +277,6 @@
                   },
                   "S3ObjectKey": "key"
                 },
-                "InputArtifacts": [],
                 "Name": "Source",
                 "OutputArtifacts": [
                   {
@@ -305,7 +304,6 @@
                   },
                   "S3ObjectKey": "additional/key"
                 },
-                "InputArtifacts": [],
                 "Name": "AdditionalSource",
                 "OutputArtifacts": [
                   {
@@ -354,7 +352,6 @@
                   }
                 ],
                 "Name": "DeployCFN",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineCFNDeployCFNCodePipelineActionRole444CF5DD",
