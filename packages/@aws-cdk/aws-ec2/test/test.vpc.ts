@@ -552,6 +552,17 @@ export = {
 
       test.done();
     },
+
+    'CIDR cannot be a Token'(test: Test) {
+      const stack = new Stack();
+      test.throws(() => {
+        new Vpc(stack, 'Vpc', {
+          cidr: Lazy.stringValue({ produce: () => 'abc' })
+        });
+      }, /property must be a concrete CIDR string/);
+
+      test.done();
+    },
   },
 
   "When creating a VPC with a custom CIDR range": {

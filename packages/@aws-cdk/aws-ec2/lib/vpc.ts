@@ -839,6 +839,10 @@ export class Vpc extends VpcBase {
     }
 
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
+    if (Token.isUnresolved(cidrBlock)) {
+      throw new Error(`'cidr' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)`);
+    }
+
     this.networkBuilder = new NetworkBuilder(cidrBlock);
 
     const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
