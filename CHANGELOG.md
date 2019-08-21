@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/aws/aws-cdk/compare/v1.4.0...v1.5.0) (2019-08-20)
+
+
+### Bug Fixes
+
+* **aws-cdk:** update Java template to new builder style ([#3723](https://github.com/aws/aws-cdk/issues/3723)) ([ab07af1](https://github.com/aws/aws-cdk/commit/ab07af1))
+* **ecr:** set correct resource policy for ecr repository ([#3590](https://github.com/aws/aws-cdk/issues/3590)) ([30f3968](https://github.com/aws/aws-cdk/commit/30f3968))
+* **events-targets:** allow adding same fargate task to multiple rules ([#3576](https://github.com/aws/aws-cdk/issues/3576)) ([5b109f9](https://github.com/aws/aws-cdk/commit/5b109f9)), closes [#3574](https://github.com/aws/aws-cdk/issues/3574)
+* **iam:** support NotActions/NotResources ([#964](https://github.com/aws/aws-cdk/issues/964)) ([#3677](https://github.com/aws/aws-cdk/issues/3677)) ([a8ee987](https://github.com/aws/aws-cdk/commit/a8ee987))
+* **kms:** append aliasName only after first ([#3659](https://github.com/aws/aws-cdk/issues/3659)) ([77671ad](https://github.com/aws/aws-cdk/commit/77671ad))
+* **region-info:** IAM service principal for China regions ([#3491](https://github.com/aws/aws-cdk/issues/3491)) ([013c181](https://github.com/aws/aws-cdk/commit/013c181))
+* **s3-deployment:** custom resource fails to run aws-cli  ([#3668](https://github.com/aws/aws-cdk/issues/3668)) ([6eabe6d](https://github.com/aws/aws-cdk/commit/6eabe6d)), closes [#3656](https://github.com/aws/aws-cdk/issues/3656)
+
+
+### Features
+
+* **bootstrap:** force toolkit bucket private ([#3695](https://github.com/aws/aws-cdk/issues/3695)) ([d1ee4ba](https://github.com/aws/aws-cdk/commit/d1ee4ba))
+* **cloudformation:** Update CloudFormation spec to 5.2.0 ([#3710](https://github.com/aws/aws-cdk/issues/3710)) ([ab86df7](https://github.com/aws/aws-cdk/commit/ab86df7))
+* **cloudformation:** update cloudformation spec to v5.1.0 ([#3670](https://github.com/aws/aws-cdk/issues/3670)) ([15f01d0](https://github.com/aws/aws-cdk/commit/15f01d0))
+* **eks:** output update-kubeconfig command ([04d88fb](https://github.com/aws/aws-cdk/commit/04d88fb)), closes [#3664](https://github.com/aws/aws-cdk/issues/3664)
+* **eks:** output update-kubeconfig command ([#3669](https://github.com/aws/aws-cdk/issues/3669)) ([9e46532](https://github.com/aws/aws-cdk/commit/9e46532)), closes [#3664](https://github.com/aws/aws-cdk/issues/3664)
+* **events-targets:** allow specifying event for codebuild project target ([#3637](https://github.com/aws/aws-cdk/issues/3637)) ([c240e1e](https://github.com/aws/aws-cdk/commit/c240e1e))
+
+
+### BREAKING CHANGES
+
+* **aws-cdk:** Java builders no longer use the "with" prefix.
+* **eks:** cluster name output will not be synthesized by default. instead we synthesize an output that includes the full `aws eks update-kubeconfig` command. You can enable synthesis of the cluster name output using the `outputClusterName: true` options.
+
+
 ## [1.4.0](https://github.com/aws/aws-cdk/compare/v1.3.0...v1.4.0) (2019-08-14)
 
 
