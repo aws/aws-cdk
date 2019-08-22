@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Lazy, Stack } from '@aws-cdk/core';
+import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Peer, Port, SecurityGroup, Vpc } from "../lib";
 
@@ -193,6 +193,17 @@ export = {
       for (const cidrIp of cidrIps) {
         test.equal(Peer.ipv4(cidrIp).uniqueId, cidrIp);
       }
+
+      test.done();
+    },
+
+    'passes with unresolved IP CIDR token'(test: Test) {
+      // GIVEN
+      const cidrIp = Token.asString(new Intrinsic('ip'));
+
+      // THEN
+      test.equal(Peer.ipv4(cidrIp).uniqueId, '${Token[TOKEN.1385]}');
+      test.equal(Peer.ipv6(cidrIp).uniqueId, '${Token[TOKEN.1385]}');
 
       test.done();
     },
