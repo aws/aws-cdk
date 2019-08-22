@@ -328,6 +328,7 @@ export abstract class BaseService extends Resource
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
+      region: '',
       service: 'iam',
       resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
