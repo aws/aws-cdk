@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { Stack, Tag } from '@aws-cdk/core';
+import { Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, SubnetType, Vpc } from '../lib';
 
@@ -552,6 +552,17 @@ export = {
 
       test.done();
     },
+
+    'CIDR cannot be a Token'(test: Test) {
+      const stack = new Stack();
+      test.throws(() => {
+        new Vpc(stack, 'Vpc', {
+          cidr: Lazy.stringValue({ produce: () => 'abc' })
+        });
+      }, /property must be a concrete CIDR string/);
+
+      test.done();
+    },
   },
 
   "When creating a VPC with a custom CIDR range": {
@@ -716,6 +727,20 @@ export = {
       test.deepEqual(subnetIds[0], vpc.privateSubnets[0].subnetId);
       test.done();
     }
+  },
+
+  'fromLookup() requires concrete values'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => {
+      Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: Lazy.stringValue({ produce: () => 'some-id' })
+      });
+
+    }, 'All arguments to Vpc.fromLookup() must be concrete');
+
+    test.done();
   },
 };
 

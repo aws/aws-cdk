@@ -74,7 +74,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
-                SubjectAlternativeNames: props.subjectAlternativeNames,
+                SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames}, { omitEmpty: true}),
                 HostedZoneId: this.hostedZoneId,
                 Region: props.region,
             }

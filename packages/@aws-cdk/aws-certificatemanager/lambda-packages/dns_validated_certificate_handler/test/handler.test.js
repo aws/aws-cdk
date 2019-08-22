@@ -107,7 +107,6 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         ResourceProperties: {
           DomainName: testDomainName,
-          SubjectAlternativeNames: [],
           HostedZoneId: testHostedZoneId,
           Region: 'us-east-1',
         }
@@ -162,7 +161,6 @@ describe('DNS Validated Certificate Handler', () => {
         RequestId: testRequestId,
         ResourceProperties: {
           DomainName: testDomainName,
-          SubjectAlternativeNames: [],
           HostedZoneId: testHostedZoneId,
           Region: 'us-east-1',
         }

@@ -159,6 +159,13 @@ export = {
       ToPort: 88
     }));
 
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
+      GroupId: { "Fn::GetAtt": [ "SecurityGroup1F554B36F", "GroupId" ] },
+      FromPort: 88,
+      ToPort: 88
+    }));
+
     test.done();
   },
 

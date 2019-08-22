@@ -20,16 +20,16 @@ export interface LoadBalancedServiceBaseProps {
   /**
    * The name of the cluster that hosts the service.
    *
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
-   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well.
+   * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
+   * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
   readonly cluster?: ICluster;
 
   /**
-   * The VPC where the ECS instances will be running or the ENIs will be deployed.
+   * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
    *
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
-   * @default - uses the vpc defined in the cluster or creates a new one.
+   * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
+   * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
   readonly vpc?: IVpc;
 
@@ -89,7 +89,7 @@ export interface LoadBalancedServiceBaseProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * The secret environment variables to pass to the container
+   * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
@@ -103,35 +103,35 @@ export interface LoadBalancedServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
-   * Determines whether the Service will be assigned a public IP address.
+   * Determines whether the service will be assigned a public IP address.
    *
    * @default false
    */
   readonly publicTasks?: boolean;
 
   /**
-   * Domain name for the service, e.g. api.example.com
+   * The domain name for the service, e.g. "api.example.com."
    *
    * @default - No domain name.
    */
   readonly domainName?: string;
 
   /**
-   * Route53 hosted zone for the domain, e.g. "example.com."
+   * The Route53 hosted zone for the domain, e.g. "example.com."
    *
    * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
 
   /**
-   * Override for the Fargate Task Definition execution role
+   * The name of the task execution IAM role that grants the Amazon ECS container agent permission to call AWS APIs on your behalf.
    *
    * @default - No value
    */
   readonly executionRole?: IRole;
 
   /**
-   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   * The name of the task IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
    * @default - A task role is automatically created for you.
    */
@@ -152,7 +152,7 @@ export interface LoadBalancedServiceBaseProps {
   readonly serviceName?: string;
 
   /**
-   * The LogDriver to use for logging.
+   * The log driver to use.
    *
    * @default - AwsLogDriver if enableLogging is true
    */
