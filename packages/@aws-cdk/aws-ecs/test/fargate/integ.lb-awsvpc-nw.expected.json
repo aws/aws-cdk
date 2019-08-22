@@ -441,8 +441,7 @@
           }
         },
         "PropagateTags": "SERVICE",
-        "EnableECSManagedTags": true,
-        "ServiceRegistries": []
+        "EnableECSManagedTags": true
       },
       "DependsOn": [
         "LBPublicListenerFargateGroup5EE2FBAF",

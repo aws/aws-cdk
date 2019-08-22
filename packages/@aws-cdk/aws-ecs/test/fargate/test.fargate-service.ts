@@ -42,7 +42,6 @@ export = {
         },
         DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
-        LoadBalancers: [],
         EnableECSManagedTags: true,
         PropagateTags: PropagatedTagSource.SERVICE,
         NetworkConfiguration: {

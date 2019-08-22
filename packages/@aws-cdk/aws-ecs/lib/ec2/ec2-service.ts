@@ -75,7 +75,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default SERVICE
+   * @default PropagatedTagSource.SERVICE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
@@ -133,10 +133,9 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
-      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
+      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE :
-      (props.propagateTaskTagsFrom === PropagatedTagSource.NONE ? undefined : props.propagateTaskTagsFrom),
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE : props.propagateTaskTagsFrom,
       enableECSManagedTags: props.enableECSManagedTags === undefined ? true : props.enableECSManagedTags,
     },
     {

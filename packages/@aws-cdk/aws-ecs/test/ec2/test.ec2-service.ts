@@ -44,7 +44,6 @@ export = {
         },
         DesiredCount: 1,
         LaunchType: LaunchType.EC2,
-        LoadBalancers: [],
         SchedulingStrategy: "REPLICA",
         EnableECSManagedTags: true,
         PropagateTags: PropagatedTagSource.SERVICE

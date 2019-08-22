@@ -608,8 +608,7 @@
           }
         },
         "EnableECSManagedTags": true,
-        "PropagateTags": "SERVICE",
-        "ServiceRegistries": []
+        "PropagateTags": "SERVICE"
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",

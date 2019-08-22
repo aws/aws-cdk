@@ -53,7 +53,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default SERVICE
+   * @default PropagatedTagSource.SERVICE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
@@ -94,8 +94,7 @@ export class FargateService extends BaseService implements IFargateService {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
       launchType: LaunchType.FARGATE,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE :
-      (props.propagateTaskTagsFrom === PropagatedTagSource.NONE ? undefined : props.propagateTaskTagsFrom),
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE : props.propagateTaskTagsFrom,
       enableECSManagedTags: props.enableECSManagedTags === undefined ? true : props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,

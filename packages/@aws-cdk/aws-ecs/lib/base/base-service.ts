@@ -81,9 +81,9 @@ export interface BaseServiceOptions {
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
    *
-   * Valid values are: PropagateTagFromType.SERVICE or PropagateTagFromType.TASK_DEFINITION
+   * Valid values are: PropagateTagFromType.SERVICE, PropagateTagFromType.TASK_DEFINITION or PropagateTagFromType.NONE
    *
-   * @default PropagatedTagSource.NONE
+   * @default PropagatedTagSource.SERVICE
    */
   readonly propagateTags?: PropagatedTagSource;
 
@@ -190,7 +190,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
-      propagateTags: props.propagateTags,
+      propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),

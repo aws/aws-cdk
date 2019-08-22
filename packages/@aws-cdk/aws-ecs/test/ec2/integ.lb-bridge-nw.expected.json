@@ -861,8 +861,7 @@
         ],
         "SchedulingStrategy": "REPLICA",
         "PropagateTags": "SERVICE",
-        "EnableECSManagedTags": true,
-        "ServiceRegistries": []
+        "EnableECSManagedTags": true
       },
       "DependsOn": [
         "LBPublicListenerECSGroupD6A32205",
