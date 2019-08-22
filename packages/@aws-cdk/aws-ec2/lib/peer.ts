@@ -84,7 +84,7 @@ class CidrIPv4 implements IPeer {
     }
 
     if (!cidrMatch[2]) {
-      throw new Error(`CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/xx"?`);
+      throw new Error(`CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/32"?`);
     }
 
     this.uniqueId = cidrIp;
@@ -129,7 +129,7 @@ class CidrIPv6 implements IPeer {
     }
 
     if (!cidrMatch[3]) {
-      throw new Error(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/xx"?`);
+      throw new Error(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
     }
 
     this.uniqueId = cidrIpv6;
