@@ -37,7 +37,12 @@ export class JournaldLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
-    this.options = this.props.options || {}
+    if (this.props) {
+      this.options = this.props.options || {}
+    } else {
+      this.options = {}
+    }
+
     return {
       logDriver: 'journald',
       options: removeEmpty(this.options),
