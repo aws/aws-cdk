@@ -115,6 +115,10 @@ export enum ReadWriteType {
  *
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
+ * NOTE the above example creates an UNENCRYPTED bucket by default,
+ * If you are required to use an Encrypted bucket you can supply a preconfigured bucket
+ * via TrailProps
+ *
  */
 export class Trail extends Resource {
 
@@ -138,17 +142,15 @@ export class Trail extends Resource {
 
     const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
-    if (props.bucket === undefined) {
+    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
 
-      this.s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
-
-      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
         resources: [this.s3bucket.bucketArn],
         actions: ['s3:GetBucketAcl'],
         principals: [cloudTrailPrincipal],
       }));
 
-      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
         resources: [this.s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
         actions: ["s3:PutObject"],
         principals: [cloudTrailPrincipal],
@@ -156,11 +158,10 @@ export class Trail extends Resource {
           StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
         }
       }));
-    } else {
-      this.s3bucket = props.bucket; }
 
     let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
+
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, "LogGroup", {
         retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
@@ -173,6 +174,7 @@ export class Trail extends Resource {
         resources: [logGroup.attrArn],
       }));
     }
+
     if (props.managementEvents) {
       const managementEvent =  {
         includeManagementEvents: true,
