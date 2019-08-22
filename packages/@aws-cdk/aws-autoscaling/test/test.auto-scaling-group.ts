@@ -2,10 +2,10 @@ import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart}
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
+import { Lazy } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
-import { Lazy } from '@aws-cdk/core';
 
 // tslint:disable:object-literal-key-quotes
 

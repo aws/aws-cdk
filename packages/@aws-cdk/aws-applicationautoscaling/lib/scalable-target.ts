@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, withResolved } from '@aws-cdk/core';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -96,16 +96,23 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   constructor(scope: Construct, id: string, props: ScalableTargetProps) {
     super(scope, id);
 
-    if (!Token.isUnresolved(props.maxCapacity) && props.maxCapacity < 0) {
-      throw new RangeError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`);
-    }
-    if (!Token.isUnresolved(props.minCapacity) && props.minCapacity < 0) {
-      throw new RangeError(`minCapacity cannot be negative, got: ${props.minCapacity}`);
-    }
-    if (!Token.isUnresolved(props.minCapacity) && !Token.isUnresolved(props.maxCapacity)
-      && props.maxCapacity < props.minCapacity) {
-      throw new RangeError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`);
-    }
+    withResolved(props.maxCapacity, max => {
+      if (max < 0) {
+        throw new RangeError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`);
+      }
+    });
+
+    withResolved(props.minCapacity, min => {
+      if (min < 0) {
+        throw new RangeError(`minCapacity cannot be negative, got: ${props.minCapacity}`);
+      }
+    });
+
+    withResolved(props.minCapacity, props.maxCapacity, (min, max) => {
+      if (max < min) {
+        throw new RangeError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`);
+      }
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
