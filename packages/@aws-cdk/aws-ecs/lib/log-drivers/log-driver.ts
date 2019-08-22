@@ -17,7 +17,7 @@ export abstract class LogDriver {
   /**
    * Creates a log driver configuration that sends log information to journald.
    */
-  public static journaldLogs(props: JournaldLogDriverProps): LogDriver {
+  public static journaldLogs(props?: JournaldLogDriverProps): LogDriver {
     return new JournaldLogDriver(props);
   }
 

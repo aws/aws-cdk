@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -74,10 +74,6 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: logs.RetentionDays.ONE_MONTH
-    }));
-
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {

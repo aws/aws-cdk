@@ -29,7 +29,7 @@ export class JournaldLogDriver extends LogDriver {
    *
    * @param props the journald log driver configuration options.
    */
-  constructor(private readonly props: JournaldLogDriverProps) {
+  constructor(private readonly props?: JournaldLogDriverProps) {
     super();
   }
 
