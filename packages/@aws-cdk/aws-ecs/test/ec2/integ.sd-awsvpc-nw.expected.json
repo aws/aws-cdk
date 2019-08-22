@@ -357,7 +357,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -820,8 +819,7 @@
             "TaskDefTaskRole1EDB4A67",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "FrontendServiceBC94BA93": {
@@ -839,7 +837,6 @@
         },
         "DesiredCount": 1,
         "LaunchType": "EC2",
-        "LoadBalancers": [],
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "DISABLED",
@@ -917,7 +914,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }

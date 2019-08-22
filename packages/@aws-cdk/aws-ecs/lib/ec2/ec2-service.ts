@@ -201,7 +201,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
     }
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
+      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or AwsVpc instead.");
     }
 
     this.loadBalancers.push({

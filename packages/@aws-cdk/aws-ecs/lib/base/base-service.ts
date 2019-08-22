@@ -185,7 +185,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, "Service", {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
+      loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
@@ -195,8 +195,8 @@ export abstract class BaseService extends Resource
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
-      serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
+      networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
+      serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       ...additionalProps
     });
 
@@ -347,6 +347,7 @@ export abstract class BaseService extends Resource
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
+      region: '',
       service: 'iam',
       resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',

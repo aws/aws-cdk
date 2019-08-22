@@ -616,7 +616,6 @@ Object {
             "Arn",
           ],
         },
-        "Volumes": Array [],
       },
       "Type": "AWS::ECS::TaskDefinition",
     },
@@ -649,7 +648,6 @@ Object {
         "DesiredCount": 1,
         "EnableECSManagedTags": true,
         "LaunchType": "FARGATE",
-        "LoadBalancers": Array [],
         "NetworkConfiguration": Object {
           "AwsvpcConfiguration": Object {
             "AssignPublicIp": "DISABLED",
@@ -686,7 +684,6 @@ Object {
             "IpProtocol": "-1",
           },
         ],
-        "SecurityGroupIngress": Array [],
         "VpcId": Object {
           "Ref": "VPCB9E5F0B4",
         },
@@ -2126,7 +2123,6 @@ Object {
                     ],
                   },
                 },
-                "InputArtifacts": Array [],
                 "Name": "Source",
                 "OutputArtifacts": Array [
                   Object {
@@ -2207,7 +2203,6 @@ Object {
                   },
                 ],
                 "Name": "Deploy",
-                "OutputArtifacts": Array [],
                 "RoleArn": Object {
                   "Fn::GetAtt": Array [
                     "PipelineDeployCodePipelineActionRole8B83082E",
@@ -2682,7 +2677,6 @@ Object {
     "Repo02AC86CF": Object {
       "Properties": Object {
         "RepositoryName": "my-first-decdk-repo",
-        "Triggers": Array [],
       },
       "Type": "AWS::CodeCommit::Repository",
     },

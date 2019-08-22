@@ -3,8 +3,7 @@
     "MyRepoF4F48043": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "my-repo",
-        "Triggers": []
+        "RepositoryName": "my-repo"
       }
     },
     "MyRepoawscdkcodepipelinecodecommitPipelineF780CA18EventRuleC207C969": {
@@ -312,7 +311,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": false
                 },
-                "InputArtifacts": [],
                 "Name": "source",
                 "OutputArtifacts": [
                   {
@@ -339,9 +337,7 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "manual",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelinebuildmanualCodePipelineActionRoleE3306AB0",
