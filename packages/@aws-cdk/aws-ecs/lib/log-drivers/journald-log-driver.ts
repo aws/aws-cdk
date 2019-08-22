@@ -1,7 +1,7 @@
+import { removeEmpty } from './aws-log-driver';
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './aws-log-driver'
 
 /**
  * Specifies the journald log driver configuration options.
@@ -12,7 +12,7 @@ export interface JournaldLogDriverProps {
    *
    * @default - No options.
    */
-  readonly options?: {[key:string]:any};
+  readonly options?: { [key: string]: any };
 }
 
 /**
@@ -22,7 +22,7 @@ export class JournaldLogDriver extends LogDriver {
   /**
    * The log driver options.
    */
-  public options?: {[key:string]:any};
+  public options?: { [key: string]: any };
 
   /**
    * Constructs a new instance of the JournaldLogDriver class.
@@ -38,9 +38,9 @@ export class JournaldLogDriver extends LogDriver {
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     if (this.props) {
-      this.options = this.props.options || {}
+      this.options = this.props.options || {};
     } else {
-      this.options = {}
+      this.options = {};
     }
 
     return {

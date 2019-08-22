@@ -34,7 +34,7 @@ export = {
           LogConfiguration: {
             LogDriver: 'journald',
             Options: {
-              'tag': 'hello'
+              tag: 'hello'
             }
           }
         }
