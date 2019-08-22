@@ -83,7 +83,7 @@ export interface BaseServiceOptions {
    *
    * Valid values are: PropagateTagFromType.SERVICE, PropagateTagFromType.TASK_DEFINITION or PropagateTagFromType.NONE
    *
-   * @default PropagatedTagSource.SERVICE
+   * @default - PropagatedTagSource.SERVICE if EC2 or Fargate Service, otherwise PropagatedTagSource.NONE.
    */
   readonly propagateTags?: PropagatedTagSource;
 
@@ -191,7 +191,7 @@ export abstract class BaseService extends Resource
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
-      enableEcsManagedTags: props.enableECSManagedTags,
+      enableEcsManagedTags: props.enableECSManagedTags === undefined ? true : props.enableECSManagedTags,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
