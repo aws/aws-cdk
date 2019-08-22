@@ -49,7 +49,7 @@ pipeline.addStage({
 To use GitHub as the source of a CodePipeline:
 
 ```typescript
-// Read the secret from ParameterStore
+// Read the secret from Secrets Manager
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
@@ -346,6 +346,43 @@ using a CloudFormation CodePipeline Action. Example:
 
 [Example of deploying a Lambda through CodePipeline](test/integ.lambda-deployed-through-codepipeline.lit.ts)
 
+##### Cross-account actions
+
+If you want to update stacks in a different account,
+pass the `account` property when creating the action:
+
+```typescript
+new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  account: '123456789012',
+});
+```
+
+This will create a new stack, called `<PipelineStackName>-support-123456789012`, in your `App`,
+that will contain the role that the pipeline will assume in account 123456789012 before executing this action.
+This support stack will automatically be deployed before the stack containing the pipeline.
+
+You can also pass a role explicitly when creating the action -
+in that case, the `account` property is ignored,
+and the action will operate in the same account the role belongs to:
+
+```typescript
+import { PhysicalName } from '@aws-cdk/core';
+
+// in stack for account 123456789012...
+const actionRole = new iam.Role(otherAccountStack, 'ActionRole', {
+  assumedBy: new iam.AccountPrincipal(pipelineAccount),
+  // the role has to have a physical name set
+  roleName: PhysicalName.GENERATE_IF_NEEDED,
+});
+
+// in the pipeline stack...
+new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  role: actionRole, // this action will be cross-account as well
+});
+```
+
 #### AWS CodeDeploy
 
 ##### Server deployments
@@ -377,7 +414,7 @@ pipeline.addStage({
 To use CodeDeploy for blue-green Lambda deployments in a Pipeline:
 
 ```typescript
-const lambdaCode = lambda.Code.cfnParameters(); 
+const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',

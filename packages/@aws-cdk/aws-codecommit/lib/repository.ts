@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -285,7 +285,7 @@ export class Repository extends RepositoryBase {
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: this.triggers
+      triggers: Lazy.anyValue({ produce: () =>  this.triggers}, { omitEmptyArray: true}),
     });
 
     this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);

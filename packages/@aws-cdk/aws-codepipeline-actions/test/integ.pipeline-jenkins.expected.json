@@ -19,17 +19,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -121,7 +111,6 @@
                   },
                   "S3ObjectKey": "some/path"
                 },
-                "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
@@ -180,7 +169,6 @@
                   }
                 ],
                 "Name": "JenkinsTest",
-                "OutputArtifacts": [],
                 "RunOrder": 1
               },
               {
@@ -199,7 +187,6 @@
                   }
                 ],
                 "Name": "JenkinsTest2",
-                "OutputArtifacts": [],
                 "RunOrder": 1
               }
             ],

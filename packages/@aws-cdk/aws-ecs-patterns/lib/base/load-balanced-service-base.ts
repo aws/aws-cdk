@@ -18,49 +18,56 @@ export enum LoadBalancerType {
  */
 export interface LoadBalancedServiceBaseProps {
   /**
-   * The cluster where your service will be deployed
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   * The name of the cluster that hosts the service.
    *
-   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well
+   * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
+   * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
   readonly cluster?: ICluster;
 
   /**
-   * VPC that the cluster instances or tasks are running in
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
    *
-   * @default - use vpc of cluster or create a new one
+   * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
+   * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
   readonly vpc?: IVpc;
 
   /**
-   * The image to start.
+   * The image used to start a container.
    */
   readonly image: ContainerImage;
 
   /**
-   * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
+   * The port number on the container that is bound to the user-specified or automatically assigned host port.
+   *
+   * If you are using containers in a task with the awsvpc or host network mode, exposed ports should be specified using containerPort.
+   * If you are using containers in a task with the bridge network mode and you specify a container port and not a host port,
+   * your container automatically receives a host port in the ephemeral port range.
+   *
+   * For more information, see hostPort.
+   * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    *
    * @default 80
    */
   readonly containerPort?: number;
 
   /**
-   * Determines whether the Application Load Balancer will be internet-facing
+   * Determines whether the Load Balancer will be internet-facing.
    *
    * @default true
    */
   readonly publicLoadBalancer?: boolean;
 
   /**
-   * Number of desired copies of running tasks
+   * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
   readonly desiredCount?: number;
 
   /**
-   * Whether to create an application load balancer or a network load balancer
+   * The type of the load balancer to be used.
    *
    * @default application
    */
@@ -75,81 +82,90 @@ export interface LoadBalancedServiceBaseProps {
   readonly certificate?: ICertificate;
 
   /**
-   * Environment variables to pass to the container
+   * The environment variables to pass to the container.
    *
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
 
   /**
-   * Secret environment variables to pass to the container
+   * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
   readonly secrets?: { [key: string]: Secret };
 
   /**
-   * Whether to create an AWS log driver
+   * Flag to indicate whether to enable logging.
    *
    * @default true
    */
   readonly enableLogging?: boolean;
 
   /**
-   * Determines whether your Fargate Service will be assigned a public IP address.
+   * Determines whether the service will be assigned a public IP address.
    *
    * @default false
    */
   readonly publicTasks?: boolean;
 
   /**
-   * Domain name for the service, e.g. api.example.com
+   * The domain name for the service, e.g. "api.example.com."
    *
    * @default - No domain name.
    */
   readonly domainName?: string;
 
   /**
-   * Route53 hosted zone for the domain, e.g. "example.com."
+   * The Route53 hosted zone for the domain, e.g. "example.com."
    *
    * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
 
   /**
-   * Override for the Fargate Task Definition execution role
+   * The name of the task execution IAM role that grants the Amazon ECS container agent permission to call AWS APIs on your behalf.
    *
    * @default - No value
    */
   readonly executionRole?: IRole;
 
   /**
-   * Override for the Fargate Task Definition task role
+   * The name of the task IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
-   * @default - No value
+   * @default - A task role is automatically created for you.
    */
   readonly taskRole?: IRole;
 
   /**
-   * Override value for the container name
+   * The container name value to be specified in the task definition.
    *
-   * @default - No value
+   * @default - none
    */
   readonly containerName?: string;
 
   /**
-   * Override value for the service name
+   * The name of the service.
    *
-   * @default CloudFormation-generated name
+   * @default - CloudFormation-generated name.
    */
   readonly serviceName?: string;
 
   /**
-   * The LogDriver to use for logging.
+   * The log driver to use.
    *
    * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
+   * Elastic Load Balancing target health checks after a task has first started.
+   *
+   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
+   */
+  readonly healthCheckGracePeriod?: cdk.Duration;
+
 }
 
 /**
@@ -157,7 +173,9 @@ export interface LoadBalancedServiceBaseProps {
  */
 export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly assignPublicIp: boolean;
-
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   */
   public readonly desiredCount: number;
 
   public readonly loadBalancerType: LoadBalancerType;
@@ -167,7 +185,9 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly listener: ApplicationListener | NetworkListener;
 
   public readonly targetGroup: ApplicationTargetGroup | NetworkTargetGroup;
-
+  /**
+   * The cluster that hosts the service.
+   */
   public readonly cluster: ICluster;
 
   public readonly logDriver?: LogDriver;

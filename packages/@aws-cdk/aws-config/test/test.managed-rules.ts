@@ -58,17 +58,7 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'config.',
-                    {
-                      Ref: 'AWS::URLSuffix'
-                    }
-                  ]
-                ]
-              }
+              Service: "config.amazonaws.com"
             }
           }
         ],

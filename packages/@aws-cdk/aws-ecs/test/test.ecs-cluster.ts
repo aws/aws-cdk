@@ -98,7 +98,6 @@ export = {
             IpProtocol: "-1"
           }
         ],
-        SecurityGroupIngress: [],
         Tags: [
           {
             Key: "Name",
@@ -245,7 +244,6 @@ export = {
             IpProtocol: "-1"
           }
         ],
-        SecurityGroupIngress: [],
         Tags: [
           {
             Key: "Name",
@@ -336,6 +334,265 @@ export = {
         HeartbeatTimeout: 300,
         NotificationTargetARN: { Ref: "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4" },
         RoleARN: { "Fn::GetAtt": [ "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B", "Arn" ] }
+      }));
+
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        Timeout: 310,
+        Environment: {
+          Variables: {
+            CLUSTER: {
+              Ref: "EcsCluster97242B84"
+            }
+          }
+        },
+        Handler: "index.lambda_handler"
+      }));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceAttribute",
+                "ec2:DescribeInstanceStatus",
+                "ec2:DescribeHosts"
+              ],
+              Effect: "Allow",
+              Resource: "*"
+            },
+            {
+              Action: "autoscaling:CompleteLifecycleAction",
+              Effect: "Allow",
+              Resource: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      Ref: "AWS::Partition"
+                    },
+                    ":autoscaling:",
+                    {
+                      Ref: "AWS::Region"
+                    },
+                    ":",
+                    {
+                      Ref: "AWS::AccountId"
+                    },
+                    ":autoScalingGroup:*:autoScalingGroupName/",
+                    {
+                      Ref: "EcsClusterDefaultAutoScalingGroupASGC1A785DB"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              Action: [
+                "ecs:DescribeContainerInstances",
+                "ecs:DescribeTasks"
+              ],
+              Effect: "Allow",
+              Resource: "*"
+            },
+            {
+              Action: [
+                "ecs:ListContainerInstances",
+                "ecs:SubmitContainerStateChange",
+                "ecs:SubmitTaskStateChange"
+              ],
+              Effect: "Allow",
+              Resource: {
+                "Fn::GetAtt": [
+                  "EcsCluster97242B84",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              Action: [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              Condition: {
+                ArnEquals: {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              Effect: "Allow",
+              Resource: "*"
+            }
+          ],
+          Version: "2012-10-17"
+        },
+        PolicyName: "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396",
+        Roles: [
+          {
+            Ref: "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    "with capacity and cloudmap namespace properties set"(test: Test) {
+      // GIVEN
+      const stack =  new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        capacity: {
+          instanceType: new ec2.InstanceType('t2.micro')
+        },
+        defaultCloudMapNamespace: {
+          name: "foo.com"
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ServiceDiscovery::PrivateDnsNamespace", {
+        Name: 'foo.com',
+          Vpc: {
+            Ref: 'MyVpcF9F0CA6F'
+          }
+      }));
+
+      expect(stack).to(haveResource("AWS::ECS::Cluster"));
+
+      expect(stack).to(haveResource("AWS::EC2::VPC", {
+        CidrBlock: '10.0.0.0/16',
+        EnableDnsHostnames: true,
+        EnableDnsSupport: true,
+        InstanceTenancy: ec2.DefaultInstanceTenancy.DEFAULT,
+        Tags: [
+          {
+            Key: "Name",
+            Value: "MyVpc"
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+        ImageId: {
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
+        InstanceType: "t2.micro",
+        IamInstanceProfile: {
+          Ref: "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
+        },
+        SecurityGroups: [
+          {
+            "Fn::GetAtt": [
+              "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
+              "GroupId"
+            ]
+          }
+        ],
+        UserData: {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\necho ECS_CLUSTER=",
+                {
+                  Ref: "EcsCluster97242B84"
+                },
+                // tslint:disable-next-line:max-line-length
+                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+              ]
+            ]
+          }
+        }
+      }));
+
+      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MaxSize: "1",
+        MinSize: "1",
+        DesiredCapacity: "1",
+        LaunchConfigurationName: {
+          Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
+        },
+        Tags: [
+          {
+            Key: "Name",
+            PropagateAtLaunch: true,
+            Value: "EcsCluster/DefaultAutoScalingGroup"
+          }
+        ],
+        VPCZoneIdentifier: [
+          {
+            Ref: "MyVpcPrivateSubnet1Subnet5057CF7E"
+          },
+          {
+            Ref: "MyVpcPrivateSubnet2Subnet0040C983"
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource("AWS::EC2::SecurityGroup", {
+        GroupDescription: "EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+        SecurityGroupEgress: [
+          {
+            CidrIp: "0.0.0.0/0",
+            Description: "Allow all outbound traffic by default",
+            IpProtocol: "-1"
+          }
+        ],
+        Tags: [
+          {
+            Key: "Name",
+            Value: "EcsCluster/DefaultAutoScalingGroup"
+          }
+        ],
+        VpcId: {
+          Ref: "MyVpcF9F0CA6F"
+        }
+      }));
+
+      expect(stack).to(haveResource("AWS::IAM::Role", {
+          AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: "sts:AssumeRole",
+              Effect: "Allow",
+              Principal: {
+                Service: { "Fn::Join": ["", ["ec2.", { Ref: "AWS::URLSuffix" }]] }
+              }
+            }
+          ],
+          Version: "2012-10-17"
+        }
+      }));
+
+      expect(stack).to(haveResource("AWS::IAM::Policy", {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "ecs:CreateCluster",
+                "ecs:DeregisterContainerInstance",
+                "ecs:DiscoverPollEndpoint",
+                "ecs:Poll",
+                "ecs:RegisterContainerInstance",
+                "ecs:StartTelemetrySession",
+                "ecs:Submit*",
+                "ecr:GetAuthorizationToken",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              Effect: "Allow",
+              Resource: "*"
+            }
+          ],
+          Version: "2012-10-17"
+        }
       }));
 
       test.done();
@@ -676,6 +933,57 @@ export = {
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
       SpotPrice: "0.31"
+    }));
+
+    test.done();
+  },
+
+  "allows specifying drain time"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      taskDrainTime: cdk.Duration.minutes(1)
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LifecycleHook", {
+      HeartbeatTimeout: 60
+    }));
+
+    test.done();
+  },
+
+  "allows containers access to instance metadata service"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      canContainersAccessInstanceRole: true
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      UserData: {
+        "Fn::Base64": {
+          "Fn::Join": [
+            "",
+            [
+              "#!/bin/bash\necho ECS_CLUSTER=",
+              {
+                Ref: "EcsCluster97242B84"
+              },
+              " >> /etc/ecs/ecs.config"
+            ]
+          ]
+        }
+      }
     }));
 
     test.done();
