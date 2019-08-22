@@ -46,16 +46,10 @@ export = {
               },
             ],
           },
-          backends: [
-            {
-              virtualService: service1,
-            },
-          ],
+          backends: [service1],
         });
 
-        node.addBackend({
-          virtualService: service2,
-        });
+        node.addBackends(service2);
 
         // THEN
         expect(stack).to(

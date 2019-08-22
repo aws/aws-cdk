@@ -25,14 +25,9 @@ export interface IVirtualNode extends cdk.IResource {
   readonly virtualNodeArn: string;
 
   /**
-   * Utility method to add a single backend for existing or new VritualNodes
+   * Utility method to add backends for existing or new VirtualNodes
    */
-  addBackend(props: VirtualNodeBackendProps): void;
-
-  /**
-   * Utility method to add backends for existing or new VritualNodes
-   */
-  addBackends(props: VirtualNodeBackendProps[]): void;
+  addBackends(...props: IVirtualService[]): void;
 
   /**
    * Utility method to add Node Listeners for new or existing VirtualNodes
@@ -53,18 +48,6 @@ export interface IVirtualNode extends cdk.IResource {
    * Utility method to add port mappings and healthecks, preferred method would be to use addListeners()
    */
   addPortAndHealthCheckMappings(ports: PortMappingProps[], health: HealthCheckProps[]): void;
-}
-
-/**
- * The backend props for which a node communicates within the mesh
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-virtualnode-backend.html
- */
-export interface VirtualNodeBackendProps {
-  /**
-   * The VirtualService name for the backend service
-   */
-  readonly virtualService: IVirtualService;
 }
 
 /**
@@ -102,7 +85,7 @@ export interface VirtualNodeProps {
    *
    * @default - No backends
    */
-  readonly backends?: VirtualNodeBackendProps[];
+  readonly backends?: IVirtualService[];
 
   /**
    * Listener properties, such as portMappings and optional healthChecks
@@ -127,24 +110,13 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
 
   /**
-   * Utility method to add a single backend for existing or new VritualNodes
+   * Utility method to add backends for existing or new VirtualNode
    */
-  public addBackend(props: VirtualNodeBackendProps) {
-    this.backends.push({
-      virtualService: {
-        virtualServiceName: props.virtualService.virtualServiceName,
-      },
-    });
-  }
-
-  /**
-   * Utility method to add backends for existing or new VritualNodes
-   */
-  public addBackends(props: VirtualNodeBackendProps[]) {
+  public addBackends(...props: IVirtualService[]) {
     for (const s of props) {
       this.backends.push({
         virtualService: {
-          virtualServiceName: s.virtualService.virtualServiceName,
+          virtualServiceName: s.virtualServiceName,
         },
       });
     }
@@ -218,7 +190,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
 }
 
 /**
- * VritualNode represents a newly defined AppMesh VirtualNode
+ * VirtualNode represents a newly defined AppMesh VirtualNode
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
@@ -267,7 +239,7 @@ export class VirtualNode extends VirtualNodeBase {
     this.namespaceName = props.namespace.namespaceName;
 
     if (props.backends) {
-      this.addBackends(props.backends);
+      this.addBackends(...props.backends);
     }
 
     if (props.listener) {

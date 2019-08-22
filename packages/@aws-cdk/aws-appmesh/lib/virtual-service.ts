@@ -55,7 +55,7 @@ export interface VirtualServiceBaseProps {
  */
 export interface VirtualServiceProps extends VirtualServiceBaseProps {
   /**
-   * The AppMesh mesh name for whiich the VirtualService belongs to
+   * The AppMesh mesh name for which the VirtualService belongs to
    */
   readonly mesh: IMesh;
 }
@@ -94,16 +94,6 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * The Amazon Resource Name (ARN) for the virtual service
    */
   public readonly virtualServiceArn: string;
-
-  /**
-   * The name of the VirtualRouter which the VirtualService uses as provider
-   */
-  // public readonly virtualRouter?: IVirtualRouter;
-
-  /**
-   * The name of the VirtualNode attached to the virtual service
-   */
-  // public readonly virtualNode?: IVirtualNode;
 
   private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
   private readonly mesh: IMesh;

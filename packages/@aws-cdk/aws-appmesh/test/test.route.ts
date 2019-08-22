@@ -48,9 +48,7 @@ export = {
         ],
       },
       backends: [
-        {
-          virtualService: service1,
-        },
+        service1,
       ],
     });
 

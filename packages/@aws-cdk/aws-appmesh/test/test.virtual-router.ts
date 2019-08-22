@@ -48,11 +48,7 @@ export = {
             },
           ],
         },
-        backends: [
-          {
-            virtualService: service1,
-          },
-        ],
+        backends: [service1],
       });
 
       router.addRoute('route-1', {
@@ -142,9 +138,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service1,
-          },
+            service1,
         ],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
@@ -159,9 +153,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service2,
-          },
+            service2,
         ],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
@@ -176,9 +168,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service1,
-          },
+            service1,
         ],
       });
 
@@ -332,9 +322,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service1,
-          },
+          service1,
         ],
       });
 
@@ -416,9 +404,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service1,
-          },
+          service1,
         ],
       });
 
@@ -434,9 +420,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service1,
-          },
+            service1,
         ],
       });
 
@@ -541,9 +525,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service1,
-          },
+            service1,
         ],
       });
 
@@ -559,9 +541,7 @@ export = {
           ],
         },
         backends: [
-          {
-            virtualService: service1,
-          },
+            service1,
         ],
       });
 

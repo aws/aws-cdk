@@ -104,13 +104,12 @@ A virtual service is an abstraction of a real service that is provided by a virt
 
 We recommend that you use the service discovery name of the real service that you're targeting (such as `my-service.default.svc.cluster.local`).
 
-For the provider property:
+When creating a virtual service:
 
-- If you want the virtual service to spread traffic across multiple virtual nodes, select Virtual router and then choose the virtual router to use from the drop-down menu.
-- If you want the virtual service to reach a virtual node directly, without a virtual router, select Virtual node and then choose the virtual node to use from the drop-down menu.
-- If you don't want the virtual service to route traffic at this time (for example, if your virtual nodes or virtual router doesn't exist yet), leave blank. You can update the provider for this virtual service later.
+- If you want the virtual service to spread traffic across multiple virtual nodes, specify a Virtual router.
+- If you want the virtual service to reach a virtual node directly, without a virtual router, specify a Virtual node.
 
-- Adds a virtual router as the provider
+Adding a virtual router as the provider:
 
 ```typescript
 mesh.addVirtualService('virtual-service', {
@@ -119,7 +118,7 @@ mesh.addVirtualService('virtual-service', {
 });
 ```
 
-- Adds a virtual node as the provider
+Adding a virtual node as the provider:
 
 ```typescript
 mesh.addVirtualService('virtual-service', {
@@ -128,17 +127,7 @@ mesh.addVirtualService('virtual-service', {
 });
 ```
 
-- creating a virtual service using the constructor
-
-```typescript
-const service = new appmesh.VirtualService(stack, 'virtual-service', {
-  mesh,
-  virtualServiceName: `my-service.default.svc.cluster.local`,
-  virtualRouter: router,
-});
-```
-
-**Note** that only one must of `virtualNodeName` or `virtualRouterName` must be chosen.
+**Note** that only one must of `virtualNode` or `virtualRouter` must be chosen.
 
 ## Adding a VirtualNode
 
@@ -213,7 +202,7 @@ const node = new appmesh.VirtualNode(stack, 'node', {
   },
 });
 
-cars_vn.node.apply(new cdk.Tag('Environment', 'Dev'));
+node.node.apply(new cdk.Tag('Environment', 'Dev'));
 ```
 
 The listeners property can be left blank dded later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
@@ -258,7 +247,7 @@ router.addRoute('route', {
 });
 ```
 
-multiple routes may also be added at once to different applications or targets.
+Multiple routes may also be added at once to different applications or targets.
 
 ```typescript
 ratingsRouter.addRoutes(

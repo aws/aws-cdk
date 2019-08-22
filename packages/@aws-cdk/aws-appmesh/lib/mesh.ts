@@ -3,9 +3,9 @@ import cdk = require('@aws-cdk/core');
 
 import { CfnMesh } from './appmesh.generated';
 import { ListenerProps } from './shared-interfaces';
-import { VirtualNode, VirtualNodeBackendProps } from './virtual-node';
+import { VirtualNode } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
-import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
+import { IVirtualService, VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
 /**
  * These properties are used when adding a VirtualNode through the Mesh type
@@ -36,7 +36,7 @@ export interface AddVirtualNodeProps {
    *
    * @default none
    */
-  readonly backends?: VirtualNodeBackendProps[];
+  readonly backends?: IVirtualService[];
 
   /**
    * @default none
