@@ -585,7 +585,7 @@
         ]
       }
     },
-    "Instance43E3DA95": {
+    "InstanceC1063A87": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "AvailabilityZone": "test-region-1a",

@@ -1,9 +1,12 @@
-import { PolicyStatement } from "@aws-cdk/aws-iam";
+import { IRole, PolicyStatement } from "@aws-cdk/aws-iam";
 import { CfnOutput, Construct } from "@aws-cdk/core";
 import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from ".";
+import { Connections } from "./connections";
 import { Instance } from "./instance";
+import { IPeer } from "./peer";
+import { Port } from "./port";
 import { ISecurityGroup } from "./security-group";
-import { IVpc, SubnetType } from "./vpc";
+import { IVpc, SubnetSelection, SubnetType } from "./vpc";
 
 /**
  * Properties of the bastion host
@@ -32,13 +35,13 @@ export interface BastionHostLinuxProps {
   readonly instanceName?: string;
 
   /**
-   * Use a public subnet instead of a private one.
-   * Set this to 'true' if you need to connect to this instance via the internet and cannot use SSM.
+   * Select the subnets to run the bastion host in.
+   * Set this to PUBLIC if you need to connect to this instance via the internet and cannot use SSM.
    * You have to allow port 22 manually by using the connections field
    *
-   * @default - false
+   * @default - private subnets of the supplied VPC
    */
-  readonly publicSubnets?: boolean;
+  readonly subnetSelection?: SubnetSelection;
 
   /**
    * Security Group to assign to this instance
@@ -65,18 +68,56 @@ export interface BastionHostLinuxProps {
  *
  * @experimental
  */
-export class BastionHostLinux extends Instance {
+export class BastionHostLinux extends Construct {
+
+  /**
+   * Allows specify security group connections for the instance.
+   */
+  public readonly connections: Connections;
+
+  /**
+   * The IAM role assumed by the instance.
+   */
+  public readonly role: IRole;
+
+  /**
+   * the underlying instance resource
+   * @attribute
+   */
+  public readonly instance: Instance;
+  /**
+   * @attribute
+   */
+  public readonly instanceId: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePrivateDnsName: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePrivateIp: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePublicDnsName: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePublicIp: string;
+
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
-    super(scope, id, {
+    super(scope, id);
+    this.instance = new Instance(this, 'Resource', {
       vpc: props.vpc,
       availabilityZone: props.availabilityZone,
       securityGroup: props.securityGroup,
       instanceName: props.instanceName || 'BastionHost',
       instanceType: props.instanceType || InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
       machineImage: new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-      vpcSubnets: props.publicSubnets ? { subnetType: SubnetType.PUBLIC } : { subnetType: SubnetType.PRIVATE },
+      vpcSubnets: props.subnetSelection || { subnetType: SubnetType.PRIVATE },
     });
-    this.addToRolePolicy(new PolicyStatement({
+    this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
         'ssmmessages:*',
         'ssm:UpdateInstanceInformation',
@@ -84,11 +125,25 @@ export class BastionHostLinux extends Instance {
       ],
       resources: ['*'],
     }));
-    this.addUserData('yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm');
+    this.instance.addUserData('yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm');
+
+    this.connections = this.instance.connections;
+    this.role = this.instance.role;
+    this.instanceId = this.instance.instanceId;
+    this.instancePrivateIp = this.instance.instancePrivateIp;
+    this.instancePrivateDnsName = this.instance.instancePrivateDnsName;
+    this.instancePublicIp = this.instance.instancePublicIp;
+    this.instancePublicDnsName = this.instance.instancePublicDnsName;
 
     new CfnOutput(this, 'BastionHostId', {
       description: 'Instance ID of the bastion host. Use this to connect via SSM Session Manager',
       value: this.instanceId,
     });
+  }
+
+  public allowSshAccessFrom(...peer: IPeer[]): void {
+      peer.forEach(p => {
+        this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
+      });
   }
 }

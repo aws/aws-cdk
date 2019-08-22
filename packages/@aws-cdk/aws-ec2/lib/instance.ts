@@ -213,7 +213,7 @@ export class Instance extends Resource implements IConnectable {
       subnet = subnets[0];
     }
 
-    this.instance = new CfnInstance(this, 'Instance', {
+    this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),

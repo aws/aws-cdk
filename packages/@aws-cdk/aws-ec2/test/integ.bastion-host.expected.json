@@ -496,10 +496,10 @@
         }
       }
     },
-    "BastionHostInstanceSecurityGroupE1AD2D4E": {
+    "BastionHostInstanceSecurityGroupE75D4274": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "TestStack/BastionHost/InstanceSecurityGroup",
+        "GroupDescription": "TestStack/BastionHost/Resource/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -518,7 +518,7 @@
         }
       }
     },
-    "BastionHostInstanceRole1113FAAD": {
+    "BastionHostInstanceRoleDD3FA5F1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -545,7 +545,7 @@
         }
       }
     },
-    "BastionHostInstanceRoleDefaultPolicy9DBB02BB": {
+    "BastionHostInstanceRoleDefaultPolicy17347525": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -562,30 +562,30 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "BastionHostInstanceRoleDefaultPolicy9DBB02BB",
+        "PolicyName": "BastionHostInstanceRoleDefaultPolicy17347525",
         "Roles": [
           {
-            "Ref": "BastionHostInstanceRole1113FAAD"
+            "Ref": "BastionHostInstanceRoleDD3FA5F1"
           }
         ]
       }
     },
-    "BastionHostInstanceProfile89CC0AF9": {
+    "BastionHostInstanceProfile770FCA07": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "BastionHostInstanceRole1113FAAD"
+            "Ref": "BastionHostInstanceRoleDD3FA5F1"
           }
         ]
       }
     },
-    "BastionHostInstance8844AF83": {
+    "BastionHost30F9ED05": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "AvailabilityZone": "test-region-1a",
         "IamInstanceProfile": {
-          "Ref": "BastionHostInstanceProfile89CC0AF9"
+          "Ref": "BastionHostInstanceProfile770FCA07"
         },
         "ImageId": {
           "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -594,7 +594,7 @@
         "SecurityGroupIds": [
           {
             "Fn::GetAtt": [
-              "BastionHostInstanceSecurityGroupE1AD2D4E",
+              "BastionHostInstanceSecurityGroupE75D4274",
               "GroupId"
             ]
           }
@@ -613,8 +613,8 @@
         }
       },
       "DependsOn": [
-        "BastionHostInstanceRoleDefaultPolicy9DBB02BB",
-        "BastionHostInstanceRole1113FAAD"
+        "BastionHostInstanceRoleDefaultPolicy17347525",
+        "BastionHostInstanceRoleDD3FA5F1"
       ]
     }
   },
@@ -622,7 +622,7 @@
     "BastionHostBastionHostIdC743CBD6": {
       "Description": "Instance ID of the bastion host. Use this to connect via SSM Session Manager",
       "Value": {
-        "Ref": "BastionHostInstance8844AF83"
+        "Ref": "BastionHost30F9ED05"
       }
     }
   },
