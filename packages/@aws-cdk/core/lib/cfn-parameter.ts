@@ -148,7 +148,7 @@ export class CfnParameter extends CfnElement {
   }
 
   /**
-   * The parameter value, if it represents a string list.
+   * The parameter value, if it represents a number.
    */
   public get valueAsNumber(): number {
     if (!isNumberType(this.type)) {
