@@ -698,8 +698,22 @@ export class Vpc extends VpcBase {
 
   /**
    * Import an existing VPC from by querying the AWS environment this stack is deployed to.
+   *
+   * Calling this method will lead to a lookup when the CDK CLI is executed.
+   * You can therefore not use any values that will only be available at
+   * CloudFormation execution time (i.e., Tokens).
+   *
+   * If you are looking to share a VPC between stacks, you can pass the `Vpc`
+   * object between stacks and use it as normal.
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
+    if (Token.isUnresolved(options.vpcId)
+      || Token.isUnresolved(options.vpcName)
+      || Object.values(options.tags || {}).some(Token.isUnresolved)
+      || Object.keys(options.tags || {}).some(Token.isUnresolved)) {
+      throw new Error(`All arguments to Vpc.fromLookup() must be concrete (no Tokens)`);
+    }
+
     const filter: {[key: string]: string} = makeTagFilter(options.tags);
 
     // We give special treatment to some tags
@@ -825,6 +839,10 @@ export class Vpc extends VpcBase {
     }
 
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
+    if (Token.isUnresolved(cidrBlock)) {
+      throw new Error(`'cidr' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)`);
+    }
+
     this.networkBuilder = new NetworkBuilder(cidrBlock);
 
     const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;

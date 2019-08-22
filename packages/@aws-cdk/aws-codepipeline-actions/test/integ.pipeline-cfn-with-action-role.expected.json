@@ -246,7 +246,6 @@
                   },
                   "S3ObjectKey": "some/path"
                 },
-                "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
@@ -290,7 +289,6 @@
                   }
                 ],
                 "Name": "CFN_Deploy",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "ActionRole60B0EDF7",
