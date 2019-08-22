@@ -3,6 +3,7 @@ import nodeunit = require('nodeunit');
 import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';
+import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
 export = nodeunit.testCase({
@@ -19,7 +20,7 @@ export = nodeunit.testCase({
         });
 
         // WHEN
-        toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
+        toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'], sdk: new SDK() });
 
         // THEN
         test.done();
