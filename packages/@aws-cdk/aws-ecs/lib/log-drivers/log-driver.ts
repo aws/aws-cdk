@@ -1,6 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
+import { JournaldLogDriver, JournaldLogDriverProps } from './journald-log-driver';
 
 /**
  * The base class for log drivers.
@@ -11,6 +12,13 @@ export abstract class LogDriver {
    */
   public static awsLogs(props: AwsLogDriverProps): LogDriver {
     return new AwsLogDriver(props);
+  }
+
+  /**
+   * Creates a log driver configuration that sends log information to journald.
+   */
+  public static journaldLogs(props: JournaldLogDriverProps): LogDriver {
+    return new JournaldLogDriver(props);
   }
 
   /**

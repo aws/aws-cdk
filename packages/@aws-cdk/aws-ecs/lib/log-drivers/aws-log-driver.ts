@@ -109,7 +109,7 @@ export class AwsLogDriver extends LogDriver {
 /**
  * Remove undefined values from a dictionary
  */
-function removeEmpty<T>(x: {[key: string]: (T | undefined)}): {[key: string]: T} {
+export function removeEmpty<T>(x: {[key: string]: (T | undefined)}): {[key: string]: T} {
   for (const key of Object.keys(x)) {
     if (!x[key]) {
       delete x[key];
