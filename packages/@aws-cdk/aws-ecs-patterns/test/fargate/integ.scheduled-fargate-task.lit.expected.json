@@ -391,8 +391,7 @@
             "ScheduledFargateTaskScheduledTaskDefTaskRoleD0FF16AD",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "ScheduledFargateTaskScheduledTaskDefScheduledContainerAssetImageAdoptRepository49B45957": {
@@ -526,7 +525,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
