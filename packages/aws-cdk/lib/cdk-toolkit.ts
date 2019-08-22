@@ -95,7 +95,7 @@ export class CdkToolkit {
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        const cfn = await options.sdk.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForWriting);
+        const cfn = await options.sdk.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
         if (!await stackExists(cfn, stack.name)) {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.name));
         } else {
