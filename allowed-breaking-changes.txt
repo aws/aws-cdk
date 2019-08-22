@@ -12,3 +12,4 @@ removed:@aws-cdk/aws-apigateway.HttpIntegration.props
 removed:@aws-cdk/aws-apigateway.Integration.props
 removed:@aws-cdk/aws-apigateway.LambdaIntegration.props
 removed:@aws-cdk/aws-apigateway.MockIntegration.props
+removed:@aws-cdk/aws-ecs-patterns.LoadBalancerType
