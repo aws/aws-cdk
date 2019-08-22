@@ -1,9 +1,10 @@
-import { INamespace } from '@aws-cdk/aws-servicediscovery';
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 
+import { Lazy } from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { HealthCheckProps, ListenerProps, PortMappingProps, Protocol } from './shared-interfaces';
+import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -20,6 +21,10 @@ export interface IVirtualNode extends cdk.IResource {
   /**
    * The Amazon Resource Name belonging to the VirtualNdoe
    *
+   * Set this value as the APPMESH_VIRTUAL_NODE_NAME environment variable for
+   * your task group's Envoy proxy container in your task definition or pod
+   * spec.
+   *
    * @attribute
    */
   readonly virtualNodeArn: string;
@@ -32,33 +37,13 @@ export interface IVirtualNode extends cdk.IResource {
   /**
    * Utility method to add Node Listeners for new or existing VirtualNodes
    */
-  addListener(props: ListenerProps): void;
-
-  /**
-   * Utility method which adds only a single port mapping to the listener property as healthchecks are optional
-   */
-  addPortMapping(props: PortMappingProps): void;
-
-  /**
-   * Utility method which adds only port mappings to the listener property as healthchecks are optional
-   */
-  addPortMappings(props: PortMappingProps[]): void;
-
-  /**
-   * Utility method to add port mappings and healthecks, preferred method would be to use addListeners()
-   */
-  addPortAndHealthCheckMappings(ports: PortMappingProps[], health: HealthCheckProps[]): void;
+  addListeners(...listeners: VirtualNodeListener[]): void;
 }
 
 /**
- * The properties used when creating a new VirtualNode
+ * Basic configuration properties for a VirtualNode
  */
-export interface VirtualNodeProps {
-  /**
-   * The name of the AppMesh which the virtual node belongs to
-   */
-  readonly mesh: IMesh;
-
+export interface VirtualNodeBaseProps {
   /**
    * The name of the VirtualNode
    *
@@ -67,32 +52,55 @@ export interface VirtualNodeProps {
   readonly virtualNodeName?: string;
 
   /**
-   * The hostname of the virtual node, only the host portion
+   * Host name of DNS record used to discover Virtual Node members
    *
-   * @example node-1
+   * The IP addresses returned by querying this DNS record will be considered
+   * part of the Virtual Node.
+   *
+   * @default - Don't use DNS-based service discovery
    */
-  readonly hostname: string;
+  readonly dnsHostName?: string;
 
   /**
-   * The service discovery namespace name, this is used for service discovery
+   * CloudMap service where Virtual Node members register themselves
    *
-   * @example domain.local
+   * Instances registering themselves into this CloudMap will
+   * be considered part of the Virtual Node.
+   *
+   * @default - Don't use CloudMap-based service discovery
    */
-  readonly namespace: INamespace;
+  readonly cloudMapService?: cloudmap.IService;
 
   /**
-   * Array of VirtualNodeBackendProps
+   * Filter down the list of CloudMap service instance
+   *
+   * @default - No CloudMap instance filter
+   */
+  readonly cloudMapServiceInstanceAttributes?: {[key: string]: string};
+
+  /**
+   * Virtual Services that this is node expected to send outbound traffic to
    *
    * @default - No backends
    */
   readonly backends?: IVirtualService[];
 
   /**
-   * Listener properties, such as portMappings and optional healthChecks
+   * Initial listener for the virtual node
    *
    * @default - No listeners
    */
-  readonly listener?: ListenerProps;
+  readonly listener?: VirtualNodeListener;
+}
+
+/**
+ * The properties used when creating a new VirtualNode
+ */
+export interface VirtualNodeProps extends VirtualNodeBaseProps {
+  /**
+   * The name of the AppMesh which the virtual node belongs to
+   */
+  readonly mesh: IMesh;
 }
 
 abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
@@ -110,7 +118,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
 
   /**
-   * Utility method to add backends for existing or new VirtualNode
+   * Add a Virtual Services that this node is expected to send outbound traffic to
    */
   public addBackends(...props: IVirtualService[]) {
     for (const s of props) {
@@ -123,74 +131,42 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 
   /**
-   * Utility method to add Node Listeners for new or existing VirtualNodes
+   * Utility method to add an inbound listener for this virtual node
    */
-  public addListener(props: ListenerProps) {
-    if (props.portMappings && props.healthChecks) {
-      this.addPortAndHealthCheckMappings(props.portMappings, props.healthChecks);
-    } else if (props.portMappings) {
-      this.addPortMappings(props.portMappings);
-    } else {
-      this.addPortMappings([{ port: 8080, protocol: Protocol.HTTP }]);
+  public addListeners(...listeners: VirtualNodeListener[]) {
+    if (this.listeners.length + listeners.length > 1) {
+      throw new Error('VirtualNode may have at most one listener');
     }
-  }
 
-  /**
-   * Utility method which adds only a single port mapping to the listener property as healthchecks are optional
-   */
-  public addPortMapping(props: PortMappingProps) {
-    this.listeners.push({
-      portMapping: {
-        port: props.port || 8080,
-        protocol: props.protocol,
-      },
-    });
-  }
-
-  /**
-   * Utility method which adds only port mappings to the listener property as healthchecks are optional
-   */
-  public addPortMappings(props: PortMappingProps[]) {
-    for (const p of props) {
+    for (const listener of listeners) {
+      const portMapping = listener.portMapping || { port: 8080, protocol: Protocol.HTTP };
       this.listeners.push({
-        portMapping: {
-          port: p.port || 8080,
-          protocol: p.protocol,
-        },
-      });
-    }
-  }
-
-  /**
-   * Utility method to add port mappings and healthecks, preferred method would be to use addListeners()
-   */
-  public addPortAndHealthCheckMappings(ports: PortMappingProps[], health: HealthCheckProps[]) {
-    if (ports.length !== health.length) {
-      throw new Error('Must provide the same number of health checks and port mappings.');
-    }
-
-    for (let i = 0; i < ports.length; i++) {
-      this.listeners.push({
-        portMapping: {
-          port: ports[i].port,
-          protocol: ports[i].protocol,
-        },
-        healthCheck: {
-          healthyThreshold: health[i].healthyThreshold || 2,
-          intervalMillis: (health[i].interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-          path: health[i].path || health[i].protocol === Protocol.HTTP ? '/' : undefined,
-          port: health[i].port || 8080,
-          protocol: health[i].protocol || Protocol.HTTP,
-          timeoutMillis: (health[i].timeout || cdk.Duration.seconds(2)).toMilliseconds(),
-          unhealthyThreshold: health[i].unhealthyThreshold || 2,
-        },
+        portMapping,
+        healthCheck: renderHealthCheck(listener.healthCheck, portMapping),
       });
     }
   }
 }
 
+function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVirtualNode.HealthCheckProperty | undefined {
+  if (hc === undefined) { return undefined; }
+  return {
+    healthyThreshold: hc.healthyThreshold || 2,
+    intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
+    path: hc.path || hc.protocol === Protocol.HTTP ? '/' : undefined,
+    port: hc.port || pm.port,
+    protocol: hc.protocol || pm.protocol,
+    timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
+    unhealthyThreshold: hc.unhealthyThreshold || 2,
+  };
+}
+
 /**
  * VirtualNode represents a newly defined AppMesh VirtualNode
+ *
+ * Any inbound traffic that your virtual node expects should be specified as a
+ * listener. Any outbound traffic that your virtual node expects to reach
+ * should be specified as a backend.
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
@@ -227,8 +203,6 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  private readonly namespaceName: string;
-
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
@@ -236,26 +210,22 @@ export class VirtualNode extends VirtualNodeBase {
 
     this.mesh = props.mesh;
 
-    this.namespaceName = props.namespace.namespaceName;
-
-    if (props.backends) {
-      this.addBackends(...props.backends);
-    }
-
-    if (props.listener) {
-      this.addListener(props.listener);
-    }
+    this.addBackends(...props.backends || []);
+    this.addListeners(...props.listener ? [props.listener] : []);
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        backends: this.backends,
-        listeners: this.listeners,
+        backends: Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
+        listeners: Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
         serviceDiscovery: {
-          dns: {
-            hostname: `${props.hostname}.${this.namespaceName}`,
-          },
+          dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
+          awsCloudMap: props.cloudMapService !== undefined ? {
+            serviceName: props.cloudMapService.serviceName,
+            namespaceName: props.cloudMapService.namespace.namespaceName,
+            attributes: renderAttributes(props.cloudMapServiceInstanceAttributes)
+          } : undefined,
         },
         logging: {
           accessLog: {
@@ -274,6 +244,11 @@ export class VirtualNode extends VirtualNodeBase {
       resourceName: this.physicalName,
     });
   }
+}
+
+function renderAttributes(attrs?: {[key: string]: string}) {
+  if (attrs === undefined) { return undefined; }
+  return Object.entries(attrs).map(([key, value]) => ({ key, value }));
 }
 
 /**

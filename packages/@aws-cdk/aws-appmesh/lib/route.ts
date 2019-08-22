@@ -52,9 +52,24 @@ export interface RouteBaseProps {
   /**
    * Weather the route is HTTP based
    *
-   * @default false
+   * @default - HTTP if `prefix` is given, TCP otherwise
    */
-  readonly isHttpRoute?: boolean;
+  readonly routeType?: RouteType;
+}
+
+/**
+ * Type of route
+ */
+export enum RouteType {
+  /**
+   * HTTP route
+   */
+  HTTP = 'http',
+
+  /**
+   * TCP route
+   */
+  TCP = 'tcp'
 }
 
 /**
@@ -135,10 +150,14 @@ export class Route extends cdk.Resource implements IRoute {
 
     this.virtualRouter = props.virtualRouter;
 
-    if (props.isHttpRoute) {
-      this.httpRoute = this.addHttpRoute(props);
+    const routeType = props.routeType !== undefined ? props.routeType :
+      props.prefix !== undefined ? RouteType.HTTP :
+      RouteType.TCP;
+
+    if (routeType === RouteType.HTTP) {
+      this.httpRoute = this.renderHttpRoute(props);
     } else {
-      this.tcpRoute = this.addTcpRoute(props.routeTargets);
+      this.tcpRoute = this.renderTcpRoute(props);
     }
 
     const route = new CfnRoute(this, 'Resource', {
@@ -162,7 +181,7 @@ export class Route extends cdk.Resource implements IRoute {
   /**
    * Utility method to add weighted route targets to an existing route
    */
-  private addWeightedTargets(props: WeightedTargetProps[]) {
+  private renderWeightedTargets(props: WeightedTargetProps[]) {
     for (const t of props) {
       this.weightedTargets.push({
         virtualNode: t.virtualNode.virtualNodeName,
@@ -173,21 +192,21 @@ export class Route extends cdk.Resource implements IRoute {
     return this.weightedTargets;
   }
 
-  private addHttpRoute(props: RouteProps) {
+  private renderHttpRoute(props: RouteProps) {
     return {
       match: {
         prefix: props.prefix || '/',
       },
       action: {
-        weightedTargets: this.addWeightedTargets(props.routeTargets),
+        weightedTargets: this.renderWeightedTargets(props.routeTargets),
       },
     };
   }
 
-  private addTcpRoute(props: WeightedTargetProps[]) {
+  private renderTcpRoute(props: RouteProps) {
     return {
       action: {
-        weightedTargets: this.addWeightedTargets(props),
+        weightedTargets: this.renderWeightedTargets(props.routeTargets),
       },
     };
   }

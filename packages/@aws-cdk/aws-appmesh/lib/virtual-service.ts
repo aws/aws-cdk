@@ -10,7 +10,7 @@ import { IVirtualRouter } from './virtual-router';
  */
 export interface IVirtualService extends cdk.IResource {
   /**
-   * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
+   * The name of the VirtualService
    *
    * @attribute
    */
@@ -29,11 +29,15 @@ export interface IVirtualService extends cdk.IResource {
  */
 export interface VirtualServiceBaseProps {
   /**
-   * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
+   * The name of the VirtualService.
+   *
+   * It is recommended this follows the fully-qualified domain name format,
+   * such as "my-service.default.svc.cluster.local".
    *
    * @example service.domain.local
+   * @default - A name is automatically generated
    */
-  readonly virtualServiceName: string;
+  readonly virtualServiceName?: string;
 
   /**
    * The VirtualRouter which the VirtualService uses as provider
@@ -63,6 +67,8 @@ export interface VirtualServiceProps extends VirtualServiceBaseProps {
 /**
  * VirtualService represents a service inside an AppMesh
  *
+ * It routes traffic either to a Virtual Node or to a Virtual Router.
+ *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_services.html
  */
 export class VirtualService extends cdk.Resource implements IVirtualService {
@@ -70,7 +76,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * Import an existing VirtualService given an ARN
    */
   public static fromVirtualServiceArn(scope: cdk.Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new  ImportedVirtualService(scope, id,  {
+    return new ImportedVirtualService(scope, id,  {
       virtualServiceArn,
     });
   }
@@ -109,10 +115,11 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
     this.mesh = props.mesh;
 
-    // Check which provider to use node or router
+    // Check which provider to use node or router (or neither)
     if (props.virtualRouter) {
       this.virtualServiceProvider = this.addVirtualRouter(props.virtualRouter.virtualRouterName);
-    } else if (props.virtualNode) {
+    }
+    if (props.virtualNode) {
       this.virtualServiceProvider = this.addVirtualNode(props.virtualNode.virtualNodeName);
     }
 

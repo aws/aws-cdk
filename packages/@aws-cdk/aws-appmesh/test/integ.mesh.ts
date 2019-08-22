@@ -19,12 +19,12 @@ const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
 
 const mesh = new appmesh.Mesh(stack, 'mesh');
 const router = mesh.addVirtualRouter('router', {
-  portMappings: [
-    {
+  listener: {
+    portMapping: {
       port: 8080,
       protocol: appmesh.Protocol.HTTP,
     },
-  ],
+  },
 });
 
 const virtualService = mesh.addVirtualService('service', {
@@ -33,26 +33,12 @@ const virtualService = mesh.addVirtualService('service', {
 });
 
 const node = mesh.addVirtualNode('node', {
-  hostname: 'node1',
-  namespace,
+  dnsHostName: `node1.${namespace.namespaceName}`,
   listener: {
-    portMappings: [
-      {
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-      },
-    ],
-    healthChecks: [
-      {
-        healthyThreshold: 3,
-        interval: cdk.Duration.seconds(5),
-        path: '/check-path',
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-        timeout: cdk.Duration.seconds(2),
-        unhealthyThreshold: 2,
-      },
-    ],
+    healthCheck: {
+      healthyThreshold: 3,
+      path: '/check-path',
+    },
   },
   backends: [
     virtualService,
@@ -73,30 +59,20 @@ router.addRoute('route-1', {
     },
   ],
   prefix: '/',
-  isHttpRoute: true,
 });
 
 const node2 = mesh.addVirtualNode('node2', {
-  hostname: 'node2',
-  namespace,
+  dnsHostName: `node2.${namespace.namespaceName}`,
   listener: {
-    portMappings: [
-      {
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-      },
-    ],
-    healthChecks: [
-      {
-        healthyThreshold: 3,
-        interval: cdk.Duration.seconds(5),
-        path: '/check-path2',
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-        timeout: cdk.Duration.seconds(2),
-        unhealthyThreshold: 2,
-      },
-    ],
+    healthCheck: {
+      healthyThreshold: 3,
+      interval: cdk.Duration.seconds(5),
+      path: '/check-path2',
+      port: 8080,
+      protocol: appmesh.Protocol.HTTP,
+      timeout: cdk.Duration.seconds(2),
+      unhealthyThreshold: 2,
+    },
   },
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
@@ -107,49 +83,35 @@ const node2 = mesh.addVirtualNode('node2', {
 });
 
 const node3 = mesh.addVirtualNode('node3', {
-  hostname: 'node3',
-  namespace,
+  dnsHostName: `node3.${namespace.namespaceName}`,
   listener: {
-    portMappings: [
-      {
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-      },
-    ],
-    healthChecks: [
-      {
-        healthyThreshold: 3,
-        interval: cdk.Duration.seconds(5),
-        path: '/check-path3',
-        port: 8080,
-        protocol: appmesh.Protocol.HTTP,
-        timeout: cdk.Duration.seconds(2),
-        unhealthyThreshold: 2,
-      },
-    ],
+    healthCheck: {
+      healthyThreshold: 3,
+      interval: cdk.Duration.seconds(5),
+      path: '/check-path3',
+      port: 8080,
+      protocol: appmesh.Protocol.HTTP,
+      timeout: cdk.Duration.seconds(2),
+      unhealthyThreshold: 2,
+    },
   },
 });
 
-router.addRoutes(
-  ['route-2', 'route-3'],
-  [
+router.addRoute('route-2', {
+  routeTargets: [
     {
-      routeTargets: [
-        {
-          virtualNode: node2,
-          weight: 30,
-        },
-      ],
-      prefix: '/path2',
-      isHttpRoute: true,
+      virtualNode: node2,
+      weight: 30,
     },
+  ],
+  prefix: '/path2',
+});
+
+router.addRoute('route-3', {
+  routeTargets: [
     {
-      routeTargets: [
-        {
-          virtualNode: node3,
-          weight: 20,
-        },
-      ],
+      virtualNode: node3,
+      weight: 20,
     },
-  ]
-);
+  ],
+});

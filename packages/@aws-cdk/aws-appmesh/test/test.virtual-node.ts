@@ -1,6 +1,4 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 
@@ -19,12 +17,6 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.Vpc(stack, 'vpc');
-        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
-          vpc,
-          name: 'domain.local',
-        });
-
         const service1 = new appmesh.VirtualService(stack, 'service-1', {
           virtualServiceName: 'service1.domain.local',
           mesh,
@@ -36,16 +28,8 @@ export = {
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          hostname: 'test',
-          namespace,
-          listener: {
-            portMappings: [
-              {
-                port: 8080,
-                protocol: appmesh.Protocol.HTTP,
-              },
-            ],
-          },
+          dnsHostName: 'test',
+          listener: {},
           backends: [service1],
         });
 
@@ -88,28 +72,15 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const vpc = new ec2.Vpc(stack, 'vpc');
-        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
-          vpc,
-          name: 'domain.local',
-        });
-
         const node = mesh.addVirtualNode('test-node', {
-          hostname: 'test',
-          namespace,
-          listener: {
-            portMappings: [
-              {
-                port: 8080,
-                protocol: appmesh.Protocol.HTTP,
-              },
-            ],
-          },
+          dnsHostName: 'test',
         });
 
-        node.addPortMapping({
-          port: 8081,
-          protocol: Protocol.TCP,
+        node.addListeners({
+          portMapping: {
+            port: 8081,
+            protocol: Protocol.TCP,
+          }
         });
 
         // THEN
@@ -117,12 +88,6 @@ export = {
           haveResourceLike('AWS::AppMesh::VirtualNode', {
             Spec: {
               Listeners: [
-                {
-                  PortMapping: {
-                    Port: 8080,
-                    Protocol: 'http',
-                  },
-                },
                 {
                   PortMapping: {
                     Port: 8081,
@@ -147,32 +112,20 @@ export = {
       meshName: 'test-mesh',
     });
 
-    const vpc = new ec2.Vpc(stack, 'vpc');
-    const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
-      vpc,
-      name: 'domain.local',
-    });
-
     const node = mesh.addVirtualNode('test-node', {
-      hostname: 'test',
-      namespace,
-      listener: {
-        portMappings: [
-          {
-            port: 8080,
-            protocol: appmesh.Protocol.HTTP,
-          },
-        ],
-      },
+      dnsHostName: 'test.domain.local',
+      listener: {},
     });
 
     const stack2 = new cdk.Stack();
 
     const node2 = appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
 
-    node2.addPortMapping({
-      port: 8081,
-      protocol: Protocol.TCP,
+    node2.addListeners({
+      portMapping: {
+        port: 8081,
+        protocol: Protocol.TCP,
+      }
     });
 
     // THEN

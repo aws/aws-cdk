@@ -13,7 +13,7 @@ export enum Protocol {
  * All values have a default if only specified as {} when creating.
  * If property not set, then no healthchecks will be defined.
  */
-export interface HealthCheckProps {
+export interface HealthCheck {
   /**
    * Number of successful attempts before considering the node UP
    *
@@ -35,14 +35,14 @@ export interface HealthCheckProps {
   /**
    * The TCP port number for the healthcheck
    *
-   * @default: 8080
+   * @default - same as corresponding port mapping
    */
   readonly port?: number;
   /**
    * The protocol to use for the healthcheck, for convinience a const enum has been defined.
    * Protocol.HTTP or Protocol.TCP
    *
-   * @default HTTP
+   * @default - same as corresponding port mapping
    */
   readonly protocol?: Protocol;
   /**
@@ -62,13 +62,14 @@ export interface HealthCheckProps {
 /**
  * Port mappings for resources that require these attributes, such as VirtualNodes and Routes
  */
-export interface PortMappingProps {
+export interface PortMapping {
   /**
    * Port mapped to the VirtualNode / Route
    *
    * @default 8080
    */
   readonly port: number;
+
   /**
    * Protocol for the VirtualNode / Route, only TCP or HTTP supported
    *
@@ -80,17 +81,18 @@ export interface PortMappingProps {
 /**
  * Represents the properties needed to define healthy and active listeners for nodes.
  */
-export interface ListenerProps {
+export interface VirtualNodeListener {
   /**
    * Array of PortMappingProps for the listener
    *
-   * @default one with defaults of port: 8080 and protocol HTTP
+   * @default - HTTP port 8080
    */
-  readonly portMappings?: PortMappingProps[];
+  readonly portMapping?: PortMapping;
+
   /**
    * Array fo HealthCheckProps for the node(s)
    *
-   * @default no healthcheck
+   * @default - no healthcheck
    */
-  readonly healthChecks?: HealthCheckProps[];
+  readonly healthCheck?: HealthCheck;
 }

@@ -1,49 +1,9 @@
-import { INamespace } from '@aws-cdk/aws-servicediscovery';
 import cdk = require('@aws-cdk/core');
 
 import { CfnMesh } from './appmesh.generated';
-import { ListenerProps } from './shared-interfaces';
-import { VirtualNode } from './virtual-node';
+import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
-import { IVirtualService, VirtualService, VirtualServiceBaseProps } from './virtual-service';
-
-/**
- * These properties are used when adding a VirtualNode through the Mesh type
- */
-export interface AddVirtualNodeProps {
-  /**
-   * The name of the VirtualNode, only used as identifier
-   *
-   * @default optional if not provided, the id property will be used
-   */
-  readonly nodeName?: string;
-
-  /**
-   * The hostname for which to identify the VirtualNode, NOT the full FQDN
-   *
-   * @example serviceb NOT serviceb.domain.local
-   */
-  readonly hostname: string;
-
-  /**
-   * The service discovery namespace name
-   * @example domain.local
-   */
-  readonly namespace: INamespace;
-
-  /**
-   * The backend services this node expects to send traffic to
-   *
-   * @default none
-   */
-  readonly backends?: IVirtualService[];
-
-  /**
-   * @default none
-   * if not specified must call addListener(), addPortMappings() or addPortAndHealthCheckMappings()
-   */
-  readonly listener?: ListenerProps;
-}
+import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -60,19 +20,6 @@ export enum MeshFilterType {
    * Allows traffic only to other resources inside the mesh, or API calls to amazon resources
    */
   DROP_ALL = 'DROP_ALL',
-}
-
-/**
- * Used to populate the spec property for the mesh, only available option today is egressFilter
- *
- */
-export interface MeshSpec {
-  /**
-   * Egress filter to be applied to the Mesh
-   *
-   * @default DROP_ALL
-   */
-  readonly egressFilter?: MeshFilterType;
 }
 
 /**
@@ -106,7 +53,7 @@ export interface IMesh extends cdk.IResource {
   /**
    * Adds a VirtualNode to the Mesh
    */
-  addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode;
+  addVirtualNode(id: string, props: VirtualNodeBaseProps): VirtualNode;
 }
 
 /**
@@ -126,18 +73,17 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
    */
-  public addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter {
+  public addVirtualRouter(id: string, props: VirtualRouterBaseProps = {}): VirtualRouter {
     return new VirtualRouter(this, id, {
+      ...props,
       mesh: this,
-      virtualRouterName: props.virtualRouterName,
-      portMappings: props.portMappings,
     });
   }
 
   /**
    * Adds a VirtualService with the given id
    */
-  public addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService {
+  public addVirtualService(id: string, props: VirtualServiceBaseProps = {}): VirtualService {
     return new VirtualService(this, id, {
       ...props,
       mesh: this,
@@ -147,11 +93,10 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
   /**
    * Adds a VirtualNode to the Mesh
    */
-  public addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode {
+  public addVirtualNode(id: string, props: VirtualNodeBaseProps = {}): VirtualNode {
     return new VirtualNode(this, id, {
       ...props,
       mesh: this,
-      namespace: props.namespace,
     });
   }
 }
@@ -168,13 +113,11 @@ export interface MeshProps {
   readonly meshName?: string;
 
   /**
-   * The spec to be applied to the mesh
+   * Egress filter to be applied to the Mesh
    *
-   * At this point only egressFilter is available.
-   *
-   * @default - All outbound traffic is dropped.
+   * @default DROP_ALL
    */
-  readonly meshSpec?: MeshSpec;
+  readonly egressFilter?: MeshFilterType;
 }
 
 /**
@@ -230,14 +173,12 @@ export class Mesh extends MeshBase {
       physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
     });
 
-    const filter = (props.meshSpec && props.meshSpec.egressFilter) || MeshFilterType.DROP_ALL;
-
     const mesh = new CfnMesh(this, 'Resource', {
       meshName: this.physicalName,
       spec: {
-        egressFilter: {
-          type: filter,
-        },
+        egressFilter: props.egressFilter ? {
+          type: props.egressFilter,
+        } : undefined,
       },
     });
 

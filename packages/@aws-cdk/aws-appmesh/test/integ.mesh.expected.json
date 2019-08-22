@@ -458,9 +458,6 @@
       "Properties": {
         "MeshName": "meshstackmesh680D3CEB",
         "Spec": {
-          "EgressFilter": {
-            "Type": "DROP_ALL"
-          }
         }
       }
     },
@@ -751,7 +748,6 @@
           ]
         },
         "Spec": {
-          "Backends": [],
           "Listeners": [
             {
               "HealthCheck": {

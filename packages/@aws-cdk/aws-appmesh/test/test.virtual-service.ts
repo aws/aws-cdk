@@ -15,15 +15,7 @@ export = {
       meshName: 'test-mesh',
     });
 
-    const router = new appmesh.VirtualRouter(stack, 'router', {
-      mesh,
-      portMappings: [
-        {
-          port: 8080,
-          protocol: appmesh.Protocol.HTTP,
-        },
-      ],
-    });
+    const router = new appmesh.VirtualRouter(stack, 'router', { mesh });
 
     const vpc = new ec2.Vpc(stack, 'vpc');
     const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {

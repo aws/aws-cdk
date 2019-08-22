@@ -1,5 +1,3 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 
@@ -17,18 +15,6 @@ export = {
 
     const router = new appmesh.VirtualRouter(stack, 'router', {
       mesh,
-      portMappings: [
-        {
-          port: 8080,
-          protocol: appmesh.Protocol.HTTP,
-        },
-      ],
-    });
-
-    const vpc = new ec2.Vpc(stack, 'vpc');
-    const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
-      vpc,
-      name: 'domain.local',
     });
 
     const service1 = new appmesh.VirtualService(stack, 'service-1', {
@@ -37,15 +23,13 @@ export = {
     });
 
     const node = mesh.addVirtualNode('test-node', {
-      hostname: 'test',
-      namespace,
+      dnsHostName: 'test',
       listener: {
-        portMappings: [
+        portMapping:
           {
             port: 8080,
             protocol: appmesh.Protocol.HTTP,
           },
-        ],
       },
       backends: [
         service1,
@@ -62,7 +46,6 @@ export = {
         },
       ],
       prefix: '/',
-      isHttpRoute: true,
     });
 
     const stack2 = new cdk.Stack();
