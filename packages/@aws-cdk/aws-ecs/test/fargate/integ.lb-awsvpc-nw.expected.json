@@ -514,11 +514,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":iam:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
+              ":iam::",
               {
                 "Ref": "AWS::AccountId"
               },
