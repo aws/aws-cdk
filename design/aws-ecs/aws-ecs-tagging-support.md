@@ -63,7 +63,7 @@ export interface BaseServiceOptions {
    *
    * Valid values are: PropagateTagFromType.SERVICE or PropagateTagFromType.TASK_DEFINITION
    *
-   * @default PropagatedTagSource.NONE
+   * @default - PropagatedTagSource.SERVICE if EC2 or Fargate Service, otherwise PropagatedTagSource.NONE.
    */
   readonly propagateTags?: PropagatedTagSource;
 
@@ -105,8 +105,8 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
-      propagateTags: props.propagateTags,
-      enableEcsManagedTags: props.enableECSManagedTags,
+      propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
+      enableEcsManagedTags: props.enableECSManagedTags === undefined ? true : props.enableECSManagedTags,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -135,9 +135,53 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default SERVICE
+   * @default  PropagatedTagSource.SERVICE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
+}
+```
+
+``` ts
+/**
+ * This creates a service using the EC2 launch type on an ECS cluster.
+ *
+ * @resource AWS::ECS::Service
+ */
+export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+
+  ...
+
+  /**
+   * Constructs a new instance of the Ec2Service class.
+   */
+  constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
+
+    ...
+
+    super(scope, id, {
+      ...props,
+      // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
+      desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+      maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
+      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
+      launchType: LaunchType.EC2,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE : props.propagateTaskTagsFrom,
+      enableECSManagedTags: props.enableECSManagedTags,
+    },
+    {
+      cluster: props.cluster.clusterName,
+      taskDefinition: props.taskDefinition.taskDefinitionArn,
+      placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
+      placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
+      schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
+    }, props.taskDefinition);
+
+    ...
+
+  }
+
+  ...
+
 }
 ```
 
@@ -150,9 +194,48 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default SERVICE
+   * @default  PropagatedTagSource.SERVICE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
+}
+```
+
+
+``` ts
+/**
+ * This creates a service using the Fargate launch type on an ECS cluster.
+ *
+ * @resource AWS::ECS::Service
+ */
+export class FargateService extends BaseService implements IFargateService {
+
+  ...
+
+  /**
+   * Constructs a new instance of the FargateService class.
+   */
+  constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
+
+    ...
+
+    super(scope, id, {
+      ...props,
+      desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
+      launchType: LaunchType.FARGATE,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE : props.propagateTaskTagsFrom,
+      enableECSManagedTags: props.enableECSManagedTags,
+    }, {
+      cluster: props.cluster.clusterName,
+      taskDefinition: props.taskDefinition.taskDefinitionArn,
+      platformVersion: props.platformVersion,
+    }, props.taskDefinition);
+
+    ...
+
+  }
+
+  ...
+
 }
 ```
 
