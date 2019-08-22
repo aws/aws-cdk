@@ -43,17 +43,17 @@ export interface IMesh extends cdk.IResource {
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
    */
-  addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter;
+  addVirtualRouter(id: string, props?: VirtualRouterBaseProps): VirtualRouter;
 
   /**
    * Adds a VirtualService with the given id
    */
-  addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService;
+  addVirtualService(id: string, props?: VirtualServiceBaseProps): VirtualService;
 
   /**
    * Adds a VirtualNode to the Mesh
    */
-  addVirtualNode(id: string, props: VirtualNodeBaseProps): VirtualNode;
+  addVirtualNode(id: string, props?: VirtualNodeBaseProps): VirtualNode;
 }
 
 /**
