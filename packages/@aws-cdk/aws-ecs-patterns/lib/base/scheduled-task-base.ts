@@ -1,8 +1,9 @@
 import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { AwsLogDriver, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
+import { IVpc } from '@aws-cdk/aws-ec2';
+import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
 import { Rule } from "@aws-cdk/aws-events";
 import { EcsTask } from "@aws-cdk/aws-events-targets";
-import { Construct } from "@aws-cdk/core";
+import { Construct, Stack } from "@aws-cdk/core";
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -10,15 +11,22 @@ import { Construct } from "@aws-cdk/core";
 export interface ScheduledTaskBaseProps {
   /**
    * The name of the cluster that hosts the service.
+   *
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
+   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well.
    */
-  readonly cluster: ICluster;
+  readonly cluster?: ICluster;
+
+  /**
+   * The VPC where the ECS instances will be running or the ENIs will be deployed.
+   *
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank.
+   * @default - uses the vpc defined in the cluster or creates a new one.
+   */
+  readonly vpc?: IVpc;
 
   /**
    * The image used to start a container.
-   *
-   * This string is passed directly to the Docker daemon.
-   * Images in the Docker Hub registry are available by default.
-   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
    */
   readonly image: ContainerImage;
 
@@ -55,7 +63,7 @@ export interface ScheduledTaskBaseProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * Secret environment variables to pass to the container
+   * The secret environment variables to pass to the container
    *
    * @default - No secret environment variables.
    */
@@ -93,7 +101,7 @@ export abstract class ScheduledTaskBase extends Construct {
   constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
     super(scope, id);
 
-    this.cluster = props.cluster;
+    this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
     this.desiredTaskCount = props.desiredTaskCount || 1;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
@@ -122,6 +130,13 @@ export abstract class ScheduledTaskBase extends Construct {
     this.eventRule.addTarget(eventRuleTarget);
 
     return eventRuleTarget;
+  }
+
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+    // magic string to avoid collision with user-defined constructs
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const stack = Stack.of(scope);
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

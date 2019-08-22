@@ -116,7 +116,6 @@
                   },
                   "S3ObjectKey": "file.zip"
                 },
-                "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
@@ -148,9 +147,7 @@
                     "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
                   }
                 },
-                "InputArtifacts": [],
                 "Name": "ManualApproval",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineApproveManualApprovalCodePipelineActionRole51D669A5",

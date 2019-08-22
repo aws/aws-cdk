@@ -391,8 +391,7 @@
             "ScheduledFargateTaskScheduledTaskDefTaskRoleD0FF16AD",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "ScheduledFargateTaskScheduledTaskDefScheduledContainerAssetImageAdoptRepository49B45957": {
@@ -526,7 +525,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
@@ -602,7 +600,7 @@
         ]
       }
     },
-    "ScheduledFargateTaskScheduledTaskDefPutTargets7149EAB4": {
+    "ScheduledFargateTaskScheduledTaskDefScheduledEventRuleTarget0PutTargets4F6BAABA": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
