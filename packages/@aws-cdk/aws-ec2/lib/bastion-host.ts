@@ -1,8 +1,8 @@
 import { IRole, PolicyStatement } from "@aws-cdk/aws-iam";
-import { CfnOutput, Construct } from "@aws-cdk/core";
+import { CfnOutput, Construct, Stack } from "@aws-cdk/core";
 import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from ".";
 import { Connections } from "./connections";
-import { Instance } from "./instance";
+import { IInstance, Instance } from "./instance";
 import { IPeer } from "./peer";
 import { Port } from "./port";
 import { ISecurityGroup } from "./security-group";
@@ -68,7 +68,8 @@ export interface BastionHostLinuxProps {
  *
  * @experimental
  */
-export class BastionHostLinux extends Construct {
+export class BastionHostLinux extends Construct implements IInstance {
+  public readonly stack: Stack;
 
   /**
    * Allows specify security group connections for the instance.
@@ -81,14 +82,20 @@ export class BastionHostLinux extends Construct {
   public readonly role: IRole;
 
   /**
-   * the underlying instance resource
-   * @attribute
+   * The underlying instance resource
    */
   public readonly instance: Instance;
+
   /**
    * @attribute
    */
   public readonly instanceId: string;
+
+  /**
+   * @attribute
+   */
+  public readonly instanceAvailabilityZone: string;
+
   /**
    * @attribute
    */
@@ -108,6 +115,7 @@ export class BastionHostLinux extends Construct {
 
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
+    this.stack = Stack.of(scope);
     this.instance = new Instance(this, 'Resource', {
       vpc: props.vpc,
       availabilityZone: props.availabilityZone,
@@ -131,6 +139,7 @@ export class BastionHostLinux extends Construct {
     this.role = this.instance.role;
     this.instanceId = this.instance.instanceId;
     this.instancePrivateIp = this.instance.instancePrivateIp;
+    this.instanceAvailabilityZone = this.instance.instanceAvailabilityZone;
     this.instancePrivateDnsName = this.instance.instancePrivateDnsName;
     this.instancePublicIp = this.instance.instancePublicIp;
     this.instancePublicDnsName = this.instance.instancePublicDnsName;
@@ -141,6 +150,12 @@ export class BastionHostLinux extends Construct {
     });
   }
 
+  /**
+   * Allow SSH access from the given peer or peers
+   *
+   * Necessary if you want to connect to the instance using ssh. If not
+   * called, you should use SSM Session Manager to connect to the instance.
+   */
   public allowSshAccessFrom(...peer: IPeer[]): void {
       peer.forEach(p => {
         this.connections.allowFrom(p, Port.tcp(22), 'SSH access');

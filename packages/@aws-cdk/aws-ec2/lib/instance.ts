@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 
-import { Construct, Duration, Fn, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
@@ -13,6 +13,53 @@ import { IVpc, SubnetSelection } from './vpc';
  * Name tag constant
  */
 const NAME_TAG: string = 'Name';
+
+export interface IInstance extends IResource, IConnectable {
+  /**
+   * The instance's ID
+   *
+   * @attribute
+   */
+  readonly instanceId: string;
+
+  /**
+   * The availability zone the instance was launched in
+   *
+   * @attribute
+   */
+  readonly instanceAvailabilityZone: string;
+
+  /**
+   * Private DNS name for this instance
+   * @attribute
+   */
+  readonly instancePrivateDnsName: string;
+
+  /**
+   * Private IP for this instance
+   *
+   * @attribute
+   */
+  readonly instancePrivateIp: string;
+
+  /**
+   * Publicly-routable DNS name for this instance.
+   *
+   * (May be an empty string if the instance does not have a public name).
+   *
+   * @attribute
+   */
+  readonly instancePublicDnsName: string;
+
+  /**
+   * Publicly-routable IP  address for this instance.
+   *
+   * (May be an empty string if the instance does not have a public IP).
+   *
+   * @attribute
+   */
+  readonly instancePublicIp: string;
+}
 
 /**
  * Properties of an EC2 Instance
@@ -110,13 +157,12 @@ export interface InstanceProps {
    * @default - CDK generated name
    */
   readonly instanceName?: string;
-
 }
 
 /**
  * This represents a single EC2 instance
  */
-export class Instance extends Resource implements IConnectable {
+export class Instance extends Resource implements IInstance {
 
   /**
    * The type of OS the instance is running.
@@ -140,7 +186,6 @@ export class Instance extends Resource implements IConnectable {
 
   /**
    * the underlying instance resource
-   * @attribute
    */
   public readonly instance: CfnInstance;
   /**
