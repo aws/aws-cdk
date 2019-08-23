@@ -440,6 +440,35 @@ export = {
     test.done();
   },
 
+  'sqsParameters are generated when they are specified in target props'(test: Test) {
+    const stack = new cdk.Stack();
+    const t1: IRuleTarget = {
+      bind: () => ({
+        id: '',
+        arn: 'ARN1',
+        sqsParameters: { messageGroupId: 'messageGroupId' }
+      })
+    };
+
+    new Rule(stack, 'EventRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      targets: [ t1 ],
+    });
+
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      Targets: [
+        {
+          "Arn": "ARN1",
+          "Id": "Target0",
+          "SqsParameters": {
+            "MessageGroupId": "messageGroupId"
+          }
+        }
+      ]
+    }));
+    test.done();
+  },
+
   'for cross-account targets': {
     'requires that the source stack specify a concrete account'(test: Test) {
       const app = new cdk.App();
