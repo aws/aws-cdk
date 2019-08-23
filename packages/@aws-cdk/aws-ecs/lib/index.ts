@@ -20,8 +20,8 @@ export * from './images/repository';
 export * from './images/ecr';
 
 export * from './log-drivers/aws-log-driver';
-export * from './log-drivers/log-driver';
 export * from './log-drivers/generic-log-driver';
+export * from './log-drivers/log-driver';
 
 // AWS::ECS CloudFormation Resources:
 //

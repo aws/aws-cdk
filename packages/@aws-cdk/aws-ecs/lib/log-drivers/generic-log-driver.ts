@@ -40,12 +40,7 @@ export class GenericLogDriver extends LogDriver {
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     this.logDriver = this.props.logDriver;
-
-    if (this.props) {
-      this.options = this.props.options || {};
-    } else {
-      this.options = {};
-    }
+    this.options = this.props.options || {};
 
     return {
       logDriver: this.logDriver,
