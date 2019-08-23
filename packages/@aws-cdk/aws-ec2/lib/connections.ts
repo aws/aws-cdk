@@ -122,7 +122,7 @@ export class Connections implements IConnectable {
   /**
    * Allow connections to the peer on the given port
    */
-  public allowTo(other: IConnectable, portRange: Port, description?: string, bidirectional = true) {
+  public allowTo(other: IConnectable, portRange: Port, description?: string) {
     if (this.skip) { return; }
 
     const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
@@ -131,9 +131,6 @@ export class Connections implements IConnectable {
         securityGroup.addEgressRule(rule, portRange, description, remoteRule);
       });
     });
-    if (!bidirectional) {
-      return;
-    }
 
     this.skip = true;
     other.connections.remoteRule = true;
@@ -148,7 +145,7 @@ export class Connections implements IConnectable {
   /**
    * Allow connections from the peer on the given port
    */
-  public allowFrom(other: IConnectable, portRange: Port, description?: string, bidirectional = true) {
+  public allowFrom(other: IConnectable, portRange: Port, description?: string) {
     if (this.skip) { return; }
 
     const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
@@ -157,10 +154,6 @@ export class Connections implements IConnectable {
         securityGroup.addIngressRule(rule, portRange, description, remoteRule);
       });
     });
-
-    if (!bidirectional) {
-      return;
-    }
 
     this.skip = true;
     other.connections.remoteRule = true;
