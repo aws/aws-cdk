@@ -859,6 +859,8 @@
           }
         },
         "SchedulingStrategy": "REPLICA",
+        "PropagateTags": "SERVICE",
+        "EnableECSManagedTags": true,
         "ServiceRegistries": [
           {
             "RegistryArn": {
