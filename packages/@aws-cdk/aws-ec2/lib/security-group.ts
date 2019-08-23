@@ -229,7 +229,7 @@ export interface SecurityGroupImportOptions {
    * @experimental
    * @default true
    */
-  allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean;
 }
 
 /**
