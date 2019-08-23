@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
-import { GenericLogDriver, GenericLogDriverProps } from './generic-log-driver';
+import { GenericLogDriver } from './generic-log-driver';
 
 /**
  * The base class for log drivers.
@@ -17,36 +17,36 @@ export abstract class LogDriver {
   /**
    * Creates a journald log driver configuration.
    */
-  public static journald(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'journald', options: props.options || {} });
+  public static journald(props?: { [key: string]: string }): LogDriver {
+    return new GenericLogDriver({ logDriver: 'journald', options: props || {} });
   }
 
   /**
    * Creates a syslog log driver configuration.
    */
-  public static syslog(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'syslog', options: props.options || {} });
+  public static syslog(props?: { [key: string]: string }): LogDriver {
+    return new GenericLogDriver({ logDriver: 'syslog', options: props || {} });
   }
 
   /**
    * Creates a gelf log driver configuration.
    */
-  public static gelf(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'syslog', options: props.options || {} });
+  public static gelf(props?: { [key: string]: string }): LogDriver {
+    return new GenericLogDriver({ logDriver: 'syslog', options: props || {} });
   }
 
   /**
    * Creates a fluentd log driver configuration.
    */
-  public static fluentd(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'fluentd', options: props.options || {} });
+  public static fluentd(props?: { [key: string]: string }): LogDriver {
+    return new GenericLogDriver({ logDriver: 'fluentd', options: props || {} });
   }
 
   /**
    * Creates a splunk log driver configuration.
    */
-  public static splunk(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'splunk', options: props.options || {} });
+  public static splunk(props?: { [key: string]: string }): LogDriver {
+    return new GenericLogDriver({ logDriver: 'splunk', options: props || {} });
   }
 
   /**

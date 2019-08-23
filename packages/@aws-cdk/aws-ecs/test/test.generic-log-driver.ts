@@ -88,6 +88,32 @@ export = {
     test.done();
   },
 
+  "create a journald log driver using journald with options"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDriver.journald({
+        tag: 'hello'
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'journald',
+            Options: {
+              tag: 'hello'
+            }
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   "create a syslog log driver using syslog"(test: Test) {
     // WHEN
     td.addContainer('Container', {

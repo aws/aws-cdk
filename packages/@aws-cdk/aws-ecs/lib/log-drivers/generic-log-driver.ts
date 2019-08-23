@@ -3,16 +3,6 @@ import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
 
 /**
- * The configuration to use when creating a log driver.
- */
-export interface GenericLogDriverProps {
-  /**
-   * The configuration options to send to the log driver.
-   */
-  readonly options?: { [key: string]: any }
-}
-
-/**
  * A log driver that sends log information to CloudWatch Logs.
  */
 export class GenericLogDriver extends LogDriver {
@@ -50,7 +40,7 @@ export class GenericLogDriver extends LogDriver {
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     this.logDriver = this.props.logDriver;
-    this.options = this.props.options;
+    this.options = this.props.options
 
     return {
       logDriver: this.logDriver,
