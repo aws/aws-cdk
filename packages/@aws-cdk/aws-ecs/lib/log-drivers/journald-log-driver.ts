@@ -1,7 +1,8 @@
 import { Construct } from '@aws-cdk/core';
-import { removeEmpty } from './aws-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
+import { removeEmpty } from './aws-log-driver';
+
 
 /**
  * Specifies the journald log driver configuration options.
