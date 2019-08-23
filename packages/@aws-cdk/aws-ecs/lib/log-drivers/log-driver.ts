@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
-import { JournaldLogDriver, JournaldLogDriverProps } from './journald-log-driver';
+import { GenericLogDriver, GenericLogDriverProps } from './generic-log-driver';
 
 /**
  * The base class for log drivers.
@@ -15,10 +15,38 @@ export abstract class LogDriver {
   }
 
   /**
-   * Creates a log driver configuration that sends log information to journald.
+   * Creates a journald log driver configuration.
    */
-  public static journaldLogs(props?: JournaldLogDriverProps): LogDriver {
-    return new JournaldLogDriver(props);
+  public static journald(props?: GenericLogDriverProps): LogDriver {
+    return new GenericLogDriver({ logDriver: 'journald', options: props.options });
+  }
+
+  /**
+   * Creates a syslog log driver configuration.
+   */
+  public static syslog(props?: GenericLogDriverProps): LogDriver {
+    return new GenericLogDriver({ logDriver: 'syslog', options: props.options });
+  }
+
+  /**
+   * Creates a gelf log driver configuration.
+   */
+  public static gelf(props?: GenericLogDriverProps): LogDriver {
+    return new GenericLogDriver({ logDriver: 'syslog', options: props.options });
+  }
+
+  /**
+   * Creates a fluentd log driver configuration.
+   */
+  public static fluentd(props?: GenericLogDriverProps): LogDriver {
+    return new GenericLogDriver({ logDriver: 'fluentd', options: props.options });
+  }
+
+  /**
+   * Creates a splunk log driver configuration.
+   */
+  public static splunk(props?: GenericLogDriverProps): LogDriver {
+    return new GenericLogDriver({ logDriver: 'splunk', options: props.options });
   }
 
   /**
