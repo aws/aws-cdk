@@ -15,7 +15,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-This library provides higher-level ECS constructs which follow common architectural patterns. It contains:
+This library provides higher-level Amazon ECS constructs which follow common architectural patterns. It contains:
 
 * Load Balanced Services
 * Queue Processing Services
@@ -23,7 +23,7 @@ This library provides higher-level ECS constructs which follow common architectu
 
 ## Load Balanced Services
 
-To define a service that is behind a load balancer, instantiate one of the following: 
+To define an Amazon ECS service that is behind a load balancer, instantiate one of the following: 
 
 * `LoadBalancedEc2Service`
 
@@ -50,6 +50,10 @@ const loadBalancedFargateService = new ecsPatterns.LoadBalancedFargateService(st
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 ```
+
+The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `cluster`. If you deploy multiple services the CDK will only create one cluster per VPC.
+
+If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
 
 ## Queue Processing Services
 

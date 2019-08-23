@@ -78,7 +78,7 @@ export = testCase({
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
             "Principal": {
-              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "lambda.amazonaws.com"
             }
             }
           ],
@@ -196,9 +196,21 @@ export = testCase({
     },
 
   },
+
+  '.ref returns the intrinsic reference (physical name)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const res = new TestCustomResource(stack, 'myResource');
+
+    // THEN
+    test.deepEqual(stack.resolve(res.resource.ref), { Ref: 'myResourceC6A188A9' });
+    test.done();
+  }
 });
 
 class TestCustomResource extends cdk.Construct {
+  public readonly resource: CustomResource;
+
   constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
@@ -210,7 +222,7 @@ class TestCustomResource extends cdk.Construct {
       timeout: cdk.Duration.minutes(5),
     });
 
-    new CustomResource(this, 'Resource', {
+    this.resource = new CustomResource(this, 'Resource', {
       ...opts,
       provider: CustomResourceProvider.lambda(singletonLambda),
     });

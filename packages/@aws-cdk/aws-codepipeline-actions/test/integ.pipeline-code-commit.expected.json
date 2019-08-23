@@ -3,8 +3,7 @@
     "MyRepoF4F48043": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "my-repo",
-        "Triggers": []
+        "RepositoryName": "my-repo"
       }
     },
     "MyRepoawscdkcodepipelinecodecommitPipelineF780CA18EventRuleC207C969": {
@@ -90,7 +89,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -189,17 +189,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -321,7 +311,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": false
                 },
-                "InputArtifacts": [],
                 "Name": "source",
                 "OutputArtifacts": [
                   {
@@ -348,9 +337,7 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "manual",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelinebuildmanualCodePipelineActionRoleE3306AB0",
@@ -506,17 +493,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               }
             }
           ],

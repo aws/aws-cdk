@@ -1,7 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { resourceArnSuffix } from './resource-arn-suffix';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
 /**
@@ -20,9 +21,13 @@ export interface SagemakerTransformProps {
     readonly role?: iam.IRole;
 
     /**
-     * Specify if the task is synchronous or asychronous.
+     * The service integration pattern indicates different ways to call SageMaker APIs.
+     *
+     * The valid value is either FIRE_AND_FORGET or SYNC.
+     *
+     * @default FIRE_AND_FORGET
      */
-    readonly synchronous?: boolean;
+    readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
     /**
      * Number of records to include in a mini-batch for an HTTP inference request.
@@ -32,7 +37,7 @@ export interface SagemakerTransformProps {
     /**
      * Environment variables to set in the Docker container.
      */
-    readonly environment?: {[key: string]: any};
+    readonly environment?: {[key: string]: string};
 
     /**
      * Maximum number of parallel requests that can be sent to each instance in a transform job.
@@ -52,7 +57,7 @@ export interface SagemakerTransformProps {
     /**
      * Tags to be applied to the train job.
      */
-    readonly tags?: {[key: string]: any};
+    readonly tags?: {[key: string]: string};
 
     /**
      * Dataset to be transformed and the Amazon S3 location where it is stored.
@@ -78,13 +83,6 @@ export interface SagemakerTransformProps {
 export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
 
     /**
-     * The execution role for the Sagemaker training job.
-     *
-     * @default new role for Amazon SageMaker to assume is automatically created.
-     */
-    public readonly role: iam.IRole;
-
-    /**
      * Dataset to be transformed and the Amazon S3 location where it is stored.
      */
     private readonly transformInput: TransformInput;
@@ -93,16 +91,25 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
      * ML compute instances for the transform job.
      */
     private readonly transformResources: TransformResources;
+    private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+    private _role?: iam.IRole;
 
-    constructor(scope: Construct, private readonly props: SagemakerTransformProps) {
+    constructor(private readonly props: SagemakerTransformProps) {
+        this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+        const supportedPatterns = [
+            sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+            sfn.ServiceIntegrationPattern.SYNC
+        ];
+
+        if (!supportedPatterns.includes(this.integrationPattern)) {
+            throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SageMaker.`);
+        }
 
         // set the sagemaker role or create new one
-        this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
-            assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-            ]
-        });
+        if (props.role) {
+            this._role = props.role;
+        }
 
         // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
         this.transformInput = (props.transformInput.transformDataSource.s3DataSource.s3DataType) ? (props.transformInput) :
@@ -123,11 +130,33 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
+        // create new role if doesn't exist
+        if (this._role === undefined) {
+            this._role = new iam.Role(task, 'SagemakerTransformRole', {
+                assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+                managedPolicies: [
+                    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
+                ]
+            });
+        }
+
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + (this.props.synchronous ? '.sync' : ''),
+          resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + resourceArnSuffix.get(this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
+    }
+
+    /**
+     * The execution role for the Sagemaker training job.
+     *
+     * Only available after task has been added to a state machine.
+     */
+    public get role(): iam.IRole {
+        if (this._role === undefined) {
+            throw new Error(`role not available yet--use the object in a Task first`);
+        }
+        return this._role;
     }
 
     private renderParameters(): {[key: string]: any} {
@@ -216,7 +245,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
             })
         ];
 
-        if (this.props.synchronous) {
+        if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
             policyStatements.push(new iam.PolicyStatement({
                 actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
                 resources: [stack.formatArn({

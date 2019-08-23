@@ -133,7 +133,7 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline(''),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });
@@ -262,17 +262,7 @@ export = {
             },
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'ses.',
-                    {
-                      Ref: 'AWS::URLSuffix'
-                    }
-                  ]
-                ]
-              }
+              Service: "ses.amazonaws.com"
             },
             Resource: {
               'Fn::Join': [
@@ -310,7 +300,8 @@ export = {
               'kms:Get*',
               'kms:Delete*',
               'kms:ScheduleKeyDeletion',
-              'kms:CancelKeyDeletion'
+              'kms:CancelKeyDeletion',
+              "kms:GenerateDataKey"
             ],
             Effect: 'Allow',
             Principal: {
@@ -351,17 +342,7 @@ export = {
             },
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'ses.',
-                    {
-                      Ref: 'AWS::URLSuffix'
-                    }
-                  ]
-                ]
-              }
+              Service: "ses.amazonaws.com"
             },
             Resource: '*'
           }

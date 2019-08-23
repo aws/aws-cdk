@@ -1,4 +1,4 @@
-import { Mode, SDK } from '../api';
+import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
@@ -6,7 +6,7 @@ import { ContextProviderPlugin } from './provider';
  * Plugin to retrieve the Availability Zones for the current account
  */
 export class AZContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SDK) {
+  constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: {[key: string]: any}) {

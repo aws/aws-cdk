@@ -137,8 +137,8 @@ export class Stage implements IStage {
   }
 
   private renderAction(action: FullActionDescriptor): CfnPipeline.ActionDeclarationProperty {
-    const outputArtifacts = this.renderArtifacts(action.outputs);
-    const inputArtifacts = this.renderArtifacts(action.inputs);
+    const outputArtifacts = cdk.Lazy.anyValue({ produce: () =>  this.renderArtifacts(action.outputs) }, { omitEmptyArray: true});
+    const inputArtifacts = cdk.Lazy.anyValue({ produce: () =>  this.renderArtifacts(action.inputs)}, { omitEmptyArray: true});
     return {
       name: action.actionName,
       inputArtifacts,

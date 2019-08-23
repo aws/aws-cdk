@@ -27,7 +27,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
+              Principal: { Service: "lambda.amazonaws.com" } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -61,7 +61,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
+              Principal: { Service: "lambda.amazonaws.com" } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // tslint:disable-next-line:max-line-length
@@ -133,7 +133,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "lambda.amazonaws.com"
               }
             }
             ],
@@ -186,15 +186,16 @@ export = {
       test.done();
     },
 
-    'fails if the principal is not a service or account principals'(test: Test) {
+    'fails if the principal is not a service, account or arn principal'(test: Test) {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
 
-      test.throws(() => fn.addPermission('F1', { principal: new iam.ArnPrincipal('just:arn') }),
+      test.throws(() => fn.addPermission('F1', { principal: new iam.OrganizationPrincipal('org') }),
         /Invalid principal type for Lambda permission statement/);
 
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
+      fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
 
       test.done();
     },
@@ -258,7 +259,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyLambda', {
-      code: lambda.Code.asset(path.join(__dirname, 'my-lambda-handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_6
     });
@@ -310,7 +311,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+                "Service": "lambda.amazonaws.com"
               }
               }
             ],
@@ -421,7 +422,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+                "Service": "lambda.amazonaws.com"
               }
               }
             ],
@@ -531,7 +532,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "lambda.amazonaws.com"
               }
             }
             ],
@@ -605,7 +606,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+                "Service": "lambda.amazonaws.com"
               }
               }
             ],
@@ -715,7 +716,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "lambda.amazonaws.com"
               }
             }
             ],
@@ -993,7 +994,7 @@ export = {
       assumedBy: new iam.AccountPrincipal('1234'),
     });
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1022,7 +1023,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1050,7 +1051,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1074,11 +1075,39 @@ export = {
     test.done();
   },
 
+  'grantInvoke with an arn principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+    const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
+
+    // WHEN
+    fn.grantInvoke(account);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: 'arn:aws:iam::123456789012:role/someRole'
+    }));
+
+    test.done();
+  },
+
   'Can use metricErrors on a lambda Function'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1099,7 +1128,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('xxx'),
+      code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
     });
@@ -1136,7 +1165,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
+              Principal: { Service: "lambda.amazonaws.com" } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1166,7 +1195,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers: [layer],
                   runtime: lambda.Runtime.NODEJS_6_10,
-                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
                 /nodejs6.10 is not in \[nodejs8.10\]/);
@@ -1186,7 +1215,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers,
                   runtime: lambda.Runtime.NODEJS_8_10,
-                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
                 /Unable to add layer:/);
@@ -1258,7 +1287,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
+              Principal: { Service: "lambda.amazonaws.com" } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1291,7 +1320,7 @@ export = {
 
     // WHEN
     new lambda.Function(stack, 'fn', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.bam',
       events: [

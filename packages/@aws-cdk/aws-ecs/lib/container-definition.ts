@@ -1,4 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
@@ -7,6 +9,36 @@ import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 /**
+ * A secret environment variable.
+ */
+export abstract class Secret {
+  /**
+   * Creates an environment variable value from a parameter stored in AWS
+   * Systems Manager Parameter Store.
+   */
+  public static fromSsmParameter(parameter: ssm.IParameter): Secret {
+    return {
+      arn: parameter.parameterArn,
+      grantRead: grantee => parameter.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   */
+  public static fromSecretsManager(secret: secretsmanager.ISecret): Secret {
+    return {
+      arn: secret.secretArn,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  public abstract readonly arn: string;
+  public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
+}
+
+/*
  * The options for creating a container definition.
  */
 export interface ContainerDefinitionOptions {
@@ -88,6 +120,13 @@ export interface ContainerDefinitionOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * The secret environment variables to pass to the container.
+   *
+   * @default - No secret environment variables.
+   */
+  readonly secrets?: { [key: string]: Secret };
 
   /**
    * Specifies whether the container is marked essential.
@@ -194,6 +233,13 @@ export interface ContainerDefinitionOptions {
    * @default - No Linux paramters.
    */
   readonly linuxParameters?: LinuxParameters;
+
+  /**
+   * The number of GPUs assigned to the container.
+   *
+   * @default - No GPUs assigned.
+   */
+  readonly gpuCount?: number;
 }
 
 /**
@@ -220,23 +266,28 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * The mount points for data volumes in your container.
    */
-  public readonly mountPoints = new Array<MountPoint>();
+   public readonly mountPoints = new Array<MountPoint>();
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-  public readonly portMappings = new Array<PortMapping>();
+   public readonly portMappings = new Array<PortMapping>();
 
-  /**
-   * The data volumes to mount from another container in the same task definition.
-   */
-  public readonly volumesFrom = new Array<VolumeFrom>();
+   /**
+    * The data volumes to mount from another container in the same task definition.
+    */
+   public readonly volumesFrom = new Array<VolumeFrom>();
 
-  /**
-   * An array of ulimits to set in the container.
-   */
-  public readonly ulimits = new Array<Ulimit>();
+   /**
+    * An array of ulimits to set in the container.
+    */
+   public readonly ulimits = new Array<Ulimit>();
+
+   /**
+    * An array dependencies defined for container startup and shutdown.
+    */
+   public readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Specifies whether the container will be marked essential.
@@ -249,6 +300,11 @@ export class ContainerDefinition extends cdk.Construct {
    * If this parameter isomitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
+
+   /**
+    * The name of this container
+    */
+  public readonly containerName: string;
 
   /**
    * Whether there was at least one memory limit specified in this definition
@@ -274,10 +330,16 @@ export class ContainerDefinition extends cdk.Construct {
    */
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
+    if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
+      if (props.memoryLimitMiB < props.memoryReservationMiB) {
+        throw new Error(`MemoryLimitMiB should not be less than MemoryReservationMiB.`);
+      }
+    }
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
+    this.containerName = this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -297,9 +359,9 @@ export class ContainerDefinition extends cdk.Construct {
       throw new Error(`You must use network mode Bridge to add container links.`);
     }
     if (alias !== undefined) {
-      this.links.push(`${container.node.id}:${alias}`);
+      this.links.push(`${container.containerName}:${alias}`);
     } else {
-      this.links.push(`${container.node.id}`);
+      this.links.push(`${container.containerName}`);
     }
   }
 
@@ -365,6 +427,13 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
+   * This method adds one or more container dependencies to the container.
+   */
+  public addContainerDependencies(...containerDependencies: ContainerDependency[]) {
+    this.containerDependencies.push(...containerDependencies);
+  }
+
+  /**
    * This method adds one or more volumes to the container.
    */
   public addVolumesFrom(...volumesFrom: VolumeFrom[]) {
@@ -385,7 +454,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -404,7 +473,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
     return defaultPortMapping.containerPort;
@@ -412,12 +481,15 @@ export class ContainerDefinition extends cdk.Construct {
 
   /**
    * Render this container definition to a CloudFormation object
+   *
+   * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
    */
-  public renderContainerDefinition(): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
+      dependsOn: cdk.Lazy.anyValue({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
@@ -428,22 +500,33 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: this.mountPoints.map(renderMountPoint),
-      name: this.node.id,
-      portMappings: this.portMappings.map(renderPortMapping),
+      mountPoints: cdk.Lazy.anyValue({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
+      name: this.containerName,
+      portMappings: cdk.Lazy.anyValue({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
-      ulimits: this.ulimits.map(renderUlimit),
+      ulimits: cdk.Lazy.anyValue({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
-      volumesFrom: this.volumesFrom.map(renderVolumeFrom),
+      volumesFrom: cdk.Lazy.anyValue({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      secrets: this.props.secrets && Object.entries(this.props.secrets)
+        .map(([k, v]) => {
+          if (taskDefinition) {
+            v.grantRead(taskDefinition.obtainExecutionRole());
+          }
+          return {
+            name: k,
+            valueFrom: v.arn
+          };
+        }),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
-      links: this.links,
+      links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
+      resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
     };
   }
 }
@@ -537,6 +620,14 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   return hcCommand.concat(cmd);
 }
 
+function renderResourceRequirements(gpuCount: number): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+  if (gpuCount === 0) { return undefined; }
+  return [{
+    type: 'GPU',
+    value: gpuCount.toString(),
+  }];
+}
+
 /**
  * The ulimit settings to pass to the container.
  *
@@ -587,6 +678,58 @@ function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
     name: ulimit.name,
     softLimit: ulimit.softLimit,
     hardLimit: ulimit.hardLimit,
+  };
+}
+/**
+ * The details of a dependency on another container in the task definition.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html
+ */
+export interface ContainerDependency {
+  /**
+   * The container to depend on.
+   */
+  readonly container: ContainerDefinition;
+
+  /**
+   * The state the container needs to be in to satisfy the dependency and proceed with startup.
+   * Valid values are ContainerDependencyCondition.START, ContainerDependencyCondition.COMPLETE,
+   * ContainerDependencyCondition.SUCCESS and ContainerDependencyCondition.HEALTHY.
+   *
+   * @default ContainerDependencyCondition.HEALTHY
+   */
+  readonly condition?: ContainerDependencyCondition;
+}
+
+export enum ContainerDependencyCondition {
+  /**
+   * This condition emulates the behavior of links and volumes today.
+   * It validates that a dependent container is started before permitting other containers to start.
+   */
+  START = 'START',
+
+  /**
+   * This condition validates that a dependent container runs to completion (exits) before permitting other containers to start.
+   * This can be useful for nonessential containers that run a script and then exit.
+   */
+  COMPLETE = 'COMPLETE',
+
+  /**
+   * This condition is the same as COMPLETE, but it also requires that the container exits with a zero status.
+   */
+  SUCCESS = 'SUCCESS',
+
+  /**
+   * This condition validates that the dependent container passes its Docker health check before permitting other containers to start.
+   * This requires that the dependent container has health checks configured. This condition is confirmed only at task startup.
+   */
+  HEALTHY = 'HEALTHY',
+}
+
+function renderContainerDependency(containerDependency: ContainerDependency): CfnTaskDefinition.ContainerDependencyProperty {
+  return {
+    containerName: containerDependency.container.containerName,
+    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY
   };
 }
 

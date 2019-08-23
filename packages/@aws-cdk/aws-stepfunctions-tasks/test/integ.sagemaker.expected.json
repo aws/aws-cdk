@@ -18,7 +18,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -50,7 +51,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "SagemakerRole5FDB64E1",
+                    "TrainTaskSagemakerRole0A9B1CDD",
                     "Arn"
                   ]
                 }
@@ -67,7 +68,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "SagemakerRole5FDB64E1",
+                    "TrainTaskSagemakerRole0A9B1CDD",
                     "Arn"
                   ]
                 }
@@ -78,8 +79,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TrainingData3FDB6D34": {
       "Type": "AWS::S3::Bucket",
@@ -100,10 +101,10 @@
           ]
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
-    "SagemakerRole5FDB64E1": {
+    "TrainTaskSagemakerRole0A9B1CDD": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -112,17 +113,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "sagemaker.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "sagemaker.amazonaws.com"
               }
             }
           ],
@@ -152,7 +143,7 @@
         ]
       }
     },
-    "SagemakerRoleDefaultPolicy9DD21C3C": {
+    "TrainTaskSagemakerRoleDefaultPolicyA28F72FA": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -247,10 +238,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "SagemakerRoleDefaultPolicy9DD21C3C",
+        "PolicyName": "TrainTaskSagemakerRoleDefaultPolicyA28F72FA",
         "Roles": [
           {
-            "Ref": "SagemakerRole5FDB64E1"
+            "Ref": "TrainTaskSagemakerRole0A9B1CDD"
           }
         ]
       }
@@ -331,7 +322,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "SagemakerRole5FDB64E1",
+                  "TrainTaskSagemakerRole0A9B1CDD",
                   "Arn"
                 ]
               }
@@ -357,11 +348,11 @@
               "{\"StartAt\":\"TrainTask\",\"States\":{\"TrainTask\":{\"End\":true,\"Parameters\":{\"TrainingJobName\":\"MyTrainingJob\",\"RoleArn\":\"",
               {
                 "Fn::GetAtt": [
-                  "SagemakerRole5FDB64E1",
+                  "TrainTaskSagemakerRole0A9B1CDD",
                   "Arn"
                 ]
               },
-              "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
+              "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"AlgorithmName\":\"GRADIENT_ASCENT\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
               {
                 "Ref": "AWS::Region"
               },

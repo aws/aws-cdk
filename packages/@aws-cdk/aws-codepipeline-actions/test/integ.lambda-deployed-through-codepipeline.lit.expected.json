@@ -18,7 +18,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -190,17 +191,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -352,7 +343,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": false
                 },
-                "InputArtifacts": [],
                 "Name": "CdkCode_Source",
                 "OutputArtifacts": [
                   {
@@ -384,7 +374,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": false
                 },
-                "InputArtifacts": [],
                 "Name": "LambdaCode_Source",
                 "OutputArtifacts": [
                   {
@@ -500,7 +489,6 @@
                   }
                 ],
                 "Name": "Lambda_CFN_Deploy",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineDeployLambdaCFNDeployCodePipelineActionRoleF8A74488",
@@ -769,17 +757,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               }
             }
           ],
@@ -1096,17 +1074,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "cloudformation.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "cloudformation.amazonaws.com"
               }
             }
           ],
@@ -1138,8 +1106,7 @@
     "CdkCodeRepo7D2EC742": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "CdkCodeRepo",
-        "Triggers": []
+        "RepositoryName": "CdkCodeRepo"
       }
     },
     "CdkCodeRepoPipelineStackPipeline9DB740AFEventRule97707F9A": {
@@ -1210,8 +1177,7 @@
     "LambdaCodeRepoE08DD409": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "LambdaCodeRepo",
-        "Triggers": []
+        "RepositoryName": "LambdaCodeRepo"
       }
     },
     "LambdaCodeRepoPipelineStackPipeline9DB740AFEventRule2C34743D": {
@@ -1288,17 +1254,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codebuild.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codebuild.amazonaws.com"
               }
             }
           ],
@@ -1461,17 +1417,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codebuild.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codebuild.amazonaws.com"
               }
             }
           ],

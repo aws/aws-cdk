@@ -357,7 +357,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -519,17 +518,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -718,17 +707,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "autoscaling.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "autoscaling.amazonaws.com"
               }
             }
           ],
@@ -804,17 +783,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -829,9 +798,7 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "Memory": 256,
-            "MountPoints": [],
             "Name": "frontend",
             "PortMappings": [
               {
@@ -839,9 +806,7 @@
                 "HostPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Family": "awsecsintegecsfrontendTD16AB905D",
@@ -854,8 +819,7 @@
             "frontendTDTaskRole638562A0",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "FrontendServiceBC94BA93": {
@@ -873,8 +837,9 @@
         },
         "DesiredCount": 1,
         "LaunchType": "EC2",
-        "LoadBalancers": [],
         "SchedulingStrategy": "REPLICA",
+        "PropagateTags": "SERVICE",
+        "EnableECSManagedTags": true,
         "ServiceRegistries": [
           {
             "ContainerName": "frontend",

@@ -25,14 +25,27 @@ export interface RoleProps {
    * If the configured and provided external IDs do not match, the
    * AssumeRole operation will fail.
    *
+   * @deprecated see {@link externalIds}
+   *
    * @default No external ID required
    */
   readonly externalId?: string;
 
   /**
+   * List of IDs that the role assumer needs to provide one of when assuming this role
+   *
+   * If the configured and provided external IDs do not match, the
+   * AssumeRole operation will fail.
+   *
+   * @default No external ID required
+   */
+  readonly externalIds?: string[];
+
+  /**
    * A list of managed policies associated with this role.
    *
-   * You can add managed policies later using `attachManagedPolicy(arn)`.
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */
@@ -55,6 +68,21 @@ export interface RoleProps {
    * @default /
    */
   readonly path?: string;
+
+  /**
+   * AWS supports permissions boundaries for IAM entities (users or roles).
+   * A permissions boundary is an advanced feature for using a managed policy
+   * to set the maximum permissions that an identity-based policy can grant to
+   * an IAM entity. An entity's permissions boundary allows it to perform only
+   * the actions that are allowed by both its identity-based policies and its
+   * permissions boundaries.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-permissionsboundary
+   * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+   *
+   * @default - No permissions boundary.
+   */
+  readonly permissionsBoundary?: IManagedPolicy;
 
   /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
@@ -195,6 +223,11 @@ export class Role extends Resource implements IRole {
    */
   public readonly policyFragment: PrincipalPolicyFragment;
 
+  /**
+   * Returns the permissions boundary attached to this role
+   */
+  public readonly permissionsBoundary?: IManagedPolicy;
+
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -204,9 +237,14 @@ export class Role extends Resource implements IRole {
       physicalName: props.roleName,
     });
 
-    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
-    this.managedPolicies.push(...props.managedPolicies || []);
+    const externalIds = props.externalIds || [];
+    if (props.externalId) {
+      externalIds.push(props.externalId);
+    }
 
+    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, externalIds);
+    this.managedPolicies.push(...props.managedPolicies || []);
+    this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
 
@@ -215,6 +253,7 @@ export class Role extends Resource implements IRole {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
+      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
     });
@@ -261,6 +300,7 @@ export class Role extends Resource implements IRole {
    * @param policy The the managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
   }
 
@@ -322,13 +362,13 @@ export interface IRole extends IIdentity {
   grantPassRole(grantee: IPrincipal): Grant;
 }
 
-function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
+function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   const statement = new PolicyStatement();
   statement.addPrincipals(principal);
   statement.addActions(principal.assumeRoleAction);
 
-  if (externalId !== undefined) {
-    statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });
+  if (externalIds.length) {
+    statement.addCondition('StringEquals', { 'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds });
   }
 
   const doc = new PolicyDocument();

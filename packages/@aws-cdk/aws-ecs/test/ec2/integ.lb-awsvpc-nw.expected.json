@@ -357,7 +357,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -519,17 +518,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -718,17 +707,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "autoscaling.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "autoscaling.amazonaws.com"
               }
             }
           ],
@@ -795,17 +774,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -820,18 +789,14 @@
           {
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
             "Memory": 256,
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Family": "awsecsintegTaskDef6FDFB69A",
@@ -844,8 +809,7 @@
             "TaskDefTaskRole1EDB4A67",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "ServiceD69D759B": {
@@ -895,7 +859,8 @@
           }
         },
         "SchedulingStrategy": "REPLICA",
-        "ServiceRegistries": []
+        "PropagateTags": "SERVICE",
+        "EnableECSManagedTags": true
       },
       "DependsOn": [
         "LBPublicListenerECSGroupD6A32205",
@@ -913,7 +878,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
@@ -943,7 +907,6 @@
     "LB8A12904C": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "LoadBalancerAttributes": [],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -972,7 +935,6 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awsecsintegLBC73915FE",
-        "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -1023,8 +985,7 @@
           "Ref": "LB8A12904C"
         },
         "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
+        "Protocol": "HTTP"
       }
     },
     "LBPublicListenerECSGroupD6A32205": {
@@ -1032,8 +993,6 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "Vpc8378EB38"
