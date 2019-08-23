@@ -21,7 +21,6 @@ test('Can create target groups with lambda targets', () => {
   expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
     Protocol: "HTTP",
-    TargetGroupAttributes: [],
     Targets: [
       { Id: "1.2.3.4" }
     ],
