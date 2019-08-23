@@ -176,7 +176,7 @@ export interface SubnetSelection {
   /**
    * If true, return at most one subnet per AZ
    *
-   * @defautl false
+   * @default false
    */
   readonly onePerAz?: boolean;
 }

@@ -420,3 +420,25 @@ A VPC endpoint enables you to privately connect your VPC to supported AWS servic
 Endpoints are virtual devices. They are horizontally scaled, redundant, and highly available VPC components that allow communication between instances in your VPC and services without imposing availability risks or bandwidth constraints on your network traffic.
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
+
+### Bastion Hosts
+A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
+You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
+feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
+
+A default bastion host for use via SSM can be configured like:
+```ts
+const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
+```
+
+If you want to connect from the internet using SSH, you need to place the host into a public subnet. You can then configure allowed source hosts.
+```ts
+const host = new ec2.BastionHostLinux(this, 'BastionHost', { 
+  vpc,
+  subnetSelection: { subnetType: SubnetType.PUBLIC },
+});
+host.allowSshAccessFrom(Peer.ipv4('1.2.3.4/32'));
+```
+
+As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
+with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
