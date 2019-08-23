@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
+import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag, Token, withResolved } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -464,16 +464,23 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
     const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
 
-    if (desiredCapacity < minCapacity || desiredCapacity > maxCapacity) {
-      throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
-    }
+    withResolved(desiredCapacity, minCapacity, (desired, min) => {
+      if (desired < min) {
+        throw new Error(`Should have minCapacity (${min}) <= desiredCapacity (${desired})`);
+      }
+    });
+    withResolved(desiredCapacity, maxCapacity, (desired, max) => {
+      if (max < desired) {
+        throw new Error(`Should have desiredCapacity (${desired}) <= maxCapacity (${max})`);
+      }
+    });
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
-      minSize: minCapacity.toString(),
-      maxSize: maxCapacity.toString(),
-      desiredCapacity: desiredCapacity.toString(),
+      minSize: stringifyNumber(minCapacity),
+      maxSize: stringifyNumber(maxCapacity),
+      desiredCapacity: stringifyNumber(desiredCapacity),
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
@@ -1056,4 +1063,15 @@ export enum EbsDeviceVolumeType {
    * Cold HDD
    */
   SC1 = 'sc1',
+}
+
+/**
+ * Stringify a number directly or lazily if it's a Token
+ */
+function stringifyNumber(x: number) {
+  if (Token.isUnresolved(x)) {
+    return Lazy.stringValue({ produce: context => `${context.resolve(x)}` });
+  } else {
+    return `${x}`;
+  }
 }
