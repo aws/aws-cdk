@@ -3,8 +3,7 @@
     "MyRepoF4F48043": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "MyIntegTestTempRepo",
-        "Triggers": []
+        "RepositoryName": "MyIntegTestTempRepo"
       }
     },
     "MyRepoawscdkcodepipelinecodebuildmultipleinputsoutputsPipeline314D3A85EventRule9F75D675": {
@@ -277,7 +276,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": false
                 },
-                "InputArtifacts": [],
                 "Name": "Source1",
                 "OutputArtifacts": [
                   {
@@ -305,7 +303,6 @@
                   },
                   "S3ObjectKey": "some/path"
                 },
-                "InputArtifacts": [],
                 "Name": "Source2",
                 "OutputArtifacts": [
                   {

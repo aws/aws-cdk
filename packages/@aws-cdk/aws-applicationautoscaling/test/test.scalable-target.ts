@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/core');
-import { Duration } from '@aws-cdk/core';
+import { Duration, Lazy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import appscaling = require('../lib');
 import { createScalableTarget } from './util';
@@ -26,6 +26,31 @@ export = {
       ResourceId: 'test:this/test',
       MinCapacity: 1,
       MaxCapacity: 20,
+    }));
+
+    test.done();
+  },
+
+  'validation does not fail when using Tokens'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new appscaling.ScalableTarget(stack, 'Target', {
+      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
+      scalableDimension: 'test:TestCount',
+      resourceId: 'test:this/test',
+      minCapacity: Lazy.numberValue({ produce: () => 10 }),
+      maxCapacity: Lazy.numberValue({ produce: () => 1 }),
+    });
+
+    // THEN: no exception
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      ServiceNamespace: 'dynamodb',
+      ScalableDimension: 'test:TestCount',
+      ResourceId: 'test:this/test',
+      MinCapacity: 10,
+      MaxCapacity: 1,
     }));
 
     test.done();

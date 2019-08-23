@@ -115,7 +115,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }),
+      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true}),
       protocol,
       port,
       sslPolicy: props.sslPolicy,

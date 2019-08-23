@@ -486,6 +486,38 @@ export = {
 
   },
 
+  'Given GPU count parameter': {
+    'will add resource requirements to container definition'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        gpuCount: 4,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            ResourceRequirements: [
+              {
+                Type: "GPU",
+                Value: "4"
+              }
+            ]
+          }
+        ]
+      }));
+
+      test.done();
+    },
+  },
+
   'can add secret environment variables to the container definition'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -913,12 +945,7 @@ export = {
           {
             Image: 'test',
             LinuxParameters: {
-              Capabilities: {
-                Add: [],
-                Drop: []
-              },
-              Devices: [],
-              Tmpfs: []
+              Capabilities: {},
             }
           }
         ]
@@ -957,8 +984,6 @@ export = {
                 Add: ["ALL"],
                 Drop: ["KILL"]
               },
-              Devices: [],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -1001,8 +1026,6 @@ export = {
                 Add: ["ALL"],
                 Drop: ["SETUID"]
               },
-              Devices: [],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -1045,7 +1068,6 @@ export = {
                   HostPath: "a/b/c"
                 }
               ],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -1084,7 +1106,6 @@ export = {
           {
             Image: 'test',
             LinuxParameters: {
-              Devices: [],
               Tmpfs: [
                 {
                   ContainerPath: "a/b/c",
@@ -1101,6 +1122,5 @@ export = {
       test.done();
     }
   },
-
   // render extra hosts test
 };
