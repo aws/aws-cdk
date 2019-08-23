@@ -61,6 +61,12 @@ export interface RuleTargetConfig {
   readonly runCommandParameters?: CfnRule.RunCommandParametersProperty;
 
   /**
+   * Parameters used when the FIFO sqs queue is used an event target by the
+   * rule.
+   */
+  readonly sqsParameters?: CfnRule.SqsParametersProperty;
+
+  /**
    * What input to send to the event target
    *
    * @default the entire event
