@@ -6,7 +6,10 @@ import { LogDriver, LogDriverConfig } from "./log-driver";
  * The configuration to use when creating a log driver.
  */
 export interface GenericLogDriverProps {
-  options?: { [key: string]: any }
+  /**
+   * The configuration options to send to the log driver.
+   */
+  readonly options?: { [key: string]: any }
 }
 
 /**
@@ -22,12 +25,12 @@ export class GenericLogDriver extends LogDriver {
    * [Using the awslogs Log Driver](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html)
    * in the Amazon Elastic Container Service Developer Guide.
    */
-  public logDriver?: string;
+  public logDriver: string;
 
   /**
    * The configuration options to send to the log driver.
    */
-  public options?: { [key: string]: string };
+  public options: { [key: string]: string };
 
   /**
    * Constructs a new instance of the GenericLogDriver class.
@@ -45,14 +48,9 @@ export class GenericLogDriver extends LogDriver {
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     this.logDriver = this.props.logDriver;
-
-    if (this.props) {
-      this.options = this.props.options || {};
-    } else {
-      this.options = {};
-    }
+    this.options = this.props.options;
 
     return {
       logDriver: this.logDriver,

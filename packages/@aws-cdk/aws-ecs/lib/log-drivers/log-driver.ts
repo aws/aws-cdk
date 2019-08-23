@@ -18,35 +18,35 @@ export abstract class LogDriver {
    * Creates a journald log driver configuration.
    */
   public static journald(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'journald', options: props.options });
+    return new GenericLogDriver({ logDriver: 'journald', options: props.options || {} });
   }
 
   /**
    * Creates a syslog log driver configuration.
    */
   public static syslog(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'syslog', options: props.options });
+    return new GenericLogDriver({ logDriver: 'syslog', options: props.options || {} });
   }
 
   /**
    * Creates a gelf log driver configuration.
    */
   public static gelf(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'syslog', options: props.options });
+    return new GenericLogDriver({ logDriver: 'syslog', options: props.options || {} });
   }
 
   /**
    * Creates a fluentd log driver configuration.
    */
   public static fluentd(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'fluentd', options: props.options });
+    return new GenericLogDriver({ logDriver: 'fluentd', options: props.options || {} });
   }
 
   /**
    * Creates a splunk log driver configuration.
    */
   public static splunk(props?: GenericLogDriverProps): LogDriver {
-    return new GenericLogDriver({ logDriver: 'splunk', options: props.options });
+    return new GenericLogDriver({ logDriver: 'splunk', options: props.options || {} });
   }
 
   /**
