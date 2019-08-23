@@ -42,9 +42,9 @@ export class GenericLogDriver extends LogDriver {
     this.logDriver = this.props.logDriver;
 
     if (this.props) {
-      this.options = this.props.options || {}
+      this.options = this.props.options || {};
     } else {
-      this.options = {}
+      this.options = {};
     }
 
     return {
