@@ -238,7 +238,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       provider: cxapi.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
       dummyValue: `dummy-value-for-${parameterName}`
-    });
+    }).value;
 
     return value;
   }

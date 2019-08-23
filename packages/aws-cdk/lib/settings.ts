@@ -284,8 +284,7 @@ export class Settings {
 
   public async save(fileName: string): Promise<this> {
     const expanded = expandHomeDir(fileName);
-    await fs.writeJson(expanded, this.settings, { spaces: 2 });
-
+    await fs.writeJson(expanded, stripTransientValues(this.settings), { spaces: 2 });
     return this;
   }
 
@@ -361,4 +360,21 @@ function expandHomeDir(x: string) {
     return fs_path.join(os.homedir(), x.substr(1));
   }
   return x;
+}
+
+/**
+ * Return all context value that are not an objecg with a _dontSaveContext member
+ */
+function stripTransientValues(obj: any) {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (!isTransientValue(value)) {
+      ret[key] = value;
+    }
+  }
+  return ret;
+}
+
+function isTransientValue(value: any) {
+  return typeof value === 'object' && value !== null && (value as any)._dontSaveContext;
 }
