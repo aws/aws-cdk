@@ -8,6 +8,8 @@ import { TargetType } from "./enums";
  *
  * If you register a target of this type, you are responsible for making
  * sure the load balancer's security group can connect to the instance.
+ *
+ * @deprecated Use IpTarget from the @aws-cdk/aws-elasticloadbalancingv2-targets package instead.
  */
 export class InstanceTarget implements IApplicationLoadBalancerTarget, INetworkLoadBalancerTarget {
   /**
@@ -57,6 +59,8 @@ export class InstanceTarget implements IApplicationLoadBalancerTarget, INetworkL
  *
  * If you register a target of this type, you are responsible for making
  * sure the load balancer's security group can send packets to the IP address.
+ *
+ * @deprecated Use IpTarget from the @aws-cdk/aws-elasticloadbalancingv2-targets package instead.
  */
 export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBalancerTarget {
   /**
@@ -108,45 +112,6 @@ export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBal
     return {
       targetType: TargetType.IP,
       targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone }
-    };
-  }
-}
-
-export class LambdaTarget implements IApplicationLoadBalancerTarget {
-  /**
-   * Create a new Lambda target
-   *
-   * TODO...
-   *
-   * @param functionArn The Lambda Function ARN to load balance to
-   */
-  constructor(private readonly functionArn: string) {
-  }
-
-  /**
-   * Register this instance target with a load balancer
-   *
-   * Don't call this, it is called automatically when you add the target to a
-   * load balancer.
-   */
-  public attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps {
-    return this.attach(targetGroup);
-  }
-
-  /**
-   * Register this instance target with a load balancer
-   *
-   * Don't call this, it is called automatically when you add the target to a
-   * load balancer.
-   */
-  public attachToNetworkTargetGroup(targetGroup: NetworkTargetGroup): LoadBalancerTargetProps {
-    return this.attach(targetGroup);
-  }
-
-  private attach(_targetGroup: ITargetGroup): LoadBalancerTargetProps {
-    return {
-      targetType: TargetType.LAMBDA,
-      targetJson: { id: this.functionArn }
     };
   }
 }

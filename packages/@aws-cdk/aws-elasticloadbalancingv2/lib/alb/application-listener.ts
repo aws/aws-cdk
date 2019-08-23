@@ -2,8 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, SslPolicy, TargetType } from '../shared/enums';
-import { LambdaTarget } from '../shared/load-balancer-targets';
+import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
 import { ApplicationListenerRule, FixedResponse, validateFixedResponse } from './application-listener-rule';
@@ -110,6 +109,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
+    if (protocol === undefined || port === undefined) {
+      throw new Error(`At least one of 'port' or 'protocol' is required`);
+    }
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
@@ -190,10 +192,6 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
     }
 
-    const hasLambdaTargets = (props.targets || []).some(target => target instanceof LambdaTarget);
-    const targetType: TargetType | undefined = hasLambdaTargets ? TargetType.LAMBDA : undefined;
-    const vpc: ec2.IVpc | undefined = hasLambdaTargets ? undefined : this.loadBalancer.vpc;
-
     const group = new ApplicationTargetGroup(this, id + 'Group', {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
@@ -202,9 +200,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
       targetGroupName: props.targetGroupName,
-      targetType,
       targets: props.targets,
-      vpc
+      vpc: this.loadBalancer.vpc
     });
 
     this.addTargetGroups(id, {
@@ -519,8 +516,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
-   * target. If you use either `Instance` or `IPAddress` as targets, all
-   * target must be of the same type.
+   * target. All target must be of the same type.
    */
   readonly targets?: IApplicationLoadBalancerTarget[];
 

@@ -18,14 +18,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The protocol to use
    *
-   * @default - Determined from port if known.
+   * @default - Determined from port if known, optional for Lambda targets.
    */
   readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
-   * @default - Determined from protocol if known.
+   * @default - Determined from protocol if known, optional for Lambda targets.
    */
   readonly port?: number;
 
@@ -76,20 +76,18 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
+  private readonly protocol?: ApplicationProtocol;
+  private readonly port?: number;
 
-  constructor(scope: Construct, id: string, props?: ApplicationTargetGroupProps) {
-
-    let protocol;
-    let port;
-
-    if (props && props.targetType !== TargetType.LAMBDA) {
-      [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
-    }
-
+  constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
+    const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     super(scope, id, { ...props }, {
       protocol,
       port,
     });
+
+    this.protocol = protocol;
+    this.port = port;
 
     this.connectableMembers = [];
     this.listeners = [];
@@ -303,6 +301,16 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
+  protected validate(): string[]  {
+    const ret = super.validate();
+
+    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
+      && (this.protocol === undefined || this.port === undefined)) {
+        ret.push(`At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup`);
+    }
+
+    return ret;
+  }
 }
 
 /**

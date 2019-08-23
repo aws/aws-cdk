@@ -152,6 +152,8 @@ const group = listener.addTargets('AppFleet', {
 group.addTarget(asg2);
 ```
 
+### Using Lambda Targets
+
 ### Configuring Health Checks
 
 Health checks are configured upon creation of a target group:
