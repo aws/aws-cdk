@@ -1,7 +1,8 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import { Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetNetworkAclAssociation, SubnetType, Vpc } from '../lib';
+// tslint:disable:max-line-length
+import { Action, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetNetworkAclAssociation, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -125,8 +126,8 @@ export = {
             networkAcl: nacl1,
             ruleNumber: 100,
             protocol: 17,
-            ruleAction: 'allow',
-            egress: true,
+            ruleAction: Action.ALLOW,
+            direction: TrafficDirection.EGRESS,
             cidrBlock: '10.0.0.0/16',
             icmp: {code: -1, type: -1},
             portRange: {from: 53, to: 53}
@@ -136,8 +137,8 @@ export = {
               networkAcl: nacl1,
               ruleNumber: 100,
               protocol: 17,
-              ruleAction: 'allow',
-              egress: false,
+              ruleAction: Action.ALLOW,
+              direction: TrafficDirection.INGRESS,
               cidrBlock: '0.0.0.0/0',
               icmp: {code: -1, type: -1},
               portRange: {from: 53, to: 53}
