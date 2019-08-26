@@ -18,7 +18,7 @@ IAM Statement Changes
 ├───┼─────────────────┼────────┼────────────────┼────────────────────────────┼───────────┤
 │ + │ \${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.amazon.aws.com │           │
 └───┴─────────────────┴────────┴────────────────┴────────────────────────────┴───────────┘
-(NOTE: There may be security-related changes not in this list. See http://bit.ly/cdk-2EhF7Np)
+(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)
 
 Resources
 [+] AWS::IAM::Role SomeRole SomeRole6DDC54DD
