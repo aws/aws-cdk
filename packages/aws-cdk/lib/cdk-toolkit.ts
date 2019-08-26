@@ -99,7 +99,7 @@ export class CdkToolkit {
         if (!await stackExists(cfn, stack.name)) {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.name));
         } else {
-          warning('%s: stack has no resources, skipping deployment and deleting existing stack.', colors.bold(stack.name));
+          warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.name));
           await this.destroy({
             stackNames: [stack.name],
             exclusively: false,
