@@ -320,7 +320,7 @@ export interface DestroyOptions {
   /**
    * The arn of the IAM role to use
    */
-  roleArn: string | undefined
+  roleArn?: string;
 
   /**
    * AWS SDK
