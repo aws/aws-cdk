@@ -41,8 +41,6 @@ export = nodeunit.testCase({
     // WHEN
     const result = await provider.getValue({ filter });
 
-    console.log(result);
-
     // THEN
     test.deepEqual(result, {
       vpcId: 'vpc-1234567',
