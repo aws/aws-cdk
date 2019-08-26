@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import cxversioning = require('@aws-cdk/cx-api/lib/versioning');
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
@@ -78,7 +79,7 @@ export = {
     ]);
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: '0.36.0',
+      version: cxversioning.CLOUD_ASSEMBLY_VERSION,
       artifacts: {
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
