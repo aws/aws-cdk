@@ -103,7 +103,7 @@ export class CdkToolkit {
           await this.destroy({
             stackNames: [stack.name],
             exclusively: false,
-            force: false,
+            force: true,
             roleArn: options.roleArn,
             sdk: options.sdk,
           });
