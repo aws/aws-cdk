@@ -50,9 +50,10 @@ export function defaultProtocolForPort(port: number): ApplicationProtocol {
 /**
  * Given a protocol and a port, try to guess the other one if it's undefined
  */
-export function determineProtocolAndPort(protocol: ApplicationProtocol | undefined, port: number | undefined): [ApplicationProtocol, number] {
+// tslint:disable-next-line:max-line-length
+export function determineProtocolAndPort(protocol: ApplicationProtocol | undefined, port: number | undefined): [ApplicationProtocol | undefined, number | undefined] {
   if (protocol === undefined && port === undefined) {
-    throw new Error('Supply at least one of protocol and port');
+    return [undefined, undefined];
   }
 
   if (protocol === undefined) { protocol = defaultProtocolForPort(port!); }

@@ -114,4 +114,9 @@ export enum TargetType {
    * Targets identified by IP address
    */
   IP = 'ip',
+
+  /**
+   * Target is a single Lambda Function
+   */
+  LAMBDA = 'lambda',
 }
