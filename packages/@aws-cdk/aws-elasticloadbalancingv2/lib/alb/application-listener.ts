@@ -109,6 +109,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
+    if (protocol === undefined || port === undefined) {
+      throw new Error(`At least one of 'port' or 'protocol' is required`);
+    }
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
@@ -198,7 +201,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       stickinessCookieDuration: props.stickinessCookieDuration,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
-      vpc: this.loadBalancer.vpc,
+      vpc: this.loadBalancer.vpc
     });
 
     this.addTargetGroups(id, {
@@ -331,6 +334,15 @@ export interface ApplicationListenerAttributes {
    * The default port on which this listener is listening
    */
   readonly defaultPort?: number;
+
+  /**
+   * Whether the security group allows all outbound traffic or not
+   *
+   * Unless set to `false`, no egress rules will be added to the security group.
+   *
+   * @default true
+   */
+  readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
 class ImportedApplicationListener extends Resource implements IApplicationListener {
@@ -349,7 +361,9 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
+        allowAllOutbound: props.securityGroupAllowsAllOutbound
+      })],
       defaultPort,
     });
   }
@@ -513,8 +527,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
-   * target. If you use either `Instance` or `IPAddress` as targets, all
-   * target must be of the same type.
+   * target. All target must be of the same type.
    */
   readonly targets?: IApplicationLoadBalancerTarget[];
 

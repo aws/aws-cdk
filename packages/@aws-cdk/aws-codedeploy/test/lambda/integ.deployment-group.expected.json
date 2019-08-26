@@ -410,10 +410,7 @@
                 "",
                 [
                   {
-                    "Fn::GetAtt": [
-                      "Handler886CB40B",
-                      "Arn"
-                    ]
+                    "Ref": "Handler886CB40B"
                   },
                   ":alias"
                 ]
