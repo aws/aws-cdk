@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import regionInfo = require('@aws-cdk/region-info');
+import { RegionInfo } from '@aws-cdk/region-info';
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
@@ -221,7 +221,7 @@ export class AppStacks {
             stack.template.Resources = {};
           }
           const resourcePresent = stack.environment.region === cxapi.UNKNOWN_REGION
-            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES';
+            || RegionInfo.get(stack.environment.region).cdkMetadataResourceAvailable;
           if (resourcePresent) {
             if (!stack.template.Resources.CDKMetadata) {
               stack.template.Resources.CDKMetadata = {
@@ -414,14 +414,9 @@ export interface Tag {
 }
 
 function _makeCdkMetadataAvailableCondition() {
-  const options = new Array<any>();
-  // Find out all regions known to support AWS::CDK::Metadata from the RegionInfo facts database
-  for (const region of regionInfo.Fact.regions) {
-    if (regionInfo.Fact.find(region, regionInfo.FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES') {
-      options.push({ 'Fn::Equals': [{ Ref: 'AWS::Region' }, region] });
-    }
-  }
-  return _fnOr(options);
+  return _fnOr(RegionInfo.regions
+    .filter(ri => ri.cdkMetadataResourceAvailable)
+    .map(ri => ({ 'Fn::Equals': [{ Ref: 'AWS::Region' }, ri.name] })));
 }
 
 /**

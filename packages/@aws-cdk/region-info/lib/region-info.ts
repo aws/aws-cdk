@@ -8,8 +8,8 @@ export class RegionInfo {
    * @returns the list of names of AWS regions for which there is at least one registered fact. This
    *          may not be an exaustive list of all available AWS regions.
    */
-  public static get regions(): string[] {
-    return Fact.regions;
+  public static get regions(): RegionInfo[] {
+    return Fact.regions.map(RegionInfo.get);
   }
 
   /**
