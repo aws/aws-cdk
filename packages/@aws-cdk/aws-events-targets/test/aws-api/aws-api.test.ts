@@ -71,7 +71,7 @@ test('use AwsApi as an event rule target', () => {
     ]
   }));
 
-  // Uses singleton function
+  // Uses a singleton function
   expect(stack).to(countResources('AWS::Lambda::Function', 1));
 
   expect(stack).to(haveResource('AWS::IAM::Policy', {
