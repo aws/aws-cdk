@@ -9,10 +9,6 @@ class TestStack extends Stack {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'Stack', { maxAzs: 2, natGateways: 1 });
-    Array.isArray(vpc);
-    Array.isArray(elbv2);
-    Array.isArray(targets);
-    Array.isArray(lambda);
 
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
     const listener = lb.addListener('Listener', { port: 80 });
