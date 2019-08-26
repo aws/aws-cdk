@@ -331,6 +331,15 @@ export interface ApplicationListenerAttributes {
    * The default port on which this listener is listening
    */
   readonly defaultPort?: number;
+
+  /**
+   * Whether the security group allows all outbound traffic or not
+   *
+   * Unless set to `false`, no egress rules will be added to the security group.
+   *
+   * @default true
+   */
+  readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
 class ImportedApplicationListener extends Resource implements IApplicationListener {
@@ -349,7 +358,9 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
+        allowAllOutbound: props.securityGroupAllowsAllOutbound
+      })],
       defaultPort,
     });
   }
