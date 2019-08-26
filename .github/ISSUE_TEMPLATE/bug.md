@@ -1,7 +1,7 @@
 ---
 name: "\U0001F41B Bug Report"
 about: Report a bug
-labels: bug, needs-triage
+labels: bug, status/needs-triage
 ---
 
 <!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
@@ -42,5 +42,5 @@ confidential information out.
   - **Language:** <!-- [all | TypeScript | Java | Python ] etc... ] -->
 
 
-### Other information 
+### Other information
 <!-- e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->
