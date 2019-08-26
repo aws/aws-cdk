@@ -80,7 +80,6 @@ interface for various AWS services.
 
 The following targets are supported:
 
-* `targets.AwsApi`: Invoke an AWS Lambda function that makes API calls
 * `targets.CodeBuildProject`: Start an AWS CodeBuild build
 * `targets.CodePipeline`: Start an AWS CodePipeline pipeline execution
 * `targets.EcsTask`: Start a task on an Amazon ECS cluster
@@ -88,6 +87,7 @@ The following targets are supported:
 * `targets.SnsTopic`: Publish into an SNS topic
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
+* `targets.AwsApi`: Make an AWS API call
 
 ### Cross-account targets
 

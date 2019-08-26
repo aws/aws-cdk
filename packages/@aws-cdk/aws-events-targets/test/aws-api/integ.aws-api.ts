@@ -53,5 +53,5 @@ class AwsApi extends cdk.Stack {
   }
 }
 
-new AwsApi(app, 'aws-cdk-aws-lambda-target-integ');
+new AwsApi(app, 'aws-cdk-aws-api-target-integ');
 app.synth();
