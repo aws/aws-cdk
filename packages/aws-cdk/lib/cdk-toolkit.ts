@@ -106,6 +106,7 @@ export class CdkToolkit {
             force: true,
             roleArn: options.roleArn,
             sdk: options.sdk,
+            fromDeploy: true,
           });
         }
         continue;
@@ -191,13 +192,14 @@ export class CdkToolkit {
       }
     }
 
+    const action = options.fromDeploy ? 'deploy' : 'destroy';
     for (const stack of stacks) {
       success('%s: destroying...', colors.blue(stack.name));
       try {
         await destroyStack({ stack, sdk: options.sdk, deployName: stack.name, roleArn: options.roleArn });
-        success('\n ✅  %s: destroyed', colors.blue(stack.name));
+        success(`\n ✅  %s: ${action}ed`, colors.blue(stack.name));
       } catch (e) {
-        error('\n ❌  %s: destroy failed', colors.blue(stack.name), e);
+        error(`\n ❌  %s: ${action} failed`, colors.blue(stack.name), e);
         throw e;
       }
     }
@@ -326,4 +328,9 @@ export interface DestroyOptions {
    * AWS SDK
    */
   sdk: ISDK;
+
+  /**
+   * Whether the destroy request came from a deploy.
+   */
+  fromDeploy?: boolean
 }
