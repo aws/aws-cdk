@@ -102,7 +102,7 @@ export class CdkToolkit {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.name));
           await this.destroy({
             stackNames: [stack.name],
-            exclusively: false,
+            exclusively: true,
             force: true,
             roleArn: options.roleArn,
             sdk: options.sdk,
