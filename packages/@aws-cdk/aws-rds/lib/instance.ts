@@ -331,7 +331,7 @@ export interface DatabaseInstanceNewProps {
    * The number of days during which automatic DB snapshots are retained. Set
    * to zero to disable backups.
    *
-   * @default 1
+   * @default Duration.days(1)
    */
   readonly backupRetention?: Duration;
 
