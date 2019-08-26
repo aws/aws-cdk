@@ -1,7 +1,7 @@
 ---
 name: "\U00002753 General Issue"
 about: Create a new issue
-labels: needs-triage
+labels: status/needs-triage
 ---
 
 <!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
@@ -10,7 +10,7 @@ labels: needs-triage
 
 <!--
 ⚠️ Important Information
-For support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk). This repository's issues are intended for feature requests and bug reports. 
+For support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk). This repository's issues are intended for feature requests and bug reports.
 -->
 
 ### The Question
@@ -29,5 +29,5 @@ falling prey to the [X/Y problem][2]!
   - **Language:** <!-- [all | TypeScript | Java | Python ] etc... ] -->
 
 
-### Other information 
+### Other information
 <!-- e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->
