@@ -1,3 +1,32 @@
+# CloudFormation Resource Specification v5.3.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.HeaderMatchMethod (__added__)
+* AWS::AppMesh::Route.HttpRouteHeader (__added__)
+* AWS::AppMesh::Route.MatchRange (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Headers (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Method (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Scheme (__added__)
+* AWS::AppMesh::Route.RouteSpec Priority (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
 # CloudFormation Resource Specification v5.2.0
 
 ## New Resource Types
