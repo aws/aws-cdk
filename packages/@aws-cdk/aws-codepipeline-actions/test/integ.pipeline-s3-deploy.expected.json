@@ -265,7 +265,6 @@
                   },
                   "S3ObjectKey": "key"
                 },
-                "InputArtifacts": [],
                 "Name": "Source",
                 "OutputArtifacts": [
                   {
@@ -304,7 +303,6 @@
                   }
                 ],
                 "Name": "DeployAction",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineDeployDeployActionCodePipelineActionRole1C288A60",

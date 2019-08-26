@@ -234,7 +234,6 @@
                   },
                   "S3ObjectKey": "key"
                 },
-                "InputArtifacts": [],
                 "Name": "Source",
                 "OutputArtifacts": [
                   {
@@ -273,7 +272,6 @@
                   }
                 ],
                 "Name": "DeploySkill",
-                "OutputArtifacts": [],
                 "RunOrder": 1
               }
             ],

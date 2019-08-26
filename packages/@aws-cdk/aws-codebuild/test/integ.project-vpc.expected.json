@@ -202,7 +202,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "MyVPCAFB07A31"
         }

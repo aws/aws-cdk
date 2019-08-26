@@ -354,8 +354,7 @@
             "TaskDefTaskRole1EDB4A67",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "TaskDefTheContainerAssetImageAdoptRepository997406C3": {
@@ -489,7 +488,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
@@ -565,7 +563,7 @@
         ]
       }
     },
-    "TaskDefPutTargetsF699575F": {
+    "TaskDefRuleTarget0PutTargets77691785": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
