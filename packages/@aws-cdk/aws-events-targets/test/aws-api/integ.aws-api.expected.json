@@ -146,7 +146,7 @@
         "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
       ]
     },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37AllowEventRuleawscdkawslambdatargetintegScheduleRuleD7F150B0A0A49AF0": {
+    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37AllowEventRuleawscdkawsapitargetintegScheduleRule511407226CC02048": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -165,7 +165,7 @@
         }
       }
     },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37AllowEventRuleawscdkawslambdatargetintegPatternRuleD1246CAEBC1475F4": {
+    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37AllowEventRuleawscdkawsapitargetintegPatternRule3D38858113E3D24D": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -221,15 +221,15 @@
   "Parameters": {
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3BucketC1F8355D": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-aws-lambda-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "S3 bucket for asset \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
     },
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3VersionKeyBA3A7136": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-aws-lambda-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "S3 key for asset version \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
     },
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeArtifactHash9D3A0C2E": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-cdk-aws-lambda-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "Artifact hash for asset \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
     }
   }
 }
