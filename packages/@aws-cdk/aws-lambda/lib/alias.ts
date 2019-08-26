@@ -156,10 +156,10 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.lambda.functionName,
-        // construct the ARN from the underlying lambda so that alarms on an alias
+        // construct the name from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
         // see: https://github.com/aws/aws-cdk/issues/2231
-        Resource: `${this.lambda.functionArn}:${this.aliasName}`
+        Resource: `${this.lambda.functionName}:${this.aliasName}`
       },
       ...props
     });
