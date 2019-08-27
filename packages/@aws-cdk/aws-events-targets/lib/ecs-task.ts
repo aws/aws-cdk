@@ -116,7 +116,7 @@ export class EcsTask implements events.IRuleTarget {
     // when using awsvpc network mode.
     if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
       const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
-      const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PRIVATE ? 'DISABLED' : 'ENABLED';
+      const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
 
       new custom.AwsCustomResource(this.taskDefinition, `${rule.node.id}${id}PutTargets`, {
         // `onCreate´ defaults to `onUpdate` and we don't need an `onDelete` here
