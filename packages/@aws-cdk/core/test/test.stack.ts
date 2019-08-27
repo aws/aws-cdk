@@ -570,6 +570,20 @@ export = {
       { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
     ]);
     test.done();
+  },
+
+  'stack.templateFile contains the name of the cloudformation output'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack1 = new Stack(app, 'MyStack1');
+    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+
+    // THEN
+    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+    test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
+    test.done();
   }
 };
 
