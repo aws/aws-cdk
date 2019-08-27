@@ -200,6 +200,7 @@ export class Queue extends QueueBase {
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
+      public readonly fifo = attrs.queueArn.endsWith('.fifo') ? true : false;
 
       protected readonly autoCreatePolicy = false;
     }
@@ -227,6 +228,11 @@ export class Queue extends QueueBase {
    */
   public readonly encryptionMasterKey?: kms.IKey;
 
+  /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   */
+  public readonly fifo: boolean;
+
   protected readonly autoCreatePolicy = true;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
@@ -245,9 +251,12 @@ export class Queue extends QueueBase {
 
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
+    const fifoProps = this.determineFifoProps(props);
+    this.fifo = (typeof(fifoProps.fifoQueue) !== 'undefined' && fifoProps) ? true : false;
+
     const queue = new CfnQueue(this, 'Resource', {
       queueName: this.physicalName,
-      ...this.determineFifoProps(props),
+      ...fifoProps,
       ...encryptionProps,
       redrivePolicy,
       delaySeconds: props.deliveryDelay && props.deliveryDelay.toSeconds(),

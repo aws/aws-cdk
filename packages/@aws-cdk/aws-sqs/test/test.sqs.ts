@@ -11,7 +11,9 @@ import { Queue } from '../lib';
 export = {
   'default properties'(test: Test) {
     const stack = new Stack();
-    new sqs.Queue(stack, 'Queue');
+    const q = new sqs.Queue(stack, 'Queue');
+
+    test.deepEqual(q.fifo, false);
 
     expect(stack).toMatch({
       "Resources": {
@@ -276,13 +278,36 @@ export = {
     },
   },
 
+  'test ".fifo" suffixed queues register as fifo'(test: Test) {
+    const stack = new Stack();
+    const queue = new Queue(stack, 'Queue', {
+      queueName: 'MyQueue.fifo'
+    });
+
+    test.deepEqual(queue.fifo, true);
+
+    expect(stack).toMatch({
+      "Resources": {
+        "Queue4A7E3555": {
+          "Type": "AWS::SQS::Queue",
+          "Properties": {
+            "QueueName": "MyQueue.fifo",
+            "FifoQueue": true
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'test metrics'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const topic = new Queue(stack, 'Queue');
+    const queue = new Queue(stack, 'Queue');
 
     // THEN
-    test.deepEqual(stack.resolve(topic.metricNumberOfMessagesSent()), {
+    test.deepEqual(stack.resolve(queue.metricNumberOfMessagesSent()), {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
@@ -290,7 +315,7 @@ export = {
       statistic: 'Sum'
     });
 
-    test.deepEqual(stack.resolve(topic.metricSentMessageSize()), {
+    test.deepEqual(stack.resolve(queue.metricSentMessageSize()), {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',

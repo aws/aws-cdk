@@ -40,6 +40,9 @@ export interface SqsQueueProps {
 export class SqsQueue implements events.IRuleTarget {
 
   constructor(public readonly queue: sqs.IQueue, private readonly props: SqsQueueProps = {}) {
+    if (typeof props.messageGroupId !== 'undefined' && !queue.fifo) {
+      throw new Error('MessageGroupId cannot be specified for non-FIFO queues.');
+    }
   }
 
   /**
