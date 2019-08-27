@@ -182,6 +182,10 @@ export class Trail extends Resource {
       };
       this.eventSelectors.push(managementEvent);
     }
+    
+    if (props.kmsKey) {
+        props.kmsKey.grantEncrypt(new iam.ServicePrincipal("cloudtrail.amazonaws.com"))
+    }
 
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
     const trail = new CfnTrail(this, 'Resource', {
