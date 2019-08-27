@@ -251,3 +251,60 @@ test("Can use same fargate taskdef multiple times in a rule", () => {
     }]
   }))).not.toThrow();
 });
+
+test("Isolated subnet does not have AssignPublicIp=true", () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [{
+      subnetType: ec2.SubnetType.ISOLATED,
+      name: 'Isolated'
+    }]
+   });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)')
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    subnetSelection: { subnetType: ec2.SubnetType.ISOLATED },
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', 'yay'],
+    }]
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('Custom::AWS', {
+    Update: {
+      service: "CloudWatchEvents",
+      apiVersion: "2015-10-07",
+      action: "putTargets",
+      parameters: {
+        Targets: [
+          {
+            EcsParameters: {
+              LaunchType: "FARGATE",
+              NetworkConfiguration: {
+                awsvpcConfiguration: {
+                  AssignPublicIp: "DISABLED",
+                }
+              },
+            },
+          }
+        ]
+      }
+    }
+  });
+});
