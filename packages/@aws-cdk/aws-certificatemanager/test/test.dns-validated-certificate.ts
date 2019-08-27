@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -151,6 +152,32 @@ export = {
         DomainName: 'mydomain.com',
         HostedZoneId: 'DUMMY'
       }));
+
+    test.done();
+  },
+
+  'works with imported role'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {
+      env: { account: '12345678', region: 'us-blue-5' },
+    });
+    const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
+      zoneName: 'hello.com'
+    });
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::account-id:role/role-name');
+
+    // WHEN
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName: 'hello.com',
+      hostedZone: helloDotComZone,
+      customResourceRole: role
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Role: 'arn:aws:iam::account-id:role/role-name'
+    }));
 
     test.done();
   },
