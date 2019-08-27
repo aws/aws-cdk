@@ -220,6 +220,14 @@ export interface FunctionProps {
    * @default - Logs never expire.
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - A new role is created.
+   */
+  readonly logRetentionRole?: iam.IRole;
 }
 
 /**
@@ -469,7 +477,8 @@ export class Function extends FunctionBase {
     if (props.logRetention) {
       new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retention: props.logRetention
+        retention: props.logRetention,
+        role: props.logRetentionRole
       });
     }
 
