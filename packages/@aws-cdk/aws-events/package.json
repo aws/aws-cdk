@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-events",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "AWS CloudWatch Events Construct Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,19 +63,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.5.0",
+    "@aws-cdk/assert": "^1.6.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0"
+    "@aws-cdk/aws-iam": "^1.6.0",
+    "@aws-cdk/core": "^1.6.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0"
+    "@aws-cdk/aws-iam": "^1.6.0",
+    "@aws-cdk/core": "^1.6.0"
   },
   "engines": {
     "node": ">= 8.10.0"
