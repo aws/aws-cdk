@@ -648,7 +648,7 @@ export interface SubnetConfiguration {
  * ```ts
  * import { Vpc } from '@aws-cdk/aws-ec2'
  *
- * const vpc = new Vpc(this, 'TheVPC',{
+ * const vpc = new Vpc(this, 'TheVPC', {
  *   cidr: "10.0.0.0/16"
  * })
  *
