@@ -1,4 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -50,6 +51,45 @@ export = {
       "LogGroupName": "group",
       "RetentionInDays": 30
     }));
+
+    test.done();
+
+  },
+
+  'with imported role'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/CoolRole');
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: logs.RetentionDays.ONE_MONTH,
+      role
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "logs:PutRetentionPolicy",
+              "logs:DeleteRetentionPolicy"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "PolicyName": "RolePolicy72E7D967",
+      "Roles": [
+        'CoolRole'
+      ]
+    }));
+
+    expect(stack).to(countResources('AWS::IAM::Role', 0));
 
     test.done();
 

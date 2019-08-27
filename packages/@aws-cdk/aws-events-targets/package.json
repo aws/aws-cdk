@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-events-targets",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Event targets for AWS CloudWatch Events",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -46,6 +46,11 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "pre": [
+      "cp -f node_modules/aws-sdk/apis/metadata.json lib/sdk-api-metadata.json"
+    ]
+  },
   "jest": {
     "moduleFileExtensions": [
       "js"
@@ -73,45 +78,47 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.5.0",
-    "@aws-cdk/aws-codecommit": "^1.5.0",
+    "@aws-cdk/assert": "^1.6.0",
+    "@aws-cdk/aws-codecommit": "^1.6.0",
+    "aws-sdk": "^2.518.0",
+    "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "jest": "^24.8.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.5.0",
-    "@aws-cdk/aws-codebuild": "^1.5.0",
-    "@aws-cdk/aws-codepipeline": "^1.5.0",
-    "@aws-cdk/aws-ec2": "^1.5.0",
-    "@aws-cdk/aws-ecs": "^1.5.0",
-    "@aws-cdk/aws-events": "^1.5.0",
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/aws-lambda": "^1.5.0",
-    "@aws-cdk/aws-sns": "^1.5.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.5.0",
-    "@aws-cdk/aws-sqs": "^1.5.0",
-    "@aws-cdk/aws-stepfunctions": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/custom-resources": "^1.5.0"
+    "@aws-cdk/aws-cloudformation": "^1.6.0",
+    "@aws-cdk/aws-codebuild": "^1.6.0",
+    "@aws-cdk/aws-codepipeline": "^1.6.0",
+    "@aws-cdk/aws-ec2": "^1.6.0",
+    "@aws-cdk/aws-ecs": "^1.6.0",
+    "@aws-cdk/aws-events": "^1.6.0",
+    "@aws-cdk/aws-iam": "^1.6.0",
+    "@aws-cdk/aws-lambda": "^1.6.0",
+    "@aws-cdk/aws-sns": "^1.6.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.6.0",
+    "@aws-cdk/aws-sqs": "^1.6.0",
+    "@aws-cdk/aws-stepfunctions": "^1.6.0",
+    "@aws-cdk/core": "^1.6.0",
+    "@aws-cdk/custom-resources": "^1.6.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.5.0",
-    "@aws-cdk/aws-codebuild": "^1.5.0",
-    "@aws-cdk/aws-codepipeline": "^1.5.0",
-    "@aws-cdk/aws-ec2": "^1.5.0",
-    "@aws-cdk/aws-ecs": "^1.5.0",
-    "@aws-cdk/aws-events": "^1.5.0",
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/aws-lambda": "^1.5.0",
-    "@aws-cdk/aws-sns": "^1.5.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.5.0",
-    "@aws-cdk/aws-sqs": "^1.5.0",
-    "@aws-cdk/aws-stepfunctions": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/custom-resources": "^1.5.0"
+    "@aws-cdk/aws-cloudformation": "^1.6.0",
+    "@aws-cdk/aws-codebuild": "^1.6.0",
+    "@aws-cdk/aws-codepipeline": "^1.6.0",
+    "@aws-cdk/aws-ec2": "^1.6.0",
+    "@aws-cdk/aws-ecs": "^1.6.0",
+    "@aws-cdk/aws-events": "^1.6.0",
+    "@aws-cdk/aws-iam": "^1.6.0",
+    "@aws-cdk/aws-lambda": "^1.6.0",
+    "@aws-cdk/aws-sns": "^1.6.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.6.0",
+    "@aws-cdk/aws-sqs": "^1.6.0",
+    "@aws-cdk/aws-stepfunctions": "^1.6.0",
+    "@aws-cdk/core": "^1.6.0",
+    "@aws-cdk/custom-resources": "^1.6.0"
   },
   "engines": {
     "node": ">= 8.10.0"

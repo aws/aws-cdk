@@ -439,7 +439,9 @@
               }
             ]
           }
-        }
+        },
+        "PropagateTags": "SERVICE",
+        "EnableECSManagedTags": true
       },
       "DependsOn": [
         "LBPublicListenerFargateGroup5EE2FBAF",
@@ -514,11 +516,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":iam:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
+              ":iam::",
               {
                 "Ref": "AWS::AccountId"
               },

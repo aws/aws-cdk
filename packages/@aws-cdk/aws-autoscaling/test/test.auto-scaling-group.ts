@@ -2,6 +2,7 @@ import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart}
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
+import { Lazy } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
@@ -149,6 +150,30 @@ export = {
       MinSize: "0",
       MaxSize: "0",
       DesiredCapacity: "0",
+    }
+    ));
+
+    test.done();
+  },
+
+  'validation is not performed when using Tokens'(test: Test) {
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minCapacity: Lazy.numberValue({ produce: () => 5 }),
+      maxCapacity: Lazy.numberValue({ produce: () => 1 }),
+      desiredCapacity: Lazy.numberValue({ produce: () => 20 }),
+    });
+
+    // THEN: no exception
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+      MinSize: "5",
+      MaxSize: "1",
+      DesiredCapacity: "20",
     }
     ));
 

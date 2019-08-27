@@ -600,7 +600,9 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE"
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",
@@ -1247,7 +1249,9 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE"
       },
       "DependsOn": [
         "L3bLBPublicListenerECSGroup0070C5CA",
@@ -1551,7 +1555,9 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE"
       },
       "DependsOn": [
         "L3cLBPublicListenerECSGroup62D7B705",

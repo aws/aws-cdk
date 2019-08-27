@@ -125,7 +125,7 @@ export enum SubnetType {
    *
    * Outbound traffic will be routed via a NAT Gateway. Preference being in
    * the same AZ, but if not available will use another AZ (control by
-   * specifing `maxGateways` on VpcNetwork). This might be used for
+   * specifing `maxGateways` on Vpc). This might be used for
    * experimental cost conscious accounts or accounts where HA outbound
    * traffic is not needed.
    */
@@ -176,7 +176,7 @@ export interface SubnetSelection {
   /**
    * If true, return at most one subnet per AZ
    *
-   * @defautl false
+   * @default false
    */
   readonly onePerAz?: boolean;
 }
@@ -334,7 +334,7 @@ abstract class VpcBase extends Resource implements IVpc {
 }
 
 /**
- * Properties that reference an external VpcNetwork
+ * Properties that reference an external Vpc
  */
 export interface VpcAttributes {
   /**
@@ -642,13 +642,13 @@ export interface SubnetConfiguration {
 }
 
 /**
- * VpcNetwork deploys an AWS VPC, with public and private subnets per Availability Zone.
+ * Vpc deploys an AWS VPC, with public and private subnets per Availability Zone.
  * For example:
  *
  * ```ts
  * import { Vpc } from '@aws-cdk/aws-ec2'
  *
- * const vpc = new Vpc(this, {
+ * const vpc = new Vpc(this, 'TheVPC', {
  *   cidr: "10.0.0.0/16"
  * })
  *
@@ -668,7 +668,7 @@ export interface SubnetConfiguration {
 export class Vpc extends VpcBase {
   /**
    * The default CIDR range used when creating VPCs.
-   * This can be overridden using VpcNetworkProps when creating a VPCNetwork resource.
+   * This can be overridden using VpcProps when creating a VPCNetwork resource.
    * e.g. new VpcResource(this, { cidr: '192.168.0.0./16' })
    */
   public static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
@@ -698,8 +698,22 @@ export class Vpc extends VpcBase {
 
   /**
    * Import an existing VPC from by querying the AWS environment this stack is deployed to.
+   *
+   * Calling this method will lead to a lookup when the CDK CLI is executed.
+   * You can therefore not use any values that will only be available at
+   * CloudFormation execution time (i.e., Tokens).
+   *
+   * If you are looking to share a VPC between stacks, you can pass the `Vpc`
+   * object between stacks and use it as normal.
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
+    if (Token.isUnresolved(options.vpcId)
+      || Token.isUnresolved(options.vpcName)
+      || Object.values(options.tags || {}).some(Token.isUnresolved)
+      || Object.keys(options.tags || {}).some(Token.isUnresolved)) {
+      throw new Error(`All arguments to Vpc.fromLookup() must be concrete (no Tokens)`);
+    }
+
     const filter: {[key: string]: string} = makeTagFilter(options.tags);
 
     // We give special treatment to some tags
@@ -809,7 +823,7 @@ export class Vpc extends VpcBase {
   private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
   /**
-   * VpcNetwork creates a VPC that spans a whole region.
+   * Vpc creates a VPC that spans a whole region.
    * It will automatically divide the provided VPC CIDR range, and create public and private subnets per Availability Zone.
    * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
    * Network routing for the private subnets will be configured to allow outbound access via a set of resilient NAT Gateways (one per AZ).

@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Lazy, Stack } from '@aws-cdk/core';
+import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Peer, Port, SecurityGroup, Vpc } from "../lib";
 
@@ -182,5 +182,79 @@ export = {
     }
 
     test.done();
+  },
+
+  'Peer IP CIDR validation': {
+    'passes with valid IPv4 CIDR block'(test: Test) {
+      // GIVEN
+      const cidrIps = ['0.0.0.0/0', '192.168.255.255/24'];
+
+      // THEN
+      for (const cidrIp of cidrIps) {
+        test.equal(Peer.ipv4(cidrIp).uniqueId, cidrIp);
+      }
+
+      test.done();
+    },
+
+    'passes with unresolved IP CIDR token'(test: Test) {
+      // GIVEN
+      Token.asString(new Intrinsic('ip'));
+
+      // THEN: don't throw
+
+      test.done();
+    },
+
+    'throws if invalid IPv4 CIDR block'(test: Test) {
+      // THEN
+      test.throws(() => {
+        Peer.ipv4('invalid');
+      }, /Invalid IPv4 CIDR/);
+
+      test.done();
+    },
+
+    'throws if missing mask in IPv4 CIDR block'(test: Test) {
+      test.throws(() => {
+        Peer.ipv4('0.0.0.0');
+      }, /CIDR mask is missing in IPv4/);
+
+      test.done();
+    },
+
+    'passes with valid IPv6 CIDR block'(test: Test) {
+      // GIVEN
+      const cidrIps = [
+        '::/0',
+        '2001:db8::/32',
+        '2001:0db8:0000:0000:0000:8a2e:0370:7334/32',
+        '2001:db8::8a2e:370:7334/32',
+      ];
+
+      // THEN
+      for (const cidrIp of cidrIps) {
+        test.equal(Peer.ipv6(cidrIp).uniqueId, cidrIp);
+      }
+
+      test.done();
+    },
+
+    'throws if invalid IPv6 CIDR block'(test: Test) {
+      // THEN
+      test.throws(() => {
+        Peer.ipv6('invalid');
+      }, /Invalid IPv6 CIDR/);
+
+      test.done();
+    },
+
+    'throws if missing mask in IPv6 CIDR block'(test: Test) {
+      test.throws(() => {
+        Peer.ipv6('::');
+      }, /IDR mask is missing in IPv6/);
+
+      test.done();
+    }
   }
 };

@@ -728,6 +728,20 @@ export = {
       test.done();
     }
   },
+
+  'fromLookup() requires concrete values'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => {
+      Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: Lazy.stringValue({ produce: () => 'some-id' })
+      });
+
+    }, 'All arguments to Vpc.fromLookup() must be concrete');
+
+    test.done();
+  },
 };
 
 function getTestStack(): Stack {
