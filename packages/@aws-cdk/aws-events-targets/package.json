@@ -46,6 +46,11 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "pre": [
+      "cp -f node_modules/aws-sdk/apis/metadata.json lib/sdk-api-metadata.json"
+    ]
+  },
   "jest": {
     "moduleFileExtensions": [
       "js"
@@ -75,6 +80,8 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.5.0",
     "@aws-cdk/aws-codecommit": "^1.5.0",
+    "aws-sdk": "^2.517.0",
+    "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "jest": "^24.8.0",
