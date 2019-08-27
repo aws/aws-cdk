@@ -19,6 +19,13 @@ export interface LogRetentionProps {
    * The number of days log events are kept in CloudWatch Logs.
    */
   readonly retention: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource.
+   *
+   * @default - A new role is created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -33,10 +40,11 @@ export class LogRetention extends cdk.Construct {
     // Custom resource provider
     const provider = new SingletonFunction(this, 'Provider', {
       code: Code.fromAsset(path.join(__dirname, 'log-retention-provider')),
-      runtime: Runtime.NODEJS_8_10,
+      runtime: Runtime.NODEJS_10_X,
       handler: 'index.handler',
       uuid: 'aae0aa3c-5b4d-4f87-b02d-85b201efdd8a',
       lambdaPurpose: 'LogRetention',
+      role: props.role,
     });
 
     // Duplicate statements will be deduplicated by `PolicyDocument`

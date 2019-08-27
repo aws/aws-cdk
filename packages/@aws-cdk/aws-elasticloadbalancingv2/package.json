@@ -73,6 +73,7 @@
     "@aws-cdk/aws-cloudwatch": "^1.5.0",
     "@aws-cdk/aws-ec2": "^1.5.0",
     "@aws-cdk/aws-iam": "^1.5.0",
+    "@aws-cdk/aws-lambda": "^1.5.0",
     "@aws-cdk/aws-s3": "^1.5.0",
     "@aws-cdk/core": "^1.5.0"
   },
@@ -82,6 +83,7 @@
     "@aws-cdk/aws-cloudwatch": "^1.5.0",
     "@aws-cdk/aws-ec2": "^1.5.0",
     "@aws-cdk/aws-iam": "^1.5.0",
+    "@aws-cdk/aws-lambda": "^1.5.0",
     "@aws-cdk/aws-s3": "^1.5.0",
     "@aws-cdk/core": "^1.5.0"
   },
