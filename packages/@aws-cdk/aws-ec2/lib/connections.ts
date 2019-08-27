@@ -172,8 +172,7 @@ export class Connections implements IConnectable {
     this._securityGroups.forEachAndForever(securityGroup => {
       this._securityGroupRules.forEachAndForever(rule => {
         securityGroup.addIngressRule(rule, portRange, description);
-        // FIXME: this seems required but we didn't use to have it. Research.
-        // securityGroup.addEgressRule(rule, portRange, description);
+        securityGroup.addEgressRule(rule, portRange, description);
       });
     });
   }

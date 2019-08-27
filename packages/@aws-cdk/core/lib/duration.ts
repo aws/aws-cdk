@@ -10,6 +10,14 @@ import { Token } from "./token";
  */
 export class Duration {
   /**
+   * @param amount the amount of Milliseconds the `Duration` will represent.
+   * @returns a new `Duration` representing `amount` ms.
+   */
+  public static millis(amount: number): Duration {
+    return new Duration(amount, TimeUnit.Milliseconds);
+  }
+
+  /**
    * @param amount the amount of Seconds the `Duration` will represent.
    * @returns a new `Duration` representing `amount` Seconds.
    */
@@ -79,6 +87,13 @@ export class Duration {
 
     this.amount = amount;
     this.unit = unit;
+  }
+
+  /**
+   * @returns the value of this `Duration` expressed in Seconds.
+   */
+  public toMilliseconds(opts: TimeConversionOptions = {}): number {
+    return convert(this.amount, this.unit, TimeUnit.Milliseconds, opts);
   }
 
   /**
@@ -168,6 +183,7 @@ export interface TimeConversionOptions {
 }
 
 class TimeUnit {
+  public static readonly Milliseconds = new TimeUnit('millis', 0.001);
   public static readonly Seconds = new TimeUnit('seconds', 1);
   public static readonly Minutes = new TimeUnit('minutes', 60);
   public static readonly Hours = new TimeUnit('hours', 3_600);

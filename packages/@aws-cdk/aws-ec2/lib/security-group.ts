@@ -216,6 +216,23 @@ export interface SecurityGroupProps {
 }
 
 /**
+ * Additional options for imported security groups
+ */
+export interface SecurityGroupImportOptions {
+  /**
+   * Mark the SecurityGroup as having been created allowing all outbound traffico
+   *
+   * Only if this is set to false will egress rules be added to this security
+   * group. Be aware, this would undo any potential "all outbound traffic"
+   * default.
+   *
+   * @experimental
+   * @default true
+   */
+  readonly allowAllOutbound?: boolean;
+}
+
+/**
  * Creates an Amazon EC2 security group within a VPC.
  *
  * This class has an additional optimization over imported security groups that it can also create
@@ -227,9 +244,16 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Import an existing security group into this app.
    */
-  public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string): ISecurityGroup {
+  public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string, options: SecurityGroupImportOptions = {}): ISecurityGroup {
     class Import extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
+
+      public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
+        // Only if allowAllOutbound has been disabled
+        if (options.allowAllOutbound === false) {
+          super.addEgressRule(peer, connection, description, remoteRule);
+        }
+      }
     }
 
     return new Import(scope, id);
@@ -274,8 +298,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }),
-      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }),
+      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules}, { omitEmptyArray: true} ),
+      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }, { omitEmptyArray: true} ),
       vpcId: props.vpc.vpcId,
     });
 

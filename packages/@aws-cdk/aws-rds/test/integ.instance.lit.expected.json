@@ -429,7 +429,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -763,7 +762,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }

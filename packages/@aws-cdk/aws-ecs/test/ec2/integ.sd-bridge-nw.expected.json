@@ -357,7 +357,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -820,8 +819,7 @@
             "frontendTDTaskRole638562A0",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "FrontendServiceBC94BA93": {
@@ -839,8 +837,9 @@
         },
         "DesiredCount": 1,
         "LaunchType": "EC2",
-        "LoadBalancers": [],
         "SchedulingStrategy": "REPLICA",
+        "PropagateTags": "SERVICE",
+        "EnableECSManagedTags": true,
         "ServiceRegistries": [
           {
             "ContainerName": "frontend",
