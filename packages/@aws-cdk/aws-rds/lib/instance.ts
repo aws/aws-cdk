@@ -256,7 +256,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The name of the Availability Zone where the DB instance will be located.
    *
-   * @default no preference
+   * @default - no preference
    */
   readonly availabilityZone?: string;
 
@@ -271,14 +271,14 @@ export interface DatabaseInstanceNewProps {
    * The number of I/O operations per second (IOPS) that the database provisions.
    * The value must be equal to or greater than 1000.
    *
-   * @default no provisioned iops
+   * @default - no provisioned iops
    */
   readonly iops?: number;
 
   /**
    * The number of CPU cores and the number of threads per core.
    *
-   * @default the default number of CPU cores and threads per core for the
+   * @default - the default number of CPU cores and threads per core for the
    * chosen instance class.
    *
    * See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#USER_ConfigureProcessor
@@ -289,7 +289,7 @@ export interface DatabaseInstanceNewProps {
    * A name for the DB instance. If you specify a name, AWS CloudFormation
    * converts it to lowercase.
    *
-   * @default a CloudFormation generated name
+   * @default - a CloudFormation generated name
    */
   readonly instanceIdentifier?: string;
 
@@ -301,21 +301,21 @@ export interface DatabaseInstanceNewProps {
   /**
    * The type of subnets to add to the created DB subnet group.
    *
-   * @default private
+   * @default - private subnets
    */
   readonly vpcPlacement?: ec2.SubnetSelection;
 
   /**
    * The port for the instance.
    *
-   * @default the default port for the chosen engine.
+   * @default - the default port for the chosen engine.
    */
   readonly port?: number;
 
   /**
    * The option group to associate with the instance.
    *
-   * @default no option group
+   * @default - no option group
    */
   readonly optionGroup?: IOptionGroup;
 
@@ -331,7 +331,7 @@ export interface DatabaseInstanceNewProps {
    * The number of days during which automatic DB snapshots are retained. Set
    * to zero to disable backups.
    *
-   * @default 1 day
+   * @default Duration.days(1)
    */
   readonly backupRetention?: Duration;
 
@@ -344,7 +344,7 @@ export interface DatabaseInstanceNewProps {
    * - Must not conflict with the preferred maintenance window.
    * - Must be at least 30 minutes.
    *
-   * @default a 30-minute window selected at random from an 8-hour block of
+   * @default - a 30-minute window selected at random from an 8-hour block of
    * time for each AWS Region. To see the time blocks available, see
    * https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow
    */
@@ -370,7 +370,7 @@ export interface DatabaseInstanceNewProps {
    * The interval, in seconds, between points when Amazon RDS collects enhanced
    * monitoring metrics for the DB instance.
    *
-   * @default no enhanced monitoring
+   * @default - no enhanced monitoring
    */
   readonly monitoringInterval?: Duration;
 
@@ -384,14 +384,14 @@ export interface DatabaseInstanceNewProps {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7 days
+   * @default 7
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
   /**
    * The AWS KMS key for encryption of Performance Insights data.
    *
-   * @default default master key
+   * @default - default master key
    */
   readonly performanceInsightKmsKey?: kms.IKey;
 
@@ -399,7 +399,7 @@ export interface DatabaseInstanceNewProps {
    * The list of log types that need to be enabled for exporting to
    * CloudWatch Logs.
    *
-   * @default no log exports
+   * @default - no log exports
    */
   readonly cloudwatchLogsExports?: string[];
 
@@ -408,9 +408,17 @@ export interface DatabaseInstanceNewProps {
    * this property, unsetting it doesn't remove the log retention policy. To
    * remove the retention policy, set the value to `Infinity`.
    *
-   * @default logs never expire
+   * @default - logs never expire
    */
   readonly cloudwatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
+  readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
   /**
    * Indicates that minor engine upgrades are applied automatically to the
@@ -463,6 +471,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   private readonly cloudwatchLogsExports?: string[];
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
+  private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     super(scope, id);
@@ -497,6 +506,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
+    this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
 
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
@@ -537,7 +547,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       for (const log of this.cloudwatchLogsExports) {
         new lambda.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
-          retention: this.cloudwatchLogsRetention
+          retention: this.cloudwatchLogsRetention,
+          role: this.cloudwatchLogsRetentionRole
         });
       }
     }
