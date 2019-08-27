@@ -61,15 +61,18 @@ export class SqsQueue implements events.IRuleTarget {
       })
     );
 
+    let fifoParameters = {};
+    if (!!this.props.messageGroupId) {
+      fifoParameters = { sqsParameters: { messageGroupId: this.props.messageGroupId } };
+    }
+
     const result: events.RuleTargetConfig = {
       id: '',
       arn: this.queue.queueArn,
       input: this.props.message,
       targetResource: this.queue,
+      ...fifoParameters,
     };
-    if (!!this.props.messageGroupId) {
-      Object.assign(result, { sqsParameters: { messageGroupId: this.props.messageGroupId } });
-    }
     return result;
 
   }

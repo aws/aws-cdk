@@ -147,7 +147,8 @@ test('fail if MessageGroupId is specified on non-fifo queues', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
 
-  throws(() => new targets.SqsQueue(queue, { messageGroupId: 'MyMessageGroupId' }), /MessageGroupId cannot be specified/);
+  throws(() => new targets.SqsQueue(queue, { messageGroupId: 'MyMessageGroupId' }),
+    /MessageGroupId cannot be specified/);
 });
 
 test('MessageGroupId is present when specified to fifo queues', () => {
