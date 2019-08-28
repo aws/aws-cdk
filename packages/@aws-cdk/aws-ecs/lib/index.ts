@@ -20,7 +20,13 @@ export * from './images/repository';
 export * from './images/ecr';
 
 export * from './log-drivers/aws-log-driver';
+export * from './log-drivers/fluentd-log-driver';
+export * from './log-drivers/gelf-log-driver';
 export * from './log-drivers/generic-log-driver';
+export * from './log-drivers/journald-log-driver';
+export * from './log-drivers/json-file-log-driver';
+export * from './log-drivers/splunk-log-driver';
+export * from './log-drivers/syslog-log-driver';
 export * from './log-drivers/log-driver';
 
 // AWS::ECS CloudFormation Resources:
