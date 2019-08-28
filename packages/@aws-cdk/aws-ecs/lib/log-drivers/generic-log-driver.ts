@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from "../index";
 
 /**
  * A log driver that sends logs to the specified driver.
