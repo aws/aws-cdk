@@ -47,9 +47,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     const listedSubnets = subnetsResponse.Subnets || [];
 
     const routeTablesResponse = await ec2.describeRouteTables(filters).promise();
-    const listedRouteTables = routeTablesResponse.RouteTables || [];
-
-    const mainRouteTable = listedRouteTables.find(table => table.Associations && !!table.Associations.find(assoc => assoc.Main));
+    const routeTables = new RouteTables(routeTablesResponse.RouteTables || []);
 
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
@@ -64,19 +62,17 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     const subnets: Subnet[] = listedSubnets.map(subnet => {
       let type = getTag('aws-cdk:subnet-type', subnet.Tags);
-      if (type === undefined) {
-        type = subnet.MapPublicIpOnLaunch ? SubnetType.Public : SubnetType.Private;
-      }
+      if (type === undefined && subnet.MapPublicIpOnLaunch) { type = SubnetType.Public; }
+      if (type === undefined && routeTables.hasRouteToIgw(subnet.SubnetId)) { type = SubnetType.Public; }
+      if (type === undefined) { type = SubnetType.Private; }
+
       if (!isValidSubnetType(type)) {
         // tslint:disable-next-line: max-line-length
         throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
       }
 
       const name = getTag('aws-cdk:subnet-name', subnet.Tags) || type;
-      const specificRouteTable =
-        listedRouteTables.find(table => table.Associations && !!table.Associations.find(assoc => assoc.SubnetId === subnet.SubnetId));
-      const routeTableId = (specificRouteTable && specificRouteTable.RouteTableId)
-        || (mainRouteTable && mainRouteTable.RouteTableId);
+      const routeTableId = routeTables.routeTableIdForSubnetId(subnet.SubnetId);
 
       if (!routeTableId) {
         throw new Error(`Subnet ${subnet.SubnetArn} does not have an associated route table (and there is no "main" table)`);
@@ -128,6 +124,32 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       publicSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.routeTableId))),
       vpnGatewayId,
     };
+  }
+}
+
+class RouteTables {
+  public readonly mainRouteTable?: AWS.EC2.RouteTable;
+
+  constructor(private readonly tables: AWS.EC2.RouteTable[]) {
+    this.mainRouteTable = this.tables.find(table => !!table.Associations && table.Associations.some(assoc => !!assoc.Main));
+  }
+
+  public routeTableIdForSubnetId(subnetId: string | undefined): string | undefined {
+    const table = this.tableForSubnet(subnetId);
+    return (table && table.RouteTableId) || (this.mainRouteTable && this.mainRouteTable.RouteTableId);
+  }
+
+  /**
+   * Whether the given subnet has a route to an IGW
+   */
+  public hasRouteToIgw(subnetId: string | undefined): boolean {
+    const table = this.tableForSubnet(subnetId);
+
+    return !!table && !!table.Routes && table.Routes.some(route => !!route.GatewayId && route.GatewayId.startsWith('igw-'));
+  }
+
+  public tableForSubnet(subnetId: string | undefined) {
+    return this.tables.find(table => !!table.Associations && table.Associations.some(assoc => assoc.SubnetId === subnetId));
   }
 }
 
