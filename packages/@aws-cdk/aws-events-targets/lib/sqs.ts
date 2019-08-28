@@ -40,8 +40,8 @@ export interface SqsQueueProps {
 export class SqsQueue implements events.IRuleTarget {
 
   constructor(public readonly queue: sqs.IQueue, private readonly props: SqsQueueProps = {}) {
-    if (typeof props.messageGroupId !== 'undefined' && !queue.fifo) {
-      throw new Error('MessageGroupId cannot be specified for non-FIFO queues.');
+    if (props.messageGroupId !== undefined && !queue.fifo) {
+      throw new Error('messageGroupId cannot be specified for non-FIFO queues');
     }
   }
 
@@ -61,20 +61,13 @@ export class SqsQueue implements events.IRuleTarget {
       })
     );
 
-    let fifoParameters = {};
-    if (!!this.props.messageGroupId) {
-      fifoParameters = { sqsParameters: { messageGroupId: this.props.messageGroupId } };
-    }
-
-    const result: events.RuleTargetConfig = {
+    return {
       id: '',
       arn: this.queue.queueArn,
       input: this.props.message,
       targetResource: this.queue,
-      ...fifoParameters,
+      sqsParameters: this.props.messageGroupId ? { messageGroupId: this.props.messageGroupId } : undefined,
     };
-    return result;
-
   }
 
 }

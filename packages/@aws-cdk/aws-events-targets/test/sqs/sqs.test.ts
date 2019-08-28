@@ -1,6 +1,4 @@
-import { throws } from 'assert';
-
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import sqs = require('@aws-cdk/aws-sqs');
 import { Duration, Stack } from '@aws-cdk/core';
@@ -18,7 +16,7 @@ test('sqs queue as an event rule target', () => {
   rule.addTarget(new targets.SqsQueue(queue));
 
   // THEN
-  expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+  cdkExpect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -52,7 +50,7 @@ test('sqs queue as an event rule target', () => {
     Queues: [{ Ref: "MyQueueE6CA6235" }]
   }));
 
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
     ScheduleExpression: "rate(1 hour)",
     State: "ENABLED",
     Targets: [
@@ -83,7 +81,7 @@ test('multiple uses of a queue as a target results in multi policy statement bec
   }
 
   // THEN
-  expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+  cdkExpect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -143,15 +141,15 @@ test('multiple uses of a queue as a target results in multi policy statement bec
   }));
 });
 
-test('fail if MessageGroupId is specified on non-fifo queues', () => {
+test('fail if messageGroupId is specified on non-fifo queues', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
 
-  throws(() => new targets.SqsQueue(queue, { messageGroupId: 'MyMessageGroupId' }),
-    /MessageGroupId cannot be specified/);
+  expect(() => new targets.SqsQueue(queue, { messageGroupId: 'MyMessageGroupId' }))
+    .toThrow(/messageGroupId cannot be specified/);
 });
 
-test('MessageGroupId is present when specified to fifo queues', () => {
+test('fifo queues are synthesized correctly', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
   const rule = new events.Rule(stack, 'MyRule', {
@@ -163,7 +161,7 @@ test('MessageGroupId is present when specified to fifo queues', () => {
     messageGroupId: 'MyMessageGroupId',
   }));
 
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
     ScheduleExpression: "rate(1 hour)",
     State: "ENABLED",
     Targets: [

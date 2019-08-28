@@ -200,7 +200,7 @@ export class Queue extends QueueBase {
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
-      public readonly fifo = attrs.queueArn.endsWith('.fifo') ? true : false;
+      public readonly fifo = queueName.endsWith('.fifo') ? true : false;
 
       protected readonly autoCreatePolicy = false;
     }
@@ -252,7 +252,7 @@ export class Queue extends QueueBase {
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
     const fifoProps = this.determineFifoProps(props);
-    this.fifo = (typeof(fifoProps.fifoQueue) !== 'undefined' && fifoProps) ? true : false;
+    this.fifo = fifoProps.fifoQueue || false;
 
     const queue = new CfnQueue(this, 'Resource', {
       queueName: this.physicalName,

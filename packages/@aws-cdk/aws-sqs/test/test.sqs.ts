@@ -97,21 +97,32 @@ export = {
     test.done();
   },
 
-  'exporting and importing works'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
+  'export and import': {
+    'importing works correctly'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
 
-    // WHEN
-    const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      // WHEN
+      const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
-    // THEN
+      // THEN
 
-    // "import" returns an IQueue bound to `Fn::ImportValue`s.
-    test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
-    test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
-      [ '', [ 'https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1' ] ] });
-    test.deepEqual(stack.resolve(imports.queueName), 'queue1');
-    test.done();
+      // "import" returns an IQueue bound to `Fn::ImportValue`s.
+      test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
+        [ '', [ 'https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1' ] ] });
+      test.deepEqual(stack.resolve(imports.queueName), 'queue1');
+      test.done();
+    },
+
+    'importing fifo and standard queues are detected correctly'(test: Test) {
+      const stack = new Stack();
+      const stdQueue = sqs.Queue.fromQueueArn(stack, 'StdQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      const fifoQueue = sqs.Queue.fromQueueArn(stack, 'FifoQueue', 'arn:aws:sqs:us-east-1:123456789012:queue2.fifo');
+      test.deepEqual(stdQueue.fifo, false);
+      test.deepEqual(fifoQueue.fifo, true);
+      test.done();
+    },
   },
 
   'grants': {
@@ -292,6 +303,28 @@ export = {
           "Type": "AWS::SQS::Queue",
           "Properties": {
             "QueueName": "MyQueue.fifo",
+            "FifoQueue": true
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'test a fifo queue is observed when the "fifo" property is specified'(test: Test) {
+    const stack = new Stack();
+    const queue = new Queue(stack, 'Queue', {
+      fifo: true
+    });
+
+    test.deepEqual(queue.fifo, true);
+
+    expect(stack).toMatch({
+      "Resources": {
+        "Queue4A7E3555": {
+          "Type": "AWS::SQS::Queue",
+          "Properties": {
             "FifoQueue": true
           }
         }
