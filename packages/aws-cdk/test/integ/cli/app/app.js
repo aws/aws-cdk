@@ -124,6 +124,16 @@ class ImportVpcStack extends cdk.Stack {
   }
 }
 
+class ConditionalResourceStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    if (!process.env.NO_RESOURCE) {
+      new iam.User(this, 'User');
+    }
+  }
+}
+
 const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
 
 const app = new cdk.App();
@@ -153,5 +163,7 @@ if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching 
   if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
   new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
 }
+
+new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
 
 app.synth();
