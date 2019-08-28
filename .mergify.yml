@@ -1,0 +1,80 @@
+# See https://doc.mergify.io
+
+pull_request_rules:
+  - name: automatic merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request is now being automatically merged.
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+      dismiss_reviews: {}
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - -title~=(WIP|wip)
+      - -label~=^(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+      - status-success=Semantic Pull Request
+  - name: comment checklist
+    actions:
+      label:
+        add: [ automerge-enabled ]
+      comment:
+        message: |
+          ### Pull Request Checklist
+
+           * [ ] Testing
+            - Unit test added (prefer to add a new test rather than modify existing tests)
+            - CLI change? Re-run/add [CLI integration tests](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#running-cli-integration-tests)
+           * [ ] Documentation
+            - **Inline docs**: make sure all public APIs are documented (copy & paste from official AWS docs)
+            - **README**: update module README
+            - **Design**: for significant features, follow the [design process](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#step-2-design-optional)
+           * [ ] Title uses the format `type(scope): text`
+            - __Type__: `fix`, `feat`, `refactor` go into CHANGELOG, `chore` is hidden
+            - __Scope__: name of the module without the `aws-` or `cdk-` prefix or postfix (e.g. `s3` instead of `aws-s3-deployment`)
+            - __Style__: use all **lower-case**, **do not** end with a period
+           * [ ] Description
+            - __Rationale__: describe rationale of change and approach taken
+            - __Issues__: Indicate issues fixed via: `fixes #xxx` or `closes #xxx`
+            - __Breaking?__: last paragraph: `BREAKING CHANGE: <describe what changed + link for details>`
+           * [ ] Sensitive Modules (requires 2 PR approvers)
+            - IAM document library (in @aws-cdk/aws-iam)
+            - EC2 security groups and ACLs (in @aws-cdk/aws-ec2)
+            - Grant APIs (if not based on official documentation with a reference)
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - -label~=^(automerge-enabled)
+      - base=master
+  - name: comment on CI fail
+    actions:
+      comment:
+        message: Codebuild (Continuous Integration) build failed for current commits. Please check log and resolve before PR is merged.
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
+  - name: remove stale reviews
+    actions:
+      dismiss_reviews: {}
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - base=master
+  - name: if fails conventional commits
+    actions:
+      comment:
+        message: Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). Please adjust title before merge.
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - status-failure=Semantic Pull Request
