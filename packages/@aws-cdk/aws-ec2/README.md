@@ -50,16 +50,18 @@ A default VPC configuration will create public and private subnets, but not
 isolated subnets. See *Advanced Subnet Configuration* below for information
 on how to change the default subnet configuration.
 
-Classes that use the VPC will "launch instances" (or more accurately, create
+Constructs using the VPC will "launch instances" (or more accurately, create
 Elastic Network Interfaces) into one or more of the subnets. They all accept
 a property called `subnetSelection` (sometimes called `vpcSubnets`) to allow
 you to select in what subnet to place the ENIs, usually defaulting to
 *private* subnets if the property is omitted.
 
-If you would like to save on the cost of NAT gateways, you can either switch
-to using *isolated* subnets as described in *Advanced Subnet Configuration*,
-or reduce the number of NAT gateways created by setting the `natGateways`
-property to a low number, like 1 or 2. Be aware that this may have
+If you would like to save on the cost of NAT gateways, you can use
+*isolated* subnets instead of *private* subnets (as described in Advanced
+*Subnet Configuration*). If you need private instances to have
+internet connectivity, another option is to reduce the number of NAT gateways
+created by setting the `natGateways` property to a lower value (the default
+is one NAT gateway per availability zone). Be aware that this may have
 availability implications for your application.
 
 
@@ -72,13 +74,14 @@ By default, a VPC will spread over at most 3 Availability Zones available to
 it. To change the number of Availability Zones that the VPC will spread over,
 specify the `maxAzs` property when defining it.
 
-How many Availability Zones are available depends on the *region* and
-*account* of the Stack containing the VPC. If the [region and account are
+The number of Availability Zones that are available depends on the *region*
+and *account* of the Stack containing the VPC. If the [region and account are
 specified](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) on
-the Stack, the CLI will look up the existing Availability Zones and get an
-accurate count. If region and account are not specified, the stack could
-be deployed anywhere and it will have to make a safe choice, limiting itself
-to 2 Availability Zones.
+the Stack, the CLI will [look up the existing Availability
+Zones](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#using-regions-availability-zones-describe)
+and get an accurate count. If region and account are not specified, the stack
+could be deployed anywhere and it will have to make a safe choice, limiting
+itself to 2 Availability Zones.
 
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
@@ -220,7 +223,9 @@ ID, but more flexibly by searching for a specific tag on the VPC.
 
 The import does assume that the VPC will be *symmetric*, i.e. that there are
 subnet groups that have a subnet in every Availability Zone that the VPC
-spreads over.
+spreads over. VPCs with other layouts cannot currently be imported, and will
+either lead to an error on import, or when another construct tries to access
+the subnets.
 
 Subnet types will be determined from the `aws-cdk:subnet-type` tag on the
 subnet if it exists, or the presence of a route to an Internet Gateway
