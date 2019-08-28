@@ -181,6 +181,7 @@ export class GraphWidget extends ConcreteWidget {
         view: 'timeSeries',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
+        stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations: horizontalAnnoations.length > 0 ? { horizontal: horizontalAnnoations } : undefined,
         yAxis: {
