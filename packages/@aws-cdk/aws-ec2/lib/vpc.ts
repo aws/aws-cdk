@@ -1413,7 +1413,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
         ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
       // tslint:disable-next-line: max-line-length
-      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read it's .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
     this.availabilityZone = attrs.availabilityZone;
