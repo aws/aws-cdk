@@ -12,6 +12,8 @@ pull_request_rules:
       delete_head_branch: {}
       dismiss_reviews: {}
     conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
       - -title~=(WIP|wip)
       - -label~=^(blocked|do-not-merge)
       - -merged
@@ -49,6 +51,8 @@ pull_request_rules:
             - EC2 security groups and ACLs (in @aws-cdk/aws-ec2)
             - Grant APIs (if not based on official documentation with a reference)
     conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
       - -label~=^(automerge-enabled)
       - base=master
   - name: comment on CI fail
@@ -56,15 +60,21 @@ pull_request_rules:
       comment:
         message: Codebuild (Continuous Integration) build failed for current commits. Please check log and resolve before PR is merged.
     conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
       - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
     conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
       - base=master
   - name: if fails conventional commits
     actions:
       comment:
         message: Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). Please adjust title before merge.
     conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
       - status-failure=Semantic Pull Request
