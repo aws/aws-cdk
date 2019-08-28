@@ -68,7 +68,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.6.0",
     "@types/aws-lambda": "^8.10.31",
-    "@types/lodash": "^4.14.136",
+    "@types/lodash": "^4.14.138",
     "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.13",
     "aws-sdk": "^2.518.0",
