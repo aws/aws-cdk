@@ -10,7 +10,7 @@ export class GenericLogDriver extends LogDriver {
    * The log driver to use for the container. The valid values listed for this parameter are log drivers
    * that the Amazon ECS container agent can communicate with by default. You cannot use awslogs with the GenericLogDriver.
    * You must use the AwsLogDriver if you want to use awslogs.
-   * 
+   *
    * For tasks using the Fargate launch type, the supported log drivers are awslogs and splunk.
    * For tasks using the EC2 launch type, the supported log drivers are awslogs, syslog, gelf, fluentd, splunk, journald, and json-file.
    *

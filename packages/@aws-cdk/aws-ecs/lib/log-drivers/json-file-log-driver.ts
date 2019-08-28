@@ -1,4 +1,4 @@
-import { GenericLogDriver } from "./generic-log-driver"
+import { GenericLogDriver } from "./generic-log-driver";
 
 /**
  * The configuration to use when creating a json-file log driver.
@@ -20,6 +20,6 @@ export class JsonFileLogDriver extends GenericLogDriver {
    * @param options the json-file log driver configuration options.
    */
   constructor(options?: JsonFileLogDriverProps) {
-    super({ logDriver: 'json-file', options })
+    super({ logDriver: 'json-file', options });
   }
 }

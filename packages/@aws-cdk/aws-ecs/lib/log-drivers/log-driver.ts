@@ -54,7 +54,7 @@ export abstract class LogDriver {
     return new SplunkLogDriver(props);
   }
 
- /**
+  /**
    * Creates a log driver configuration that sends log information to syslog Logs.
    */
   public static syslog(props?: SyslogLogDriverProps): LogDriver {

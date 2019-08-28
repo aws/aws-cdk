@@ -1,4 +1,4 @@
-import { GenericLogDriver } from "./generic-log-driver"
+import { GenericLogDriver } from "./generic-log-driver";
 
 /**
  * The configuration to use when creating a syslog log driver.
@@ -20,6 +20,6 @@ export class SyslogLogDriver extends GenericLogDriver {
    * @param options the syslog log driver configuration options.
    */
   constructor(options?: SyslogLogDriverProps) {
-    super({ logDriver: 'syslog', options })
+    super({ logDriver: 'syslog', options });
   }
 }

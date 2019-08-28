@@ -1,4 +1,4 @@
-import { GenericLogDriver } from "./generic-log-driver"
+import { GenericLogDriver } from "./generic-log-driver";
 
 /**
  * The configuration to use when creating a splunk log driver.
@@ -20,6 +20,6 @@ export class SplunkLogDriver extends GenericLogDriver {
    * @param options the splunk log driver configuration options.
    */
   constructor(options?: SplunkLogDriverProps) {
-    super({ logDriver: 'splunk', options })
+    super({ logDriver: 'splunk', options });
   }
 }

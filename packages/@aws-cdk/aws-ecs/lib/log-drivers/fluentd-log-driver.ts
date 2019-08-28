@@ -1,4 +1,4 @@
-import { GenericLogDriver } from "./generic-log-driver"
+import { GenericLogDriver } from "./generic-log-driver";
 
 /**
  * The configuration to use when creating a fluentd log driver.
@@ -20,6 +20,6 @@ export class FluentdLogDriver extends GenericLogDriver {
    * @param options the fluentd log driver configuration options.
    */
   constructor(options?: FluentdLogDriverProps) {
-    super({ logDriver: 'fluentd', options })
+    super({ logDriver: 'fluentd', options });
   }
 }

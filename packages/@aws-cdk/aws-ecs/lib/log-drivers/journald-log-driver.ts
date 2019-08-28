@@ -1,4 +1,4 @@
-import { GenericLogDriver } from "./generic-log-driver"
+import { GenericLogDriver } from "./generic-log-driver";
 
 /**
  * The configuration to use when creating a journald log driver.
@@ -20,6 +20,6 @@ export class JournaldLogDriver extends GenericLogDriver {
    * @param options the journald log driver configuration options.
    */
   constructor(options?: JournaldLogDriverProps) {
-    super({ logDriver: 'journald', options })
+    super({ logDriver: 'journald', options });
   }
 }

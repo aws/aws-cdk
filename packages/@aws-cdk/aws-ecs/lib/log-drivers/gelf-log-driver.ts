@@ -1,4 +1,4 @@
-import { GenericLogDriver } from "./generic-log-driver"
+import { GenericLogDriver } from "./generic-log-driver";
 
 /**
  * The configuration to use when creating a gelf log driver.
@@ -20,6 +20,6 @@ export class GelfLogDriver extends GenericLogDriver {
    * @param options the gelf log driver configuration options.
    */
   constructor(options?: GelfLogDriverProps) {
-    super({ logDriver: 'gelf', options })
+    super({ logDriver: 'gelf', options });
   }
 }
