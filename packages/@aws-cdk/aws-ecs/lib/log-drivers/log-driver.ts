@@ -29,7 +29,7 @@ export abstract class LogDriver {
   /**
    * Creates a log driver configuration that sends log information to gelf Logs.
    */
-  public static gelf(props?: GelfLogDriverProps): LogDriver {
+  public static gelf(props: GelfLogDriverProps): LogDriver {
     return new GelfLogDriver(props);
   }
 
@@ -50,7 +50,7 @@ export abstract class LogDriver {
   /**
    * Creates a log driver configuration that sends log information to splunk Logs.
    */
-  public static splunk(props?: SplunkLogDriverProps): LogDriver {
+  public static splunk(props: SplunkLogDriverProps): LogDriver {
     return new SplunkLogDriver(props);
   }
 

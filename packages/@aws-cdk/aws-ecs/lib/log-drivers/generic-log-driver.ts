@@ -20,7 +20,7 @@ export class GenericLogDriver extends LogDriver {
   /**
    * The configuration options to send to the log driver.
    */
-  private options: { [key: string]: string };
+  private options: { [key: string]: string|number|boolean };
 
   /**
    * Constructs a new instance of the GenericLogDriver class.
@@ -48,10 +48,12 @@ export class GenericLogDriver extends LogDriver {
 /**
  * Remove undefined values from a dictionary
  */
-function removeEmpty<T>(x: {[key: string]: (T | undefined)}): {[key: string]: T} {
+function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): { [key: string]: string } {
   for (const key of Object.keys(x)) {
     if (!x[key]) {
       delete x[key];
+    } else {
+      x[key] = x[key] + '';
     }
   }
   return x as any;

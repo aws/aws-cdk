@@ -22,7 +22,6 @@ export * from './images/ecr';
 export * from './log-drivers/aws-log-driver';
 export * from './log-drivers/fluentd-log-driver';
 export * from './log-drivers/gelf-log-driver';
-export * from './log-drivers/generic-log-driver';
 export * from './log-drivers/journald-log-driver';
 export * from './log-drivers/json-file-log-driver';
 export * from './log-drivers/splunk-log-driver';

@@ -66,7 +66,7 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: ecs.LogDriver.journald()
+      logging: ecs.JournaldLogDriver.journald()
     });
 
     // THEN
