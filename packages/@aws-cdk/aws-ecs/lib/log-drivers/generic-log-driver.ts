@@ -15,12 +15,12 @@ export class GenericLogDriver extends LogDriver {
    * For tasks using the EC2 launch type, the supported log drivers are awslogs, syslog, gelf, fluentd, splunk, journald, and json-file.
    *
    */
-  public logDriver: string;
+  private logDriver: string;
 
   /**
    * The configuration options to send to the log driver.
    */
-  public options: { [key: string]: string };
+  private options: { [key: string]: string };
 
   /**
    * Constructs a new instance of the GenericLogDriver class.
