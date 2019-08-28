@@ -120,6 +120,15 @@ export interface FunctionAttributes {
    * to this Lambda.
    */
   readonly securityGroupId?: string;
+
+  /**
+   * Whether the imported security group allows all outbound traffic or not
+   *
+   * Unless set to `false`, no egress rules will be added to the security group.
+   *
+   * @default true
+   */
+  readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {

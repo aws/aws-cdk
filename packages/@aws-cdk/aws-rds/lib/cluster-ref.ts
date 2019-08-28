@@ -55,6 +55,15 @@ export interface DatabaseClusterAttributes {
   readonly securityGroupId: string;
 
   /**
+   * Whether the imported security group allows all outbound traffic or not
+   *
+   * Unless set to `false`, no egress rules will be added to the security group.
+   *
+   * @default true
+   */
+  readonly securityGroupAllowsAllOutbound?: boolean;
+
+  /**
    * Identifier for the cluster
    */
   readonly clusterIdentifier: string;

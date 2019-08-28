@@ -278,7 +278,9 @@ export class Function extends FunctionBase {
         if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
             securityGroups: [
-              ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)
+              ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId, {
+                allowAllOutbound: attrs.securityGroupAllowsAllOutbound,
+              })
             ]
           });
         }

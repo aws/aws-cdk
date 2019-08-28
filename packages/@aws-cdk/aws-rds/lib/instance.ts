@@ -79,6 +79,15 @@ export interface DatabaseInstanceAttributes {
    * The security group identifier of the instance.
    */
   readonly securityGroupId: string;
+
+  /**
+   * Whether the imported security group allows all outbound traffic or not
+   *
+   * Unless set to `false`, no egress rules will be added to the security group.
+   *
+   * @default true
+   */
+  readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
 /**
@@ -92,7 +101,9 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId, {
+          allowAllOutbound: attrs.securityGroupAllowsAllOutbound
+        })],
         defaultPort: this.defaultPort
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
