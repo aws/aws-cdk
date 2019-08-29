@@ -21,7 +21,7 @@ export abstract class LogDrivers {
   /**
    * Creates a log driver configuration that sends log information to fluentd Logs.
    */
-  public static fluentd(props: FluentdLogDriverProps): LogDriver {
+  public static fluentd(props?: FluentdLogDriverProps): LogDriver {
     return new FluentdLogDriver(props);
   }
 
@@ -35,14 +35,14 @@ export abstract class LogDrivers {
   /**
    * Creates a log driver configuration that sends log information to journald Logs.
    */
-  public static journald(props: JournaldLogDriverProps): LogDriver {
+  public static journald(props?: JournaldLogDriverProps): LogDriver {
     return new JournaldLogDriver(props);
   }
 
   /**
    * Creates a log driver configuration that sends log information to json-file Logs.
    */
-  public static jsonFile(props: JsonFileLogDriverProps): LogDriver {
+  public static jsonFile(props?: JsonFileLogDriverProps): LogDriver {
     return new JsonFileLogDriver(props);
   }
 
@@ -56,7 +56,7 @@ export abstract class LogDrivers {
   /**
    * Creates a log driver configuration that sends log information to syslog Logs.
    */
-  public static syslog(props: SyslogLogDriverProps): LogDriver {
+  public static syslog(props?: SyslogLogDriverProps): LogDriver {
     return new SyslogLogDriver(props);
   }
 }
