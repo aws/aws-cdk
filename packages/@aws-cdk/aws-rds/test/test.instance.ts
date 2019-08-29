@@ -488,5 +488,28 @@ export = {
     }));
 
     test.done();
+  },
+
+  'imported instance with imported security group honors allowAllOutbound'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
+      instanceEndpointAddress: 'address',
+      instanceIdentifier: 'identifier',
+      port: 3306,
+      securityGroupId: 'sg-123456789',
+      securityGroupAllowsAllOutbound: false
+    });
+
+    // WHEN
+    instance.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'sg-123456789',
+    }));
+
+    test.done();
   }
 };
