@@ -14,7 +14,7 @@ export function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): 
  * Checks that a value is a positive integer
  */
 export function ensurePositiveInteger(val: number) {
-    if (val && val < 0) {
+    if (val && Number.isInteger(val) && val < 0) {
         throw new Error(`\`${val}\` must be a positive integer.`);
     }
 }
