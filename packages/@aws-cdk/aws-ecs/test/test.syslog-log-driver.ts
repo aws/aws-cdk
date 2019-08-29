@@ -61,4 +61,26 @@ export = {
 
     test.done();
   },
+
+  "create a syslog log driver using syslog"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.syslog()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'syslog',
+            Options: {}
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };

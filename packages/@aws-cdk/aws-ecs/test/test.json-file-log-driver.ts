@@ -61,4 +61,26 @@ export = {
 
     test.done();
   },
+
+  "create a json-file log driver using json-file"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.jsonFile()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'json-file',
+            Options: {}
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };

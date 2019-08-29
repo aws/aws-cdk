@@ -61,4 +61,26 @@ export = {
 
     test.done();
   },
+
+  "create a splunk log driver using splunk"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.splunk()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'splunk',
+            Options: {}
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };

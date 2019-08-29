@@ -61,4 +61,26 @@ export = {
 
     test.done();
   },
+
+  "create a fluentd log driver using fluentd"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.fluentd()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'fluentd',
+            Options: {}
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };

@@ -61,4 +61,26 @@ export = {
 
     test.done();
   },
+
+  "create a gelf log driver using gelf"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.gelf()
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'gelf',
+            Options: {}
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
