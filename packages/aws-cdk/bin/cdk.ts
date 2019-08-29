@@ -5,7 +5,7 @@ import colors = require('colors/safe');
 import path = require('path');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, BootstrapEnvironmentProps, destroyStack, SDK } from '../lib';
+import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
@@ -18,9 +18,6 @@ import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import version = require('../lib/version');
-
-// tslint:disable-next-line:no-var-requires
-const promptly = require('promptly');
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -201,11 +198,18 @@ async function initCommandLine() {
           requireApproval: configuration.settings.get(['requireApproval']),
           ci: args.ci,
           reuseAssets: args['build-exclude'],
-          tags: configuration.settings.get(['tags'])
+          tags: configuration.settings.get(['tags']),
+          sdk: aws,
         });
 
       case 'destroy':
-        return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
+        return await cli.destroy({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          force: args.force,
+          roleArn: args.roleArn,
+          sdk: aws,
+        });
 
       case 'synthesize':
       case 'synth':
@@ -330,35 +334,6 @@ async function initCommandLine() {
     }
 
     return 0; // exit-code
-  }
-
-  async function cliDestroy(stackNames: string[], exclusively: boolean, force: boolean, roleArn: string | undefined) {
-    const stacks = await appStacks.selectStacks(stackNames, {
-      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
-      defaultBehavior: DefaultSelection.OnlySingle
-    });
-
-    // The stacks will have been ordered for deployment, so reverse them for deletion.
-    stacks.reverse();
-
-    if (!force) {
-      // tslint:disable-next-line:max-line-length
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
-      if (!confirmed) {
-        return;
-      }
-    }
-
-    for (const stack of stacks) {
-      success('%s: destroying...', colors.blue(stack.name));
-      try {
-        await destroyStack({ stack, sdk: aws, deployName: stack.name, roleArn });
-        success('\n ✅  %s: destroyed', colors.blue(stack.name));
-      } catch (e) {
-        error('\n ❌  %s: destroy failed', colors.blue(stack.name), e);
-        throw e;
-      }
-    }
   }
 
   /**
