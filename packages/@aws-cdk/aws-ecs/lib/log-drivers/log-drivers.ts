@@ -10,7 +10,7 @@ import { SyslogLogDriver, SyslogLogDriverProps } from './syslog-log-driver';
 /**
  * The base class for log drivers.
  */
-export abstract class LogDrivers {
+export class LogDrivers {
   /**
    * Creates a log driver configuration that sends log information to CloudWatch Logs.
    */
