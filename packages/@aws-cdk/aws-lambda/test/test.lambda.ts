@@ -1,4 +1,5 @@
 import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
@@ -1372,7 +1373,28 @@ export = {
     }));
 
     test.done();
-   }
+   },
+
+   'imported lambda with imported security group honors allowAllOutbound'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const fn = lambda.Function.fromFunctionAttributes(stack, 'fn', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
+      securityGroupId: 'sg-123456789',
+      securityGroupAllowsAllOutbound: false,
+    });
+
+    // WHEN
+    fn.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'sg-123456789',
+    }));
+
+    test.done();
+  }
 };
 
 function newTestLambda(scope: cdk.Construct) {
