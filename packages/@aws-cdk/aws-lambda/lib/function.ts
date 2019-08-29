@@ -76,7 +76,7 @@ export interface FunctionProps {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: any };
+  readonly environment?: { [key: string]: string };
 
   /**
    * The runtime environment for the Lambda function that you are uploading.
@@ -392,7 +392,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private readonly environment?: { [key: string]: any };
+  private readonly environment: { [key: string]: string };
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -491,11 +491,7 @@ export class Function extends FunctionBase {
    * @param key The environment variable key.
    * @param value The environment variable's value.
    */
-  public addEnvironment(key: string, value: any): this {
-    if (!this.environment) {
-      // TODO: add metadata
-      return this;
-    }
+  public addEnvironment(key: string, value: string): this {
     this.environment[key] = value;
     return this;
   }
