@@ -15,12 +15,12 @@ export = {
     cb();
   },
 
-  'create a gelf log driver with options'(test: Test) {
+  'create a gelf log driver with minimum options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
       logging: new ecs.GelfLogDriver({
-        tag: 'hello'
+        address: 'my-gelf-address'
       })
     });
 
@@ -31,7 +31,7 @@ export = {
           LogConfiguration: {
             LogDriver: 'gelf',
             Options: {
-              tag: 'hello'
+              'gelf-address': 'my-gelf-address'
             }
           }
         }
@@ -41,32 +41,13 @@ export = {
     test.done();
   },
 
-  'create a gelf log driver without options'(test: Test) {
+  "create a gelf log driver using gelf with minimum options"(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.GelfLogDriver()
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'gelf'
-          }
-        }
-      ]
-    }));
-
-    test.done();
-  },
-
-  "create a gelf log driver using gelf"(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.LogDrivers.gelf()
+      logging: ecs.LogDrivers.gelf({
+        address: 'my-gelf-address'
+      })
     });
 
     // THEN
@@ -75,7 +56,9 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'gelf',
-            Options: {}
+            Options: {
+              'gelf-address': 'my-gelf-address'
+            }
           }
         }
       ]

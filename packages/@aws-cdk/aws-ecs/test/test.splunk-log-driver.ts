@@ -15,12 +15,13 @@ export = {
     cb();
   },
 
-  'create a splunk log driver with options'(test: Test) {
+  'create a splunk log driver with minimum options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
       logging: new ecs.SplunkLogDriver({
-        tag: 'hello'
+        token: 'my-splunk-token',
+        url: 'my-splunk-url'
       })
     });
 
@@ -31,7 +32,8 @@ export = {
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
-              tag: 'hello'
+              'splunk-token': 'my-splunk-token',
+              'url': 'my-splunk-url'
             }
           }
         }
@@ -41,32 +43,14 @@ export = {
     test.done();
   },
 
-  'create a splunk log driver without options'(test: Test) {
+  "create a splunk log driver using splunk with minimum options"(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.SplunkLogDriver()
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'splunk'
-          }
-        }
-      ]
-    }));
-
-    test.done();
-  },
-
-  "create a splunk log driver using splunk"(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.LogDrivers.splunk()
+      logging: ecs.LogDrivers.splunk({
+        token: 'my-splunk-token',
+        url: 'my-splunk-url'
+      })
     });
 
     // THEN
@@ -75,7 +59,10 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'splunk',
-            Options: {}
+            Options: {
+              'splunk-token': 'my-splunk-token',
+              'url': 'my-splunk-url'
+            }
           }
         }
       ]
