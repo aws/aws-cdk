@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "CDK Constructs for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -66,7 +66,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.6.0",
+    "@aws-cdk/assert": "^1.6.1",
     "@types/aws-lambda": "^8.10.31",
     "@types/lodash": "^4.14.138",
     "@types/nock": "^10.0.3",
@@ -82,29 +82,29 @@
     "sinon": "^7.4.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.6.0",
-    "@aws-cdk/aws-ec2": "^1.6.0",
-    "@aws-cdk/aws-events": "^1.6.0",
-    "@aws-cdk/aws-iam": "^1.6.0",
-    "@aws-cdk/aws-logs": "^1.6.0",
-    "@aws-cdk/aws-s3": "^1.6.0",
-    "@aws-cdk/aws-s3-assets": "^1.6.0",
-    "@aws-cdk/aws-sqs": "^1.6.0",
-    "@aws-cdk/core": "^1.6.0",
-    "@aws-cdk/cx-api": "^1.6.0"
+    "@aws-cdk/aws-cloudwatch": "^1.6.1",
+    "@aws-cdk/aws-ec2": "^1.6.1",
+    "@aws-cdk/aws-events": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/aws-logs": "^1.6.1",
+    "@aws-cdk/aws-s3": "^1.6.1",
+    "@aws-cdk/aws-s3-assets": "^1.6.1",
+    "@aws-cdk/aws-sqs": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.6.0",
-    "@aws-cdk/aws-ec2": "^1.6.0",
-    "@aws-cdk/aws-events": "^1.6.0",
-    "@aws-cdk/aws-iam": "^1.6.0",
-    "@aws-cdk/aws-logs": "^1.6.0",
-    "@aws-cdk/aws-s3": "^1.6.0",
-    "@aws-cdk/aws-s3-assets": "^1.6.0",
-    "@aws-cdk/aws-sqs": "^1.6.0",
-    "@aws-cdk/core": "^1.6.0",
-    "@aws-cdk/cx-api": "^1.6.0"
+    "@aws-cdk/aws-cloudwatch": "^1.6.1",
+    "@aws-cdk/aws-ec2": "^1.6.1",
+    "@aws-cdk/aws-events": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/aws-logs": "^1.6.1",
+    "@aws-cdk/aws-s3": "^1.6.1",
+    "@aws-cdk/aws-s3-assets": "^1.6.1",
+    "@aws-cdk/aws-sqs": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "engines": {
     "node": ">= 8.10.0"
