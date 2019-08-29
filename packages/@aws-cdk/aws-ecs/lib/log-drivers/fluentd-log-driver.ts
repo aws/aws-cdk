@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver'
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './utils'
+import { stringifyOptions } from './utils'
 
 /**
  * Specifies the fluentd log driver configuration options.
@@ -75,7 +75,7 @@ export class FluentdLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'fluentd',
-      options: removeEmpty({
+      options: stringifyOptions({
         'fluentd-address': this.props.address,
         'fluentd-async-connect': this.props.asyncConnect,
         'fluentd-buffer-limit': this.props.bufferLimit,

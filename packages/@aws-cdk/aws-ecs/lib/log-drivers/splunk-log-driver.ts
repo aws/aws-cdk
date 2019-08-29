@@ -2,10 +2,12 @@ import { Construct } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty, ensureInList, ensureInRange } from './utils'
+import { stringifyOptions, ensureInList, ensureInRange } from './utils'
 
 /**
  * Specifies the splunk log driver configuration options.
+ * 
+ * [Source](https://docs.docker.com/config/containers/logging/splunk/)
  */
 export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
@@ -121,7 +123,7 @@ export class SplunkLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'splunk',
-      options: removeEmpty({
+      options: stringifyOptions({
         'splunk-token': this.props.token,
         'splunk-url': this.props.url,
         'splunk-source': this.props.source,

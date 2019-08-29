@@ -36,3 +36,25 @@ export function ensureInRange(val: number, start: number, end: number) {
         throw new Error(`\`${val}\` must be within range ${start}:${end}`);
     }
 }
+
+export function stringifyOptions(options: { [key: string]: (string | string[] | number | boolean | undefined) }) {
+    let _options: { [key: string]: string } = {}
+    const filteredOptions = removeEmpty(options)
+
+    for (const key of Object.keys(filteredOptions)) {
+        if (filteredOptions.env && Array.isArray(filteredOptions.env)) {
+            _options.env = filteredOptions.env.join(',');
+            continue;
+        }
+
+        if (filteredOptions.labels && Array.isArray(filteredOptions.labels)) {
+            _options.env = filteredOptions.labels.join(',');
+            continue;
+        }
+
+        // Convert value to string
+        _options[key] = `${filteredOptions[key]}`
+    }
+
+    return _options
+}

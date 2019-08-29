@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './utils'
+import { stringifyOptions } from './utils'
 
 /**
  * Specifies the journald log driver configuration options.
@@ -39,7 +39,7 @@ export class JournaldLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'journald',
-      options: removeEmpty({
+      options: stringifyOptions({
         'tag': this.props.tag,
         'labels': this.props.labels,
         'env': this.props.env,

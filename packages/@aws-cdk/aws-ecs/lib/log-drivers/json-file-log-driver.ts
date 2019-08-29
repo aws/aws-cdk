@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './utils'
+import { stringifyOptions } from './utils'
 
 /**
  * Specifies the json-file log driver configuration options.
@@ -59,7 +59,7 @@ export class JsonFileLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'json-file',
-      options: removeEmpty({
+      options: stringifyOptions({
         'max-size': this.props.maxSize,
         'max-file': this.props.maxFile,
         'compress': this.props.compress,

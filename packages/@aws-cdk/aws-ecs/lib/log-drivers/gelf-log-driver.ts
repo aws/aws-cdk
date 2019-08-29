@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty, ensureInList, ensureInRange, ensurePositiveInteger } from './utils'
+import { stringifyOptions, ensureInList, ensureInRange, ensurePositiveInteger } from './utils'
 
 /**
  * Specifies the journald log driver configuration options.
@@ -95,7 +95,7 @@ export class GelfLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'gelf',
-      options: removeEmpty({
+      options: stringifyOptions({
         'gelf-address': this.props.address,
         'gelf-compression-type': this.props.compressionType,
         'gelf-compression-level': this.props.compressionLevel,

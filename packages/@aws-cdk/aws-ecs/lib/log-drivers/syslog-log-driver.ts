@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './utils'
+import { stringifyOptions } from './utils'
 
 /**
  * Specifies the syslog log driver configuration options.
@@ -98,7 +98,7 @@ export class SyslogLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'syslog',
-      options: removeEmpty({
+      options: stringifyOptions({
         'syslog-address': this.props.address,
         'syslog-facility': this.props.facility,
         'syslog-tls-ca-cert': this.props.tlsCaCert,
