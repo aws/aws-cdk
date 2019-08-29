@@ -1,4 +1,5 @@
 import { Construct } from '@aws-cdk/core';
+import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
 import { removeEmpty } from './utils'
@@ -6,7 +7,7 @@ import { removeEmpty } from './utils'
 /**
  * Specifies the splunk log driver configuration options.
  */
-export interface SplunkLogDriverProps {
+export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Splunk HTTP Event Collector token.
    */
@@ -91,39 +92,6 @@ export interface SplunkLogDriverProps {
    * @default - gzipLevel not set.
    */
   readonly gzipLevel?: number;
-
-  /**
-   * Specify tag for message, which interpret some markup. Default value is {{.ID}}
-   * (12 characters of the container ID). Refer to the log tag option documentation
-   * for customizing the log tag format.
-   *
-   * @default - tag not set
-   */
-  readonly tag?: string;
-
-  /**
-   * Comma-separated list of keys of labels, which should be included in message, if these
-   * labels are specified for container.
-   *
-   * @default - labels not set
-   */
-  readonly labels?: string;
-
-  /**
-   * Comma-separated list of keys of environment variables, which should be included in
-   * message, if these variables are specified for container.
-   *
-   * @default - env not set
-   */
-  readonly env?: string;
-
-  /**
-   * Similar to and compatible with env. A regular expression to match logging-related
-   * environment variables. Used for advanced log tag options.
-   *
-   * @default - envRegex not set
-   */
-  readonly envRegex?: string;
 }
 
 /**
@@ -135,7 +103,7 @@ export class SplunkLogDriver extends LogDriver {
    *
    * @param props the splunk log driver configuration options.
    */
-  constructor(private readonly props?: SplunkLogDriverProps) {
+  constructor(private readonly props: SplunkLogDriverProps) {
     super();
   }
 
@@ -143,28 +111,26 @@ export class SplunkLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
-    const options = this.props ? {
-      'splunk-token': this.props.token,
-      'splunk-url': this.props.url,
-      'splunk-source': this.props.source,
-      'splunk-sourceType': this.props.sourceType,
-      'splunk-index': this.props.index,
-      'splunk-capath': this.props.capath,
-      'splunk-caname': this.props.caname,
-      'splunk-insecureskipverify': this.props.insecureskipverify,
-      'splunk-format': this.props.format,
-      'splunk-verify-connection': this.props.verifyConnection,
-      'splunk-gzip': this.props.gzip,
-      'splunk-gzip-level': this.props.gzipLevel,
-      'tag': this.props.tag,
-      'labels': this.props.labels,
-      'env': this.props.env,
-      'env-regex': this.props.envRegex
-    } : {};
-
     return {
       logDriver: 'splunk',
-      options: removeEmpty(options),
+      options: removeEmpty({
+        'splunk-token': this.props.token,
+        'splunk-url': this.props.url,
+        'splunk-source': this.props.source,
+        'splunk-sourceType': this.props.sourceType,
+        'splunk-index': this.props.index,
+        'splunk-capath': this.props.capath,
+        'splunk-caname': this.props.caname,
+        'splunk-insecureskipverify': this.props.insecureskipverify,
+        'splunk-format': this.props.format,
+        'splunk-verify-connection': this.props.verifyConnection,
+        'splunk-gzip': this.props.gzip,
+        'splunk-gzip-level': this.props.gzipLevel,
+        'tag': this.props.tag,
+        'labels': this.props.labels,
+        'env': this.props.env,
+        'env-regex': this.props.envRegex
+      }),
     };
   }
 }

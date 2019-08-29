@@ -1,4 +1,5 @@
 import { Construct } from '@aws-cdk/core';
+import { BaseLogDriverProps } from './base-log-driver'
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
 import { removeEmpty } from './utils'
@@ -6,7 +7,7 @@ import { removeEmpty } from './utils'
 /**
  * Specifies the fluentd log driver configuration options.
  */
-export interface FluentdLogDriverProps {
+export interface FluentdLogDriverProps extends BaseLogDriverProps {
   /**
    * By default, the logging driver connects to localhost:24224. Supply the
    * address option to connect to a different address. tcp(default) and unix
@@ -52,42 +53,6 @@ export interface FluentdLogDriverProps {
    * @default - subSecondPrecision not set.
    */
   readonly subSecondPrecision?: boolean;
-
-  /**
-   * By default, Docker uses the first 12 characters of the container ID to tag
-   * log messages. Refer to the log tag option documentation for customizing the
-   * log tag format.
-   *
-   * @default - No tag
-   */
-  readonly tag?: string;
-
-  /**
-   * The labels option takes a comma-separated list of keys. If there is collision
-   * between label and env keys, the value of the env takes precedence. Adds additional
-   * fields to the extra attributes of a logging message.
-   *
-   * @default - No labels
-   */
-  readonly labels?: string;
-
-  /**
-   * The env option takes a comma-separated list of keys. If there is collision between
-   * label and env keys, the value of the env takes precedence. Adds additional fields
-   * to the extra attributes of a logging message.
-   *
-   * @default - No env
-   */
-  readonly env?: string;
-
-  /**
-   * The env-regex option is similar to and compatible with env. Its value is a regular
-   * expression to match logging-related environment variables. It is used for advanced
-   * log tag options.
-   *
-   * @default - No envRegex
-   */
-  readonly envRegex?: string;
 }
 
 /**
@@ -99,7 +64,7 @@ export class FluentdLogDriver extends LogDriver {
    *
    * @param props the fluentd log driver configuration options.
    */
-  constructor(private readonly props?: FluentdLogDriverProps) {
+  constructor(private readonly props: FluentdLogDriverProps = {}) {
     super();
   }
 
@@ -107,22 +72,20 @@ export class FluentdLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
-    const options = this.props ? {
-      'fluentd-address': this.props.address,
-      'fluentd-async-connect': this.props.asyncConnect,
-      'fluentd-buffer-limit': this.props.bufferLimit,
-      'fluentd-retry-wait': this.props.retryWait,
-      'fluentd-max-retries': this.props.maxRetries,
-      'fluentd-sub-second-precision': this.props.subSecondPrecision,
-      'tag': this.props.tag,
-      'labels': this.props.labels,
-      'env': this.props.env,
-      'env-regex': this.props.envRegex
-    } : {};
-
     return {
       logDriver: 'fluentd',
-      options: removeEmpty(options),
+      options: removeEmpty({
+        'fluentd-address': this.props.address,
+        'fluentd-async-connect': this.props.asyncConnect,
+        'fluentd-buffer-limit': this.props.bufferLimit,
+        'fluentd-retry-wait': this.props.retryWait,
+        'fluentd-max-retries': this.props.maxRetries,
+        'fluentd-sub-second-precision': this.props.subSecondPrecision,
+        'tag': this.props.tag,
+        'labels': this.props.labels,
+        'env': this.props.env,
+        'env-regex': this.props.envRegex
+      }),
     };
   }
 }

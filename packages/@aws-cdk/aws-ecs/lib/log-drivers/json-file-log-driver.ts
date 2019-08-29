@@ -1,4 +1,5 @@
 import { Construct } from '@aws-cdk/core';
+import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
 import { removeEmpty } from './utils'
@@ -6,7 +7,7 @@ import { removeEmpty } from './utils'
 /**
  * Specifies the json-file log driver configuration options.
  */
-export interface JsonFileLogDriverProps {
+export interface JsonFileLogDriverProps extends BaseLogDriverProps {
   /**
    * The maximum size of the log before it is rolled. A positive integer plus a modifier
    * representing the unit of measure (k, m, or g). Defaults to -1 (unlimited).
@@ -30,30 +31,6 @@ export interface JsonFileLogDriverProps {
    * @default - compress not set
    */
   readonly compress?: boolean;
-
-  /**
-   * Applies when starting the Docker daemon. A comma-separated list of logging-related
-   * labels this daemon accepts. Used for advanced log tag options.
-   *
-   * @default - labels not set
-   */
-  readonly labels?: string;
-
-  /**
-   * Applies when starting the Docker daemon. A comma-separated list of logging-related
-   * environment variables this daemon accepts. Used for advanced log tag options.
-   *
-   * @default - env not set
-   */
-  readonly env?: string;
-
-  /**
-   * Similar to and compatible with env. A regular expression to match logging-related
-   * environment variables. Used for advanced log tag options.
-   *
-   * @default - envRegex not set
-   */
-  readonly envRegex?: string;
 }
 
 /**
@@ -65,7 +42,7 @@ export class JsonFileLogDriver extends LogDriver {
    *
    * @param props the json-file log driver configuration options.
    */
-  constructor(private readonly props?: JsonFileLogDriverProps) {
+  constructor(private readonly props: JsonFileLogDriverProps = {}) {
     super();
   }
 
@@ -73,18 +50,16 @@ export class JsonFileLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
-    const options = this.props ? {
-      'max-size': this.props.maxSize,
-      'max-file': this.props.maxFile,
-      'compress': this.props.compress,
-      'labels': this.props.labels,
-      'env': this.props.env,
-      'env-regex': this.props.envRegex
-    } : {};
-
     return {
       logDriver: 'json-file',
-      options: removeEmpty(options),
+      options: removeEmpty({
+        'max-size': this.props.maxSize,
+        'max-file': this.props.maxFile,
+        'compress': this.props.compress,
+        'labels': this.props.labels,
+        'env': this.props.env,
+        'env-regex': this.props.envRegex
+      }),
     };
   }
 }

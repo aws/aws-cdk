@@ -99,21 +99,19 @@ export class GelfLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
-    const options = this.props ? {
-      'gelf-address': this.props.address,
-      'gelf-compression-type': this.props.compressionType,
-      'gelf-compression-level': this.props.compressionLevel,
-      'gelf-tcp-max-reconnect': this.props.tcpMaxReconnect,
-      'gelf-tcp-reconnect-delay': this.props.tcpReconnectDelay,
-      'tag': this.props.tag,
-      'labels': this.props.labels,
-      'env': this.props.env,
-      'env-regex': this.props.envRegex
-    } : {};
-
     return {
       logDriver: 'gelf',
-      options: removeEmpty(options),
+      options: removeEmpty({
+        'gelf-address': this.props.address,
+        'gelf-compression-type': this.props.compressionType,
+        'gelf-compression-level': this.props.compressionLevel,
+        'gelf-tcp-max-reconnect': this.props.tcpMaxReconnect,
+        'gelf-tcp-reconnect-delay': this.props.tcpReconnectDelay,
+        'tag': this.props.tag,
+        'labels': this.props.labels,
+        'env': this.props.env,
+        'env-regex': this.props.envRegex
+      }),
     };
   }
 }
