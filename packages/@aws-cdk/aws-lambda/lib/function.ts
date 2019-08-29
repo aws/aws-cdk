@@ -492,10 +492,6 @@ export class Function extends FunctionBase {
    * @param value The environment variable's value.
    */
   public addEnvironment(key: string, value: string): this {
-    if (!this.environment) {
-      // TODO: add metadata
-      return this;
-    }
     this.environment[key] = value;
     return this;
   }
