@@ -6,6 +6,8 @@ import { removeEmpty } from './utils'
 
 /**
  * Specifies the journald log driver configuration options.
+ * 
+ * [Source](https://docs.docker.com/config/containers/logging/journald/)
  */
 export interface JournaldLogDriverProps extends BaseLogDriverProps {
   /**

@@ -6,6 +6,8 @@ import { removeEmpty } from './utils'
 
 /**
  * Specifies the syslog log driver configuration options.
+ * 
+ * [Source](https://docs.docker.com/config/containers/logging/syslog/)
  */
 export interface SyslogLogDriverProps extends BaseLogDriverProps {
   /**

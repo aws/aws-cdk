@@ -6,6 +6,8 @@ import { removeEmpty } from './utils'
 
 /**
  * Specifies the fluentd log driver configuration options.
+ * 
+ * [Source](https://docs.docker.com/config/containers/logging/fluentd/)
  */
 export interface FluentdLogDriverProps extends BaseLogDriverProps {
   /**

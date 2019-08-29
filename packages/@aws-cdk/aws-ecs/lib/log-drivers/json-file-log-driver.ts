@@ -6,6 +6,8 @@ import { removeEmpty } from './utils'
 
 /**
  * Specifies the json-file log driver configuration options.
+ * 
+ * [Source](https://docs.docker.com/config/containers/logging/json-file/)
  */
 export interface JsonFileLogDriverProps extends BaseLogDriverProps {
   /**

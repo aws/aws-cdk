@@ -6,6 +6,8 @@ import { removeEmpty, ensureInList, ensureInRange, ensurePositiveInteger } from 
 
 /**
  * Specifies the journald log driver configuration options.
+ * 
+ * [Source](https://docs.docker.com/config/containers/logging/gelf/)
  */
 export interface GelfLogDriverProps extends BaseLogDriverProps {
   /**
