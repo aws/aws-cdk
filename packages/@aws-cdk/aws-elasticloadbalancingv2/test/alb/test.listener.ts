@@ -624,7 +624,28 @@ export = {
     }), /`targetGroups`.*`fixedResponse`/);
 
     test.done();
-  }
+  },
+
+  'Imported listener with imported security group honors allowAllOutbound'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'Listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroupId: 'security-group-id',
+      securityGroupAllowsAllOutbound: false,
+    });
+
+    // WHEN
+    listener.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'security-group-id'
+    }));
+
+    test.done();
+  },
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {
