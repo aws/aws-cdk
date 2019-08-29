@@ -21,7 +21,7 @@ export class GenericLogDriver extends LogDriver {
   /**
    * The configuration options to send to the log driver.
    */
-  private options: { [key: string]: string|number|boolean };
+  private options: { [key: string]: string };
 
   /**
    * Constructs a new instance of the GenericLogDriver class.
