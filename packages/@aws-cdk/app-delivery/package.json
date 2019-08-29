@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -40,18 +40,18 @@
     "build+test": "npm run build && npm test"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.6.0",
-    "@aws-cdk/aws-codebuild": "^1.6.0",
-    "@aws-cdk/aws-codepipeline": "^1.6.0",
-    "@aws-cdk/aws-codepipeline-actions": "^1.6.0",
-    "@aws-cdk/aws-events": "^1.6.0",
-    "@aws-cdk/aws-iam": "^1.6.0",
-    "@aws-cdk/core": "^1.6.0",
-    "@aws-cdk/cx-api": "^1.6.0"
+    "@aws-cdk/aws-cloudformation": "^1.6.1",
+    "@aws-cdk/aws-codebuild": "^1.6.1",
+    "@aws-cdk/aws-codepipeline": "^1.6.1",
+    "@aws-cdk/aws-codepipeline-actions": "^1.6.1",
+    "@aws-cdk/aws-events": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.6.0",
-    "@aws-cdk/aws-s3": "^1.6.0",
+    "@aws-cdk/assert": "^1.6.1",
+    "@aws-cdk/aws-s3": "^1.6.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "fast-check": "^1.16.0",
@@ -74,14 +74,14 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.6.0",
-    "@aws-cdk/aws-codebuild": "^1.6.0",
-    "@aws-cdk/aws-codepipeline": "^1.6.0",
-    "@aws-cdk/aws-codepipeline-actions": "^1.6.0",
-    "@aws-cdk/aws-events": "^1.6.0",
-    "@aws-cdk/aws-iam": "^1.6.0",
-    "@aws-cdk/core": "^1.6.0",
-    "@aws-cdk/cx-api": "^1.6.0"
+    "@aws-cdk/aws-cloudformation": "^1.6.1",
+    "@aws-cdk/aws-codebuild": "^1.6.1",
+    "@aws-cdk/aws-codepipeline": "^1.6.1",
+    "@aws-cdk/aws-codepipeline-actions": "^1.6.1",
+    "@aws-cdk/aws-events": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "engines": {
     "node": ">= 8.10.0"
