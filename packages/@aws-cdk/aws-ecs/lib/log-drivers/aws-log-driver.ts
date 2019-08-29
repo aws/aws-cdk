@@ -2,6 +2,7 @@ import logs = require('@aws-cdk/aws-logs');
 import { Construct, Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
+import { removeEmpty } from './utils'
 
 /**
  * Specifies the awslogs log driver configuration options.
@@ -104,16 +105,4 @@ export class AwsLogDriver extends LogDriver {
       }),
     };
   }
-}
-
-/**
- * Remove undefined values from a dictionary
- */
-function removeEmpty<T>(x: {[key: string]: (T | undefined)}): {[key: string]: T} {
-  for (const key of Object.keys(x)) {
-    if (!x[key]) {
-      delete x[key];
-    }
-  }
-  return x as any;
 }

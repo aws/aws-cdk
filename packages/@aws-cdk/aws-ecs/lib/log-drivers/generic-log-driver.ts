@@ -1,6 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "../index";
+import { removeEmpty } from './utils'
 
 /**
  * A log driver that sends logs to the specified driver.
@@ -43,18 +44,4 @@ export class GenericLogDriver extends LogDriver {
       options: removeEmpty(this.options),
     };
   }
-}
-
-/**
- * Remove undefined values from a dictionary
- */
-function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): { [key: string]: string } {
-  for (const key of Object.keys(x)) {
-    if (!x[key]) {
-      delete x[key];
-    } else {
-      x[key] = x[key] + '';
-    }
-  }
-  return x as any;
 }

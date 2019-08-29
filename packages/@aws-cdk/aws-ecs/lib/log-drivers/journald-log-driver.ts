@@ -1,6 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
+import { removeEmpty } from './utils'
 
 /**
  * Specifies the journald log driver configuration options.
@@ -68,18 +69,4 @@ export class JournaldLogDriver extends LogDriver {
       options: removeEmpty(options),
     };
   }
-}
-
-/**
- * Remove undefined values from a dictionary
- */
-function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): { [key: string]: string } {
-  for (const key of Object.keys(x)) {
-    if (!x[key]) {
-      delete x[key];
-    } else {
-      x[key] = x[key] + '';
-    }
-  }
-  return x as any;
 }
