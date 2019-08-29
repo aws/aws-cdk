@@ -19,38 +19,37 @@ export interface FluentdLogDriverProps extends BaseLogDriverProps {
 
   /**
    * Docker connects to Fluentd in the background. Messages are buffered until
-   * the connection is established. Defaults to false.
+   * the connection is established.
    *
-   * @default - asyncConnect not set.
+   * @default - false
    */
   readonly asyncConnect?: boolean;
 
   /**
-   * The amount of data to buffer before flushing to disk. Defaults to the amount
-   * of RAM available to the container.
+   * The amount of data to buffer before flushing to disk.
    *
-   * @default - bufferLimit not set.
+   * @default - The amount of RAM available to the container.
    */
   readonly bufferLimit?: number;
 
   /**
-   * How long to wait between retries. Defaults to 1 second.
+   * How long to wait between retries.
    *
-   * @default - retryWait not set.
+   * @default - 1 second
    */
   readonly retryWait?: number;
 
   /**
-   * The maximum number of retries. Defaults to 4294967295 (2**32 - 1).
+   * The maximum number of retries.
    *
-   * @default - maxRetries not set.
+   * @default - 4294967295 (2**32 - 1).
    */
   readonly maxRetries?: number;
 
   /**
-   * Generates event logs in nanosecond resolution. Defaults to false.
+   * Generates event logs in nanosecond resolution.
    *
-   * @default - subSecondPrecision not set.
+   * @default - false
    */
   readonly subSecondPrecision?: boolean;
 }

@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './utils'
+import { removeEmpty, ensureInList, ensureInRange } from './utils'
 
 /**
  * Specifies the splunk log driver configuration options.
@@ -45,16 +45,16 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Path to root certificate.
    *
-   * @default - capath not set.
+   * @default - caPath not set.
    */
-  readonly capath?: string;
+  readonly caPath?: string;
 
   /**
-   * Name to use for validating server certificate; by default the hostname of the splunk-url is used.
+   * Name to use for validating server certificate.
    *
-   * @default - caname not set.
+   * @default - The hostname of the splunk-url
    */
-  readonly caname?: string;
+  readonly caName?: string;
 
   /**
    * Ignore server certificate validation.
@@ -64,32 +64,32 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
   readonly insecureskipverify?: string;
 
   /**
-   * Message format. Can be inline, json or raw. Defaults to inline.
+   * Message format. Can be inline, json or raw.
    *
-   * @default - format not set.
+   * @default - inline
    */
   readonly format?: string;
 
   /**
-   * Verify on start, that docker can connect to Splunk server. Defaults to true.
+   * Verify on start, that docker can connect to Splunk server.
    *
-   * @default - verifyConnection not set.
+   * @default - true
    */
   readonly verifyConnection?: boolean;
 
   /**
    * Enable/disable gzip compression to send events to Splunk Enterprise or Splunk
-   * Cloud instance. Defaults to false.
+   * Cloud instance.
    *
-   * @default - gzip not set.
+   * @default - false
    */
   readonly gzip?: boolean;
 
   /**
    * Set compression level for gzip. Valid values are -1 (default), 0 (no compression),
-   * 1 (best speed) ... 9 (best compression). Defaults to DefaultCompression.
+   * 1 (best speed) ... 9 (best compression).
    *
-   * @default - gzipLevel not set.
+   * @default - -1 (Default Compression)
    */
   readonly gzipLevel?: number;
 }
@@ -105,6 +105,14 @@ export class SplunkLogDriver extends LogDriver {
    */
   constructor(private readonly props: SplunkLogDriverProps) {
     super();
+
+    if (props.format) {
+      ensureInList(props.format, ['inline', 'json', 'raw'])
+    }
+
+    if (props.gzipLevel) {
+      ensureInRange(props.gzipLevel, -1, 9)
+    }
   }
 
   /**
@@ -119,8 +127,8 @@ export class SplunkLogDriver extends LogDriver {
         'splunk-source': this.props.source,
         'splunk-sourceType': this.props.sourceType,
         'splunk-index': this.props.index,
-        'splunk-capath': this.props.capath,
-        'splunk-caname': this.props.caname,
+        'splunk-capath': this.props.caPath,
+        'splunk-caname': this.props.caName,
         'splunk-insecureskipverify': this.props.insecureskipverify,
         'splunk-format': this.props.format,
         'splunk-verify-connection': this.props.verifyConnection,

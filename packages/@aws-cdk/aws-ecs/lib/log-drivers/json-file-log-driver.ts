@@ -10,25 +10,25 @@ import { removeEmpty } from './utils'
 export interface JsonFileLogDriverProps extends BaseLogDriverProps {
   /**
    * The maximum size of the log before it is rolled. A positive integer plus a modifier
-   * representing the unit of measure (k, m, or g). Defaults to -1 (unlimited).
+   * representing the unit of measure (k, m, or g).
    *
-   * @default - maxSize not set
+   * @default - -1 (unlimited)
    */
   readonly maxSize?: string;
 
   /**
    * The maximum number of log files that can be present. If rolling the logs creates
    * excess files, the oldest file is removed. Only effective when max-size is also set.
-   * A positive integer. Defaults to 1.
+   * A positive integer.
    *
-   * @default - maxFile not set
+   * @default - 1
    */
-  readonly maxFile?: string;
+  readonly maxFile?: number;
 
   /**
-   * Toggles compression for rotated logs. Default is disabled.
+   * Toggles compression for rotated logs.
    *
-   * @default - compress not set
+   * @default - false
    */
   readonly compress?: boolean;
 }
@@ -44,6 +44,11 @@ export class JsonFileLogDriver extends LogDriver {
    */
   constructor(private readonly props: JsonFileLogDriverProps = {}) {
     super();
+
+    // Validation
+    if (props.maxFile && props.maxFile < 0) {
+        throw new Error('`maxFile` must be a positive integer.');
+    }
   }
 
   /**

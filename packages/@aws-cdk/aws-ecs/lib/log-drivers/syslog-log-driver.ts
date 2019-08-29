@@ -10,10 +10,9 @@ import { removeEmpty } from './utils'
 export interface SyslogLogDriverProps extends BaseLogDriverProps {
   /**
    * The address of an external syslog server. The URI specifier may be
-   * [tcp|udp|tcp+tls]://host:port, unix://path, or unixgram://path. If
-   * the transport is tcp, udp, or tcp+tls, the default port is 514.
+   * [tcp|udp|tcp+tls]://host:port, unix://path, or unixgram://path.
    *
-   * @default - address not set
+   * @default - If the transport is tcp, udp, or tcp+tls, the default port is 514.
    */
   readonly address?: string;
 
@@ -52,9 +51,9 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
 
   /**
    * If set to true, TLS verification is skipped when connecting to the syslog
-   * daemon. Defaults to false. Ignored if the address protocol is not tcp+tls.
+   * daemon. Ignored if the address protocol is not tcp+tls.
    *
-   * @default - tlsSkipVerify not set
+   * @default - false
    */
   readonly tlsSkipVerify?: boolean;
 

@@ -4,7 +4,7 @@ export interface BaseLogDriverProps {
    * log messages. Refer to the log tag option documentation for customizing the
    * log tag format.
    *
-   * @default - tag not set
+   * @default - The first 12 characters of the container ID 
    */
   readonly tag?: string;
 
@@ -13,7 +13,7 @@ export interface BaseLogDriverProps {
    * between label and env keys, the value of the env takes precedence. Adds additional
    * fields to the extra attributes of a logging message.
    *
-   * @default - labels not set
+   * @default - No labels
    */
   readonly labels?: string[];
 
@@ -22,16 +22,16 @@ export interface BaseLogDriverProps {
    * label and env keys, the value of the env takes precedence. Adds additional fields
    * to the extra attributes of a logging message.
    *
-   * @default - env not set
+   * @default - No env
    */
-  readonly env?: { [key: string]: string };
+  readonly env?: string[];
 
   /**
    * The env-regex option is similar to and compatible with env. Its value is a regular
    * expression to match logging-related environment variables. It is used for advanced
    * log tag options.
    *
-   * @default - envRegex not set
+   * @default - No envRegex
    */
   readonly envRegex?: string;
 }

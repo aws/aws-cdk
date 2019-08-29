@@ -1,12 +1,13 @@
 import { Construct } from '@aws-cdk/core';
+import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './utils'
+import { removeEmpty, ensureInList, ensureInRange, ensurePositiveInteger } from './utils'
 
 /**
  * Specifies the journald log driver configuration options.
  */
-export interface GelfLogDriverProps {
+export interface GelfLogDriverProps extends BaseLogDriverProps {
   /**
    * The address of the GELF server. tcp and udp are the only supported URI
    * specifier and you must specify the port.
@@ -17,7 +18,7 @@ export interface GelfLogDriverProps {
    * UDP Only The type of compression the GELF driver uses to compress each
    * log message. Allowed values are gzip, zlib and none.
    *
-   * @default - compressionType not set
+   * @default - gzip
    */
   readonly compressionType?: string;
 
@@ -26,7 +27,7 @@ export interface GelfLogDriverProps {
    * An integer in the range of -1 to 9 (BestCompression). Higher levels provide more
    * compression at lower speed. Either -1 or 0 disables compression.
    *
-   * @default - compressionLevel not set
+   * @default - 1
    */
   readonly compressionLevel?: number;
 
@@ -34,7 +35,7 @@ export interface GelfLogDriverProps {
    * TCP Only The maximum number of reconnection attempts when the connection drop.
    * A positive integer.
    *
-   * @default - tcpMaxReconnect not set
+   * @default - 3
    */
   readonly tcpMaxReconnect?: number;
 
@@ -42,7 +43,7 @@ export interface GelfLogDriverProps {
    * TCP Only The number of seconds to wait between reconnection attempts.
    * A positive integer.
    *
-   * @default - tcpReconnectDelay not set
+   * @default - 1
    */
   readonly tcpReconnectDelay?: number;
 
@@ -51,35 +52,9 @@ export interface GelfLogDriverProps {
    * Docker uses the first 12 characters of the container ID to tag log messages.
    * Refer to the log tag option documentation for customizing the log tag format.
    *
-   * @default - tag not set
+   * @default - The first 12 characters of the container ID
    */
   readonly tag?: string;
-
-  /**
-   * Applies when starting the Docker daemon. A comma-separated list of logging-related
-   * labels this daemon accepts. Adds additional key on the extra fields, prefixed by
-   * an underscore (_). Used for advanced log tag options.
-   *
-   * @default - labels not set
-   */
-  readonly labels?: string;
-
-  /**
-   * Applies when starting the Docker daemon. A comma-separated list of logging-related
-   * environment variables this daemon accepts. Adds additional key on the extra fields,
-   * prefixed by an underscore (_). Used for advanced log tag options.
-   *
-   * @default - env not set
-   */
-  readonly env?: string;
-
-  /**
-   * Similar to and compatible with env. A regular expression to match logging-related
-   * environment variables. Used for advanced log tag options.
-   *
-   * @default - envRegex not set
-   */
-  readonly envRegex?: string;
 }
 
 /**
@@ -93,6 +68,23 @@ export class GelfLogDriver extends LogDriver {
    */
   constructor(private readonly props: GelfLogDriverProps) {
     super();
+
+    // Validation
+    if (props.compressionType) {
+      ensureInList(props.compressionType, ['gzip', 'zlib', 'none'])
+    }
+
+    if (props.compressionLevel) {
+      ensureInRange(props.compressionLevel, -1, 9)
+    }
+
+    if (props.tcpMaxReconnect) {
+      ensurePositiveInteger(props.tcpMaxReconnect)
+    }
+
+    if (props.tcpReconnectDelay) {
+      ensurePositiveInteger(props.tcpReconnectDelay)
+    }
   }
 
   /**
