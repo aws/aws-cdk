@@ -1,12 +1,12 @@
 import { Construct } from '@aws-cdk/core';
-import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
+import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions } from './utils'
+import { stringifyOptions } from './utils';
 
 /**
  * Specifies the json-file log driver configuration options.
- * 
+ *
  * [Source](https://docs.docker.com/config/containers/logging/json-file/)
  */
 export interface JsonFileLogDriverProps extends BaseLogDriverProps {

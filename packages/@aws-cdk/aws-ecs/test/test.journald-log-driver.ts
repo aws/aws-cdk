@@ -62,24 +62,24 @@ export = {
     test.done();
   },
 
-  "create a journald log driver using journald"(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.JournaldLogDriver.journald()
-    });
+  // "create a journald log driver using journald"(test: Test) {
+  //   // WHEN
+  //   td.addContainer('Container', {
+  //     image,
+  //     logging: ecs.JournaldLogDriver.journald()
+  //   });
 
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'journald'
-          }
-        }
-      ]
-    }));
+  //   // THEN
+  //   expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+  //     ContainerDefinitions: [
+  //       {
+  //         LogConfiguration: {
+  //           LogDriver: 'journald'
+  //         }
+  //       }
+  //     ]
+  //   }));
 
-    test.done();
-  },
+  //   test.done();
+  // },
 };

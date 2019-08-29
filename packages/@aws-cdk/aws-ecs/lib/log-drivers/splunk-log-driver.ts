@@ -1,12 +1,12 @@
 import { Construct } from '@aws-cdk/core';
-import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
+import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions, ensureInList, ensureInRange } from './utils'
+import { ensureInList, ensureInRange, stringifyOptions } from './utils';
 
 /**
  * Specifies the splunk log driver configuration options.
- * 
+ *
  * [Source](https://docs.docker.com/config/containers/logging/splunk/)
  */
 export interface SplunkLogDriverProps extends BaseLogDriverProps {
@@ -109,11 +109,11 @@ export class SplunkLogDriver extends LogDriver {
     super();
 
     if (props.format) {
-      ensureInList(props.format, ['inline', 'json', 'raw'])
+      ensureInList(props.format, ['inline', 'json', 'raw']);
     }
 
     if (props.gzipLevel) {
-      ensureInRange(props.gzipLevel, -1, 9)
+      ensureInRange(props.gzipLevel, -1, 9);
     }
   }
 

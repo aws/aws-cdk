@@ -4,7 +4,7 @@ export interface BaseLogDriverProps {
    * log messages. Refer to the log tag option documentation for customizing the
    * log tag format.
    *
-   * @default - The first 12 characters of the container ID 
+   * @default - The first 12 characters of the container ID
    */
   readonly tag?: string;
 

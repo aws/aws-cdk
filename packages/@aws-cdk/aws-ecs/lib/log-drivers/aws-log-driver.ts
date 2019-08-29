@@ -2,7 +2,7 @@ import logs = require('@aws-cdk/aws-logs');
 import { Construct, Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { removeEmpty } from './utils'
+import { removeEmpty } from './utils';
 
 /**
  * Specifies the awslogs log driver configuration options.

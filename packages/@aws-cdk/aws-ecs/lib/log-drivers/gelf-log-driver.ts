@@ -1,12 +1,12 @@
 import { Construct } from '@aws-cdk/core';
-import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
+import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions, ensureInList, ensureInRange, ensurePositiveInteger } from './utils'
+import { ensureInList, ensureInRange, ensurePositiveInteger, stringifyOptions } from './utils';
 
 /**
  * Specifies the journald log driver configuration options.
- * 
+ *
  * [Source](https://docs.docker.com/config/containers/logging/gelf/)
  */
 export interface GelfLogDriverProps extends BaseLogDriverProps {
@@ -48,15 +48,6 @@ export interface GelfLogDriverProps extends BaseLogDriverProps {
    * @default - 1
    */
   readonly tcpReconnectDelay?: number;
-
-  /**
-   * A string that is appended to the APP-NAME in the gelf message. By default,
-   * Docker uses the first 12 characters of the container ID to tag log messages.
-   * Refer to the log tag option documentation for customizing the log tag format.
-   *
-   * @default - The first 12 characters of the container ID
-   */
-  readonly tag?: string;
 }
 
 /**
@@ -73,19 +64,19 @@ export class GelfLogDriver extends LogDriver {
 
     // Validation
     if (props.compressionType) {
-      ensureInList(props.compressionType, ['gzip', 'zlib', 'none'])
+      ensureInList(props.compressionType, ['gzip', 'zlib', 'none']);
     }
 
     if (props.compressionLevel) {
-      ensureInRange(props.compressionLevel, -1, 9)
+      ensureInRange(props.compressionLevel, -1, 9);
     }
 
     if (props.tcpMaxReconnect) {
-      ensurePositiveInteger(props.tcpMaxReconnect)
+      ensurePositiveInteger(props.tcpMaxReconnect);
     }
 
     if (props.tcpReconnectDelay) {
-      ensurePositiveInteger(props.tcpReconnectDelay)
+      ensurePositiveInteger(props.tcpReconnectDelay);
     }
   }
 

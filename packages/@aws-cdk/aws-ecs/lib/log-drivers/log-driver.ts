@@ -1,12 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
-import { FluentdLogDriver, FluentdLogDriverProps } from './fluentd-log-driver';
-import { GelfLogDriver, GelfLogDriverProps } from './gelf-log-driver';
-import { JournaldLogDriver, JournaldLogDriverProps } from './journald-log-driver';
-import { JsonFileLogDriver, JsonFileLogDriverProps } from './json-file-log-driver';
-import { SplunkLogDriver, SplunkLogDriverProps } from './splunk-log-driver';
-import { SyslogLogDriver, SyslogLogDriverProps } from './syslog-log-driver';
 
 /**
  * The base class for log drivers.
@@ -17,48 +11,6 @@ export abstract class LogDriver {
    */
   public static awsLogs(props: AwsLogDriverProps): LogDriver {
     return new AwsLogDriver(props);
-  }
-
-  /**
-   * Creates a log driver configuration that sends log information to fluentd Logs.
-   */
-  public static fluentd(props: FluentdLogDriverProps): LogDriver {
-    return new FluentdLogDriver(props);
-  }
-
-  /**
-   * Creates a log driver configuration that sends log information to gelf Logs.
-   */
-  public static gelf(props: GelfLogDriverProps): LogDriver {
-    return new GelfLogDriver(props);
-  }
-
-  /**
-   * Creates a log driver configuration that sends log information to journald Logs.
-   */
-  public static journald(props: JournaldLogDriverProps): LogDriver {
-    return new JournaldLogDriver(props);
-  }
-
-  /**
-   * Creates a log driver configuration that sends log information to json-file Logs.
-   */
-  public static jsonFile(props: JsonFileLogDriverProps): LogDriver {
-    return new JsonFileLogDriver(props);
-  }
-
-  /**
-   * Creates a log driver configuration that sends log information to splunk Logs.
-   */
-  public static splunk(props: SplunkLogDriverProps): LogDriver {
-    return new SplunkLogDriver(props);
-  }
-
-  /**
-   * Creates a log driver configuration that sends log information to syslog Logs.
-   */
-  public static syslog(props: SyslogLogDriverProps): LogDriver {
-    return new SyslogLogDriver(props);
   }
 
   /**

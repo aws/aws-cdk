@@ -1,12 +1,12 @@
 import { Construct } from '@aws-cdk/core';
-import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
+import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions } from './utils'
+import { stringifyOptions } from './utils';
 
 /**
  * Specifies the syslog log driver configuration options.
- * 
+ *
  * [Source](https://docs.docker.com/config/containers/logging/syslog/)
  */
 export interface SyslogLogDriverProps extends BaseLogDriverProps {
@@ -68,15 +68,6 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    * @default - format not set
    */
   readonly format?: string;
-
-  /**
-   * A string that is appended to the APP-NAME in the syslog message. By default,
-   * Docker uses the first 12 characters of the container ID to tag log messages.
-   * Refer to the log tag option documentation for customizing the log tag format.
-   *
-   * @default - tag not set
-   */
-  readonly tag?: string;
 }
 
 /**

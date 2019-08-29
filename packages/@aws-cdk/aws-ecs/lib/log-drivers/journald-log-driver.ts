@@ -1,24 +1,15 @@
 import { Construct } from '@aws-cdk/core';
-import { BaseLogDriverProps } from './base-log-driver';
 import { ContainerDefinition } from '../container-definition';
+import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions } from './utils'
+import { stringifyOptions } from './utils';
 
 /**
  * Specifies the journald log driver configuration options.
- * 
+ *
  * [Source](https://docs.docker.com/config/containers/logging/journald/)
  */
-export interface JournaldLogDriverProps extends BaseLogDriverProps {
-  /**
-   * Specify template to set CONTAINER_TAG and SYSLOG_IDENTIFIER value in
-   * journald logs. Refer to log tag option documentation to customize the
-   * log tag format.
-   *
-   * @default - No tag
-   */
-  readonly tag?: string;
-}
+export interface JournaldLogDriverProps extends BaseLogDriverProps {}
 
 /**
  * A log driver that sends log information to journald Logs.
