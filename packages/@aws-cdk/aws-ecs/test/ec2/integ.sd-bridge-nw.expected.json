@@ -838,8 +838,7 @@
         "DesiredCount": 1,
         "LaunchType": "EC2",
         "SchedulingStrategy": "REPLICA",
-        "PropagateTags": "SERVICE",
-        "EnableECSManagedTags": true,
+        "EnableECSManagedTags": false,
         "ServiceRegistries": [
           {
             "ContainerName": "frontend",

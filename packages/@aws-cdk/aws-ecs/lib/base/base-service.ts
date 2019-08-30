@@ -83,7 +83,7 @@ export interface BaseServiceOptions {
    *
    * Valid values are: PropagateTagFromType.SERVICE, PropagateTagFromType.TASK_DEFINITION or PropagateTagFromType.NONE
    *
-   * @default - PropagatedTagSource.SERVICE if EC2 or Fargate Service, otherwise PropagatedTagSource.NONE.
+   * @default - PropagatedTagSource.NONE.
    */
   readonly propagateTags?: PropagatedTagSource;
 
@@ -91,7 +91,7 @@ export interface BaseServiceOptions {
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
    * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
    *
-   * @default true
+   * @default false
    */
   readonly enableECSManagedTags?: boolean;
 }
@@ -191,7 +191,7 @@ export abstract class BaseService extends Resource
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
-      enableEcsManagedTags: props.enableECSManagedTags === undefined ? true : props.enableECSManagedTags,
+      enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */

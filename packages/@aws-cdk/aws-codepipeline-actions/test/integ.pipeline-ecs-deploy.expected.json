@@ -273,8 +273,7 @@
             ]
           }
         },
-        "EnableECSManagedTags": true,
-        "PropagateTags": "SERVICE"
+        "EnableECSManagedTags": false,
       }
     },
     "FargateServiceSecurityGroup0A0E79CB": {
