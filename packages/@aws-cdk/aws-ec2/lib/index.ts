@@ -8,6 +8,7 @@ export * from './security-group';
 export * from './peer';
 export * from './vpc';
 export * from './vpc-lookup';
+export * from './vpc-peering-connection';
 export * from './vpn';
 export * from './vpc-endpoint';
 export * from './user-data';

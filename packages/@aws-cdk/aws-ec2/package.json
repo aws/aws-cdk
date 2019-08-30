@@ -94,6 +94,7 @@
       "no-unused-type:@aws-cdk/aws-ec2.VpcEndpointType",
       "no-unused-type:@aws-cdk/aws-ec2.VpnConnectionType",
       "props-physical-name:@aws-cdk/aws-ec2.VpnConnectionProps",
+      "props-physical-name:@aws-cdk/aws-ec2.VpcPeeringConnectionProps",
       "props-physical-name:@aws-cdk/aws-ec2.GatewayVpcEndpointProps",
       "props-physical-name:@aws-cdk/aws-ec2.PrivateSubnetProps",
       "props-physical-name:@aws-cdk/aws-ec2.PublicSubnetProps",
