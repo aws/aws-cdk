@@ -308,7 +308,7 @@ abstract class VpcBase extends Resource implements IVpc {
     });
   }
 
-  public addPeeringConnection(id: string,  options: VpcPeeringConnectionOptions): VpcPeeringConnection {
+  public addPeeringConnection(id: string, options: VpcPeeringConnectionOptions): VpcPeeringConnection {
     return new VpcPeeringConnection(this, id, {
       vpc: this,
       ...options
