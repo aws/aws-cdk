@@ -83,7 +83,7 @@ export interface BaseServiceOptions {
    *
    * Valid values are: PropagateTagFromType.SERVICE, PropagateTagFromType.TASK_DEFINITION or PropagateTagFromType.NONE
    *
-   * @default - PropagatedTagSource.NONE.
+   * @default PropagatedTagSource.NONE
    */
   readonly propagateTags?: PropagatedTagSource;
 
