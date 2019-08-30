@@ -8,6 +8,7 @@ import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetId, subne
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpcLookupOptions } from './vpc-lookup';
+import { VpcPeeringConnection, VpcPeeringConnectionOptions } from './vpc-peering-connection';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
@@ -103,6 +104,11 @@ export interface IVpc extends IResource {
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
+
+  /**
+   * Adds a new peering connection to this VPC
+   */
+  addPeeringConnection(id: string, options: VpcPeeringConnectionOptions): VpcPeeringConnection
 }
 
 /**
@@ -302,6 +308,13 @@ abstract class VpcBase extends Resource implements IVpc {
     });
   }
 
+  public addPeeringConnection(id: string,  options: VpcPeeringConnectionOptions): VpcPeeringConnection {
+    return new VpcPeeringConnection(this, id, {
+      vpc: this,
+      ...options
+    });
+  }
+
   /**
    * Return the subnets appropriate for the placement strategy
    */
@@ -331,6 +344,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return subnets;
   }
+
 }
 
 /**
