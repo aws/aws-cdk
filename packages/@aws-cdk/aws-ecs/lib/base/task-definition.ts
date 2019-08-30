@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
-import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
 
@@ -323,6 +323,19 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
+  }
+
+  /**
+   * Returns the container that listens to a given host port if present.
+   * @internal
+   */
+  public _findContainerByHostPort(port: number, protocol: Protocol): ContainerDefinition | undefined {
+    for (const container of this.containers) {
+      if (container._findPortMapping(port, protocol) !== undefined) {
+        return container;
+      }
+    }
+    return undefined;
   }
 
   /**

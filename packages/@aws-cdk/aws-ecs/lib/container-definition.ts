@@ -480,6 +480,21 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
+   * Returns the container port for the requested host port if it exists
+   * @internal
+   */
+  public _findPortMapping(hostPort: number, protocol: Protocol): PortMapping | undefined {
+    for (const portMapping of this.portMappings) {
+      const p = portMapping.protocol || Protocol.TCP;
+      const h = portMapping.hostPort || portMapping.containerPort;
+      if (protocol === p && hostPort === h) {
+        return portMapping;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * Render this container definition to a CloudFormation object
    *
    * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
@@ -1061,7 +1061,78 @@ export = {
       test.throws(() => {
         service.attachToApplicationTargetGroup(targetGroup);
       }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+      test.done();
+    },
 
+    "allows connection to an explicit target port"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('EcsCapacity', { instanceType: new ec2.InstanceType('t2.micro')});
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 2048,
+      });
+      container.addPortMappings({ containerPort: 8000 }, { containerPort: 8080 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+        targetPort: 8080,
+      });
+
+      // THEN
+      service.attachToApplicationTargetGroup(targetGroup);
+      test.equal(container.ingressPort, 8000);
+      expect(stack).to(haveResourceLike("AWS::ECS::Service", {
+        LoadBalancers: [
+          {
+            ContainerName: "MainContainer",
+            ContainerPort: 8080,
+          }
+        ]
+      }));
+      expect(stack).to(haveResourceLike("AWS::EC2::SecurityGroupIngress", {
+        ToPort: 8080
+      }));
+      test.done();
+    },
+
+    "throws if connection specifies a target port that doesn't exist"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+        targetPort: 8080,
+      });
+
+      // THEN
+      test.throws(() => {
+        service.attachToApplicationTargetGroup(targetGroup);
+      }, /Cannot attach a load balancer to an unmapped container port./);
       test.done();
     }
   },
@@ -1122,6 +1193,75 @@ export = {
         service.attachToNetworkTargetGroup(targetGroup);
       }, /Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
+      test.done();
+    },
+
+    "allows connection to an explicit target port"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('EcsCapacity', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 2048,
+      });
+      container.addPortMappings({ containerPort: 8000 }, { containerPort: 8080 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+        targetPort: 8080,
+      });
+
+      // THEN
+      service.attachToNetworkTargetGroup(targetGroup);
+      test.equal(container.ingressPort, 8000);
+      expect(stack).to(haveResourceLike("AWS::ECS::Service", {
+        LoadBalancers: [
+          {
+            ContainerName: "MainContainer",
+            ContainerPort: 8080,
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    "throws if connection specifies a target port that doesn't exist"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+        targetPort: 8080,
+      });
+
+      // THEN
+      test.throws(() => {
+        service.attachToNetworkTargetGroup(targetGroup);
+      }, /Cannot attach a load balancer to an unmapped container port./);
       test.done();
     }
   },

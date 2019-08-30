@@ -994,6 +994,59 @@ export = {
 
       test.done();
     },
+  },
+  "_findContainerByHostPort works correctly": {
+    'when no containers are present'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
 
+      // WHEN
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      // THEN
+      test.equal(taskDefinition._findContainerByHostPort(8000, ecs.Protocol.TCP), undefined);
+      test.done();
+    },
+
+    'when no matching container port is available'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8080 });
+
+      // THEN
+      test.equal(taskDefinition._findContainerByHostPort(8000, ecs.Protocol.TCP), undefined);
+      test.done();
+    },
+
+    'when a matching container port exists'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const primary = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+      primary.addPortMappings({ containerPort: 8080 });
+      const secondary = taskDefinition.addContainer("sidecar", {
+        image: ecs.ContainerImage.fromRegistry("sidecar"),
+        memoryLimitMiB: 512
+      });
+      secondary.addPortMappings({ containerPort: 8000 });
+
+      // THEN
+      test.equal(taskDefinition.defaultContainer, primary);
+      test.equal(taskDefinition._findContainerByHostPort(8000, ecs.Protocol.TCP), secondary);
+      test.equal(taskDefinition._findContainerByHostPort(8080, ecs.Protocol.TCP), primary);
+      test.done();
+    }
   }
 };

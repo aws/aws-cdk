@@ -7,6 +7,7 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -225,7 +226,7 @@ export abstract class BaseService extends Resource
 
     // Open up security groups. For dynamic port mapping, we won't know the port range
     // in advance so we need to open up all ports.
-    const port = this.taskDefinition.defaultContainer!.ingressPort;
+    const port = targetGroup.targetPort || this.taskDefinition.defaultContainer!.ingressPort;
     const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(port);
     targetGroup.registerConnectable(this, portRange);
 
@@ -327,11 +328,7 @@ export abstract class BaseService extends Resource
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
-    this.loadBalancers.push({
-      targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDefinition.defaultContainer!.containerName,
-      containerPort: this.taskDefinition.defaultContainer!.containerPort,
-    });
+    this.loadBalancers.push(this.makeLoadBalancerProperty(targetGroup.targetGroupArn, targetGroup.targetPort));
 
     // Service creation can only happen after the load balancer has
     // been associated with our target group(s), so add ordering dependency.
@@ -339,6 +336,31 @@ export abstract class BaseService extends Resource
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
+  }
+
+  /**
+   * Generate a load balancer property given an optional host port
+   */
+  private makeLoadBalancerProperty(targetGroupArn: string, targetPort?: number): CfnService.LoadBalancerProperty {
+    if (targetPort === undefined) {
+      return {
+        targetGroupArn,
+        containerPort: this.taskDefinition.defaultContainer!.containerPort,
+        containerName: this.taskDefinition.defaultContainer!.containerName,
+      };
+    }
+
+    const container = this.taskDefinition._findContainerByHostPort(targetPort, Protocol.TCP);
+    if (container === undefined) {
+      throw new Error("Cannot attach a load balancer to an unmapped container port.");
+    }
+
+    const portMapping = container._findPortMapping(targetPort, Protocol.TCP);
+    return {
+      targetGroupArn,
+      containerPort: portMapping!.containerPort,
+      containerName: container.containerName,
+    };
   }
 
   /**

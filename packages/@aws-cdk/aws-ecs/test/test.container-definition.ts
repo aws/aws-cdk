@@ -924,6 +924,87 @@ export = {
     }
   },
 
+  '_findPortMapping works properly': {
+    'when the port mappings are empty'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      const container = taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        essential: true
+      });
+
+      // THEN
+      test.equal(container._findPortMapping(0, ecs.Protocol.TCP), undefined);
+      test.done();
+    },
+
+    'when the port mappings do not match'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      const container = taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        essential: true
+      });
+
+      container.addPortMappings(
+        { containerPort: 8000, protocol: ecs.Protocol.UDP }, // wrong protocol
+        { containerPort: 8000, hostPort: 8001, protocol: ecs.Protocol.TCP }, // wrong host port
+      );
+
+      // THEN
+      test.equal(container._findPortMapping(8000, ecs.Protocol.TCP), undefined);
+      test.done();
+    },
+
+    'when the port mappings match'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      const container = taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        essential: true
+      });
+
+      const mapping = { containerPort: 80, hostPort: 8000, protocol: ecs.Protocol.TCP };
+      container.addPortMappings(mapping);
+
+      // THEN
+      test.equal(container._findPortMapping(8000, ecs.Protocol.TCP), mapping);
+      test.done();
+    },
+
+    'when the port mapping uses defaults'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      const container = taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        essential: true
+      });
+
+      const mapping = { containerPort: 80 };
+      container.addPortMappings({ containerPort: 443, hostPort: 8000 }, mapping);
+
+      // THEN
+      test.same(container._findPortMapping(80, ecs.Protocol.TCP), { containerPort: 80, hostPort: 0 });
+      test.done();
+    }
+  },
+
   'Can specify linux parameters': {
     'with only required properties set, it correctly sets default properties'(test: Test) {
       // GIVEN

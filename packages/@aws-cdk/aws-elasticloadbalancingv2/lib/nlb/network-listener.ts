@@ -146,6 +146,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       proxyProtocolV2: props.proxyProtocolV2,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
+      targetPort: props.targetPort,
       vpc: this.loadBalancer.vpc,
     });
 
@@ -176,6 +177,13 @@ export interface AddNetworkTargetsProps {
    * @default Determined from protocol if known
    */
   readonly port: number;
+
+  /**
+   * The port used to attach to targets.
+   *
+   * @default Determined from target
+   */
+  readonly targetPort?: number;
 
   /**
    * The targets to add to this target group.
