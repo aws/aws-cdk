@@ -278,6 +278,12 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
           assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
           roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
         });
+
+        // the deployment role might need read access to the pipeline's bucket
+        // (for example, if it's deploying a Lambda function),
+        // and since this is cross-account, even admin permissions won't be enough -
+        // the pipeline's bucket must trust this role
+        options.bucket.grantRead(this._deploymentRole);
       } else {
         this._deploymentRole = new iam.Role(scope, 'Role', {
           assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
