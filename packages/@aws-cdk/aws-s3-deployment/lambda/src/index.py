@@ -99,7 +99,7 @@ def handler(event, context):
             s3_deploy(s3_source_zip, s3_dest)
 
         if distribution_id:
-            cloudfront_invalidate(distribution_id, distribution_paths, physical_id)
+            cloudfront_invalidate(distribution_id, distribution_paths)
 
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id)
     except KeyError as e:
@@ -133,7 +133,7 @@ def s3_deploy(s3_source_zip, s3_dest):
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches
-def cloudfront_invalidate(distribution_id, distribution_paths, physical_id):
+def cloudfront_invalidate(distribution_id, distribution_paths):
     invalidation_resp = cloudfront.create_invalidation(
         DistributionId=distribution_id,
         InvalidationBatch={
@@ -141,7 +141,7 @@ def cloudfront_invalidate(distribution_id, distribution_paths, physical_id):
                 'Quantity': len(distribution_paths),
                 'Items': distribution_paths
             },
-            'CallerReference': physical_id,
+            'CallerReference': str(uuid4()),
         })
     # by default, will wait up to 10 minutes
     cloudfront.get_waiter('invalidation_completed').wait(
