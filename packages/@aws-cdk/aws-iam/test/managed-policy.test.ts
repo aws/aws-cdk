@@ -1,29 +1,26 @@
-import { expect } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import cdk = require('@aws-cdk/core');
-import { Test } from 'nodeunit';
 import { Group, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
-export = {
-  'simple AWS managed policy'(test: Test) {
+describe('managed policy', () => {
+  test('simple AWS managed policy', () => {
     const stack = new cdk.Stack();
     const mp = ManagedPolicy.fromAwsManagedPolicyName("service-role/SomePolicy");
 
-    test.deepEqual(stack.resolve(mp.managedPolicyArn), {
+    expect(stack.resolve(mp.managedPolicyArn)).toEqual({
       "Fn::Join": ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':iam::aws:policy/service-role/SomePolicy'
       ]]
     });
+  });
 
-    test.done();
-  },
-
-  'simple customer managed policy'(test: Test) {
+  test('simple customer managed policy', () => {
     const stack = new cdk.Stack();
     const mp = ManagedPolicy.fromManagedPolicyName(stack, 'MyCustomerManagedPolicy', "SomeCustomerPolicy");
 
-    test.deepEqual(stack.resolve(mp.managedPolicyArn), {
+    expect(stack.resolve(mp.managedPolicyArn)).toEqual({
       "Fn::Join": ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -32,11 +29,9 @@ export = {
         ':policy/SomeCustomerPolicy'
       ]]
     });
+  });
 
-    test.done();
-  },
-
-  'managed policy with statements'(test: Test) {
+  test('managed policy with statements', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
 
@@ -47,7 +42,7 @@ export = {
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -73,10 +68,9 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'policy name can be omitted, in which case the logical id will be used'(test: Test) {
+  test('policy name can be omitted, in which case the logical id will be used', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
 
@@ -87,7 +81,7 @@ export = {
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -112,10 +106,9 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'via props, managed policy can be attached to users, groups and roles and permissions, description and path can be added'(test: Test) {
+  test('via props, managed policy can be attached to users, groups and roles and permissions, description and path can be added', () => {
     const app = new cdk.App();
 
     const stack = new cdk.Stack(app, 'MyStack');
@@ -136,7 +129,7 @@ export = {
       statements: [ new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] }) ],
     });
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         User1E278A736: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
@@ -172,11 +165,9 @@ export = {
         }
       }
     });
+  });
 
-    test.done();
-  },
-
-  'idempotent if a principal (user/group/role) is attached twice'(test: Test) {
+  test('idempotent if a principal (user/group/role) is attached twice', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     const p = new ManagedPolicy(stack, 'MyManagedPolicy');
@@ -196,7 +187,7 @@ export = {
     p.attachToRole(role);
     p.attachToRole(role);
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -230,10 +221,9 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'users, groups, roles and permissions can be added using methods'(test: Test) {
+  test('users, groups, roles and permissions can be added using methods', () => {
     const app = new cdk.App();
 
     const stack = new cdk.Stack(app, 'MyStack');
@@ -248,7 +238,7 @@ export = {
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
     p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['dynamodb:GetItem'] }));
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -285,10 +275,9 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'policy can be attached to users, groups or role via methods on the principal'(test: Test) {
+  test('policy can be attached to users, groups or role via methods on the principal', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
 
@@ -303,7 +292,7 @@ export = {
 
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -335,10 +324,9 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'policy from AWS managed policy lookup can be attached to users, groups or role via methods on the principal'(test: Test) {
+  test('policy from AWS managed policy lookup can be attached to users, groups or role via methods on the principal', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
 
@@ -351,7 +339,7 @@ export = {
     group.addManagedPolicy(policy);
     role.addManagedPolicy(policy);
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyUserDC45028B: {
           Type: 'AWS::IAM::User',
@@ -412,10 +400,9 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'policy from customer managed policy lookup can be attached to users, groups or role via methods'(test: Test) {
+  test('policy from customer managed policy lookup can be attached to users, groups or role via methods', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
 
@@ -428,7 +415,7 @@ export = {
     group.addManagedPolicy(policy);
     role.addManagedPolicy(policy);
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         MyUserDC45028B: {
           Type: 'AWS::IAM::User',
@@ -495,14 +482,13 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'fails if policy document is empty'(test: Test) {
+  test('fails if policy document is empty', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new ManagedPolicy(stack, 'MyPolicy');
-    test.throws(() => app.synth(), /Managed Policy is empty. You must add statements to the policy/);
-    test.done();
-  },
-};
+    expect(() => app.synth())
+      .toThrow(/Managed Policy is empty. You must add statements to the policy/);
+  });
+});
