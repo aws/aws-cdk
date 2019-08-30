@@ -45,12 +45,13 @@ export interface IVpcPeeringConnection extends IResource {
 
     readonly peeringVpcId: string;
 
+    readonly peeringConnectionId: string;
 }
 
 export class VpcPeeringConnection extends Resource implements IVpcPeeringConnection {
     public readonly vpcId: string;
     public readonly peeringVpcId: string;
-
+    public readonly peeringConnectionId: string;
     constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
         super(scope, id);
 
@@ -73,6 +74,7 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
 
         this.vpcId = vpcPeeringConnection.vpcId;
         this.peeringVpcId = vpcPeeringConnection.peerVpcId;
+        this.peeringConnectionId = vpcPeeringConnection.ref;
     }
 
 }
