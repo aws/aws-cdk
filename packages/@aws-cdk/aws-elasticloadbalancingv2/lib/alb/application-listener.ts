@@ -343,7 +343,8 @@ export interface ApplicationListenerAttributes {
   readonly defaultPort?: number;
 
   /**
-   * Whether the imported security group allows all outbound traffic or not
+   * Whether the imported security group allows all outbound traffic or not when
+   * imported using `securityGroupId`
    *
    * Unless set to `false`, no egress rules will be added to the security group.
    *
