@@ -1375,14 +1375,15 @@ export = {
     test.done();
    },
 
-   'imported lambda with imported security group honors allowAllOutbound'(test: Test) {
+   'imported lambda with imported security group and allowAllOutbound set to false'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     const fn = lambda.Function.fromFunctionAttributes(stack, 'fn', {
       functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
-      securityGroupId: 'sg-123456789',
-      securityGroupAllowsAllOutbound: false,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      }),
     });
 
     // WHEN

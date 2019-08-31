@@ -114,21 +114,22 @@ export interface FunctionAttributes {
   readonly role?: iam.IRole;
 
   /**
-   * Id of the securityGroup for this Lambda, if in a VPC.
+   * Id of the security group of this Lambda, if in a VPC.
    *
    * This needs to be given in order to support allowing connections
    * to this Lambda.
+   *
+   * @deprecated use `securityGroup` instead
    */
   readonly securityGroupId?: string;
 
   /**
-   * Whether the imported security group allows all outbound traffic or not
+   * The security group of this Lambda, if in a VPC.
    *
-   * Unless set to `false`, no egress rules will be added to the security group.
-   *
-   * @default true
+   * This needs to be given in order to support allowing connections
+   * to this Lambda.
    */
-  readonly securityGroupAllowsAllOutbound?: boolean;
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {
