@@ -50,18 +50,16 @@ export interface DatabaseClusterAttributes {
   readonly port: number;
 
   /**
-   * The security group for this database cluster
+   * The security group identifier of the database cluster
+   *
+   * @deprecated use `securityGroup` instead
    */
-  readonly securityGroupId: string;
+  readonly securityGroupId?: string;
 
   /**
-   * Whether the imported security group allows all outbound traffic or not
-   *
-   * Unless set to `false`, no egress rules will be added to the security group.
-   *
-   * @default true
+   * The security group for the database cluster
    */
-  readonly securityGroupAllowsAllOutbound?: boolean;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Identifier for the cluster

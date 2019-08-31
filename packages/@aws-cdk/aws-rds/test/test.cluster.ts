@@ -358,8 +358,9 @@ export = {
       instanceIdentifiers: ['identifier'],
       port: 3306,
       readerEndpointAddress: 'reader-address',
-      securityGroupId: 'sg-123456789',
-      securityGroupAllowsAllOutbound: false
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false
+      }),
     });
 
     // WHEN

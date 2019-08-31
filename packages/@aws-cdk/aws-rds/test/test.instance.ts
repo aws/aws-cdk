@@ -490,7 +490,7 @@ export = {
     test.done();
   },
 
-  'imported instance with imported security group honors allowAllOutbound'(test: Test) {
+  'imported instance with imported security group with allowAllOutbound set to false'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -498,8 +498,9 @@ export = {
       instanceEndpointAddress: 'address',
       instanceIdentifier: 'identifier',
       port: 3306,
-      securityGroupId: 'sg-123456789',
-      securityGroupAllowsAllOutbound: false
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false
+      }),
     });
 
     // WHEN

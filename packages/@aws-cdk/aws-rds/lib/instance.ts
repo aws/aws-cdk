@@ -77,17 +77,15 @@ export interface DatabaseInstanceAttributes {
 
   /**
    * The security group identifier of the instance.
+   *
+   * @deprecated use `securityGroup` instead
    */
-  readonly securityGroupId: string;
+  readonly securityGroupId?: string;
 
   /**
-   * Whether the imported security group allows all outbound traffic or not
-   *
-   * Unless set to `false`, no egress rules will be added to the security group.
-   *
-   * @default true
+   * The security group of the instance.
    */
-  readonly securityGroupAllowsAllOutbound?: boolean;
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 /**
@@ -98,19 +96,26 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * Import an existing database instance.
    */
   public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+    let securityGroup: ec2.ISecurityGroup;
+    if (attrs.securityGroup) {
+      securityGroup = attrs.securityGroup;
+    } else if (attrs.securityGroupId) {
+      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId);
+    } else {
+      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an instance.');
+    }
+
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId, {
-          allowAllOutbound: attrs.securityGroupAllowsAllOutbound
-        })],
+        securityGroups: [securityGroup],
         defaultPort: this.defaultPort
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
-      public readonly securityGroupId = attrs.securityGroupId;
+      public readonly securityGroupId = securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);
