@@ -626,14 +626,15 @@ export = {
     test.done();
   },
 
-  'Imported listener with imported security group honors allowAllOutbound'(test: Test) {
+  'Imported listener with imported security group and allowAllOutbound set to false'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'Listener', {
       listenerArn: 'listener-arn',
       defaultPort: 443,
-      securityGroupId: 'security-group-id',
-      securityGroupAllowsAllOutbound: false,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
     });
 
     // WHEN
