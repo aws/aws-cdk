@@ -57,7 +57,7 @@ export interface DatabaseClusterAttributes {
   readonly securityGroupId?: string;
 
   /**
-   * The security group for the database cluster
+   * The security group of the database cluster
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
