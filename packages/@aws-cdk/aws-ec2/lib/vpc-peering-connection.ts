@@ -71,13 +71,9 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
   public readonly peeringVpcId: string;
   public readonly peeringConnectionId: string;
 
-  // private id: string;
-
   private vpc: IVpc;
 
   private peeredVpc?: IVpc;
-
-  // private peeringConnection: CfnVPCPeeringConnection;
 
   constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
     super(scope, id);
