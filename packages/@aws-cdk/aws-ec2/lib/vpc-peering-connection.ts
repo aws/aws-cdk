@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource, Stack } from "@aws-cdk/core";
 import { CfnVPCPeeringConnection } from "./ec2.generated";
-import { IVpc, Route } from "./vpc";
+import { IRoute, IVpc } from "./vpc";
 
 /**
  * Options to add vpc peering conection to vpc
@@ -55,12 +55,12 @@ export interface IVpcPeeringConnection extends IResource {
    * Add route to peering VPC route tables to peered VPC.
    * @param cidr Cidr block of the peered VPC
    */
-  addRoute(cidr: string): Route;
+  addRoute(cidr: string): IRoute[];
   /**
    * Add route to peered VPC route tables to peering VPC.
    * @param cidr Cidr block of the peering VPC
    */
-  addPeeredRoute(cidr: string): Route;
+  addPeeredRoute(cidr: string): IRoute[];
 }
 
 /**
@@ -71,11 +71,13 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
   public readonly peeringVpcId: string;
   public readonly peeringConnectionId: string;
 
-  private id: string;
+  // private id: string;
 
   private vpc: IVpc;
 
   private peeredVpc?: IVpc;
+
+  // private peeringConnection: CfnVPCPeeringConnection;
 
   constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
     super(scope, id);
@@ -106,30 +108,34 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
       peerRegion: props.region,
       peerRoleArn: props.roleArn
     });
-    this.id = id;
+    // this.id = id;
     this.vpc = props.vpc;
     this.peeredVpc = props.peeredVpc;
     this.vpcId = vpcPeeringConnection.vpcId;
     this.peeringVpcId = vpcPeeringConnection.peerVpcId;
     this.peeringConnectionId = vpcPeeringConnection.ref;
+    // this.peeringConnection = vpcPeeringConnection;
   }
 
-  public addRoute(cidr: string): Route {
-    return this.vpc.addRoute(`${this.id}Route`, {
+  public addRoute(cidr: string): IRoute[] {
+    const routes =  this.vpc.addRoute(`DefaultRoute`, {
       destinationCidr: cidr,
       targetType: "vpcPeeringConnectionId",
       targetId: this.peeringConnectionId
     });
+    return routes;
   }
 
-  public addPeeredRoute(cidr: string): Route {
+  public addPeeredRoute(cidr: string): IRoute[] {
     if (this.peeredVpc === undefined) {
       throw new Error("Can't add peer route to undefined Vpc");
     }
-    return this.peeredVpc.addRoute(`${this.id}PeeredRoute`, {
+    const peeredRoute = this.peeredVpc.addRoute(`DefaultPeeredRoute`, {
       destinationCidr: cidr,
       targetType: "vpcPeeringConnectionId",
       targetId: this.peeringConnectionId
     });
+    return peeredRoute;
   }
+
 }

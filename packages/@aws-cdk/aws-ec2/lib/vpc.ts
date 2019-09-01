@@ -1,6 +1,7 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
     IDependable, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
+import crypto = require('crypto');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -46,7 +47,13 @@ export interface IRouteTable {
   readonly routeTableId: string;
 }
 
-export interface IRoute extends IResource {}
+export interface IRoute extends IResource {
+  /**
+   * Route ID
+   * @attribute
+   */
+  readonly routeId: string;
+}
 
 export interface IVpc extends IResource {
   /**
@@ -115,7 +122,7 @@ export interface IVpc extends IResource {
   /**
    * Adds a new route to vpc's route tables
    */
-  addRoute(id: string, options: RouteOptions): Route
+  addRoute(id: string, options: RouteOptions): IRoute[]
 }
 
 /**
@@ -322,11 +329,17 @@ abstract class VpcBase extends Resource implements IVpc {
     });
   }
 
-  public addRoute(id: string, options: RouteOptions): Route {
-    return new Route(this, id, {
-      vpc: this,
-      ...options
+  public addRoute(id: string, options: RouteOptions): IRoute[] {
+    const {subnets, ...props} = options;
+    const subnetSelection = this.selectSubnetObjects(subnets || {});
+    const routes: IRoute[] = [];
+    subnetSelection.forEach((subnet: ISubnet, index: number) => {
+        routes.push(new Route(this, `${id}${index}${this.hashCidr(options.destinationCidr || options.destinationCidrIpv6)}`, {
+          routeTableId: subnet.routeTable.routeTableId,
+          ...props,
+        }));
     });
+    return routes;
   }
   /**
    * Return the subnets appropriate for the placement strategy
@@ -358,6 +371,10 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
+  private hashCidr(cidr?: string): string {
+    const md5 = crypto.createHash('md5').update(cidr || "Route").digest("hex");
+    return md5.slice(0, 8).toUpperCase();
+  }
 }
 
 /**
@@ -1478,8 +1495,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 }
 
 export type RouteTargetType = "egressOnlyInternetGatewayId" | "gatewayId" | "instanceId"| "natGatewayId" |"networkInterfaceId" | "vpcPeeringConnectionId" | "transitGatewayId";
-export interface RouteOptions {
 
+export interface CommonRouteOptions {
   /**
    * Route destination IPv4 cidr block - Required if destinationCidrIpv6 is not provided
    * @default null
@@ -1493,12 +1510,6 @@ export interface RouteOptions {
   readonly destinationCidrIpv6?: string;
 
   /**
-   * Route tables to add routes based on subnets
-   * @default all subnets available
-   */
-  readonly subnets?: SubnetSelection;
-
-  /**
    * Route target type
    */
   readonly targetType: RouteTargetType;
@@ -1507,39 +1518,46 @@ export interface RouteOptions {
    * Route target id
    */
   readonly targetId: string;
+}
+export interface RouteOptions extends CommonRouteOptions {
+  /**
+   * Route tables to add routes based on subnets
+   * @default all subnets available
+   */
+  readonly subnets?: SubnetSelection;
 
 }
 
-export interface RouteProps extends RouteOptions {
-
-  readonly vpc: IVpc;
+export interface RouteProps extends CommonRouteOptions {
+  /**
+   * Route table id to add route
+   */
+  readonly routeTableId: string;
 }
 
 export class Route extends Resource implements IRoute {
 
+  public readonly routeId: string;
+
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
-
     if (props.destinationCidr === undefined && props.destinationCidrIpv6 === undefined) {
       throw new Error("You must define a cidr block or an IPv6 cidr block");
     }
+    if (props.routeTableId === undefined) {
+      throw new Error("Route table id is required");
+    }
 
-    const routeTableIds = props.vpc.selectSubnets(props.subnets).subnets.map(subnet => {
-      if (subnet.routeTable && subnet.routeTable.routeTableId) {
-        return subnet.routeTable.routeTableId;
-      } else {
-        throw new Error("There are no route tables defined in this VPC");
-      }
+    const route = new CfnRoute(this, id, {
+      destinationCidrBlock: props.destinationCidr,
+      destinationIpv6CidrBlock: props.destinationCidrIpv6,
+      [props.targetType]: props.targetId,
+      routeTableId: props.routeTableId,
     });
-    routeTableIds.forEach((routeTableId, index) => {
-      new CfnRoute(this, id + index, {
-        destinationCidrBlock: props.destinationCidr,
-        destinationIpv6CidrBlock: props.destinationCidrIpv6,
-        [props.targetType]: props.targetId,
-        routeTableId,
-      });
-    });
+
+    this.routeId = route.ref;
   }
+
 }
 
 /**

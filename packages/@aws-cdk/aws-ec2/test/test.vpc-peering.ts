@@ -126,5 +126,35 @@ export = {
     });
 
     test.done();
-}
+  },
+  'can create multiple routes to same vpc peering connection'(test: Test) {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, "Vpc1", {
+      cidr: '10.0.0.0/16'
+    });
+    const vpc2 = new Vpc(stack, "Vpc2", {
+      cidr: "10.1.0.0/16"
+    });
+    const peering = new VpcPeeringConnection(stack, "Vpc1Vpc2Peering", {
+        vpc,
+        peeredVpc: vpc2
+    });
+    peering.addRoute('10.1.0.0/24');
+    peering.addRoute('10.1.1.0/24');
+
+    expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+      DestinationCidrBlock: "10.1.0.0/24",
+      VpcPeeringConnectionId: {
+          Ref: "Vpc1Vpc2Peering472614AF"
+      }
+    }));
+    expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+      DestinationCidrBlock: "10.1.1.0/24",
+      VpcPeeringConnectionId: {
+          Ref: "Vpc1Vpc2Peering472614AF"
+      }
+    }));
+
+    test.done();
+  }
 };
