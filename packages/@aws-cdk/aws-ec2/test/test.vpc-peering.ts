@@ -1,4 +1,4 @@
-import { expect, haveResource,  } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike,  } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Vpc, VpcPeeringConnection } from '../lib';
@@ -73,5 +73,58 @@ export = {
       }));
 
       test.done();
-  }
+  },
+  'can create peering routes between vpcs'(test: Test) {
+      const stack = new Stack();
+      const vpc = new Vpc(stack, "Vpc1", {
+          cidr: '10.0.0.0/16'
+      });
+      const vpc2 = new Vpc(stack, "Vpc2", {
+          cidr: '10.1.0.0/16'
+      });
+      const peering = new VpcPeeringConnection(stack, "Vpc1Vpc2Peering", {
+          vpc,
+          peeredVpc: vpc2
+      });
+      peering.addRoute('10.1.0.0/16');
+      peering.addPeeredRoute('10.0.0.0/16');
+
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationCidrBlock: "10.1.0.0/16",
+        VpcPeeringConnectionId: {
+            Ref: "Vpc1Vpc2Peering472614AF"
+        }
+      }));
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationCidrBlock: "10.0.0.0/16",
+        VpcPeeringConnectionId: {
+            Ref: "Vpc1Vpc2Peering472614AF"
+        }
+      }));
+
+      test.done();
+  },
+  'throws error when peered vpc is outside cdk'(test: Test) {
+    const stack = new Stack();
+    const vpc = new Vpc(stack, "Vpc1", {
+        cidr: '10.0.0.0/16'
+    });
+    const peering = new VpcPeeringConnection(stack, "Vpc1Vpc2Peering", {
+        vpc,
+        peeredVpcId: "vpc-12341234"
+    });
+    peering.addRoute('10.1.0.0/16');
+
+    expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+      DestinationCidrBlock: "10.1.0.0/16",
+      VpcPeeringConnectionId: {
+          Ref: "Vpc1Vpc2Peering472614AF"
+      }
+    }));
+    test.throws(() => {
+        peering.addPeeredRoute('10.0.0.0/16');
+    });
+
+    test.done();
+}
 };

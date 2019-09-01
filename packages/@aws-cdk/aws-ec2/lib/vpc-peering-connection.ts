@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource, Stack } from "@aws-cdk/core";
 import { CfnVPCPeeringConnection } from "./ec2.generated";
-import { IVpc } from "./vpc";
+import { IVpc, Route } from "./vpc";
 
 /**
  * Options to add vpc peering conection to vpc
@@ -50,6 +50,17 @@ export interface IVpcPeeringConnection extends IResource {
   readonly peeringVpcId: string;
 
   readonly peeringConnectionId: string;
+
+  /**
+   * Add route to peering VPC route tables to peered VPC.
+   * @param cidr Cidr block of the peered VPC
+   */
+  addRoute(cidr: string): Route;
+  /**
+   * Add route to peered VPC route tables to peering VPC.
+   * @param cidr Cidr block of the peering VPC
+   */
+  addPeeredRoute(cidr: string): Route;
 }
 
 /**
@@ -59,6 +70,13 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
   public readonly vpcId: string;
   public readonly peeringVpcId: string;
   public readonly peeringConnectionId: string;
+
+  private id: string;
+
+  private vpc: IVpc;
+
+  private peeredVpc?: IVpc;
+
   constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
     super(scope, id);
 
@@ -88,9 +106,30 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
       peerRegion: props.region,
       peerRoleArn: props.roleArn
     });
-
+    this.id = id;
+    this.vpc = props.vpc;
+    this.peeredVpc = props.peeredVpc;
     this.vpcId = vpcPeeringConnection.vpcId;
     this.peeringVpcId = vpcPeeringConnection.peerVpcId;
     this.peeringConnectionId = vpcPeeringConnection.ref;
+  }
+
+  public addRoute(cidr: string): Route {
+    return this.vpc.addRoute(`${this.id}Route`, {
+      destinationCidr: cidr,
+      targetType: "vpcPeeringConnectionId",
+      targetId: this.peeringConnectionId
+    });
+  }
+
+  public addPeeredRoute(cidr: string): Route {
+    if (this.peeredVpc === undefined) {
+      throw new Error("Can't add peer route to undefined Vpc");
+    }
+    return this.peeredVpc.addRoute(`${this.id}PeeredRoute`, {
+      destinationCidr: cidr,
+      targetType: "vpcPeeringConnectionId",
+      targetId: this.peeringConnectionId
+    });
   }
 }
