@@ -742,6 +742,35 @@ export = {
 
     test.done();
   },
+  'routes': {
+    'it should add a route to peering connection'(test: Test) {
+      const stack = new Stack();
+
+      const vpc1 = new Vpc(stack, "Vpc1", {
+        cidr: "10.0.0.0/16",
+        maxAzs: 1,
+      });
+      const vpc2 = new Vpc(stack, "Vpc2", {
+        cidr: "10.1.0.0/16"
+      });
+      const peering = vpc1.addPeeringConnection("Vpc1PeerVpc2", {
+        peeredVpc: vpc2
+      });
+      vpc1.addRoute("Vpc1Vpc2PeeringRoute", {
+        destinationCidr: "10.1.0.0/16",
+        targetType: "vpcPeeringConnectionId",
+        targetId: peering.peeringConnectionId
+      });
+
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationCidrBlock: "10.1.0.0/16",
+        VpcPeeringConnectionId: {
+          Ref: "Vpc1Vpc1PeerVpc207EE990B"
+        }
+      }));
+      test.done();
+    }
+  }
 };
 
 function getTestStack(): Stack {

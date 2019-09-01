@@ -46,6 +46,8 @@ export interface IRouteTable {
   readonly routeTableId: string;
 }
 
+export interface IRoute extends IResource {}
+
 export interface IVpc extends IResource {
   /**
    * Identifier for this VPC
@@ -109,6 +111,11 @@ export interface IVpc extends IResource {
    * Adds a new peering connection to this VPC
    */
   addPeeringConnection(id: string, options: VpcPeeringConnectionOptions): VpcPeeringConnection
+
+  /**
+   * Adds a new route to vpc's route tables
+   */
+  addRoute(id: string, options: RouteOptions): Route
 }
 
 /**
@@ -315,6 +322,12 @@ abstract class VpcBase extends Resource implements IVpc {
     });
   }
 
+  public addRoute(id: string, options: RouteOptions): Route {
+    return new Route(this, id, {
+      vpc: this,
+      ...options
+    });
+  }
   /**
    * Return the subnets appropriate for the placement strategy
    */
@@ -1461,6 +1474,71 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!
     };
+  }
+}
+
+export type RouteTargetType = "egressOnlyInternetGatewayId" | "gatewayId" | "instanceId"| "natGatewayId" |"networkInterfaceId" | "vpcPeeringConnectionId" | "transitGatewayId";
+export interface RouteOptions {
+
+  /**
+   * Route destination IPv4 cidr block - Required if destinationCidrIpv6 is not provided
+   * @default null
+   */
+  readonly destinationCidr?: string;
+
+  /**
+   * Route destination IPv6 cidr block - Required if destinationCidr is not provided
+   * @default null
+   */
+  readonly destinationCidrIpv6?: string;
+
+  /**
+   * Route tables to add routes based on subnets
+   * @default all subnets available
+   */
+  readonly subnets?: SubnetSelection;
+
+  /**
+   * Route target type
+   */
+  readonly targetType: RouteTargetType;
+
+  /**
+   * Route target id
+   */
+  readonly targetId: string;
+
+}
+
+export interface RouteProps extends RouteOptions {
+
+  readonly vpc: IVpc;
+}
+
+export class Route extends Resource implements IRoute {
+
+  constructor(scope: Construct, id: string, props: RouteProps) {
+    super(scope, id);
+
+    if (props.destinationCidr === undefined && props.destinationCidrIpv6 === undefined) {
+      throw new Error("You must define a cidr block or an IPv6 cidr block");
+    }
+
+    const routeTableIds = props.vpc.selectSubnets(props.subnets).subnets.map(subnet => {
+      if (subnet.routeTable && subnet.routeTable.routeTableId) {
+        return subnet.routeTable.routeTableId;
+      } else {
+        throw new Error("There are no route tables defined in this VPC");
+      }
+    });
+    routeTableIds.forEach((routeTableId, index) => {
+      new CfnRoute(this, id + index, {
+        destinationCidrBlock: props.destinationCidr,
+        destinationIpv6CidrBlock: props.destinationCidrIpv6,
+        [props.targetType]: props.targetId,
+        routeTableId,
+      });
+    });
   }
 }
 
