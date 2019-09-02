@@ -68,6 +68,7 @@
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
+    "jest": "^24.8.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
@@ -77,6 +78,17 @@
   "peerDependencies": {
     "@aws-cdk/core": "^1.6.1",
     "@aws-cdk/region-info": "^1.6.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 70
+      }
+    }
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
