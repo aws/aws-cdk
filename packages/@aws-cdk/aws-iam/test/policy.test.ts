@@ -1,21 +1,19 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import { App, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
-export = {
-  'fails when policy is empty'(test: Test) {
+describe('IAM policy', () => {
+  test('fails when policy is empty', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new Policy(stack, 'MyPolicy');
 
-    test.throws(() => app.synth(), /Policy is empty/);
-    test.done();
-  },
+    expect(() => app.synth()).toThrow(/Policy is empty/);
+  });
 
-  'policy with statements'(test: Test) {
+  test('policy with statements', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
 
@@ -26,7 +24,7 @@ export = {
     const group = new Group(stack, 'MyGroup');
     group.attachInlinePolicy(policy);
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -38,10 +36,9 @@ export = {
              Version: '2012-10-17' },
           PolicyName: 'MyPolicyName' } },
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } } });
-    test.done();
-  },
+  });
 
-  'policy name can be omitted, in which case the logical id will be used'(test: Test) {
+  test('policy name can be omitted, in which case the logical id will be used', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
 
@@ -52,7 +49,7 @@ export = {
     const user = new User(stack, 'MyUser');
     user.attachInlinePolicy(policy);
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -64,10 +61,9 @@ export = {
           PolicyName: 'MyPolicy39D66CF6',
           Users: [ { Ref: 'MyUserDC45028B' } ] } },
         MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
-    test.done();
-  },
+  });
 
-  'policy can be attached users, groups and roles and added permissions via props'(test: Test) {
+  test('policy can be attached users, groups and roles and added permissions via props', () => {
     const app = new App();
 
     const stack = new Stack(app, 'MyStack');
@@ -86,7 +82,7 @@ export = {
       statements: [ new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] }) ],
     });
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { User1E278A736: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
         Role13A5C70C1:
@@ -109,11 +105,9 @@ export = {
           PolicyName: 'Foo',
           Roles: [ { Ref: 'Role13A5C70C1' } ],
           Users: [ { Ref: 'User1E278A736' } ] } } } });
+  });
 
-    test.done();
-  },
-
-  'idempotent if a principal (user/group/role) is attached twice'(test: Test) {
+  test('idempotent if a principal (user/group/role) is attached twice', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     const p = new Policy(stack, 'MyPolicy');
@@ -123,7 +117,7 @@ export = {
     p.attachToUser(user);
     p.attachToUser(user);
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -133,10 +127,9 @@ export = {
           PolicyName: 'MyPolicy39D66CF6',
           Users: [ { Ref: 'MyUserDC45028B' } ] } },
         MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
-    test.done();
-  },
+  });
 
-  'users, groups, roles and permissions can be added using methods'(test: Test) {
+  test('users, groups, roles and permissions can be added using methods', () => {
     const app = new App();
 
     const stack = new Stack(app, 'MyStack');
@@ -151,7 +144,7 @@ export = {
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
     p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['dynamodb:GetItem'] }));
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyTestPolicy316BDB50:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -175,10 +168,9 @@ export = {
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' } } } } });
-    test.done();
-  },
+  });
 
-  'policy can be attached to users, groups or role via methods on the principal'(test: Test) {
+  test('policy can be attached to users, groups or role via methods on the principal', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
 
@@ -193,7 +185,7 @@ export = {
 
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -215,10 +207,9 @@ export = {
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' } } } } });
-    test.done();
-  },
+  });
 
-  'fails if policy name is not unique within a user/group/role'(test: Test) {
+  test('fails if policy name is not unique within a user/group/role', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
 
@@ -236,38 +227,33 @@ export = {
     p1.attachToRole(role);
 
     // try to attach p2 to all of these and expect to fail
-    test.throws(() => p2.attachToUser(user), /A policy named "Foo" is already attached/);
-    test.throws(() => p2.attachToGroup(group), /A policy named "Foo" is already attached/);
-    test.throws(() => p2.attachToRole(role), /A policy named "Foo" is already attached/);
+    expect(() => p2.attachToUser(user)).toThrow(/A policy named "Foo" is already attached/);
+    expect(() => p2.attachToGroup(group)).toThrow(/A policy named "Foo" is already attached/);
+    expect(() => p2.attachToRole(role)).toThrow(/A policy named "Foo" is already attached/);
 
     p3.attachToUser(user);
     p3.attachToGroup(group);
     p3.attachToRole(role);
+  });
 
-    test.done();
-  },
-
-  'fails if policy is not attached to a principal'(test: Test) {
+  test('fails if policy is not attached to a principal', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new Policy(stack, 'MyPolicy');
-    test.throws(() => app.synth(), /Policy must be attached to at least one principal: user, group or role/);
-    test.done();
-  },
+    expect(() => app.synth()).toThrow(/Policy must be attached to at least one principal: user, group or role/);
+  });
 
-  "generated policy name is the same as the logical id if it's shorter than 128 characters"(test: Test) {
+  test("generated policy name is the same as the logical id if it's shorter than 128 characters", () => {
     const stack = new Stack();
 
     createPolicyWithLogicalId(stack, 'Foo');
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       "PolicyName": "Foo",
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'generated policy name only uses the last 128 characters of the logical id'(test: Test) {
+  test('generated policy name only uses the last 128 characters of the logical id', () => {
     const stack = new Stack();
 
     const logicalId128 = 'a' + dup(128 - 2) + 'a';
@@ -275,11 +261,9 @@ export = {
 
     createPolicyWithLogicalId(stack, logicalIdOver128);
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       "PolicyName": logicalId128,
-    }));
-
-    test.done();
+    });
 
     function dup(count: number) {
       let r = '';
@@ -288,8 +272,8 @@ export = {
       }
       return r;
     }
-  },
-};
+  });
+});
 
 function createPolicyWithLogicalId(stack: Stack, logicalId: string): void {
   const policy = new Policy(stack, logicalId);
