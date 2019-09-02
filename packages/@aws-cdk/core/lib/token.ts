@@ -112,8 +112,9 @@ export class Tokenization {
    */
   public static resolve(obj: any, options: ResolveOptions): any {
     return resolve(obj, {
-      ...options,
-      preparing: false
+      scope: options.scope,
+      resolver: options.resolver,
+      preparing: options.preparing || false
     });
   }
 
@@ -150,6 +151,11 @@ export interface ResolveOptions {
    * The resolver to apply to any resolvable tokens found
    */
   readonly resolver: ITokenResolver;
+
+  /**
+   * Whether the resolution is being executed during the prepare phase or not.
+   */
+  readonly preparing?: boolean;
 }
 
 /**

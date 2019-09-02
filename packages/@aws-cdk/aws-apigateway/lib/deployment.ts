@@ -1,4 +1,4 @@
-import { Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, DefaultTokenResolver, Lazy, RemovalPolicy, Resource, Stack, StringConcat, Tokenization } from '@aws-cdk/core';
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
@@ -128,12 +128,23 @@ class LatestDeploymentResource extends CfnDeployment {
     if (this.hashComponents.length > 0) {
       const md5 = crypto.createHash('md5');
       this.hashComponents
-        .map(c => stack.resolve(c))
+        .map(c => {
+          try {
+            // TODO: Remove the code in the try block with next major version release of CDK.
+            // It's here to be backwards compatible, i.e., prevent LogicalIds to change.
+            return stack.resolve(c);
+          } catch (e) {
+            return Tokenization.resolve(c, {
+              scope: this,
+              resolver: new DefaultTokenResolver(new StringConcat()),
+              preparing: true,
+            });
+          }
+        })
         .forEach(c => md5.update(JSON.stringify(c)));
 
       this.overrideLogicalId(this.originalLogicalId + md5.digest("hex"));
     }
-
     super.prepare();
   }
 }
