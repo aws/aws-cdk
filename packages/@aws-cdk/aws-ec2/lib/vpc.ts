@@ -1553,6 +1553,10 @@ export interface RouteProps extends CommonRouteOptions {
   readonly routeTable: IRouteTable;
 }
 
+/**
+ * Creates a route in a route table within a VPC.
+ * @resource AWS::EC2::Route
+ */
 export class Route extends Resource implements IRoute {
 
   public readonly routeId: string;
