@@ -275,11 +275,13 @@ export class Function extends FunctionBase {
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
 
-        if (attrs.securityGroupId) {
+        if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
-            securityGroups: [
-              ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)
-            ]
+            securityGroups: [attrs.securityGroup]
+          });
+        } else if (attrs.securityGroupId) {
+          this._connections = new ec2.Connections({
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
           });
         }
       }

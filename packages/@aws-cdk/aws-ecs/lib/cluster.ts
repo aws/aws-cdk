@@ -581,11 +581,9 @@ class ImportedCluster extends Resource implements ICluster {
       resourceName: props.clusterName
     });
 
-    let i = 1;
-    for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
-      i++;
-    }
+    this.connections = new ec2.Connections({
+      securityGroups: props.securityGroups
+    });
   }
 
   public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
