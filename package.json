@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
-    "@types/node": "^8.10.52",
+    "@types/node": "^8.10.53",
     "@types/nodeunit": "^0.0.30",
     "conventional-changelog-cli": "^2.0.23",
     "fs-extra": "^8.1.0",
