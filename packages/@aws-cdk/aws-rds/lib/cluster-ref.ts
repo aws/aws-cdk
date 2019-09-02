@@ -50,16 +50,9 @@ export interface DatabaseClusterAttributes {
   readonly port: number;
 
   /**
-   * The security group identifier of the database cluster
-   *
-   * @deprecated use `securityGroup` instead
-   */
-  readonly securityGroupId?: string;
-
-  /**
    * The security group of the database cluster
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup: ec2.ISecurityGroup;
 
   /**
    * Identifier for the cluster

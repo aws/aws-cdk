@@ -189,19 +189,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Import an existing DatabaseCluster from properties
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
-    let securityGroup: ec2.ISecurityGroup;
-    if (attrs.securityGroup) {
-      securityGroup = attrs.securityGroup;
-    } else if (attrs.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId);
-    } else {
-      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import a cluster.');
-    }
-
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [securityGroup],
+        securityGroups: [attrs.securityGroup],
         defaultPort: this.defaultPort
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
@@ -209,7 +200,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
       public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = securityGroup.securityGroupId;
+      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);
