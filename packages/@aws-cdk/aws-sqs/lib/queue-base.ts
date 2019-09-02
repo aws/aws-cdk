@@ -28,6 +28,11 @@ export interface IQueue extends IResource {
   readonly encryptionMasterKey?: kms.IKey;
 
   /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   */
+  readonly fifo: boolean;
+
+  /**
    * Adds a statement to the IAM resource policy associated with this queue.
    *
    * If this queue was created in this stack (`new Queue`), a queue policy
@@ -111,6 +116,11 @@ export abstract class QueueBase extends Resource implements IQueue {
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
   public abstract readonly encryptionMasterKey?: kms.IKey;
+
+  /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   */
+  public abstract readonly fifo: boolean;
 
   /**
    * Controls automatic creation of policy objects.
