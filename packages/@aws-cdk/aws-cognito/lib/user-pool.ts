@@ -195,6 +195,12 @@ export interface UserPoolTriggers {
   readonly verifyAuthChallengeResponse?: lambda.IFunction;
 
   /**
+   * A pre-token-generation AWS Lambda trigger.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   */
+  readonly preTokenGeneration?: lambda.IFunction;
+
+  /**
    * Index signature
    */
   [trigger: string]: lambda.IFunction | undefined;
@@ -495,6 +501,17 @@ export class UserPool extends Resource implements IUserPool {
   public addVerifyAuthChallengeResponseTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
     this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
+  }
+
+  /**
+   * Attach 'Pre Token Generation' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   * @param fn the lambda function to attach
+   */
+  public addPreTokenGenerationTrigger(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn, 'PreTokenGeneration');
+    this.triggers = { ...this.triggers, PreTokenGeneration: fn.functionArn };
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
