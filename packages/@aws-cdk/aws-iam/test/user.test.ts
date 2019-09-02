@@ -1,41 +1,37 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { ManagedPolicy, User } from '../lib';
 
-export = {
-  'default user'(test: Test) {
+describe('IAM user', () => {
+  test('default user', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser');
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: { MyUserDC45028B: { Type: 'AWS::IAM::User' } }
     });
-    test.done();
-  },
+  });
 
-  'default user with password'(test: Test) {
+  test('default user with password', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser', {
       password: SecretValue.plainText('1234')
     });
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyUserDC45028B:
          { Type: 'AWS::IAM::User',
          Properties: { LoginProfile: { Password: '1234' } } } } });
-    test.done();
-  },
+  });
 
-  'fails if reset password is required but no password is set'(test: Test) {
+  test('fails if reset password is required but no password is set', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
-    test.throws(() => new User(stack, 'MyUser', { passwordResetRequired: true }));
-    test.done();
-  },
+    expect(() => new User(stack, 'MyUser', { passwordResetRequired: true })).toThrow();
+  });
 
-  'create with managed policy'(test: Test) {
+  test('create with managed policy', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
@@ -46,16 +42,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::User', {
+    expect(stack).toHaveResource('AWS::IAM::User', {
       ManagedPolicyArns: [
         { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf" ] ] }
       ]
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'can supply permissions boundary managed policy'(test: Test) {
+  test('can supply permissions boundary managed policy', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -65,7 +59,7 @@ export = {
       permissionsBoundary,
     });
 
-    expect(stack).to(haveResource('AWS::IAM::User', {
+    expect(stack).toHaveResource('AWS::IAM::User', {
       PermissionsBoundary: {
         "Fn::Join": [
           "",
@@ -78,8 +72,6 @@ export = {
           ]
         ]
       }
-    }));
-
-    test.done();
-  }
-};
+    });
+  });
+});
