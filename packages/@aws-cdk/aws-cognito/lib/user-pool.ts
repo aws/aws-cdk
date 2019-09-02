@@ -511,7 +511,7 @@ export class UserPool extends Resource implements IUserPool {
    */
   public addPreTokenGenerationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreTokenGeneration');
-    this.triggers = { ...this.triggers, PreTokenGeneration: fn.functionArn };
+    this.triggers = { ...this.triggers, preTokenGeneration: fn.functionArn };
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
