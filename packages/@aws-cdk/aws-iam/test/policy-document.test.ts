@@ -1,10 +1,10 @@
+import '@aws-cdk/assert/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { Anyone, AnyPrincipal, CanonicalUserPrincipal, Effect, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
-export = {
-  'the Permission class is a programming model for iam'(test: Test) {
+describe('IAM polocy document', () => {
+  test('the Permission class is a programming model for iam', () => {
     const stack = new Stack();
 
     const p = new PolicyStatement();
@@ -17,7 +17,7 @@ export = {
     p.addAwsAccountPrincipal(`my${Token.asString({ account: 'account' })}name`);
     p.addAccountCondition('12221121221');
 
-    test.deepEqual(stack.resolve(p.toStatementJson()), { Action:
+    expect(stack.resolve(p.toStatementJson())).toEqual({ Action:
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
@@ -33,11 +33,9 @@ export = {
             { account: 'account' },
             'name:root' ] ] } },
        Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
+  });
 
-    test.done();
-  },
-
-  'the PolicyDocument class is a dom for iam policy documents'(test: Test) {
+  test('the PolicyDocument class is a dom for iam policy documents', () => {
     const stack = new Stack();
     const doc = new PolicyDocument();
     const p1 = new PolicyStatement();
@@ -56,78 +54,69 @@ export = {
     doc.addStatements(p2);
     doc.addStatements(p3);
 
-    test.deepEqual(stack.resolve(doc), {
+    expect(stack.resolve(doc)).toEqual({
       Version: '2012-10-17',
       Statement:
         [{ Effect: 'Allow', Action: 'sqs:SendMessage', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
           { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
           { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' } ] });
+  });
 
-    test.done();
-  },
-
-  'Cannot combine Actions and NotActions'(test: Test) {
-    test.throws(() => {
+  test('Cannot combine Actions and NotActions', () => {
+    expect(() => {
       new PolicyStatement({
         actions: ['abc'],
         notActions: ['def'],
       });
-    }, /Cannot add 'NotActions' to policy statement if 'Actions' have been added/);
+    }).toThrow(/Cannot add 'NotActions' to policy statement if 'Actions' have been added/);
+  });
 
-    test.done();
-  },
-
-  'Cannot combine Resources and NotResources'(test: Test) {
-    test.throws(() => {
+  test('Cannot combine Resources and NotResources', () => {
+    expect(() => {
       new PolicyStatement({
         resources: ['abc'],
         notResources: ['def'],
       });
-    }, /Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
+    }).toThrow(/Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
+  });
 
-    test.done();
-  },
-
-  'Permission allows specifying multiple actions upon construction'(test: Test) {
+  test('Permission allows specifying multiple actions upon construction', () => {
     const stack = new Stack();
     const perm = new PolicyStatement();
     perm.addResources('MyResource');
     perm.addActions('Action1', 'Action2', 'Action3');
 
-    test.deepEqual(stack.resolve(perm.toStatementJson()), {
+    expect(stack.resolve(perm.toStatementJson())).toEqual({
       Effect: 'Allow',
       Action: [ 'Action1', 'Action2', 'Action3' ],
       Resource: 'MyResource' });
-    test.done();
-  },
+  });
 
-  'PolicyDoc resolves to undefined if there are no permissions'(test: Test) {
+  test('PolicyDoc resolves to undefined if there are no permissions', () => {
     const stack = new Stack();
     const p = new PolicyDocument();
-    test.deepEqual(stack.resolve(p), undefined);
-    test.done();
-  },
+    expect(stack.resolve(p)).toBeUndefined();
+  });
 
-  'canonicalUserPrincipal adds a principal to a policy with the passed canonical user id'(test: Test) {
+  test('canonicalUserPrincipal adds a principal to a policy with the passed canonical user id', () => {
     const stack = new Stack();
     const p = new PolicyStatement();
     const canoncialUser = "averysuperduperlongstringfor";
     p.addPrincipals(new CanonicalUserPrincipal(canoncialUser));
-    test.deepEqual(stack.resolve(p.toStatementJson()), {
+    expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: "Allow",
       Principal: {
         CanonicalUser: canoncialUser
       }
     });
-    test.done();
-  },
+  });
 
-  'addAccountRootPrincipal adds a principal with the current account root'(test: Test) {
+  test('addAccountRootPrincipal adds a principal with the current account root', () => {
     const stack = new Stack();
 
     const p = new PolicyStatement();
     p.addAccountRootPrincipal();
-    test.deepEqual(stack.resolve(p.toStatementJson()), {
+    expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: "Allow",
       Principal: {
         AWS: {
@@ -144,14 +133,13 @@ export = {
         }
       }
     });
-    test.done();
-  },
+  });
 
-  'addFederatedPrincipal adds a Federated principal with the passed value'(test: Test) {
+  test('addFederatedPrincipal adds a Federated principal with the passed value', () => {
     const stack = new Stack();
     const p = new PolicyStatement();
     p.addFederatedPrincipal("com.amazon.cognito", { StringEquals: { key: 'value' }});
-    test.deepEqual(stack.resolve(p.toStatementJson()), {
+    expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: "Allow",
       Principal: {
         Federated: "com.amazon.cognito"
@@ -160,16 +148,15 @@ export = {
         StringEquals: { key: 'value' }
       }
     });
-    test.done();
-  },
+  });
 
-  'addAwsAccountPrincipal can be used multiple times'(test: Test) {
+  test('addAwsAccountPrincipal can be used multiple times', () => {
     const stack = new Stack();
 
     const p = new PolicyStatement();
     p.addAwsAccountPrincipal('1234');
     p.addAwsAccountPrincipal('5678');
-    test.deepEqual(stack.resolve(p.toStatementJson()), {
+    expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -178,88 +165,76 @@ export = {
         ]
       }
     });
-    test.done();
-  },
+  });
 
-  'hasResource': {
-    'false if there are no resources'(test: Test) {
-      test.equal(new PolicyStatement().hasResource, false, 'hasResource should be false for an empty permission');
-      test.done();
-    },
+  describe('hasResource', () => {
+    test('false if there are no resources', () => {
+      expect(new PolicyStatement().hasResource).toEqual(false);
+    });
 
-    'true if there is one resource'(test: Test) {
-      test.equal(
-        new PolicyStatement({ resources: ['one-resource'] }).hasResource,
-        true,
-        'hasResource is true when there is one resource');
-      test.done();
-    },
+    test('true if there is one resource', () => {
+      expect(new PolicyStatement({ resources: ['one-resource'] }).hasResource).toEqual(true);
+    });
 
-    'true for multiple resources'(test: Test) {
+    test('true for multiple resources', () => {
       const p = new PolicyStatement();
       p.addResources('r1');
       p.addResources('r2');
-      test.equal(p.hasResource, true, 'hasResource is true when there are multiple resource');
-      test.done();
-    },
-  },
+      expect(p.hasResource).toEqual(true);
+    });
+  });
 
-  'hasPrincipal': {
-    'false if there is no principal'(test: Test) {
-      test.equal(new PolicyStatement().hasPrincipal, false);
-      test.done();
-    },
+  describe('hasPrincipal', () => {
+    test('false if there is no principal', () => {
+      expect(new PolicyStatement().hasPrincipal).toEqual(false);
+    });
 
-    'true if there is a principal'(test: Test) {
+    test('true if there is a principal', () => {
       const p = new PolicyStatement();
       p.addArnPrincipal('bla');
-      test.equal(p.hasPrincipal, true);
-      test.done();
-    }
-  },
+      expect(p.hasPrincipal).toEqual(true);
+    });
+  });
 
-  'statementCount returns the number of statement in the policy document'(test: Test) {
+  test('statementCount returns the number of statement in the policy document', () => {
     const p = new PolicyDocument();
-    test.equal(p.statementCount, 0);
+    expect(p.statementCount).toEqual(0);
     p.addStatements(new PolicyStatement({ actions: ['action1'] }));
-    test.equal(p.statementCount, 1);
+    expect(p.statementCount).toEqual(1);
     p.addStatements(new PolicyStatement({ actions: ['action2'] }));
-    test.equal(p.statementCount, 2);
-    test.done();
-  },
+    expect(p.statementCount).toEqual(2);
+  });
 
-  '{ AWS: "*" } principal': {
-    'is represented as `Anyone`'(test: Test) {
+  describe('{ AWS: "*" } principal', () => {
+    test('is represented as `Anyone`', () => {
       const stack = new Stack();
       const p = new PolicyDocument();
 
       p.addStatements(new PolicyStatement({ principals: [new Anyone()] }));
 
-      test.deepEqual(stack.resolve(p), {
+      expect(stack.resolve(p)).toEqual({
         Statement: [
           { Effect: 'Allow', Principal: '*' }
         ],
         Version: '2012-10-17'
       });
-      test.done();
-    },
+    });
 
-    'is represented as `AnyPrincipal`'(test: Test) {
+    test('is represented as `AnyPrincipal`', () => {
       const stack = new Stack();
       const p = new PolicyDocument();
 
       p.addStatements(new PolicyStatement({ principals: [new AnyPrincipal()] }));
 
-      test.deepEqual(stack.resolve(p), {
+      expect(stack.resolve(p)).toEqual({
         Statement: [
           { Effect: 'Allow', Principal: '*' }
         ],
         Version: '2012-10-17'
       });
-      test.done();
-    },
+    });
 
-    'is represented as `addAnyPrincipal`'(test: Test) {
+    test('is represented as `addAnyPrincipal`', () => {
       const stack = new Stack();
       const p = new PolicyDocument();
 
@@ -267,33 +242,30 @@ export = {
       s.addAnyPrincipal();
       p.addStatements(s);
 
-      test.deepEqual(stack.resolve(p), {
+      expect(stack.resolve(p)).toEqual({
         Statement: [
           { Effect: 'Allow', Principal: '*' }
         ],
         Version: '2012-10-17'
       });
-      test.done();
-    }
-  },
+    });
+  });
 
-  'addResources() will not break a list-encoded Token'(test: Test) {
+  test('addResources() will not break a list-encoded Token', () => {
     const stack = new Stack();
 
     const statement = new PolicyStatement();
     statement.addActions(...Lazy.listValue({ produce: () => ['a', 'b', 'c'] }));
     statement.addResources(...Lazy.listValue({ produce: () => ['x', 'y', 'z'] }));
 
-    test.deepEqual(stack.resolve(statement.toStatementJson()), {
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
       Effect: 'Allow',
       Action: ['a', 'b', 'c'],
       Resource: ['x', 'y', 'z'],
     });
+  });
 
-    test.done();
-  },
-
-  'addCanonicalUserPrincipal can be used to add cannonical user principals'(test: Test) {
+  test('addCanonicalUserPrincipal can be used to add cannonical user principals', () => {
     const stack = new Stack();
     const p = new PolicyDocument();
 
@@ -306,18 +278,16 @@ export = {
     p.addStatements(s1);
     p.addStatements(s2);
 
-    test.deepEqual(stack.resolve(p), {
+    expect(stack.resolve(p)).toEqual({
       Statement: [
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-1' } },
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } }
       ],
       Version: '2012-10-17'
     });
+  });
 
-    test.done();
-  },
-
-  'addPrincipal correctly merges array in'(test: Test) {
+  test('addPrincipal correctly merges array in', () => {
     const stack = new Stack();
     const arrayPrincipal: IPrincipal = {
       get grantPrincipal() { return this; },
@@ -328,7 +298,7 @@ export = {
     const s = new PolicyStatement();
     s.addAccountRootPrincipal();
     s.addPrincipals(arrayPrincipal);
-    test.deepEqual(stack.resolve(s.toStatementJson()), {
+    expect(stack.resolve(s.toStatementJson())).toEqual({
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -337,11 +307,10 @@ export = {
         ]
       }
     });
-    test.done();
-  },
+  });
 
   // https://github.com/aws/aws-cdk/issues/1201
-  'policy statements with multiple principal types can be created using multiple addPrincipal calls'(test: Test) {
+  test('policy statements with multiple principal types can be created using multiple addPrincipal calls', () => {
     const stack = new Stack();
     const s = new PolicyStatement();
     s.addArnPrincipal('349494949494');
@@ -349,83 +318,72 @@ export = {
     s.addResources('resource');
     s.addActions('action');
 
-    test.deepEqual(stack.resolve(s.toStatementJson()), {
+    expect(stack.resolve(s.toStatementJson())).toEqual({
       Action: 'action',
       Effect: 'Allow',
       Principal: { AWS: '349494949494', Service: 'test.service' },
       Resource: 'resource'
     });
+  });
 
-    test.done();
-  },
-
-  'Service principals': {
-    'regional service principals resolve appropriately'(test: Test) {
+  describe('Service principals', () => {
+    test('regional service principals resolve appropriately', () => {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
       const s = new PolicyStatement();
       s.addActions('test:Action');
       s.addServicePrincipal('codedeploy.amazonaws.com');
 
-      test.deepEqual(stack.resolve(s.toStatementJson()), {
+      expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
       });
+    });
 
-      test.done();
-    },
-
-    'regional service principals resolve appropriately (with user-set region)'(test: Test) {
+    test('regional service principals resolve appropriately (with user-set region)', () => {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
       const s = new PolicyStatement();
       s.addActions('test:Action');
       s.addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
 
-      test.deepEqual(stack.resolve(s.toStatementJson()), {
+      expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
       });
+    });
 
-      test.done();
-    },
-
-    'obscure service principals resolve to the user-provided value'(test: Test) {
+    test('obscure service principals resolve to the user-provided value', () => {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
       const s = new PolicyStatement();
       s.addActions('test:Action');
       s.addServicePrincipal('test.service-principal.dev');
 
-      test.deepEqual(stack.resolve(s.toStatementJson()), {
+      expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'test.service-principal.dev' }
       });
+    });
+  });
 
-      test.done();
-    },
-  },
+  describe('CompositePrincipal can be used to represent a principal that has multiple types', () => {
 
-  'CompositePrincipal can be used to represent a principal that has multiple types': {
-
-    'with a single principal'(test: Test) {
+    test('with a single principal', () => {
       const stack = new Stack();
       const p = new CompositePrincipal(new ArnPrincipal('i:am:an:arn'));
       const statement = new PolicyStatement();
       statement.addPrincipals(p);
-      test.deepEqual(stack.resolve(statement.toStatementJson()), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
-      test.done();
-    },
+      expect(stack.resolve(statement.toStatementJson())).toEqual({ Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
+    });
 
-    'conditions are not allowed on individual principals of a composite'(test: Test) {
+    test('conditions are not allowed on individual principals of a composite', () => {
       const p = new CompositePrincipal(new ArnPrincipal('i:am'));
-      test.throws(() => p.addPrincipals(new FederatedPrincipal('federated', { condition: 1 })),
-        /Components of a CompositePrincipal must not have conditions/);
+      expect(() => p.addPrincipals(new FederatedPrincipal('federated', { condition: 1 })))
+        .toThrow(/Components of a CompositePrincipal must not have conditions/);
+    });
 
-      test.done();
-    },
-
-    'principals and conditions are a big nice merge'(test: Test) {
+    test('principals and conditions are a big nice merge', () => {
       const stack = new Stack();
       // add via ctor
       const p = new CompositePrincipal(
@@ -445,7 +403,7 @@ export = {
       statement.addArnPrincipal('aws-principal-3');
       statement.addCondition('cond2', { boom: 123 });
 
-      test.deepEqual(stack.resolve(statement.toStatementJson()), {
+      expect(stack.resolve(statement.toStatementJson())).toEqual({
         Condition: {
           cond2: { boom: 123 }
         },
@@ -455,24 +413,21 @@ export = {
           Service: [ 'amazon.com', 'another.service' ],
         }
       });
-      test.done();
-    },
+    });
 
-    'cannot mix types of assumeRoleAction in a single composite'(test: Test) {
+    test('cannot mix types of assumeRoleAction in a single composite', () => {
       // GIVEN
       const p = new CompositePrincipal(new ArnPrincipal('arn')); // assumeRoleAction is "sts:AssumeRule"
 
       // THEN
-      test.throws(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')),
-        /Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+      expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')))
+       .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+    });
+  });
 
-      test.done();
-    }
-  },
+  describe('duplicate statements', () => {
 
-  'duplicate statements': {
-
-    'without tokens'(test: Test) {
+    test('without tokens', () => {
       // GIVEN
       const stack = new Stack();
       const p = new PolicyDocument();
@@ -496,11 +451,10 @@ export = {
       p.addStatements(statement);
 
       // THEN
-      test.equal(stack.resolve(p).Statement.length, 1);
-      test.done();
-    },
+      expect(stack.resolve(p).Statement).toHaveLength(1);
+    });
 
-    'with tokens'(test: Test) {
+    test('with tokens', () => {
       // GIVEN
       const stack = new Stack();
       const p = new PolicyDocument();
@@ -518,13 +472,11 @@ export = {
       p.addStatements(statement2);
 
       // THEN
-      test.equal(stack.resolve(p).Statement.length, 1);
-      test.done();
-    },
+      expect(stack.resolve(p).Statement).toHaveLength(1);
+    });
+  });
 
-  },
-
-  'autoAssignSids enables auto-assignment of a unique SID for each statement'(test: Test) {
+  test('autoAssignSids enables auto-assignment of a unique SID for each statement', () => {
     // GIVEN
     const doc = new PolicyDocument({
       assignSids: true
@@ -539,17 +491,16 @@ export = {
 
     // THEN
     const stack = new Stack();
-    test.deepEqual(stack.resolve(doc), {
+    expect(stack.resolve(doc)).toEqual({
       Version: '2012-10-17',
       Statement: [
         { Action: 'action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },
         { Action: 'action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' }
       ],
     });
-    test.done();
-  },
+  });
 
-  'constructor args are equivalent to mutating in-place'(test: Test) {
+  test('constructor args are equivalent to mutating in-place', () => {
     const stack = new Stack();
 
     const s = new PolicyStatement();
@@ -571,8 +522,6 @@ export = {
       }
     }));
 
-    test.deepEqual(stack.resolve(doc1), stack.resolve(doc2));
-
-    test.done();
-  },
-};
+    expect(stack.resolve(doc1)).toEqual(stack.resolve(doc2));
+  });
+});

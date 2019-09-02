@@ -1,17 +1,16 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
-export = {
-  'default role'(test: Test) {
+describe('IAM role', () => {
+  test('default role', () => {
     const stack = new Stack();
 
     new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com')
     });
 
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -21,10 +20,9 @@ export = {
               Effect: 'Allow',
               Principal: { Service: 'sns.amazonaws.com' } } ],
              Version: '2012-10-17' } } } } });
-    test.done();
-  },
+  });
 
-  'a role can grant PassRole permissions'(test: Test) {
+  test('a role can grant PassRole permissions', () => {
     // GIVEN
     const stack = new Stack();
     const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('henk.amazonaws.com') });
@@ -34,7 +32,7 @@ export = {
     role.grantPassRole(user);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -45,12 +43,10 @@ export = {
         ],
         Version: "2012-10-17"
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'can supply externalId'(test: Test) {
+  test('can supply externalId', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -61,7 +57,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -75,12 +71,10 @@ export = {
         ],
         Version: "2012-10-17"
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'can supply single externalIds'(test: Test) {
+  test('can supply single externalIds', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -91,7 +85,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -105,12 +99,10 @@ export = {
         ],
         Version: "2012-10-17"
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'can supply multiple externalIds'(test: Test) {
+  test('can supply multiple externalIds', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -121,7 +113,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -135,22 +127,20 @@ export = {
         ],
         Version: "2012-10-17"
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'policy is created automatically when permissions are added'(test: Test) {
+  test('policy is created automatically when permissions are added', () => {
     // by default we don't expect a role policy
     const before = new Stack();
     new Role(before, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    expect(before).notTo(haveResource('AWS::IAM::Policy'));
+    expect(before).not.toHaveResource('AWS::IAM::Policy');
 
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
     afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['myaction'] }));
-    expect(after).to(haveResource('AWS::IAM::Policy', {
+    expect(after).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -167,11 +157,11 @@ export = {
           Ref: "MyRoleF48FFE04"
         }
       ]
-    }));
-    test.done();
-  },
+    });
 
-  'managed policy arns can be supplied upon initialization and also added later'(test: Test) {
+  });
+
+  test('managed policy arns can be supplied upon initialization and also added later', () => {
     const stack = new Stack();
 
     const role = new Role(stack, 'MyRole', {
@@ -180,7 +170,7 @@ export = {
     });
 
     role.addManagedPolicy({ managedPolicyArn: 'managed3' });
-    expect(stack).toMatch({ Resources:
+    expect(stack).toMatchTemplate({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -191,10 +181,10 @@ export = {
               Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
-    test.done();
-  },
 
-  'federated principal can change AssumeRoleAction'(test: Test) {
+  });
+
+  test('federated principal can change AssumeRoleAction', () => {
     const stack = new Stack();
     const cognitoPrincipal = new FederatedPrincipal(
       'foo',
@@ -203,7 +193,7 @@ export = {
 
     new Role(stack, 'MyRole', { assumedBy: cognitoPrincipal });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -217,17 +207,15 @@ export = {
           }
         ],
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
+  describe('maxSessionDuration', () => {
 
-  'maxSessionDuration': {
-
-    'is not specified by default'(test: Test) {
+    test('is not specified by default', () => {
       const stack = new Stack();
       new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-      expect(stack).toMatch({
+      expect(stack).toMatchTemplate({
         Resources: {
           MyRoleF48FFE04: {
           Type: "AWS::IAM::Role",
@@ -248,22 +236,19 @@ export = {
           }
         }
       });
-      test.done();
-    },
+    });
 
-    'can be used to specify the maximum session duration for assuming the role'(test: Test) {
+    test('can be used to specify the maximum session duration for assuming the role', () => {
       const stack = new Stack();
 
       new Role(stack, 'MyRole', { maxSessionDuration: Duration.seconds(3700), assumedBy: new ServicePrincipal('sns.amazonaws.com') });
 
-      expect(stack).to(haveResource('AWS::IAM::Role', {
+      expect(stack).toHaveResource('AWS::IAM::Role', {
         MaxSessionDuration: 3700
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'must be between 3600 and 43200'(test: Test) {
+    test('must be between 3600 and 43200', () => {
       const stack = new Stack();
 
       const assumedBy = new ServicePrincipal('bla');
@@ -272,15 +257,16 @@ export = {
       new Role(stack, 'MyRole2', { assumedBy, maxSessionDuration: Duration.hours(12) });
 
       const expected = (val: any) => `maxSessionDuration is set to ${val}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`;
-      test.throws(() => new Role(stack, 'MyRole3', { assumedBy, maxSessionDuration: Duration.minutes(1) }), expected(60));
-      test.throws(() => new Role(stack, 'MyRole4', { assumedBy, maxSessionDuration: Duration.seconds(3599) }), expected(3599));
-      test.throws(() => new Role(stack, 'MyRole5', { assumedBy, maxSessionDuration: Duration.seconds(43201) }), expected(43201));
+      expect(() => new Role(stack, 'MyRole3', { assumedBy, maxSessionDuration: Duration.minutes(1) }))
+        .toThrow(expected(60));
+      expect(() => new Role(stack, 'MyRole4', { assumedBy, maxSessionDuration: Duration.seconds(3599) }))
+        .toThrow(expected(3599));
+      expect(() => new Role(stack, 'MyRole5', { assumedBy, maxSessionDuration: Duration.seconds(43201) }))
+        .toThrow(expected(43201));
+    });
+  });
 
-      test.done();
-    }
-  },
-
-  'allow role with multiple principals'(test: Test) {
+  test('allow role with multiple principals', () => {
     const stack = new Stack();
 
     new Role(stack, 'MyRole', {
@@ -290,7 +276,7 @@ export = {
       )
     });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -304,12 +290,10 @@ export = {
         ],
         Version: "2012-10-17"
       }
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'fromRoleArn'(test: Test) {
+  test('fromRoleArn', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -317,12 +301,11 @@ export = {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/S3Access');
 
     // THEN
-    test.deepEqual(importedRole.roleArn, 'arn:aws:iam::123456789012:role/S3Access');
-    test.deepEqual(importedRole.roleName, 'S3Access');
-    test.done();
-  },
+    expect(importedRole.roleArn).toEqual('arn:aws:iam::123456789012:role/S3Access');
+    expect(importedRole.roleName).toEqual('S3Access');
+  });
 
-  'add policy to imported role'(test: Test) {
+  test('add policy to imported role', () => {
     // GIVEN
     const stack = new Stack();
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MyRole');
@@ -334,7 +317,7 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -346,11 +329,11 @@ export = {
         Version: "2012-10-17"
       },
       Roles: [ "MyRole" ]
-    }));
-    test.done();
-  },
+    });
 
-  'can supply permissions boundary managed policy'(test: Test) {
+  });
+
+  test('can supply permissions boundary managed policy', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -361,7 +344,7 @@ export = {
       permissionsBoundary,
     });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       PermissionsBoundary: {
         "Fn::Join": [
           "",
@@ -374,8 +357,6 @@ export = {
           ]
         ]
       }
-    }));
-
-    test.done();
-  }
-};
+    });
+  });
+});
