@@ -72,7 +72,7 @@
     "@types/aws-lambda": "^8.10.31",
     "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.13",
-    "aws-sdk": "^2.519.0",
+    "aws-sdk": "^2.521.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
