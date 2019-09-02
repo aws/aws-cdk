@@ -79,7 +79,7 @@
     "lodash": "^4.17.15",
     "nock": "^10.0.6",
     "pkglint": "file:../../../tools/pkglint",
-    "sinon": "^7.4.1"
+    "sinon": "^7.4.2"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "^1.6.1",

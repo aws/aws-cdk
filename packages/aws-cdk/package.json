@@ -55,7 +55,7 @@
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
     "pkglint": "file:../../tools/pkglint",
-    "sinon": "^7.4.1"
+    "sinon": "^7.4.2"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "^1.6.1",
