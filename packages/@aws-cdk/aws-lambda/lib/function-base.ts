@@ -56,9 +56,14 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
+   * @param permission The permission to grant to this Lambda function. @see Permission for details.
+   * @param scope An optional scope to which this permission should be attached.
    */
   addPermission(id: string, permission: Permission): void;
 
+  /**
+   * Adds a statement to the IAM role assumed by the instance.
+   */
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
   /**
@@ -178,6 +183,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
+   * @param permission The permission to grant to this Lambda function. @see Permission for details.
+   * @param scope An optional scope to which this permission should be attached. By default, this will be the function handler.
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
@@ -187,8 +194,9 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
     const principal = this.parsePermissionPrincipal(permission.principal);
     const action = permission.action || 'lambda:InvokeFunction';
+    const scope = permission.scope || this;
 
-    new CfnPermission(this, id, {
+    new CfnPermission(scope, id, {
       action,
       principal,
       functionName: this.functionArn,
@@ -198,6 +206,9 @@ export abstract class FunctionBase extends Resource implements IFunction {
     });
   }
 
+  /**
+   * Adds a statement to the IAM role assumed by the instance.
+   */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
