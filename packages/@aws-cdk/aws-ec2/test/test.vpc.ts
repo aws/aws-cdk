@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject }
 import { Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable:max-line-length
-import { Action, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetNetworkAclAssociation, SubnetType, TrafficDirection, Vpc } from '../lib';
+import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetNetworkAclAssociation, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -123,31 +123,25 @@ export = {
       const nacl1 = new NetworkAcl(stack, 'myNACL1', {vpc});
 
       new NetworkAclEntry(stack, 'AllowDNSEgress', {
-            networkAcl: nacl1,
-            ruleNumber: 100,
-            protocol: 17,
-            ruleAction: Action.ALLOW,
-            direction: TrafficDirection.EGRESS,
-            cidrBlock: '10.0.0.0/16',
-            icmp: {code: -1, type: -1},
-            portRange: {from: 53, to: 53}
-            } );
+        networkAcl: nacl1,
+        ruleNumber: 100,
+        traffic: AclTraffic.udpPort(53),
+        direction: TrafficDirection.EGRESS,
+        cidr: AclCidr.ipv4('10.0.0.0/16'),
+      });
 
       new NetworkAclEntry(stack, 'AllowDNSIngress', {
-              networkAcl: nacl1,
-              ruleNumber: 100,
-              protocol: 17,
-              ruleAction: Action.ALLOW,
-              direction: TrafficDirection.INGRESS,
-              cidrBlock: '0.0.0.0/0',
-              icmp: {code: -1, type: -1},
-              portRange: {from: 53, to: 53}
-              } );
+        networkAcl: nacl1,
+        ruleNumber: 100,
+        traffic: AclTraffic.udpPort(53),
+        direction: TrafficDirection.INGRESS,
+        cidr: AclCidr.anyIpv4(),
+      });
 
       for (const subnet of vpc.privateSubnets) {
-          new SubnetNetworkAclAssociation(stack, 'AssociatePrivate' + subnet.node.uniqueId, {
-            networkAcl: nacl1, subnet,
-              });
+        new SubnetNetworkAclAssociation(stack, 'AssociatePrivate' + subnet.node.uniqueId, {
+          networkAcl: nacl1, subnet,
+        });
       }
 
       expect(stack).to(countResources('AWS::EC2::NetworkAcl', 1));
