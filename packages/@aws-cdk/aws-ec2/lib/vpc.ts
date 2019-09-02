@@ -46,7 +46,9 @@ export interface IRouteTable {
    */
   readonly routeTableId: string;
 }
-
+/**
+ * An abstract route
+ */
 export interface IRoute extends IResource {
   /**
    * Route ID
@@ -335,7 +337,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routes: IRoute[] = [];
     subnetSelection.forEach((subnet: ISubnet, index: number) => {
         routes.push(new Route(this, `${id}${index}${this.hashCidr(options.destinationCidr || options.destinationCidrIpv6)}`, {
-          routeTableId: subnet.routeTable.routeTableId,
+          routeTable: subnet.routeTable,
           ...props,
         }));
     });
@@ -1494,18 +1496,34 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   }
 }
 
-export type RouteTargetType = "egressOnlyInternetGatewayId" | "gatewayId" | "instanceId"| "natGatewayId" |"networkInterfaceId" | "vpcPeeringConnectionId" | "transitGatewayId";
+export enum RouteTargetType {
+  EGRESS_ONLY_INTERNET_GATEWAY_ID = "egressOnlyInternetGatewayId",
+
+  GATEWAY_ID = "gatewayId",
+
+  INSTANCE_ID = "instanceId",
+
+  NAT_GATEWAY_ID = "natGatewayId",
+
+  NETWORK_INTERFACE_ID = "networkInterfaceId",
+
+  VPC_PEERING_CONNECTION_ID = "vpcPeeringConnectionId",
+
+  TRANSIT_GATEWAY_ID = "transitGatewayId",
+}
 
 export interface CommonRouteOptions {
   /**
-   * Route destination IPv4 cidr block - Required if destinationCidrIpv6 is not provided
-   * @default null
+   * Route destination IPv4 cidr block
+   * Required if destinationCidrIpv6 is not provided
+   * @default -
    */
   readonly destinationCidr?: string;
 
   /**
-   * Route destination IPv6 cidr block - Required if destinationCidr is not provided
-   * @default null
+   * Route destination IPv6 cidr block
+   * Required if destinationCidr is not provided
+   * @default -
    */
   readonly destinationCidrIpv6?: string;
 
@@ -1530,9 +1548,9 @@ export interface RouteOptions extends CommonRouteOptions {
 
 export interface RouteProps extends CommonRouteOptions {
   /**
-   * Route table id to add route
+   * Route table to add route
    */
-  readonly routeTableId: string;
+  readonly routeTable: IRouteTable;
 }
 
 export class Route extends Resource implements IRoute {
@@ -1544,7 +1562,7 @@ export class Route extends Resource implements IRoute {
     if (props.destinationCidr === undefined && props.destinationCidrIpv6 === undefined) {
       throw new Error("You must define a cidr block or an IPv6 cidr block");
     }
-    if (props.routeTableId === undefined) {
+    if (props.routeTable === undefined) {
       throw new Error("Route table id is required");
     }
 
@@ -1552,7 +1570,7 @@ export class Route extends Resource implements IRoute {
       destinationCidrBlock: props.destinationCidr,
       destinationIpv6CidrBlock: props.destinationCidrIpv6,
       [props.targetType]: props.targetId,
-      routeTableId: props.routeTableId,
+      routeTableId: props.routeTable.routeTableId,
     });
 
     this.routeId = route.ref;

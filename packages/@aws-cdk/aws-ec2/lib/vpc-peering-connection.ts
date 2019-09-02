@@ -1,66 +1,80 @@
+import { IRole } from "@aws-cdk/aws-iam";
 import { Construct, IResource, Resource, Stack } from "@aws-cdk/core";
 import { CfnVPCPeeringConnection } from "./ec2.generated";
-import { IRoute, IVpc } from "./vpc";
+import { IRoute, IVpc, RouteTargetType } from "./vpc";
 
 /**
  * Options to add vpc peering conection to vpc
  */
 export interface VpcPeeringConnectionOptions {
   /**
-   * Peered Vpc
-   * Required: either a peeredVpcId or peeredVpc
-   * @default null
+   * The VPC with which you are creating the VPC peering connection
+   * Required: either a peerVpcId or peerVpc
+   * @default -
    */
-  readonly peeredVpc?: IVpc;
+  readonly peerVpc?: IVpc;
   /**
-   * Peering connection vpc id
-   * Required: either a peeredVpcId or peeredVpc
-   * @default null
+   * The ID of the VPC with which you are creating the VPC peering connection
+   * Required: either a peerVpcId or peerVpc
+   * @default -
    */
-  readonly peeredVpcId?: string;
+  readonly peerVpcId?: string;
 
   /**
-   * Peering connection owner Id
+   * The AWS account ID of the owner of the peer VPC.
    * @default Your AWS account ID
    */
   readonly ownerId?: string;
 
   /**
-   * Peering connection region
+   * The region in which the peer VPC is located.
    * @default The Region in which you make the request
    */
   readonly region?: string;
 
   /**
-   * Peering connection role arn - Required if you provide different ownerId.
+   * The VPC peer role for the peering connection when connecting to another AWS account.
+   * Required if you provide different ownerId.
    * @default -
    */
-  readonly roleArn?: string;
+  readonly role?: IRole;
 }
 
 export interface VpcPeeringConnectionProps extends VpcPeeringConnectionOptions {
   /**
-   * Vpc
+   * The VPC which is initiating the peering connection.
    */
   readonly vpc: IVpc;
 }
+/**
+ * VPC peering connection
+ */
 export interface IVpcPeeringConnection extends IResource {
+  /**
+   * The ID of the VPC which is initiating the peering connection.
+   */
   readonly vpcId: string;
 
-  readonly peeringVpcId: string;
+  /**
+   * The ID of the VPC with which the peering connection was created.
+   */
+  readonly peerVpcId: string;
 
+  /**
+   * The ID of the VPC peering connection.
+   */
   readonly peeringConnectionId: string;
 
   /**
-   * Add route to peering VPC route tables to peered VPC.
+   * Add route to the VPC's route tables that initiated the VPC peering connection.
    * @param cidr Cidr block of the peered VPC
    */
   addRoute(cidr: string): IRoute[];
   /**
-   * Add route to peered VPC route tables to peering VPC.
+   * Add route to the VPC's route tables with which the VPC peering connection was created.
    * @param cidr Cidr block of the peering VPC
    */
-  addPeeredRoute(cidr: string): IRoute[];
+  addPeerRoute(cidr: string): IRoute[];
 }
 
 /**
@@ -68,70 +82,75 @@ export interface IVpcPeeringConnection extends IResource {
  */
 export class VpcPeeringConnection extends Resource implements IVpcPeeringConnection {
   public readonly vpcId: string;
-  public readonly peeringVpcId: string;
+  public readonly peerVpcId: string;
   public readonly peeringConnectionId: string;
 
   private vpc: IVpc;
 
-  private peeredVpc?: IVpc;
+  private peerVpc?: IVpc;
 
   constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
     super(scope, id);
 
     const stack = Stack.of(this);
-    let ownerId = stack.account;
-    if (props.ownerId !== undefined) {
-        ownerId = props.ownerId;
+    let peerOwnerId = stack.account;
+    let peerVpcId: string;
+    let roleArn: string | undefined;
+    if (props.peerVpcId !== undefined && props.peerVpc !== undefined) {
+      throw new Error("Either a peerVpc or a peerVpcId is required");
     }
 
-    if (props.peeredVpcId !== undefined && ownerId !== stack.account && props.roleArn === undefined) {
-      throw new Error("roleArn is required when peering to another vpc in outside cdk");
+    if (props.peerVpc !== undefined) {
+      peerVpcId = props.peerVpc.vpcId;
+      const peerVpcStack = Stack.of(props.peerVpc);
+      peerOwnerId = peerVpcStack.account;
+    } else if (props.peerVpcId !== undefined) {
+      peerVpcId = props.peerVpcId;
+      peerOwnerId = props.ownerId || stack.account;
+    } else {
+      throw new Error("Either a peerVpc or a peerVpcId is required");
     }
 
-    if (props.vpc === undefined) {
-      throw new Error("Vpc is requried");
+    if (peerOwnerId !== stack.account && props.role === undefined) {
+      throw new Error("A role is required when creating a VPC peering connection with a VPC in another account.");
+    }
+    if (props.role !== undefined) {
+      roleArn = props.role.roleArn;
     }
 
-    const peeredVpcId = props.peeredVpc === undefined ? props.peeredVpcId : props.peeredVpc.vpcId;
-
-    if (peeredVpcId === undefined) {
-      throw new Error("Either a peerVpc contruct or a peerVpcId is required");
-    }
     const vpcPeeringConnection = new CfnVPCPeeringConnection(this, id, {
       vpcId: props.vpc.vpcId,
-      peerVpcId: peeredVpcId,
-      peerOwnerId: props.ownerId,
+      peerVpcId,
+      peerOwnerId,
       peerRegion: props.region,
-      peerRoleArn: props.roleArn
+      peerRoleArn: roleArn
     });
-    // this.id = id;
+
     this.vpc = props.vpc;
-    this.peeredVpc = props.peeredVpc;
+    this.peerVpc = props.peerVpc;
     this.vpcId = vpcPeeringConnection.vpcId;
-    this.peeringVpcId = vpcPeeringConnection.peerVpcId;
+    this.peerVpcId = vpcPeeringConnection.peerVpcId;
     this.peeringConnectionId = vpcPeeringConnection.ref;
-    // this.peeringConnection = vpcPeeringConnection;
   }
 
   public addRoute(cidr: string): IRoute[] {
-    const routes =  this.vpc.addRoute(`DefaultRoute`, {
+    const routes = this.vpc.addRoute(`DefaultRoute`, {
       destinationCidr: cidr,
-      targetType: "vpcPeeringConnectionId",
+      targetType: RouteTargetType.VPC_PEERING_CONNECTION_ID,
       targetId: this.peeringConnectionId
     });
     return routes;
   }
 
-  public addPeeredRoute(cidr: string): IRoute[] {
-    if (this.peeredVpc === undefined) {
+  public addPeerRoute(cidr: string): IRoute[] {
+    if (this.peerVpc === undefined) {
       throw new Error("Can't add peer route to undefined Vpc");
     }
-    const peeredRoute = this.peeredVpc.addRoute(`DefaultPeeredRoute`, {
+    const peeredRoute = this.peerVpc.addRoute(`DefaultPeeredRoute`, {
       destinationCidr: cidr,
-      targetType: "vpcPeeringConnectionId",
+      targetType: RouteTargetType.VPC_PEERING_CONNECTION_ID,
       targetId: this.peeringConnectionId
     });
     return peeredRoute;
   }
-
 }

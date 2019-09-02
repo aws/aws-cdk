@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import { Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { CfnVPC, DefaultInstanceTenancy, SubnetType, Vpc } from '../lib';
+import { CfnVPC, DefaultInstanceTenancy, RouteTargetType, SubnetType, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -754,11 +754,11 @@ export = {
         cidr: "10.1.0.0/16"
       });
       const peering = vpc1.addPeeringConnection("Vpc1PeerVpc2", {
-        peeredVpc: vpc2
+        peerVpc: vpc2
       });
       vpc1.addRoute("Vpc1Vpc2PeeringRoute", {
         destinationCidr: "10.1.0.0/16",
-        targetType: "vpcPeeringConnectionId",
+        targetType: RouteTargetType.VPC_PEERING_CONNECTION_ID,
         targetId: peering.peeringConnectionId
       });
 
