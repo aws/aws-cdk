@@ -81,7 +81,7 @@ export interface BaseServiceOptions {
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
    *
-   * Valid values are: PropagateTagFromType.SERVICE, PropagateTagFromType.TASK_DEFINITION or PropagateTagFromType.NONE
+   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION or PropagatedTagSource.NONE
    *
    * @default PropagatedTagSource.NONE
    */
