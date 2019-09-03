@@ -1,5 +1,7 @@
 /**
  * Either an IPv4 or an IPv6 CIDR
+ *
+ * @experimental
  */
 export abstract class AclCidr {
   /**
@@ -49,6 +51,8 @@ class AclCidrImpl extends AclCidr {
 
 /**
  * Acl Configuration for CIDR
+ *
+ * @experimental
  */
 export interface AclCidrConfig {
   /**
@@ -64,6 +68,8 @@ export interface AclCidrConfig {
 
 /**
  * The traffic that is configured using a Network ACL entry
+ *
+ * @experimental
  */
 export abstract class AclTraffic {
   /**
@@ -154,6 +160,8 @@ export abstract class AclTraffic {
 
 /**
  * Properties for selecting ICMP traffic
+ *
+ * @experimental
  */
 export interface IcmpProps {
   /**
@@ -182,6 +190,8 @@ class AclTrafficImpl extends AclTraffic {
 
 /**
  * Acl Configuration for traffic
+ *
+ * @experimental
  */
 export interface AclTrafficConfig {
   /**
@@ -221,6 +231,8 @@ export interface AclTrafficConfig {
 
 /**
  * Properties to create Icmp
+ *
+ * @experimental
  */
 export interface AclIcmp {
   /**
@@ -239,6 +251,8 @@ export interface AclIcmp {
 
 /**
  * Properties to create PortRange
+ *
+ * @experimental
  */
 export interface AclPortRange {
   /**
