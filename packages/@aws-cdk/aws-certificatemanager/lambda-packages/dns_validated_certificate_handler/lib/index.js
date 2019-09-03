@@ -10,6 +10,7 @@ const defaultSleep = function (ms) {
 let defaultResponseURL;
 let waiter;
 let sleep = defaultSleep;
+let random = Math.random;
 
 /**
  * Upload a CloudFormation response object to S3.
@@ -112,7 +113,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
       // component of backoff fixed to ensure minimum total wait time on
       // slow targets.
       const base = Math.pow(2, attempt);
-      await sleep(Math.random() * base * 50 + base * 150);
+      await sleep(random() * base * 50 + base * 150);
     }
   }
   if (!record) {
@@ -265,4 +266,18 @@ exports.withSleep = function(s) {
  */
 exports.resetSleep = function() {
   sleep = defaultSleep;
+}
+
+/**
+ * @private
+ */
+exports.withRandom = function(r) {
+  random = r;
+}
+
+/**
+ * @private
+ */
+exports.resetRandom = function() {
+  random = Math.random;
 }

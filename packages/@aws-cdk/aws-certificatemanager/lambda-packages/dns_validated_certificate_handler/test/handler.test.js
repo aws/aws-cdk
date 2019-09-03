@@ -181,6 +181,90 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
+  test('Fails after at more than 60 seconds', () => {
+    handler.withRandom(() => 0);
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+      Certificate: {
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'FAILED' &&
+        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
+        }));
+        expect(request.isDone()).toBe(true);
+        const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
+        expect(totalSleep).toBeGreaterThan(60 * 1000);
+      });
+  });
+
+  test('Fails after at less than 360 seconds', () => {
+    handler.withRandom(() => 1);
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+      Certificate: {
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'FAILED' &&
+        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
+        }));
+        expect(request.isDone()).toBe(true);
+        expect(spySleep.callCount).toBeLessThan(10);
+        const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
+        expect(totalSleep).toBeLessThan(360 *1000);
+      });
+  });
+
+
   test('Deletes a certificate if RequestType is Delete', () => {
     const deleteCertificateFake = sinon.fake.resolves({});
     AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
