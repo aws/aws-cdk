@@ -1,7 +1,7 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "lib/index.js",
   "repository": {
@@ -40,14 +40,14 @@
     "colors": "^1.3.3",
     "fs-extra": "^8.1.0",
     "jest": "^24.8.0",
-    "jsii": "^0.15.1",
-    "jsii-pacmak": "^0.15.1",
+    "jsii": "^0.16.0",
+    "jsii-pacmak": "^0.15.2",
     "nodeunit": "^0.11.3",
     "nyc": "^14.1.1",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3",
-    "yargs": "^13.3.0"
+    "typescript": "~3.6.2",
+    "yargs": "^14.0.0"
   },
   "keywords": [
     "aws",

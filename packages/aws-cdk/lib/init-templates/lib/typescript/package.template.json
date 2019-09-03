@@ -5,13 +5,10 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "test": "nodeunit test/test.*.js"
+    "watch": "tsc -w"
   },
   "devDependencies": {
-    "@types/nodeunit": "^0.0.30",
-    "nodeunit": "^0.11.2",
-    "typescript": "^3.3.3333"
+    "typescript": "~3.6.2"
   },
   "peerDependencies": {
     "@aws-cdk/core": "^%cdk-version%"

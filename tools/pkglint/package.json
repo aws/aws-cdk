@@ -1,6 +1,6 @@
 {
   "name": "pkglint",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "private": true,
   "description": "Validate and fix package.json files",
   "main": "lib/index.js",
@@ -44,6 +44,6 @@
     "colors": "^1.3.3",
     "fs-extra": "^8.1.0",
     "semver": "^6.3.0",
-    "yargs": "^13.3.0"
+    "yargs": "^14.0.0"
   }
 }
