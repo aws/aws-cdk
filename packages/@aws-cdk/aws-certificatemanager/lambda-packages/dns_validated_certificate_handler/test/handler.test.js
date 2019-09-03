@@ -15,6 +15,9 @@ describe('DNS Validated Certificate Handler', () => {
   const testCertificateArn = 'arn:aws:acm:region:123456789012:certificate/12345678-1234-1234-1234-123456789012';
   const testRRName = '_3639ac514e785e898d2646601fa951d5.example.com';
   const testRRValue = '_x2.acm-validations.aws';
+  const spySleep = sinon.spy(function(ms) {
+    return Promise.resolve();
+  });
 
   beforeEach(() => {
     handler.withDefaultResponseURL(ResponseURL);
@@ -28,7 +31,7 @@ describe('DNS Validated Certificate Handler', () => {
         }
       };
     });
-    handler.withSleep(() => Promise.resolve());
+    handler.withSleep(spySleep);
     console.log = function () { };
   });
   afterEach(() => {
@@ -37,6 +40,7 @@ describe('DNS Validated Certificate Handler', () => {
     handler.resetSleep();
     AWS.restore();
     console.log = origLog;
+    spySleep.resetHistory();
   });
 
   test('Fails if the event payload is empty', () => {
@@ -173,6 +177,7 @@ describe('DNS Validated Certificate Handler', () => {
           ValidationMethod: 'DNS'
         }));
         expect(request.isDone()).toBe(true);
+        expect(spySleep.callCount).toBeLessThan(10);
       });
   });
 
