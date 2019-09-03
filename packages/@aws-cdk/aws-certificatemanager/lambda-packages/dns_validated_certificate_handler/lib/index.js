@@ -108,7 +108,10 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
       record = options[0].ResourceRecord;
     } else {
       // Exponential backoff with jitter based on 200ms base
-      await sleep(Math.random() * (Math.pow(2, attempt) * 200));
+      // component of backoff fixed to ensure minimum total wait time on
+      // slow targets.
+      const base = Math.pow(2, attempt);
+      await sleep(Math.random() * base * 50 + base * 150);
     }
   }
   if (!record) {
