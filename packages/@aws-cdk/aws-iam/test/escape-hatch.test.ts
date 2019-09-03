@@ -1,15 +1,14 @@
 // tests for the L1 escape hatches (overrides). those are in the IAM module
 // because we want to verify them end-to-end, as a complement to the unit
 // tests in the @aws-cdk/core module
-import { expect } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import iam = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
 
-export = {
-  'addPropertyOverride should allow overriding supported properties'(test: Test) {
+describe('IAM escape hatches', () => {
+  test('addPropertyOverride should allow overriding supported properties', () => {
     const stack = new Stack();
     const user = new iam.User(stack, 'user', {
       userName: 'MyUserName',
@@ -18,7 +17,7 @@ export = {
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
     cfn.addPropertyOverride('UserName', 'OverriddenUserName');
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       "Resources": {
         "user2C2B57AE": {
           "Type": "AWS::IAM::User",
@@ -28,9 +27,9 @@ export = {
         }
       }
     });
-    test.done();
-  },
-  'addPropertyOverrides should allow specifying arbitrary properties'(test: Test) {
+  });
+
+  test('addPropertyOverrides should allow specifying arbitrary properties', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
@@ -40,7 +39,7 @@ export = {
     cfn.addPropertyOverride('Hello.World', 'Boom');
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       "Resources": {
         "user2C2B57AE": {
           "Type": "AWS::IAM::User",
@@ -53,10 +52,9 @@ export = {
         }
       }
     });
+  });
 
-    test.done();
-  },
-  'addOverride should allow overriding properties'(test: Test) {
+  test('addOverride should allow overriding properties', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
@@ -71,7 +69,7 @@ export = {
     cfn.addOverride('UpdatePolicy.UseOnlineResharding.Type', 'None');
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       "Resources": {
         "user2C2B57AE": {
           "Type": "AWS::IAM::User",
@@ -92,7 +90,5 @@ export = {
         }
       }
     });
-
-    test.done();
-  }
-};
+  });
+});
