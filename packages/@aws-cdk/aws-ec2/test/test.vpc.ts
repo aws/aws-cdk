@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject }
 import { Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable:max-line-length
-import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetNetworkAclAssociation, SubnetType, TrafficDirection, Vpc } from '../lib';
+import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -120,7 +120,11 @@ export = {
           }
         ]
       });
-      const nacl1 = new NetworkAcl(stack, 'myNACL1', {vpc});
+
+      const nacl1 = new NetworkAcl(stack, 'myNACL1', {
+        vpc,
+        subnetSelection: { subnetType: SubnetType.PRIVATE },
+      });
 
       new NetworkAclEntry(stack, 'AllowDNSEgress', {
         networkAcl: nacl1,
@@ -137,12 +141,6 @@ export = {
         direction: TrafficDirection.INGRESS,
         cidr: AclCidr.anyIpv4(),
       });
-
-      for (const subnet of vpc.privateSubnets) {
-        new SubnetNetworkAclAssociation(stack, 'AssociatePrivate' + subnet.node.uniqueId, {
-          networkAcl: nacl1, subnet,
-        });
-      }
 
       expect(stack).to(countResources('AWS::EC2::NetworkAcl', 1));
       expect(stack).to(countResources('AWS::EC2::NetworkAclEntry', 2));

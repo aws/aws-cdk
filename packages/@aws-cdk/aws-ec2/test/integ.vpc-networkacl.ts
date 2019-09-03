@@ -9,7 +9,10 @@ const vpc = new ec2.Vpc(stack, 'MyVpc');
 
 // Test NetworkAcl and rules
 
-const nacl1 = new ec2.NetworkAcl(stack, 'myNACL1', {vpc});
+const nacl1 = new ec2.NetworkAcl(stack, 'myNACL1', {
+  vpc,
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
+});
 
 nacl1.addEntry('AllowDNSEgress', {
   ruleNumber: 100,
@@ -24,11 +27,5 @@ nacl1.addEntry('AllowDNSIngress', {
   direction: TrafficDirection.INGRESS,
   cidr: AclCidr.anyIpv4()
 });
-
-for (const subnet of vpc.privateSubnets) {
-  new ec2.SubnetNetworkAclAssociation(stack, 'AssociatePrivate' + subnet.node.uniqueId, {
-    networkAcl: nacl1, subnet,
-  });
-}
 
 app.synth();

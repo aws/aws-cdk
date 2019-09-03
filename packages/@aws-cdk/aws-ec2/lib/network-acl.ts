@@ -1,7 +1,7 @@
 import { Construct, IResource,  Resource } from '@aws-cdk/core';
 import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation  } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
-import { ISubnet, IVpc } from './vpc';
+import { ISubnet, IVpc, SubnetSelection } from './vpc';
 
 /**
  * A NetworkAcl
@@ -39,6 +39,16 @@ export interface NetworkAclProps {
    * The VPC in which to create the NetworkACL.
    */
   readonly vpc: IVpc;
+
+  /**
+   * Subnets in the given VPC to associate the ACL with
+   *
+   * More subnets can always be added later by calling
+   * `associateWithSubnets()`.
+   *
+   * @default - No subnets associated
+   */
+  readonly subnetSelection?: SubnetSelection;
 }
 
 export class NetworkAcl extends NetworkAclBase {
@@ -68,11 +78,14 @@ export class NetworkAcl extends NetworkAclBase {
   public readonly networkAclVpcId: string;
 
   private readonly networkAcl: CfnNetworkAcl;
+  private readonly vpc: IVpc;
 
   constructor(scope: Construct, id: string, props: NetworkAclProps) {
     super(scope, id, {
       physicalName: props.networkAclName
     });
+
+    this.vpc = props.vpc;
 
     this.networkAcl = new CfnNetworkAcl(this, 'Resource', {
       vpcId: props.vpc.vpcId,
@@ -80,13 +93,33 @@ export class NetworkAcl extends NetworkAclBase {
 
     this.networkAclId = this.networkAcl.ref;
     this.networkAclVpcId = this.networkAcl.vpcId;
+
+    if (props.subnetSelection !== undefined) {
+      this.associateWithSubnet('DefaultAssociation', props.subnetSelection);
+    }
   }
 
+  /**
+   * Add a new entry to the ACL
+   */
   public addEntry(id: string, options: CommonNetworkAclEntryOptions): NetworkAclEntry {
     return new NetworkAclEntry(this, id, {
       networkAcl: this,
       ...options
     });
+  }
+
+  /**
+   * Associate the ACL with a given set of subnets
+   */
+  public associateWithSubnet(id: string, selection: SubnetSelection) {
+    const subnets = this.vpc.selectSubnets(selection);
+    for (const subnet of subnets.subnets) {
+      new SubnetNetworkAclAssociation(this, id + subnet.node.uniqueId, {
+        networkAcl: this,
+        subnet,
+      });
+    }
   }
 }
 

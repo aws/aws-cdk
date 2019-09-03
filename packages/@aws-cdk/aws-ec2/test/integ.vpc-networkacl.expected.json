@@ -504,49 +504,7 @@
         }
       }
     },
-    "AllowDNSEgress1276C141": {
-      "Type": "AWS::EC2::NetworkAclEntry",
-      "Properties": {
-        "NetworkAclId": {
-          "Ref": "myNACL198AF6597"
-        },
-        "Protocol": 17,
-        "RuleAction": "allow",
-        "RuleNumber": 100,
-        "CidrBlock": "172.16.0.0/24",
-        "Egress": true,
-        "Icmp": {
-          "Code": -1,
-          "Type": -1
-        },
-        "PortRange": {
-          "From": 53,
-          "To": 53
-        }
-      }
-    },
-    "AllowDNSIngress6E43C5EC": {
-      "Type": "AWS::EC2::NetworkAclEntry",
-      "Properties": {
-        "NetworkAclId": {
-          "Ref": "myNACL198AF6597"
-        },
-        "Protocol": 17,
-        "RuleAction": "allow",
-        "RuleNumber": 100,
-        "CidrBlock": "0.0.0.0/0",
-        "Egress": false,
-        "Icmp": {
-          "Code": -1,
-          "Type": -1
-        },
-        "PortRange": {
-          "From": 53,
-          "To": 53
-        }
-      }
-    },
-    "AssociatePrivateawscdkec2vpcMyVpcPrivateSubnet1FED4593C479C054A": {
+    "myNACL1DefaultAssociationawscdkec2vpcMyVpcPrivateSubnet1FED4593C4AF222C6": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
@@ -557,7 +515,7 @@
         }
       }
     },
-    "AssociatePrivateawscdkec2vpcMyVpcPrivateSubnet2A2D31E078BD6357E": {
+    "myNACL1DefaultAssociationawscdkec2vpcMyVpcPrivateSubnet2A2D31E07B1508A9A": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
@@ -568,7 +526,7 @@
         }
       }
     },
-    "AssociatePrivateawscdkec2vpcMyVpcPrivateSubnet35E0B6064F87A9DEC": {
+    "myNACL1DefaultAssociationawscdkec2vpcMyVpcPrivateSubnet35E0B6064690BFF70": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "NetworkAclId": {
@@ -576,6 +534,40 @@
         },
         "SubnetId": {
           "Ref": "MyVpcPrivateSubnet3Subnet772D6AD7"
+        }
+      }
+    },
+    "myNACL1AllowDNSEgressD49F54D3": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "myNACL198AF6597"
+        },
+        "Protocol": 17,
+        "RuleAction": "allow",
+        "RuleNumber": 100,
+        "CidrBlock": "172.16.0.0/24",
+        "Egress": true,
+        "PortRange": {
+          "From": 53,
+          "To": 53
+        }
+      }
+    },
+    "myNACL1AllowDNSIngress3030B2C3": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "myNACL198AF6597"
+        },
+        "Protocol": 17,
+        "RuleAction": "allow",
+        "RuleNumber": 100,
+        "CidrBlock": "0.0.0.0/0",
+        "Egress": false,
+        "PortRange": {
+          "From": 53,
+          "To": 53
         }
       }
     }
