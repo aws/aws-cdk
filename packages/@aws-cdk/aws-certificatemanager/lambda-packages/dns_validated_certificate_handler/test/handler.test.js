@@ -28,11 +28,13 @@ describe('DNS Validated Certificate Handler', () => {
         }
       };
     });
+    handler.withSleep(() => Promise.resolve());
     console.log = function () { };
   });
   afterEach(() => {
     // Restore waiters and logger
     handler.resetWaiter();
+    handler.resetSleep();
     AWS.restore();
     console.log = origLog;
   });
