@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { ISDK } from '../api/util/sdk';
 import { debug } from '../logging';
-import { Context } from '../settings';
+import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AZContextProviderPlugin } from './availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { ContextProviderPlugin } from './provider';
@@ -35,7 +35,7 @@ export async function provideContextValues(
     } catch (e) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.
-      value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, _dontSaveContext: true };
+      value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
     }
     context.set(key, value);
     debug(`Setting "${key}" context to ${JSON.stringify(value)}`);

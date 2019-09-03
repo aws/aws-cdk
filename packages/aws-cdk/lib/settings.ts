@@ -11,6 +11,11 @@ export const PROJECT_CONFIG = 'cdk.json';
 export const PROJECT_CONTEXT = 'cdk.context.json';
 export const USER_DEFAULTS = '~/.cdk.json';
 
+/**
+ * If a context value is an object with this key set to a truthy value, it won't be saved to cdk.context.json
+ */
+export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
+
 const CONTEXT_KEY = 'context';
 
 export type Arguments = { readonly [name: string]: unknown };
@@ -363,9 +368,9 @@ function expandHomeDir(x: string) {
 }
 
 /**
- * Return all context value that are not an objecg with a _dontSaveContext member
+ * Return all context value that are not transient context values
  */
-function stripTransientValues(obj: any) {
+function stripTransientValues(obj: {[key: string]: any}) {
   const ret: any = {};
   for (const [key, value] of Object.entries(obj)) {
     if (!isTransientValue(value)) {
@@ -375,6 +380,11 @@ function stripTransientValues(obj: any) {
   return ret;
 }
 
+/**
+ * Return whether the given value is a transient context value
+ *
+ * Values that are objects with a magic key set to a truthy value are considered transient.
+ */
 function isTransientValue(value: any) {
-  return typeof value === 'object' && value !== null && (value as any)._dontSaveContext;
+  return typeof value === 'object' && value !== null && (value as any)[TRANSIENT_CONTEXT_KEY];
 }

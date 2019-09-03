@@ -40,4 +40,4 @@ export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
 /**
  * If a context value is an object with this key, it indicates an error
  */
-export const PROVIDER_ERROR_KEY = '_providerError';
+export const PROVIDER_ERROR_KEY = '$providerError';
