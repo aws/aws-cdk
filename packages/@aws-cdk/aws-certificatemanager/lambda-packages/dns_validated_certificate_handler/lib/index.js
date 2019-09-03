@@ -99,7 +99,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   console.log('Waiting for ACM to provide DNS records for validation...');
 
   let record;
-  const maxAttempts = 6;
+  const maxAttempts = 10;
   for (let attempt = 0; attempt < maxAttempts - 1 && !record; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
