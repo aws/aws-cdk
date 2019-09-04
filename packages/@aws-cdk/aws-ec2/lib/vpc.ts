@@ -1511,19 +1511,19 @@ export enum RouteTargetType {
 
   TRANSIT_GATEWAY_ID = "transitGatewayId",
 }
-
+/**
+ * Common interface to for Routeoptions and RouteProps.
+ */
 export interface CommonRouteOptions {
   /**
    * Route destination IPv4 cidr block
-   * Required if destinationCidrIpv6 is not provided
-   * @default -
+   * @default - Required if destinationCidrIpv6 is not provided
    */
   readonly destinationCidr?: string;
 
   /**
    * Route destination IPv6 cidr block
-   * Required if destinationCidr is not provided
-   * @default -
+   * @default - Required if destinationCidr is not provided
    */
   readonly destinationCidrIpv6?: string;
 
@@ -1537,6 +1537,9 @@ export interface CommonRouteOptions {
    */
   readonly targetId: string;
 }
+/**
+ * Options needed to create a Route from Vpc method.
+ */
 export interface RouteOptions extends CommonRouteOptions {
   /**
    * Route tables to add routes based on subnets
@@ -1546,9 +1549,12 @@ export interface RouteOptions extends CommonRouteOptions {
 
 }
 
+/**
+ * Route properties needed to create a Route.
+ */
 export interface RouteProps extends CommonRouteOptions {
   /**
-   * Route table to add route
+   * Route table to add the route.
    */
   readonly routeTable: IRouteTable;
 }

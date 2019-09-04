@@ -9,20 +9,18 @@ import { IRoute, IVpc, RouteTargetType } from "./vpc";
 export interface VpcPeeringConnectionOptions {
   /**
    * The VPC with which you are creating the VPC peering connection
-   * Required: either a peerVpcId or peerVpc
-   * @default -
+   * @default - Specify either a peerVpc or peerVpcId
    */
   readonly peerVpc?: IVpc;
   /**
    * The ID of the VPC with which you are creating the VPC peering connection
-   * Required: either a peerVpcId or peerVpc
-   * @default -
+   * @default - Specify either a peerVpc or peerVpcId
    */
   readonly peerVpcId?: string;
 
   /**
    * The AWS account ID of the owner of the peer VPC.
-   * @default Your AWS account ID
+   * @default Your AWS account ID if peerVpcId is provided or the AWS account ID of the peerVpc.
    */
   readonly ownerId?: string;
 
@@ -34,8 +32,7 @@ export interface VpcPeeringConnectionOptions {
 
   /**
    * The VPC peer role for the peering connection when connecting to another AWS account.
-   * Required if you provide different ownerId.
-   * @default -
+   * @default - Specify if the peerVpc/peerVpcId and the Vpc are in different accounts.
    */
   readonly role?: IRole;
 }
