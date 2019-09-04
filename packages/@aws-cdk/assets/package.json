@@ -70,7 +70,7 @@
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "pkglint": "file:../../../tools/pkglint",
-    "sinon": "^7.4.1",
+    "sinon": "^7.4.2",
     "ts-mock-imports": "^1.2.6"
   },
   "dependencies": {
