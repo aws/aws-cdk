@@ -583,8 +583,7 @@
             }
           }
         ],
-        "EnableECSManagedTags": true,
-        "PropagateTags": "SERVICE",
+        "EnableECSManagedTags": false,
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "DISABLED",

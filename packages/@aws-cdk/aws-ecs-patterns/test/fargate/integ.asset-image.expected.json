@@ -777,8 +777,7 @@
             ]
           }
         },
-        "EnableECSManagedTags": true,
-        "PropagateTags": "SERVICE"
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",

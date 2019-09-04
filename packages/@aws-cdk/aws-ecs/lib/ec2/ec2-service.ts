@@ -135,7 +135,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE : props.propagateTaskTagsFrom,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
       enableECSManagedTags: props.enableECSManagedTags,
     },
     {

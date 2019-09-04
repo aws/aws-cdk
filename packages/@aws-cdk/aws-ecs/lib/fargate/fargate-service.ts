@@ -94,7 +94,7 @@ export class FargateService extends BaseService implements IFargateService {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
       launchType: LaunchType.FARGATE,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.SERVICE : props.propagateTaskTagsFrom,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
       enableECSManagedTags: props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,
