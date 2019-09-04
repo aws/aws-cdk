@@ -27,10 +27,6 @@ export class DynamoEventSource implements lambda.IEventSource {
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 1000)) {
       throw new Error(`Maximum batch size must be between 1 and 1000 inclusive (given ${this.props.batchSize})`);
     }
-
-    if(!table.streaming){
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`);
-    }
   }
 
   public bind(target: lambda.IFunction) {
