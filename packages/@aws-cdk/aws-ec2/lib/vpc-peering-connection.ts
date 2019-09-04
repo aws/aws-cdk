@@ -66,12 +66,13 @@ export interface IVpcPeeringConnection extends IResource {
    * Add route to the VPC's route tables that initiated the VPC peering connection.
    * @param cidr Cidr block of the peered VPC
    */
-  addRoute(cidr: string): IRoute[];
+  addRoute(id: string, cidr: string): IRoute[];
   /**
-   * Add route to the VPC's route tables with which the VPC peering connection was created.
+   * Add route to the peer VPC's route tables with which the VPC peering connection was created.
+   * it works only when peerVpc is provided and it's on the same account.
    * @param cidr Cidr block of the peering VPC
    */
-  addPeerRoute(cidr: string): IRoute[];
+  addPeerRoute(id: string, cidr: string): IRoute[];
 }
 
 /**
@@ -89,7 +90,11 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
 
   private vpc: IVpc;
 
+  private ownerId: string;
+
   private peerVpc?: IVpc;
+
+  private peerOwnerId?: string;
 
   constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
     super(scope, id);
@@ -130,13 +135,15 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
 
     this.vpc = props.vpc;
     this.peerVpc = props.peerVpc;
+    this.peerOwnerId = peerOwnerId;
+    this.ownerId = stack.account;
     this.vpcId = vpcPeeringConnection.vpcId;
     this.peerVpcId = vpcPeeringConnection.peerVpcId;
     this.peeringConnectionId = vpcPeeringConnection.ref;
   }
 
-  public addRoute(cidr: string): IRoute[] {
-    const routes = this.vpc.addRoute(`DefaultRoute`, {
+  public addRoute(id: string, cidr: string): IRoute[] {
+    const routes = this.vpc.addRoute(id, {
       destinationCidr: cidr,
       targetType: RouteTargetType.VPC_PEERING_CONNECTION_ID,
       targetId: this.peeringConnectionId
@@ -144,11 +151,14 @@ export class VpcPeeringConnection extends Resource implements IVpcPeeringConnect
     return routes;
   }
 
-  public addPeerRoute(cidr: string): IRoute[] {
+  public addPeerRoute(id: string, cidr: string): IRoute[] {
     if (this.peerVpc === undefined) {
       throw new Error("Can't add peer route to undefined Vpc");
     }
-    const peeredRoute = this.peerVpc.addRoute(`DefaultPeeredRoute`, {
+    if (this.ownerId !== this.peerOwnerId) {
+      throw new Error("Can't add peer route to peer vpc in another account");
+    }
+    const peeredRoute = this.peerVpc.addRoute(id, {
       destinationCidr: cidr,
       targetType: RouteTargetType.VPC_PEERING_CONNECTION_ID,
       targetId: this.peeringConnectionId

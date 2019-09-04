@@ -92,8 +92,8 @@ export = {
       vpc,
       peerVpc: vpc2
     });
-    peering.addRoute("10.1.0.0/16");
-    peering.addPeerRoute("10.0.0.0/16");
+    peering.addRoute("Vpc1PeeringRoute", "10.1.0.0/16");
+    peering.addPeerRoute("Vpc2PeeringRoute", "10.0.0.0/16");
 
     expect(stack).to(
       haveResourceLike("AWS::EC2::Route", {
@@ -123,7 +123,7 @@ export = {
       vpc,
       peerVpcId: "vpc-12341234"
     });
-    peering.addRoute("10.1.0.0/16");
+    peering.addRoute("VpcPeeringRoute", "10.1.0.0/16");
 
     expect(stack).to(
       haveResourceLike("AWS::EC2::Route", {
@@ -134,7 +134,7 @@ export = {
       })
     );
     test.throws(() => {
-      peering.addPeerRoute("10.0.0.0/16");
+      peering.addPeerRoute("OutsideVpcPeeringRoute", "10.0.0.0/16");
     });
 
     test.done();
@@ -151,8 +151,8 @@ export = {
       vpc,
       peerVpc: vpc2
     });
-    peering.addRoute("10.1.0.0/24");
-    peering.addRoute("10.1.1.0/24");
+    peering.addRoute("SubnetOnePeeringRoute", "10.1.0.0/24");
+    peering.addRoute("SubnetTwoPeeringRoute", "10.1.1.0/24");
 
     expect(stack).to(
       haveResourceLike("AWS::EC2::Route", {

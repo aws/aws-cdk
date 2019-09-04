@@ -1,7 +1,7 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
     IDependable, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
-import crypto = require('crypto');
+// import crypto = require('crypto');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -35,6 +35,8 @@ export interface ISubnet extends IResource {
    * The route table for this subnet
    */
   readonly routeTable: IRouteTable;
+
+  addRoute(id: string, options: CommonRouteOptions): IRoute
 }
 
 /**
@@ -336,10 +338,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const subnetSelection = this.selectSubnetObjects(subnets || {});
     const routes: IRoute[] = [];
     subnetSelection.forEach((subnet: ISubnet, index: number) => {
-        routes.push(new Route(this, `${id}${index}${this.hashCidr(options.destinationCidr || options.destinationCidrIpv6)}`, {
-          routeTable: subnet.routeTable,
-          ...props,
-        }));
+        routes.push(subnet.addRoute(`${id}${index}`, props));
     });
     return routes;
   }
@@ -373,10 +372,10 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
-  private hashCidr(cidr?: string): string {
-    const md5 = crypto.createHash('md5').update(cidr || "Route").digest("hex");
-    return md5.slice(0, 8).toUpperCase();
-  }
+  // private hashCidr(cidr?: string): string {
+  //   const md5 = crypto.createHash('md5').update(cidr || "Route").digest("hex");
+  //   return md5.slice(0, 8).toUpperCase();
+  // }
 }
 
 /**
@@ -1288,16 +1287,12 @@ export class Subnet extends Resource implements ISubnet {
    * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
   public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: IDependable) {
-    const route = new CfnRoute(this, `DefaultRoute`, {
-      routeTableId: this.routeTable.routeTableId,
-      destinationCidrBlock: '0.0.0.0/0',
-      gatewayId
+    const route = this.addRoute(`DefaultRoute`, {
+      destinationCidr: '0.0.0.0/0',
+      targetId: gatewayId,
+      targetType: RouteTargetType.GATEWAY_ID
     });
     route.node.addDependency(gatewayAttachment);
-
-    // Since the 'route' depends on the gateway attachment, just
-    // depending on the route is enough.
-    this._internetConnectivityEstablished.add(route);
   }
 
   /**
@@ -1305,12 +1300,23 @@ export class Subnet extends Resource implements ISubnet {
    * @param natGatewayId The ID of the NAT gateway
    */
   public addDefaultNatRoute(natGatewayId: string) {
-    const route = new CfnRoute(this, `DefaultRoute`, {
-      routeTableId: this.routeTable.routeTableId,
-      destinationCidrBlock: '0.0.0.0/0',
-      natGatewayId
+    this.addRoute(`DefaultRoute`, {
+      destinationCidr: '0.0.0.0/0',
+      targetId: natGatewayId,
+      targetType: RouteTargetType.NAT_GATEWAY_ID
     });
+  }
+
+  public addRoute(id: string, options: CommonRouteOptions): IRoute {
+    const route = new Route(this, id, {
+      routeTable: this.routeTable,
+      ...options
+    });
+
     this._internetConnectivityEstablished.add(route);
+
+    return route;
+
   }
 }
 
@@ -1493,6 +1499,17 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!
     };
+  }
+
+  public addRoute(id: string, options: CommonRouteOptions): IRoute {
+    if (!this.routeTable.routeTableId) {
+      throw new Error("No routeTableId defined in this subnet.");
+    }
+    const route = new Route(this, id, {
+      routeTable: this.routeTable,
+      ...options
+    });
+    return route;
   }
 }
 
