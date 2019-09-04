@@ -198,6 +198,11 @@ export class Table extends Resource {
     });
  }
 
+  /**
+  * @attribute
+  */
+  public readonly streaming: boolean;
+
  /**
   * @attribute
   */
@@ -267,6 +272,8 @@ export class Table extends Resource {
     this.tableName = this.getResourceNameAttribute(this.table.ref);
 
     this.tableStreamArn = this.table.attrStreamArn;
+
+    this.streaming = !!props.stream;
 
     this.scalingRole = this.makeScalingRole();
 
