@@ -1,3 +1,86 @@
+# CloudFormation Resource Specification v6.0.0
+
+## New Resource Types
+
+* AWS::Config::OrganizationConfigRule
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker SecurityGroups.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ApplicationAutoScaling::ScalableTarget SuspendedState (__added__)
+* AWS::CloudWatch::Alarm ThresholdMetricId (__added__)
+* AWS::CloudWatch::Alarm Threshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Cognito::UserPoolClient RefreshTokenValidity.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::EC2::Instance CpuOptions (__added__)
+* AWS::ECS::TaskDefinition IpcMode (__added__)
+* AWS::ECS::TaskDefinition PidMode (__added__)
+* AWS::ElastiCache::ReplicationGroup KmsKeyId (__added__)
+* AWS::IAM::Role Description (__added__)
+* AWS::IAM::Role Tags (__added__)
+* AWS::Lambda::EventSourceMapping MaximumBatchingWindowInSeconds (__added__)
+* AWS::RDS::DBCluster AssociatedRoles (__added__)
+* AWS::RDS::DBCluster RestoreType (__added__)
+* AWS::RDS::DBCluster SourceDBClusterIdentifier (__added__)
+* AWS::RDS::DBCluster UseLatestRestorableTime (__added__)
+* AWS::RDS::DBInstance AssociatedRoles (__added__)
+* AWS::SNS::Subscription Region.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget.SuspendedState (__added__)
+* AWS::EC2::Instance.CpuOptions (__added__)
+* AWS::ECS::TaskDefinition.SystemControl (__added__)
+* AWS::Elasticsearch::Domain.ZoneAwarenessConfig (__added__)
+* AWS::Events::Rule.AwsVpcConfiguration (__added__)
+* AWS::Events::Rule.NetworkConfiguration (__added__)
+* AWS::RDS::DBCluster.DBClusterRole (__added__)
+* AWS::RDS::DBInstance.DBInstanceRole (__added__)
+* AWS::Cognito::UserPool.AdminCreateUserConfig UnusedAccountValidityDays.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::Cognito::UserPool.PasswordPolicy TemporaryPasswordValidityDays.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::DynamoDB::Table.SSESpecification KMSMasterKeyId (__added__)
+* AWS::DynamoDB::Table.SSESpecification SSEType (__added__)
+* AWS::EC2::ClientVpnEndpoint.TagSpecification ResourceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::ClientVpnEndpoint.TagSpecification Tags.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::Instance.Ebs KmsKeyId (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition Interactive (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition PseudoTerminal (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition SystemControls (__added__)
+* AWS::ECS::TaskDefinition.LogConfiguration SecretOptions (__added__)
+* AWS::ECS::TaskDefinition.Tmpfs Size.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig ZoneAwarenessConfig (__added__)
+* AWS::Events::Rule.EcsParameters Group (__added__)
+* AWS::Events::Rule.EcsParameters LaunchType (__added__)
+* AWS::Events::Rule.EcsParameters NetworkConfiguration (__added__)
+* AWS::Events::Rule.EcsParameters PlatformVersion (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+
+
 # CloudFormation Resource Specification v5.3.0
 
 ## New Resource Types
