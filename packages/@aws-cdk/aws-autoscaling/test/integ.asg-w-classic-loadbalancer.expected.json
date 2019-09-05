@@ -569,7 +569,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-asg-integ/Fleet"
+          }
+        ]
       }
     },
     "FleetInstanceProfileC6192A66": {
