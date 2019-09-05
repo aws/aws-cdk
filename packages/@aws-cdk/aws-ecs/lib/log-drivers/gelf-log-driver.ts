@@ -2,7 +2,7 @@ import { Construct, Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { ensureInRange, ensurePositiveInteger, stringifyOptions } from './utils';
+import { ensureInRange, ensurePositiveInteger, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
  * The type of compression the GELF driver uses to compress each log message.
@@ -93,10 +93,7 @@ export class GelfLogDriver extends LogDriver {
         'gelf-compression-level': this.props.compressionLevel,
         'gelf-tcp-max-reconnect': this.props.tcpMaxReconnect,
         'gelf-tcp-reconnect-delay': this.props.tcpReconnectDelay,
-        'tag': this.props.tag,
-        'labels': this.props.labels,
-        'env': this.props.env,
-        'env-regex': this.props.envRegex
+        ...renderCommonLogDriverOptions(this.props)
       }),
     };
   }

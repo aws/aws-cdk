@@ -36,16 +36,6 @@ export function stringifyOptions(options: { [key: string]: (Duration | string | 
     const filteredOptions = removeEmpty(options);
 
     for (const key of Object.keys(filteredOptions)) {
-        if (!Token.isUnresolved(filteredOptions.env) && filteredOptions.env && Array.isArray(filteredOptions.env)) {
-            _options.env = filteredOptions.env.join(',');
-            continue;
-        }
-
-        if (!Token.isUnresolved(filteredOptions.labels) && filteredOptions.labels && Array.isArray(filteredOptions.labels)) {
-            _options.env = filteredOptions.labels.join(',');
-            continue;
-        }
-
         // Convert value to string
         _options[key] = `${filteredOptions[key]}`;
     }

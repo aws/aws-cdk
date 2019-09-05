@@ -34,7 +34,7 @@ export = {
             LogDriver: 'splunk',
             Options: {
               'splunk-token': 'my-splunk-token',
-              'url': 'my-splunk-url'
+              'splunk-url': 'my-splunk-url'
             }
           }
         }

@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions } from './utils';
+import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
  * Specifies the journald log driver configuration options.
@@ -31,10 +31,7 @@ export class JournaldLogDriver extends LogDriver {
     return {
       logDriver: 'journald',
       options: stringifyOptions({
-        'tag': this.props.tag,
-        'labels': this.props.labels,
-        'env': this.props.env,
-        'env-regex': this.props.envRegex
+        ...renderCommonLogDriverOptions(this.props)
       }),
     };
   }

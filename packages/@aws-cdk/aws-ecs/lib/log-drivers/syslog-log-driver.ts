@@ -75,7 +75,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
  */
 export class SyslogLogDriver extends LogDriver {
   /**
-   * Constructs a new instance of the FluentdLogDriver class.
+   * Constructs a new instance of the SyslogLogDriver class.
    *
    * @param props the syslog log driver configuration options.
    */

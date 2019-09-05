@@ -20,7 +20,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JsonFileLogDriver({
-        tag: 'hello'
+        env: ['hello']
       }),
       memoryLimitMiB: 128
     });
@@ -32,7 +32,7 @@ export = {
           LogConfiguration: {
             LogDriver: 'json-file',
             Options: {
-              tag: 'hello'
+              env: 'hello'
             }
           }
         }

@@ -2,7 +2,7 @@ import { Construct, Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions } from './utils';
+import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
  * Specifies the fluentd log driver configuration options.
@@ -82,10 +82,7 @@ export class FluentdLogDriver extends LogDriver {
         'fluentd-retry-wait': this.props.retryWait,
         'fluentd-max-retries': this.props.maxRetries,
         'fluentd-sub-second-precision': this.props.subSecondPrecision,
-        'tag': this.props.tag,
-        'labels': this.props.labels,
-        'env': this.props.env,
-        'env-regex': this.props.envRegex
+        ...renderCommonLogDriverOptions(this.props)
       }),
     };
   }

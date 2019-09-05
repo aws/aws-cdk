@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { stringifyOptions } from './utils';
+import { joinWithCommas, stringifyOptions } from './utils';
 
 /**
  * Specifies the json-file log driver configuration options.
@@ -63,8 +63,8 @@ export class JsonFileLogDriver extends LogDriver {
         'max-size': this.props.maxSize,
         'max-file': this.props.maxFile,
         'compress': this.props.compress,
-        'labels': this.props.labels,
-        'env': this.props.env,
+        'labels': joinWithCommas(this.props.labels),
+        'env': joinWithCommas(this.props.env),
         'env-regex': this.props.envRegex
       }),
     };
