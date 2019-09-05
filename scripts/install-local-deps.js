@@ -45,6 +45,9 @@ function installDeps(pkg, location, ...depLists) {
         linked.add(name);
         paths.push(path);
         if (locks) {
+          if (!locks.dependencies) {
+            locks.dependencies = {};
+          }
           locks.dependencies[name] = { version, dev };
         }
       });
@@ -54,7 +57,7 @@ function installDeps(pkg, location, ...depLists) {
   }
   if (locks) {
     sortKeys(locks.dependencies);
-    locks.version = pkg.version
+    locks.version = pkg.version;
     writeJsonSync(lockFile, locks, { spaces: findIndent(lockFile) });
   } else {
     // This is dog slow, hence we're playing funky games elsewhere... but we're not in the business of bootstrapping
