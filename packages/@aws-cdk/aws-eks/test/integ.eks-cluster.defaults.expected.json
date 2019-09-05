@@ -1014,6 +1014,26 @@
               ]
             ]
           }
+        ],
+        "Tags": [
+          {
+            "Key":"Name",
+            "Value":"eks-integ-defaults/Cluster/DefaultCapacity"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "Cluster9EE0221C"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
         ]
       }
     },
