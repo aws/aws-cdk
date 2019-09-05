@@ -46,7 +46,7 @@
     "@types/request": "^2.48.2",
     "@types/semver": "^6.0.1",
     "@types/sinon": "^7.0.13",
-    "@types/table": "^4.0.6",
+    "@types/table": "^4.0.7",
     "@types/uuid": "^3.4.5",
     "@types/yaml": "^1.0.2",
     "@types/yargs": "^13.0.2",

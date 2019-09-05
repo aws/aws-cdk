@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/string-width": "^4.0.1",
-    "@types/table": "^4.0.6",
+    "@types/table": "^4.0.7",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "fast-check": "^1.16.2",
     "pkglint": "file:../../../tools/pkglint"
