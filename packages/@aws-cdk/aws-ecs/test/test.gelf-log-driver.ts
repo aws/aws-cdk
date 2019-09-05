@@ -21,7 +21,8 @@ export = {
       image,
       logging: new ecs.GelfLogDriver({
         address: 'my-gelf-address'
-      })
+      }),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -47,7 +48,8 @@ export = {
       image,
       logging: ecs.LogDrivers.gelf({
         address: 'my-gelf-address'
-      })
+      }),
+      memoryLimitMiB: 128
     });
 
     // THEN

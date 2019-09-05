@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct, Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
@@ -39,7 +39,7 @@ export interface FluentdLogDriverProps extends BaseLogDriverProps {
    *
    * @default - 1 second
    */
-  readonly retryWait?: number;
+  readonly retryWait?: Duration;
 
   /**
    * The maximum number of retries.

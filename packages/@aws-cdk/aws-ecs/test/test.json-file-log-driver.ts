@@ -21,7 +21,8 @@ export = {
       image,
       logging: new ecs.JsonFileLogDriver({
         tag: 'hello'
-      })
+      }),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -45,7 +46,8 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.JsonFileLogDriver()
+      logging: new ecs.JsonFileLogDriver(),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -66,7 +68,8 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: ecs.LogDrivers.jsonFile()
+      logging: ecs.LogDrivers.jsonFile(),
+      memoryLimitMiB: 128
     });
 
     // THEN

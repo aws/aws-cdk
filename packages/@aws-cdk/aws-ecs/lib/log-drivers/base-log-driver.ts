@@ -9,7 +9,7 @@ export interface BaseLogDriverProps {
   readonly tag?: string;
 
   /**
-   * The labels option takes a comma-separated list of keys. If there is collision
+   * The labels option takes an array of keys. If there is collision
    * between label and env keys, the value of the env takes precedence. Adds additional
    * fields to the extra attributes of a logging message.
    *
@@ -18,7 +18,7 @@ export interface BaseLogDriverProps {
   readonly labels?: string[];
 
   /**
-   * The env option takes a comma-separated list of keys. If there is collision between
+   * The env option takes an array of keys. If there is collision between
    * label and env keys, the value of the env takes precedence. Adds additional fields
    * to the extra attributes of a logging message.
    *

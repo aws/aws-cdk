@@ -21,7 +21,8 @@ export = {
       image,
       logging: new ecs.FluentdLogDriver({
         tag: 'hello'
-      })
+      }),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -45,7 +46,8 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.FluentdLogDriver()
+      logging: new ecs.FluentdLogDriver(),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -66,7 +68,8 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: ecs.LogDrivers.fluentd()
+      logging: ecs.LogDrivers.fluentd(),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -74,8 +77,7 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'fluentd',
-            Options: {}
+            LogDriver: 'fluentd'
           }
         }
       ]

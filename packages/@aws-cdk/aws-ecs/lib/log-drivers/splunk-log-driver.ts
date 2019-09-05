@@ -2,7 +2,16 @@ import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { ensureInList, ensureInRange, stringifyOptions } from './utils';
+import { ensureInRange, stringifyOptions } from './utils';
+
+/**
+ * Log Message Format
+ */
+export enum SplunkLogFormat {
+  INLINE = 'inline',
+  JSON = 'json',
+  RAW = 'raw'
+}
 
 /**
  * Specifies the splunk log driver configuration options.
@@ -61,16 +70,16 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Ignore server certificate validation.
    *
-   * @default - insecureskipverify not set.
+   * @default - insecureSkipVerify not set.
    */
-  readonly insecureskipverify?: string;
+  readonly insecureSkipVerify?: string;
 
   /**
    * Message format. Can be inline, json or raw.
    *
    * @default - inline
    */
-  readonly format?: string;
+  readonly format?: SplunkLogFormat;
 
   /**
    * Verify on start, that docker can connect to Splunk server.
@@ -108,10 +117,6 @@ export class SplunkLogDriver extends LogDriver {
   constructor(private readonly props: SplunkLogDriverProps) {
     super();
 
-    if (props.format) {
-      ensureInList(props.format, ['inline', 'json', 'raw']);
-    }
-
     if (props.gzipLevel) {
       ensureInRange(props.gzipLevel, -1, 9);
     }
@@ -131,7 +136,7 @@ export class SplunkLogDriver extends LogDriver {
         'splunk-index': this.props.index,
         'splunk-capath': this.props.caPath,
         'splunk-caname': this.props.caName,
-        'splunk-insecureskipverify': this.props.insecureskipverify,
+        'splunk-insecureskipverify': this.props.insecureSkipVerify,
         'splunk-format': this.props.format,
         'splunk-verify-connection': this.props.verifyConnection,
         'splunk-gzip': this.props.gzip,

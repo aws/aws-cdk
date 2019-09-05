@@ -1,8 +1,17 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct, Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { ensureInList, ensureInRange, ensurePositiveInteger, stringifyOptions } from './utils';
+import { ensureInRange, ensurePositiveInteger, stringifyOptions } from './utils';
+
+/**
+ * The type of compression the GELF driver uses to compress each log message.
+ */
+export enum GelfCompressionType {
+  GZIP = 'gzip',
+  ZLIB = 'zlib',
+  NONE = 'none'
+}
 
 /**
  * Specifies the journald log driver configuration options.
@@ -22,7 +31,7 @@ export interface GelfLogDriverProps extends BaseLogDriverProps {
    *
    * @default - gzip
    */
-  readonly compressionType?: string;
+  readonly compressionType?: GelfCompressionType;
 
   /**
    * UDP Only The level of compression when gzip or zlib is the gelf-compression-type.
@@ -47,7 +56,7 @@ export interface GelfLogDriverProps extends BaseLogDriverProps {
    *
    * @default - 1
    */
-  readonly tcpReconnectDelay?: number;
+  readonly tcpReconnectDelay?: Duration;
 }
 
 /**
@@ -63,20 +72,12 @@ export class GelfLogDriver extends LogDriver {
     super();
 
     // Validation
-    if (props.compressionType) {
-      ensureInList(props.compressionType, ['gzip', 'zlib', 'none']);
-    }
-
     if (props.compressionLevel) {
       ensureInRange(props.compressionLevel, -1, 9);
     }
 
     if (props.tcpMaxReconnect) {
       ensurePositiveInteger(props.tcpMaxReconnect);
-    }
-
-    if (props.tcpReconnectDelay) {
-      ensurePositiveInteger(props.tcpReconnectDelay);
     }
   }
 

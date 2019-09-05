@@ -21,7 +21,8 @@ export = {
       image,
       logging: new ecs.SyslogLogDriver({
         tag: 'hello'
-      })
+      }),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -45,7 +46,8 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.SyslogLogDriver()
+      logging: new ecs.SyslogLogDriver(),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -66,7 +68,8 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: ecs.LogDrivers.syslog()
+      logging: ecs.LogDrivers.syslog(),
+      memoryLimitMiB: 128
     });
 
     // THEN

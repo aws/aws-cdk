@@ -22,7 +22,8 @@ export = {
       logging: new ecs.SplunkLogDriver({
         token: 'my-splunk-token',
         url: 'my-splunk-url'
-      })
+      }),
+      memoryLimitMiB: 128
     });
 
     // THEN
@@ -50,7 +51,8 @@ export = {
       logging: ecs.LogDrivers.splunk({
         token: 'my-splunk-token',
         url: 'my-splunk-url'
-      })
+      }),
+      memoryLimitMiB: 128
     });
 
     // THEN
