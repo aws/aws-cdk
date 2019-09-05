@@ -1,5 +1,7 @@
+export * from './bastion-host';
 export * from './connections';
 export * from './instance-types';
+export * from './instance';
 export * from './machine-image';
 export * from './network-acl';
 export * from './network-acl-types';

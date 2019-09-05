@@ -1,7 +1,7 @@
 ---
 name: "\U0001F680 Feature Request"
 about: Request a new feature
-labels: feature-request, needs-triage
+labels: feature-request, status/needs-triage
 ---
 
 <!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
@@ -20,7 +20,7 @@ Check the box below (with an X) if you think this feature might result in a
 breaking change (this requiring a major version bump when released). If unsure,
 please leave the box un-checked.
 -->
-* [ ] :warning: This feature might incur a breaking change 
+* [ ] :warning: This feature might incur a breaking change
 
 ### Description
 <!--
@@ -44,5 +44,5 @@ diagrams, ...
   - **Language:** <!-- [all | TypeScript | Java | Python ] etc... ] -->
 
 
-### Other information 
+### Other information
 <!-- e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->

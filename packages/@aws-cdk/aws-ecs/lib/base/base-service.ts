@@ -77,6 +77,23 @@ export interface BaseServiceOptions {
    * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly cloudMapOptions?: CloudMapOptions;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
+   *
+   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION or PropagatedTagSource.NONE
+   *
+   * @default PropagatedTagSource.NONE
+   */
+  readonly propagateTags?: PropagatedTagSource;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default false
+   */
+  readonly enableECSManagedTags?: boolean;
 }
 
 /**
@@ -173,6 +190,8 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
+      propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
+      enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -328,6 +347,7 @@ export abstract class BaseService extends Resource
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
+      region: '',
       service: 'iam',
       resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
@@ -495,4 +515,24 @@ export enum LaunchType {
    * The service will be launched using the FARGATE launch type
    */
   FARGATE = 'FARGATE'
+}
+
+/**
+ * Propagate tags from either service or task definition
+ */
+export enum PropagatedTagSource {
+  /**
+   * Propagate tags from service
+   */
+  SERVICE = 'SERVICE',
+
+  /**
+   * Propagate tags from task definition
+   */
+  TASK_DEFINITION = 'TASK_DEFINITION',
+
+  /**
+   * Do not propagate
+   */
+  NONE = 'NONE'
 }

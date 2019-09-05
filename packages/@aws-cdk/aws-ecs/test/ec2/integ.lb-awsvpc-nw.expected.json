@@ -392,7 +392,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80": {
@@ -536,6 +542,12 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
           }
         ]
       }
@@ -712,7 +724,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88": {
@@ -858,7 +876,8 @@
             ]
           }
         },
-        "SchedulingStrategy": "REPLICA"
+        "SchedulingStrategy": "REPLICA",
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "LBPublicListenerECSGroupD6A32205",

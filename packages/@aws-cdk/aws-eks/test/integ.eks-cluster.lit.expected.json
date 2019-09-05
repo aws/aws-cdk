@@ -1014,6 +1014,26 @@
               ]
             ]
           }
+        ],
+        "Tags": [
+          {
+            "Key":"Name",
+            "Value":"eks-integ-test-basic/EKSCluster/Nodes"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "EKSClusterE11008B6"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
         ]
       }
     },

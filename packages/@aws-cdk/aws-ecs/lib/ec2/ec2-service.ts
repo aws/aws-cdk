@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -70,6 +70,14 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default false
    */
   readonly daemon?: boolean;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default PropagatedTagSource.SERVICE
+   */
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -125,8 +133,10 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
-      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
+      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
+      enableECSManagedTags: props.enableECSManagedTags,
     },
     {
       cluster: props.cluster.clusterName,

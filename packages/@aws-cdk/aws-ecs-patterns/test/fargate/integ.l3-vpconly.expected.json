@@ -600,7 +600,8 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",
@@ -1247,7 +1248,8 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "L3bLBPublicListenerECSGroup0070C5CA",
@@ -1551,7 +1553,8 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "L3cLBPublicListenerECSGroup62D7B705",

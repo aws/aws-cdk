@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3-assets",
-  "version": "1.5.0",
+  "version": "1.6.1",
   "description": "Deploy local files and directories to S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -59,29 +59,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.5.0",
+    "@aws-cdk/assert": "^1.6.1",
     "@types/sinon": "^7.0.13",
-    "aws-cdk": "^1.5.0",
+    "aws-cdk": "^1.6.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "pkglint": "file:../../../tools/pkglint",
-    "sinon": "^7.4.1",
+    "sinon": "^7.4.2",
     "ts-mock-imports": "^1.2.6"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^1.5.0",
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/aws-s3": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/cx-api": "^1.5.0"
+    "@aws-cdk/assets": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/aws-s3": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^1.5.0",
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/aws-s3": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/cx-api": "^1.5.0"
+    "@aws-cdk/assets": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/aws-s3": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "engines": {
     "node": ">= 8.10.0"

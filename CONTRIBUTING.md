@@ -35,6 +35,8 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
 - [Troubleshooting](#troubleshooting)
+- [Debugging](#debugging)
+  - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
 - [Related Repositories](#related-repositories)
 
 ## Getting Started
@@ -316,7 +318,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com/aws/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -340,7 +342,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com/aws/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -545,6 +547,60 @@ have to disable the built-in rebuild functionality of `lerna run test`:
 ```shell
 $ CDK_TEST_BUILD=false lr test
 ```
+
+## Debugging
+
+### Connecting the VS Code Debugger
+
+*Note:* This applies to typescript CDK application only.
+
+To debug your CDK application along with the CDK repository,
+
+1. Clone the CDK repository locally and build the repository. See [Workflows](#workflows) section for the different build options.
+2. Open the CDK application (assume it's `hello-cdk` in these steps) and the CDK repository as a [VS code multi-root workspace](https://code.visualstudio.com/docs/editor/multi-root-workspaces).
+3. Change the `app` property in your CDK app's `cdk.json` file to enable the inspector agent, i.e.
+
+  ```json
+  {
+    "app": "node --inspect-brk bin/hello-cdk.js"
+  }
+  ```
+
+4. Open the [workspace settings file](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings) and verify that the following two folders must already exist
+
+  ```json
+  {
+    "folders": [
+      { "path": "<path-to-cdk-repo>/aws-cdk" },
+      { "path": "<path-to-cdk-app>/hello-cdk" }
+    ],
+  }
+  ```
+
+5. Add the following launch configuration to the settings file -
+
+  ```json
+  "launch": {
+    "configurations": [{
+      "type": "node",
+      "request": "launch",
+      "name": "Debug hello-cdk",
+      "program": "${workspaceFolder:hello-cdk}/bin/hello-cdk.js",
+      "cwd": "${workspaceFolder:hello-cdk}",
+      "console": "internalConsole",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
+      "outFiles": [
+        "${workspaceFolder:aws-cdk}/**/*.js",
+        "${workspaceFolder:hello-cdk}/**/*.js",
+      ],
+    }]
+  }
+  ```
+
+  *Go [here](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) for more about launch configurations.*
+
+6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
 
 ## Related Repositories
 

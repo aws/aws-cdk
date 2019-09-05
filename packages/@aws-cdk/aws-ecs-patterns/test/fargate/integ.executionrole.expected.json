@@ -606,7 +606,8 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",

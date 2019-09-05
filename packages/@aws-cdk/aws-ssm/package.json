@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ssm",
-  "version": "1.5.0",
+  "version": "1.6.1",
   "description": "The CDK Construct Library for AWS::SSM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,22 +62,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.5.0",
+    "@aws-cdk/assert": "^1.6.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/cx-api": "^1.5.0"
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/cx-api": "^1.5.0"
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1",
+    "@aws-cdk/cx-api": "^1.6.1"
   },
   "engines": {
     "node": ">= 8.10.0"

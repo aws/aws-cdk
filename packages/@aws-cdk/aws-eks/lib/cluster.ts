@@ -9,7 +9,7 @@ import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
-import { maxPodsForInstanceType } from './instance-data';
+import { MAX_PODS } from './instance-data';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 
@@ -662,4 +662,12 @@ class ImportedCluster extends Resource implements ICluster {
       i++;
     }
   }
+}
+
+export function maxPodsForInstanceType(instanceType: ec2.InstanceType) {
+  const num = MAX_PODS.get(instanceType.toString());
+  if (num === undefined) {
+    throw new Error(`Instance type not supported for EKS: ${instanceType.toString()}. Please pick a different instance type.`);
+  }
+  return num;
 }

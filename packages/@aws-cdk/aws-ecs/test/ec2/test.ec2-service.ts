@@ -44,7 +44,8 @@ export = {
         },
         DesiredCount: 1,
         LaunchType: LaunchType.EC2,
-        SchedulingStrategy: "REPLICA"
+        SchedulingStrategy: "REPLICA",
+        EnableECSManagedTags: false,
       }));
 
       test.done();

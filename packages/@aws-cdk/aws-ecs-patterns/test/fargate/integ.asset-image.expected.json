@@ -776,7 +776,8 @@
               }
             ]
           }
-        }
+        },
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",
