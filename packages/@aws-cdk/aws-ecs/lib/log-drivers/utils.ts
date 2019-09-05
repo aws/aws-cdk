@@ -1,4 +1,5 @@
 import { Duration, Token } from '@aws-cdk/core';
+import { BaseLogDriverProps } from './base-log-driver';
 
 /**
  * Remove undefined values from a dictionary
@@ -50,4 +51,17 @@ export function stringifyOptions(options: { [key: string]: (Duration | string | 
     }
 
     return _options;
+}
+
+export function renderCommonLogDriverOptions(opts: BaseLogDriverProps) {
+    return {
+          'tag': opts.tag,
+          'labels': joinWithCommas(opts.labels),
+          'env': joinWithCommas(opts.env),
+          'env-regex': opts.envRegex
+    };
+}
+
+export function joinWithCommas(xs?: string[]): string | undefined {
+    return xs && xs.join(',');
 }

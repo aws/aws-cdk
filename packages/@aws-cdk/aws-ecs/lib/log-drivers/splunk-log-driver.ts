@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
-import { ensureInRange, stringifyOptions } from './utils';
+import { ensureInRange, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
  * Log Message Format
@@ -141,10 +141,7 @@ export class SplunkLogDriver extends LogDriver {
         'splunk-verify-connection': this.props.verifyConnection,
         'splunk-gzip': this.props.gzip,
         'splunk-gzip-level': this.props.gzipLevel,
-        'tag': this.props.tag,
-        'labels': this.props.labels,
-        'env': this.props.env,
-        'env-regex': this.props.envRegex
+        ...renderCommonLogDriverOptions(this.props)
       }),
     };
   }
