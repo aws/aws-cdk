@@ -124,6 +124,23 @@ const EKS_AMI: {[version: string]: {[type: string]: {[region: string]: string}}}
     EU (Paris) (eu-west-3)	ami-00b44348ab3eb2c9f	ami-03136b5b83c5b61ba
     EU (Stockholm) (eu-north-1)	ami-02218be9004537a65	ami-057821acea15c1a98
     `),
+    '1.14': parseTable(`
+    US East (Ohio) (us-east-2) 	ami-0b031080918049726 	ami-04d77fc8fef1aaca2
+    US East (N. Virginia) (us-east-1) 	ami-03e43ca3afc5d79a3 	ami-06191d186b526c958
+    US West (Oregon) (us-west-2) 	ami-076c743acc3ec4159 	ami-06a627486f5cdcfc5
+    Asia Pacific (Hong Kong) (ap-east-1) 	ami-00542b29e27204f2f 	N/A*
+    Asia Pacific (Mumbai) (ap-south-1) 	ami-05bc2d5c9ce03d871 	ami-03807add4352f6e91
+    Asia Pacific (Tokyo) (ap-northeast-1) 	ami-07965c80cb853df83 	ami-015bb79419d174bd5
+    Asia Pacific (Seoul) (ap-northeast-2) 	ami-01d6aeb8c614a0845 	ami-0d755d74fc8224a9b
+    Asia Pacific (Singapore) (ap-southeast-1) 	ami-06a770d3ab2a8d907 	ami-0588cc83f0a817cec
+    Asia Pacific (Sydney) (ap-southeast-2) 	ami-05b461c33a8e8b5b4 	ami-0eddf7bdcd5a0214a
+    EU (Frankfurt) (eu-central-1) 	ami-0bbac7cbcb41a55f5 	ami-048c8692923c91566
+    EU (Ireland) (eu-west-1) 	ami-0a7313ee6c5ea3183 	ami-01c2a548e95a8867f
+    EU (London) (eu-west-2) 	ami-0c9806e57a54faf9f 	ami-07cb972305fc401eb
+    EU (Paris) (eu-west-3) 	ami-0f5705ccd7919964d 	ami-0fc79430cca30a71e
+    EU (Stockholm) (eu-north-1) 	ami-064a74cffcc25767f 	ami-0f689c98b9f8bee3b
+    Middle East (Bahrain) (me-south-1) 	ami-0cd9f426956a966c7 	N/A*
+    `),
 };
 
 /**
