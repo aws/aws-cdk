@@ -63,7 +63,13 @@ export = {
                 }
               ],
               "Version": "2012-10-17"
-            }
+            },
+            "Tags": [
+             {
+               "Key": "Name",
+               "Value": "MyFleet"
+             }
+           ],
           }
         },
         "MyFleetInstanceProfile70A58496": {

@@ -551,7 +551,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Instance"
+          }
+        ]
       }
     },
     "InstanceInstanceRoleDefaultPolicy4ACE9290": {

@@ -929,6 +929,26 @@
                 ]
               ]
             }
+          ],
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "k8s-cluster/cluster22/Nodes"
+            },
+            {
+              "Key": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "kubernetes.io/cluster/",
+                    {
+                      "Ref": "cluster227BD1CB20"
+                    }
+                  ]
+                ]
+              },
+              "Value": "owned"
+            }
           ]
         }
       },
