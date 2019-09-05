@@ -1,3 +1,4 @@
+import { Token } from "@aws-cdk/core";
 import { Connections, IConnectable } from "./connections";
 
 /**
@@ -77,6 +78,18 @@ class CidrIPv4 implements IPeer {
   public readonly uniqueId: string;
 
   constructor(private readonly cidrIp: string) {
+    if (!Token.isUnresolved(cidrIp)) {
+      const cidrMatch = cidrIp.match(/^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/);
+
+      if (!cidrMatch) {
+        throw new Error(`Invalid IPv4 CIDR: "${cidrIp}"`);
+      }
+
+      if (!cidrMatch[2]) {
+        throw new Error(`CIDR mask is missing in IPv4: "${cidrIp}". Did you mean "${cidrIp}/32"?`);
+      }
+    }
+
     this.uniqueId = cidrIp;
   }
 
@@ -112,6 +125,18 @@ class CidrIPv6 implements IPeer {
   public readonly uniqueId: string;
 
   constructor(private readonly cidrIpv6: string) {
+    if (!Token.isUnresolved(cidrIpv6)) {
+      const cidrMatch = cidrIpv6.match(/^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/);
+
+      if (!cidrMatch) {
+        throw new Error(`Invalid IPv6 CIDR: "${cidrIpv6}"`);
+      }
+
+      if (!cidrMatch[3]) {
+        throw new Error(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
+      }
+    }
+
     this.uniqueId = cidrIpv6;
   }
 

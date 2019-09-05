@@ -152,6 +152,27 @@ const group = listener.addTargets('AppFleet', {
 group.addTarget(asg2);
 ```
 
+### Using Lambda Targets
+
+To use a Lambda Function as a target, use the integration class in the
+`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import targets = require('@aws-cdk/aws-elasticloadbalancingv2-targets');
+
+const lambdaFunction = new lambda.Function(...);
+const loadBalancer = new elbv2.ApplicationLoadBalancer(...);
+
+const listener = lb.addListener('Listener', { port: 80 });
+listener.addTargets('Targets', {
+    targets: [new targets.LambdaTarget(lambdaFunction)]
+});
+```
+
+Only a single Lambda function can be added to a single listener rule.
+
 ### Configuring Health Checks
 
 Health checks are configured upon creation of a target group:

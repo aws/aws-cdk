@@ -646,6 +646,7 @@ Object {
           "MinimumHealthyPercent": 50,
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": Object {
           "AwsvpcConfiguration": Object {

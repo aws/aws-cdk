@@ -2,6 +2,61 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+## [1.6.1](https://github.com/aws/aws-cdk/compare/v1.6.0...v1.6.1) (2019-08-29)
+
+
+### Bug Fixes
+
+* **cloudwatch:** don't ignore 'stacked' property in GraphWidget class ([#2103](https://github.com/aws/aws-cdk/issues/2103)) ([#3796](https://github.com/aws/aws-cdk/issues/3796)) ([527b362](https://github.com/aws/aws-cdk/commit/527b362))
+* **init-templates:** remove dependency on @types/node ([#3840](https://github.com/aws/aws-cdk/issues/3840)) ([f46ce18](https://github.com/aws/aws-cdk/commit/f46ce18)), closes [#3839](https://github.com/aws/aws-cdk/issues/3839)
+* **toolkit:** do not deploy empty stacks ([#3144](https://github.com/aws/aws-cdk/issues/3144)) ([64ace90](https://github.com/aws/aws-cdk/commit/64ace90))
+* **vpc:** recognize Public subnets by Internet Gateway ([#3784](https://github.com/aws/aws-cdk/issues/3784)) ([54599e5](https://github.com/aws/aws-cdk/commit/54599e5)), closes [#3706](https://github.com/aws/aws-cdk/issues/3706)
+
+
+
+## [1.6.0](https://github.com/aws/aws-cdk/compare/v1.5.0...v1.6.0) (2019-08-27)
+
+
+### Bug Fixes
+
+* **aws-stepfunctions:** refactor sagemaker tasks and fix default role issue ([#3014](https://github.com/aws/aws-cdk/issues/3014)) ([d8fcb50](https://github.com/aws/aws-cdk/commit/d8fcb50))
+* **cli:** update bit.ly link to use GitHub link directly ([#3782](https://github.com/aws/aws-cdk/issues/3782)) ([042fb53](https://github.com/aws/aws-cdk/commit/042fb53))
+* **ec2:** also add egress rules for `allowInternally()` ([#3741](https://github.com/aws/aws-cdk/issues/3741)) ([051aacb](https://github.com/aws/aws-cdk/commit/051aacb)), closes [#3254](https://github.com/aws/aws-cdk/issues/3254)
+* **ec2:** fix error when using Tokens in Vpc.fromLookup() ([#3740](https://github.com/aws/aws-cdk/issues/3740)) ([004077f](https://github.com/aws/aws-cdk/commit/004077f)), closes [#3600](https://github.com/aws/aws-cdk/issues/3600)
+* **ec2:** throw useful error when using lazy CIDR in VPC ([#3739](https://github.com/aws/aws-cdk/issues/3739)) ([c92e9a9](https://github.com/aws/aws-cdk/commit/c92e9a9)), closes [#3617](https://github.com/aws/aws-cdk/issues/3617)
+* **ecs:** IAM role ARN must not specific region. ([#3755](https://github.com/aws/aws-cdk/issues/3755)) ([210ed8f](https://github.com/aws/aws-cdk/commit/210ed8f)), closes [#3733](https://github.com/aws/aws-cdk/issues/3733)
+* **events:** fix ECS target in Isolated subnet ([#3786](https://github.com/aws/aws-cdk/issues/3786)) ([8bbc7e6](https://github.com/aws/aws-cdk/commit/8bbc7e6))
+* **iam:** make User implement IUser ([#3738](https://github.com/aws/aws-cdk/issues/3738)) ([05e13f3](https://github.com/aws/aws-cdk/commit/05e13f3)), closes [#3490](https://github.com/aws/aws-cdk/issues/3490)
+* **lambda:** generate correct metrics for aliases ([#3728](https://github.com/aws/aws-cdk/issues/3728)) ([ce08853](https://github.com/aws/aws-cdk/commit/ce08853)), closes [#3724](https://github.com/aws/aws-cdk/issues/3724)
+* **lambda/rds:** allow to specify a role for log retention lambda ([#3730](https://github.com/aws/aws-cdk/issues/3730)) ([013cab6](https://github.com/aws/aws-cdk/commit/013cab6)), closes [#3685](https://github.com/aws/aws-cdk/issues/3685)
+* **scaling:** don't fail when using Tokens ([#3758](https://github.com/aws/aws-cdk/issues/3758)) ([0a2ed3d](https://github.com/aws/aws-cdk/commit/0a2ed3d))
+
+
+### Features
+
+* **acm:** validated certificate can use existing Role ([#3785](https://github.com/aws/aws-cdk/issues/3785)) ([b51723c](https://github.com/aws/aws-cdk/commit/b51723c)), closes [#3519](https://github.com/aws/aws-cdk/issues/3519) [#3753](https://github.com/aws/aws-cdk/issues/3753)
+* **appmesh:** add support for AWS AppMesh ([#2299](https://github.com/aws/aws-cdk/issues/2299)) ([98863f9](https://github.com/aws/aws-cdk/commit/98863f9)), closes [#2297](https://github.com/aws/aws-cdk/issues/2297)
+* **cloudfront:** define lambda@edge as resolvable resource ([#2861](https://github.com/aws/aws-cdk/issues/2861)) ([c39d659](https://github.com/aws/aws-cdk/commit/c39d659)), closes [#1575](https://github.com/aws/aws-cdk/issues/1575)
+* **cloudtrail:** accept existing S3 bucket ([#3680](https://github.com/aws/aws-cdk/issues/3680)) ([c2d6847](https://github.com/aws/aws-cdk/commit/c2d6847)), closes [#3651](https://github.com/aws/aws-cdk/issues/3651)
+* **core:** stack.templateFile ([#3808](https://github.com/aws/aws-cdk/issues/3808)) ([ac54e14](https://github.com/aws/aws-cdk/commit/ac54e14)), closes [#3807](https://github.com/aws/aws-cdk/issues/3807)
+* **ec2:** add Instance and Bastion Host ([#3697](https://github.com/aws/aws-cdk/issues/3697)) ([ef09aba](https://github.com/aws/aws-cdk/commit/ef09aba)), closes [#3174](https://github.com/aws/aws-cdk/issues/3174) [#1713](https://github.com/aws/aws-cdk/issues/1713)
+* **ec2:** imported SecurityGroups don't create egress rules ([#3386](https://github.com/aws/aws-cdk/issues/3386)) ([04710d0](https://github.com/aws/aws-cdk/commit/04710d0)), closes [#3355](https://github.com/aws/aws-cdk/issues/3355)
+* **ec2:** Validate IP addresses passed to CidrIPvX ([#3642](https://github.com/aws/aws-cdk/issues/3642)) ([b67b0f3](https://github.com/aws/aws-cdk/commit/b67b0f3)), closes [#3639](https://github.com/aws/aws-cdk/issues/3639)
+* **ecs:** add GPU support in container definition ([#3044](https://github.com/aws/aws-cdk/issues/3044)) ([2590327](https://github.com/aws/aws-cdk/commit/2590327))
+* **ecs:** support ecs tag propagation and ecs managed tags ([#3420](https://github.com/aws/aws-cdk/issues/3420)) ([1e81053](https://github.com/aws/aws-cdk/commit/1e81053))
+* **eks:** updated AMI and EC2 instance sizes ([#3805](https://github.com/aws/aws-cdk/issues/3805)) ([2d165ad](https://github.com/aws/aws-cdk/commit/2d165ad)), closes [#3751](https://github.com/aws/aws-cdk/issues/3751)
+* **elbv2:** add support for Lambda targets ([#3348](https://github.com/aws/aws-cdk/issues/3348)) ([f003dcc](https://github.com/aws/aws-cdk/commit/f003dcc)), closes [#1921](https://github.com/aws/aws-cdk/issues/1921)
+* **events:** add target to make AWS API calls ([#3720](https://github.com/aws/aws-cdk/issues/3720)) ([b6f055a](https://github.com/aws/aws-cdk/commit/b6f055a)), closes [#2538](https://github.com/aws/aws-cdk/issues/2538)
+* **region-info:** report availability of metadata service in Bahrein & Hong-Kong ([#3799](https://github.com/aws/aws-cdk/issues/3799)) ([95d8ac3](https://github.com/aws/aws-cdk/commit/95d8ac3))
+* updated CloudFormation Resource specification 5.3.0 ([#3789](https://github.com/aws/aws-cdk/issues/3789)) ([39ee810](https://github.com/aws/aws-cdk/commit/39ee810))
+
+
+### BREAKING CHANGES
+
+* **ec2:** By default, egress rules are not created anymore on imported security groups. This can be configured by setting `allowAllOutbound: false` upon importing.
+
+
 ## [1.5.0](https://github.com/aws/aws-cdk/compare/v1.4.0...v1.5.0) (2019-08-20)
 
 

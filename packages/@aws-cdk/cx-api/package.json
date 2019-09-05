@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cx-api",
-  "version": "1.5.0",
+  "version": "1.6.1",
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -60,10 +60,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24.0.17",
+    "@types/jest": "^24.0.18",
     "@types/semver": "^6.0.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {

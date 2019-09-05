@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-appmesh",
-  "version": "1.5.0",
+  "version": "1.6.1",
   "description": "The CDK Construct Library for AWS::AppMesh",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,19 +64,54 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.5.0",
+    "@aws-cdk/assert": "^1.6.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "^1.6.1",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.5.0"
+    "@aws-cdk/aws-ec2": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/aws-servicediscovery": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.5.0"
+    "@aws-cdk/aws-ec2": "^1.6.1",
+    "@aws-cdk/aws-iam": "^1.6.1",
+    "@aws-cdk/aws-servicediscovery": "^1.6.1",
+    "@aws-cdk/core": "^1.6.1"
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedMesh",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedRoute",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualNode",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualRouter",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualService",
+      "from-signature:@aws-cdk/aws-appmesh.Route.fromRouteName",
+      "from-signature:@aws-cdk/aws-appmesh.VirtualNode.fromVirtualNodeName",
+      "from-signature:@aws-cdk/aws-appmesh.VirtualRouter.fromVirtualRouterName",
+      "from-signature:@aws-cdk/aws-appmesh.VirtualService.fromVirtualServiceName",
+      "resource-attribute:@aws-cdk/aws-appmesh.IMesh.meshUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IRoute.routeUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IVirtualNode.virtualNodeUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IVirtualRouter.virtualRouterUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IVirtualService.virtualServiceUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.Mesh.meshUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.Route.routeMeshName",
+      "resource-attribute:@aws-cdk/aws-appmesh.Route.routeUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.Route.routeVirtualRouterName",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeMeshName",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualRouter.virtualRouterMeshName",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualRouter.virtualRouterUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualService.virtualServiceMeshName",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualService.virtualServiceUid"
+    ]
   },
   "stability": "experimental"
 }

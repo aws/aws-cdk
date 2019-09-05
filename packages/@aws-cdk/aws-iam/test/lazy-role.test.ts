@@ -1,10 +1,9 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import cdk = require('@aws-cdk/core');
-import nodeunit = require('nodeunit');
 import iam = require('../lib');
 
-export = nodeunit.testCase({
-  'creates no resource when unused'(test: nodeunit.Test) {
+describe('IAM lazy role', () => {
+  test('creates no resource when unused', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -14,11 +13,10 @@ export = nodeunit.testCase({
     });
 
     // THEN
-    expect(stack).notTo(haveResourceLike('AWS::IAM::Role'));
-    test.done();
-  },
+    expect(stack).not.toHaveResource('AWS::IAM::Role');
+  });
 
-  'creates the resource when a property is read'(test: nodeunit.Test) {
+  test('creates the resource when a property is read', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -28,8 +26,8 @@ export = nodeunit.testCase({
     }).roleArn;
 
     // THEN
-    test.notEqual(roleArn, null);
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(roleArn).not.toBeNull();
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -38,11 +36,10 @@ export = nodeunit.testCase({
           Principal: { Service: 'test.service' }
         }]
       }
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'returns appropriate roleName'(test: nodeunit.Test) {
+  test('returns appropriate roleName', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -52,8 +49,7 @@ export = nodeunit.testCase({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(role.roleName),
-                   { Ref: 'Lazy399F7F48'});
-    test.done();
-  }
+    expect(stack.resolve(role.roleName))
+      .toEqual({ Ref: 'Lazy399F7F48' });
+  });
 });

@@ -42,6 +42,7 @@ export = {
         },
         DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
+        EnableECSManagedTags: false,
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: "DISABLED",

@@ -165,3 +165,19 @@ export interface EncodingOptions {
 export function isResolvableObject(x: any): x is IResolvable {
   return typeof(x) === 'object' && x !== null && typeof x.resolve === 'function';
 }
+
+/**
+ * Call the given function only if all given values are resolved
+ *
+ * Exported as a function since it will be used by TypeScript modules, but
+ * can't be exposed via JSII because of the generics.
+ */
+export function withResolved<A>(a: A, fn: (a: A) => void): void;
+export function withResolved<A, B>(a: A, b: B, fn: (a: A, b: B) => void): void;
+export function withResolved<A, B, C>(a: A, b: B, c: C, fn: (a: A, b: B, c: C) => void): void;
+export function withResolved(...args: any[]) {
+  if (args.length < 2) { return; }
+  const argArray = args.slice(0, args.length - 1);
+  if (argArray.some(Token.isUnresolved)) { return; }
+  args[args.length - 1].apply(arguments, argArray);
+}
