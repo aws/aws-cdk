@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct, SecretValue } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from "./log-driver";
@@ -22,7 +22,7 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Splunk HTTP Event Collector token.
    */
-  readonly token: string;
+  readonly token: SecretValue;
 
   /**
    * Path to your Splunk Enterprise, self-service Splunk Cloud instance, or Splunk

@@ -20,7 +20,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.SplunkLogDriver({
-        token: 'my-splunk-token',
+        token: cdk.SecretValue.secretsManager('my-splunk-token'),
         url: 'my-splunk-url'
       }),
       memoryLimitMiB: 128
@@ -33,7 +33,7 @@ export = {
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
-              'splunk-token': 'my-splunk-token',
+              'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
               'splunk-url': 'my-splunk-url'
             }
           }
@@ -49,7 +49,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.splunk({
-        token: 'my-splunk-token',
+        token: cdk.SecretValue.secretsManager('my-splunk-token'),
         url: 'my-splunk-url'
       }),
       memoryLimitMiB: 128
@@ -62,7 +62,7 @@ export = {
           LogConfiguration: {
             LogDriver: 'splunk',
             Options: {
-              'splunk-token': 'my-splunk-token',
+              'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
               'splunk-url': 'my-splunk-url'
             }
           }

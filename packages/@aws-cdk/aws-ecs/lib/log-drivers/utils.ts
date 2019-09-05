@@ -1,4 +1,4 @@
-import { Duration, Token } from '@aws-cdk/core';
+import { Duration, SecretValue, Token } from '@aws-cdk/core';
 import { BaseLogDriverProps } from './base-log-driver';
 
 /**
@@ -31,7 +31,7 @@ export function ensureInRange(val: number, start: number, end: number) {
     }
 }
 
-export function stringifyOptions(options: { [key: string]: (Duration | string | string[] | number | boolean | undefined) }) {
+export function stringifyOptions(options: { [key: string]: (SecretValue | Duration | string | string[] | number | boolean | undefined) }) {
     const _options: { [key: string]: string } = {};
     const filteredOptions = removeEmpty(options);
 
