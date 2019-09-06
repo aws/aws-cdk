@@ -30,7 +30,7 @@ Under the hood when you register an ECS service to a target group, only the defa
 
 However, users don’t always want to register the first essential container and the first added container port by default (they might also want to register the second or third container instead). Although users can always set the container they want to register to be the default container. Nevertheless, when they are trying to register multiple containers in a service, duplicated services (very similar except for the default container and port) are required for them, which cause extra costs.
 
-## General approach
+## Proposal
 
  To solve this problem, we propose two major changes: proposing a new API and improve the current one. Both methods allow users to specify which container and which port of that container they want to register.
 
@@ -73,6 +73,145 @@ listener.addTargets(string, {
     })
   ],
   ... // other target group props and rule props
+});
+```
+
+## Use cases / Examples
+According to customer feedback, we can focus on the following two use cases.
+
+### Use case 1
+_I have an ECS service with two containers: one container is mapped to /web/* to serve front end assets; and my other container is mapped to /api/* to serve backend requests. As a user of the ECS CDK, I should be able to programmatically create two different path rules in my ALB and map them to the containers, so that my team can work on separate logical boundaries but scale the task as one unit._
+
+**New API**
+``` ts
+service.registerContainerTargets([
+  {
+    // listener: listener // if only one listener
+    containerName: "frontend",
+    targetProps: [
+      {
+        // targetGroup1 will be attached to listener
+        containerPort: 80,
+        targetGroups: [
+          {
+            targetGroupID: "web",
+            listener: listener,
+            addTargetGroupProps: { // existing interface on IListener
+              pathPattern: "/web/*"
+            }
+          }
+        ]
+      },
+    ]
+  },
+  {
+    containerName: "backend",
+    targetProps: [
+      {
+        // targetGroup2 will be attached to listener
+        containerPort: 80,
+        targetGroups: [
+          {
+            targetGroupID: 'api',
+            listener: listener,
+            addTargetGroupProps: {
+              pathPattern: "/api/*"
+            }
+          }
+        ]
+      },
+    ]
+  },
+]);
+```
+
+**Improved current API**
+``` ts
+listener.addTargets('web', {
+  // Accept only one target (see project scope)
+  targets: [
+    //set the target to be registered, default to be first container and first port added
+    service.registerTarget({
+      containerName: "frontend",
+      containerPort: 80
+    })
+  ],
+  pathPattern: "/web/*"
+  ... // other target group props and rule props
+});
+
+listener.addTargets('api', {
+  targets: [
+    service.registerTarget({
+      containerName: "backend",
+      containerPort: 443
+    })
+  ],
+  pathPattern: "/api/*"
+});
+```
+
+### Use case 2
+_I have an ECS service with one container, which listens on port 8080 to serve API traffic. And my container is also listening on port 9080 to serve management traffic. As a user of the ECS CDK, I should be able to programmatically create my application load balancers and map the container ports separately, so that I can have more control of which traffic is routed to my management port._
+
+**New Api**
+``` ts
+service.registerContainerTargets([
+  {
+    containerName: "myContainer",
+    targetProps: [
+      {
+        // targetGroup1 will be attached to listener1
+        containerPort: 8080,
+        targetGroups: [
+          {
+            targetGroupID: 'api',
+            listener: listener1,
+            addTargetGroupProps: {
+              pathPattern: "/api/*"
+            }
+          }
+        ]
+      },
+      {
+        // targetGroup2 will be attached to listener2
+        containerPort: 9080,
+        targetGroups: [
+          {
+            targetGroupID: "management"
+            listener: listener2,
+            addTargetGroupProps: {
+              pathPattern: "/management/*"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]);
+```
+
+**Improved current API**
+``` ts
+listener1.addTargets('api', {
+  targets: [
+    service.registerTarget({
+      containerName: "myContainer",
+      containerPort: 8080
+    })
+  ],
+  pathPattern: "/api/*"
+  ... // other target group props and rule props
+});
+
+listener2.addTargets('management', {
+  targets: [
+    service.registerTarget({
+      containerName: "myContainer",
+      containerPort: 9080
+    })
+  ],
+  pathPattern: "/management/*"
 });
 ```
 
@@ -490,74 +629,13 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 }
 ```
 
-An example use case to register api and static content to separate containers of same task:
+## Failure Scenarios
+1. When task definition has no essential container. (Fails when CDK synthesizing to get CFN template)
 
-**New API**
-```ts
-service.registerContainerTargets([
-  {
-    // listener: listener // if only one listener
-    containerName: "frontend",
-    targetProps: [
-      {
-        // targetGroup1 will be attached to listener
-        containerPort: 80,
-        targetGroups: [
-          {
-            targetGroupID: "web",
-            listener: listener,
-            addTargetGroupProps: {
-              pathPattern: "/web/*",
-              priority: 10
-            }
-          }
-        ]
-      },
-    ]
-  },
-  {
-    containerName: "backend",
-    targetProps: [
-      {
-        // targetGroup2 will be attached to listener
-        containerPort: 443,
-        targetGroups: [
-          {
-            targetGroupID: 'api',
-            listener: listener,
-            addTargetGroupProps: {
-              pathPattern: "/api/*",
-              priority: 10
-            }
-          }
-        ]
-      },
-    ]
-  },
-]);
-```
+2. When users register a target without specifying both container name and container port. (Fails when building)
 
-**Improved current API**
-``` ts
-listener.addTargets('web', {
-  targets: [
-    service.registerTarget({
-      containerName: "frontend",
-      containerPort: 80
-    })
-  ],
-  pathPattern: "/web/*",
-  priority: 10
-});
+3. When users register a container name that doesn’t exist in the task definition. (Will error in build time)
 
-listener.addTargets('api', {
-  targets: [
-    service.registerTarget({
-      containerName: "backend",
-      containerPort: 443
-    })
-  ],
-  pathPattern: "/api/*",
-  priority: 10
-});
-```
+4. When users register a container port that doesn’t exist in the container’s port mappings. (Will error in build time)
+
+5. For improved current API, if more than one container name/port pairs in the same service registered to the same target group. (Will error when deploying)
