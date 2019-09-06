@@ -16,11 +16,14 @@
 <!--END STABILITY BANNER-->
 
 This library contains commonly used patterns for Route53:
-* HTTP Redirect
+* HTTPS Redirect
+
+This constructs allows creating a simple HTTP -> HTTPS and domainA -> domainB redirect using CloudFront and S3.
+
   ```ts
-  new HTTPSRedirect(stack, 'Redirect', {
+  new HttpsRedirect(stack, 'Redirect', {
     domainName: 'foo.example.com',
-    redirectTarget: 'bar.example.com',
+    targetDomain: 'bar.example.com',
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
       zoneName: 'example.com',

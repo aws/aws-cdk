@@ -4,45 +4,47 @@ import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
 import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { Construct, Fn, RemovalPolicy } from '@aws-cdk/core';
+import * as crypto from 'crypto';
 
-export interface HTTPSRedirectProps {
+export interface HttpsRedirectProps {
   /**
    * HostedZone of the domain
    */
   readonly zone: IHostedZone;
   /**
-   * The redirect target
+   * The redirect target domain
    */
-  readonly redirectTarget: string;
+  readonly targetDomain: string;
   /**
-   * The domain name
+   * The domain names to create that will redirect to `targetDomain`
    *
    * @default - the domain name of the zone
    */
-  readonly domainName?: string;
+  readonly recordNames?: string[];
   /**
-   * The ARN of the certificate; Has to be in us-east-1
+   * The ACM certificate; Has to be in us-east-1
    *
    * @default - create a new certificate in us-east-1
    */
   readonly certificate?: ICertificate;
 }
 
-export class HTTPSRedirect extends Construct {
-  constructor(scope: Construct, id: string, props: HTTPSRedirectProps) {
+export class HttpsRedirect extends Construct {
+  constructor(scope: Construct, id: string, props: HttpsRedirectProps) {
     super(scope, id);
 
-    const domainName = props.domainName || props.zone.zoneName;
+    const domainNames = props.recordNames || [props.zone.zoneName];
 
     const redirectCertArn = props.certificate ? props.certificate.certificateArn : new DnsValidatedCertificate(this, 'RedirectCertificate', {
-      domainName,
+      domainName: domainNames[0],
+      subjectAlternativeNames: domainNames,
       hostedZone: props.zone,
       region: 'us-east-1',
     }).certificateArn;
 
     const redirectBucket = new Bucket(this, 'RedirectBucket', {
       websiteRedirect: {
-        hostName: props.redirectTarget,
+        hostName: props.targetDomain,
         protocol: RedirectProtocol.HTTPS,
       },
       removalPolicy: RemovalPolicy.DESTROY,
@@ -57,17 +59,21 @@ export class HTTPSRedirect extends Construct {
       }],
       aliasConfiguration: {
         acmCertRef: redirectCertArn,
-        names: [domainName],
+        names: domainNames,
       },
-      comment: `${domainName} Redirect to ${props.redirectTarget}`,
+      comment: `Redirect to ${props.targetDomain} from ${domainNames.join(', ')}`,
       priceClass: PriceClass.PRICE_CLASS_ALL,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
-    new ARecord(this, 'RedirectAliasRecord', {
-      recordName: domainName,
-      zone: props.zone,
-      target: RecordTarget.fromAlias(new CloudFrontTarget(redirectDist)),
+    domainNames.forEach((domainName) => {
+      const hash = crypto.createHash('md5').update(domainName).digest("hex").substr(0, 6);
+      new ARecord(this, `RedirectAliasRecord${hash}`, {
+        recordName: domainName,
+        zone: props.zone,
+        target: RecordTarget.fromAlias(new CloudFrontTarget(redirectDist)),
+      });
     });
+
   }
 }
