@@ -646,7 +646,7 @@ Object {
           "MinimumHealthyPercent": 50,
         },
         "DesiredCount": 1,
-        "EnableECSManagedTags": true,
+        "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": Object {
           "AwsvpcConfiguration": Object {
@@ -666,7 +666,6 @@ Object {
             ],
           },
         },
-        "PropagateTags": "SERVICE",
         "TaskDefinition": Object {
           "Ref": "MyTaskDef01F0D39B",
         },
