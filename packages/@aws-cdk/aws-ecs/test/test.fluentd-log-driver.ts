@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike, countResources } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -56,6 +56,59 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'fluentd'
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'create a fluentd log driver with all possible options'(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: new ecs.FluentdLogDriver({
+        address: 'localhost:24224',
+        asyncConnect: true,
+        bufferLimit: 128,
+        retryWait: cdk.Duration.seconds(1),
+        maxRetries: 4294967295,
+        subSecondPrecision: false,
+        tag: 'my-tag',
+        labels: [
+          'one',
+          'two',
+          'three'
+        ],
+        env: [
+          'one',
+          'two',
+          'three'
+        ],
+        envRegex: '[0-9]{1}'
+      }),
+      memoryLimitMiB: 128
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'fluentd',
+            Options: {
+              'fluentd-address': 'localhost:24224',
+              'fluentd-async-connect': 'true',
+              'fluentd-buffer-limit': '128',
+              'fluentd-retry-wait': '1',
+              'fluentd-max-retries': '4294967295',
+              'fluentd-sub-second-precision': 'false',
+              'tag': 'my-tag',
+              'labels': 'one,two,three',
+              'env': 'one,two,three',
+              'envRegex': '[0-9]{1}'
+            }
           }
         }
       ]
