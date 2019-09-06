@@ -2,13 +2,15 @@
 
 const aws = require('aws-sdk');
 
-const sleep = function (ms) {
+const defaultSleep = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 // These are used for test purposes only
 let defaultResponseURL;
 let waiter;
+let sleep = defaultSleep;
+let random = Math.random;
 
 /**
  * Upload a CloudFormation response object to S3.
@@ -97,7 +99,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   console.log('Waiting for ACM to provide DNS records for validation...');
 
   let record;
-  const maxAttempts = 6;
+  const maxAttempts = 10;
   for (let attempt = 0; attempt < maxAttempts - 1 && !record; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
@@ -108,7 +110,10 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
       record = options[0].ResourceRecord;
     } else {
       // Exponential backoff with jitter based on 200ms base
-      await sleep(Math.random() * (Math.pow(2, attempt) * 200));
+      // component of backoff fixed to ensure minimum total wait time on
+      // slow targets.
+      const base = Math.pow(2, attempt);
+      await sleep(random() * base * 50 + base * 150);
     }
   }
   if (!record) {
@@ -248,3 +253,31 @@ exports.withWaiter = function (w) {
 exports.resetWaiter = function () {
   waiter = undefined;
 };
+
+/**
+ * @private
+ */
+exports.withSleep = function(s) {
+  sleep = s;
+}
+
+/**
+ * @private
+ */
+exports.resetSleep = function() {
+  sleep = defaultSleep;
+}
+
+/**
+ * @private
+ */
+exports.withRandom = function(r) {
+  random = r;
+}
+
+/**
+ * @private
+ */
+exports.resetRandom = function() {
+  random = Math.random;
+}
