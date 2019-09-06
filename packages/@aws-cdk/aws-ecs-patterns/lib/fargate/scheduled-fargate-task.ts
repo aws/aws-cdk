@@ -37,7 +37,7 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
  */
 export class ScheduledFargateTask extends ScheduledTaskBase {
   /**
-   * The ECS service in this construct
+   * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
 
@@ -47,8 +47,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
   constructor(scope: Construct, id: string, props: ScheduledFargateTaskProps) {
     super(scope, id, props);
 
-    // Create a Task Definition for the container to start, also creates a log driver
-    this. taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
+    this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
     });
