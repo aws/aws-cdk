@@ -49,9 +49,13 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
  */
 export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   /**
-   * The Fargate service in this construct
+   * The Fargate service in this construct.
    */
   public readonly service: FargateService;
+  /**
+   * The Fargate task definition in this construct.
+   */
+  public readonly taskDefinition: FargateTaskDefinition;
 
   /**
    * Constructs a new instance of the QueueProcessingFargateService class.
@@ -60,11 +64,11 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
+    this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
     });
-    taskDefinition.addContainer('QueueProcessingContainer', {
+    this.taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       command: props.command,
       environment: this.environment,
@@ -77,7 +81,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     this.service = new FargateService(this, 'QueueProcessingFargateService', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition
+      taskDefinition: this.taskDefinition
     });
     this.configureAutoscalingForService(this.service);
   }

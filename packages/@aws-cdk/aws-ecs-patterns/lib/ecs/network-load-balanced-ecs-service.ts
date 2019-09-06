@@ -1,11 +1,12 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
-import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
 /**
- * The properties for the QueueProcessingEc2Service service.
+ * The properties for the NetworkLoadBalancedEc2Service service.
  */
-export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBaseProps {
+export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedServiceBaseProps {
+
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -25,14 +26,13 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * @default none
    */
   readonly cpu?: number;
-
   /**
    * The hard limit (in MiB) of memory to present to the container.
    *
    * If your container attempts to exceed the allocated memory, the container
    * is terminated.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   * At least one of memoryLimitMiB and memoryReservationMiB is required.
    *
    * @default - No memory limit.
    */
@@ -46,7 +46,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * it can consume up to the value specified by the Memory property or all of
    * the available memory on the container instance—whichever comes first.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   * At least one of memoryLimitMiB and memoryReservationMiB is required.
    *
    * @default - No memory reserved.
    */
@@ -54,45 +54,52 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
 }
 
 /**
- * Class to create a queue processing EC2 service.
+ * An EC2 service running on an ECS cluster fronted by a network load balancer.
  */
-export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
+export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBase {
 
   /**
-   * The EC2 service in this construct.
+   * The ECS service in this construct.
    */
   public readonly service: Ec2Service;
   /**
-   * The EC2 task definition in this construct
+   * The EC2 Task Definition in this construct.
    */
   public readonly taskDefinition: Ec2TaskDefinition;
 
   /**
-   * Constructs a new instance of the QueueProcessingEc2Service class.
+   * Constructs a new instance of the NetworkLoadBalancedEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
+  constructor(scope: Construct, id: string, props: NetworkLoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
-    // Create a Task Definition for the container to start
-    this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef');
-    this.taskDefinition.addContainer('QueueProcessingContainer', {
-      image: props.image,
-      memoryLimitMiB: props.memoryLimitMiB,
-      memoryReservationMiB: props.memoryReservationMiB,
-      cpu: props.cpu,
-      command: props.command,
-      environment: this.environment,
-      secrets: this.secrets,
-      logging: this.logDriver
+    this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
+      executionRole: props.executionRole,
+      taskRole: props.taskRole
     });
 
-    // Create an ECS service with the previously defined Task Definition and configure
-    // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    this.service = new Ec2Service(this, 'QueueProcessingService', {
+    const containerName = props.containerName !== undefined ? props.containerName : 'web';
+    const container = this.taskDefinition.addContainer(containerName, {
+      image: props.image,
+      cpu: props.cpu,
+      memoryLimitMiB: props.memoryLimitMiB,
+      memoryReservationMiB: props.memoryReservationMiB,
+      environment: props.environment,
+      secrets: props.secrets,
+      logging: this.logDriver,
+    });
+    container.addPortMappings({
+      containerPort: props.containerPort || 80
+    });
+
+    this.service = new Ec2Service(this, "Service", {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition: this.taskDefinition
+      taskDefinition: this.taskDefinition,
+      assignPublicIp: false,
+      serviceName: props.serviceName,
+      healthCheckGracePeriod: props.healthCheckGracePeriod,
     });
-    this.configureAutoscalingForService(this.service);
+    this.addServiceAsTarget(this.service);
   }
 }

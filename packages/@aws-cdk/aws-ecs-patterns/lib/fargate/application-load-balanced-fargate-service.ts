@@ -1,11 +1,11 @@
 import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
-import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
+import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
 /**
- * The properties for the LoadBalancedFargateService service.
+ * The properties for the ApplicationLoadBalancedFargateService service.
  */
-export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
+export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationLoadBalancedServiceBaseProps {
   /**
    * The number of cpu units used by the task.
    *
@@ -48,25 +48,39 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
+  /**
+   * Determines whether the service will be assigned a public IP address.
+   *
+   * @default false
+   */
+  readonly assignPublicIp?: boolean;
 }
 
 /**
- * A Fargate service running on an ECS cluster fronted by a load balancer.
+ * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
-export class LoadBalancedFargateService extends LoadBalancedServiceBase {
+export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalancedServiceBase {
 
+  public readonly assignPublicIp: boolean;
   /**
    * The Fargate service in this construct.
    */
   public readonly service: FargateService;
+  /**
+   * The Fargate task definition in this construct.
+   */
+  public readonly taskDefinition: FargateTaskDefinition;
 
   /**
-   * Constructs a new instance of the LoadBalancedFargateService class.
+   * Constructs a new instance of the ApplicationLoadBalancedFargateService class.
    */
-  constructor(scope: Construct, id: string, props: LoadBalancedFargateServiceProps) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedFargateServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
+    this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
+
+    this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryLimitMiB: props.memoryLimitMiB,
       cpu: props.cpu,
       executionRole: props.executionRole,
@@ -74,7 +88,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = taskDefinition.addContainer(containerName, {
+    const container = this.taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
       environment: props.environment,
@@ -87,7 +101,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     this.service = new FargateService(this, "Service", {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition,
+      taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,

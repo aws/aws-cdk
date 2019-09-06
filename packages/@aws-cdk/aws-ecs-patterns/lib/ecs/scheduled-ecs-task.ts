@@ -46,7 +46,7 @@ export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
 export class ScheduledEc2Task extends ScheduledTaskBase {
 
   /**
-   * The ECS service in this construct
+   * The EC2 task definition in this construct.
    */
   public readonly taskDefinition: Ec2TaskDefinition;
 
