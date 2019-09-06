@@ -1,4 +1,4 @@
-import { expect, haveResourceLike, countResources } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
