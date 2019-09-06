@@ -1,22 +1,16 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup, BaseLoadBalancer, NetworkListener,
-  NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import cdk = require('@aws-cdk/core');
 
-export enum LoadBalancerType {
-  APPLICATION,
-  NETWORK
-}
-
 /**
- * The properties for the base LoadBalancedEc2Service or LoadBalancedFargateService service.
+ * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
  */
-export interface LoadBalancedServiceBaseProps {
+export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * The name of the cluster that hosts the service.
    *
@@ -67,13 +61,6 @@ export interface LoadBalancedServiceBaseProps {
   readonly desiredCount?: number;
 
   /**
-   * The type of the load balancer to be used.
-   *
-   * @default application
-   */
-  readonly loadBalancerType?: LoadBalancerType
-
-  /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
    *
@@ -101,13 +88,6 @@ export interface LoadBalancedServiceBaseProps {
    * @default true
    */
   readonly enableLogging?: boolean;
-
-  /**
-   * Determines whether the service will be assigned a public IP address.
-   *
-   * @default false
-   */
-  readonly publicTasks?: boolean;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -169,22 +149,19 @@ export interface LoadBalancedServiceBaseProps {
 }
 
 /**
- * The base class for LoadBalancedEc2Service and LoadBalancedFargateService services.
+ * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
-export abstract class LoadBalancedServiceBase extends cdk.Construct {
-  public readonly assignPublicIp: boolean;
+export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
   public readonly desiredCount: number;
 
-  public readonly loadBalancerType: LoadBalancerType;
+  public readonly loadBalancer: ApplicationLoadBalancer;
 
-  public readonly loadBalancer: BaseLoadBalancer;
+  public readonly listener: ApplicationListener;
 
-  public readonly listener: ApplicationListener | NetworkListener;
-
-  public readonly targetGroup: ApplicationTargetGroup | NetworkTargetGroup;
+  public readonly targetGroup: ApplicationTargetGroup;
   /**
    * The cluster that hosts the service.
    */
@@ -193,9 +170,9 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly logDriver?: LogDriver;
 
   /**
-   * Constructs a new instance of the LoadBalancedServiceBase class.
+   * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.
    */
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceBaseProps) {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
@@ -207,15 +184,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
     this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
-    this.assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     this.desiredCount = props.desiredCount || 1;
-
-    // Load balancer
-    this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.APPLICATION;
-
-    if (this.loadBalancerType !== LoadBalancerType.APPLICATION && this.loadBalancerType !== LoadBalancerType.NETWORK) {
-       throw new Error(`invalid loadBalancerType`);
-    }
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
 
@@ -224,34 +193,20 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
-      this.loadBalancer = new ApplicationLoadBalancer(this, 'LB', lbProps);
-    } else {
-      this.loadBalancer = new NetworkLoadBalancer(this, 'LB', lbProps);
-    }
+    this.loadBalancer = new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     const targetProps = {
       port: 80
     };
 
-    const hasCertificate = props.certificate !== undefined;
-    if (hasCertificate && this.loadBalancerType !== LoadBalancerType.APPLICATION) {
-      throw new Error("Cannot add certificate to an NLB");
-    }
+    this.listener = this.loadBalancer.addListener('PublicListener', {
+      port: props.certificate !== undefined ? 443 : 80,
+      open: true
+    });
+    this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
-    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
-      this.listener = (this.loadBalancer as ApplicationLoadBalancer).addListener('PublicListener', {
-        port: hasCertificate ? 443 : 80,
-        open: true
-      });
-      this.targetGroup = this.listener.addTargets('ECS', targetProps);
-
-      if (props.certificate !== undefined) {
-        this.listener.addCertificateArns('Arns', [props.certificate.certificateArn]);
-      }
-    } else {
-      this.listener = (this.loadBalancer as NetworkLoadBalancer).addListener('PublicListener', { port: 80 });
-      this.targetGroup = this.listener.addTargets('ECS', targetProps);
+    if (props.certificate !== undefined) {
+      this.listener.addCertificateArns('Arns', [props.certificate.certificateArn]);
     }
 
     if (typeof props.domainName !== 'undefined') {
@@ -277,11 +232,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
   }
 
   protected addServiceAsTarget(service: BaseService) {
-    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
-      (this.targetGroup as ApplicationTargetGroup).addTarget(service);
-    } else {
-      (this.targetGroup as NetworkTargetGroup).addTarget(service);
-    }
+    this.targetGroup.addTarget(service);
   }
 
   private createAWSLogDriver(prefix: string): AwsLogDriver {
