@@ -58,12 +58,12 @@ export interface AclCidrConfig {
   /**
    * Ipv4 CIDR
    */
-  cidrBlock?: string;
+  readonly cidrBlock?: string;
 
   /**
    * Ipv6 CIDR
    */
-  ipv6CidrBlock?: string;
+  readonly ipv6CidrBlock?: string;
 }
 
 /**
@@ -156,26 +156,6 @@ export abstract class AclTraffic {
   }
 
   public abstract toTrafficConfig(): AclTrafficConfig;
-}
-
-/**
- * Properties for selecting ICMP traffic
- *
- * @experimental
- */
-export interface IcmpProps {
-  /**
-   * The Internet Control Message Protocol (ICMP) type. You can use -1 to specify all ICMP types.
-   * Conditional requirement: Required if you specify 1 (ICMP) for the CreateNetworkAclEntry protocol parameter.
-   */
-  readonly type?: number;
-
-  /**
-   * The Internet Control Message Protocol (ICMP) code. You can use -1 to specify all ICMP
-   * codes for the given ICMP type. Requirement is conditional: Required if you
-   * specify 1 (ICMP) for the protocol parameter.
-   */
-  readonly code?: number;
 }
 
 class AclTrafficImpl extends AclTraffic {

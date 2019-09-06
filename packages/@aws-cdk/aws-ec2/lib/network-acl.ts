@@ -325,7 +325,18 @@ export interface SubnetNetworkAclAssociationProps {
  *
  * @experimental
  */
-export class SubnetNetworkAclAssociation extends Resource implements ISubnetNetworkAclAssociation {
+abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
+  public abstract readonly subnetNetworkAclAssociationAssociationId: string;
+}
+export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
+  public static fromSubnetNetworkAclAssociationAssociationId(scope: Construct, id: string,
+                                                             subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
+    class Import extends SubnetNetworkAclAssociationBase {
+      public readonly subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationAssociationId;
+    }
+
+    return new Import(scope, id);
+  }
   /**
    * ID for the current SubnetNetworkAclAssociation
    * @attribute
