@@ -15,6 +15,9 @@ describe('DNS Validated Certificate Handler', () => {
   const testCertificateArn = 'arn:aws:acm:region:123456789012:certificate/12345678-1234-1234-1234-123456789012';
   const testRRName = '_3639ac514e785e898d2646601fa951d5.example.com';
   const testRRValue = '_x2.acm-validations.aws';
+  const spySleep = sinon.spy(function(ms) {
+    return Promise.resolve();
+  });
 
   beforeEach(() => {
     handler.withDefaultResponseURL(ResponseURL);
@@ -28,13 +31,16 @@ describe('DNS Validated Certificate Handler', () => {
         }
       };
     });
+    handler.withSleep(spySleep);
     console.log = function () { };
   });
   afterEach(() => {
     // Restore waiters and logger
     handler.resetWaiter();
+    handler.resetSleep();
     AWS.restore();
     console.log = origLog;
+    spySleep.resetHistory();
   });
 
   test('Fails if the event payload is empty', () => {
@@ -171,8 +177,93 @@ describe('DNS Validated Certificate Handler', () => {
           ValidationMethod: 'DNS'
         }));
         expect(request.isDone()).toBe(true);
+        expect(spySleep.callCount).toBeLessThan(10);
       });
   });
+
+  test('Fails after at more than 60 seconds', () => {
+    handler.withRandom(() => 0);
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+      Certificate: {
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'FAILED' &&
+        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
+        }));
+        expect(request.isDone()).toBe(true);
+        const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
+        expect(totalSleep).toBeGreaterThan(60 * 1000);
+      });
+  });
+
+  test('Fails after at less than 360 seconds', () => {
+    handler.withRandom(() => 1);
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+      Certificate: {
+      }
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'FAILED' &&
+        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
+        }));
+        expect(request.isDone()).toBe(true);
+        expect(spySleep.callCount).toBeLessThan(10);
+        const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
+        expect(totalSleep).toBeLessThan(360 *1000);
+      });
+  });
+
 
   test('Deletes a certificate if RequestType is Delete', () => {
     const deleteCertificateFake = sinon.fake.resolves({});
