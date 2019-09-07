@@ -77,69 +77,72 @@ const EKS_AMI: {[version: string]: {[type: string]: {[region: string]: string}}}
     EU (Stockholm) (eu-north-1) 	ami-028df8ba9b8603bdd 	ami-0d1ee923abbb8cf6c
     `),
   '1.11': parseTable(`
-    US East (Ohio) (us-east-2)	ami-0e565ff1ccb9b6979	ami-0f9e62727a55f68d3
-    US East (N. Virginia) (us-east-1)	ami-08571c6cee1adbb62	ami-0c3d92683a7946ac3
-    US West (Oregon) (us-west-2)	ami-0566833f0c8e9031e	ami-058b22acd515ec20b
-    Asia Pacific (Hong Kong) (ap-east-1)	ami-0e2e431905d176277	ami-0baf9ac8446e87fb5
-    Asia Pacific (Mumbai) (ap-south-1)	ami-073c3d075aeb53d1f	ami-0c709282458d1114c
-    Asia Pacific (Tokyo) (ap-northeast-1)	ami-0644b094efc34d888	ami-023f507ec007de487
-    Asia Pacific (Seoul) (ap-northeast-2)	ami-0ab0067299faa5229	ami-0ccbbe6530310b01d
-    Asia Pacific (Singapore) (ap-southeast-1)	ami-087f58c635bb8283b	ami-0341435cf966cb837
-    Asia Pacific (Sydney) (ap-southeast-2)	ami-06caef7a88fd74af2	ami-0987b07bd338f97db
-    EU (Frankfurt) (eu-central-1)	ami-099b3f8db68693895	ami-060f13bd7397f782d
-    EU (Ireland) (eu-west-1)	ami-06b60c5852910e7b5	ami-0d84963dfda5af073
-    EU (London) (eu-west-2)	ami-0b56c1f39e4b1eb8e	ami-0189e53a00d37a0b6
-    EU (Paris) (eu-west-3)	ami-036237d1951bfeabc	ami-0baea83f5f5d2abfe
-    EU (Stockholm) (eu-north-1)	ami-0612e10dfe00c5ff6	ami-0d5b7823e58094232
+    US East (Ohio) (us-east-2) 	ami-0f01aa60d08b56b51 	ami-06352290702ae9aa4
+    US East (N. Virginia) (us-east-1) 	ami-0277d42c17d2fd9f6 	ami-06dbf81822c5d802d
+    US West (Oregon) (us-west-2) 	ami-0e024bc930f00f7a2 	ami-01ccb69d4e42d3098
+    Asia Pacific (Hong Kong) (ap-east-1) 	ami-01efe02a8386b4448 	ami-0bf87f2c6a31cf83c
+    Asia Pacific (Mumbai) (ap-south-1) 	ami-0fee6e6300019359b 	ami-067c840a5dce7fe27
+    Asia Pacific (Tokyo) (ap-northeast-1) 	ami-0acea8b886f0e3f8f 	ami-0dc2541c99f0623e1
+    Asia Pacific (Seoul) (ap-northeast-2) 	ami-01e754bb06dedfd13 	ami-013299f00c1c965d4
+    Asia Pacific (Singapore) (ap-southeast-1) 	ami-04aff8301e51a47e4 	ami-07e5bc491d2ec43e1
+    Asia Pacific (Sydney) (ap-southeast-2) 	ami-0cb611c369549e9c9 	ami-04b5a2ebc54d30b11
+    EU (Frankfurt) (eu-central-1) 	ami-0157324517811932f 	ami-0147c8fcfea398609
+    EU (Ireland) (eu-west-1) 	ami-0ed6bcde59efbec8a 	ami-01f0f9e4092c0f784
+    EU (London) (eu-west-2) 	ami-0b2d004b35f3153c4 	ami-024af210119b7a9f8
+    EU (Paris) (eu-west-3) 	ami-0c592c8c15d5a2824 	ami-00d28dcaaa9b1010a
+    EU (Stockholm) (eu-north-1) 	ami-019c885c71264830f 	ami-0a2aefc5b3775e1da
+    Middle East (Bahrain) (me-south-1) 	ami-0f19239ec6bfc1fd4 	ami-03ba561b225de5fc7
     `),
   '1.12': parseTable(`
-    US East (Ohio) (us-east-2)	ami-0ebb1c51e5fe9c376	ami-0b42bfc7af8bb3abc
-    US East (N. Virginia) (us-east-1)	ami-01e370f796735b244	ami-0eb0119f55d589a03
-    US West (Oregon) (us-west-2)	ami-0b520e822d42998c1	ami-0c9156d7fcd3c2948
-    Asia Pacific (Hong Kong) (ap-east-1)	ami-0aa07b9e8bfcdaaff	ami-0a5e7de0e5d22a988
-    Asia Pacific (Mumbai) (ap-south-1)	ami-03b7b0e3088a72394	ami-0c1bc87ff613a979b
-    Asia Pacific (Tokyo) (ap-northeast-1)	ami-0f554256ac7b33081	ami-0e2f87975f5aa9908
-    Asia Pacific (Seoul) (ap-northeast-2)	ami-066a40f5f0e0b90f4	ami-08101c357b41e9f9a
-    Asia Pacific (Singapore) (ap-southeast-1)	ami-06a42a7479836d402	ami-0420c66a82472f4b2
-    Asia Pacific (Sydney) (ap-southeast-2)	ami-0f93997f60ca40d26	ami-04a085528a6af6499
-    EU (Frankfurt) (eu-central-1)	ami-04341c15c2f941589	ami-09c45f4e40a56254b
-    EU (Ireland) (eu-west-1)	ami-018b4a3f81f517183	ami-04668c090ff8c1f50
-    EU (London) (eu-west-2)	ami-0fd0b45d54f80a0e9	ami-0b925567bd252e74c
-    EU (Paris) (eu-west-3)	ami-0b12420c7f7281432	ami-0f975ac243bcd0da0
-    EU (Stockholm) (eu-north-1)	ami-01c1b0b8dcbd02b11	ami-093da2874a5426ce3
+    US East (Ohio) (us-east-2) 	ami-0d60b7264ed85e022 	ami-043355c6f9c7b980c
+    US East (N. Virginia) (us-east-1) 	ami-0259ce67309f76e0b 	ami-0585963de7ab8b964
+    US West (Oregon) (us-west-2) 	ami-0315dd35bf204311d 	ami-04f40a6dd1cd12b3c
+    Asia Pacific (Hong Kong) (ap-east-1) 	ami-0fafd65fe31195cb5 	ami-0f6b904acd6b3add8
+    Asia Pacific (Mumbai) (ap-south-1) 	ami-0d9c7adc50f0c3f04 	ami-008ab31273984feb4
+    Asia Pacific (Tokyo) (ap-northeast-1) 	ami-08b2cecec9f2d5964 	ami-0364b5f7211f80363
+    Asia Pacific (Seoul) (ap-northeast-2) 	ami-0bbe543cd7fc2acd1 	ami-08704c644f2f284bb
+    Asia Pacific (Singapore) (ap-southeast-1) 	ami-07696966feacc8e7b 	ami-044d6be5df6aa258e
+    Asia Pacific (Sydney) (ap-southeast-2) 	ami-07621fc1a7675f06c 	ami-002dcfad1b6044f1d
+    EU (Frankfurt) (eu-central-1) 	ami-0fe22fc725c19301f 	ami-0a697401e7cfa02bd
+    EU (Ireland) (eu-west-1) 	ami-0a6be9528ebb8999d 	ami-049574de1981b69dc
+    EU (London) (eu-west-2) 	ami-0a8dc5b3290842d3e 	ami-009594e276ffd81b0
+    EU (Paris) (eu-west-3) 	ami-01dbd2d713c939649 	ami-06cb6ffbba9a766eb
+    EU (Stockholm) (eu-north-1) 	ami-0586fb63f5c466e3c 	ami-0051b31561a86c5fb
+    Middle East (Bahrain) (me-south-1) 	ami-08eab8b7cd9f43bd0 	ami-0d4ec4bd32daaae1c
     `),
   '1.13': parseTable(`
-    US East (Ohio) (us-east-2)	ami-027683840ad78d833	ami-0af8403c143fd4a07
-    US East (N. Virginia) (us-east-1)	ami-0d3998d69ebe9b214	ami-0484012ada3522476
-    US West (Oregon) (us-west-2)	ami-00b95829322267382	ami-0d24da600cc96ae6b
-    Asia Pacific (Hong Kong) (ap-east-1)	ami-03f8634a8fd592414	ami-080eb165234752969
-    Asia Pacific (Mumbai) (ap-south-1)	ami-0062e5b0411e77c1a	ami-010dbb7183ab64b39
-    Asia Pacific (Tokyo) (ap-northeast-1)	ami-0a67c71d2ab43d36f	ami-069303796840f8155
-    Asia Pacific (Seoul) (ap-northeast-2)	ami-0d66d2fefbc86831a	ami-04f71dc710ff5baf4
-    Asia Pacific (Singapore) (ap-southeast-1)	ami-06206d907abb34bbc	ami-0213fc532b1c2e05f
-    Asia Pacific (Sydney) (ap-southeast-2)	ami-09f2d86f2d8c4f77d	ami-01fc0a4c67f82532b
-    EU (Frankfurt) (eu-central-1)	ami-038bd8d3a2345061f	ami-07b7cbb235789cc31
-    EU (Ireland) (eu-west-1)	ami-0199284372364b02a	ami-00bfeece5b673b69f
-    EU (London) (eu-west-2)	ami-0f454b09349248e29	ami-0babebc79dbf6016c
-    EU (Paris) (eu-west-3)	ami-00b44348ab3eb2c9f	ami-03136b5b83c5b61ba
-    EU (Stockholm) (eu-north-1)	ami-02218be9004537a65	ami-057821acea15c1a98
+    US East (Ohio) (us-east-2) 	ami-0355b5edf93d47112 	ami-080eaa48408e4cce8
+    US East (N. Virginia) (us-east-1) 	ami-08198f90fe8bc57f0 	ami-0b2f191b2ddb13526
+    US West (Oregon) (us-west-2) 	ami-0dc5bf48daa40eb35 	ami-0842679a8337cad05
+    Asia Pacific (Hong Kong) (ap-east-1) 	ami-056314bd2d2acbdc1 	ami-0a63a7853310f3111
+    Asia Pacific (Mumbai) (ap-south-1) 	ami-00f4cff050d28ee2d 	ami-0e80f1d31941f6010
+    Asia Pacific (Tokyo) (ap-northeast-1) 	ami-0262013b4d50142a2 	ami-0a443fa8decd2df67
+    Asia Pacific (Seoul) (ap-northeast-2) 	ami-0d9a543e7c4279c11 	ami-019966f3e72baba33
+    Asia Pacific (Singapore) (ap-southeast-1) 	ami-0013f4890e2ce167b 	ami-07f34d09a8d7fe5a4
+    Asia Pacific (Sydney) (ap-southeast-2) 	ami-01cd15b342b7edf5e 	ami-03563e56d0af30647
+    EU (Frankfurt) (eu-central-1) 	ami-01ffee931e45bb6bf 	ami-0e262bd06b1cbc1d6
+    EU (Ireland) (eu-west-1) 	ami-00ea6211202297fe8 	ami-05cded29b25d50f91
+    EU (London) (eu-west-2) 	ami-0ef7099142dae7023 	ami-0163f3b1681613866
+    EU (Paris) (eu-west-3) 	ami-00cc28b5bcb9dc724 	ami-0bc7f58961988d81e
+    EU (Stockholm) (eu-north-1) 	ami-01d7a7c38f882ef68 	ami-0b219ca1c6aa2f7fb
+    Middle East (Bahrain) (me-south-1) 	ami-0ae4a6a2950a3546e 	ami-0dd405f6294e0414d
     `),
     '1.14': parseTable(`
-    US East (Ohio) (us-east-2) 	ami-0b031080918049726 	ami-04d77fc8fef1aaca2
-    US East (N. Virginia) (us-east-1) 	ami-03e43ca3afc5d79a3 	ami-06191d186b526c958
-    US West (Oregon) (us-west-2) 	ami-076c743acc3ec4159 	ami-06a627486f5cdcfc5
-    Asia Pacific (Hong Kong) (ap-east-1) 	ami-00542b29e27204f2f 	N/A*
-    Asia Pacific (Mumbai) (ap-south-1) 	ami-05bc2d5c9ce03d871 	ami-03807add4352f6e91
-    Asia Pacific (Tokyo) (ap-northeast-1) 	ami-07965c80cb853df83 	ami-015bb79419d174bd5
-    Asia Pacific (Seoul) (ap-northeast-2) 	ami-01d6aeb8c614a0845 	ami-0d755d74fc8224a9b
-    Asia Pacific (Singapore) (ap-southeast-1) 	ami-06a770d3ab2a8d907 	ami-0588cc83f0a817cec
-    Asia Pacific (Sydney) (ap-southeast-2) 	ami-05b461c33a8e8b5b4 	ami-0eddf7bdcd5a0214a
-    EU (Frankfurt) (eu-central-1) 	ami-0bbac7cbcb41a55f5 	ami-048c8692923c91566
-    EU (Ireland) (eu-west-1) 	ami-0a7313ee6c5ea3183 	ami-01c2a548e95a8867f
-    EU (London) (eu-west-2) 	ami-0c9806e57a54faf9f 	ami-07cb972305fc401eb
-    EU (Paris) (eu-west-3) 	ami-0f5705ccd7919964d 	ami-0fc79430cca30a71e
-    EU (Stockholm) (eu-north-1) 	ami-064a74cffcc25767f 	ami-0f689c98b9f8bee3b
-    Middle East (Bahrain) (me-south-1) 	ami-0cd9f426956a966c7 	N/A*
+    US East (Ohio) (us-east-2) 	ami-0f841722be384ed96 	ami-02ed30745089113eb
+    US East (N. Virginia) (us-east-1) 	ami-08739803f18dcc019 	ami-0d5628765ec5d0c5a
+    US West (Oregon) (us-west-2) 	ami-038a987c6425a84ad 	ami-02ce33febfee0b888
+    Asia Pacific (Hong Kong) (ap-east-1) 	ami-0fc4b0a16426993b5 	ami-0c23d82cc7e2b0f53
+    Asia Pacific (Mumbai) (ap-south-1) 	ami-0e9f7f3edab94472d 	ami-0981d2926d2260939
+    Asia Pacific (Tokyo) (ap-northeast-1) 	ami-055d09694b6e5591a 	ami-0515f3ce5064036dc
+    Asia Pacific (Seoul) (ap-northeast-2) 	ami-023bb403131889300 	ami-0cba72a7e9b560b06
+    Asia Pacific (Singapore) (ap-southeast-1) 	ami-0d26e45a1e5422b8e 	ami-0503f4de442edeef2
+    Asia Pacific (Sydney) (ap-southeast-2) 	ami-0d8e3da32bd74f39b 	ami-09a0ec306d79ed058
+    EU (Frankfurt) (eu-central-1) 	ami-0f64557dd6506a4aa 	ami-0698f87b093bbcdda
+    EU (Ireland) (eu-west-1) 	ami-0497f6feb9d494baf 	ami-04cef31a7c7bf1169
+    EU (London) (eu-west-2) 	ami-010d34c5744286662 	ami-04f1bbad31585405d
+    EU (Paris) (eu-west-3) 	ami-04fada31d8c50b7a8 	ami-0ebcd2fd2eb614793
+    EU (Stockholm) (eu-north-1) 	ami-0a4a5386eb62c775e 	ami-04e7d365014dee49c
+    Middle East (Bahrain) (me-south-1) 	ami-0b7e753bbd3a0ae24 	ami-07ca0892ebe2c442e
     `),
 };
 
