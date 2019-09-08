@@ -30,6 +30,10 @@ export class DynamoEventSource implements lambda.IEventSource {
   }
 
   public bind(target: lambda.IFunction) {
+    if (!this.table.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`);
+    }
+
     target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`, {
       batchSize: this.props.batchSize || 100,
       eventSourceArn: this.table.tableStreamArn,

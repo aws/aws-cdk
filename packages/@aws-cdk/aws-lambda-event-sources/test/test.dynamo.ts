@@ -111,6 +111,26 @@ export = {
     test.done();
   },
 
+  'fails if streaming not enabled on table'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      }
+    });
+
+    // WHEN
+    test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
+      batchSize: 50,
+      startingPosition: lambda.StartingPosition.LATEST
+    })), /DynamoDB Streams must be enabled on the table T/);
+
+    test.done();
+  },
+
   'fails if batch size < 1'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

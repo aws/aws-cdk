@@ -211,7 +211,7 @@ export class Table extends Resource {
   /**
    * @attribute
    */
-  public readonly tableStreamArn: string;
+  public readonly tableStreamArn: string | undefined;
 
   private readonly table: CfnTable;
 
@@ -266,7 +266,7 @@ export class Table extends Resource {
     });
     this.tableName = this.getResourceNameAttribute(this.table.ref);
 
-    this.tableStreamArn = this.table.attrStreamArn;
+    this.tableStreamArn = props.stream ? this.table.attrStreamArn : undefined;
 
     this.scalingRole = this.makeScalingRole();
 
@@ -452,6 +452,10 @@ export class Table extends Resource {
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
   public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
+
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
