@@ -809,6 +809,26 @@
     "myClusterDefaultCapacityInstanceRoleA36E0984": {
       "Type": "AWS::IAM::Role",
       "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "myClusterE51CD07F"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
+        ],
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
@@ -1108,6 +1128,26 @@
     "myClusterspotInstanceRole03AE80B5": {
       "Type": "AWS::IAM::Role",
       "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/spot"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "myClusterE51CD07F"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
+        ],
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
