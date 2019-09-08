@@ -15,20 +15,20 @@
 ---
 <!--END STABILITY BANNER-->
 
-This library contains commonly used patterns for Route53:
-* HTTPS Redirect
+This library contains commonly used patterns for Route53.
 
-This constructs allows creating a simple HTTP -> HTTPS and domainA -> domainB redirect using CloudFront and S3.
 
-  ```ts
-  new HttpsRedirect(stack, 'Redirect', {
-    domainName: 'foo.example.com',
-    targetDomain: 'bar.example.com',
-    zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-      hostedZoneId: 'ID',
-      zoneName: 'example.com',
-    })
-  });
-  ```
+## HTTPS Redirect
 
-See the documentation of `@aws-cdk/aws-route53-patterns` for more information.
+This construct allows creating a simple HTTP->HTTPS and domainA->domainB redirect using CloudFront and S3.
+
+```ts
+new HttpsRedirect(stack, 'Redirect', {
+  domainName: 'foo.example.com',
+  targetDomain: 'bar.example.com',
+  zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+    hostedZoneId: 'ID',
+    zoneName: 'example.com',
+  })
+});
+```
