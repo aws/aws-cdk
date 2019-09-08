@@ -54,7 +54,7 @@
     "@aws-cdk/aws-s3": "^1.7.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "fast-check": "^1.16.2",
+    "fast-check": "^1.16.3",
     "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {
