@@ -1072,7 +1072,7 @@
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                " --use-max-pods 29"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-defaults --resource ClusterDefaultCapacityASG00CC9431 --region test-region"
               ]
             ]
           }
@@ -1218,7 +1218,22 @@
             "aws eks update-kubeconfig --name ",
             {
               "Ref": "Cluster9EE0221C"
-            }
+            },
+            " --region test-region"
+          ]
+        ]
+      }
+    },
+    "ClusterGetTokenCommand06AE992E": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "aws eks get-token --cluster-name ",
+            {
+              "Ref": "Cluster9EE0221C"
+            },
+            " --region test-region"
           ]
         ]
       }

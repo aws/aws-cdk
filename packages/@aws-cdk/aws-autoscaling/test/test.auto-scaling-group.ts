@@ -545,7 +545,7 @@ export = {
     const vpc = mockVpc(stack);
 
     // WHEN
-    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
@@ -554,6 +554,7 @@ export = {
     });
 
     // THEN
+    test.deepEqual(asg.spotPrice, '0.05');
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
       SpotPrice: "0.05",
     }));

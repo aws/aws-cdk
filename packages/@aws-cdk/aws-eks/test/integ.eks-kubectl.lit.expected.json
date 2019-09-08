@@ -987,7 +987,7 @@
                   {
                     "Ref": "cluster227BD1CB20"
                   },
-                  " --use-max-pods 17"
+                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
                 ]
               ]
             }
@@ -1144,7 +1144,22 @@
               "aws eks update-kubeconfig --name ",
               {
                 "Ref": "cluster227BD1CB20"
-              }
+              },
+              " --region test-region"
+            ]
+          ]
+        }
+      },
+      "cluster22GetTokenCommand99DB9B02": {
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "aws eks get-token --cluster-name ",
+              {
+                "Ref": "cluster227BD1CB20"
+              },
+              " --region test-region"
             ]
           ]
         }
