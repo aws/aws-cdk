@@ -1,6 +1,6 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
-import { Subnet } from '@aws-cdk/aws-ec2';
 import ec2 = require('@aws-cdk/aws-ec2');
+import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
@@ -11,8 +11,8 @@ import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
-import { renderUserData } from './user-data';
 import { spotInterruptHandler } from './spot-interrupt-handler';
+import { renderUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
