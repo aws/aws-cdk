@@ -25,7 +25,7 @@ namespace %name.PascalCased%
         }
 
         // Give the specified principal read access to the buckets in this construct.
-        public void GrantRead(IIPrincipal principal)
+        public void GrantRead(IPrincipal principal)
         {
             foreach (Bucket bucket in _buckets)
             {

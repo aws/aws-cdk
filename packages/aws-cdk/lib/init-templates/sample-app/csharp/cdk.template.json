@@ -1,3 +1,3 @@
 {
-  "app": "dotnet src/%name.PascalCased%/bin/Debug/netcoreapp2.1/%name.PascalCased%.dll"
+  "app": "dotnet run -p src/%name.PascalCased%/%name.PascalCased%.csproj"
 }
