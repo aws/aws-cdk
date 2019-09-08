@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iam",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "CDK routines for easily assigning correct and minimal IAM permissions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,20 +64,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.6.1",
+    "@aws-cdk/assert": "^1.7.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.6.1",
-    "@aws-cdk/region-info": "^1.6.1"
+    "@aws-cdk/core": "^1.7.0",
+    "@aws-cdk/region-info": "^1.7.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.6.1",
-    "@aws-cdk/region-info": "^1.6.1"
+    "@aws-cdk/core": "^1.7.0",
+    "@aws-cdk/region-info": "^1.7.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -96,6 +96,7 @@
   },
   "awslint": {
     "exclude": [
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy"
     ]

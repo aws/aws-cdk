@@ -800,6 +800,26 @@
               ]
             ]
           }
+        ],
+        "Tags": [
+          {
+            "Key":"Name",
+            "Value":"eks-integ-test/EKSCluster/Nodes"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "EKSClusterBA6ECF8F"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
         ]
       }
     },
@@ -838,7 +858,7 @@
                 {
                   "Ref": "EKSClusterBA6ECF8F"
                 },
-                " --use-max-pods 17"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-test --resource EKSClusterNodesASGC2597E34 --region test-region"
               ]
             ]
           }
@@ -918,7 +938,22 @@
             "aws eks update-kubeconfig --name ",
             {
               "Ref": "EKSClusterBA6ECF8F"
-            }
+            },
+            " --region test-region"
+          ]
+        ]
+      }
+    },
+    "EKSClusterGetTokenCommand10DBF41A": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "aws eks get-token --cluster-name ",
+            {
+              "Ref": "EKSClusterBA6ECF8F"
+            },
+            " --region test-region"
           ]
         ]
       }
