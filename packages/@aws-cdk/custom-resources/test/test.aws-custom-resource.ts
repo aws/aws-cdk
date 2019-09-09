@@ -185,5 +185,42 @@ export = {
     }, /`physicalResourceId`.+`physicalResourceIdPath`/);
 
     test.done();
-  }
+  },
+
+  'encodes booleans'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      onCreate: {
+        service: 'service',
+        action: 'action',
+        parameters: {
+          trueBoolean: true,
+          trueString: 'true',
+          falseBoolean: false,
+          falseString: 'false'
+        },
+        physicalResourceId: 'id'
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWS', {
+      "Create": {
+        "service": "service",
+        "action": "action",
+        "parameters": {
+          "trueBoolean": "TRUE:BOOLEAN",
+          "trueString": "true",
+          "falseBoolean": "FALSE:BOOLEAN",
+          "falseString": "false"
+        },
+        "physicalResourceId": "id"
+      },
+    }));
+
+    test.done();
+  },
 };

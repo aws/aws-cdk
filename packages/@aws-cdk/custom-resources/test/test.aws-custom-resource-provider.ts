@@ -187,10 +187,10 @@ export = {
     test.done();
   },
 
-  async 'fixes booleans'(test: Test) {
-    const getParameterFake = sinon.fake.resolves({});
+  async 'decodes booleans'(test: Test) {
+    const putItemFake = sinon.fake.resolves({});
 
-    AWS.mock('SSM', 'getParameter', getParameterFake);
+    AWS.mock('DynamoDB', 'putItem', putItemFake);
 
     const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
       ...eventCommon,
@@ -198,13 +198,26 @@ export = {
       ResourceProperties: {
         ServiceToken: 'token',
         Create: {
-          service: 'SSM',
-          action: 'getParameter',
+          service: 'DynamoDB',
+          action: 'putItem',
           parameters: {
-            Name: 'my-parameter',
-            WithDecryption: 'true'
+            TableName: 'table',
+            Item: {
+              True: {
+                BOOL: 'TRUE:BOOLEAN'
+              },
+              TrueString: {
+                S: 'true'
+              },
+              False: {
+                BOOL: 'FALSE:BOOLEAN'
+              },
+              FalseString: {
+                S: 'false'
+              },
+            }
           },
-          physicalResourceId: 'my-parameter'
+          physicalResourceId: 'put-item'
         } as AwsSdkCall
       }
     };
@@ -215,9 +228,22 @@ export = {
 
     await handler(event, {} as AWSLambda.Context);
 
-    sinon.assert.calledWith(getParameterFake, {
-      Name: 'my-parameter',
-      WithDecryption: true // boolean
+    sinon.assert.calledWith(putItemFake, {
+      TableName: 'table',
+      Item: {
+        True: {
+          BOOL: true
+        },
+        TrueString: {
+          S: 'true'
+        },
+        False: {
+          BOOL: false
+        },
+        FalseString: {
+          S: 'false'
+        },
+      }
     });
 
     test.equal(request.isDone(), true);

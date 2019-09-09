@@ -208,7 +208,7 @@
             "Name": {
               "Ref": "DummyParameter53662B67"
             },
-            "WithDecryption": true
+            "WithDecryption": "TRUE:BOOLEAN"
           },
           "physicalResourceIdPath": "Parameter.ARN"
         },
@@ -219,7 +219,7 @@
             "Name": {
               "Ref": "DummyParameter53662B67"
             },
-            "WithDecryption": true
+            "WithDecryption": "TRUE:BOOLEAN"
           },
           "physicalResourceIdPath": "Parameter.ARN"
         }
