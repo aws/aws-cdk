@@ -76,9 +76,9 @@ export interface DatabaseInstanceAttributes {
   readonly port: number;
 
   /**
-   * The security group identifier of the instance.
+   * The security group of the instance.
    */
-  readonly securityGroupId: string;
+  readonly securityGroup: ec2.ISecurityGroup;
 }
 
 /**
@@ -92,14 +92,14 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+        securityGroups: [attrs.securityGroup],
         defaultPort: this.defaultPort
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
-      public readonly securityGroupId = attrs.securityGroupId;
+      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);
