@@ -1,8 +1,8 @@
-import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { Lazy, Stack, Tag } from '@aws-cdk/core';
+import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
+import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-// tslint:disable:max-line-length
-import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry, SubnetType, TrafficDirection, Vpc } from '../lib';
+import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry,
+  Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -602,6 +602,54 @@ export = {
           cidr: Lazy.stringValue({ produce: () => 'abc' })
         });
       }, /property must be a concrete CIDR string/);
+
+      test.done();
+    },
+  },
+
+  'Network ACL association': {
+    'by default uses default ACL reference'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      new CfnOutput(stack, 'Output', {
+        value: (vpc.publicSubnets[0] as Subnet).subnetNetworkAclAssociationId
+      });
+
+      expect(stack).toMatch({
+        Outputs: {
+          Output: {
+            Value: { "Fn::GetAtt": [ "TheVPCPublicSubnet1Subnet770D4FF2", "NetworkAclAssociationId" ] }
+          }
+        }
+      }, MatchStyle.SUPERSET);
+
+      test.done();
+    },
+
+    'if ACL is replaced new ACL reference is returned'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+
+      // WHEN
+      new CfnOutput(stack, 'Output', {
+        value: (vpc.publicSubnets[0] as Subnet).subnetNetworkAclAssociationId
+      });
+      new NetworkAcl(stack, 'ACL', {
+        vpc,
+        subnetSelection: { subnetType: SubnetType.PUBLIC }
+      });
+
+      expect(stack).toMatch({
+        Outputs: {
+          Output: {
+            Value: { Ref: "ACLDBD1BB49"}
+          }
+        }
+      }, MatchStyle.SUPERSET);
 
       test.done();
     },

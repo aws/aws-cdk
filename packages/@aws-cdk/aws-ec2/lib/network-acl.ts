@@ -14,6 +14,11 @@ export interface INetworkAcl extends IResource {
    * @attribute
    */
   readonly networkAclId: string;
+
+  /**
+   * Add a new entry to the ACL
+   */
+  addEntry(id: string, options: CommonNetworkAclEntryOptions): NetworkAclEntry;
 }
 
 /**
@@ -23,6 +28,17 @@ export interface INetworkAcl extends IResource {
  */
 abstract class NetworkAclBase extends Resource implements INetworkAcl {
   public abstract readonly networkAclId: string;
+
+  /**
+   * Add a new entry to the ACL
+   */
+  public addEntry(id: string, options: CommonNetworkAclEntryOptions): NetworkAclEntry {
+    return new NetworkAclEntry(this, id, {
+      networkAcl: this,
+      ...options
+    });
+  }
+
 }
 
 /**
@@ -58,7 +74,10 @@ export interface NetworkAclProps {
 }
 
 /**
- * Define a new network ACL
+ * Define a new custom network ACL
+ *
+ * By default, will deny all inbound and outbound traffic unless entries are
+ * added explicitly allowing it.
  *
  * @experimental
  */
@@ -111,25 +130,12 @@ export class NetworkAcl extends NetworkAclBase {
   }
 
   /**
-   * Add a new entry to the ACL
-   */
-  public addEntry(id: string, options: CommonNetworkAclEntryOptions): NetworkAclEntry {
-    return new NetworkAclEntry(this, id, {
-      networkAcl: this,
-      ...options
-    });
-  }
-
-  /**
    * Associate the ACL with a given set of subnets
    */
   public associateWithSubnet(id: string, selection: SubnetSelection) {
     const subnets = this.vpc.selectSubnets(selection);
     for (const subnet of subnets.subnets) {
-      new SubnetNetworkAclAssociation(this, id + subnet.node.uniqueId, {
-        networkAcl: this,
-        subnet,
-      });
+      subnet.associateNetworkAcl(id, this);
     }
   }
 }
@@ -226,7 +232,8 @@ export interface CommonNetworkAclEntryOptions {
   /**
    * Whether to allow or deny traffic that matches the rule; valid values are "allow" or "deny".
    *
-   * Any traffic that is not explicitly allowed is automatically denied.
+   * Any traffic that is not explicitly allowed is automatically denied in a custom
+   * ACL, all traffic is automatically allowed in a default ACL.
    *
    * @default ALLOW
    */
