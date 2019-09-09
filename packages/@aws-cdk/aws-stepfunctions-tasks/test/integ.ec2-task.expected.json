@@ -47,7 +47,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E": {
@@ -188,6 +194,12 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
           }
         ]
       }
@@ -356,7 +368,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D": {

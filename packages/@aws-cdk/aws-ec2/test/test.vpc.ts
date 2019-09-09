@@ -1,7 +1,8 @@
-import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { Lazy, Stack, Tag } from '@aws-cdk/core';
+import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
+import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { CfnVPC, DefaultInstanceTenancy, RouteTargetType, SubnetType, Vpc } from '../lib';
+import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy,
+  NetworkAcl, NetworkAclEntry, RouteTargetType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -103,6 +104,47 @@ export = {
       });
       expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       expect(stack).notTo(haveResource("AWS::EC2::NatGateway"));
+      test.done();
+    },
+    "with private subnets and custom networkAcl."(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'Public',
+          },
+          {
+            subnetType: SubnetType.PRIVATE,
+            name: 'private',
+          }
+        ]
+      });
+
+      const nacl1 = new NetworkAcl(stack, 'myNACL1', {
+        vpc,
+        subnetSelection: { subnetType: SubnetType.PRIVATE },
+      });
+
+      new NetworkAclEntry(stack, 'AllowDNSEgress', {
+        networkAcl: nacl1,
+        ruleNumber: 100,
+        traffic: AclTraffic.udpPort(53),
+        direction: TrafficDirection.EGRESS,
+        cidr: AclCidr.ipv4('10.0.0.0/16'),
+      });
+
+      new NetworkAclEntry(stack, 'AllowDNSIngress', {
+        networkAcl: nacl1,
+        ruleNumber: 100,
+        traffic: AclTraffic.udpPort(53),
+        direction: TrafficDirection.INGRESS,
+        cidr: AclCidr.anyIpv4(),
+      });
+
+      expect(stack).to(countResources('AWS::EC2::NetworkAcl', 1));
+      expect(stack).to(countResources('AWS::EC2::NetworkAclEntry', 2));
+      expect(stack).to(countResources('AWS::EC2::SubnetNetworkAclAssociation', 3));
       test.done();
     },
 
@@ -560,6 +602,54 @@ export = {
           cidr: Lazy.stringValue({ produce: () => 'abc' })
         });
       }, /property must be a concrete CIDR string/);
+
+      test.done();
+    },
+  },
+
+  'Network ACL association': {
+    'by default uses default ACL reference'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      new CfnOutput(stack, 'Output', {
+        value: (vpc.publicSubnets[0] as Subnet).subnetNetworkAclAssociationId
+      });
+
+      expect(stack).toMatch({
+        Outputs: {
+          Output: {
+            Value: { "Fn::GetAtt": [ "TheVPCPublicSubnet1Subnet770D4FF2", "NetworkAclAssociationId" ] }
+          }
+        }
+      }, MatchStyle.SUPERSET);
+
+      test.done();
+    },
+
+    'if ACL is replaced new ACL reference is returned'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+
+      // WHEN
+      new CfnOutput(stack, 'Output', {
+        value: (vpc.publicSubnets[0] as Subnet).subnetNetworkAclAssociationId
+      });
+      new NetworkAcl(stack, 'ACL', {
+        vpc,
+        subnetSelection: { subnetType: SubnetType.PUBLIC }
+      });
+
+      expect(stack).toMatch({
+        Outputs: {
+          Output: {
+            Value: { Ref: "ACLDBD1BB49"}
+          }
+        }
+      }, MatchStyle.SUPERSET);
 
       test.done();
     },
