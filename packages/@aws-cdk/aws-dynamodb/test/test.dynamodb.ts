@@ -1184,6 +1184,23 @@ export = {
       test.done();
     },
 
+    '"grantStreamRead" should fail if streaming is not enabled on table"'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        }
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      test.throws(() => table.grantStreamRead(user), /DynamoDB Streams must be enabled on the table my-table/);
+
+      test.done();
+    },
+
     '"grantStreamRead" allows principal to read and describe the table stream"'(test: Test) {
       // GIVEN
       const stack = new Stack();
