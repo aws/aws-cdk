@@ -21,6 +21,3 @@ cache:
 install: ./install.sh
 script:
   - ./build.sh
-  - git update-index --refresh
-  - git diff-index --exit-code --stat HEAD
-  - untracked=$(git ls-files --others --exclude-standard) && echo "${untracked}" && test -z "${untracked}"
