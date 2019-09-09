@@ -1529,7 +1529,7 @@ export enum RouteTargetType {
   TRANSIT_GATEWAY_ID = "transitGatewayId",
 }
 /**
- * Common interface to for Routeoptions and RouteProps.
+ * Common interface to for RouteOptions and RouteProps.
  */
 export interface CommonRouteOptions {
   /**

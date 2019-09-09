@@ -37,6 +37,9 @@ export interface VpcPeeringConnectionOptions {
   readonly role?: IRole;
 }
 
+/**
+ * Vpc peering connection options.
+ */
 export interface VpcPeeringConnectionProps extends VpcPeeringConnectionOptions {
   /**
    * The VPC which is initiating the peering connection.
