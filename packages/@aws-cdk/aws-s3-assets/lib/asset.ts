@@ -68,7 +68,6 @@ export class Asset extends cdk.Construct implements assets.IAsset {
   public readonly isZipArchive: boolean;
 
   public readonly sourceHash: string;
-  public readonly artifactHash: string;
 
   /**
    * The S3 prefix where all different versions of this asset are stored
@@ -117,7 +116,6 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
     const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
-    this.artifactHash = hashParam.valueAsString;
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
