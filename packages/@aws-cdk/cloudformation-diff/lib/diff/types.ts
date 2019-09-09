@@ -272,6 +272,8 @@ export interface IDifference<ValueType> {
 export class Difference<ValueType> implements IDifference<ValueType> {
   /**
    * Whether this is an actual different or the values are actually the same
+   *
+   * isDifferent => (isUpdate | isRemoved | isUpdate)
    */
   public readonly isDifferent: boolean;
 
