@@ -3,7 +3,7 @@ import { User } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/core');
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { IRuleTarget, RuleTargetInput, Schedule } from '../lib';
+import { EventField, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 export = {
@@ -26,6 +26,45 @@ export = {
           }
         ]
       }));
+      test.done();
+    },
+
+    'can use joined JSON containing refs in JSON object'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(Duration.minutes(1)),
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
+        data: EventField.fromPath('$'),
+        stackName: cdk.Aws.STACK_NAME,
+      })));
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                f1: '$'
+              },
+              InputTemplate: {
+                'Fn::Join': [
+                  '',
+                  [
+                    '{"data":<f1>,"stackName":"',
+                    { Ref: 'AWS::StackName' },
+                    '"}'
+                  ]
+                ]
+              },
+            }
+          }
+        ]
+      }));
+
       test.done();
     },
 

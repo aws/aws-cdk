@@ -208,9 +208,21 @@ class FieldAwareEventInput extends RuleTargetInput {
   private unquoteKeyPlaceholders(sub: string) {
     if (this.inputType !== InputType.Object) { return sub; }
 
-    return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
-      ctx.resolve(sub).replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>')
-    });
+    return Lazy.stringValue({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
+
+    function deepUnquote(resolved: any): any {
+      if (Array.isArray(resolved)) {
+        return resolved.map(deepUnquote);
+      } else if (typeof(resolved) === 'object' && resolved !== null) {
+        for (const [key, value] of Object.entries(resolved)) {
+          resolved[key] = deepUnquote(value);
+        }
+        return resolved;
+      } else if (typeof(resolved) === 'string') {
+        return resolved.replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>');
+      }
+      return resolved;
+    }
   }
 }
 
