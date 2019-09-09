@@ -23,19 +23,15 @@ function flatten(object: object): { [key: string]: string } {
 }
 
 /**
- * Converts true/false strings to booleans in an object
+ * Decodes encoded true/false values
  */
-function fixBooleans(object: object) {
+function decodeBooleans(object: object) {
   return JSON.parse(JSON.stringify(object), (_k, v) => {
     switch (v) {
-      case 'true':
+      case 'TRUE:BOOLEAN':
         return true;
-      case 'true!':
-        return 'true';
-      case 'false':
+      case 'FALSE:BOOLEAN':
         return false;
-      case 'false!':
-        return 'false';
       default:
         return v;
     }
@@ -69,7 +65,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       const awsService = new (AWS as any)[call.service](call.apiVersion && { apiVersion: call.apiVersion });
 
       try {
-        const response = await awsService[call.action](call.parameters && fixBooleans(call.parameters)).promise();
+        const response = await awsService[call.action](call.parameters && decodeBooleans(call.parameters)).promise();
         flatData = flatten(response);
         data = call.outputPath
           ? filterKeys(flatData, k => k.startsWith(call.outputPath!))

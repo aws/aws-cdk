@@ -156,13 +156,14 @@ export class AwsCustomResource extends cdk.Construct {
       }
     }
 
+    const create = props.onCreate || props.onUpdate;
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: 'Custom::AWS',
       provider: CustomResourceProvider.lambda(provider),
       properties: {
-        create: props.onCreate || props.onUpdate,
-        update: props.onUpdate,
-        delete: props.onDelete
+        create: create && encodeBooleans(create),
+        update: props.onUpdate && encodeBooleans(props.onUpdate),
+        delete: props.onDelete && encodeBooleans(props.onDelete)
       }
     });
   }
@@ -187,7 +188,23 @@ export class AwsCustomResource extends cdk.Construct {
  */
 function awsSdkToIamAction(service: string, action: string): string {
   const srv = service.toLowerCase();
-  const iamService = awsSdkMetadata[srv].prefix || srv;
+  const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
+}
+
+/**
+ * Encodes booleans as special strings
+ */
+function encodeBooleans(object: object) {
+  return JSON.parse(JSON.stringify(object), (_k, v) => {
+    switch (v) {
+      case true:
+        return 'TRUE:BOOLEAN';
+      case false:
+        return 'FALSE:BOOLEAN';
+      default:
+        return v;
+    }
+  });
 }
