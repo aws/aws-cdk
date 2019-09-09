@@ -26,11 +26,20 @@ function flatten(object: object): { [key: string]: string } {
  * Converts true/false strings to booleans in an object
  */
 function fixBooleans(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => v === 'true'
-    ? true
-    : v === 'false'
-      ? false
-      : v);
+  return JSON.parse(JSON.stringify(object), (_k, v) => {
+    switch (v) {
+      case 'true':
+        return true;
+      case 'true!':
+        return 'true';
+      case 'false':
+        return false;
+      case 'false!':
+        return 'false';
+      default:
+        return v;
+    }
+  });
 }
 
 /**

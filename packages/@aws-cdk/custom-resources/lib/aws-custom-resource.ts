@@ -102,7 +102,7 @@ export interface AwsCustomResourceProps {
   readonly onUpdate?: AwsSdkCall;
 
   /**
-   * THe AWS SDK call to make when the resource is deleted
+   * The AWS SDK call to make when the resource is deleted
    *
    * @default no call
    */

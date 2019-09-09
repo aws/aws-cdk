@@ -225,6 +225,70 @@ export = {
     test.done();
   },
 
+  async 'can prevent boolean conversions'(test: Test) {
+    const putItemFake = sinon.fake.resolves({});
+
+    AWS.mock('DynamoDB', 'putItem', putItemFake);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: {
+          service: 'DynamoDB',
+          action: 'putItem',
+          parameters: {
+            TableName: 'table',
+            Item: {
+              True: {
+                BOOL: 'true'
+              },
+              TrueString: {
+                S: 'true!'
+              },
+              False: {
+                BOOL: 'false'
+              },
+              FalseString: {
+                S: 'false!'
+              },
+            }
+          },
+          physicalResourceId: 'put-item'
+        } as AwsSdkCall
+      }
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS'
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    sinon.assert.calledWith(putItemFake, {
+      TableName: 'table',
+      Item: {
+        True: {
+          BOOL: true
+        },
+        TrueString: {
+          S: 'true'
+        },
+        False: {
+          BOOL: false
+        },
+        FalseString: {
+          S: 'false'
+        },
+      }
+    });
+
+    test.equal(request.isDone(), true);
+
+    test.done();
+  },
+
   async 'restrict output path'(test: Test) {
     const listObjectsFake = sinon.fake.resolves({
       Contents: [

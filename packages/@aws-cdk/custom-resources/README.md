@@ -101,3 +101,6 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
   }
 })
 ```
+
+#### Booleans conversion
+Since custom resource properties are always stringified by CloudFormation, `true`/`false` values will automatically be converted back to booleans. If the strings `'true'`/`'false'` are required in the SDK call, use `'true!'`/`'false!'`.
