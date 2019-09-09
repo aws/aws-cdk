@@ -205,24 +205,24 @@ class FieldAwareEventInput extends RuleTargetInput {
    * Those have been put there by JSON.stringify(), but we need to
    * remove them.
    */
-  private unquoteKeyPlaceholders(sub: string, inputType?: InputType) {
-    if ((inputType || this.inputType) !== InputType.Object) { return sub; }
+  private unquoteKeyPlaceholders(sub: string) {
+    if (this.inputType !== InputType.Object) { return sub; }
 
-    const unquote = (resolved: any) => {
-      if (typeof(resolved) === 'object' && resolved !== null) {
-        for (const key of Object.keys(resolved)) {
-          resolved[key] = unquote(resolved[key]);
+    return Lazy.stringValue({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
+
+    function deepUnquote(resolved: any): any {
+      if (Array.isArray(resolved)) {
+        return resolved.map(deepUnquote);
+      } else if (typeof(resolved) === 'object' && resolved !== null) {
+        for (const [key, value] of Object.entries(resolved)) {
+          resolved[key] = deepUnquote(value);
         }
         return resolved;
       } else if (typeof(resolved) === 'string') {
         return resolved.replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>');
       }
       return resolved;
-    };
-
-    return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
-      Token.asString(unquote(ctx.resolve(sub)))
-    });
+    }
   }
 }
 
