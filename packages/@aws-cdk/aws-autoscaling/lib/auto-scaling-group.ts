@@ -390,6 +390,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public readonly userData: ec2.UserData;
 
+  /**
+   * The maximum spot price configured for thie autoscaling group. `undefined`
+   * indicates that this group uses on-demand capacity.
+   */
+  public readonly spotPrice?: string;
+
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -515,6 +521,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
+
+    this.spotPrice = props.spotPrice;
   }
 
   /**
