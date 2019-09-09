@@ -1,8 +1,9 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-    IDependable, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+    IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
+import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetId, subnetName  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
@@ -33,6 +34,13 @@ export interface ISubnet extends IResource {
    * The route table for this subnet
    */
   readonly routeTable: IRouteTable;
+
+  /**
+   * Associate a Network ACL with this subnet
+   *
+   * @param acl The Network ACL to associate
+   */
+  associateNetworkAcl(id: string, acl: INetworkAcl): void;
 }
 
 /**
@@ -1199,6 +1207,8 @@ export class Subnet extends Resource implements ISubnet {
 
   private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
+  private _networkAcl: INetworkAcl;
+
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
 
@@ -1217,7 +1227,11 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
-    this.subnetNetworkAclAssociationId = subnet.attrNetworkAclAssociationId;
+
+    // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
+    // was just created. However, the ACL can be replaced at a later time.
+    this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
+    this.subnetNetworkAclAssociationId = Lazy.stringValue({ produce: () => this._networkAcl.networkAclId });
     this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
@@ -1255,6 +1269,20 @@ export class Subnet extends Resource implements ISubnet {
   }
 
   /**
+   * Network ACL associated with this Subnet
+   *
+   * Upon creation, this is the default ACL which allows all traffic, except
+   * explicit DENY entries that you add.
+   *
+   * You can replace it with a custom ACL which denies all traffic except
+   * the explic it ALLOW entries that you add by creating a `NetworkAcl`
+   * object and calling `associateNetworkAcl()`.
+   */
+  public get networkAcl(): INetworkAcl {
+    return this._networkAcl;
+  }
+
+  /**
    * Adds an entry to this subnets route table that points to the passed NATGatwayId
    * @param natGatewayId The ID of the NAT gateway
    */
@@ -1265,6 +1293,17 @@ export class Subnet extends Resource implements ISubnet {
       natGatewayId
     });
     this._internetConnectivityEstablished.add(route);
+  }
+
+  public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
+    this._networkAcl = networkAcl;
+
+    const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
+    const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+      networkAcl,
+      subnet: this,
+    });
   }
 }
 
@@ -1447,6 +1486,15 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!
     };
+  }
+
+  public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
+    const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
+    const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+      networkAcl,
+      subnet: this,
+    });
   }
 }
 
