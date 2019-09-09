@@ -954,6 +954,90 @@ export = {
       test.done();
     },
 
+    "correctly sets proxyConfiguration"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: {
+          containerName: "web",
+          proxyConfigurationProperties: [
+            {
+              name: "IgnoredUID",
+              value: "foobar"
+            },
+            {
+              name: "IgnoredGID",
+              value: ""
+            },
+            {
+              name: "AppPorts",
+              value: "80, 81"
+            },
+            {
+              name: "ProxyIngressPort",
+              value: "80"
+            },
+            {
+              name: "ProxyEgressPort",
+              value: "81"
+            },
+            {
+              name: "EgressIgnoredPorts",
+              value: ""
+            },
+            {
+              name: "EgressIgnoredIPs",
+              value: ""
+            }
+          ]
+        }
+      });
+      taskDefinition.addContainer("web", {
+        memoryLimitMiB: 1024,
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        ProxyConfiguration: {
+          ContainerName: "web",
+          ProxyConfigurationProperties: [
+            {
+              Name: "IgnoredUID",
+              Value: "foobar"
+            },
+            {
+              Name: "IgnoredGID",
+              Value: ""
+            },
+            {
+              Name: "AppPorts",
+              Value: "80, 81"
+            },
+            {
+              Name: "ProxyIngressPort",
+              Value: "80"
+            },
+            {
+              Name: "ProxyEgressPort",
+              Value: "81"
+            },
+            {
+              Name: "EgressIgnoredPorts",
+              Value: ""
+            },
+            {
+              Name: "EgressIgnoredIPs",
+              Value: ""
+            }
+          ],
+          Type: "APPMESH"
+        }
+      }));
+      test.done();
+    },
+
     "correctly sets dockerVolumeConfiguration"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -993,7 +1077,6 @@ export = {
       }));
 
       test.done();
-    },
-
+    }
   }
 };
