@@ -147,7 +147,7 @@
                   },
                   "ActionMode": "CHANGE_SET_REPLACE",
                   "ChangeSetName": "CICD-ChangeSet",
-                  "TemplatePath": "Artifact_CICDGitHubF8BA7ADD::CICD.template.yaml"
+                  "TemplatePath": "Artifact_CICDGitHubF8BA7ADD::CICD.template.json"
                 },
                 "InputArtifacts": [
                   {
