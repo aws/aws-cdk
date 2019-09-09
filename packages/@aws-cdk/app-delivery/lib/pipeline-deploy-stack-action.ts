@@ -120,7 +120,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
       changeSetName,
       runOrder: createChangeSetRunOrder,
       stackName: props.stack.stackName,
-      templatePath: props.input.atPath(`${props.stack.stackName}.template.yaml`),
+      templatePath: props.input.atPath(props.stack.templateFile),
       adminPermissions: props.adminPermissions,
       deploymentRole: props.role,
       capabilities,
