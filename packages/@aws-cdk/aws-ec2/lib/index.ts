@@ -3,6 +3,8 @@ export * from './connections';
 export * from './instance-types';
 export * from './instance';
 export * from './machine-image';
+export * from './network-acl';
+export * from './network-acl-types';
 export * from './port';
 export * from './security-group';
 export * from './peer';
