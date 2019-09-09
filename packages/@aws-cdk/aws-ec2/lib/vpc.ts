@@ -1586,8 +1586,9 @@ export class Route extends Resource implements IRoute {
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
-    if (props.destinationCidr === undefined && props.destinationCidrIpv6 === undefined) {
-      throw new Error("You must define a cidr block or an IPv6 cidr block");
+    if (props.destinationCidr === undefined && props.destinationCidrIpv6 === undefined ||
+      props.destinationCidr !== undefined && props.destinationCidrIpv6 !== undefined) {
+      throw new Error("You must define either a cidr block or an IPv6 cidr block");
     }
     if (props.routeTable === undefined) {
       throw new Error("Route table id is required");
