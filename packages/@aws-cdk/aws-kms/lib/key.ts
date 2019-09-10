@@ -289,10 +289,11 @@ export class Key extends KeyBase {
       public readonly keyArn = keyArn;
       public readonly keyId: string;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
-      
-      constructor(scope: Construct, id: string, keyResourceName: string) {
+
+      constructor(keyId: string) {
         super(scope, id);
-        this.keyId = keyResourceName;
+
+        this.keyId = keyId;
       }
     }
 
