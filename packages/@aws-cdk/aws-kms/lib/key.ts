@@ -292,17 +292,11 @@ export class Key extends KeyBase {
 
     class Import extends KeyBase {
       public readonly keyArn = keyArn;
-      public readonly keyId: string;
+      public readonly keyId = keyResourceName;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
-
-      constructor(keyId: string) {
-        super(scope, id);
-
-        this.keyId = keyId;
-      }
     }
 
-    return new Import(keyResourceName);
+    return new Import();
   }
 
   public readonly keyArn: string;
