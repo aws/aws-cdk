@@ -68,8 +68,9 @@ export = {
     pool.addPostConfirmationTrigger(fn);
     pool.addPreAuthenticationTrigger(fn);
     pool.addPreSignUpTrigger(fn);
-    pool.addVerifyAuthChallengeResponseTrigger(fn);
     pool.addPreTokenGenerationTrigger(fn);
+    pool.addUserMigrationTrigger(fn);
+    pool.addVerifyAuthChallengeResponseTrigger(fn);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
@@ -81,8 +82,9 @@ export = {
         PostConfirmation: stack.resolve(fn.functionArn),
         PreAuthentication: stack.resolve(fn.functionArn),
         PreSignUp: stack.resolve(fn.functionArn),
-        VerifyAuthChallengeResponse: stack.resolve(fn.functionArn),
-        PreTokenGeneration: stack.resolve(fn.functionArn)
+        PreTokenGeneration: stack.resolve(fn.functionArn),
+        UserMigration: stack.resolve(fn.functionArn),
+        VerifyAuthChallengeResponse: stack.resolve(fn.functionArn)
       }
     }));
 
