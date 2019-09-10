@@ -964,15 +964,15 @@ export = {
           proxyConfigurationProperties: [
             {
               name: "IgnoredUID",
-              value: "foobar"
+              value: "1337"
             },
             {
               name: "IgnoredGID",
-              value: ""
+              value: "1338"
             },
             {
               name: "AppPorts",
-              value: "80, 81"
+              value: "80,81"
             },
             {
               name: "ProxyIngressPort",
@@ -984,11 +984,11 @@ export = {
             },
             {
               name: "EgressIgnoredPorts",
-              value: ""
+              value: "8081"
             },
             {
               name: "EgressIgnoredIPs",
-              value: ""
+              value: "169.254.170.2,169.254.169.254"
             }
           ]
         }
@@ -1005,15 +1005,15 @@ export = {
           ProxyConfigurationProperties: [
             {
               Name: "IgnoredUID",
-              Value: "foobar"
+              Value: "1337"
             },
             {
               Name: "IgnoredGID",
-              Value: ""
+              Value: "1338"
             },
             {
               Name: "AppPorts",
-              Value: "80, 81"
+              Value: "80,81"
             },
             {
               Name: "ProxyIngressPort",
@@ -1025,11 +1025,11 @@ export = {
             },
             {
               Name: "EgressIgnoredPorts",
-              Value: ""
+              Value: "8081"
             },
             {
               Name: "EgressIgnoredIPs",
-              Value: ""
+              Value: "169.254.170.2,169.254.169.254"
             }
           ],
           Type: "APPMESH"
