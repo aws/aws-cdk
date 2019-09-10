@@ -285,18 +285,23 @@ export class Key extends KeyBase {
    * @param keyArn the ARN of an existing KMS key.
    */
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
+    class Import extends KeyBase {
+      public readonly keyArn = keyArn;
+      public readonly keyId: string;
+      protected readonly policy?: iam.PolicyDocument | undefined = undefined;
+      
+      constructor(scope: Construct, id: string, keyResourceName: string) {
+        super(scope, id);
+        this.keyId = keyResourceName;
+      }
+    }
+
     const keyResourceName = Stack.of(scope).parseArn(keyArn).resourceName;
     if (!keyResourceName) {
       throw new Error(`KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
     }
 
-    class Import extends KeyBase {
-      public readonly keyArn = keyArn;
-      public readonly keyId = keyResourceName;
-      protected readonly policy?: iam.PolicyDocument | undefined = undefined;
-    }
-
-    return new Import();
+    return new Import(keyResourceName);
   }
 
   public readonly keyArn: string;
