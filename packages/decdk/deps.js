@@ -44,7 +44,7 @@ for (const dir of modules) {
   deps[meta.name] = requirement;
 }
 
-fs.writeFileSync(path.join(__dirname, 'package.json'), JSON.stringify(pkg, undefined, 2));
+fs.writeFileSync(path.join(__dirname, 'package.json'), JSON.stringify(pkg, undefined, 2) + '\n');
 
 if (errors) {
   console.error('errors found. updated package.json');
