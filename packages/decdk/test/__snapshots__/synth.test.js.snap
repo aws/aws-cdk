@@ -2012,6 +2012,20 @@ Object {
       "Type": "AWS::KMS::Key",
       "UpdateReplacePolicy": "Retain",
     },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AliasName": "alias/codepipeline-pipelinepipeline22f2a91d",
+        "TargetKeyId": Object {
+          "Fn::GetAtt": Array [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::KMS::Alias",
+      "UpdateReplacePolicy": "Retain",
+    },
     "PipelineBuildCodePipelineActionRoleD77A08E6": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -2083,10 +2097,7 @@ Object {
         "ArtifactStore": Object {
           "EncryptionKey": Object {
             "Id": Object {
-              "Fn::GetAtt": Array [
-                "PipelineArtifactsBucketEncryptionKey01D58D69",
-                "Arn",
-              ],
+              "Ref": "PipelineArtifactsBucketEncryptionKey01D58D69",
             },
             "Type": "KMS",
           },
