@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/core');
 import { PolicyStatement } from "./policy-statement";
-import { IGrantable } from "./principals";
+import { IGrantable, IPrincipal } from "./principals";
 
 /**
  * Basic options for a grant operation
@@ -83,6 +83,13 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
    * @default Same as regular resource ARNs
    */
   readonly resourceSelfArns?: string[];
+
+  /**
+   * The principal to use in the statement for the resource policy.
+   *
+   * @default - the principal of the grantee will be used
+   */
+  readonly resourcePolicyPrincipal?: IPrincipal;
 }
 
 /**
@@ -160,7 +167,7 @@ export class Grant {
     const statement = new PolicyStatement({
       actions: options.actions,
       resources: (options.resourceSelfArns || options.resourceArns),
-      principals: [options.grantee!.grantPrincipal]
+      principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal]
     });
 
     options.resource.addToResourcePolicy(statement);
