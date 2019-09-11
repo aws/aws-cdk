@@ -93,10 +93,14 @@ export class AwsApi implements events.IRuleTarget {
     // Allow handler to be called from rule
     addLambdaPermission(rule, handler);
 
+    // Do not pollute CF template with `policyStatement` in input
+    const input = { ...this.props };
+    delete input.policyStatement;
+
     return {
       id: '',
       arn: handler.functionArn,
-      input: events.RuleTargetInput.fromObject(this.props),
+      input: events.RuleTargetInput.fromObject(input),
       targetResource: handler,
     };
   }
