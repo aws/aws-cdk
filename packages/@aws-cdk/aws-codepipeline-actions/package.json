@@ -16,8 +16,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Codepipeline.Actions",
-        "packageId": "Amazon.CDK.AWS.Codepipeline.Actions",
+        "namespace": "Amazon.CDK.AWS.CodePipeline.Actions",
+        "packageId": "Amazon.CDK.AWS.CodePipeline.Actions",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "versionSuffix": "-devpreview"
