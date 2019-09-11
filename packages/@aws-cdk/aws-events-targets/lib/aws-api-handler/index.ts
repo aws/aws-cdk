@@ -1,8 +1,8 @@
 // tslint:disable:no-console
 import AWS = require('aws-sdk');
-import { AwsApiProps } from '../aws-api';
+import { AwsApiInput } from '../aws-api';
 
-export async function handler(event: AwsApiProps) {
+export async function handler(event: AwsApiInput) {
   console.log('Event: %j', event);
   console.log('AWS SDK VERSION: ' + (AWS as any).VERSION);
 
