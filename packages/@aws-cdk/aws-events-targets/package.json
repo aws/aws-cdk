@@ -100,7 +100,7 @@
     "@aws-cdk/aws-sns-subscriptions": "^1.8.0",
     "@aws-cdk/aws-sqs": "^1.8.0",
     "@aws-cdk/aws-stepfunctions": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
