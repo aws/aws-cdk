@@ -182,6 +182,20 @@
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
     },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-pipelinestackpipeline9db740af",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn"
+          ]
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -504,10 +518,7 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Fn::GetAtt": [
-                "PipelineArtifactsBucketEncryptionKey01D58D69",
-                "Arn"
-              ]
+              "Ref": "PipelineArtifactsBucketEncryptionKey01D58D69"
             },
             "Type": "KMS"
           },
