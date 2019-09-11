@@ -18,7 +18,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -139,6 +140,20 @@
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
     },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-awscdkcodepipelinecloudformationpipeline7dbde619",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn"
+          ]
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -148,17 +163,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -286,7 +291,6 @@
                   },
                   "S3ObjectKey": "key"
                 },
-                "InputArtifacts": [],
                 "Name": "Source",
                 "OutputArtifacts": [
                   {
@@ -314,7 +318,6 @@
                   },
                   "S3ObjectKey": "additional/key"
                 },
-                "InputArtifacts": [],
                 "Name": "AdditionalSource",
                 "OutputArtifacts": [
                   {
@@ -363,7 +366,6 @@
                   }
                 ],
                 "Name": "DeployCFN",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineCFNDeployCFNCodePipelineActionRole444CF5DD",
@@ -379,10 +381,7 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Fn::GetAtt": [
-                "PipelineArtifactsBucketEncryptionKey01D58D69",
-                "Arn"
-              ]
+              "Ref": "PipelineArtifactsBucketEncryptionKey01D58D69"
             },
             "Type": "KMS"
           },
@@ -795,17 +794,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "cloudformation.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "cloudformation.amazonaws.com"
               }
             }
           ],

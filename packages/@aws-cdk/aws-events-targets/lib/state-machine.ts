@@ -35,7 +35,8 @@ export class SfnStateMachine implements events.IRuleTarget {
             actions: ['states:StartExecution'],
             resources: [this.machine.stateMachineArn]
         })]),
-        input: this.props.input
+        input: this.props.input,
+        targetResource: this.machine,
     };
   }
 }

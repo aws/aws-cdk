@@ -346,15 +346,9 @@
     "ClusterEB0386A7": {
       "Type": "AWS::ECS::Cluster"
     },
-    "FargateServiceTaskDefwebLogGroup71FAF541": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
-    },
     "FargateServiceLBB353E155": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "LoadBalancerAttributes": [],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -383,7 +377,6 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awsecsintegFargateServiceLB5FE4725D",
-        "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -434,8 +427,7 @@
           "Ref": "FargateServiceLBB353E155"
         },
         "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
+        "Protocol": "HTTP"
       }
     },
     "FargateServiceLBPublicListenerECSGroupBE57E081": {
@@ -443,8 +435,6 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "Vpc8378EB38"
@@ -460,17 +450,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -561,7 +541,11 @@
                       }
                     ]
                   },
-                  ".amazonaws.com/",
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
                   {
                     "Fn::GetAtt": [
                       "FargateServiceTaskDefwebAssetImageAdoptRepositoryCDAFD419",
@@ -585,7 +569,6 @@
                 ]
               ]
             },
-            "Links": [],
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -598,16 +581,13 @@
                 }
               }
             },
-            "MountPoints": [],
             "Name": "web",
             "PortMappings": [
               {
                 "ContainerPort": 8000,
                 "Protocol": "tcp"
               }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
+            ]
           }
         ],
         "Cpu": "256",
@@ -628,8 +608,7 @@
             "FargateServiceTaskDefTaskRole8CDCF85E",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "FargateServiceTaskDefwebAssetImageAdoptRepositoryCDAFD419": {
@@ -659,8 +638,13 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "FargateServiceTaskDefwebLogGroup71FAF541": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "FargateServiceTaskDefExecutionRole9194820E": {
       "Type": "AWS::IAM::Role",
@@ -671,17 +655,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ecs-tasks.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
@@ -771,6 +745,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
           {
@@ -781,7 +756,6 @@
             }
           }
         ],
-        "HealthCheckGracePeriodSeconds": 60,
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "DISABLED",
@@ -803,7 +777,7 @@
             ]
           }
         },
-        "ServiceRegistries": []
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",
@@ -821,7 +795,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
@@ -857,17 +830,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],

@@ -1,12 +1,12 @@
 import cxapi = require('@aws-cdk/cx-api');
 import AWS = require('aws-sdk');
-import { Mode, SDK } from '../api';
+import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
 export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: SDK) {
+  constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: cxapi.VpcContextQuery) {
@@ -22,7 +22,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
   private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<string> {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
-    const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(x => ({ Name: x[0], Values: [x[1]] }));
+    const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
     debug(`Listing VPCs in ${args.account}:${args.region}`);
     const response = await ec2.describeVpcs({ Filters: filters }).promise();
@@ -41,8 +41,13 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   private async readVpcProps(ec2: AWS.EC2, vpcId: string): Promise<cxapi.VpcContextResponse> {
     debug(`Describing VPC ${vpcId}`);
 
-    const subnetsResponse = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
+    const filters = { Filters: [{ Name: 'vpc-id', Values: [vpcId] }] };
+
+    const subnetsResponse = await ec2.describeSubnets(filters).promise();
     const listedSubnets = subnetsResponse.Subnets || [];
+
+    const routeTablesResponse = await ec2.describeRouteTables(filters).promise();
+    const routeTables = new RouteTables(routeTablesResponse.RouteTables || []);
 
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
@@ -57,13 +62,29 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     const subnets: Subnet[] = listedSubnets.map(subnet => {
       let type = getTag('aws-cdk:subnet-type', subnet.Tags);
-      if (type === undefined) {
-        type = subnet.MapPublicIpOnLaunch ? 'Public' : 'Private';
+      if (type === undefined && subnet.MapPublicIpOnLaunch) { type = SubnetType.Public; }
+      if (type === undefined && routeTables.hasRouteToIgw(subnet.SubnetId)) { type = SubnetType.Public; }
+      if (type === undefined) { type = SubnetType.Private; }
+
+      if (!isValidSubnetType(type)) {
+        // tslint:disable-next-line: max-line-length
+        throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
       }
 
       const name = getTag('aws-cdk:subnet-name', subnet.Tags) || type;
+      const routeTableId = routeTables.routeTableIdForSubnetId(subnet.SubnetId);
 
-      return { az: subnet.AvailabilityZone!, type: type as SubnetType, name, subnetId: subnet.SubnetId! };
+      if (!routeTableId) {
+        throw new Error(`Subnet ${subnet.SubnetArn} does not have an associated route table (and there is no "main" table)`);
+      }
+
+      return {
+        az: subnet.AvailabilityZone!,
+        type,
+        name,
+        subnetId: subnet.SubnetId!,
+        routeTableId,
+      };
     });
 
     const grouped = groupSubnets(subnets);
@@ -94,12 +115,41 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       availabilityZones: grouped.azs,
       isolatedSubnetIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.subnetId))),
       isolatedSubnetNames: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.name ? [group.name] : [])),
+      isolatedSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.routeTableId))),
       privateSubnetIds: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.subnets.map(s => s.subnetId))),
       privateSubnetNames: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.name ? [group.name] : [])),
+      privateSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.subnets.map(s => s.routeTableId))),
       publicSubnetIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.subnetId))),
       publicSubnetNames: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.name ? [group.name] : [])),
+      publicSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.routeTableId))),
       vpnGatewayId,
     };
+  }
+}
+
+class RouteTables {
+  public readonly mainRouteTable?: AWS.EC2.RouteTable;
+
+  constructor(private readonly tables: AWS.EC2.RouteTable[]) {
+    this.mainRouteTable = this.tables.find(table => !!table.Associations && table.Associations.some(assoc => !!assoc.Main));
+  }
+
+  public routeTableIdForSubnetId(subnetId: string | undefined): string | undefined {
+    const table = this.tableForSubnet(subnetId);
+    return (table && table.RouteTableId) || (this.mainRouteTable && this.mainRouteTable.RouteTableId);
+  }
+
+  /**
+   * Whether the given subnet has a route to an IGW
+   */
+  public hasRouteToIgw(subnetId: string | undefined): boolean {
+    const table = this.tableForSubnet(subnetId);
+
+    return !!table && !!table.Routes && table.Routes.some(route => !!route.GatewayId && route.GatewayId.startsWith('igw-'));
+  }
+
+  public tableForSubnet(subnetId: string | undefined) {
+    return this.tables.find(table => !!table.Associations && table.Associations.some(assoc => assoc.SubnetId === subnetId));
   }
 }
 
@@ -153,10 +203,17 @@ enum SubnetType {
   Isolated = 'Isolated'
 }
 
+function isValidSubnetType(val: string): val is SubnetType {
+  return val === SubnetType.Public
+    || val === SubnetType.Private
+    || val === SubnetType.Isolated;
+}
+
 interface Subnet {
   az: string;
   type: SubnetType;
   name?: string;
+  routeTableId: string;
   subnetId: string;
 }
 

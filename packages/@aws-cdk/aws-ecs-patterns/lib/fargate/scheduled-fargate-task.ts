@@ -1,7 +1,10 @@
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { Construct } from '@aws-cdk/core';
 import { ScheduledTaskBase, ScheduledTaskBaseProps } from '../base/scheduled-task-base';
 
+/**
+ * The properties for the ScheduledFargateTask service.
+ */
 export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
   /**
    * The number of cpu units used by the task.
@@ -24,33 +27,38 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
    * If your container attempts to exceed the allocated memory, the container
    * is terminated.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
-   *
    * @default 512
    */
   readonly memoryLimitMiB?: number;
-
 }
 
 /**
  * A scheduled Fargate task that will be initiated off of cloudwatch events.
  */
 export class ScheduledFargateTask extends ScheduledTaskBase {
-  constructor(scope: cdk.Construct, id: string, props: ScheduledFargateTaskProps) {
+  /**
+   * The Fargate task definition in this construct.
+   */
+  public readonly taskDefinition: FargateTaskDefinition;
+
+  /**
+   * Constructs a new instance of the ScheduledFargateTask class.
+   */
+  constructor(scope: Construct, id: string, props: ScheduledFargateTaskProps) {
     super(scope, id, props);
 
-    // Create a Task Definition for the container to start, also creates a log driver
-    const taskDefinition = new ecs.FargateTaskDefinition(this, 'ScheduledTaskDef', {
+    this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
     });
-    taskDefinition.addContainer('ScheduledContainer', {
+    this.taskDefinition.addContainer('ScheduledContainer', {
       image: props.image,
       command: props.command,
       environment: props.environment,
-      logging: this.createAWSLogDriver(this.node.id)
+      secrets: props.secrets,
+      logging: this.logDriver
     });
 
-    this.addTaskDefinitionToEventTarget(taskDefinition);
+    this.addTaskDefinitionToEventTarget(this.taskDefinition);
   }
 }

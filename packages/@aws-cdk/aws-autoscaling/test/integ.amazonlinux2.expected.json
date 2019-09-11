@@ -360,7 +360,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -396,7 +395,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-autoscaling-integ/Fleet"
+          }
+        ]
       }
     },
     "FleetInstanceProfileC6192A66": {

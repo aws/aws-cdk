@@ -19,11 +19,11 @@ beforeEach(() => {
             iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
         ],
     });
-  });
+});
 
 test('create basic transform job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
         transformJobName: "MyTransformJob",
         modelName: "MyModelName",
         transformInput: {
@@ -65,13 +65,33 @@ test('create basic transform job', () => {
     });
 });
 
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+    expect(() => {
+        new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+            integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+            transformJobName: "MyTransformJob",
+            modelName: "MyModelName",
+            transformInput: {
+                transformDataSource: {
+                    s3DataSource: {
+                        s3Uri: 's3://inputbucket/prefix',
+                    }
+                }
+            },
+            transformOutput: {
+                s3OutputPath: 's3://outputbucket/prefix',
+            },
+        }) });
+    }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call SageMaker./i);
+  });
+
 test('create complex transform job', () => {
     // WHEN
     const kmsKey = new kms.Key(stack, 'Key');
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
         transformJobName: "MyTransformJob",
         modelName: "MyModelName",
-        synchronous: true,
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
         role,
         transformInput: {
             transformDataSource: {
@@ -141,7 +161,7 @@ test('create complex transform job', () => {
 
 test('pass param to transform job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
         transformJobName: sfn.Data.stringAt('$.TransformJobName'),
         modelName: sfn.Data.stringAt('$.ModelName'),
         role,

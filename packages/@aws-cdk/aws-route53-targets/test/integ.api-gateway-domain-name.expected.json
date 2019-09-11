@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -60,7 +50,7 @@
         "HandlerServiceRoleFCDC14AE"
       ]
     },
-    "HandlerApiPermissionANY90312B89": {
+    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANY133739C8": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -101,7 +91,7 @@
         }
       }
     },
-    "HandlerApiPermissionTestANY40D41BDC": {
+    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANY872335B7": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -138,7 +128,7 @@
         }
       }
     },
-    "HandlerApiPermissionANYproxyDC4EA7A1": {
+    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANYproxyD4D13682": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -179,7 +169,7 @@
         }
       }
     },
-    "HandlerApiPermissionTestANYproxyCF641E04": {
+    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYproxyFF16208A": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -257,17 +247,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "apigateway.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "apigateway.amazonaws.com"
               }
             }
           ],

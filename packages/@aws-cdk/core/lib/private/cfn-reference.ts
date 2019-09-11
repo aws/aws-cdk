@@ -101,7 +101,13 @@ export class CfnReference extends Reference {
   public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
-    const token = this.replacementTokens.get(Stack.of(context.scope));
+    const consumingStack = Stack.of(context.scope);
+    const token = this.replacementTokens.get(consumingStack);
+    if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
+    }
+
     if (token) {
       return token.resolve(context);
     } else {
@@ -120,9 +126,9 @@ export class CfnReference extends Reference {
     }
 
     // tslint:disable-next-line:max-line-length
-    if (this.producingStack && this.producingStack !== consumingStack && !this.replacementTokens.has(consumingStack)) {
+    if (!this.replacementTokens.has(consumingStack) && this.isCrossStackReference(consumingStack)) {
       // We're trying to resolve a cross-stack reference
-      consumingStack.addDependency(this.producingStack, `${consumingConstruct.node.path} -> ${this.target.node.path}.${this.originalDisplayName}`);
+      consumingStack.addDependency(this.producingStack!, `${consumingConstruct.node.path} -> ${this.target.node.path}.${this.originalDisplayName}`);
       this.replacementTokens.set(consumingStack, this.exportValue(consumingStack));
     }
   }
@@ -179,6 +185,10 @@ export class CfnReference extends Reference {
     const prefix = stack.stackName ? stack.stackName + ':' : '';
     const exportName = prefix + makeUniqueId(components);
     return exportName;
+  }
+
+  private isCrossStackReference(consumingStack: Stack) {
+    return this.producingStack && this.producingStack !== consumingStack;
   }
 }
 

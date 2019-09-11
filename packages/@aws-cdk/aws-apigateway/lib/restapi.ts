@@ -100,7 +100,7 @@ export interface RestApiProps extends ResourceOptions {
   readonly apiKeySourceType?: ApiKeySourceType;
 
   /**
-   * The list of binary media mine-types that are supported by the RestApi
+   * The list of binary media mime-types that are supported by the RestApi
    * resource, such as "image/png" or "application/octet-stream"
    *
    * @default - RestApi supports only UTF-8-encoded text payloads.

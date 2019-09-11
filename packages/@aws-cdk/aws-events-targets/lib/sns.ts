@@ -42,6 +42,7 @@ export class SnsTopic implements events.IRuleTarget {
       id: '',
       arn: this.topic.topicArn,
       input: this.props.message,
+      targetResource: this.topic,
     };
   }
 }

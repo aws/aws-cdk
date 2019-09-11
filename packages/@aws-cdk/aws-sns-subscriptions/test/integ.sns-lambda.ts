@@ -12,7 +12,7 @@ class SnsToLambda extends cdk.Stack {
     const fction = new lambda.Function(this, 'Echo', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
-      code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
     });
 
     topic.addSubscription(new subs.LambdaSubscription(fction));
@@ -20,7 +20,7 @@ class SnsToLambda extends cdk.Stack {
     const fctionFiltered = new lambda.Function(this, 'Filtered', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
-      code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
     });
 
     topic.addSubscription(new subs.LambdaSubscription(fctionFiltered, {

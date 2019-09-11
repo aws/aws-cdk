@@ -11,7 +11,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": "vpc-60900905"
       }
     }
@@ -22,6 +21,9 @@
     },
     "PrivateSubnets": {
       "Value": "ids:"
+    },
+    "PublicRouteTables": {
+      "Value": "ids: rtb-e19455ca, rtb-e0c24797, rtb-ccd77395"
     }
   }
 }

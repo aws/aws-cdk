@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-stepfunctions",
-  "version": "1.1.0",
+  "version": "1.8.0",
   "description": "The CDK Construct Library for AWS::StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,24 +62,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.1.0",
+    "@aws-cdk/assert": "^1.8.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.1.0",
-    "@aws-cdk/aws-events": "^1.1.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/core": "^1.1.0"
+    "@aws-cdk/aws-cloudwatch": "^1.8.0",
+    "@aws-cdk/aws-events": "^1.8.0",
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.1.0",
-    "@aws-cdk/aws-events": "^1.1.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/core": "^1.1.0"
+    "@aws-cdk/aws-cloudwatch": "^1.8.0",
+    "@aws-cdk/aws-events": "^1.8.0",
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -89,7 +89,8 @@
       "import-props-interface:@aws-cdk/aws-stepfunctions.ActivityImportProps",
       "export:@aws-cdk/aws-stepfunctions.IActivity",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.WaitProps.duration",
-      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT"
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT",
+      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
     ]
   },
   "stability": "experimental"

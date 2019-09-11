@@ -50,7 +50,11 @@
                 }
               ]
             },
-            ".amazonaws.com/",
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
             {
               "Ref": "Repo02AC86CF"
             }

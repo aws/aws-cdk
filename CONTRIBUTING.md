@@ -35,6 +35,8 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
 - [Troubleshooting](#troubleshooting)
+- [Debugging](#debugging)
+  - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
 - [Related Repositories](#related-repositories)
 
 ## Getting Started
@@ -43,7 +45,7 @@ For day-to-day development and normal contributions, [Node.js 8.11](https://node
 should be sufficient.
 
 ```console
-$ git clone git@github.com:awslabs/aws-cdk.git
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 $ ./build.sh
 ```
@@ -58,9 +60,7 @@ installed, or use the Docker workflow.
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
 ## Pull Requests
-*PLEASE NOTE: We are working hard to stabilize the CDK APIs and tuning them to meet our consistency guidelines. While we work on getting the APIs aligned with our guidelines, we are pausing work on most community PRs starting around the 21st of this month. Please continue to report issues and submit feature requests, of course. We expect to get back to work on community PRs within a few weeks.*
 
----
 ### Pull Request Checklist
 
 * [ ] Testing
@@ -318,7 +318,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com/aws/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -342,7 +342,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com/aws/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -547,6 +547,60 @@ have to disable the built-in rebuild functionality of `lerna run test`:
 ```shell
 $ CDK_TEST_BUILD=false lr test
 ```
+
+## Debugging
+
+### Connecting the VS Code Debugger
+
+*Note:* This applies to typescript CDK application only.
+
+To debug your CDK application along with the CDK repository,
+
+1. Clone the CDK repository locally and build the repository. See [Workflows](#workflows) section for the different build options.
+2. Build the CDK application using the appropriate npm script (typically, `npm run build`) and then run the `link-all.sh` script as so -
+
+   ```
+   cd /path/to/cdk/app
+   /path/to/aws-cdk/link-all.sh
+   ```
+
+3. Open the CDK application (assume it's `hello-cdk` in these steps) and the CDK repository as a [VS code multi-root workspace](https://code.visualstudio.com/docs/editor/multi-root-workspaces).
+4. Open the [workspace settings file](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings) and verify that the following two folders must already exist
+
+  ```json
+  {
+    "folders": [
+      { "path": "<path-to-cdk-repo>/aws-cdk" },
+      { "path": "<path-to-cdk-app>/hello-cdk" }
+    ],
+  }
+  ```
+
+5. Add the following launch configuration to the settings file -
+
+  ```json
+  "launch": {
+    "configurations": [{
+      "type": "node",
+      "request": "launch",
+      "name": "Debug hello-cdk",
+      "program": "${workspaceFolder:hello-cdk}/bin/hello-cdk.js",
+      "cwd": "${workspaceFolder:hello-cdk}",
+      "console": "internalConsole",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
+      "outFiles": [
+        "${workspaceFolder:aws-cdk}/**/*.js",
+        "${workspaceFolder:hello-cdk}/**/*.js",
+      ],
+    }]
+  }
+  ```
+
+  *Go [here](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) for more about launch configurations.*
+
+6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
+7. Any time you modify the CDK app or any of the CDK modules, they need to be re-built and depending on the change the `link-all.sh` script from step#2, may need to be re-run. Only then, would VS code recognize the change and potentially the breakpoint.
 
 ## Related Repositories
 

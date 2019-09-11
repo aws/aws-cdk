@@ -1,5 +1,6 @@
 const path = require('path');
 const cdk = require('@aws-cdk/core');
+const ec2 = require('@aws-cdk/aws-ec2');
 const ssm = require('@aws-cdk/aws-ssm');
 const iam = require('@aws-cdk/aws-iam');
 const sns = require('@aws-cdk/aws-sns');
@@ -101,6 +102,38 @@ class DockerStack extends cdk.Stack {
   }
 }
 
+const VPC_TAG_NAME = 'custom-tag';
+const VPC_TAG_VALUE = 'bazinga!';
+
+class DefineVpcStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new ec2.Vpc(this, 'VPC', {
+      maxAzs: 1,
+    }).node.applyAspect(new cdk.Tag(VPC_TAG_NAME, VPC_TAG_VALUE));
+  }
+}
+
+class ImportVpcStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
+    ec2.Vpc.fromLookup(this, 'ByTag', { tags: { [VPC_TAG_NAME]: VPC_TAG_VALUE } });
+  }
+}
+
+class ConditionalResourceStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    if (!process.env.NO_RESOURCE) {
+      new iam.User(this, 'User');
+    }
+  }
+}
+
 const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
 
 const app = new cdk.App();
@@ -122,5 +155,15 @@ new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env:
 
 new LambdaStack(app, `${stackPrefix}-lambda`);
 new DockerStack(app, `${stackPrefix}-docker`);
+
+if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
+  const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+  if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
+    new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
+  if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
+  new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+}
+
+new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
 
 app.synth();

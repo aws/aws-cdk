@@ -6,13 +6,17 @@ import json
 import sys
 import traceback
 import logging
+import botocore
 from botocore.vendored import requests
+from botocore.exceptions import ClientError
 from unittest.mock import MagicMock
+from unittest.mock import patch
+
 
 class TestHandler(unittest.TestCase):
     def setUp(self):
         logger = logging.getLogger()
-
+        
         # clean up old aws.out file (from previous runs)
         try: os.remove("aws.out")
         except OSError: pass
@@ -132,6 +136,72 @@ class TestHandler(unittest.TestCase):
             "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
         )
+
+    def test_update_same_dest_cf_invalidate(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'CreateInvalidation':
+                assert kwarg['DistributionId'] == '<cf-dist-id>'
+                assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 1
+                assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/*'
+                return {'Invalidation': {'Id': '<invalidation-id>'}}
+            if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
+                return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Update", {
+                "SourceBucketName": "<source-bucket>",
+                "SourceObjectKey": "<source-object-key>",
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DistributionId": "<cf-dist-id>"
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, physical_id="<physical-id>")
+
+    def test_update_same_dest_cf_invalidate_custom_prefix(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'CreateInvalidation':
+                assert kwarg['DistributionId'] == '<cf-dist-id>'
+                assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 1
+                assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/<dest-prefix>/*'
+                return {'Invalidation': {'Id': '<invalidation-id>'}}
+            if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
+                return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Update", {
+                "SourceBucketName": "<source-bucket>",
+                "SourceObjectKey": "<source-object-key>",
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DestinationBucketKeyPrefix": "<dest-prefix>",
+                "DistributionId": "<cf-dist-id>"
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, physical_id="<physical-id>")
+
+    def test_update_same_dest_cf_invalidate_custom_paths(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'CreateInvalidation':
+                assert kwarg['DistributionId'] == '<cf-dist-id>'
+                assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 2
+                assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/path1/*'
+                assert kwarg['InvalidationBatch']['Paths']['Items'][1] == '/path2/*'
+                return {'Invalidation': {'Id': '<invalidation-id>'}}
+            if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
+                return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Update", {
+                "SourceBucketName": "<source-bucket>",
+                "SourceObjectKey": "<source-object-key>",
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DistributionId": "<cf-dist-id>",
+                "DistributionPaths": ["/path1/*", "/path2/*"]
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, physical_id="<physical-id>")
 
     def test_update_new_dest_retain(self):
         invoke_handler("Update", {

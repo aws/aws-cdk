@@ -111,15 +111,17 @@ cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.xlarge'),
-  machineImage: new EcsOptimizedAmi(),
+  machineImage: EcsOptimizedImage.amazonLinux(),
   // Or use Amazon ECS-Optimized Amazon Linux 2 AMI
-  // machineImage: new EcsOptimizedAmi({ generation: ec2.AmazonLinuxGeneration.AmazonLinux2 }),
+  // machineImage: EcsOptimizedImage.amazonLinux2(),
   desiredCapacity: 3,
   // ... other options here ...
 });
 
 cluster.addAutoScalingGroup(autoScalingGroup);
 ```
+
+If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
 ## Task definitions
 
@@ -202,6 +204,26 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   to start. If no tag is provided, "latest" is assumed.
 * `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
+
+### Environment variables
+
+To pass environment variables to the container, use the `environment` and `secrets` props.
+
+```ts
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  environment: { // clear text, not for sensitive data
+    STAGE: 'prod',
+  },
+  secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
+    SECRET: ecs.Secret.fromSecretsManager(secret),
+    PARAMETER: ecs.Secret.fromSsmParameter(parameter),
+  }
+});
+```
+
+The task execution role is automatically granted read permissions on the secrets/parameters.
 
 ## Service
 
@@ -330,5 +352,3 @@ rule.addTarget(new targets.EcsTask({
   }]
 }));
 ```
-
-> Note: it is currently not possible to start AWS Fargate tasks in this way.

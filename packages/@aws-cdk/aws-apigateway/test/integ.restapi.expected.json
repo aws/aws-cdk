@@ -26,8 +26,8 @@
         "myapiv1toysPUT59AFBBC2",
         "myapiv1toysA55FCBC4"
       ],
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "myapiDeploymentStagebeta96434BEB": {
       "Type": "AWS::ApiGateway::Stage",
@@ -66,17 +66,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "apigateway.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "apigateway.amazonaws.com"
               }
             }
           ],
@@ -332,6 +322,64 @@
         }
       }
     },
+    "myapiApiKey43446CCF": {
+      "Type": "AWS::ApiGateway::ApiKey",
+      "Properties": {
+        "Enabled": true,
+        "StageKeys": [
+          {
+            "RestApiId": {
+              "Ref": "myapi4C7BF186"
+            },
+            "StageName": {
+              "Ref": "myapiDeploymentStagebeta96434BEB"
+            }
+          }
+        ]
+      }
+    },
+    "myapiUsagePlan56F9C4F2": {
+      "Type": "AWS::ApiGateway::UsagePlan",
+      "Properties": {
+        "ApiStages": [
+          {
+            "ApiId": {
+              "Ref": "myapi4C7BF186"
+            },
+            "Stage": {
+              "Ref": "myapiDeploymentStagebeta96434BEB"
+            },
+            "Throttle": {
+              "/v1/toys/GET": {
+                "BurstLimit": 2,
+                "RateLimit": 10
+              }
+            }
+          }
+        ],
+        "Description": "Free tier monthly usage plan",
+        "Quota": {
+          "Limit": 10000,
+          "Period": "MONTH"
+        },
+        "Throttle": {
+          "RateLimit": 5
+        },
+        "UsagePlanName": "Basic"
+      }
+    },
+    "myapiUsagePlanUsagePlanKeyResource050D133F": {
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+      "Properties": {
+        "KeyId": {
+          "Ref": "myapiApiKey43446CCF"
+        },
+        "KeyType": "API_KEY",
+        "UsagePlanId": {
+          "Ref": "myapiUsagePlan56F9C4F2"
+        }
+      }
+    },
     "MyHandlerServiceRoleFFA06653": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -341,17 +389,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -392,7 +430,7 @@
         "MyHandlerServiceRoleFFA06653"
       ]
     },
-    "MyHandlerApiPermissionGETv1toys8E10C024": {
+    "MyHandlerApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1toys00F704BC": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -433,7 +471,7 @@
         }
       }
     },
-    "MyHandlerApiPermissionTestGETv1toys499738A6": {
+    "MyHandlerApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1toysDBCC8082": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -470,7 +508,7 @@
         }
       }
     },
-    "MyHandlerApiPermissionGETv1books376A9081": {
+    "MyHandlerApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1books96EB3DB8": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -511,7 +549,7 @@
         }
       }
     },
-    "MyHandlerApiPermissionTestGETv1booksB64C41EB": {
+    "MyHandlerApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1books906B3BB6": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -548,7 +586,7 @@
         }
       }
     },
-    "MyHandlerApiPermissionPOSTv1booksAC487705": {
+    "MyHandlerApiPermissiontestapigatewayrestapimyapi1AE401C4POSTv1booksA48C273B": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -589,7 +627,7 @@
         }
       }
     },
-    "MyHandlerApiPermissionTestPOSTv1books6E15773F": {
+    "MyHandlerApiPermissionTesttestapigatewayrestapimyapi1AE401C4POSTv1booksA566985D": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -624,62 +662,6 @@
             ]
           ]
         }
-      }
-    },
-    "myapiUsagePlan56F9C4F2": {
-      "Type": "AWS::ApiGateway::UsagePlan",
-      "Properties": {
-        "ApiStages": [
-          {
-            "ApiId": {
-              "Ref": "myapi4C7BF186"
-            },
-            "Stage": {
-              "Ref": "myapiDeploymentStagebeta96434BEB"
-            },
-            "Throttle": {
-              "/v1/toys/GET": {
-                "BurstLimit": 2,
-                "RateLimit": 10
-              }
-            }
-          }
-        ],
-        "Throttle": { "RateLimit": 5 },
-        "Description": "Free tier monthly usage plan",
-        "Quota": {
-          "Limit": 10000,
-          "Period": "MONTH"
-        },
-        "UsagePlanName": "Basic"
-      }
-    },
-    "myapiUsagePlanUsagePlanKeyResource050D133F": {
-      "Type": "AWS::ApiGateway::UsagePlanKey",
-      "Properties": {
-        "KeyId": {
-          "Ref": "myapiApiKey43446CCF"
-        },
-        "KeyType": "API_KEY",
-        "UsagePlanId": {
-          "Ref": "myapiUsagePlan56F9C4F2"
-        }
-      }
-    },
-    "myapiApiKey43446CCF": {
-      "Type": "AWS::ApiGateway::ApiKey",
-      "Properties": {
-        "Enabled": true,
-        "StageKeys": [
-          {
-            "RestApiId": {
-              "Ref": "myapi4C7BF186"
-            },
-            "StageName": {
-              "Ref": "myapiDeploymentStagebeta96434BEB"
-            }
-          }
-        ]
       }
     }
   },

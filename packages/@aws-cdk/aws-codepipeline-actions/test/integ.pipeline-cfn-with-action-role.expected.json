@@ -144,17 +144,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -256,7 +246,6 @@
                   },
                   "S3ObjectKey": "some/path"
                 },
-                "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
@@ -300,7 +289,6 @@
                   }
                 ],
                 "Name": "CFN_Deploy",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "ActionRole60B0EDF7",
@@ -442,17 +430,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "cloudformation.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "cloudformation.amazonaws.com"
               }
             }
           ],

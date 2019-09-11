@@ -516,6 +516,15 @@ export interface ApplicationLoadBalancerAttributes {
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
   readonly loadBalancerDnsName?: string;
+
+  /**
+   * Whether the security group allows all outbound traffic or not
+   *
+   * Unless set to `false`, no egress rules will be added to the security group.
+   *
+   * @default true
+   */
+  readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -567,7 +576,9 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)]
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
+        allowAllOutbound: props.securityGroupAllowsAllOutbound
+      })]
     });
   }
 

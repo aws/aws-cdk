@@ -126,7 +126,12 @@ abstract class ParameterBase extends Resource implements IParameter {
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
-      actions: ['ssm:DescribeParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
+      actions: [
+        'ssm:DescribeParameters',
+        'ssm:GetParameters',
+        'ssm:GetParameter',
+        'ssm:GetParameterHistory'
+      ],
       resourceArns: [this.parameterArn],
     });
   }

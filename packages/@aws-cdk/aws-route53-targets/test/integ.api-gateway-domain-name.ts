@@ -15,7 +15,7 @@ class TestStack extends Stack {
     const hostedZoneId = 'AAAAAAAAAAAAA';
 
     const handler = new lambda.Function(this, 'Handler', {
-      code: lambda.Code.inline(`exports.handler = async () => {
+      code: lambda.Code.fromInline(`exports.handler = async () => {
         return {
           statusCode: '200',
           body: 'hello, world!'

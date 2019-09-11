@@ -76,7 +76,7 @@ export class CloudArtifact {
    * @param id The artifact ID
    * @param artifact The artifact manifest
    */
-  public static from(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact {
+  public static fromManifest(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact {
     switch (artifact.type) {
       case ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);

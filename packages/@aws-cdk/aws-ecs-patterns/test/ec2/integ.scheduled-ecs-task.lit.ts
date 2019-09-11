@@ -26,7 +26,7 @@ class EventStack extends cdk.Stack {
       desiredTaskCount: 2,
       memoryLimitMiB: 512,
       cpu: 1,
-      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
     /// !hide

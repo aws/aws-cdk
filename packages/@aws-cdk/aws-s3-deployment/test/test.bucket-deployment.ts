@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import cloudfront = require('@aws-cdk/aws-cloudfront');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -114,6 +115,85 @@ export = {
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       RetainOnDelete: true
     }));
+
+    test.done();
+  },
+
+  'distribution can be used to provide a CloudFront distribution for invalidation'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+    const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: bucket
+          },
+          behaviors : [ {isDefaultBehavior: true}]
+        }
+      ]
+    });
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      source: s3deploy.Source.asset(path.join(__dirname, 'my-website.zip')),
+      destinationBucket: bucket,
+      distribution,
+      distributionPaths: ['/images/*']
+    });
+
+    expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
+      DistributionId: {
+        "Ref": "DistributionCFDistribution882A7313"
+      },
+      DistributionPaths: ['/images/*']
+    }));
+
+    test.done();
+  },
+
+  'invalidation can happen without distributionPaths provided'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+    const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: bucket
+          },
+          behaviors : [ {isDefaultBehavior: true}]
+        }
+      ]
+    });
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      source: s3deploy.Source.asset(path.join(__dirname, 'my-website.zip')),
+      destinationBucket: bucket,
+      distribution,
+    });
+
+    expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
+      DistributionId: {
+        "Ref": "DistributionCFDistribution882A7313"
+      },
+    }));
+
+    test.done();
+  },
+
+  'fails if distribution paths provided but not distribution ID'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // THEN
+    test.throws(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
+      source: s3deploy.Source.asset(path.join(__dirname, 'my-website', 'index.html')),
+      destinationBucket: bucket,
+      distributionPaths: ['/images/*']
+    }), /Distribution must be specified if distribution paths are specified/);
 
     test.done();
   },

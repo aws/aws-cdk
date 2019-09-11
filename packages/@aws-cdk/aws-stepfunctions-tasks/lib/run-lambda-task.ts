@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { FieldUtils } from '../../aws-stepfunctions/lib/fields';
+import { resourceArnSuffix } from './resource-arn-suffix';
 
 /**
  * Properties for RunLambdaTask
@@ -13,15 +13,18 @@ export interface RunLambdaTaskProps {
   readonly payload?: { [key: string]: any };
 
   /**
-   * Whether to pause the workflow until a task token is returned
+   * The service integration pattern indicates different ways to invoke Lambda function.
    *
-   * If this is set to true, the Context.taskToken value must be included
+   * The valid value for Lambda is either FIRE_AND_FORGET or WAIT_FOR_TASK_TOKEN,
+   * it determines whether to pause the workflow until a task token is returned.
+   *
+   * If this is set to WAIT_FOR_TASK_TOKEN, the Context.taskToken value must be included
    * somewhere in the payload and the Lambda must call
    * `SendTaskSuccess/SendTaskFailure` using that token.
    *
-   * @default false
+   * @default FIRE_AND_FORGET
    */
-  readonly waitForTaskToken?: boolean;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 
   /**
    * Invocation type of the Lambda function
@@ -55,18 +58,28 @@ export interface RunLambdaTaskProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html
  */
 export class RunLambdaTask implements sfn.IStepFunctionsTask {
-  private readonly waitForTaskToken: boolean;
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: RunLambdaTaskProps = {}) {
-    this.waitForTaskToken = !!props.waitForTaskToken;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
-    if (this.waitForTaskToken && !FieldUtils.containsTaskToken(props.payload)) {
+    const supportedPatterns = [
+      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+    ];
+
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`);
+    }
+
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+        && !sfn.FieldUtils.containsTaskToken(props.payload)) {
       throw new Error('Task Token is missing in payload (pass Context.taskToken somewhere in payload)');
     }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const resourceArn = 'arn:aws:states:::lambda:invoke' + (this.waitForTaskToken ? '.waitForTaskToken' : '');
+    const resourceArn = 'arn:aws:states:::lambda:invoke' + resourceArnSuffix.get(this.integrationPattern);
 
     return {
       resourceArn,
@@ -106,4 +119,9 @@ export enum InvocationType {
    * The API response only includes a status code.
    */
   EVENT = 'Event',
+
+  /**
+   * TValidate parameter values and verify that the user or role has permission to invoke the function.
+   */
+  DRY_RUN = 'DryRun'
 }

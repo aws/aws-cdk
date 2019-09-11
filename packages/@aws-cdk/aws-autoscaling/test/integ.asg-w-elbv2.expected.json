@@ -360,7 +360,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -417,7 +416,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-asg-integ/Fleet"
+          }
+        ]
       }
     },
     "FleetInstanceProfileC6192A66": {
@@ -569,7 +574,6 @@
     "LB8A12904C": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "LoadBalancerAttributes": [],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -598,7 +602,6 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awscdkasgintegLB91115691",
-        "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -649,8 +652,7 @@
           "Ref": "LB8A12904C"
         },
         "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
+        "Protocol": "HTTP"
       }
     },
     "LBListenerTargetGroupF04FCF6D": {
@@ -658,8 +660,6 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
         "TargetType": "instance",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"

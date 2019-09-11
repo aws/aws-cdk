@@ -114,12 +114,22 @@ export interface FunctionAttributes {
   readonly role?: iam.IRole;
 
   /**
-   * Id of the securityGroup for this Lambda, if in a VPC.
+   * Id of the security group of this Lambda, if in a VPC.
+   *
+   * This needs to be given in order to support allowing connections
+   * to this Lambda.
+   *
+   * @deprecated use `securityGroup` instead
+   */
+  readonly securityGroupId?: string;
+
+  /**
+   * The security group of this Lambda, if in a VPC.
    *
    * This needs to be given in order to support allowing connections
    * to this Lambda.
    */
-  readonly securityGroupId?: string;
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {
@@ -285,8 +295,12 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.ServicePrincipal).service;
     }
 
+    if (`arn` in principal) {
+      return (principal as iam.ArnPrincipal).arn;
+    }
+
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
-      'Supported: AccountPrincipal, ServicePrincipal');
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
   }
 }
 

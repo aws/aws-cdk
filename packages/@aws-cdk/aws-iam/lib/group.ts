@@ -40,9 +40,10 @@ export interface GroupProps {
   readonly groupName?: string;
 
   /**
-   * A list managed policies associated with this role.
+   * A list of managed policies associated with this role.
    *
-   * You can add managed policies later using `attachManagedPolicy(policy)`.
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */
@@ -154,6 +155,7 @@ export class Group extends GroupBase {
    * @param policy The managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
   }
 }

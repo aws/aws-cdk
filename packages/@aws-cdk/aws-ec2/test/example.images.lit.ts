@@ -21,8 +21,18 @@ const linux = new ec2.GenericLinuxImage({
     'eu-west-1': 'ami-12345678',
     // ...
 });
+
+// For other custom (Windows) images, instantiate a `GenericWindowsImage` with
+// a map giving the AMI to in for each region:
+
+const genericWindows = new ec2.GenericWindowsImage({
+  'us-east-1': 'ami-97785bed',
+  'eu-west-1': 'ami-12345678',
+  // ...
+});
 /// !hide
 
 Array.isArray(windows);
 Array.isArray(amznLinux);
 Array.isArray(linux);
+Array.isArray(genericWindows);

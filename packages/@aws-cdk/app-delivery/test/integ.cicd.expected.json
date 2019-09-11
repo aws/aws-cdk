@@ -14,17 +14,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -127,7 +117,6 @@
                   "OAuthToken": "DummyToken",
                   "PollForSourceChanges": true
                 },
-                "InputArtifacts": [],
                 "Name": "GitHub",
                 "OutputArtifacts": [
                   {
@@ -158,7 +147,7 @@
                   },
                   "ActionMode": "CHANGE_SET_REPLACE",
                   "ChangeSetName": "CICD-ChangeSet",
-                  "TemplatePath": "Artifact_CICDGitHubF8BA7ADD::CICD.template.yaml"
+                  "TemplatePath": "Artifact_CICDGitHubF8BA7ADD::CICD.template.json"
                 },
                 "InputArtifacts": [
                   {
@@ -166,7 +155,6 @@
                   }
                 ],
                 "Name": "ChangeSet",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "CodePipelineDeployChangeSetCodePipelineActionRoleB3BCDD8A",
@@ -187,9 +175,7 @@
                   "ActionMode": "CHANGE_SET_EXECUTE",
                   "ChangeSetName": "CICD-ChangeSet"
                 },
-                "InputArtifacts": [],
                 "Name": "Execute",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "CodePipelineDeployExecuteCodePipelineActionRoleAE36AF49",
@@ -426,17 +412,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "cloudformation.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "cloudformation.amazonaws.com"
               }
             }
           ],

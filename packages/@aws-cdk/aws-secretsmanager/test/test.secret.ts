@@ -105,7 +105,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -204,7 +205,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -347,7 +349,7 @@ export = {
     const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
       runtime: lambda.Runtime.NODEJS_8_10,
-      code: lambda.Code.inline('export.handler = event => event;'),
+      code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler'
     });
 

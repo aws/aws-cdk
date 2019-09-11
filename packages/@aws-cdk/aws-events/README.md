@@ -87,3 +87,45 @@ The following targets are supported:
 * `targets.SnsTopic`: Publish into an SNS topic
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
+* `targets.AwsApi`: Make an AWS API call
+
+### Cross-account targets
+
+It's possible to have the source of the event and a target in separate AWS accounts:
+
+```typescript
+import { App, Stack } from '@aws-cdk/core';
+import codebuild = require('@aws-cdk/aws-codebuild');
+import codecommit = require('@aws-cdk/aws-codecommit');
+import targets = require('@aws-cdk/aws-events-targets');
+
+const app = new App();
+
+const stack1 = new Stack(app, 'Stack1', { env: { account: account1, region: 'us-east-1' } });
+const repo = new codecommit.Repository(stack1, 'Repository', {
+  // ...
+});
+
+const stack2 = new Stack(app, 'Stack2', { env: { account: account2, region: 'us-east-1' } });
+const project = new codebuild.Project(stack2, 'Project', {
+  // ...
+});
+
+repo.onCommit('OnCommit', {
+  target: new targets.CodeBuildProject(project),
+});
+```
+
+In this situation, the CDK will wire the 2 accounts together:
+
+* It will generate a rule in the source stack with the event bus of the target account as the target
+* It will generate a rule in the target stack, with the provided target
+* It will generate a separate stack that gives the source account permissions to publish events
+  to the event bus of the target account in the given region,
+  and make sure its deployed before the source stack
+
+**Note**: while events can span multiple accounts, they _cannot_ span different regions
+(that is a CloudWatch, not CDK, limitation).
+
+For more information, see the
+[AWS documentation on cross-account events](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEvents-CrossAccountEventDelivery.html).

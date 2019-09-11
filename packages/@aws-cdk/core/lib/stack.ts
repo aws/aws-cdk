@@ -154,6 +154,14 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
+   * The name of the CloudFormation template file emitted to the output
+   * directory during synthesis.
+   *
+   * @example MyStack.template.json
+   */
+  public readonly templateFile: string;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -197,6 +205,8 @@ export class Stack extends Construct implements ITaggable {
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
+
+    this.templateFile = `${this.stackName}.template.json`;
   }
 
   /**
@@ -207,6 +217,7 @@ export class Stack extends Construct implements ITaggable {
       scope: this,
       prefix: [],
       resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+      preparing: false
     });
   }
 
@@ -511,17 +522,16 @@ export class Stack extends Construct implements ITaggable {
 
   protected synthesize(session: ISynthesisSession): void {
     const builder = session.assembly;
-    const template = `${this.stackName}.template.json`;
 
     // write the CloudFormation template as a JSON file
-    const outPath = path.join(builder.outdir, template);
+    const outPath = path.join(builder.outdir, this.templateFile);
     fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
 
     const deps = this.dependencies.map(s => s.stackName);
     const meta = this.collectMetadata();
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
-      templateFile: template
+      templateFile: this.templateFile
     };
 
     // add an artifact that represents this stack
@@ -545,9 +555,19 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   protected _toCloudFormation() {
+    if (this.templateOptions.transform) {
+      // tslint:disable-next-line: max-line-length
+      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `templateOptions.transforms`.');
+      if (!this.templateOptions.transforms) {
+        this.templateOptions.transforms = [];
+      }
+      if (this.templateOptions.transforms.indexOf(this.templateOptions.transform) === -1) {
+        this.templateOptions.transforms.unshift(this.templateOptions.transform);
+      }
+    }
     const template: any = {
       Description: this.templateOptions.description,
-      Transform: this.templateOptions.transform,
+      Transform: extractSingleValue(this.templateOptions.transforms),
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
       Metadata: this.templateOptions.metadata
     };
@@ -690,8 +710,15 @@ export interface ITemplateOptions {
 
   /**
    * Gets or sets the top-level template transform for this stack (e.g. "AWS::Serverless-2016-10-31").
+   *
+   * @deprecated use `transforms` instead.
    */
   transform?: string;
+
+  /**
+   * Gets or sets the top-level template transform(s) for this stack (e.g. `["AWS::Serverless-2016-10-31"]`).
+   */
+  transforms?: string[];
 
   /**
    * Metadata associated with the CloudFormation template.
@@ -745,4 +772,11 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
 interface StackDependency {
   stack: Stack;
   reason: string;
+}
+
+function extractSingleValue<T>(array: T[] | undefined): T[] | T | undefined {
+  if (array && array.length === 1) {
+    return array[0];
+  }
+  return array;
 }

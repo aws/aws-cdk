@@ -6,7 +6,7 @@ import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
-import { SDK } from './util/sdk';
+import { ISDK } from './util/sdk';
 
 /** @experimental */
 export interface UploadProps {
@@ -25,7 +25,7 @@ export interface Uploaded {
 
 /** @experimental */
 export class ToolkitInfo {
-  public readonly sdk: SDK;
+  public readonly sdk: ISDK;
 
   /**
    * A cache of previous uploads done in this session
@@ -33,7 +33,7 @@ export class ToolkitInfo {
   private readonly previousUploads: {[key: string]: Uploaded} = {};
 
   constructor(private readonly props: {
-    sdk: SDK,
+    sdk: ISDK,
     bucketName: string,
     bucketEndpoint: string,
     environment: cxapi.Environment
@@ -217,7 +217,7 @@ async function objectExists(s3: aws.S3, bucket: string, key: string) {
 }
 
 /** @experimental */
-export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SDK, stackName: string): Promise<ToolkitInfo | undefined> {
+export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK, stackName: string): Promise<ToolkitInfo | undefined> {
   const cfn = await sdk.cloudFormation(environment.account, environment.region, Mode.ForReading);
   const stack = await waitForStack(cfn, stackName);
   if (!stack) {

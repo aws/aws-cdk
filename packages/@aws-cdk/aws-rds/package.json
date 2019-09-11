@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-rds",
-  "version": "1.1.0",
+  "version": "1.8.0",
   "description": "CDK Constructs for AWS RDS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -62,37 +62,37 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.1.0",
-    "@aws-cdk/aws-events-targets": "^1.1.0",
+    "@aws-cdk/assert": "^1.8.0",
+    "@aws-cdk/aws-events-targets": "^1.8.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.1.0",
-    "@aws-cdk/aws-ec2": "^1.1.0",
-    "@aws-cdk/aws-events": "^1.1.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/aws-kms": "^1.1.0",
-    "@aws-cdk/aws-lambda": "^1.1.0",
-    "@aws-cdk/aws-logs": "^1.1.0",
-    "@aws-cdk/aws-sam": "^1.1.0",
-    "@aws-cdk/aws-secretsmanager": "^1.1.0",
-    "@aws-cdk/core": "^1.1.0"
+    "@aws-cdk/aws-cloudwatch": "^1.8.0",
+    "@aws-cdk/aws-ec2": "^1.8.0",
+    "@aws-cdk/aws-events": "^1.8.0",
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/aws-kms": "^1.8.0",
+    "@aws-cdk/aws-lambda": "^1.8.0",
+    "@aws-cdk/aws-logs": "^1.8.0",
+    "@aws-cdk/aws-sam": "^1.8.0",
+    "@aws-cdk/aws-secretsmanager": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.1.0",
-    "@aws-cdk/aws-ec2": "^1.1.0",
-    "@aws-cdk/aws-events": "^1.1.0",
-    "@aws-cdk/aws-iam": "^1.1.0",
-    "@aws-cdk/aws-kms": "^1.1.0",
-    "@aws-cdk/aws-lambda": "^1.1.0",
-    "@aws-cdk/aws-logs": "^1.1.0",
-    "@aws-cdk/aws-sam": "^1.1.0",
-    "@aws-cdk/aws-secretsmanager": "^1.1.0",
-    "@aws-cdk/core": "^1.1.0"
+    "@aws-cdk/aws-cloudwatch": "^1.8.0",
+    "@aws-cdk/aws-ec2": "^1.8.0",
+    "@aws-cdk/aws-events": "^1.8.0",
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/aws-kms": "^1.8.0",
+    "@aws-cdk/aws-lambda": "^1.8.0",
+    "@aws-cdk/aws-logs": "^1.8.0",
+    "@aws-cdk/aws-sam": "^1.8.0",
+    "@aws-cdk/aws-secretsmanager": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
     "node": ">= 8.10.0"

@@ -204,7 +204,7 @@ test('lambda subscription', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
 
   topic.addSubscription(new subs.LambdaSubscription(fction));
@@ -227,17 +227,7 @@ test('lambda subscription', () => {
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "lambda.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "lambda.amazonaws.com"
                 }
               }
             ],
@@ -344,7 +334,7 @@ test('multiple subscriptions', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
 
   topic.addSubscription(new subs.SqsSubscription(queue));
@@ -421,17 +411,7 @@ test('multiple subscriptions', () => {
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "lambda.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "lambda.amazonaws.com"
                 }
               }
             ],
@@ -520,7 +500,7 @@ test('with filter policy', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });
 
   topic.addSubscription(new subs.LambdaSubscription(fction, {

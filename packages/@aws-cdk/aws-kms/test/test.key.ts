@@ -1,8 +1,18 @@
-import { exactlyMatchTemplate, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import {
+  exactlyMatchTemplate,
+  expect,
+  haveResource,
+  haveResourceLike,
+  ResourcePart,
+  SynthUtils
+} from '@aws-cdk/assert';
 import { PolicyStatement, User } from '@aws-cdk/aws-iam';
-import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import iam = require('@aws-cdk/aws-iam');
+import { App, CfnOutput, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
+
+// tslint:disable:object-literal-key-quotes
 
 export = {
   'default key'(test: Test) {
@@ -30,7 +40,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
             ],
             Effect: "Allow",
             Principal: {
@@ -104,7 +115,8 @@ export = {
               "kms:Get*",
               "kms:Delete*",
               "kms:ScheduleKeyDeletion",
-              "kms:CancelKeyDeletion"
+              "kms:CancelKeyDeletion",
+              "kms:GenerateDataKey"
             ],
             Effect: "Allow",
             Principal: {
@@ -183,7 +195,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   Effect: "Allow",
                   Principal: {
@@ -277,7 +290,8 @@ export = {
                     "kms:Get*",
                     "kms:Delete*",
                     "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion"
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
                   ],
                   Effect: "Allow",
                   Principal: {
@@ -325,6 +339,103 @@ export = {
     test.done();
   },
 
+  'can run multiple addAlias'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'Test');
+
+    const key = new Key(stack, 'MyKey', {
+      enableKeyRotation: true,
+      enabled: false
+    });
+
+    const alias1 = key.addAlias('alias/alias1');
+    const alias2 = key.addAlias('alias/alias2');
+    test.ok(alias1.aliasName);
+    test.ok(alias2.aliasName);
+
+    expect(stack).toMatch({
+      Resources: {
+        MyKey6AB29FA6: {
+          Type: "AWS::KMS::Key",
+          Properties: {
+            EnableKeyRotation: true,
+            Enabled: false,
+            KeyPolicy: {
+              Statement: [
+                {
+                  Action: [
+                    "kms:Create*",
+                    "kms:Describe*",
+                    "kms:Enable*",
+                    "kms:List*",
+                    "kms:Put*",
+                    "kms:Update*",
+                    "kms:Revoke*",
+                    "kms:Disable*",
+                    "kms:Get*",
+                    "kms:Delete*",
+                    "kms:ScheduleKeyDeletion",
+                    "kms:CancelKeyDeletion",
+                    "kms:GenerateDataKey"
+                  ],
+                  Effect: "Allow",
+                  Principal: {
+                    AWS: {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            Ref: "AWS::Partition"
+                          },
+                          ":iam::",
+                          {
+                            Ref: "AWS::AccountId"
+                          },
+                          ":root"
+                        ]
+                      ]
+                    }
+                  },
+                  Resource: "*"
+                }
+              ],
+              Version: "2012-10-17"
+            }
+          },
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
+        },
+        MyKeyAlias1B45D9DA: {
+          Type: "AWS::KMS::Alias",
+          Properties: {
+            AliasName: "alias/alias1",
+            TargetKeyId: {
+              "Fn::GetAtt": [
+                "MyKey6AB29FA6",
+                "Arn"
+              ]
+            }
+          }
+        },
+        MyKeyAliasaliasalias2EC56BD3E: {
+          Type: "AWS::KMS::Alias",
+          Properties: {
+            AliasName: "alias/alias2",
+            TargetKeyId: {
+              "Fn::GetAtt": [
+                "MyKey6AB29FA6",
+                "Arn"
+              ]
+            }
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'grant decrypt on a key'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -341,7 +452,7 @@ export = {
           // This one is there by default
           {
             // tslint:disable-next-line:max-line-length
-            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion" ],
+            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:GenerateDataKey" ],
             Effect: "Allow",
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root" ] ] } },
             Resource: "*"
@@ -374,51 +485,135 @@ export = {
     test.done();
   },
 
-  'import/export can be used to bring in an existing key'(test: Test) {
-    const stack2 = new Stack();
-    const myKeyImported = Key.fromKeyArn(stack2, 'MyKeyImported', 'arn:of:key');
+  'grant for a principal in a dependent stack works correctly'(test: Test) {
+    const app = new App();
 
-    // addAlias can be called on imported keys.
-    myKeyImported.addAlias('alias/hello');
+    const principalStack = new Stack(app, 'PrincipalStack');
+    const principal = new iam.Role(principalStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+    });
 
-    expect(stack2).toMatch({
-      Resources: {
-        MyKeyImportedAliasB1C5269F: {
-          Type: "AWS::KMS::Alias",
-          Properties: {
-            AliasName: "alias/hello",
-            TargetKeyId: 'arn:of:key'
-          }
-        }
-      }
+    const keyStack = new Stack(app, 'KeyStack');
+    const key = new Key(keyStack, 'Key');
+
+    principalStack.addDependency(keyStack);
+
+    key.grantEncrypt(principal);
+
+    expect(keyStack).to(haveResourceLike('AWS::KMS::Key', {
+      "KeyPolicy": {
+        "Statement": [
+          {
+            // owning account management permissions - we don't care about them in this test
+          },
+          {
+            "Action": [
+              "kms:Encrypt",
+              "kms:ReEncrypt*",
+              "kms:GenerateDataKey*",
+            ],
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": {
+                "Fn::Join": ["", [
+                  "arn:",
+                  { "Ref": "AWS::Partition" },
+                  ":iam::",
+                  { "Ref": "AWS::AccountId" },
+                  ":root",
+                ]],
+              },
+            },
+            "Resource": "*",
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'keyId resolves to a Ref'(test: Test) {
+    const stack = new Stack();
+    const key = new Key(stack, 'MyKey');
+
+    new CfnOutput(stack, 'Out', {
+      value: key.keyId,
+    });
+
+    const template = SynthUtils.synthesize(stack).template.Outputs;
+
+    test.deepEqual(template, {
+      "Out": {
+        "Value": {
+          "Ref": "MyKey6AB29FA6",
+        },
+      },
     });
 
     test.done();
   },
 
-  'addToResourcePolicy allowNoOp and there is no policy': {
-    'succeed if set to true (default)'(test: Test) {
+  'imported keys': {
+    'throw an error when providing something that is not a valid key ARN'(test: Test) {
       const stack = new Stack();
 
-      const key = Key.fromKeyArn(stack, 'Imported', 'foo/bar');
-
-      key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
+      test.throws(() => {
+        Key.fromKeyArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:key');
+      }, /KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:key'/);
 
       test.done();
     },
 
-    'fails if set to false'(test: Test) {
+    'can have aliases added to them'(test: Test) {
+      const stack2 = new Stack();
+      const myKeyImported = Key.fromKeyArn(stack2, 'MyKeyImported',
+        'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
 
-      const stack = new Stack();
+      // addAlias can be called on imported keys.
+      myKeyImported.addAlias('alias/hello');
 
-      const key = Key.fromKeyArn(stack, 'Imported', 'foo/bar');
+      test.equal(myKeyImported.keyId, '12345678-1234-1234-1234-123456789012');
 
-      test.throws(() =>
-        key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }), /* allowNoOp */ false),
-        'Unable to add statement to IAM resource policy for KMS key: "foo/bar"');
+      expect(stack2).toMatch({
+        Resources: {
+          MyKeyImportedAliasB1C5269F: {
+            Type: "AWS::KMS::Alias",
+            Properties: {
+              AliasName: "alias/hello",
+              TargetKeyId: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+            }
+          }
+        }
+      });
 
       test.done();
+    },
 
-    }
-  }
+    'addToResourcePolicy allowNoOp and there is no policy': {
+      'succeed if set to true (default)'(test: Test) {
+        const stack = new Stack();
+
+        const key = Key.fromKeyArn(stack, 'Imported',
+          'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
+
+        key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
+
+        test.done();
+      },
+
+      'fails if set to false'(test: Test) {
+        const stack = new Stack();
+
+        const key = Key.fromKeyArn(stack, 'Imported',
+          'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
+
+        test.throws(() => {
+          key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }), /* allowNoOp */ false);
+        }, 'Unable to add statement to IAM resource policy for KMS key: "foo/bar"');
+
+        test.done();
+      },
+    },
+  },
 };

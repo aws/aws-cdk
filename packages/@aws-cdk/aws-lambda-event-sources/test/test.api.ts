@@ -9,7 +9,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
     });
@@ -35,7 +35,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
     });
@@ -72,7 +72,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const handler = new lambda.Function(stack, 'MyFunc', {
-      code: lambda.Code.inline('boom'),
+      code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
     });

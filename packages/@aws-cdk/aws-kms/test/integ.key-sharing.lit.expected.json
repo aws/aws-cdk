@@ -19,7 +19,8 @@
                   "kms:Get*",
                   "kms:Delete*",
                   "kms:ScheduleKeyDeletion",
-                  "kms:CancelKeyDeletion"
+                  "kms:CancelKeyDeletion",
+                  "kms:GenerateDataKey"
                 ],
                 "Effect": "Allow",
                 "Principal": {
@@ -46,22 +47,35 @@
             "Version": "2012-10-17"
           }
         },
-        "DeletionPolicy": "Delete",
-        "UpdateReplacePolicy": "Delete"
-      },
-      "MyKeyAlias1B45D9DA": {
-        "Type": "AWS::KMS::Alias",
-        "Properties": {
-          "AliasName": "alias/foo",
-          "TargetKeyId": {
-            "Fn::GetAtt": [
-              "MyKey6AB29FA6",
-              "Arn"
-            ]
-          }
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      }
+    },
+    "Outputs": {
+      "ExportsOutputFnGetAttMyKey6AB29FA6Arn4FA82736": {
+        "Value": {
+          "Fn::GetAtt": [
+            "MyKey6AB29FA6",
+            "Arn"
+          ]
+        },
+        "Export": {
+          "Name": "KeyStack:ExportsOutputFnGetAttMyKey6AB29FA6Arn4FA82736"
         }
       }
     }
   },
-  {}
+  {
+    "Resources": {
+      "Alias325C5727": {
+        "Type": "AWS::KMS::Alias",
+        "Properties": {
+          "AliasName": "alias/foo",
+          "TargetKeyId": {
+            "Fn::ImportValue": "KeyStack:ExportsOutputFnGetAttMyKey6AB29FA6Arn4FA82736"
+          }
+        }
+      }
+    }
+  }
 ]

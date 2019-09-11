@@ -447,6 +447,15 @@ export = {
       test.same(root.node.defaultChild, defaultChild);
       test.done();
     },
+    'can override defaultChild'(test: Test) {
+      const root = new Root();
+      new Construct(root, 'Resource');
+      const defaultChild = new Construct(root, 'OtherResource');
+      root.node.defaultChild = defaultChild;
+
+      test.same(root.node.defaultChild, defaultChild);
+      test.done();
+    },
     'returns "undefined" if there is no default'(test: Test) {
       const root = new Root();
       new Construct(root, 'child1');
