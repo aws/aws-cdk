@@ -240,6 +240,8 @@ export interface BucketAttributes {
    * @default false
    */
   readonly bucketWebsiteNewUrlFormat?: boolean;
+
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -529,18 +531,7 @@ abstract class BucketBase extends Resource implements IBucket {
     }
 
     if (this.encryptionKey) {
-      if (crossAccountAccess) {
-        // we can't access the Key ARN (they don't have physical names),
-        // so fall back on using '*'. ToDo we need to make this better... somehow
-        iam.Grant.addToPrincipalAndResource({
-          actions: keyActions,
-          grantee,
-          resourceArns: ['*'],
-          resource: this.encryptionKey,
-        });
-      } else {
-        this.encryptionKey.grant(grantee, ...keyActions);
-      }
+      this.encryptionKey.grant(grantee, ...keyActions);
     }
 
     return ret;
@@ -897,7 +888,7 @@ export class Bucket extends BucketBase {
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
-      public readonly encryptionKey?: kms.IKey;
+      public readonly encryptionKey = attrs.encryptionKey;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;

@@ -101,8 +101,12 @@ export abstract class Resource extends Construct implements IResource {
     }
 
     if (!this._physicalName) {
-      this._physicalName = generatePhysicalName(this);
+      this._physicalName = this.generatePhysicalName();
     }
+  }
+
+  protected generatePhysicalName(): string {
+    return generatePhysicalName(this);
   }
 
   /**

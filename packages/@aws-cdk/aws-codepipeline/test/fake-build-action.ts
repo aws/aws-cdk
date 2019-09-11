@@ -15,6 +15,8 @@ export interface FakeBuildActionProps extends codepipeline.CommonActionProps {
   role?: iam.IRole;
 
   account?: string;
+
+  region?: string;
 }
 
 export class FakeBuildAction implements codepipeline.IAction {
