@@ -12,6 +12,9 @@ export type AwsSdkMetadata = {[key: string]: any};
 
 const awsSdkMetadata: AwsSdkMetadata = metadata;
 
+/**
+ * Rule target input for an AwsApi target.
+ */
 export interface AwsApiInput {
   /**
    * The service to call
@@ -54,6 +57,9 @@ export interface AwsApiInput {
   readonly apiVersion?: string;
 }
 
+/**
+ * Properties for an AwsApi target.
+ */
 export interface AwsApiProps extends AwsApiInput {
   /**
    * The IAM policy statement to allow the API call. Use only if
