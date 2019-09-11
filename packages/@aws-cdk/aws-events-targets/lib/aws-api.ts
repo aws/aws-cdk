@@ -12,7 +12,7 @@ export type AwsSdkMetadata = {[key: string]: any};
 
 const awsSdkMetadata: AwsSdkMetadata = metadata;
 
-export interface AwsApiProps {
+export interface AwsApiInput {
   /**
    * The service to call
    *
@@ -52,7 +52,9 @@ export interface AwsApiProps {
    * @default - use latest available API version
    */
   readonly apiVersion?: string;
+}
 
+export interface AwsApiProps extends AwsApiInput {
   /**
    * The IAM policy statement to allow the API call. Use only if
    * resource restriction is needed.
@@ -93,9 +95,13 @@ export class AwsApi implements events.IRuleTarget {
     // Allow handler to be called from rule
     addLambdaPermission(rule, handler);
 
-    // Do not pollute CF template with `policyStatement` in input
-    const input = { ...this.props };
-    delete input.policyStatement;
+    const input: AwsApiInput = {
+      service: this.props.service,
+      action: this.props.action,
+      parameters: this.props.parameters,
+      catchErrorPattern: this.props.catchErrorPattern,
+      apiVersion: this.props.apiVersion,
+    };
 
     return {
       id: '',

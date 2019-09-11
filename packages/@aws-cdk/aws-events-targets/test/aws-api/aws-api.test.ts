@@ -19,8 +19,8 @@ test('use AwsApi as an event rule target', () => {
       service: 'cool-service',
       forceNewDeployment: true
     } as AWS.ECS.UpdateServiceRequest,
+    catchErrorPattern: 'error',
     apiVersion: '2019-01-01',
-    catchErrorPattern: 'error'
   }));
 
   rule.addTarget(new targets.AwsApi({
@@ -49,8 +49,8 @@ test('use AwsApi as an event rule target', () => {
             service: 'cool-service',
             forceNewDeployment: true
           },
+          catchErrorPattern: 'error',
           apiVersion: '2019-01-01',
-          catchErrorPattern: 'error'
         })
       },
       {
