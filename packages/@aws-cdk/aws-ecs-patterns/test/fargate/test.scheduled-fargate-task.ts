@@ -26,6 +26,25 @@ export = {
         {
           Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
           EcsParameters: {
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                  }
+                ]
+              }
+            },
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
@@ -83,6 +102,25 @@ export = {
         {
           Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
           EcsParameters: {
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                  }
+                ]
+              }
+            },
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
