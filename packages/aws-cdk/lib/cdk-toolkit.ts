@@ -1,10 +1,14 @@
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format } from 'util';
+import { Mode } from './api/aws-auth/credentials';
 import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
+import { destroyStack } from './api/deploy-stack';
 import { IDeploymentTarget } from './api/deployment-target';
+import { stackExists } from './api/util/cloudformation';
+import { ISDK } from './api/util/sdk';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { data, error, highlight, print, success } from './logging';
+import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 
 // tslint:disable-next-line:no-var-requires
@@ -90,6 +94,24 @@ export class CdkToolkit {
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
+      if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
+        const cfn = await options.sdk.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
+        if (!await stackExists(cfn, stack.name)) {
+          warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.name));
+        } else {
+          warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.name));
+          await this.destroy({
+            stackNames: [stack.name],
+            exclusively: true,
+            force: true,
+            roleArn: options.roleArn,
+            sdk: options.sdk,
+            fromDeploy: true,
+          });
+        }
+        continue;
+      }
+
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
@@ -148,6 +170,36 @@ export class CdkToolkit {
         data(result.stackArn);
       } catch (e) {
         error('\n ❌  %s failed: %s', colors.bold(stack.name), e);
+        throw e;
+      }
+    }
+  }
+
+  public async destroy(options: DestroyOptions) {
+    const stacks = await this.appStacks.selectStacks(options.stackNames, {
+      extend: options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+      defaultBehavior: DefaultSelection.OnlySingle
+    });
+
+    // The stacks will have been ordered for deployment, so reverse them for deletion.
+    stacks.reverse();
+
+    if (!options.force) {
+      // tslint:disable-next-line:max-line-length
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    const action = options.fromDeploy ? 'deploy' : 'destroy';
+    for (const stack of stacks) {
+      success('%s: destroying...', colors.blue(stack.name));
+      try {
+        await destroyStack({ stack, sdk: options.sdk, deployName: stack.name, roleArn: options.roleArn });
+        success(`\n ✅  %s: ${action}ed`, colors.blue(stack.name));
+      } catch (e) {
+        error(`\n ❌  %s: ${action} failed`, colors.blue(stack.name), e);
         throw e;
       }
     }
@@ -244,4 +296,41 @@ export interface DeployOptions {
    * Tags to pass to CloudFormation for deployment
    */
   tags?: Tag[];
+
+  /**
+   * AWS SDK
+   */
+  sdk: ISDK;
+}
+
+export interface DestroyOptions {
+  /**
+   * The names of the stacks to delete
+   */
+  stackNames: string[];
+
+  /**
+   * Whether to exclude stacks that depend on the stacks to be deleted
+   */
+  exclusively: boolean;
+
+  /**
+   * Whether to skip prompting for confirmation
+   */
+  force: boolean;
+
+  /**
+   * The arn of the IAM role to use
+   */
+  roleArn?: string;
+
+  /**
+   * AWS SDK
+   */
+  sdk: ISDK;
+
+  /**
+   * Whether the destroy request came from a deploy.
+   */
+  fromDeploy?: boolean
 }

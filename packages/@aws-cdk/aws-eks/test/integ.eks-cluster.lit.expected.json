@@ -575,7 +575,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -867,7 +866,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -1016,6 +1014,26 @@
               ]
             ]
           }
+        ],
+        "Tags": [
+          {
+            "Key":"Name",
+            "Value":"eks-integ-test-basic/EKSCluster/Nodes"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "EKSClusterE11008B6"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
         ]
       }
     },
@@ -1054,7 +1072,7 @@
                 {
                   "Ref": "EKSClusterE11008B6"
                 },
-                " --use-max-pods 17"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-test-basic --resource EKSClusterNodesASGC2597E34 --region test-region"
               ]
             ]
           }
@@ -1200,7 +1218,22 @@
             "aws eks update-kubeconfig --name ",
             {
               "Ref": "EKSClusterE11008B6"
-            }
+            },
+            " --region test-region"
+          ]
+        ]
+      }
+    },
+    "EKSClusterGetTokenCommand10DBF41A": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "aws eks get-token --cluster-name ",
+            {
+              "Ref": "EKSClusterE11008B6"
+            },
+            " --region test-region"
           ]
         ]
       }

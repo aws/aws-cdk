@@ -616,7 +616,6 @@ Object {
             "Arn",
           ],
         },
-        "Volumes": Array [],
       },
       "Type": "AWS::ECS::TaskDefinition",
     },
@@ -647,8 +646,8 @@ Object {
           "MinimumHealthyPercent": 50,
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
-        "LoadBalancers": Array [],
         "NetworkConfiguration": Object {
           "AwsvpcConfiguration": Object {
             "AssignPublicIp": "DISABLED",
@@ -667,7 +666,6 @@ Object {
             ],
           },
         },
-        "ServiceRegistries": Array [],
         "TaskDefinition": Object {
           "Ref": "MyTaskDef01F0D39B",
         },
@@ -684,7 +682,6 @@ Object {
             "IpProtocol": "-1",
           },
         ],
-        "SecurityGroupIngress": Array [],
         "VpcId": Object {
           "Ref": "VPCB9E5F0B4",
         },
@@ -2015,6 +2012,20 @@ Object {
       "Type": "AWS::KMS::Key",
       "UpdateReplacePolicy": "Retain",
     },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AliasName": "alias/codepipeline-pipelinepipeline22f2a91d",
+        "TargetKeyId": Object {
+          "Fn::GetAtt": Array [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::KMS::Alias",
+      "UpdateReplacePolicy": "Retain",
+    },
     "PipelineBuildCodePipelineActionRoleD77A08E6": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -2086,10 +2097,7 @@ Object {
         "ArtifactStore": Object {
           "EncryptionKey": Object {
             "Id": Object {
-              "Fn::GetAtt": Array [
-                "PipelineArtifactsBucketEncryptionKey01D58D69",
-                "Arn",
-              ],
+              "Ref": "PipelineArtifactsBucketEncryptionKey01D58D69",
             },
             "Type": "KMS",
           },
@@ -2124,7 +2132,6 @@ Object {
                     ],
                   },
                 },
-                "InputArtifacts": Array [],
                 "Name": "Source",
                 "OutputArtifacts": Array [
                   Object {
@@ -2205,7 +2212,6 @@ Object {
                   },
                 ],
                 "Name": "Deploy",
-                "OutputArtifacts": Array [],
                 "RoleArn": Object {
                   "Fn::GetAtt": Array [
                     "PipelineDeployCodePipelineActionRole8B83082E",
@@ -2680,7 +2686,6 @@ Object {
     "Repo02AC86CF": Object {
       "Properties": Object {
         "RepositoryName": "my-first-decdk-repo",
-        "Triggers": Array [],
       },
       "Type": "AWS::CodeCommit::Repository",
     },
