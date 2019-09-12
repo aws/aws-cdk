@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a strategy for publishing the construct tree which represents a CDK app as a part of the Cloud Assembly that the CDK generates. 
+This is a strategy for publishing the construct tree which represents a CDK app as a part of the Cloud Assembly that the CDK generates.
 
 ***Goal*: Expose the** **`construct tree`** **for CDK Apps as an artifact of the Cloud Assembly**
 
@@ -22,7 +22,7 @@ The CDK CLI is the primary mechanism through which developers currently interact
 
 Developers author their CDK applications by leveraging higher-level intent based APIs offered through the [AWS Construct Library](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html). They use CLI commands such as `cdk synth` to produce the cloud assembly and `cdk deploy` to deploy it to AWS CloudFormation. When deployments fail, they often have to drop into the AWS CloudFormation templates that the CDK generated or log into the AWS console to trace their issues.
 
-As an example, the following CDK application for an Application Load Balancer includes constructs from Auto Scaling, VPC, and Application Load Balancing. 
+As an example, the following CDK application for an Application Load Balancer includes constructs from Auto Scaling, VPC, and Application Load Balancing.
 
 ```ts
     const vpc = new ec2.Vpc(this, 'VPC');
@@ -57,16 +57,15 @@ As an example, the following CDK application for an Application Load Balancer in
 
 Running `cdk synth` on this application produces ~800 lines of CloudFormation template and represents over 35 AWS resources spanning 5 services. The generated template is part of the cloud assembly and will be used subsequently by deploy and is staged in the `cdk.out` directory. This showcases the power of the CDK in the ability to define high level abstractions of infrastructure in familiar languages that can be reused.
 
-Continuing with this example, inspecting the the cloud assembly’s CloudFormation template doesn’t help gain any insight when behavior does not match expectations. 
+Continuing with this example, inspecting the the cloud assembly’s CloudFormation template doesn’t help gain any insight when behavior does not match expectations.
 
 In this scenario, these are some details that are not intuitive without diving deeper:
 
-> What resources does the AutoScalingGroup construct contain? the VPC construct? 
+> What resources does the AutoScalingGroup construct contain? the VPC construct?
 
 > What properties were the resources initialized with? Can they be changed?
 
 > Is the relationship between these constructs captured in the cloud assembly correctly?
-
 
 When deployments fail, or provisioned resources don’t hold the properties that one might expect, developers can’t figure out what properties that resources such as `NatGateway, AutoScalingGroup, Subnets, Route Tables` were configured with without dropping into the generated CloudFormation template. It can take a good amount of clicking and digging before developers can figure out what happened and almost certainly needs them to get away from their favourite IDE and switch context to find out.
 
@@ -105,7 +104,7 @@ This list describes only the minimal set of requirements from this feature. Afte
 1. **Format** - Publish underlying data as a `.json` file that contains the information required to render a construct tree view. The construct tree illustrated in the previous section is only a depiction of what a human readable(ish) view might look like
 2. **Constructs**
     1. ***Nodes*** - CDK application constructs at the root and drill down to the constructs it contains (1+ cloud resources.) Initially, we will focus our attention on AWS resources, but the model is extensible to cloud components from any provider
-    2. ***Metadata -*** Constructs will expose metadata which will include an array of objects associated with the construct. 
+    2. ***Metadata -*** Constructs will expose metadata which will include an array of objects associated with the construct.
         1. ***Properties*** - Higher level constructs (L2 and L3) will expose properties and values of the resources they contain. This will especially be useful for constructs that are opinionated and set defaults on behalf of developers
         2. ***Errors/Warnings*** - Errors and warnings that are produced during synthesis indicating validation failures, deprecation notices, guidance, etc will be included in the tree. These are emitted at the construct level although the message may point towards a specific property.
     3. **Assets** - Assets information will be included in the construct tree. Assets represent actions that the CDK *will* take ahead of stack deployments (i.e. S3 assets are zipped and uploaded directly, Docker images are uploaded to ECR). The asset metadata in the tree is the S3 key that an asset *would* have
@@ -173,7 +172,6 @@ As a temporary placeholder, here's the implementation of the prototype construct
                                             }]
                                         }]
                                     },
-                                    ...
 ```
 
 ### Construct metadata
@@ -212,7 +210,7 @@ export interface IDisplayable {
 
 ## Future Possibilities
 
-We do not expect customers to have to interact directly with the outputs that the CDK produces as a part of the cloud assembly. Publishing the CDK construct tree as an output to the cloud assembly is intended to be a starting point to build on and create experiences based on it. 
+We do not expect customers to have to interact directly with the outputs that the CDK produces as a part of the cloud assembly. Publishing the CDK construct tree as an output to the cloud assembly is intended to be a starting point to build on and create experiences based on it.
 
 ### Tooling
 
