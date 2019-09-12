@@ -49,8 +49,7 @@ export = {
           betweenStrict: { start: 2000, stop: 3000 },
           greaterThanOrEqualTo: 1000,
           lessThanOrEqualTo: -2,
-        }),
-        size: sns.SubscriptionFilter.existsFilter(),
+        })
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic
@@ -75,7 +74,30 @@ export = {
           { numeric: ['<=', -2] },
           { numeric: ['>=', 300, '<=', 350] },
           { numeric: ['>', 2000, '<', 3000] },
-        ],
+        ]
+      },
+    }));
+    test.done();
+  },
+
+  'with existsFilter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        size: sns.SubscriptionFilter.existsFilter(),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+      FilterPolicy: {
         size: [{ exists: true }]
       },
     }));
