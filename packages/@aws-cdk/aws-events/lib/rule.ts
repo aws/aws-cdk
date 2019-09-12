@@ -242,6 +242,7 @@ export class Rule extends Resource implements IRule {
       ecsParameters: targetProps.ecsParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
+      sqsParameters: targetProps.sqsParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {

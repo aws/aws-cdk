@@ -106,11 +106,11 @@ export class LinuxParameters extends cdk.Construct {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
       capabilities: {
-        add: cdk.Lazy.listValue({ produce: () => this.capAdd }),
-        drop: cdk.Lazy.listValue({  produce: () => this.capDrop }),
+        add: cdk.Lazy.listValue({ produce: () => this.capAdd }, { omitEmpty: true}),
+        drop: cdk.Lazy.listValue({  produce: () => this.capDrop }, { omitEmpty: true}),
       },
-      devices: cdk.Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }),
-      tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) })
+      devices: cdk.Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
+      tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true })
     };
   }
 }

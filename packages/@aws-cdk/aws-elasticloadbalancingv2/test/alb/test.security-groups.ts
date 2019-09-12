@@ -114,7 +114,8 @@ export = {
     // WHEN
     const lb2 = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack2, 'LB', {
       loadBalancerArn: fixture.lb.loadBalancerArn,
-      securityGroupId: fixture.lb.connections.securityGroups[0].securityGroupId
+      securityGroupId: fixture.lb.connections.securityGroups[0].securityGroupId,
+      securityGroupAllowsAllOutbound: false,
     });
     const listener2 = lb2.addListener('YetAnotherListener', { port: 80 });
     listener2.addTargetGroups('Default', { targetGroups: [group] });
@@ -142,7 +143,8 @@ export = {
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
       defaultPort: 8008,
       securityGroupId: fixture.listener.connections.securityGroups[0].securityGroupId,
-      listenerArn: fixture.listener.listenerArn
+      listenerArn: fixture.listener.listenerArn,
+      securityGroupAllowsAllOutbound: false,
     });
     listener2.addTargetGroups('Default', {
       // Must be a non-default target

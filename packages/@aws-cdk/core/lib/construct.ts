@@ -63,7 +63,7 @@ export class ConstructNode {
     }
 
     // write session manifest and lock store
-    return builder.build(options);
+    return builder.buildAssembly(options);
   }
 
   /**

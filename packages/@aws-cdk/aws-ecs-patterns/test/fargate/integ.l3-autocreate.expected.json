@@ -3,7 +3,6 @@
     "L3LB212FC0E0": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "LoadBalancerAttributes": [],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -32,7 +31,6 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awsecsintegL3LB6453BA0A",
-        "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -83,8 +81,7 @@
           "Ref": "L3LB212FC0E0"
         },
         "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
+        "Protocol": "HTTP"
       }
     },
     "L3LBPublicListenerECSGroup648EEA11": {
@@ -92,8 +89,6 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
@@ -163,8 +158,7 @@
             "L3TaskDefTaskRole21C75D10",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "L3TaskDefwebLogGroupC6E4A38A": {
@@ -264,7 +258,7 @@
             ]
           }
         },
-        "ServiceRegistries": []
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",
@@ -282,7 +276,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
         }
@@ -658,7 +651,6 @@
     "L3bLBB8FADA4E": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "LoadBalancerAttributes": [],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -687,7 +679,6 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awsecsintegL3bLB9C1497A7",
-        "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -738,8 +729,7 @@
           "Ref": "L3bLBB8FADA4E"
         },
         "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
+        "Protocol": "HTTP"
       }
     },
     "L3bLBPublicListenerECSGroup0070C5CA": {
@@ -747,8 +737,6 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
@@ -818,8 +806,7 @@
             "L3bTaskDefTaskRoleADAB80C8",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "L3bTaskDefwebLogGroup8E5F1183": {
@@ -919,7 +906,7 @@
             ]
           }
         },
-        "ServiceRegistries": []
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "L3bLBPublicListenerECSGroup0070C5CA",
@@ -937,7 +924,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
         }
