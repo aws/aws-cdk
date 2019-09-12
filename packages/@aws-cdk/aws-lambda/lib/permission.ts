@@ -43,7 +43,7 @@ export interface Permission {
    * in cases such as cross-stack references where the Permissions would need
    * to sit closer to the consumer of this permission (i.e., the caller).
    *
-   * @default The instance of lambda.IFunction
+   * @default - The instance of lambda.IFunction
    */
   readonly scope?: Construct;
 
