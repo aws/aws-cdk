@@ -81,7 +81,7 @@ pull_request_rules:
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
-      - author!=@aws-cdk-core
+      - author!=@aws/aws-cdk-core
       - base=master
   - name: if fails conventional commits
     actions:
