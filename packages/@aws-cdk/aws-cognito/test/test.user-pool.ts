@@ -53,7 +53,62 @@ export = {
   'on* API correctly appends triggers'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'MyLambda', {
+
+    const createAuthChallengeLambdaFn = new lambda.Function(stack, 'createAuthChallengeLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const customMessageLambdaFn = new lambda.Function(stack, 'customMessageLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const defineAuthChallengeLambdaFn = new lambda.Function(stack, 'defineAuthChallengeLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const postAuthenticationLambdaFn = new lambda.Function(stack, 'postAuthenticationLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const postConfirmationLambdaFn = new lambda.Function(stack, 'postConfirmationLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const preAuthenticationLambdaFn = new lambda.Function(stack, 'preAuthenticationLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const preSignUpLambdaFn = new lambda.Function(stack, 'preSignUpLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const preTokenGenerationLambdaFn = new lambda.Function(stack, 'preTokenGenerationLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const userMigrationLambdaFn = new lambda.Function(stack, 'userMigrationLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const verifyAuthChallengeResponseLambdaFn = new lambda.Function(stack, 'verifyAuthChallengeResponseLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10,
@@ -61,26 +116,30 @@ export = {
 
     // WHEN
     const pool = new cognito.UserPool(stack, 'Pool', { });
-    pool.addCreateAuthChallengeTrigger(fn);
-    pool.addCustomMessageTrigger(fn);
-    pool.addDefineAuthChallengeTrigger(fn);
-    pool.addPostAuthenticationTrigger(fn);
-    pool.addPostConfirmationTrigger(fn);
-    pool.addPreAuthenticationTrigger(fn);
-    pool.addPreSignUpTrigger(fn);
-    pool.addVerifyAuthChallengeResponseTrigger(fn);
+    pool.addCreateAuthChallengeTrigger(createAuthChallengeLambdaFn);
+    pool.addCustomMessageTrigger(customMessageLambdaFn);
+    pool.addDefineAuthChallengeTrigger(defineAuthChallengeLambdaFn);
+    pool.addPostAuthenticationTrigger(postAuthenticationLambdaFn);
+    pool.addPostConfirmationTrigger(postConfirmationLambdaFn);
+    pool.addPreAuthenticationTrigger(preAuthenticationLambdaFn);
+    pool.addPreSignUpTrigger(preSignUpLambdaFn);
+    pool.addPreTokenGenerationTrigger(preTokenGenerationLambdaFn);
+    pool.addUserMigrationTrigger(userMigrationLambdaFn);
+    pool.addVerifyAuthChallengeResponseTrigger(verifyAuthChallengeResponseLambdaFn);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
-        CreateAuthChallenge: stack.resolve(fn.functionArn),
-        CustomMessage: stack.resolve(fn.functionArn),
-        DefineAuthChallenge: stack.resolve(fn.functionArn),
-        PostAuthentication: stack.resolve(fn.functionArn),
-        PostConfirmation: stack.resolve(fn.functionArn),
-        PreAuthentication: stack.resolve(fn.functionArn),
-        PreSignUp: stack.resolve(fn.functionArn),
-        VerifyAuthChallengeResponse: stack.resolve(fn.functionArn)
+        CreateAuthChallenge: stack.resolve(createAuthChallengeLambdaFn.functionArn),
+        CustomMessage: stack.resolve(customMessageLambdaFn.functionArn),
+        DefineAuthChallenge: stack.resolve(defineAuthChallengeLambdaFn.functionArn),
+        PostAuthentication: stack.resolve(postAuthenticationLambdaFn.functionArn),
+        PostConfirmation: stack.resolve(postConfirmationLambdaFn.functionArn),
+        PreAuthentication: stack.resolve(preAuthenticationLambdaFn.functionArn),
+        PreSignUp: stack.resolve(preSignUpLambdaFn.functionArn),
+        PreTokenGeneration: stack.resolve(preTokenGenerationLambdaFn.functionArn),
+        UserMigration: stack.resolve(userMigrationLambdaFn.functionArn),
+        VerifyAuthChallengeResponse: stack.resolve(verifyAuthChallengeResponseLambdaFn.functionArn)
       }
     }));
 
