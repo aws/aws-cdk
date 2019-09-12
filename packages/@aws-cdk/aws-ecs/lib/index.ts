@@ -6,6 +6,7 @@ export * from './container-definition';
 export * from './container-image';
 export * from './cluster';
 export * from './placement';
+export * from './proxy-configuration';
 
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';
