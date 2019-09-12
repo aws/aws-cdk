@@ -143,37 +143,6 @@ The following metadata properties will be included by the construct that produce
 
 **TODO** - add concrete walkthrough example of a CDK application and the construct-tree flat map it would produce
 
-As a temporary placeholder, here's the implementation of the prototype construct referenced in the overview. It's a representation of the construct-tree of the [CDK Workshop](https://cdkworkshop.com/) application.
-
-```json
-{
-    "id": "App",
-    "path": "",
-    "children": [{
-                "id": "CdkWorkshopStack",
-                "path": "CdkWorkshopStack",
-                "children": [{
-                            "id": "HelloHandler",
-                            "path": "CdkWorkshopStack/HelloHandler",
-                            "children": [{
-                                        "id": "ServiceRole",
-                                        "path": "CdkWorkshopStack/HelloHandler/ServiceRole",
-                                        "children": [{
-                                            "id": "Resource",
-                                            "path": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
-                                            "metadata": {
-                                                "resourceType": "AWS::IAM::Role",
-                                                "logicalId": "HelloHandlerServiceRole11EF7C63"
-                                            },
-                                            "links": [{
-                                                "sourcePath": "CdkWorkshopStack/HelloHandler/Resource",
-                                                "targetPath": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
-                                                "attribute": "Arn"
-                                            }]
-                                        }]
-                                    },
-```
-
 ### Construct metadata
 
 We will also introduce an interface that constructs *can* implement to provide metadata such as properties, additional context, anything a construct would want to report back into the rendered view. Constructs will be able to supply information about themselves for inclusion into the context tree.
