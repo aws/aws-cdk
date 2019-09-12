@@ -1553,7 +1553,14 @@ export = {
       const bucket = new s3.Bucket(stack, 'Website', {
         websiteIndexDocument: 'index.html'
       });
-      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), {
+        'Fn::Select': [
+          2,
+          {
+            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ]
+          }
+        ]
+      });
       test.done();
     },
     'adds RedirectAllRequestsTo property'(test: Test) {
