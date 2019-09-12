@@ -1548,6 +1548,14 @@ export = {
       test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
     },
+    'exports the WebsiteDomain'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index.html'
+      });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
+      test.done();
+    },
     'adds RedirectAllRequestsTo property'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {

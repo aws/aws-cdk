@@ -53,7 +53,7 @@ export class HttpsRedirect extends Construct {
       originConfigs: [{
         behaviors: [{ isDefaultBehavior: true }],
         customOriginSource: {
-          domainName: Fn.select(2, Fn.split('/', redirectBucket.bucketWebsiteUrl)),
+          domainName: redirectBucket.bucketWebsiteDomainName,
           originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
         },
       }],
