@@ -65,12 +65,12 @@ As we addressed above, the current API only register the default container name/
 ``` ts
 listener.addTargets(string, {
   // Accept only one target
-  ecsTargets: {
-    //set the target to be registered, default to be first container and first port added
-    containerName: string,
-    containerPort: number,
-    target: IEcsApplicationTarget || IEcsNetworkTarget
-  },
+  targets: [
+    service.loadBalancerTarget({
+      containerName: string,
+      containerPort: number
+    })
+  ]
   ... // other target group props and rule props
 });
 ```
@@ -128,22 +128,23 @@ service.registerContainerTargets([
 ``` ts
 listener.addTargets('web', {
   // Accept only one target (see project scope)
-  ecsTargets: {
-    //set the target to be registered, default to be first container and first port added
-    containerName: "frontend",
-    containerPort: 80,
-    target: service
-  },
+  targets: [
+    service.loadBalancerTarget({
+      containerName: "frontend",
+      containerPort: 80,
+    })
+  ],
   pathPattern: "/web/*"
   ... // other target group props and rule props
 });
 
 listener.addTargets('api', {
-  ecsTargets: {
-    containerName: "backend",
-    containerPort: 443,
-    target: service
-  },
+  targets: [
+    service.loadBalancerTarget({
+      containerName: "backend",
+      containerPort: 443,
+    })
+  ],
   pathPattern: "/api/*"
 });
 ```
@@ -191,21 +192,23 @@ service.registerContainerTargets([
 **Improved current API**
 ``` ts
 listener1.addTargets('api', {
-  ecsTargets: {
-    containerName: "myContainer",
-    containerPort: 8080,
-    target: service
-  },
+  targets: [
+    service.loadBalancerTarget({
+      containerName: "myContainer",
+      containerPort: 8080,
+    })
+  ],
   pathPattern: "/api/*"
   ... // other target group props and rule props
 });
 
 listener2.addTargets('management', {
-  ecsTargets: {
-    containerName: "myContainer",
-    containerPort: 9080,
-    target: service
-  },
+  targets: [
+    service.loadBalancerTarget({
+      containerName: "myContainer",
+      containerPort: 9080,
+    })
+  ],
   pathPattern: "/management/*"
 });
 ```
@@ -335,21 +338,6 @@ export abstract class BaseService extends Resource
 _base-service.ts_
 ``` ts
 /**
- * Properties for defining an ECS target.
- */
-export interface ContainerTarget {
-  /**
-   * The name of the container.
-   */
-  readonly containerName: string;
-
-  /**
-   * The port number of the container.
-   */
-  readonly containerPort: number;
-}
-
-/**
  * Properties for ECS container targets.
  */
 export interface TargetProps {
@@ -397,288 +385,32 @@ export interface TargetGroupProps {
 ```
 
 ### Part 3: Improve the current API
-
-_application-target-group.ts_
-```ts
-/**
- * Interface for an ECS target
- */
-export interface IEcsApplicationTarget {
-  /**
-   * The ECS target service
-   */
-  target: IEcsApplicationLoadBalancerTarget;
-
-  /**
-   * Name of the target container
-   */
-  containerName: string;
-
-  /**
-   * Port number of the target container
-   */
-  containerPort: number;
-}
-
-/**
- * Properties for defining an Application Target Group
- */
-export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
-
-  ...
-
-  /**
-   * The ECS targets to add to this target group.
-   *
-   * @default - No targets.
-   */
-  readonly ecsTargets?: IEcsApplicationTarget;
-}
-
-/**
- * Define an Application Target Group
- */
-export class ApplicationTargetGroup extends TargetGroupBase implements IApplicationTargetGroup {
-
-  ...
-
-  constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
-
-    ...
-
-    if (props) {
-
-      ...
-
-      if (props.ecsTargets !== undefined) {
-        this.addEcsTarget(props.ecsTargets.target, props.ecsTargets.containerName, props.ecsTargets.containerPort);
-      }
-
-      ...
-
-    }
-  }
-
-  ...
-
-  /**
-   * Add a load balancing ECS target to this target group.
-   */
-  public addEcsTarget(target: IEcsApplicationLoadBalancerTarget, containerName: string, containerPort: number) {
-    const result = target.attachToEcsApplicationTargetGroup(this, containerName, containerPort);
-    this.addLoadBalancerTarget(result);
-  }
-
-  ...
-
-}
-```
-
-_application-listener.ts_
-``` ts
-import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup, IEcsApplicationTarget } from './application-target-group';
-
-/**
- * Properties for adding new targets to a listener
- */
-export interface AddApplicationTargetsProps extends AddRuleProps {
-
-  ...
-
-  /**
-   * The ECS targets to add to this target group.
-   *
-   * @default - No targets.
-   */
-  readonly ecsTargets?: IEcsApplicationTarget;
-
-  ...
-
-}
-
-/**
- * Define an ApplicationListener
- *
- * @resource AWS::ElasticLoadBalancingV2::Listener
- */
-export class ApplicationListener extends BaseListener implements IApplicationListener {
-
-  ...
-
-  /**
-   * Load balance incoming requests to the given load balancing targets.
-   *
-   * This method implicitly creates an ApplicationTargetGroup for the targets
-   * involved.
-   *
-   * It's possible to add conditions to the targets added in this way. At least
-   * one set of targets must be added without conditions.
-   *
-   * @returns The newly created target group
-   */
-  public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
-
-    ...
-
-    const group = new ApplicationTargetGroup(this, id + 'Group', {
-
-      ...
-
-      ecsTargets: props.ecsTargets,
-
-      ...
-
-    });
-
-    ...
-
-  }
-}
-```
-
-_network-target-group.ts_
-``` ts
-/**
- * Interface for an ECS target
- */
-export interface IEcsNetworkTarget {
-  /**
-   * The ECS target service
-   */
-  target: IEcsNetworkLoadBalancerTarget;
-
-  /**
-   * Name of the target container
-   */
-  containerName: string;
-
-  /**
-   * Port number of the target container
-   */
-  containerPort: number;
-}
-
-/**
- * Interface for constructs that can be a ECS target of a load balancer
- */
-export interface IEcsNetworkLoadBalancerTarget {
-  /**
-   * Attach load-balanced target to a TargetGroup
-   *
-   * May return JSON to directly add to the [Targets] list, or return undefined
-   * if the target will register itself with the load balancer.
-   */
-  attachToEcsNetworkTargetGroup(targetGroup: NetworkTargetGroup, containerName: string, containerPort: number): LoadBalancerTargetProps;
-}
-
-/**
- * Properties for a new Network Target Group
- */
-export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
-
-  ...
-
-  /**
-   * The ECS targets to add to this target group.
-   *
-   * @default - No targets.
-   */
-  readonly ecsTargets?: IEcsNetworkTarget;
-}
-
-/**
- * Define a Network Target Group
- */
-export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
-
-  ...
-
-  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
-
-    ...
-
-    if (props.ecsTargets) {
-      this.addEcsTarget(props.ecsTargets.target, props.ecsTargets.containerName, props.ecsTargets.containerPort);
-    }
-
-    ...
-
-  }
-
-  /**
-   * Add a load balancing ECS target to this target group.
-   */
-  public addEcsTarget(target: IEcsNetworkLoadBalancerTarget, containerName: string, containerPort: number) {
-    const result = target.attachToEcsNetworkTargetGroup(this, containerName, containerPort);
-    this.addLoadBalancerTarget(result);
-  }
-
-  ...
-
-}
-```
-
-_network-listener.ts_
-``` ts
-/**
- * Properties for adding new network targets to a listener
- */
-import { IEcsNetworkTarget, INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
-
-export interface AddNetworkTargetsProps {
-
-  ...
-
-  /**
-   * The ECS targets to add to this target group.
-   *
-   * @default - No targets.
-   */
-  readonly ecsTargets?: IEcsNetworkTarget;
-
-  ...
-
-}
-
-/**
- * Define a Network Listener
- *
- * @resource AWS::ElasticLoadBalancingV2::Listener
- */
-export class NetworkListener extends BaseListener implements INetworkListener {
-
-  ...
-
-  /**
-   * Load balance incoming requests to the given load balancing targets.
-   *
-   * This method implicitly creates an ApplicationTargetGroup for the targets
-   * involved.
-   *
-   * @returns The newly created target group
-   */
-  public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
-
-    ...
-
-    const group = new NetworkTargetGroup(this, id + 'Group', {
-
-      ...
-
-      ecsTargets: props.ecsTargets,
-
-      ...
-
-    });
-
-    ...
-
-  }
-}
-```
-
 _base-service.ts_
 ``` ts
+
+/**
+ * Interface for ECS load balancer target.
+ */
+export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
+}
+
+/**
+ * Properties for defining an ECS target.
+ */
+export interface LoadBalancerTargetOptions {
+  /**
+   * The name of the container.
+   */
+  readonly containerName: string;
+
+  /**
+   * The port number of the container.
+   */
+  readonly containerPort: number;
+}
+
+...
+
 /**
  * The base class for Ec2Service and FargateService services.
  */
@@ -688,57 +420,49 @@ export abstract class BaseService extends Resource
 
   ...
 
-  /**
-   * This method is called to attach this service to an Application Load Balancer.
-   *
-   * Don't call this function directly. Instead, call targetGroup.addEcsTarget()
-   * to add this service to a load balancer.
-   */
-  public attachToEcsApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup, containerName: string,
-                                           containerPort: number): elbv2.LoadBalancerTargetProps {
-    const target = { containerName, containerPort };
-    if (!this.validateExist(target)) {
+  public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+    const self = this;
+    if (!this.validateExist(options)) {
       throw new Error('One of container name or port for the provided targets does not exist.');
     }
-    const ret = this.attachToELB(targetGroup, target);
+    return {
+      attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+        const port = self.taskDefinition._findHostPort(options.containerName, options.containerPort);
+        const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(port);
+        targetGroup.registerConnectable(self, portRange);
+        return self.attachToELBv2(targetGroup, options);
+      },
 
-    // Open up security groups. For dynamic port mapping, we won't know the port range
-    // in advance so we need to open up all ports.
-    const port = this.taskDefinition._findHostPort(target.containerName, target.containerPort);
-    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(port);
-    targetGroup.registerConnectable(this, portRange);
-
-    return ret;
-  }
-
-  /**
-   * This method is called to attach this service to an Network Load Balancer.
-   *
-   * Don't call this function directly. Instead, call targetGroup.addEcsTarget()
-   * to add this service to a load balancer.
-   */
-  public attachToEcsNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup, containerName: string,
-                                       containerPort: number): elbv2.LoadBalancerTargetProps {
-    const target = { containerName, containerPort };
-    if (!this.validateExist(target)) {
-      throw new Error('One of container name or port for the provided targets does not exist.');
-    }
-    const ret = this.attachToELB(targetGroup, target);
-    return ret;
+      attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+        return self.attachToELBv2(targetGroup, options);
+      },
+    };
   }
 
   ...
 
-  private attachToELB(targetGroup: elbv2.ITargetGroup, target: ContainerTarget): elbv2.LoadBalancerTargetProps {
+  /**
+   * Shared logic for attaching to an ELBv2
+   */
+  private attachToELBv2(targetGroup: elbv2.ITargetGroup, options?: LoadBalancerTargetOptions): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
-    this.loadBalancers.push({
-      targetGroupArn: targetGroup.targetGroupArn,
-      containerName: target.containerName,
-      containerPort: target.containerPort,
-    });
+    if (!options) {
+      this.loadBalancers.push({
+        targetGroupArn: targetGroup.targetGroupArn,
+        containerName: this.taskDefinition.defaultContainer!.containerName,
+        containerPort: this.taskDefinition.defaultContainer!.containerPort,
+
+      });
+    } else {
+      this.loadBalancers.push({
+        targetGroupArn: targetGroup.targetGroupArn,
+        containerName: options.containerName,
+        containerPort: options.containerPort,
+      });
+    }
 
     // Service creation can only happen after the load balancer has
     // been associated with our target group(s), so add ordering dependency.
@@ -778,22 +502,24 @@ export abstract class BaseService extends Resource
             const props = targetGroupProp.addTargetGroupProps as elbv2.AddApplicationTargetsProps;
             targetGroupProp.listener.addTargets(targetGroupProp.targetGroupID, {
               ... props,
-              ecsTargets: {
-                containerName: target.containerName,
-                containerPort: target.containerPort,
-                target: this
-              },
+              targets: [
+                this.loadBalancerTarget({
+                  containerName: target.containerName,
+                  containerPort: target.containerPort
+                })
+              ]
             });
           }
           if (targetGroupProp.listener instanceof elbv2.NetworkListener) {
             const props = targetGroupProp.addTargetGroupProps as elbv2.AddNetworkTargetsProps;
             targetGroupProp.listener.addTargets(targetGroupProp.targetGroupID, {
               ... props,
-              ecsTargets: {
-                containerName: target.containerName,
-                containerPort: target.containerPort,
-                target: this,
-              }
+              targets: [
+                this.loadBalancerTarget({
+                  containerName: target.containerName,
+                  containerPort: target.containerPort
+                })
+              ]
             });
           }
         }
