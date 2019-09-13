@@ -23,8 +23,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
-        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520"
+        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteD428FF70",
+        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteD6B410CD"
       ]
     },
     "L3LBSecurityGroupEDE61198": {
@@ -370,7 +370,7 @@
         }
       }
     },
-    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178": {
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteD428FF70": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -461,7 +461,7 @@
         }
       }
     },
-    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520": {
+    "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteD6B410CD": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -552,7 +552,7 @@
         }
       }
     },
-    "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1DefaultRouteA5ADF694": {
+    "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1DefaultRoute36F1D988": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -614,7 +614,7 @@
         }
       }
     },
-    "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2DefaultRoute20CE2D89": {
+    "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2DefaultRoute2F84902A": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -671,8 +671,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178",
-        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520"
+        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteD428FF70",
+        "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteD6B410CD"
       ]
     },
     "L3bLBSecurityGroup7A2B0AA0": {
