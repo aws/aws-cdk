@@ -66,7 +66,7 @@
         }
       }
     },
-    "ClusterDefaultVpcPublicSubnet1DefaultRouteCF22EF6E": {
+    "ClusterDefaultVpcPublicSubnet1DefaultRoute3657A792": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -157,7 +157,7 @@
         }
       }
     },
-    "ClusterDefaultVpcPublicSubnet2DefaultRoute1FA8621E": {
+    "ClusterDefaultVpcPublicSubnet2DefaultRouteBE0E96B1": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -248,7 +248,7 @@
         }
       }
     },
-    "ClusterDefaultVpcPublicSubnet3DefaultRouteB6080504": {
+    "ClusterDefaultVpcPublicSubnet3DefaultRoute47E0D1B8": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -347,7 +347,7 @@
         }
       }
     },
-    "ClusterDefaultVpcPrivateSubnet1DefaultRouteD624C8BD": {
+    "ClusterDefaultVpcPrivateSubnet1DefaultRoute72EBE3EE": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -417,7 +417,7 @@
         }
       }
     },
-    "ClusterDefaultVpcPrivateSubnet2DefaultRouteAB55737C": {
+    "ClusterDefaultVpcPrivateSubnet2DefaultRouteC7E89B3A": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -487,7 +487,7 @@
         }
       }
     },
-    "ClusterDefaultVpcPrivateSubnet3DefaultRoute932EDFF0": {
+    "ClusterDefaultVpcPrivateSubnet3DefaultRouteF112E3A6": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {

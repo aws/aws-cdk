@@ -65,7 +65,7 @@
         }
       }
     },
-    "MyVPCPublicSubnet1DefaultRouteAF81AA9B": {
+    "MyVPCPublicSubnet1DefaultRoute1C08056A": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -156,7 +156,7 @@
         }
       }
     },
-    "MyVPCPrivateSubnet1DefaultRouteA8EE6636": {
+    "MyVPCPrivateSubnet1DefaultRoute117E120B": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {

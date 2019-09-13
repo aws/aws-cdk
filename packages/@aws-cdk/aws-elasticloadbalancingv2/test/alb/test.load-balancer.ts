@@ -45,8 +45,8 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: [
-        'StackPublicSubnet1DefaultRoute16154E3D',
-        'StackPublicSubnet2DefaultRoute0319539B',
+        'StackPublicSubnet1DefaultRoute484365E0',
+        'StackPublicSubnet2DefaultRoute5A035DCA',
       ]
     }, ResourcePart.CompleteDefinition));
 

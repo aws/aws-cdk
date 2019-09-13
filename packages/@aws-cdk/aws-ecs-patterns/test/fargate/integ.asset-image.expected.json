@@ -65,7 +65,7 @@
         }
       }
     },
-    "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+    "VpcPublicSubnet1DefaultRouteD94E8E7E": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -156,7 +156,7 @@
         }
       }
     },
-    "VpcPublicSubnet2DefaultRoute97F91067": {
+    "VpcPublicSubnet2DefaultRoute324472C1": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -247,7 +247,7 @@
         }
       }
     },
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
+    "VpcPrivateSubnet1DefaultRoute4F869445": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -309,7 +309,7 @@
         }
       }
     },
-    "VpcPrivateSubnet2DefaultRoute060D2087": {
+    "VpcPrivateSubnet2DefaultRouteE875F232": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -369,8 +369,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet2DefaultRoute97F91067"
+        "VpcPublicSubnet1DefaultRouteD94E8E7E",
+        "VpcPublicSubnet2DefaultRoute324472C1"
       ]
     },
     "FargateServiceLBSecurityGroup5F444C78": {

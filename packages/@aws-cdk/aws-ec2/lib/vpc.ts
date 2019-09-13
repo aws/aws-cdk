@@ -41,7 +41,7 @@ export interface ISubnet extends IResource {
    * Add new route to the subnet's route table.
    * @param options the route options
    */
-  addRoute(id: string, options: CommonRouteOptions): IRoute
+  addRoute(id: string, options: BaseRouteOptions): IRoute
 
   /**
    * Associate a Network ACL with this subnet
@@ -1340,7 +1340,7 @@ export class Subnet extends Resource implements ISubnet {
     });
   }
 
-  public addRoute(id: string, options: CommonRouteOptions): IRoute {
+  public addRoute(id: string, options: BaseRouteOptions): IRoute {
     const route = new Route(this, id, {
       routeTable: this.routeTable,
       ...options
@@ -1545,7 +1545,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     };
   }
 
-  public addRoute(id: string, options: CommonRouteOptions): IRoute {
+  public addRoute(id: string, options: BaseRouteOptions): IRoute {
     if (!this.routeTable.routeTableId) {
       throw new Error("No routeTableId defined in this subnet.");
     }
@@ -1582,9 +1582,9 @@ export enum RouteTargetType {
   TRANSIT_GATEWAY_ID = "transitGatewayId",
 }
 /**
- * Common interface to for RouteOptions and RouteProps.
+ * base interface to for RouteOptions and RouteProps.
  */
-export interface CommonRouteOptions {
+export interface BaseRouteOptions {
   /**
    * Route destination IPv4 cidr block
    * @default - Required if destinationCidrIpv6 is not provided
@@ -1610,7 +1610,7 @@ export interface CommonRouteOptions {
 /**
  * Options needed to create a Route from Vpc method.
  */
-export interface RouteOptions extends CommonRouteOptions {
+export interface RouteOptions extends BaseRouteOptions {
   /**
    * Route tables to add routes based on subnets
    * @default all subnets available
@@ -1622,7 +1622,7 @@ export interface RouteOptions extends CommonRouteOptions {
 /**
  * Route properties needed to create a Route.
  */
-export interface RouteProps extends CommonRouteOptions {
+export interface RouteProps extends BaseRouteOptions {
   /**
    * Route table to add the route.
    */

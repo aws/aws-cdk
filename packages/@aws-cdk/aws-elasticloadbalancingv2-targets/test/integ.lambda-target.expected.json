@@ -65,7 +65,7 @@
         }
       }
     },
-    "StackPublicSubnet1DefaultRoute16154E3D": {
+    "StackPublicSubnet1DefaultRoute484365E0": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -156,7 +156,7 @@
         }
       }
     },
-    "StackPublicSubnet2DefaultRoute0319539B": {
+    "StackPublicSubnet2DefaultRoute5A035DCA": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -221,7 +221,7 @@
         }
       }
     },
-    "StackPrivateSubnet1DefaultRouteFBF81BA5": {
+    "StackPrivateSubnet1DefaultRouteC79AEA49": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -283,7 +283,7 @@
         }
       }
     },
-    "StackPrivateSubnet2DefaultRoute22004492": {
+    "StackPrivateSubnet2DefaultRouteE074AEC1": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
@@ -340,8 +340,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "StackPublicSubnet1DefaultRoute16154E3D",
-        "StackPublicSubnet2DefaultRoute0319539B"
+        "StackPublicSubnet1DefaultRoute484365E0",
+        "StackPublicSubnet2DefaultRoute5A035DCA"
       ]
     },
     "LBSecurityGroup8A41EA2B": {
