@@ -22,7 +22,10 @@ export = {
     test.done();
   },
   'falsy value'(test: Test) {
-    test.equal(serialize({}), '');
+    test.throws(() =>
+        serialize({}),
+        /A RFC 2616 compliant Cache-Control header value must contain at least one directive/
+    );
     test.equal(serialize({maxAge: Duration.seconds(0)}), 'max-age=0');
     test.done();
   },

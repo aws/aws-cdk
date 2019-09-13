@@ -207,5 +207,9 @@ export const serializeCacheControlOptions = (options: CacheControlOptions): stri
       headers.push(...options.of);
     }
 
+    if (!headers.length) {
+        throw new Error('A RFC 2616 compliant Cache-Control header value must contain at least one directive');
+    }
+
     return headers.join(', ');
 };
