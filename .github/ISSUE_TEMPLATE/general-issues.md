@@ -1,41 +1,33 @@
 ---
-name: General Issues
-about: Please use this template to submit issues for review
-title: ''
-labels: needs-triage
-assignees: ''
-
+name: "\U00002753 General Issue"
+about: Create a new issue
+labels: status/needs-triage
 ---
 
-**Note: for support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk)**. This repository's issues are intended for feature requests and bug reports.
+<!-- NOTE:📕 If issue regarding developer guide, please create issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
 
-* **I'm submitting a ...**
-  - [ ] :beetle: bug report
-  - [ ] :rocket: feature request
-  - [ ] :books: construct library gap
-  - [ ] :phone: security issue or vulnerability => Please see [policy](https://github.com/aws/aws-cdk/security/policy)
-  - [ ] :question: support request => Please see note at the top of this template.
+## :question: General Issue
 
+<!--
+⚠️ Important Information
+For support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk). This repository's issues are intended for feature requests and bug reports.
+-->
 
-* **What is the current behavior?**
-*If the current behavior is a :beetle:bug:beetle:: Please provide the steps to reproduce*
+### The Question
+<!--
+Ask your question here. Include any details relevant. Make sure you are not
+falling prey to the [X/Y problem][2]!
 
+[2]: http://xyproblem.info
+-->
 
+### Environment
 
-* **What is the expected behavior (or behavior of feature suggested)?**
-
-
-
-* **What is the motivation / use case for changing the behavior or adding this feature?**
-
-
-
-* **Please tell us about your environment:**
-
-  - CDK CLI Version: xx.xx.xx
-  - Module Version: xx.xx.xx
-  - OS: [all | Windows 10 | OSX Mojave | Ubuntu | etc... ]
-  - Language: [all | TypeScript | Java | Python ]
+  - **CDK CLI Version:** <!-- Output of `cdk version` -->
+  - **Module Version:** <!-- Version of the module in question -->
+  - **OS:** <!-- [all | Windows 10 | OSX Mojave | Ubuntu | etc... ] -->
+  - **Language:** <!-- [all | TypeScript | Java | Python ] etc... ] -->
 
 
-* **Other information** (e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc)
+### Other information
+<!-- e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->

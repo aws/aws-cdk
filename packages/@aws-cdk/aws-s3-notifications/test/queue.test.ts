@@ -29,9 +29,7 @@ test('queues can be used as destinations', () => {
           },
           Effect: "Allow",
           Principal: {
-            Service: {
-              "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]]
-            }
+            Service: "s3.amazonaws.com"
           },
           Resource: { "Fn::GetAtt": [ "Queue4A7E3555", "Arn" ] }
 
@@ -117,7 +115,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
           },
           Effect: "Allow",
           Principal: {
-            Service: { "Fn::Join": [ "", [ "s3.", { Ref: "AWS::URLSuffix" } ] ] }
+            Service: "s3.amazonaws.com"
           },
           Resource: "*"
         },
@@ -128,9 +126,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
           ],
           Effect: "Allow",
           Principal: {
-            Service: {
-              "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]]
-            }
+            Service: "s3.amazonaws.com"
           },
           Resource: "*"
         }

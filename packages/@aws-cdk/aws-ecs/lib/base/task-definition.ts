@@ -265,8 +265,8 @@ export class TaskDefinition extends TaskDefinitionBase {
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: Lazy.anyValue({ produce: () => this.containers.map(x => x.renderContainerDefinition(this)) }),
-      volumes: Lazy.anyValue({ produce: () => this.volumes }),
+      containerDefinitions: Lazy.anyValue({ produce: () => this.containers.map(x => x.renderContainerDefinition(this)) }, { omitEmptyArray: true }),
+      volumes: Lazy.anyValue({ produce: () => this.volumes }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
@@ -276,8 +276,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       ],
       networkMode: this.networkMode,
       placementConstraints: Lazy.anyValue({ produce: () =>
-        !isFargateCompatible(this.compatibility) && this.placementConstraints.length > 0 ? this.placementConstraints : undefined
-      }),
+        !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
+      }, { omitEmptyArray: true }),
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
@@ -484,7 +484,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No options
    */
-  readonly driverOpts?: string[];
+  readonly driverOpts?: {[key: string]: string};
   /**
    * Custom metadata to add to your Docker volume.
    *

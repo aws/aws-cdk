@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const handler = new Function(stack, 'Handler', {
-  code: Code.asset(path.join(__dirname, 'my-lambda-handler')),
+  code: Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
   runtime: Runtime.PYTHON_3_6
 });
@@ -18,7 +18,7 @@ const submitJob = new sfn.Task(stack, 'Invoke Handler', {
 });
 
 const callbackHandler = new Function(stack, 'CallbackHandler', {
-  code: Code.asset(path.join(__dirname, 'my-lambda-handler')),
+  code: Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
   runtime: Runtime.PYTHON_3_6
 });

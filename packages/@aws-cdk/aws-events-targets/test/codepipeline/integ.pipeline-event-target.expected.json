@@ -3,8 +3,7 @@
     "Repo02AC86CF": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "TestRepository",
-        "Triggers": []
+        "RepositoryName": "TestRepository"
       }
     },
     "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2": {
@@ -97,6 +96,20 @@
       "DeletionPolicy": "Retain",
       "UpdateReplacePolicy": "Retain"
     },
+    "pipelinePipeline22F2A91DArtifactsBucketEncryptionKeyAlias9530209A": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-pipelineeventspipelinepipeline22f2a91dfbb66895",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+            "Arn"
+          ]
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
     "pipelinePipeline22F2A91DRole58B7B05E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -106,17 +119,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -237,7 +240,6 @@
                   },
                   "BranchName": "master"
                 },
-                "InputArtifacts": [],
                 "Name": "CodeCommit",
                 "OutputArtifacts": [
                   {
@@ -264,9 +266,7 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "Hello",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "pipelinePipeline22F2A91DBuildHelloCodePipelineActionRoleA9729116",
@@ -282,10 +282,7 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Fn::GetAtt": [
-                "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
-                "Arn"
-              ]
+              "Ref": "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2"
             },
             "Type": "KMS"
           },
@@ -373,17 +370,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               }
             }
           ],

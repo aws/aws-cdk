@@ -44,6 +44,13 @@ export class RegionInfo {
   }
 
   /**
+   * The hosted zone ID used by Route 53 to alias a S3 static website in this region (e.g: Z2O1EMRO9K5GLX)
+   */
+  public get s3StaticWebsiteHostedZoneId(): string | undefined {
+    return Fact.find(this.name, FactName.S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID);
+  }
+
+  /**
    * The name of the service principal for a given service in this region.
    * @param service the service name (e.g: s3.amazonaws.com)
    */

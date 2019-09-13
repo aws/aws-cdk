@@ -50,7 +50,7 @@ export interface SendToQueueProps {
 }
 
 /**
- * A StepFunctions Task to invoke a Lambda function.
+ * A StepFunctions Task to send messages to SQS queue.
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.

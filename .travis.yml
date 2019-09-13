@@ -19,5 +19,5 @@ cache:
   - pip
 
 install: ./install.sh
-script: ./build.sh
-
+script:
+  - ./build.sh

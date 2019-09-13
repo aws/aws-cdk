@@ -1,8 +1,12 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
+import kms = require('@aws-cdk/aws-kms');
+import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
+import { FakeBuildAction } from './fake-build-action';
+import { FakeSourceAction } from './fake-source-action';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -39,6 +43,270 @@ export = {
       test.equal(pipeline.pipelineName, 'MyPipeline');
 
       test.done();
+    },
+
+    'that is cross-region': {
+      'allows passing an Alias in place of the KMS Key in the replication Bucket'(test: Test) {
+        const app = new cdk.App();
+
+        const replicationRegion = 'us-west-1';
+        const replicationStack = new cdk.Stack(app, 'ReplicationStack', {
+          env: { region: replicationRegion, account: '123456789012' },
+        });
+        const replicationKey = new kms.Key(replicationStack, 'ReplicationKey');
+        const replicationAlias = replicationKey.addAlias('alias/my-replication-alias');
+        const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
+          encryptionKey: replicationAlias,
+          bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+        });
+
+        const pipelineRegion = 'us-west-2';
+        const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
+          env: { region: pipelineRegion, account: '123456789012' },
+        });
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          crossRegionReplicationBuckets: {
+            [replicationRegion]: replicationBucket,
+          },
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                region: replicationRegion,
+              })],
+            },
+          ],
+        });
+
+        expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+          "ArtifactStores": [
+            {
+              "Region": replicationRegion,
+              "ArtifactStore": {
+                "Type": "S3",
+                "EncryptionKey": {
+                  "Type": "KMS",
+                  "Id": "alias/my-replication-alias",
+                },
+              },
+            },
+            {
+              "Region": pipelineRegion,
+            },
+          ],
+        }));
+
+        expect(replicationStack).to(haveResourceLike('AWS::KMS::Key', {
+          "KeyPolicy": {
+            "Statement": [
+              {
+                // owning account management permissions - we don't care about them in this test
+              },
+              {
+                // KMS verifies whether the principal given in its key policy exists when creating that key.
+                // Since the replication bucket must be deployed before the pipeline,
+                // we cannot put the pipeline role as the principal here -
+                // hence, we put the account itself
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:DescribeKey",
+                  "kms:Encrypt",
+                  "kms:ReEncrypt*",
+                  "kms:GenerateDataKey*",
+                ],
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": ["", [
+                      "arn:",
+                      { "Ref": "AWS::Partition" },
+                      ":iam::123456789012:root",
+                    ]],
+                  },
+                },
+                "Resource": "*",
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+
+      "generates ArtifactStores with the alias' name as the KeyID"(test: Test) {
+        const app = new cdk.App();
+        const replicationRegion = 'us-west-1';
+
+        const pipelineRegion = 'us-west-2';
+        const pipelineStack = new cdk.Stack(app, 'MyStack', {
+          env: { region: pipelineRegion, account: '123456789012' },
+        });
+        const sourceOutput = new codepipeline.Artifact();
+        const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                region: replicationRegion,
+              })],
+            },
+          ],
+        });
+
+        expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+          "ArtifactStores": [
+            {
+              "Region": replicationRegion,
+              "ArtifactStore": {
+                "Type": "S3",
+                "EncryptionKey": {
+                  "Type": "KMS",
+                  "Id": "alias/mystack-support-us-west-1tencryptionalias9b344b2b8e6825cb1f7d",
+                },
+              },
+            },
+            {
+              "Region": pipelineRegion,
+            },
+          ],
+        }));
+
+        expect(pipeline.crossRegionSupport[replicationRegion].stack).to(haveResourceLike('AWS::KMS::Alias', {
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        }, ResourcePart.CompleteDefinition));
+
+        test.done();
+      },
+
+      'allows passing an imported Bucket and Key for the replication Bucket'(test: Test) {
+        const replicationRegion = 'us-west-1';
+
+        const pipelineRegion = 'us-west-2';
+        const pipelineStack = new cdk.Stack(undefined, undefined, {
+          env: { region: pipelineRegion },
+        });
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          crossRegionReplicationBuckets: {
+            [replicationRegion]: s3.Bucket.fromBucketAttributes(pipelineStack, 'ReplicationBucket', {
+              bucketArn: 'arn:aws:s3:::my-us-west-1-replication-bucket',
+              encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'ReplicationKey',
+                `arn:aws:kms:${replicationRegion}:123456789012:key/1234-5678-9012`
+              ),
+            }),
+          },
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                region: replicationRegion,
+              })],
+            },
+          ],
+        });
+
+        expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+          "ArtifactStores": [
+            {
+              "Region": replicationRegion,
+              "ArtifactStore": {
+                "Type": "S3",
+                "Location": "my-us-west-1-replication-bucket",
+                "EncryptionKey": {
+                  "Type": "KMS",
+                  "Id": "1234-5678-9012",
+                },
+              },
+            },
+            {
+              "Region": pipelineRegion,
+            },
+          ],
+        }));
+
+        test.done();
+      },
+    },
+
+    'that is cross-account': {
+      'does not allow passing a dynamic value in the Action account property'(test: Test) {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack', { env: { account: '123456789012' }});
+        const sourceOutput = new codepipeline.Artifact();
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+          ],
+        });
+        const buildStage = pipeline.addStage({ stageName: 'Build' });
+
+        test.throws(() => {
+          buildStage.addAction(new FakeBuildAction({
+            actionName: 'FakeBuild',
+            input: sourceOutput,
+            account: cdk.Aws.ACCOUNT_ID,
+          }));
+        }, /The 'account' property must be a concrete value \(action: 'FakeBuild'\)/);
+
+        test.done();
+      },
+
+      'does not allow an env-agnostic Pipeline Stack if an Action account has been provided'(test: Test) {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+        const sourceOutput = new codepipeline.Artifact();
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+          ],
+        });
+        const buildStage = pipeline.addStage({ stageName: 'Build' });
+
+        test.throws(() => {
+          buildStage.addAction(new FakeBuildAction({
+            actionName: 'FakeBuild',
+            input: sourceOutput,
+            account: '123456789012',
+          }));
+        }, /Pipeline stack which uses cross-environment actions must have an explicitly set account/);
+
+        test.done();
+      },
     },
   },
 };

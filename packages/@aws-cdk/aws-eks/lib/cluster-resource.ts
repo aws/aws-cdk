@@ -41,7 +41,7 @@ export class ClusterResource extends Construct {
     // each cluster resource will have it's own lambda handler since permissions
     // are scoped to this cluster and related resources like it's role
     const handler = new lambda.Function(this, 'ResourceHandler', {
-      code: lambda.Code.asset(path.join(__dirname, 'cluster-resource')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'cluster-resource')),
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),

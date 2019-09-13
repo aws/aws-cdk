@@ -12,10 +12,10 @@
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.
 
-### VPC
+## VPC
 
 Most projects need a Virtual Private Cloud to provide security by means of
-network partitioning. This is easily achieved by creating an instance of
+network partitioning. This is achieved by creating an instance of
 `Vpc`:
 
 ```ts
@@ -24,32 +24,106 @@ import ec2 = require('@aws-cdk/aws-ec2');
 const vpc = new ec2.Vpc(this, 'VPC');
 ```
 
-All default Constructs requires EC2 instances to be launched inside a VPC, so
+All default constructs require EC2 instances to be launched inside a VPC, so
 you should generally start by defining a VPC whenever you need to launch
 instances for your project.
 
-Our default `Vpc` class creates a private and public subnet for every
-availability zone. Classes that use the VPC will generally launch instances
-into all private subnets, and provide a parameter called `vpcSubnets` to
-allow you to override the placement. [Read more about
+### Subnet Types
+
+A VPC consists of one or more subnets that instances can be placed into. CDK
+distinguishes three different subnet types:
+
+* **Public** - public subnets connect directly to the Internet using an
+  Internet Gateway. If you want your instances to have a public IP address
+  and be directly reachable from the Internet, you must place them in a
+  public subnet.
+* **Private** - instances in private subnets are not directly routable from the
+  Internet, and connect out to the Internet via a NAT gateway. By default, a
+  NAT gateway is created in every public subnet for maximum availability. Be
+  aware that you will be charged for NAT gateways.
+* **Isolated** - isolated subnets do not route from or to the Internet, and
+  as such do not require NAT gateways. They can only connect to or be
+  connected to from other instances in the same VPC. A default VPC configuration
+  will not include isolated subnets,
+
+A default VPC configuration will create public and private subnets, but not
+isolated subnets. See *Advanced Subnet Configuration* below for information
+on how to change the default subnet configuration.
+
+Constructs using the VPC will "launch instances" (or more accurately, create
+Elastic Network Interfaces) into one or more of the subnets. They all accept
+a property called `subnetSelection` (sometimes called `vpcSubnets`) to allow
+you to select in what subnet to place the ENIs, usually defaulting to
+*private* subnets if the property is omitted.
+
+If you would like to save on the cost of NAT gateways, you can use
+*isolated* subnets instead of *private* subnets (as described in Advanced
+*Subnet Configuration*). If you need private instances to have
+internet connectivity, another option is to reduce the number of NAT gateways
+created by setting the `natGateways` property to a lower value (the default
+is one NAT gateway per availability zone). Be aware that this may have
+availability implications for your application.
+
+
+[Read more about
 subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).
 
+### Control over availability zones
 
-#### Advanced Subnet Configuration
-If you require the ability to configure subnets the `Vpc` can be
-customized with `SubnetConfiguration` array. This is best explained by an
-example:
+By default, a VPC will spread over at most 3 Availability Zones available to
+it. To change the number of Availability Zones that the VPC will spread over,
+specify the `maxAzs` property when defining it.
+
+The number of Availability Zones that are available depends on the *region*
+and *account* of the Stack containing the VPC. If the [region and account are
+specified](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) on
+the Stack, the CLI will [look up the existing Availability
+Zones](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#using-regions-availability-zones-describe)
+and get an accurate count. If region and account are not specified, the stack
+could be deployed anywhere and it will have to make a safe choice, limiting
+itself to 2 Availability Zones.
+
+Therefore, to get the VPC to spread over 3 or more availability zones, you
+must specify the environment where the stack will be deployed.
+
+### Advanced Subnet Configuration
+
+If the default VPC configuration (public and private subnets spanning the
+size of the VPC) don't suffice for you, you can configure what subnets to
+create by specifying the `subnetConfiguration` property. It allows you
+to configure the number and size of all subnets. Specifying an advanced
+subnet configuration could look like this:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-
 const vpc = new ec2.Vpc(this, 'TheVPC', {
+  // 'cidr' configures the IP range and size of the entire VPC.
+  // The IP space will be divided over the configured subnets.
   cidr: '10.0.0.0/21',
+
+  // 'maxAzs' configures the maximum number of availability zones to use
+  maxAzs: 3,
+
+  // 'subnetConfiguration' specifies the "subnet groups" to create.
+  // Every subnet group will have a subnet for each AZ, so this
+  // configuration will create `3 groups × 3 AZs = 9` subnets.
   subnetConfiguration: [
     {
-      cidrMask: 24,
-      name: 'Ingress',
+      // 'subnetType' controls Internet access, as described above.
       subnetType: ec2.SubnetType.PUBLIC,
+
+      // 'name' is used to name this particular subnet group. You will have to
+      // use the name for subnet selection if you have more than one subnet
+      // group of the same type.
+      name: 'Ingress',
+
+      // 'cidrMask' specifies the IP addresses in the range of of individual
+      // subnets in the group. Each of the subnets in this group will contain
+      // `2^(32 address bits - 24 subnet bits) - 2 reserved addresses = 254`
+      // usable IP addresses.
+      //
+      // If 'cidrMask' is left out the available address space is evenly
+      // divided across the remaining subnet groups.
+      cidrMask: 24,
     },
     {
       cidrMask: 24,
@@ -60,6 +134,11 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       cidrMask: 28,
       name: 'Database',
       subnetType: ec2.SubnetType.ISOLATED,
+
+      // 'reserved' can be used to reserve IP address space. No resources will
+      // be created for this subnet, but the IP range will be kept available for
+      // future creation of this subnet, or even for future subdivision.
+      reserved: true
     }
   ],
 });
@@ -83,120 +162,18 @@ DatabaseSubnet1   |`ISOLATED`|`10.0.6.0/28` |#1|Only routes within the VPC
 DatabaseSubnet2   |`ISOLATED`|`10.0.6.16/28`|#2|Only routes within the VPC
 DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
-Each `Public` Subnet will have a NAT Gateway. Each `Private` Subnet will have a
-route to the NAT Gateway in the same availability zone. `Isolated` subnets
-will not have a route to the internet, but are routeable within the VPC. The
-numbers [1-3] will consistently map to availability zones (e.g. *IngressSubnet1*
-and *ApplicationSubnet1* will be in the same avialbility zone).
+### Reserving subnet IP space
 
-`Isolated` Subnets provide simplified secure networking principles, but come at
-an operational complexity. The lack of an internet route means that if you deploy
-instances in this subnet you will not be able to patch from the internet, this is
-commonly reffered to as
-[fully baked images](https://aws.amazon.com/answers/configuration-management/aws-ami-design/).
-Features such as
-[cfn-signal](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html)
-are also unavailable. Using these subnets for managed services (RDS,
-Elasticache, Redshift) is a very practical use because the managed services do
-not incur additional operational overhead.
-
-Many times when you plan to build an application you don't know how many
-instances of the application you will need and therefore you don't know how much
-IP space to allocate. For example, you know the application will only have
-Elastic Loadbalancers in the public subnets and you know you will have 1-3 RDS
-databases for your data tier, and the rest of the IP space should just be evenly
-distributed for the application.
-
-```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-
-const vpc = new ec2.Vpc(this, 'TheVPC', {
-  cidr: '10.0.0.0/16',
-  subnetConfiguration: [
-    {
-      cidrMask: 26,
-      name: 'Public',
-      subnetType: ec2.SubnetType.PUBLIC,
-    },
-    {
-      name: 'Application',
-      subnetType: ec2.SubnetType.PRIVATE,
-    },
-    {
-      cidrMask: 27,
-      name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
-    }
-  ],
-});
-```
-
-The `Vpc` from the above configuration in a Region with three
-availability zones will be the following:
-
-Subnet Name       |Type      | IP Block
-------------------|----------|----------------
-PublicSubnet1     |`PUBLIC`  |`10.0.0.0/26`
-PublicSubnet2     |`PUBLIC`  |`10.0.0.64/26`
-PublicSubnet3     |`PUBLIC`  |`10.0.2.128/26`
-DatabaseSubnet1   |`PRIVATE` |`10.0.0.192/27`
-DatabaseSubnet2   |`PRIVATE` |`10.0.0.224/27`
-DatabaseSubnet3   |`PRIVATE` |`10.0.1.0/27`
-ApplicationSubnet1|`ISOLATED`|`10.0.64.0/18`
-ApplicationSubnet2|`ISOLATED`|`10.0.128.0/18`
-ApplicationSubnet3|`ISOLATED`|`10.0.192.0/18`
-
-Any subnet configuration without a `cidrMask` will be counted up and allocated
-evenly across the remaining IP space.
-
-Teams may also become cost conscious and be willing to trade availability for
-cost. For example, in your test environments perhaps you would like the same VPC
-as production, but instead of 3 NAT Gateways you would like only 1. This will
-save on the cost, but trade the 3 availability zone to a 1 for all egress
-traffic. This can be accomplished with a single parameter configuration:
-
-```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-
-const vpc = new ec2.Vpc(this, 'TheVPC', {
-  cidr: '10.0.0.0/16',
-  natGateways: 1,
-  natGatewayPlacement: {subnetName: 'Public'},
-  subnetConfiguration: [
-    {
-      cidrMask: 26,
-      name: 'Public',
-      subnetType: ec2.SubnetType.PUBLIC,
-      natGateway: true,
-    },
-    {
-      name: 'Application',
-      subnetType: ec2.SubnetType.PRIVATE,
-    },
-    {
-      cidrMask: 27,
-      name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
-    }
-  ],
-});
-```
-
-The `Vpc` above will have the exact same subnet definitions as listed
-above. However, this time the VPC will have only 1 NAT Gateway and all
-Application subnets will route to the NAT Gateway.
-
-#### Reserving subnet IP space
 There are situations where the IP space for a subnet or number of subnets
-will need to be reserved. This is useful in situations where subnets
-would need to be added after the vpc is originally deployed, without causing
-IP renumbering for existing subnets. The IP space for a subnet may be reserved
-by setting the `reserved` subnetConfiguration property to true, as shown below:
+will need to be reserved. This is useful in situations where subnets would
+need to be added after the vpc is originally deployed, without causing IP
+renumbering for existing subnets. The IP space for a subnet may be reserved
+by setting the `reserved` subnetConfiguration property to true, as shown
+below:
 
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 const vpc = new ec2.Vpc(this, 'TheVPC', {
-  cidr: '10.0.0.0/16',
   natGateways: 1,
   subnetConfiguration: [
     {
@@ -213,7 +190,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       cidrMask: 26,
       name: 'Application2',
       subnetType: ec2.SubnetType.PRIVATE,
-      reserved: true,
+      reserved: true,   // <---- This subnet group is reserved
     },
     {
       cidrMask: 27,
@@ -226,13 +203,10 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
 
 In the example above, the subnet for Application2 is not actually provisioned
 but its IP space is still reserved. If in the future this subnet needs to be
-provisioned, then the `reserved: true` property should be removed. Most
-importantly, this action would not cause the Database subnet to get renumbered,
-but rather the IP space that was previously reserved will be used for the
-subnet provisioned for Application2. The `reserved` property also takes into
-consideration the number of availability zones when reserving IP space.
+provisioned, then the `reserved: true` property should be removed. Reserving
+parts of the IP space prevents the other subnets from getting renumbered.
 
-#### Sharing VPCs between stacks
+### Sharing VPCs between stacks
 
 If you are creating multiple `Stack`s inside the same CDK application, you
 can reuse a VPC defined in one Stack in another by simply passing the VPC
@@ -240,13 +214,30 @@ instance around:
 
 [sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
 
-#### Importing an existing VPC
+### Importing an existing VPC
 
-If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`:
+If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
+The CDK CLI will search for the specified VPC in the the stack's region and
+account, and import the subnet configuration. Looking up can be done by VPC
+ID, but more flexibly by searching for a specific tag on the VPC.
+
+The import does assume that the VPC will be *symmetric*, i.e. that there are
+subnet groups that have a subnet in every Availability Zone that the VPC
+spreads over. VPCs with other layouts cannot currently be imported, and will
+either lead to an error on import, or when another construct tries to access
+the subnets.
+
+Subnet types will be determined from the `aws-cdk:subnet-type` tag on the
+subnet if it exists, or the presence of a route to an Internet Gateway
+otherwise. Subnet names will be determined from the `aws-cdk:subnet-name` tag
+on the subnet if it exists, or will mirror the subnet type otherwise (i.e.
+a public subnet will have the name `"Public"`).
+
+Here's how `Vpc.fromLookup()` can be used:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
 
-### Allowing Connections
+## Allowing Connections
 
 In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
 is controlled by **Security Groups**. You can think of Security Groups as a
@@ -345,7 +336,7 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 fleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
-### Machine Images (AMIs)
+## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
 library contains constructs to select the AMI you want to use.
@@ -364,7 +355,7 @@ selectable by instantiating one of these classes:
 >
 > We will add command-line options to make this step easier in the future.
 
-### VPN connections to a VPC
+## VPN connections to a VPC
 
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
@@ -414,9 +405,31 @@ const vpnConnection = vpc.addVpnConnection('Dynamic', {
 const state = vpnConnection.metricTunnelState();
 ```
 
-### VPC endpoints
+## VPC endpoints
 A VPC endpoint enables you to privately connect your VPC to supported AWS services and VPC endpoint services powered by PrivateLink without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Connect connection. Instances in your VPC do not require public IP addresses to communicate with resources in the service. Traffic between your VPC and the other service does not leave the Amazon network.
 
 Endpoints are virtual devices. They are horizontally scaled, redundant, and highly available VPC components that allow communication between instances in your VPC and services without imposing availability risks or bandwidth constraints on your network traffic.
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
+
+## Bastion Hosts
+A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
+You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
+feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
+
+A default bastion host for use via SSM can be configured like:
+```ts
+const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
+```
+
+If you want to connect from the internet using SSH, you need to place the host into a public subnet. You can then configure allowed source hosts.
+```ts
+const host = new ec2.BastionHostLinux(this, 'BastionHost', {
+  vpc,
+  subnetSelection: { subnetType: SubnetType.PUBLIC },
+});
+host.allowSshAccessFrom(Peer.ipv4('1.2.3.4/32'));
+```
+
+As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
+with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.

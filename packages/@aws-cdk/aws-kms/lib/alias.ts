@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import iam = require('@aws-cdk/aws-iam');
+import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 
@@ -7,8 +8,9 @@ const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
 
 /**
  * A KMS Key alias.
+ * An alias can be used in all places that expect a key.
  */
-export interface IAlias extends IResource {
+export interface IAlias extends IKey {
   /**
    * The name of the alias.
    *
@@ -41,12 +43,55 @@ export interface AliasProps {
    * specify another alias.
    */
   readonly targetKey: IKey;
+
+  /**
+   * Policy to apply when the alias is removed from this stack.
+   *
+   * @default - The alias will be deleted
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 abstract class AliasBase extends Resource implements IAlias {
   public abstract readonly aliasName: string;
 
   public abstract readonly aliasTargetKey: IKey;
+
+  public get keyArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'kms',
+      // aliasName already contains the '/'
+      resource: this.aliasName,
+    });
+  }
+
+  public get keyId(): string {
+    return this.aliasName;
+  }
+
+  public addAlias(alias: string): Alias {
+    return this.aliasTargetKey.addAlias(alias);
+  }
+
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void {
+    this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
+  }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return this.aliasTargetKey.grant(grantee, ...actions);
+  }
+
+  public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.aliasTargetKey.grantDecrypt(grantee);
+  }
+
+  public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.aliasTargetKey.grantEncrypt(grantee);
+  }
+
+  public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.aliasTargetKey.grantEncryptDecrypt(grantee);
+  }
 }
 
 export interface AliasAttributes {
@@ -79,31 +124,45 @@ export class Alias extends AliasBase {
   public readonly aliasTargetKey: IKey;
 
   constructor(scope: Construct, id: string, props: AliasProps) {
-    super(scope, id);
+    let aliasName = props.aliasName;
 
-    if (!Token.isUnresolved(props.aliasName)) {
-      if (!props.aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
-        throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.aliasName}`);
+    if (!Token.isUnresolved(aliasName)) {
+      if (!aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
+        aliasName = REQUIRED_ALIAS_PREFIX + aliasName;
       }
 
-      if (props.aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${props.aliasName}`);
+      if (aliasName === REQUIRED_ALIAS_PREFIX) {
+        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`);
       }
 
-      if (props.aliasName.startsWith(DISALLOWED_PREFIX)) {
-        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.aliasName}`);
+      if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
+        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`);
       }
 
-      if (!props.aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+      if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new Error(`Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-`);
       }
     }
 
-    const resource = new CfnAlias(this, 'Resource', {
-      aliasName: props.aliasName,
-      targetKeyId: props.targetKey.keyArn
+    super(scope, id, {
+      physicalName: aliasName,
     });
 
-    this.aliasName = resource.aliasName;
+    this.aliasTargetKey = props.targetKey;
+
+    const resource = new CfnAlias(this, 'Resource', {
+      aliasName: this.physicalName,
+      targetKeyId: this.aliasTargetKey.keyArn
+    });
+
+    this.aliasName = this.getResourceNameAttribute(resource.aliasName);
+
+    if (props.removalPolicy) {
+      resource.applyRemovalPolicy(props.removalPolicy);
+    }
+  }
+
+  protected generatePhysicalName(): string {
+    return REQUIRED_ALIAS_PREFIX + super.generatePhysicalName();
   }
 }

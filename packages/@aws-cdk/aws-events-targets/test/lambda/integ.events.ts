@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'lambda-events');
 const fn = new lambda.Function(stack, 'MyFunc', {
   runtime: lambda.Runtime.NODEJS_8_10,
   handler: 'index.handler',
-  code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
+  code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
 });
 
 const timer = new events.Rule(stack, 'Timer', {

@@ -305,7 +305,7 @@ export = {
       vpc
     });
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('dummy'),
+      code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });
@@ -485,6 +485,30 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       BackupRetentionPeriod: 0
+    }));
+
+    test.done();
+  },
+
+  'imported instance with imported security group with allowAllOutbound set to false'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
+      instanceEndpointAddress: 'address',
+      instanceIdentifier: 'identifier',
+      port: 3306,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false
+      }),
+    });
+
+    // WHEN
+    instance.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'sg-123456789',
     }));
 
     test.done();

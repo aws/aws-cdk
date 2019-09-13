@@ -33,19 +33,14 @@ export class Default {
       case 'states':
         return `${service}.${region}.amazonaws.com`;
 
-      // Services with a universal principal across all regions/partitions
-      case 'sns':
-      case 'sqs':
-        return `${service}.amazonaws.com`;
-
-      // Services with a partitional principal (the default case)
-      case 'application-autoscaling':
-      case 'autoscaling':
+      // Services with a partitional principal
       case 'ec2':
-      case 'events':
-      case 'lambda':
-      default:
         return `${service}.${urlSuffix}`;
+
+      // Services with a universal principal across all regions/partitions (the default case)
+      default:
+          return `${service}.amazonaws.com`;
+
     }
   }
 

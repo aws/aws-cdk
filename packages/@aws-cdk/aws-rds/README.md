@@ -23,14 +23,14 @@ your instances will be launched privately or publicly:
 
 ```ts
 const cluster = new DatabaseCluster(this, 'Database', {
-    engine: DatabaseClusterEngine.Aurora,
+    engine: DatabaseClusterEngine.AURORA,
     masterUser: {
         username: 'admin'
     },
     instanceProps: {
-        instanceType: ec2.InstanceType.of(InstanceClass.Burstable2, InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpcSubnets: {
-            subnetType: ec2.SubnetType.Public,
+            subnetType: ec2.SubnetType.PUBLIC,
         },
         vpc
     }
@@ -48,8 +48,8 @@ your instances will be launched privately or publicly:
 
 ```ts
 const instance = new DatabaseInstance(stack, 'Instance', {
-    engine: rds.DatabaseInstanceEngine.OracleSE1,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+    engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     masterUsername: 'syscdk',
     vpc
 });
@@ -62,15 +62,15 @@ a source database respectively:
 ```ts
 new DatabaseInstanceFromSnapshot(stack, 'Instance', {
     snapshotIdentifier: 'my-snapshot',
-    engine: rds.DatabaseInstanceEngine.Postgres,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+    engine: rds.DatabaseInstanceEngine.POSTGRES,
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
     vpc
 });
 
 new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     sourceDatabaseInstance: sourceInstance,
-    engine: rds.DatabaseInstanceEngine.Postgres,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+    engine: rds.DatabaseInstanceEngine.POSTGRES,
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
     vpc
 });
 ```
@@ -117,7 +117,7 @@ Rotation of the master password is also supported for an existing cluster:
 ```ts
 new SecretRotation(stack, 'Rotation', {
     secret: importedSecret,
-    application: SecretRotationApplication.OracleRotationSingleUser
+    application: SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER
     target: importedCluster, // or importedInstance
     vpc: importedVpc,
 })

@@ -1,17 +1,22 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
-import { Subnet } from '@aws-cdk/aws-ec2';
 import ec2 = require('@aws-cdk/aws-ec2');
+import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { CfnOutput, Construct, Duration, IResource, Resource, Tag } from '@aws-cdk/core';
+import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import path = require('path');
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
-import { maxPodsForInstanceType } from './instance-data';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
+import { spotInterruptHandler } from './spot-interrupt-handler';
+import { renderUserData } from './user-data';
+
+// defaults are based on https://eksctl.io
+const DEFAULT_CAPACITY_COUNT = 2;
+const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
 /**
  * An EKS cluster
@@ -87,8 +92,10 @@ export interface ClusterAttributes {
 export interface ClusterProps {
   /**
    * The VPC in which to create the Cluster
+   *
+   * @default - a VPC with default configuration will be created and can be accessed through `cluster.vpc`.
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place EKS Control Plane ENIs
@@ -170,6 +177,51 @@ export interface ClusterProps {
    * @default true The cluster can be managed by the AWS CDK application.
    */
   readonly kubectlEnabled?: boolean;
+
+  /**
+   * Number of instances to allocate as an initial capacity for this cluster.
+   * Instance type can be configured through `defaultCapacityInstanceType`,
+   * which defaults to `m5.large`.
+   *
+   * Use `cluster.addCapacity` to add additional customized capacity. Set this
+   * to `0` is you wish to avoid the initial capacity allocation.
+   *
+   * @default 2
+   */
+  readonly defaultCapacity?: number;
+
+  /**
+   * The instance type to use for the default capacity. This will only be taken
+   * into account if `defaultCapacity` is > 0.
+   *
+   * @default m5.large
+   */
+  readonly defaultCapacityInstance?: ec2.InstanceType;
+
+  /**
+   * Determines whether a CloudFormation output with the name of the cluster
+   * will be synthesized.
+   *
+   * @default false
+   */
+  readonly outputClusterName?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the ARN of the "masters"
+   * IAM role will be synthesized (if `mastersRole` is specified).
+   *
+   * @default false
+   */
+  readonly outputMastersRoleArn?: boolean;
+
+  /**
+   * Determines whether a CloudFormation output with the `aws eks
+   * update-kubeconfig` command will be synthesized. This command will include
+   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   *
+   * @default true
+   */
+  readonly outputConfigCommand?: boolean;
 }
 
 /**
@@ -248,6 +300,12 @@ export class Cluster extends Resource implements ICluster {
   public readonly _k8sResourceHandler?: lambda.Function;
 
   /**
+   * The auto scaling group that hosts the default capacity for this cluster.
+   * This will be `undefined` if the default capacity is set to 0.
+   */
+  public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
+
+  /**
    * The IAM role that was used to create this cluster. This role is
    * automatically added by Amazon EKS to the `system:masters` RBAC group of the
    * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
@@ -269,12 +327,14 @@ export class Cluster extends Resource implements ICluster {
    * @param name the name of the Construct to create
    * @param props properties in the IClusterProps interface
    */
-  constructor(scope: Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps = { }) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
 
-    this.vpc = props.vpc;
+    const stack = Stack.of(this);
+
+    this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
 
     this.tagSubnets();
@@ -288,7 +348,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-      vpc: props.vpc,
+      vpc: this.vpc,
       description: 'EKS Control Plane Security Group',
     });
 
@@ -299,7 +359,7 @@ export class Cluster extends Resource implements ICluster {
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
-    const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
+    const subnetIds = [...new Set(Array().concat(...placements.map(s => this.vpc.selectSubnets(s).subnetIds)))];
 
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
@@ -330,7 +390,13 @@ export class Cluster extends Resource implements ICluster {
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
-    new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+    const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
+    const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
+    const commonCommandOptions = [ `--region ${stack.region}` ];
+
+    if (props.outputClusterName) {
+      new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+    }
 
     // we maintain a single manifest custom resource handler per cluster since
     // permissions and role are scoped. This will return `undefined` if kubectl
@@ -344,6 +410,26 @@ export class Cluster extends Resource implements ICluster {
       }
 
       this.awsAuth.addMastersRole(props.mastersRole);
+
+      if (props.outputMastersRoleArn) {
+        new CfnOutput(this, 'MastersRoleArn', { value: props.mastersRole.roleArn });
+      }
+
+      commonCommandOptions.push(`--role-arn ${props.mastersRole.roleArn}`);
+    }
+
+    // allocate default capacity if non-zero (or default).
+    const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    if (desiredCapacity > 0) {
+      const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
+      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
+    }
+
+    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    if (outputConfigCommand) {
+      const postfix = commonCommandOptions.join(' ');
+      new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
+      new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
   }
 
@@ -352,6 +438,12 @@ export class Cluster extends Resource implements ICluster {
    *
    * The nodes will automatically be configured with the right VPC and AMI
    * for the instance type and Kubernetes version.
+   *
+   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
+   * If kubectl is enabled, the
+   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
+   * daemon will be installed on all spot instances to handle
+   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
@@ -366,8 +458,9 @@ export class Cluster extends Resource implements ICluster {
     });
 
     this.addAutoScalingGroup(asg, {
-      maxPods: maxPodsForInstanceType(options.instanceType),
       mapRole: options.mapRole,
+      bootstrapOptions: options.bootstrapOptions,
+      bootstrapEnabled: options.bootstrapEnabled
     });
 
     return asg;
@@ -381,11 +474,17 @@ export class Cluster extends Resource implements ICluster {
    * add the right policies to the instance role, apply the right tags, and add
    * the required user data to the instance's launch configuration.
    *
-   * Prefer to use `addCapacity` if possible, it will automatically configure
-   * the right AMI and the `maxPods` number based on your instance type.
+   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
+   * If kubectl is enabled, the
+   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
+   * daemon will be installed on all spot instances to handle
+   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
+   *
+   * Prefer to use `addCapacity` if possible.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
    * @param autoScalingGroup [disable-awslint:ref-via-interface]
+   * @param options options for adding auto scaling groups, like customizing the bootstrap script
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
     // self rules
@@ -403,23 +502,23 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
-    autoScalingGroup.addUserData(
-      'set -o xtrace',
-      `/etc/eks/bootstrap.sh ${this.clusterName} --use-max-pods ${options.maxPods}`,
-    );
-    // FIXME: Add a cfn-signal call once we've sorted out UserData and can write reliable
-    // signaling scripts: https://github.com/aws/aws-cdk/issues/623
+    const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
+    if (options.bootstrapOptions && !bootstrapEnabled) {
+      throw new Error(`Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false`);
+    }
+
+    if (bootstrapEnabled) {
+      const userData = renderUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
+      autoScalingGroup.addUserData(...userData);
+    }
 
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    autoScalingGroup.node.applyAspect(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
-
-    // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
-    new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-      value: autoScalingGroup.role.roleArn
+    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+      applyToLaunchedInstances: true
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
@@ -438,6 +537,17 @@ export class Cluster extends Resource implements ICluster {
           'system:nodes'
         ]
       });
+    } else {
+      // since we are not mapping the instance role to RBAC, synthesize an
+      // output so it can be pasted into `aws-auth-cm.yaml`
+      new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+        value: autoScalingGroup.role.roleArn
+      });
+    }
+
+    // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
+    if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
+      this.addResource('spot-interrupt-handler', ...spotInterruptHandler());
     }
   }
 
@@ -476,7 +586,7 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return new lambda.Function(this, 'KubernetesResourceHandler', {
-      code: lambda.Code.asset(path.join(__dirname, 'k8s-resource')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'k8s-resource')),
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
@@ -531,20 +641,79 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
    * @default - true if the cluster has kubectl enabled (which is the default).
    */
   readonly mapRole?: boolean;
+
+  /**
+   * Configures the EC2 user-data script for instances in this autoscaling group
+   * to bootstrap the node (invoke `/etc/eks/bootstrap.sh`) and associate it
+   * with the EKS cluster.
+   *
+   * If you wish to provide a custom user data script, set this to `false` and
+   * manually invoke `autoscalingGroup.addUserData()`.
+   *
+   * @default true
+   */
+  readonly bootstrapEnabled?: boolean;
+
+  /**
+   * EKS node bootstrapping options.
+   *
+   * @default - none
+   */
+  readonly bootstrapOptions?: BootstrapOptions;
+}
+
+export interface BootstrapOptions {
+  /**
+   * Sets `--max-pods` for the kubelet based on the capacity of the EC2 instance.
+   *
+   * @default true
+   */
+  readonly useMaxPods?: boolean;
+
+  /**
+   * Restores the docker default bridge network.
+   *
+   * @default false
+   */
+  readonly enableDockerBridge?: boolean;
+
+  /**
+   * Number of retry attempts for AWS API call (DescribeCluster).
+   *
+   * @default 3
+   */
+  readonly awsApiRetryAttempts?: number;
+
+  /**
+   * The contents of the `/etc/docker/daemon.json` file. Useful if you want a
+   * custom config differing from the default one in the EKS AMI.
+   *
+   * @default - none
+   */
+  readonly dockerConfigJson?: string;
+
+  /**
+   * Extra arguments to add to the kubelet. Useful for adding labels or taints.
+   *
+   * @example --node-labels foo=bar,goo=far
+   * @default - none
+   */
+  readonly kubeletExtraArgs?: string;
+
+  /**
+   * Additional command line arguments to pass to the `/etc/eks/bootstrap.sh`
+   * command.
+   *
+   * @see https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh
+   * @default - none
+   */
+  readonly additionalArgs?: string;
 }
 
 /**
  * Options for adding an AutoScalingGroup as capacity
  */
 export interface AutoScalingGroupOptions {
-  /**
-   * How many pods to allow on this instance.
-   *
-   * Should be at most equal to the maximum number of IP addresses available to
-   * the instance type less one.
-   */
-  readonly maxPods: number;
-
   /**
    * Will automatically update the aws-auth ConfigMap to map the IAM instance
    * role to RBAC.
@@ -554,6 +723,23 @@ export interface AutoScalingGroupOptions {
    * @default - true if the cluster has kubectl enabled (which is the default).
    */
   readonly mapRole?: boolean;
+
+  /**
+   * Configures the EC2 user-data script for instances in this autoscaling group
+   * to bootstrap the node (invoke `/etc/eks/bootstrap.sh`) and associate it
+   * with the EKS cluster.
+   *
+   * If you wish to provide a custom user data script, set this to `false` and
+   * manually invoke `autoscalingGroup.addUserData()`.
+   *
+   * @default true
+   */
+  readonly bootstrapEnabled?: boolean;
+
+  /**
+   * Allows options for node bootstrapping through EC2 user data.
+   */
+  readonly bootstrapOptions?: BootstrapOptions;
 }
 
 /**

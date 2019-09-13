@@ -36,7 +36,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
       runtime: lambda.Runtime.NODEJS_8_10,
       lambdaPurpose: 'AdoptEcrRepository',
       handler: 'handler.handler',
-      code: lambda.Code.asset(path.join(__dirname, 'adopt-repository')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'adopt-repository')),
       uuid: 'dbc60def-c595-44bc-aa5c-28c95d68f62c',
       timeout: cdk.Duration.minutes(5)
     });

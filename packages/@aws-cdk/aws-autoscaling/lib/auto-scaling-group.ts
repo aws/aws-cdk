@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
+import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag, Token, withResolved } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -208,6 +208,20 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
@@ -376,6 +390,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public readonly userData: ec2.UserData;
 
+  /**
+   * The maximum spot price configured for thie autoscaling group. `undefined`
+   * indicates that this group uses on-demand capacity.
+   */
+  public readonly spotPrice?: string;
+
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -416,6 +436,29 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
+      blockDeviceMappings: (props.blockDevices !== undefined ? props.blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+          ({deviceName, volume, mappingEnabled}) => {
+            const {virtualName, ebsDevice: ebs} = volume;
+
+            if (ebs) {
+              const {iops, volumeType} = ebs;
+
+              if (!iops) {
+                if (volumeType === EbsDeviceVolumeType.IO1) {
+                  throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+                }
+              } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+                this.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+              }
+            }
+
+            return {
+              deviceName,
+              ebs,
+              virtualName,
+              noDevice: mappingEnabled !== undefined ? !mappingEnabled : undefined,
+            };
+          }) : undefined),
     });
 
     launchConfig.node.addDependency(this.role);
@@ -427,16 +470,23 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
     const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
 
-    if (desiredCapacity < minCapacity || desiredCapacity > maxCapacity) {
-      throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
-    }
+    withResolved(desiredCapacity, minCapacity, (desired, min) => {
+      if (desired < min) {
+        throw new Error(`Should have minCapacity (${min}) <= desiredCapacity (${desired})`);
+      }
+    });
+    withResolved(desiredCapacity, maxCapacity, (desired, max) => {
+      if (max < desired) {
+        throw new Error(`Should have desiredCapacity (${desired}) <= maxCapacity (${max})`);
+      }
+    });
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
-      minSize: minCapacity.toString(),
-      maxSize: maxCapacity.toString(),
-      desiredCapacity: desiredCapacity.toString(),
+      minSize: stringifyNumber(minCapacity),
+      maxSize: stringifyNumber(maxCapacity),
+      desiredCapacity: stringifyNumber(desiredCapacity),
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
@@ -457,7 +507,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
@@ -471,6 +521,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
+
+    this.spotPrice = props.spotPrice;
   }
 
   /**
@@ -863,4 +915,171 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * Value to keep the metric around
    */
   readonly targetValue: number;
+}
+
+export interface BlockDevice {
+  /**
+   * The device name exposed to the EC2 instance
+   *
+   * @example '/dev/sdh', 'xvdh'
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
+   */
+  readonly deviceName: string;
+
+  /**
+   * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
+   *
+   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
+   *
+   */
+  readonly volume: BlockDeviceVolume;
+
+  /**
+   * If false, the device mapping will be suppressed.
+   * If set to false for the root device, the instance might fail the Amazon EC2 health check.
+   * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
+   *
+   * @default true - device mapping is left untouched
+   */
+  readonly mappingEnabled?: boolean;
+}
+
+export interface EbsDeviceOptionsBase {
+  /**
+   * Indicates whether to delete the volume when the instance is terminated.
+   *
+   * @default - true for Amazon EC2 Auto Scaling, false otherwise (e.g. EBS)
+   */
+  readonly deleteOnTermination?: boolean;
+
+  /**
+   * The number of I/O operations per second (IOPS) to provision for the volume.
+   *
+   * Must only be set for {@link volumeType}: {@link EbsDeviceVolumeType.IO1}
+   *
+   * The maximum ratio of IOPS to volume size (in GiB) is 50:1, so for 5,000 provisioned IOPS,
+   * you need at least 100 GiB storage on the volume.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   */
+  readonly iops?: number;
+
+  /**
+   * The EBS volume type
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   *
+   * @default {@link EbsDeviceVolumeType.GP2}
+   */
+  readonly volumeType?: EbsDeviceVolumeType;
+}
+
+export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
+  /**
+   * Specifies whether the EBS volume is encrypted.
+   * Encrypted EBS volumes can only be attached to instances that support Amazon EBS encryption
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances
+   *
+   * @default false
+   */
+  readonly encrypted?: boolean;
+}
+
+export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
+  /**
+   * The volume size, in Gibibytes (GiB)
+   *
+   * If you specify volumeSize, it must be equal or greater than the size of the snapshot.
+   *
+   * @default - The snapshot size
+   */
+  readonly volumeSize?: number;
+}
+
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+  readonly snapshotId?: string;
+}
+
+/**
+ * Describes a block device mapping for an Auto Scaling group.
+ */
+export class BlockDeviceVolume  {
+  /**
+   * Creates a new Elastic Block Storage device
+   *
+   * @param volumeSize The volume size, in Gibibytes (GiB)
+   * @param options additional device options
+   */
+  public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
+    return new this({...options, volumeSize});
+  }
+
+  /**
+   * Creates a new Elastic Block Storage device from an existing snapshot
+   *
+   * @param snapshotId The snapshot ID of the volume to use
+   * @param options additional device options
+   */
+  public static ebsFromSnapshot(snapshotId: string, options: EbsDeviceSnapshotOptions = {}): BlockDeviceVolume {
+    return new this({...options, snapshotId});
+  }
+
+  /**
+   * Creates a virtual, ephemeral device.
+   * The name will be in the form ephemeral{volumeIndex}.
+   *
+   * @param volumeIndex the volume index. Must be equal or greater than 0
+   */
+  public static ephemeral(volumeIndex: number) {
+    if (volumeIndex < 0) {
+      throw new Error(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+    }
+
+    return new this(undefined, `ephemeral${volumeIndex}`);
+  }
+
+  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
+  }
+}
+
+/**
+ * Supported EBS volume types for {@link AutoScalingGroupProps.blockDevices}
+ */
+export enum EbsDeviceVolumeType {
+  /**
+   * Magnetic
+   */
+  STANDARD = 'standard',
+
+  /**
+   *  Provisioned IOPS SSD
+   */
+  IO1 = 'io1',
+
+  /**
+   * General Purpose SSD
+   */
+  GP2 = 'gp2',
+
+  /**
+   * Throughput Optimized HDD
+   */
+  ST1 = 'st1',
+
+  /**
+   * Cold HDD
+   */
+  SC1 = 'sc1',
+}
+
+/**
+ * Stringify a number directly or lazily if it's a Token
+ */
+function stringifyNumber(x: number) {
+  if (Token.isUnresolved(x)) {
+    return Lazy.stringValue({ produce: context => `${context.resolve(x)}` });
+  } else {
+    return `${x}`;
+  }
 }
