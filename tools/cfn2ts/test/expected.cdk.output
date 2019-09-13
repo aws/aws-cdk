@@ -14345,6 +14345,16 @@ export namespace aws.cognito.UserPool {
         CustomMessage?: string | core.Token;
 
         /**
+         * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-lambdaconfig.html#cfn-cognito-userpool-lambdaconfig-pretokengeneration
+         */
+        PreTokenGeneration?: string | core.Token;
+
+        /**
+         * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-lambdaconfig.html#cfn-cognito-userpool-lambdaconfig-usermigration
+         */
+        UserMigration?: string | core.Token;
+
+        /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-lambdaconfig.html#cfn-cognito-userpool-lambdaconfig-verifyauthchallengeresponse
          */
         VerifyAuthChallengeResponse?: string | core.Token;
