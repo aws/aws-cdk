@@ -1,6 +1,6 @@
 # See https://doc.mergify.io
 
-pull_request_rules:    
+pull_request_rules:
   - name: automatic merge
     actions:
       comment:
