@@ -1,5 +1,5 @@
 import { CfnTaskDefinition } from '../ecs.generated';
-import { ProxyConfiguration, ProxyConfigurationConfigProps } from './proxy-configuration';
+import { ProxyConfiguration } from './proxy-configuration';
 
 /**
  * Interface for setting the properties of proxy configuration.
@@ -45,9 +45,14 @@ export interface AppMeshProxyConfigurationProps {
 }
 
 /**
- * The configuration to use when setting a proxy configuration.
+ * The configuration to use when setting an App Mesh proxy configuration.
  */
-export interface AppMeshProxyConfigurationConfigProps extends ProxyConfigurationConfigProps {
+export interface AppMeshProxyConfigurationConfigProps {
+  /**
+   * The name of the container that will serve as the App Mesh proxy.
+   */
+  readonly containerName: string;
+
   /**
    * The set of network configuration parameters to provide the Container Network Interface (CNI) plugin.
    */
@@ -55,7 +60,7 @@ export interface AppMeshProxyConfigurationConfigProps extends ProxyConfiguration
 }
 
 /**
- * The AppMeshProxyConfiguration property specifies the details for the App Mesh proxy.
+ * The class for App Mesh proxy configurations.
  *
  * For tasks using the EC2 launch type, the container instances require at least version 1.26.0 of the container agent and at least version
  * 1.26.0-1 of the ecs-init package to enable a proxy configuration. If your container instances are launched from the Amazon ECS-optimized

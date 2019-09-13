@@ -4,22 +4,44 @@ import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
 export = {
-  "correctly sets all appMeshProxyConfiguration"(test: Test) {
+  "correctly sets all genericProxyConfiguration"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.genericProxyConfiguration({
       containerName: "web",
-      properties: {
-        ignoredUID: 1337,
-        ignoredGID: 1338,
-        appPorts: [80, 81],
-        proxyIngressPort: 80,
-        proxyEgressPort: 81,
-        egressIgnoredPorts: [8081],
-        egressIgnoredIPs: ["169.254.170.2", "169.254.169.254"],
-      }
+      properties: [
+        {
+          name: "IgnoredUID",
+          value: "1337"
+        },
+        {
+          name: "IgnoredGID",
+          value: "1338"
+        },
+        {
+          name: "AppPorts",
+          value: "80,81"
+        },
+        {
+          name: "ProxyIngressPort",
+          value: "80"
+        },
+        {
+          name: "ProxyEgressPort",
+          value: "81"
+        },
+        {
+          name: "EgressIgnoredPorts",
+          value: "8081"
+        },
+        {
+          name: "EgressIgnoredIPs",
+          value: "169.254.170.2,169.254.169.254"
+        }
+      ],
+      type: "APPMESH"
     })});
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
@@ -66,19 +88,32 @@ export = {
     test.done();
   },
 
-  "correctly sets appMeshProxyConfiguration with default properties set"(test: Test) {
+  "correctly sets genericProxyConfiguration with default properties set"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.genericProxyConfiguration({
       containerName: "web",
-      properties: {
-        ignoredUID: 1337,
-        appPorts: [80, 81],
-        proxyIngressPort: 80,
-        proxyEgressPort: 81
-      }
+      properties: [
+        {
+          name: "IgnoredUID",
+          value: "1337"
+        },
+        {
+          name: "AppPorts",
+          value: "80,81"
+        },
+        {
+          name: "ProxyIngressPort",
+          value: "80"
+        },
+        {
+          name: "ProxyEgressPort",
+          value: "81"
+        }
+      ],
+      type: "APPMESH"
     })});
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
@@ -113,13 +148,14 @@ export = {
     test.done();
   },
 
-  "correctly sets appMeshProxyConfiguration with no properties set"(test: Test) {
+  "correctly sets genericProxyConfiguration with no properties set"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.genericProxyConfiguration({
       containerName: "web",
+      type: "APPMESH"
     })});
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
@@ -133,25 +169,6 @@ export = {
         Type: "APPMESH"
       }
     }));
-    test.done();
-  },
-
-  "throws when neither of IgnoredUID and IgnoredGID is set"(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // THEN
-    test.throws(() => {
-      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-        containerName: "web",
-        properties: {
-          appPorts: [80, 81],
-          proxyIngressPort: 80,
-          proxyEgressPort: 81
-        }
-      })});
-    }, /Either ignoredUID or ignoredGID should be specified./);
-
     test.done();
   }
 };
