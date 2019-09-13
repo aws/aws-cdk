@@ -1,6 +1,21 @@
 # See https://doc.mergify.io
 
 pull_request_rules:
+  - name: dependabot merge
+    actions:
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - author=dependabot[bot]
+      - author=dependabot-preview[bot]
+      - -label~=^(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+      
   - name: automatic merge
     actions:
       comment:
@@ -23,10 +38,9 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
       - status-success=Semantic Pull Request
+
   - name: comment checklist
     actions:
-      label:
-        add: [ automerge-enabled ]
       comment:
         message: |
           Thanks so much for taking the time to contribute to the AWS CDK ❤️
@@ -53,8 +67,8 @@ pull_request_rules:
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
-      - -label~=^(automerge-enabled)
       - base=master
+
   - name: comment on CI fail
     actions:
       comment:
@@ -63,6 +77,7 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
+
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
@@ -70,6 +85,7 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - base=master
+
   - name: if fails conventional commits
     actions:
       comment:
