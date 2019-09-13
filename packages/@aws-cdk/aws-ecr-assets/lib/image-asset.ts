@@ -54,7 +54,6 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
   public repository: ecr.IRepository;
 
   public readonly sourceHash: string;
-  public readonly artifactHash: string;
 
   /**
    * Directory where the source files are stored
@@ -115,7 +114,6 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     // haven't already started using the image.
     this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName });
     this.imageUri = `${this.repository.repositoryUri}@sha256:${imageSha}`;
-    this.artifactHash = imageSha;
   }
 }
 

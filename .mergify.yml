@@ -10,7 +10,6 @@ pull_request_rules:
         method: squash
         strict_method: merge
       delete_head_branch: {}
-      dismiss_reviews: {}
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
@@ -23,42 +22,52 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
       - status-success=Semantic Pull Request
+  - name: automatically merge dependabot
+    actions:
+      comment:
+        message: Thanks for keeping us safe dependabot! ❤️
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - author=dependabot[bot]
+      - author=dependabot-preview[bot]
+      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: comment checklist
     actions:
-      label:
-        add: [ automerge-enabled ]
       comment:
         message: |
-          ### Pull Request Checklist
+          Thanks so much for taking the time to contribute to the AWS CDK ❤️
 
-           * [ ] Testing
-            - Unit test added (prefer to add a new test rather than modify existing tests)
-            - CLI change? Re-run/add [CLI integration tests](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#running-cli-integration-tests)
-           * [ ] Documentation
-            - **Inline docs**: make sure all public APIs are documented (copy & paste from official AWS docs)
-            - **README**: update module README
-            - **Design**: for significant features, follow the [design process](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#step-2-design-optional)
-           * [ ] Title uses the format `type(scope): text`
-            - __Type__: `fix`, `feat`, `refactor` go into CHANGELOG, `chore` is hidden
-            - __Scope__: name of the module without the `aws-` or `cdk-` prefix or postfix (e.g. `s3` instead of `aws-s3-deployment`)
-            - __Style__: use all **lower-case**, **do not** end with a period
-           * [ ] Description
+          We will shortly assign someone to review this pull request and help get it
+          merged. In the meantime, please **take a minute to make sure you follow this
+          checklist**:
+
+          * **PR title `type(scope): text`**
+            * __type__: `fix`, `feat`, `refactor` go into CHANGELOG, `chore` is hidden
+            - __scope__: name of module without `aws-` or `cdk-` prefix or postfix (e.g. `s3` instead of `aws-s3-deployment`)
+            - __text__: use all **lower-case**, **do not** end with a period, do not include issue refs
+          * **PR Description**
             - __Rationale__: describe rationale of change and approach taken
-            - __Issues__: Indicate issues fixed via: `fixes #xxx` or `closes #xxx`
+            - __Issues__: indicate issues fixed via: `fixes #xxx` or `closes #xxx`
             - __Breaking?__: last paragraph: `BREAKING CHANGE: <describe what changed + link for details>`
-           * [ ] Sensitive Modules (requires 2 PR approvers)
-            - IAM document library (in @aws-cdk/aws-iam)
-            - EC2 security groups and ACLs (in @aws-cdk/aws-ec2)
-            - Grant APIs (if not based on official documentation with a reference)
+          * **Testing**
+            - Unit test added. Prefer to add a new test rather than modify existing tests
+            - **CLI or init templates change**? Re-run/add [CLI integration tests](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#running-cli-integration-tests)
+          * **Documentation**
+            - **README**: update module README to describe new features
+            - **API docs**: public APIs must be documented. Copy from official AWS docs when possible
+            - **Design**: for significant features, follow [design process](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#step-2-design-optional)
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
-      - -label~=^(automerge-enabled)
       - base=master
   - name: comment on CI fail
     actions:
       comment:
-        message: Codebuild (Continuous Integration) build failed for current commits. Please check log and resolve before PR is merged.
+        message: Continuous integration build failed
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
@@ -69,6 +78,7 @@ pull_request_rules:
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
+      - author!=@aws/aws-cdk-core
       - base=master
   - name: if fails conventional commits
     actions:
