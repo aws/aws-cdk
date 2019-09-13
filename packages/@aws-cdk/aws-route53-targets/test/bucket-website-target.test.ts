@@ -28,7 +28,6 @@ test('use S3 bucket website as record target', () => {
   });
 });
 
-
 test('use S3 bucket website as record target (fromBucketName)', () => {
   // GIVEN
   const app = new App();
@@ -62,7 +61,6 @@ test('use S3 bucket website as record target (fromBucketName)', () => {
     },
   });
 });
-
 
 test('throws if region agnostic', () => {
   // GIVEN
