@@ -714,7 +714,7 @@ Object {
       },
       "Type": "AWS::EC2::InternetGateway",
     },
-    "VPCPrivateSubnet1DefaultRouteAE1D6490": Object {
+    "VPCPrivateSubnet1DefaultRoute22A20650": Object {
       "Properties": Object {
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": Object {
@@ -783,7 +783,7 @@ Object {
       },
       "Type": "AWS::EC2::Subnet",
     },
-    "VPCPublicSubnet1DefaultRoute91CEF279": Object {
+    "VPCPublicSubnet1DefaultRouteF3877B91": Object {
       "DependsOn": Array [
         "VPCVPCGW99B986DC",
       ],
@@ -2873,7 +2873,7 @@ Object {
       },
       "Type": "AWS::EC2::InternetGateway",
     },
-    "VPCPrivateSubnet1DefaultRouteAE1D6490": Object {
+    "VPCPrivateSubnet1DefaultRoute22A20650": Object {
       "Properties": Object {
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": Object {
@@ -2942,7 +2942,7 @@ Object {
       },
       "Type": "AWS::EC2::Subnet",
     },
-    "VPCPrivateSubnet2DefaultRouteF4F5CFD2": Object {
+    "VPCPrivateSubnet2DefaultRouteB34B54C9": Object {
       "Properties": Object {
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": Object {
@@ -3011,7 +3011,7 @@ Object {
       },
       "Type": "AWS::EC2::Subnet",
     },
-    "VPCPublicSubnet1DefaultRoute91CEF279": Object {
+    "VPCPublicSubnet1DefaultRouteF3877B91": Object {
       "DependsOn": Array [
         "VPCVPCGW99B986DC",
       ],
@@ -3109,7 +3109,7 @@ Object {
       },
       "Type": "AWS::EC2::Subnet",
     },
-    "VPCPublicSubnet2DefaultRouteB7481BBA": Object {
+    "VPCPublicSubnet2DefaultRoute24CCBAA6": Object {
       "DependsOn": Array [
         "VPCVPCGW99B986DC",
       ],
