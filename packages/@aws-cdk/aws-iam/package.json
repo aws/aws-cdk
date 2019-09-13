@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iam",
-  "version": "1.5.0",
+  "version": "1.8.0",
   "description": "CDK routines for easily assigning correct and minimal IAM permissions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,19 +64,31 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.5.0",
+    "@aws-cdk/assert": "^1.8.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
+    "jest": "^24.9.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/region-info": "^1.5.0"
+    "@aws-cdk/core": "^1.8.0",
+    "@aws-cdk/region-info": "^1.8.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.5.0",
-    "@aws-cdk/region-info": "^1.5.0"
+    "@aws-cdk/core": "^1.8.0",
+    "@aws-cdk/region-info": "^1.8.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 70
+      }
+    }
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
@@ -84,6 +96,7 @@
   },
   "awslint": {
     "exclude": [
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy"
     ]

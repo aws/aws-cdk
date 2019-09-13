@@ -19,7 +19,8 @@
     "strictPropertyInitialization":false,
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "typeRoots": ["./node_modules/@types"]
   },
   "exclude": ["cdk.out"]
 }

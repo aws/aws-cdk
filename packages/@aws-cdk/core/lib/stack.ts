@@ -154,6 +154,14 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
+   * The name of the CloudFormation template file emitted to the output
+   * directory during synthesis.
+   *
+   * @example MyStack.template.json
+   */
+  public readonly templateFile: string;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -197,6 +205,8 @@ export class Stack extends Construct implements ITaggable {
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
+
+    this.templateFile = `${this.stackName}.template.json`;
   }
 
   /**
@@ -512,17 +522,16 @@ export class Stack extends Construct implements ITaggable {
 
   protected synthesize(session: ISynthesisSession): void {
     const builder = session.assembly;
-    const template = `${this.stackName}.template.json`;
 
     // write the CloudFormation template as a JSON file
-    const outPath = path.join(builder.outdir, template);
+    const outPath = path.join(builder.outdir, this.templateFile);
     fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
 
     const deps = this.dependencies.map(s => s.stackName);
     const meta = this.collectMetadata();
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
-      templateFile: template
+      templateFile: this.templateFile
     };
 
     // add an artifact that represents this stack

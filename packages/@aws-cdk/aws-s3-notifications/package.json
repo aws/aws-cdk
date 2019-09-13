@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3-notifications",
-  "version": "1.5.0",
+  "version": "1.8.0",
   "description": "Bucket Notifications API for AWS S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -69,28 +69,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.5.0",
+    "@aws-cdk/assert": "^1.8.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/aws-lambda": "^1.5.0",
-    "@aws-cdk/aws-s3": "^1.5.0",
-    "@aws-cdk/aws-sns": "^1.5.0",
-    "@aws-cdk/aws-sqs": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0"
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/aws-lambda": "^1.8.0",
+    "@aws-cdk/aws-s3": "^1.8.0",
+    "@aws-cdk/aws-sns": "^1.8.0",
+    "@aws-cdk/aws-sqs": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.5.0",
-    "@aws-cdk/aws-lambda": "^1.5.0",
-    "@aws-cdk/aws-s3": "^1.5.0",
-    "@aws-cdk/aws-sns": "^1.5.0",
-    "@aws-cdk/aws-sqs": "^1.5.0",
-    "@aws-cdk/core": "^1.5.0"
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/aws-lambda": "^1.8.0",
+    "@aws-cdk/aws-s3": "^1.8.0",
+    "@aws-cdk/aws-sns": "^1.8.0",
+    "@aws-cdk/aws-sqs": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
     "node": ">= 8.10.0"
