@@ -64,14 +64,6 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - base=master
-  - name: comment on CI fail
-    actions:
-      comment:
-        message: Continuous integration build failed
-    conditions:
-      - author!=dependabot[bot]
-      - author!=dependabot-preview[bot]
-      - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
