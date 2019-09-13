@@ -92,7 +92,7 @@ export class GelfLogDriver extends LogDriver {
         'gelf-compression-type': this.props.compressionType,
         'gelf-compression-level': this.props.compressionLevel,
         'gelf-tcp-max-reconnect': this.props.tcpMaxReconnect,
-        'gelf-tcp-reconnect-delay': this.props.tcpReconnectDelay,
+        'gelf-tcp-reconnect-delay': this.props.tcpReconnectDelay && this.props.tcpReconnectDelay.toSeconds(),
         ...renderCommonLogDriverOptions(this.props)
       }),
     };

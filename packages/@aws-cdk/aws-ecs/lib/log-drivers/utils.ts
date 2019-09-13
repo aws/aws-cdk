@@ -6,7 +6,7 @@ import { BaseLogDriverProps } from './base-log-driver';
  */
 export function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): { [key: string]: string } {
     for (const key of Object.keys(x)) {
-      if (!x[key]) {
+      if (x[key] === undefined) {
         delete x[key];
       }
     }

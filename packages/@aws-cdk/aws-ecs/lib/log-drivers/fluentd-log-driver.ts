@@ -79,7 +79,7 @@ export class FluentdLogDriver extends LogDriver {
         'fluentd-address': this.props.address,
         'fluentd-async-connect': this.props.asyncConnect,
         'fluentd-buffer-limit': this.props.bufferLimit,
-        'fluentd-retry-wait': this.props.retryWait,
+        'fluentd-retry-wait': this.props.retryWait && this.props.retryWait.toSeconds(),
         'fluentd-max-retries': this.props.maxRetries,
         'fluentd-sub-second-precision': this.props.subSecondPrecision,
         ...renderCommonLogDriverOptions(this.props)

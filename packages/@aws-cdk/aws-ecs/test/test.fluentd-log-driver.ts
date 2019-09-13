@@ -107,7 +107,7 @@ export = {
               'tag': 'my-tag',
               'labels': 'one,two,three',
               'env': 'one,two,three',
-              'envRegex': '[0-9]{1}'
+              'env-regex': '[0-9]{1}'
             }
           }
         }
