@@ -50,16 +50,22 @@ describe('IAM polocy document', () => {
     p3.effect = Effect.ALLOW;
     p3.addNotActions('cloudformation:UpdateTerminationProtection');
 
+    const p4 = new PolicyStatement();
+    p4.effect = Effect.DENY;
+    p4.addNotPrincipals(new CanonicalUserPrincipal('OnlyAuthorizedUser'));
+
     doc.addStatements(p1);
     doc.addStatements(p2);
     doc.addStatements(p3);
+    doc.addStatements(p4);
 
     expect(stack.resolve(doc)).toEqual({
       Version: '2012-10-17',
       Statement:
         [{ Effect: 'Allow', Action: 'sqs:SendMessage', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
           { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
-          { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' } ] });
+          { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' },
+          { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } } ] });
   });
 
   test('Cannot combine Actions and NotActions', () => {
@@ -78,6 +84,15 @@ describe('IAM polocy document', () => {
         notResources: ['def'],
       });
     }).toThrow(/Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
+  });
+
+  test('Cannot combine Principals and NotPrincipals', () => {
+    expect(() => {
+      new PolicyStatement({
+        principals: [new CanonicalUserPrincipal('abc')],
+        notPrincipals: [new CanonicalUserPrincipal('def')],
+      });
+    }).toThrow(/Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added/);
   });
 
   test('Permission allows specifying multiple actions upon construction', () => {
@@ -192,6 +207,12 @@ describe('IAM polocy document', () => {
     test('true if there is a principal', () => {
       const p = new PolicyStatement();
       p.addArnPrincipal('bla');
+      expect(p.hasPrincipal).toEqual(true);
+    });
+
+    test('true if there is a notPrincipal', () => {
+      const p = new PolicyStatement();
+      p.addNotPrincipals(new CanonicalUserPrincipal('test'));
       expect(p.hasPrincipal).toEqual(true);
     });
   });

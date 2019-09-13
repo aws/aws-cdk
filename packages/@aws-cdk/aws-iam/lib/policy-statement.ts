@@ -16,6 +16,7 @@ export class PolicyStatement {
   private readonly action = new Array<any>();
   private readonly notAction = new Array<any>();
   private readonly principal: { [key: string]: any[] } = {};
+  private readonly notPrincipal: { [key: string]: any[] } = {};
   private readonly resource = new Array<any>();
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
@@ -26,6 +27,7 @@ export class PolicyStatement {
     this.addActions(...props.actions || []);
     this.addNotActions(...props.notActions || []);
     this.addPrincipals(...props.principals || []);
+    this.addNotPrincipals(...props.notPrincipals || []);
     this.addResources(...props.resources || []);
     this.addNotResources(...props.notResources || []);
     if (props.conditions !== undefined) {
@@ -59,13 +61,24 @@ export class PolicyStatement {
    * Indicates if this permission has a "Principal" section.
    */
   public get hasPrincipal() {
-    return Object.keys(this.principal).length > 0;
+    return Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0;
   }
 
   public addPrincipals(...principals: IPrincipal[]) {
     for (const principal of principals) {
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
+      this.addConditions(fragment.conditions);
+    }
+  }
+
+  public addNotPrincipals(...notPrincipals: IPrincipal[]) {
+    if (Object.keys(notPrincipals).length > 0 && Object.keys(this.principal).length > 0) {
+      throw new Error(`Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added`);
+    }
+    for (const notPrincipal of notPrincipals) {
+      const fragment = notPrincipal.policyFragment;
+      mergePrincipal(this.notPrincipal, fragment.principalJson);
       this.addConditions(fragment.conditions);
     }
   }
@@ -170,6 +183,7 @@ export class PolicyStatement {
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
       Principal: _normPrincipal(this.principal),
+      NotPrincipal: _normPrincipal(this.notPrincipal),
       Resource: _norm(this.resource),
       NotResource: _norm(this.notResource),
       Sid: _norm(this.sid),
@@ -268,6 +282,13 @@ export interface PolicyStatementProps {
    * @default - no principals
    */
   readonly principals?: IPrincipal[];
+
+  /**
+   * List of not principals to add to the statement
+   *
+   * @default - no not principals
+   */
+  readonly notPrincipals?: IPrincipal[];
 
   /**
    * Resource ARNs to add to the statement
