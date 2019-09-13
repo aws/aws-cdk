@@ -7,7 +7,7 @@ import {RegionInfo} from '@aws-cdk/region-info';
  * Use a S3 as an alias record target
  */
 export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
-  constructor(private readonly bucket: s3.Bucket) {
+  constructor(private readonly bucket: s3.IBucket) {
   }
 
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
@@ -29,7 +29,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
 
     return {
       hostedZoneId,
-      dnsName: this.bucket.bucketWebsiteUrl,
+      dnsName: this.bucket.bucketRegionalDomainName,
     };
   }
 }
