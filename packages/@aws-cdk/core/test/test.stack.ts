@@ -436,6 +436,25 @@ export = {
     test.done();
   },
 
+  'urlSuffix does not imply a stack dependency'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+
+    // WHEN
+    new CfnOutput(second, 'Output', {
+      value: first.urlSuffix
+    });
+
+    // THEN
+    app.synth();
+
+    test.equal(second.dependencies.length, 0);
+
+    test.done();
+  },
+
   'stack with region supplied via props returns literal value'(test: Test) {
     // GIVEN
     const app = new App();
