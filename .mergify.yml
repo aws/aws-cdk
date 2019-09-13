@@ -1,21 +1,6 @@
 # See https://doc.mergify.io
 
-pull_request_rules:
-  - name: dependabot merge
-    actions:
-      merge:
-        strict: smart
-        method: squash
-        strict_method: merge
-      delete_head_branch: {}
-    conditions:
-      - author=dependabot[bot]
-      - author=dependabot-preview[bot]
-      - -label~=^(blocked|do-not-merge)
-      - -merged
-      - -closed
-      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
-      
+pull_request_rules:    
   - name: automatic merge
     actions:
       comment:
@@ -25,7 +10,6 @@ pull_request_rules:
         method: squash
         strict_method: merge
       delete_head_branch: {}
-      dismiss_reviews: {}
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
@@ -38,7 +22,19 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
       - status-success=Semantic Pull Request
-
+  - name: automatically merge dependabot
+    actions:
+      comment:
+        message: Thanks for keeping us safe dependabot! ❤️
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - author=dependabot[bot]
+      - author=dependabot-preview[bot]
+      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: comment checklist
     actions:
       comment:
@@ -68,7 +64,6 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - base=master
-
   - name: comment on CI fail
     actions:
       comment:
@@ -77,15 +72,14 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
-
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
+      - author!=@aws/aws-cdk-core
       - base=master
-
   - name: if fails conventional commits
     actions:
       comment:
