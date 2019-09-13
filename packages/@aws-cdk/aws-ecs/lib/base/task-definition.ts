@@ -4,7 +4,7 @@ import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
-import { ProxyConfiguration } from '../proxy-configuration';
+import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 
 /**
  * The interface for all task definitions.

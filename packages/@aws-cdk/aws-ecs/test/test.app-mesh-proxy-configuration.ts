@@ -4,12 +4,12 @@ import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
 export = {
-  "correctly sets all proxyConfiguration"(test: Test) {
+  "correctly sets all appMeshProxyConfiguration"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: new ecs.ProxyConfiguration({
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfiguration.appMeshProxyConfiguration({
         containerName: "web",
         properties: {
           ignoredUID: 1337,
@@ -68,12 +68,12 @@ export = {
     test.done();
   },
 
-  "correctly sets proxyConfiguration with default properties set"(test: Test) {
+  "correctly sets appMeshProxyConfiguration with default properties set"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: new ecs.ProxyConfiguration({
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfiguration.appMeshProxyConfiguration({
         containerName: "web",
         properties: {
           ignoredUID: 1337,
@@ -116,12 +116,12 @@ export = {
     test.done();
   },
 
-  "correctly sets proxyConfiguration with no properties set"(test: Test) {
+  "correctly sets appMeshProxyConfiguration with no properties set"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: new ecs.ProxyConfiguration({
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfiguration.appMeshProxyConfiguration({
         containerName: "web",
       })
     });
@@ -146,7 +146,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: new ecs.ProxyConfiguration({
+      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfiguration.appMeshProxyConfiguration({
         containerName: "web",
         properties: {
           appPorts: [80, 81],
