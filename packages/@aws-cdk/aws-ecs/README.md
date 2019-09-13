@@ -352,3 +352,118 @@ rule.addTarget(new targets.EcsTask({
   }]
 }));
 ```
+
+## Log Drivers
+
+Currently Supported Log Drivers:
+
+- awslogs
+- fluentd
+- gelf
+- journald
+- json-file
+- splunk
+- syslog  
+
+### awslogs Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
+});
+```
+
+### fluentd Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.fluentd()
+});
+```
+
+### gelf Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.gelf()
+});
+```
+
+### journald Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.journald()
+});
+```
+
+### json-file Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.jsonFile()
+});
+```
+
+### splunk Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.splunk()
+});
+```
+
+### syslog Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.syslog()
+});
+```
+
+### Generic Log Driver
+
+A generic log driver object exists to provide a lower level abstraction of the log driver configuration.
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.GenericLogDriver({
+    logDriver: 'fluentd',
+    options: {
+      tag: 'example-tag'
+    }
+  })
+});
+```
