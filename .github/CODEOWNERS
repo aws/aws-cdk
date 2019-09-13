@@ -17,7 +17,7 @@
 /packages/@aws-cdk/aws-config                     @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-opsworks                   @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-opsworkscm                 @aws/aws-cdk-team  @eladb
-/packages/@aws-cdk/aws-sam                        @aws/aws-cdk-team  @eladb
+/packages/@aws-cdk/aws-sam                        @aws/aws-cdk-team  @eladb @nija-at
 /packages/@aws-cdk/aws-secretsmanager             @aws/aws-cdk-team  @rix0rrr
 /packages/@aws-cdk/aws-servicecatalog             @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-ssm                        @aws/aws-cdk-team  @eladb
@@ -71,9 +71,9 @@
 /packages/@aws-cdk/aws-iotthingsgraph             @aws/aws-cdk-team  @shivlaks
 /packages/@aws-cdk/aws-eks                        @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/cfnspec                        @aws/aws-cdk-team  @eladb
-/packages/@aws-cdk/aws-sns                        @aws/aws-cdk-team  @garnaat
-/packages/@aws-cdk/aws-sns-subscriptions          @aws/aws-cdk-team  @garnaat
-/packages/@aws-cdk/aws-sqs                        @aws/aws-cdk-team  @garnaat
+/packages/@aws-cdk/aws-sns                        @aws/aws-cdk-team  @garnaat @nija-at
+/packages/@aws-cdk/aws-sns-subscriptions          @aws/aws-cdk-team  @garnaat @nija-at
+/packages/@aws-cdk/aws-sqs                        @aws/aws-cdk-team  @garnaat @nija-at
 /packages/@aws-cdk/aws-robomaker                  @aws/aws-cdk-team  @skinny85
 /packages/@aws-cdk/aws-sagemaker                  @aws/aws-cdk-team  @skinny85
 /packages/@aws-cdk/aws-amplify                    @aws/aws-cdk-team  @shivlaks
@@ -88,14 +88,14 @@
 /packages/@aws-cdk/aws-kms                        @aws/aws-cdk-team  @rix0rrr
 /packages/@aws-cdk/aws-iam                        @aws/aws-cdk-team  @rix0rrr
 /packages/@aws-cdk/aws-inspector                  @aws/aws-cdk-team  @rix0rrr
-/packages/@aws-cdk/aws-apigateway                 @aws/aws-cdk-team  @eladb
-/packages/@aws-cdk/aws-cognito                    @aws/aws-cdk-team  @eladb
-/packages/@aws-cdk/aws-lambda                     @aws/aws-cdk-team  @eladb
-/packages/@aws-cdk/aws-lambda-event-sources       @aws/aws-cdk-team  @eladb
+/packages/@aws-cdk/aws-apigateway                 @aws/aws-cdk-team  @eladb @nija-at
+/packages/@aws-cdk/aws-cognito                    @aws/aws-cdk-team  @eladb @nija-at
+/packages/@aws-cdk/aws-lambda                     @aws/aws-cdk-team  @eladb @nija-at
+/packages/@aws-cdk/aws-lambda-event-sources       @aws/aws-cdk-team  @eladb @nija-at
 /packages/@aws-cdk/aws-stepfunctions              @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-stepfunctions-tasks        @aws/aws-cdk-team  @eladb
-/packages/@aws-cdk/aws-waf                        @aws/aws-cdk-team  @eladb
-/packages/@aws-cdk/aws-wafregional                @aws/aws-cdk-team  @eladb
+/packages/@aws-cdk/aws-waf                        @aws/aws-cdk-team  @eladb @nija-at
+/packages/@aws-cdk/aws-wafregional                @aws/aws-cdk-team  @eladb @nija-at
 /packages/@aws-cdk/aws-cloudfront                 @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-mediastore                 @aws/aws-cdk-team  @eladb
 /packages/@aws-cdk/aws-s3                         @aws/aws-cdk-team  @eladb
