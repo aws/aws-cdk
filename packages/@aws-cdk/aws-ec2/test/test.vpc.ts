@@ -859,6 +859,25 @@ export = {
         }
       }));
       test.done();
+    },
+    'should be able to add route to one subnet'(test: Test) {
+      const stack = new Stack();
+      const vpc = new Vpc(stack, "Vpc");
+      const subnet = vpc.selectSubnets({subnetType: SubnetType.PRIVATE}).subnets[0];
+      subnet.addRoute("CustomRoute", {
+        destinationCidr: "123.123.123.123/32",
+        targetType: RouteTargetType.INSTANCE_ID,
+        targetId: 'i-12341234'
+      });
+
+      expect(stack).to(haveResource("AWS::EC2::Route", {
+        DestinationCidrBlock: "123.123.123.123/32",
+        InstanceId: "i-12341234",
+        RouteTableId: {
+          Ref: "VpcPrivateSubnet1RouteTableB2C5B500"
+        }
+      }));
+      test.done();
     }
   }
 };

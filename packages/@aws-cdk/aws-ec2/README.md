@@ -405,6 +405,60 @@ const vpnConnection = vpc.addVpnConnection('Dynamic', {
 const state = vpnConnection.metricTunnelState();
 ```
 
+## Routes
+Each subnet by default comes with a route table and its routes.
+You can add routes specific to a subnet using the `addRoute` method on a subnet or if you want to add to all the route tables you can use the `addRoute` on the VPC instance.
+
+```ts
+const vpc = new Vpc(stack, "Vpc");
+
+vpc.addRoute("NewRoute", {
+  destinationCidr: "122.122.122.122/32", /* required or you can use the destinationCidrIpv6 */
+  targetType: RouteTargetType.INSTANCE_ID, /* required */
+  targetId: "i-12341234" /* required */,
+  subnetSelection: { subnetType: SubnetType.PUBLIC} /* optional */
+})
+```
+
+```ts
+const vpc = new Vpc(stack, "Vpc");
+
+const subnet = vpc.selectSubnets({
+  subnetType: SubnetType.PRIVATE
+  }).subnets[0] // we only want to add to one private subnet
+
+subnet.addRoute("DemoRoute", {
+  destinationCidr: "122.122.122.122/32", /* required or you can use the destinationCidrIpv6 */
+  targetType: RouteTargetType.INSTANCE_ID, /* required */
+  targetId: "i-12341234" /* required */,
+})
+```
+
+## VPC peering connection
+To create a vpc peering connection with another VPC in another stack you can simply use `addPeeringConnection` method from the VPC initiating the connection
+
+```ts
+const vpc = new Vpc(stack, "Vpc")
+// Make sure that the VPCs have different CIDR blocks
+const anotherVpc = new Vpc(stack, "AnotherVpc", {
+  cidr: "10.2.0.0/16"
+})
+
+vpc.addPeeringConnection("PeeringConnectionWithAnotherVPC", {peeredVpc: anotherVpc} )
+```
+
+You can also create a VPC peering connection with a VPC outside of the CDK stack
+
+```ts
+const vpc = new Vpc(stack, "Vpc")
+
+vpc.addPeeringConnection("PeeringConnectionWithVPCOutsideCDK", {
+  peeredVpcId: "vpc-id"
+})
+
+```
+> NOTE: In case of **imported VPC**, you have to provide the **routetable ids** otherwise it won't work.
+
 ## VPC endpoints
 A VPC endpoint enables you to privately connect your VPC to supported AWS services and VPC endpoint services powered by PrivateLink without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Connect connection. Instances in your VPC do not require public IP addresses to communicate with resources in the service. Traffic between your VPC and the other service does not leave the Amazon network.
 
