@@ -37,8 +37,6 @@ pull_request_rules:
       - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: comment checklist
     actions:
-      label:
-        add: [ automerge-enabled ]
       comment:
         message: |
           Thanks so much for taking the time to contribute to the AWS CDK ❤️
@@ -65,7 +63,6 @@ pull_request_rules:
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
-      - -label~=^(automerge-enabled)
       - base=master
   - name: comment on CI fail
     actions:
