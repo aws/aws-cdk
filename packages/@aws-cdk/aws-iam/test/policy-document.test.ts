@@ -86,13 +86,22 @@ describe('IAM polocy document', () => {
     }).toThrow(/Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
   });
 
-  test('Cannot combine Principals and NotPrincipals', () => {
+  test('Cannot add NotPrincipals when Principals exist', () => {
+    const stmt = new PolicyStatement({
+      principals: [new CanonicalUserPrincipal('abc')],
+    });
     expect(() => {
-      new PolicyStatement({
-        principals: [new CanonicalUserPrincipal('abc')],
-        notPrincipals: [new CanonicalUserPrincipal('def')],
-      });
+      stmt.addNotPrincipals(new CanonicalUserPrincipal('def'));
     }).toThrow(/Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added/);
+  });
+
+  test('Cannot add Principals when NotPrincipals exist', () => {
+    const stmt = new PolicyStatement({
+      notPrincipals: [new CanonicalUserPrincipal('abc')],
+    });
+    expect(() => {
+      stmt.addPrincipals(new CanonicalUserPrincipal('def'));
+    }).toThrow(/Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added/);
   });
 
   test('Permission allows specifying multiple actions upon construction', () => {

@@ -65,6 +65,9 @@ export class PolicyStatement {
   }
 
   public addPrincipals(...principals: IPrincipal[]) {
+    if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
+      throw new Error(`Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added`);
+    }
     for (const principal of principals) {
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
