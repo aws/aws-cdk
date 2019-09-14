@@ -548,7 +548,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-codedeploy-server-dg/ASG"
+          }
+        ]
       }
     },
     "ASGInstanceRoleDefaultPolicy7636D8BF": {

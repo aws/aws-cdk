@@ -1,7 +1,7 @@
 {
   "name": "pkgtools",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.8.0",
   "description": "Tools for generating cross-package artifacts",
   "main": "index.js",
   "repository": {
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "fs-extra": "^8.1.0",
-    "yargs": "^13.3.0"
+    "yargs": "^14.0.0"
   },
   "keywords": [
     "aws",

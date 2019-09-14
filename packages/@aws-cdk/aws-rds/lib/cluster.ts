@@ -192,7 +192,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+        securityGroups: [attrs.securityGroup],
         defaultPort: this.defaultPort
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
@@ -200,7 +200,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
       public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = attrs.securityGroupId;
+      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);

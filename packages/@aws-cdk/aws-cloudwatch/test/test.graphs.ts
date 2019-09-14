@@ -3,6 +3,31 @@ import { Test } from 'nodeunit';
 import { Alarm, AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
+  'add stacked property to graphs'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'Test widget',
+      stacked: true
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'Test widget',
+        region: { Ref: 'AWS::Region' },
+        stacked: true,
+        yAxis: {}
+      }
+    }]);
+
+    test.done();
+  },
+
   'add metrics to graphs on either axis'(test: Test) {
     // WHEN
     const stack = new Stack();

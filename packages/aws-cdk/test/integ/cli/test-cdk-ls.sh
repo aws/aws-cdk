@@ -7,6 +7,7 @@ source ${scriptdir}/common.bash
 setup
 
 assert "cdk ls" <<HERE
+${STACK_NAME_PREFIX}-conditional-resource
 ${STACK_NAME_PREFIX}-docker
 ${STACK_NAME_PREFIX}-iam-test
 ${STACK_NAME_PREFIX}-lambda

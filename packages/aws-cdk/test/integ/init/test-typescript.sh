@@ -18,5 +18,6 @@ for template in app sample-app lib; do
     cdk init -l typescript -t $template
     npm ls # this will fail if we have unmet peer dependencies
     npm run build
+    npm run test
     cdk synth
 done

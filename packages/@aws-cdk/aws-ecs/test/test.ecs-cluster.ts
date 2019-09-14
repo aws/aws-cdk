@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
@@ -1095,6 +1095,33 @@ export = {
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();
+
+    test.done();
+  },
+
+  'imported cluster with imported security groups honors allowAllOutbound'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    const importedSg1 = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG1', 'sg-1', { allowAllOutbound: false });
+    const importedSg2 = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG2', 'sg-2');
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      securityGroups: [importedSg1, importedSg2],
+      vpc,
+    });
+
+    // WHEN
+    cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'sg-1'
+    }));
+
+    expect(stack).to(countResources('AWS::EC2::SecurityGroupEgress', 1));
 
     test.done();
   },

@@ -12,3 +12,10 @@ removed:@aws-cdk/aws-apigateway.HttpIntegration.props
 removed:@aws-cdk/aws-apigateway.Integration.props
 removed:@aws-cdk/aws-apigateway.LambdaIntegration.props
 removed:@aws-cdk/aws-apigateway.MockIntegration.props
+incompatible-argument:@aws-cdk/aws-lambda.Function.<initializer>
+incompatible-argument:@aws-cdk/aws-lambda.SingletonFunction.<initializer>
+incompatible-argument:@aws-cdk/aws-lambda.Function.addEnvironment
+changed-type:@aws-cdk/aws-dynamodb.Table.tableStreamArn
+incompatible-argument:@aws-cdk/aws-apigateway.LambdaRestApi.addModel
+incompatible-argument:@aws-cdk/aws-apigateway.Model.<initializer>
+incompatible-argument:@aws-cdk/aws-apigateway.RestApi.addModel

@@ -87,6 +87,7 @@ The following targets are supported:
 * `targets.SnsTopic`: Publish into an SNS topic
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
+* `targets.AwsApi`: Make an AWS API call
 
 ### Cross-account targets
 
@@ -113,7 +114,7 @@ const project = new codebuild.Project(stack2, 'Project', {
 repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
 });
-``` 
+```
 
 In this situation, the CDK will wire the 2 accounts together:
 
