@@ -14,13 +14,13 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - -title~=(WIP|wip)
-      - -label~=^(blocked|do-not-merge)
+      - -label~=(blocked|do-not-merge)
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
-      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+      - status-success=AWS CodeBuild us-east-1 (AutoBuildProject6AEA49D1-qxepHUsryhcu)
       - status-success=Semantic Pull Request
   - name: automatically merge dependabot
     actions:
@@ -34,7 +34,7 @@ pull_request_rules:
     conditions:
       - author=dependabot[bot]
       - author=dependabot-preview[bot]
-      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+      - status-success=AWS CodeBuild us-east-1 (AutoBuildProject6AEA49D1-qxepHUsryhcu)
   - name: comment checklist
     actions:
       comment:
@@ -64,14 +64,6 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - base=master
-  - name: comment on CI fail
-    actions:
-      comment:
-        message: Continuous integration build failed
-    conditions:
-      - author!=dependabot[bot]
-      - author!=dependabot-preview[bot]
-      - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
