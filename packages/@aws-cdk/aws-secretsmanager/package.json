@@ -12,7 +12,8 @@
         "packageId": "Amazon.CDK.AWS.SecretsManager",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/AWS-Cloud-Development-Kit_Icon_64_Squid.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.secretsmanager",

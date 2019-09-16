@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.EFS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/AWS-Cloud-Development-Kit_Icon_64_Squid.png"
       },
       "python": {
         "distName": "aws-cdk.aws-efs",
