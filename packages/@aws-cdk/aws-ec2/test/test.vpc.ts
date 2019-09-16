@@ -400,7 +400,7 @@ export = {
           },
         ],
         natGatewaySubnets: {
-          subnetName: 'egress'
+          subnetGroupName: 'egress'
         },
       });
       expect(stack).to(countResources("AWS::EC2::NatGateway", 3));
@@ -431,7 +431,7 @@ export = {
           },
         ],
         natGatewaySubnets: {
-          subnetName: 'notthere',
+          subnetGroupName: 'notthere',
         },
       }));
       test.done();
@@ -774,6 +774,24 @@ export = {
       });
 
       // WHEN
+      const { subnetIds } = vpc.selectSubnets({ subnetGroupName: 'DontTalkToMe' });
+
+      // THEN
+      test.deepEqual(subnetIds, vpc.privateSubnets.map(s => s.subnetId));
+      test.done();
+    },
+
+    'subnetName is an alias for subnetGroupName (backwards compat)'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
+        ]
+      });
+
+      // WHEN
       const { subnetIds } = vpc.selectSubnets({ subnetName: 'DontTalkToMe' });
 
       // THEN
@@ -793,7 +811,19 @@ export = {
 
       test.throws(() => {
         vpc.selectSubnets();
-      }, /There are no 'Private' subnets in this VPC/);
+      }, /There are no 'Private' subnet groups in this VPC. Available types: Public/);
+
+      test.done();
+    },
+
+    'selecting subnets by name fails if the name is unknown'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      test.throws(() => {
+        vpc.selectSubnets({ subnetGroupName: 'Toot' });
+      }, /There are no subnet groups with name 'Toot' in this VPC. Available names: Public,Private/);
 
       test.done();
     },
