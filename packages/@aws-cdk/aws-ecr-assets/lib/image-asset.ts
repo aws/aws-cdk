@@ -74,9 +74,18 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     if (!fs.existsSync(path.join(dir, 'Dockerfile'))) {
       throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
+    
+    let excludes = [];
+
+    const ignore = path.join(dir, '.dockerignore');
+
+    if(fs.existsSync(ignore)){
+      excludes = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
+    }
 
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
+      exclude: excludes,
       sourcePath: dir
     });
 
