@@ -286,9 +286,9 @@ There are various classes that implement the connection peer part:
 // Simple connection peers
 let peer = ec2.Peer.ipv4("10.0.0.0/16");
 let peer = ec2.Peer.anyIpv4();
-let peer = ec2.ipv6("::0/0");
-let peer = ec2.anyIpv6();
-let peer = ec2.prefixList("pl-12345");
+let peer = ec2.Peer.ipv6("::0/0");
+let peer = ec2.Peer.anyIpv6();
+let peer = ec2.Peer.prefixList("pl-12345");
 fleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
 ```
 
@@ -308,9 +308,9 @@ the connection specifier:
 
 ```ts
 ec2.Port.tcp(80)
-ec2.tcpRange(60000, 65535)
-ec2.allTcp()
-ec2.allTraffic()
+ec2.Port.tcpRange(60000, 65535)
+ec2.Port.allTcp()
+ec2.Port.allTraffic()
 ```
 
 > NOTE: This set is not complete yet; for example, there is no library support for ICMP at the moment.
