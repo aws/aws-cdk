@@ -75,7 +75,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
     
-    let excludes = [];
+    let excludes: string[] = [];
 
     const ignore = path.join(dir, '.dockerignore');
 
