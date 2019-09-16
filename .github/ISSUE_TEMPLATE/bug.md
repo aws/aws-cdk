@@ -34,7 +34,7 @@ what is the error message you are seeing?
   - **CLI Version      :**
   - **Framework Version:**
   - **OS               :**
-  - **Language.        :**
+  - **Language         :**
 
 ### Other
 
