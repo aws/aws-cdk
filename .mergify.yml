@@ -14,7 +14,7 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - -title~=(WIP|wip)
-      - -label~=^(blocked|do-not-merge)
+      - -label~=(blocked|do-not-merge)
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
