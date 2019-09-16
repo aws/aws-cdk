@@ -176,7 +176,7 @@ export interface SubnetSelection {
    * Select the subnet group with the given name. This only needs
    * to be used if you have multiple subnet groups of the same type
    * and you need to distinguish between them. Otherwise, prefer
-   * selection by type.
+   * `subnetType`.
    *
    * This field does not select individual subnets, it selects all subnets that
    * share the given subnet group name. This is the name supplied in
@@ -1446,13 +1446,13 @@ class ImportedVpc extends VpcBase {
 function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
   if (placement.subnetName !== undefined) {
     if (placement.subnetGroupName !== undefined) {
-      throw new Error(`Cannot supply both 'subnetName' and 'subnetGroupName', they mean the same thing. Prefer 'subnetGroupName'.`);
+      throw new Error(`Please use only 'subnetGroupName' ('subnetName' is deprecated and has the same behavior)`);
     }
     placement = {...placement, subnetGroupName: placement.subnetName };
   }
 
   if (placement.subnetType !== undefined && placement.subnetGroupName !== undefined) {
-    throw new Error('Only one of subnetType and subnetName can be supplied');
+    throw new Error(`Only one of 'subnetType' and 'subnetGroupName' can be supplied`);
   }
 
   if (placement.subnetType === undefined && placement.subnetGroupName === undefined) {
