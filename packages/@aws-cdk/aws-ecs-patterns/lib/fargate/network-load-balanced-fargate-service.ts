@@ -105,6 +105,8 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      propagateTaskTagsFrom: props.propagateTaskTagsFrom,
+      enableECSManagedTags: props.enableECSManagedTags,
     });
     this.addServiceAsTarget(this.service);
   }

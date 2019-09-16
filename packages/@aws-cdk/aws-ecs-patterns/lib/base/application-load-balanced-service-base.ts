@@ -1,6 +1,6 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
@@ -159,6 +159,21 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    */
   readonly healthCheckGracePeriod?: cdk.Duration;
 
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default - none
+   */
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default false
+   */
+  readonly enableECSManagedTags?: boolean;
 }
 
 /**

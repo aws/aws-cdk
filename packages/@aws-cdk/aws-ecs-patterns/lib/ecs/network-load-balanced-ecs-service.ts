@@ -99,6 +99,8 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      propagateTaskTagsFrom: props.propagateTaskTagsFrom,
+      enableECSManagedTags: props.enableECSManagedTags,
     });
     this.addServiceAsTarget(this.service);
   }
