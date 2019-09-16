@@ -287,7 +287,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       placementConstraints: Lazy.anyValue({ produce: () =>
         !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
       }, { omitEmptyArray: true }),
-      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind() : undefined,
+      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
     });

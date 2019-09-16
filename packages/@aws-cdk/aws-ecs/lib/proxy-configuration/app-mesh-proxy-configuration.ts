@@ -1,3 +1,5 @@
+import { Construct } from '@aws-cdk/core';
+import { TaskDefinition } from '../base/task-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { ProxyConfiguration } from './proxy-configuration';
 
@@ -85,7 +87,7 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
   /**
    * Called when the proxy configuration is configured on a task definition.
    */
-  public bind(): CfnTaskDefinition.ProxyConfigurationProperty {
+  public bind(_scope: Construct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty {
     const configProps = this.props.properties;
     const configType = "APPMESH";
     if (configProps) {
@@ -123,11 +125,12 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
         ]),
         type: configType
       };
+    } else {
+      return {
+        containerName: this.props.containerName,
+        type: configType
+      };
     }
-    return {
-      containerName: this.props.containerName,
-      type: configType
-    };
   }
 }
 

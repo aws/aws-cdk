@@ -1,3 +1,5 @@
+import { Construct } from '@aws-cdk/core';
+import { TaskDefinition } from '../base/task-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 
 /**
@@ -7,5 +9,5 @@ export abstract class ProxyConfiguration {
   /**
    * Called when the proxy configuration is configured on a task definition.
    */
-  public abstract bind(): CfnTaskDefinition.ProxyConfigurationProperty;
+  public abstract bind(_scope: Construct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty;
 }
