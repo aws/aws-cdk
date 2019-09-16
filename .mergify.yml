@@ -25,15 +25,14 @@ pull_request_rules:
   - name: automatically merge dependabot
     actions:
       comment:
-        message: Thanks for keeping us safe dependabot! ❤️
+        message: Thanks for keeping us safe, @dependabot! ❤️
       merge:
         strict: smart
         method: squash
         strict_method: merge
       delete_head_branch: {}
     conditions:
-      - author=dependabot[bot]
-      - author=dependabot-preview[bot]
+      - author~=dependabot(-preview)?[bot]
       - status-success=AWS CodeBuild us-east-1 (AutoBuildProject6AEA49D1-qxepHUsryhcu)
   - name: comment checklist
     actions:
