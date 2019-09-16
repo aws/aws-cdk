@@ -31,7 +31,7 @@ what is the error message you are seeing?
 
 ### Environment
 
-  - **CLI Version.     :**
+  - **CLI Version      :**
   - **Framework Version:**
   - **OS               :**
   - **Language.        :**
