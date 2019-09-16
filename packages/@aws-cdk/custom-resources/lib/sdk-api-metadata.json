@@ -754,5 +754,12 @@
   "forecastqueryservice": {
     "prefix": "forecastquery",
     "name": "ForecastQueryService"
+  },
+  "qldb": {
+    "name": "QLDB"
+  },
+  "qldbsession": {
+    "prefix": "qldb-session",
+    "name": "QLDBSession"
   }
 }
