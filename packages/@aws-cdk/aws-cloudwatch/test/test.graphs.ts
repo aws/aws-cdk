@@ -3,6 +3,31 @@ import { Test } from 'nodeunit';
 import { Alarm, AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
+  'add stacked property to graphs'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'Test widget',
+      stacked: true
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'Test widget',
+        region: { Ref: 'AWS::Region' },
+        stacked: true,
+        yAxis: {}
+      }
+    }]);
+
+    test.done();
+  },
+
   'add metrics to graphs on either axis'(test: Test) {
     // WHEN
     const stack = new Stack();
@@ -29,7 +54,6 @@ export = {
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
           ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
         ],
-        annotations: { horizontal: [] },
         yAxis: {}
       }
     }]);
@@ -55,7 +79,6 @@ export = {
         metrics: [
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average', label: 'MyMetric', color: '000000' }],
         ],
-        annotations: { horizontal: [] },
         yAxis: {}
       }
     }]);
@@ -241,7 +264,6 @@ export = {
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
           ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
         ],
-        annotations: { horizontal: [] },
         yAxis: {
           left: { label: "Left yAxis", max: 100 },
           right: { label: "Right yAxis", min: 10, showUnits: false } }

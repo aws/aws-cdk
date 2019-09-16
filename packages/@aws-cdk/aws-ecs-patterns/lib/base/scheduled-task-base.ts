@@ -1,8 +1,9 @@
 import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { AwsLogDriver, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
+import { IVpc } from '@aws-cdk/aws-ec2';
+import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
 import { Rule } from "@aws-cdk/aws-events";
 import { EcsTask } from "@aws-cdk/aws-events-targets";
-import { Construct } from "@aws-cdk/core";
+import { Construct, Stack } from "@aws-cdk/core";
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -10,15 +11,22 @@ import { Construct } from "@aws-cdk/core";
 export interface ScheduledTaskBaseProps {
   /**
    * The name of the cluster that hosts the service.
+   *
+   * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
+   * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
-  readonly cluster: ICluster;
+  readonly cluster?: ICluster;
+
+  /**
+   * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
+   *
+   * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
+   * @default - uses the VPC defined in the cluster or creates a new VPC.
+   */
+  readonly vpc?: IVpc;
 
   /**
    * The image used to start a container.
-   *
-   * This string is passed directly to the Docker daemon.
-   * Images in the Docker Hub registry are available by default.
-   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
    */
   readonly image: ContainerImage;
 
@@ -55,16 +63,16 @@ export interface ScheduledTaskBaseProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * Secret environment variables to pass to the container
+   * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
   readonly secrets?: { [key: string]: Secret };
 
   /**
-   * The LogDriver to use for logging.
+   * The log driver to use.
    *
-   * @default AwsLogDriver if enableLogging is true
+   * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
 }
@@ -93,7 +101,7 @@ export abstract class ScheduledTaskBase extends Construct {
   constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
     super(scope, id);
 
-    this.cluster = props.cluster;
+    this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
     this.desiredTaskCount = props.desiredTaskCount || 1;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
@@ -122,6 +130,13 @@ export abstract class ScheduledTaskBase extends Construct {
     this.eventRule.addTarget(eventRuleTarget);
 
     return eventRuleTarget;
+  }
+
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+    // magic string to avoid collision with user-defined constructs
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const stack = Stack.of(scope);
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

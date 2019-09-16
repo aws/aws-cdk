@@ -59,6 +59,7 @@ export class LambdaIntegration extends AwsIntegration {
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
+      scope: method,
       sourceArn: method.methodArn,
     });
 
@@ -66,7 +67,8 @@ export class LambdaIntegration extends AwsIntegration {
     if (this.enableTest) {
       this.handler.addPermission(`ApiPermission.Test.${desc}`, {
         principal,
-        sourceArn: method.testMethodArn
+        scope: method,
+        sourceArn: method.testMethodArn,
       });
     }
   }

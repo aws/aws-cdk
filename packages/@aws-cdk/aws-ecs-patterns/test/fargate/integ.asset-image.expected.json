@@ -349,7 +349,6 @@
     "FargateServiceLBB353E155": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "LoadBalancerAttributes": [],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -378,7 +377,6 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awsecsintegFargateServiceLB5FE4725D",
-        "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -429,8 +427,7 @@
           "Ref": "FargateServiceLBB353E155"
         },
         "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
+        "Protocol": "HTTP"
       }
     },
     "FargateServiceLBPublicListenerECSGroupBE57E081": {
@@ -438,8 +435,6 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "Vpc8378EB38"
@@ -613,8 +608,7 @@
             "FargateServiceTaskDefTaskRole8CDCF85E",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "FargateServiceTaskDefwebAssetImageAdoptRepositoryCDAFD419": {
@@ -783,7 +777,7 @@
             ]
           }
         },
-        "ServiceRegistries": []
+        "EnableECSManagedTags": false
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",
@@ -801,7 +795,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }

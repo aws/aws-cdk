@@ -23,6 +23,13 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
      * @default the region the stack is deployed in.
      */
     readonly region?: string;
+
+    /**
+     * Role to use for the custom resource that creates the validated certificate
+     *
+     * @default - A new role will be created
+     */
+    readonly customResourceRole?: iam.IRole;
 }
 
 /**
@@ -55,7 +62,8 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
             code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
             runtime: lambda.Runtime.NODEJS_8_10,
-            timeout: cdk.Duration.minutes(15)
+            timeout: cdk.Duration.minutes(15),
+            role: props.customResourceRole
         });
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({
             actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate'],
@@ -74,7 +82,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
-                SubjectAlternativeNames: props.subjectAlternativeNames,
+                SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
                 HostedZoneId: this.hostedZoneId,
                 Region: props.region,
             }

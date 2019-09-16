@@ -143,7 +143,6 @@ class TestHandler(unittest.TestCase):
                 assert kwarg['DistributionId'] == '<cf-dist-id>'
                 assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 1
                 assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/*'
-                assert kwarg['InvalidationBatch']['CallerReference'] == '<physical-id>'
                 return {'Invalidation': {'Id': '<invalidation-id>'}}
             if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
                 return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
@@ -165,7 +164,6 @@ class TestHandler(unittest.TestCase):
                 assert kwarg['DistributionId'] == '<cf-dist-id>'
                 assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 1
                 assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/<dest-prefix>/*'
-                assert kwarg['InvalidationBatch']['CallerReference'] == '<physical-id>'
                 return {'Invalidation': {'Id': '<invalidation-id>'}}
             if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
                 return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
@@ -189,7 +187,6 @@ class TestHandler(unittest.TestCase):
                 assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 2
                 assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/path1/*'
                 assert kwarg['InvalidationBatch']['Paths']['Items'][1] == '/path2/*'
-                assert kwarg['InvalidationBatch']['CallerReference'] == '<physical-id>'
                 return {'Invalidation': {'Id': '<invalidation-id>'}}
             if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
                 return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}

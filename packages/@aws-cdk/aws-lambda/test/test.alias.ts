@@ -187,12 +187,7 @@ export = {
           'Fn::Join': [
             '',
             [
-              {
-                "Fn::GetAtt": [
-                  "MyLambdaCCE802FB",
-                  "Arn"
-                ]
-              },
+              { Ref: "MyLambdaCCE802FB" },
               ':prod'
             ]
           ]

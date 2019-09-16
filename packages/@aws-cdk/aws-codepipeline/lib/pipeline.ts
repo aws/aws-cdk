@@ -231,6 +231,12 @@ export class Pipeline extends PipelineBase {
         encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.RETAIN
       });
+      // add an alias to make finding the key in the console easier
+      new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
+        aliasName: this.generateNameForDefaultBucketKeyAlias(),
+        targetKey: encryptionKey,
+        removalPolicy: RemovalPolicy.RETAIN, // alias should be retained, like the key
+      });
     }
     this.artifactBucket = propsBucket;
 
@@ -240,8 +246,8 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStore() }),
-      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStores() }),
+      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStoreProperty() }),
+      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStoresProperty() }),
       stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
@@ -367,9 +373,10 @@ export class Pipeline extends PipelineBase {
       return this.artifactBucket;
     }
 
+    const pipelineStack = Stack.of(this);
+    let otherStack: Stack;
     let replicationBucket = this.crossRegionReplicationBuckets[region];
     if (!replicationBucket) {
-      const pipelineStack = Stack.of(this);
       const pipelineAccount = pipelineStack.account;
       if (Token.isUnresolved(pipelineAccount)) {
         throw new Error("You need to specify an explicit account when using CodePipeline's cross-region support");
@@ -382,21 +389,32 @@ export class Pipeline extends PipelineBase {
         account: pipelineAccount,
       });
       replicationBucket = crossRegionScaffoldStack.replicationBucket;
-      pipelineStack.addDependency(crossRegionScaffoldStack);
       this._crossRegionSupport[region] = {
         stack: crossRegionScaffoldStack,
         replicationBucket,
       };
       this.crossRegionReplicationBuckets[region] = replicationBucket;
+      otherStack = crossRegionScaffoldStack;
+    } else {
+      otherStack = Stack.of(replicationBucket);
     }
+
+    // the stack containing the replication bucket must be deployed before the pipeline
+    pipelineStack.addDependency(otherStack);
     replicationBucket.grantReadWrite(this.role);
 
-    this.artifactStores[region] = {
-      location: replicationBucket.bucketName,
-      type: 'S3',
-    };
+    this.artifactStores[region] = this.renderArtifactStore(replicationBucket);
 
     return replicationBucket;
+  }
+
+  private generateNameForDefaultBucketKeyAlias(): string {
+    const prefix = 'alias/codepipeline-';
+    const maxAliasLength = 256;
+    const uniqueId = this.node.uniqueId;
+    // take the last 256 - (prefix length) characters of uniqueId
+    const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
+    return prefix + uniqueId.substring(startIndex).toLowerCase();
   }
 
   /**
@@ -644,7 +662,7 @@ export class Pipeline extends PipelineBase {
     return ret;
   }
 
-  private renderArtifactStores(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
+  private renderArtifactStoresProperty(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
     if (!this.crossRegion) { return undefined; }
 
     // add the Pipeline's artifact store
@@ -657,30 +675,29 @@ export class Pipeline extends PipelineBase {
     }));
   }
 
-  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty | undefined {
+  private renderArtifactStoreProperty(): CfnPipeline.ArtifactStoreProperty | undefined {
     if (this.crossRegion) { return undefined; }
     return this.renderPrimaryArtifactStore();
   }
 
   private renderPrimaryArtifactStore(): CfnPipeline.ArtifactStoreProperty {
+    return this.renderArtifactStore(this.artifactBucket);
+  }
+
+  private renderArtifactStore(bucket: s3.IBucket): CfnPipeline.ArtifactStoreProperty {
     let encryptionKey: CfnPipeline.EncryptionKeyProperty | undefined;
-    const bucketKey = this.artifactBucket.encryptionKey;
+    const bucketKey = bucket.encryptionKey;
     if (bucketKey) {
       encryptionKey = {
         type: 'KMS',
-        id: bucketKey.keyArn,
+        id: bucketKey.keyId,
       };
-    }
-
-    const bucketName = this.artifactBucket.bucketName;
-    if (!bucketName) {
-      throw new Error('Artifacts bucket must have a bucket name');
     }
 
     return {
       type: 'S3',
-      location: bucketName,
-      encryptionKey
+      location: bucket.bucketName,
+      encryptionKey,
     };
   }
 

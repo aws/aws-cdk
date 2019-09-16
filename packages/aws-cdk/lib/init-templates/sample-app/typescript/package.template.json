@@ -7,13 +7,17 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "test": "jest",
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/node": "8.10.45",
-    "typescript": "^3.3.3333",
+    "aws-cdk": "^%cdk-version%",
+    "@aws-cdk/assert": "^1.6.1",
+    "@types/jest": "^24.0.18",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",
-    "aws-cdk": "^%cdk-version%"
+    "typescript": "~3.6.2"
   },
   "dependencies": {
     "@aws-cdk/aws-sns": "^%cdk-version%",
