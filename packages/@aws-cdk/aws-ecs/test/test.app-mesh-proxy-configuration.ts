@@ -150,7 +150,7 @@ export = {
           proxyEgressPort: 81
         }
       })});
-    }, /Either ignoredUID or ignoredGID should be specified./);
+    }, /At least one of ignoredUID or ignoredGID should be specified./);
 
     test.done();
   }
