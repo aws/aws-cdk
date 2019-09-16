@@ -333,6 +333,9 @@ abstract class VpcBase extends Resource implements IVpc {
       }
     }
 
+    // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
+    // see ImportedVpc
+
     if (subnets.length === 0) {
       throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
     }
@@ -722,7 +725,7 @@ export class Vpc extends VpcBase {
    * Import an exported VPC
    */
   public static fromVpcAttributes(scope: Construct, id: string, attrs: VpcAttributes): IVpc {
-    return new ImportedVpc(scope, id, attrs);
+    return new ImportedVpc(scope, id, attrs, false);
   }
 
   /**
@@ -762,7 +765,7 @@ export class Vpc extends VpcBase {
       dummyValue: DUMMY_VPC_PROPS
     });
 
-    return this.fromVpcAttributes(scope, id, attributes);
+    return new ImportedVpc(scope, id, attributes, attributes === DUMMY_VPC_PROPS);
 
     /**
      * Prefixes all keys in the argument with `tag:`.`
@@ -1381,7 +1384,7 @@ class ImportedVpc extends VpcBase {
   public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
 
-  constructor(scope: Construct, id: string, props: VpcAttributes) {
+  constructor(scope: Construct, id: string, props: VpcAttributes, private readonly isDummyImport: boolean) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
@@ -1397,6 +1400,36 @@ class ImportedVpc extends VpcBase {
     this.publicSubnets = pub.import(this);
     this.privateSubnets = priv.import(this);
     this.isolatedSubnets = iso.import(this);
+  }
+
+  protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
+    // Reimplementation that does not throw
+    // Proof of concept implementation: to be fixed after
+    // https://github.com/aws/aws-cdk/pull/4089 is merged.
+    selection = reifySelectionDefaults(selection);
+    let subnets: ISubnet[] = [];
+
+    if (selection.subnetName !== undefined) { // Select by name
+      const allSubnets =  [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
+      subnets = allSubnets.filter(s => subnetName(s) === selection.subnetName);
+    } else { // Select by type
+      subnets = {
+        [SubnetType.ISOLATED]: this.isolatedSubnets,
+        [SubnetType.PRIVATE]: this.privateSubnets,
+        [SubnetType.PUBLIC]: this.publicSubnets,
+      }[selection.subnetType || SubnetType.PRIVATE];
+
+      if (selection.onePerAz && subnets.length > 0) {
+        // Restrict to at most one subnet group
+        subnets = subnets.filter(s => subnetName(s) === subnetName(subnets[0]));
+      }
+    }
+
+    if (subnets.length === 0 && !this.isDummyImport) {
+      throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
+    }
+
+    return subnets;
   }
 }
 
