@@ -62,7 +62,7 @@ export abstract class Code {
   }
 
   /**
-   * @deprecated use `fromCfnParmaeters`
+   * @deprecated use `fromCfnParameters`
    */
   public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
     return this.fromCfnParameters(props);
