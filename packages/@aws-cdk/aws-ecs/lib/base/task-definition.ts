@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
-import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
 
@@ -294,6 +294,39 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
+   * Returns the host port that match the provided container name and container port.
+   *
+   * @internal
+   */
+  public _findHostPort(target: LoadBalancerTargetOptions): HostPort {
+    const container = this.findContainer(target.containerName);
+    if (container === undefined) {
+      throw new Error("Container does not exist.");
+    }
+    const portMapping = container._findPortMapping(target.containerPort, target.protocol || Protocol.TCP);
+    if (portMapping === undefined) {
+      throw new Error("Container port using the protocol does not exist.");
+    }
+    if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
+      return {
+        port: portMapping.hostPort,
+        protocol: portMapping.protocol || Protocol.TCP
+      };
+    }
+
+    if (this.networkMode === NetworkMode.BRIDGE) {
+      return {
+        port: 0,
+        protocol: portMapping.protocol || Protocol.TCP
+      };
+    }
+    return {
+      port: portMapping.containerPort,
+      protocol: portMapping.protocol || Protocol.TCP
+    };
+  }
+
+  /**
    * Adds a policy statement to the task IAM role.
    */
   public addToTaskRolePolicy(statement: iam.PolicyStatement) {
@@ -382,6 +415,18 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
     return ret;
   }
+
+  /**
+   * Returns the container that match the provided containerName.
+   */
+  private findContainer(containerName: string): ContainerDefinition | undefined {
+    for (const container of this.containers) {
+      if (container.containerName === containerName) {
+        return container;
+      }
+    }
+    return undefined;
+  }
 }
 
 /**
@@ -462,6 +507,43 @@ export interface Host {
    * This property is not supported for tasks that use the Fargate launch type.
    */
   readonly sourcePath?: string;
+}
+
+/**
+ * The port number as well as the protocol of a container host port.
+ *
+ * @internal
+ */
+export interface HostPort {
+  /**
+   * Port number of the container.
+   */
+  readonly port: number;
+
+  /**
+   * Protocol of the port.
+   */
+  readonly protocol: Protocol;
+}
+
+/**
+ * Properties for defining an ECS target.
+ */
+export interface LoadBalancerTargetOptions {
+  /**
+   * The name of the container.
+   */
+  readonly containerName: string;
+
+  /**
+   * The port number of the container.
+   */
+  readonly containerPort: number;
+
+  /**
+   * The protocol used for the port mapping.
+   */
+  readonly protocol?: Protocol;
 }
 
 /**
