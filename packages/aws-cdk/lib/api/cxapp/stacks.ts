@@ -232,11 +232,12 @@ export class AppStacks {
               };
               if (stack.environment.region === cxapi.UNKNOWN_REGION) {
                 stack.template.Conditions = stack.template.Conditions || {};
-                if (!stack.template.Conditions.CDKMetadataAvailable) {
-                  stack.template.Conditions.CDKMetadataAvailable = _makeCdkMetadataAvailableCondition();
-                  stack.template.Resources.CDKMetadata.Condition = 'CDKMetadataAvailable';
+                const condName = 'CDKMetadataAvailable';
+                if (!stack.template.Conditions[condName]) {
+                  stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
+                  stack.template.Resources.CDKMetadata.Condition = condName;
                 } else {
-                  warning(`The stack ${stack.name} already includes a CDKMetadataAvailable condition`);
+                  warning(`The stack ${stack.name} already includes a ${condName} condition`);
                 }
               }
             } else {
