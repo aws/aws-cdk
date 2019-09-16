@@ -63,6 +63,32 @@ By default, the contents of the destination bucket will be deleted when the
 changed. You can use the option `retainOnDelete: true` to disable this behavior,
 in which case the contents will be retained.
 
+## CloudFront Invalidation
+
+You can provide a CloudFront distribution and optional paths to invalidate after the bucket deployment finishes.
+
+```ts
+const bucket = new s3.Bucket(this, 'Destination');
+
+const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
+  originConfigs: [
+    {
+      s3OriginSource: {
+        s3BucketSource: bucket
+      },
+      behaviors : [ {isDefaultBehavior: true}]
+    }
+  ]
+});
+
+new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
+  source: s3deploy.Source.asset('./website-dist'),
+  destinationBucket: bucket,
+  distribution,
+  distributionPaths: ['/images/*.png'],
+});
+```
+
 ## Notes
 
  * This library uses an AWS CloudFormation custom resource which about 10MiB in

@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -10,7 +10,15 @@ import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface IUser extends IIdentity {
+  /**
+   * The user's name
+   * @attribute
+   */
   readonly userName: string;
+
+  /**
+   * Adds this user to a group.
+   */
   addToGroup(group: IGroup): void;
 }
 
@@ -24,9 +32,10 @@ export interface UserProps {
   readonly groups?: IGroup[];
 
   /**
-   * A list managed policies associated with this role.
+   * A list of managed policies associated with this role.
    *
-   * You can add managed policies later using `attachManagedPolicy(policy)`.
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
    *
    * @default - No managed policies.
    */
@@ -39,6 +48,21 @@ export interface UserProps {
    * @default /
    */
   readonly path?: string;
+
+  /**
+   * AWS supports permissions boundaries for IAM entities (users or roles).
+   * A permissions boundary is an advanced feature for using a managed policy
+   * to set the maximum permissions that an identity-based policy can grant to
+   * an IAM entity. An entity's permissions boundary allows it to perform only
+   * the actions that are allowed by both its identity-based policies and its
+   * permissions boundaries.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-permissionsboundary
+   * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+   *
+   * @default - No permissions boundary.
+   */
+  readonly permissionsBoundary?: IManagedPolicy;
 
   /**
    * A name for the IAM user. For valid values, see the UserName parameter for
@@ -81,7 +105,53 @@ export interface UserProps {
   readonly passwordResetRequired?: boolean;
 }
 
-export class User extends Resource implements IIdentity {
+/**
+ * Define a new IAM user
+ */
+export class User extends Resource implements IIdentity, IUser {
+  /**
+   * Import an existing user given a username
+   */
+  public static fromUserName(scope: Construct, id: string, userName: string): IUser {
+    const arn = Stack.of(scope).formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'user',
+      resourceName: userName
+    });
+
+    class Import extends Resource implements IUser {
+      public readonly grantPrincipal: IPrincipal = this;
+      public readonly userName: string = userName;
+      public readonly assumeRoleAction: string = 'sts:AssumeRole';
+      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
+      private defaultPolicy?: Policy;
+
+      public addToPolicy(statement: PolicyStatement): boolean {
+        if (!this.defaultPolicy) {
+          this.defaultPolicy = new Policy(this, 'Policy');
+          this.defaultPolicy.attachToUser(this);
+        }
+        this.defaultPolicy.addStatements(statement);
+        return true;
+      }
+
+      public addToGroup(_group: IGroup): void {
+        throw new Error('Cannot add imported User to Group');
+      }
+
+      public attachInlinePolicy(_policy: Policy): void {
+        throw new Error('Cannot add inline policy to imported User');
+      }
+
+      public addManagedPolicy(_policy: IManagedPolicy): void {
+        throw new Error('Cannot add managed policy to imported User');
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
@@ -97,6 +167,11 @@ export class User extends Resource implements IIdentity {
    */
   public readonly userArn: string;
 
+  /**
+   * Returns the permissions boundary attached to this user
+   */
+  public readonly permissionsBoundary?: IManagedPolicy;
+
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly groups = new Array<any>();
@@ -110,12 +185,14 @@ export class User extends Resource implements IIdentity {
     });
 
     this.managedPolicies.push(...props.managedPolicies || []);
+    this.permissionsBoundary = props.permissionsBoundary;
 
     const user = new CfnUser(this, 'Resource', {
       userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
+      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       loginProfile: this.parseLoginProfile(props)
     });
 
@@ -146,6 +223,7 @@ export class User extends Resource implements IIdentity {
    * @param policy The managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
   }
 

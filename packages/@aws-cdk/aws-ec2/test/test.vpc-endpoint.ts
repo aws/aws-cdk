@@ -174,49 +174,6 @@ export = {
       test.done();
     },
 
-    'conveniance methods for S3 and DynamoDB'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VpcNetwork');
-
-      // WHEN
-      vpc.addS3Endpoint('S3');
-      vpc.addDynamoDbEndpoint('DynamoDb');
-
-      // THEN
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.s3'
-            ]
-          ]
-        },
-      }));
-
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.dynamodb'
-            ]
-          ]
-        },
-      }));
-
-      test.done();
-    },
-
     'works with an imported vpc'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -228,10 +185,7 @@ export = {
       });
 
       // THEN
-      new GatewayVpcEndpoint(stack, 'Gateway', {
-        service: GatewayVpcEndpointAwsService.S3,
-        vpc
-      });
+      vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 });
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
         ServiceName: { 'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3']] },
@@ -239,6 +193,20 @@ export = {
         RouteTableIds: ['rt1', 'rt2', 'rt3'],
         VpcEndpointType: 'Gateway',
       }));
+
+      test.done();
+    },
+
+    'throws with an imported vpc without route tables ids'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'id',
+        privateSubnetIds: ['1', '2', '3'],
+        availabilityZones: ['a', 'b', 'c']
+      });
+
+      test.throws(() => vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 }), /route table/);
 
       test.done();
     }

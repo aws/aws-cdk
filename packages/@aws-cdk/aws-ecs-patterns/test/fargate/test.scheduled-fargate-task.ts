@@ -26,6 +26,25 @@ export = {
         {
           Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
           EcsParameters: {
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                  }
+                ]
+              }
+            },
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
@@ -41,7 +60,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -54,11 +72,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -78,7 +92,7 @@ export = {
       desiredTaskCount: 2,
       memoryLimitMiB: 512,
       cpu: 2,
-      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -88,6 +102,25 @@ export = {
         {
           Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
           EcsParameters: {
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                  }
+                ]
+              }
+            },
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
@@ -103,17 +136,12 @@ export = {
         {
           Environment: [
             {
-              Name: "name",
-              Value: "TRIGGER"
-            },
-            {
-              Name: "value",
+              Name: "TRIGGER",
               Value: "CloudWatch Events"
             }
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -126,11 +154,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -156,7 +180,6 @@ export = {
         {
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -169,11 +192,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));
@@ -205,7 +224,6 @@ export = {
           ],
           Essential: true,
           Image: "henk",
-          Links: [],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -218,11 +236,7 @@ export = {
               }
             }
           },
-          MountPoints: [],
-          Name: "ScheduledContainer",
-          PortMappings: [],
-          Ulimits: [],
-          VolumesFrom: []
+          Name: "ScheduledContainer"
         }
       ]
     }));

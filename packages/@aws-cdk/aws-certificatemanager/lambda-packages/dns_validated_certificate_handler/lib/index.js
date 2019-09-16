@@ -2,13 +2,15 @@
 
 const aws = require('aws-sdk');
 
-const sleep = function (ms) {
+const defaultSleep = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 // These are used for test purposes only
 let defaultResponseURL;
 let waiter;
+let sleep = defaultSleep;
+let random = Math.random;
 
 /**
  * Upload a CloudFormation response object to S3.
@@ -76,7 +78,7 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  */
 const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
   const crypto = require('crypto');
-  const acm = new aws.ACM({region});
+  const acm = new aws.ACM({ region });
   const route53 = new aws.Route53();
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
@@ -96,18 +98,27 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for ACM to provide DNS records for validation...');
 
-  var describeCertResponse;
-  let attempt = 0;
-  do {
-    // Exponential backoff with jitter based on 100ms base
-    await sleep(Math.random() * (Math.pow(attempt, 2) * 100));
-    describeCertResponse = await acm.describeCertificate({
+  let record;
+  const maxAttempts = 10;
+  for (let attempt = 0; attempt < maxAttempts - 1 && !record; attempt++) {
+    const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
-  } while (describeCertResponse.Certificate.DomainValidationOptions < 1 ||
-    'ResourceRecord' in describeCertResponse.Certificate.DomainValidationOptions[0] === false);
+    const options = Certificate.DomainValidationOptions || [];
 
-  const record = describeCertResponse.Certificate.DomainValidationOptions[0].ResourceRecord;
+    if (options.length > 0 && options[0].ResourceRecord) {
+      record = options[0].ResourceRecord;
+    } else {
+      // Exponential backoff with jitter based on 200ms base
+      // component of backoff fixed to ensure minimum total wait time on
+      // slow targets.
+      const base = Math.pow(2, attempt);
+      await sleep(random() * base * 50 + base * 150);
+    }
+  }
+  if (!record) {
+    throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`)
+  }
 
   console.log(`Upserting DNS record into zone ${hostedZoneId}: ${record.Name} ${record.Type} ${record.Value}`);
 
@@ -158,7 +169,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
  * @param {string} arn The certificate ARN
  */
 const deleteCertificate = async function (arn, region) {
-  const acm = new aws.ACM({region});
+  const acm = new aws.ACM({ region });
 
   console.log(`Deleting certificate ${arn}`);
 
@@ -242,3 +253,31 @@ exports.withWaiter = function (w) {
 exports.resetWaiter = function () {
   waiter = undefined;
 };
+
+/**
+ * @private
+ */
+exports.withSleep = function(s) {
+  sleep = s;
+}
+
+/**
+ * @private
+ */
+exports.resetSleep = function() {
+  sleep = defaultSleep;
+}
+
+/**
+ * @private
+ */
+exports.withRandom = function(r) {
+  random = r;
+}
+
+/**
+ * @private
+ */
+exports.resetRandom = function() {
+  random = Math.random;
+}

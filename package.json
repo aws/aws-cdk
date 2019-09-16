@@ -8,19 +8,19 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.15",
-    "@types/node": "^8.10.51",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^8.10.52",
     "@types/nodeunit": "^0.0.30",
-    "conventional-changelog-cli": "^2.0.21",
+    "conventional-changelog-cli": "^2.0.23",
     "fs-extra": "^8.1.0",
-    "jest": "^24.8.0",
-    "jsii-diff": "^0.14.2",
+    "jest": "^24.9.0",
+    "jsii-diff": "^0.16.0",
     "lerna": "^3.16.4",
     "nodeunit": "^0.11.3",
     "nyc": "^14.1.1",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "tslint": "^5.20.0",
+    "typescript": "~3.6.3"
   },
   "repository": {
     "type": "git",

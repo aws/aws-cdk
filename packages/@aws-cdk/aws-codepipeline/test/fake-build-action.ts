@@ -13,6 +13,10 @@ export interface FakeBuildActionProps extends codepipeline.CommonActionProps {
   owner?: string;
 
   role?: iam.IRole;
+
+  account?: string;
+
+  region?: string;
 }
 
 export class FakeBuildAction implements codepipeline.IAction {

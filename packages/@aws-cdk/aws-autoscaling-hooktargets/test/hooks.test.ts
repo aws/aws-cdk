@@ -56,7 +56,7 @@ describe('given an AutoScalingGroup', () => {
   test('can use Lambda function as hook target', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
-      code: lambda.Code.inline('foo'),
+      code: lambda.Code.fromInline('foo'),
       runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.index',
     });

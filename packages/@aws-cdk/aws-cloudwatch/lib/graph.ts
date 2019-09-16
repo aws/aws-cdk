@@ -167,6 +167,10 @@ export class GraphWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
+    const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
+      (this.props.rightAnnotations || []).map(mapAnnotation('right')));
+    const metrics = (this.props.left || []).map(m => metricJson(m, 'left')).concat(
+      (this.props.right || []).map(m => metricJson(m, 'right')));
     return [{
       type: 'metric',
       width: this.width,
@@ -177,12 +181,9 @@ export class GraphWidget extends ConcreteWidget {
         view: 'timeSeries',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
-        metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
-             (this.props.right || []).map(m => metricJson(m, 'right'))),
-        annotations: {
-          horizontal: (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
-                (this.props.rightAnnotations || []).map(mapAnnotation('right')))
-        },
+        stacked: this.props.stacked,
+        metrics: metrics.length > 0 ? metrics : undefined,
+        annotations: horizontalAnnoations.length > 0 ? { horizontal: horizontalAnnoations } : undefined,
         yAxis: {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,

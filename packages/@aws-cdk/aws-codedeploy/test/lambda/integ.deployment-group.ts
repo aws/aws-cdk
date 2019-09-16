@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda');
 
 const handler = new lambda.Function(stack, `Handler`, {
-  code: lambda.Code.asset(path.join(__dirname, 'handler')),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler')),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_8_10,
 });
@@ -20,12 +20,12 @@ const blueGreenAlias = new lambda.Alias(stack, `Alias`, {
 });
 
 const preHook = new lambda.Function(stack, `PreHook`, {
-  code: lambda.Code.asset(path.join(__dirname, 'preHook')),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'preHook')),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_8_10
 });
 const postHook = new lambda.Function(stack, `PostHook`, {
-  code: lambda.Code.asset(path.join(__dirname, 'postHook')),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'postHook')),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_8_10
 });

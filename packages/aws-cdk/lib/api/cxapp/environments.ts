@@ -45,14 +45,15 @@ async function parseEnvironment(sdk: ISDK, env: cxapi.Environment): Promise<cxap
  */
 export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environment[] {
   if (envSpecs.length === 0) {
-    throw new Error(`Either specify an app with '--app', or specify an environment name like '123456789012/us-east-1'`);
+    throw new Error(`Either specify an app with '--app', or specify an environment name like 'aws://123456789012/us-east-1'`);
   }
 
   const ret = new Array<cxapi.Environment>();
+
   for (const spec of envSpecs) {
-    const parts = spec.split('/');
+    const parts = spec.replace(/^aws:\/\//, '').split('/');
     if (parts.length !== 2) {
-      throw new Error(`Expected environment name in format '<account>/<region>', got: ${spec}`);
+      throw new Error(`Expected environment name in format 'aws://<account>/<region>', got: ${spec}`);
     }
 
     ret.push({

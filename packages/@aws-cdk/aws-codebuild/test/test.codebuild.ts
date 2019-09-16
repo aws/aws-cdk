@@ -29,7 +29,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -156,8 +156,7 @@ export = {
         "MyRepoF4F48043": {
           "Type": "AWS::CodeCommit::Repository",
           "Properties": {
-          "RepositoryName": "hello-cdk",
-          "Triggers": []
+          "RepositoryName": "hello-cdk"
           }
         },
         "MyProjectRole9BBE5233": {
@@ -169,7 +168,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -324,7 +323,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
+              "Service": "codebuild.amazonaws.com"
               }
             }
             ],
@@ -581,6 +580,7 @@ export = {
             codebuild.FilterGroup.inEventOf(
               codebuild.EventAction.PULL_REQUEST_CREATED,
               codebuild.EventAction.PULL_REQUEST_UPDATED,
+              codebuild.EventAction.PULL_REQUEST_MERGED,
             ).andTagIs('v.*'),
             // duplicate event actions are fine
             codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
@@ -602,7 +602,7 @@ export = {
           Webhook: true,
           FilterGroups: [
             [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED' },
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_MERGED' },
               { Type: 'HEAD_REF', Pattern: 'refs/tags/v.*' },
             ],
             [

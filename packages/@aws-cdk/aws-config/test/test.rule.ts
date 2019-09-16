@@ -42,7 +42,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.inline('foo'),
+      code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });
@@ -208,7 +208,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.inline('foo'),
+      code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });
@@ -229,7 +229,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.inline('foo'),
+      code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });
@@ -250,7 +250,7 @@ export = {
     });
 
     const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.inline('dummy'),
+      code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_8_10
     });

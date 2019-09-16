@@ -59,6 +59,14 @@ export = nodeunit.testCase({
     test.done();
   },
 
+  'seconds to milliseconds'(test: nodeunit.Test) {
+    const duration = Duration.seconds(5);
+
+    test.equal(duration.toMilliseconds(), 5_000);
+
+    test.done();
+  },
+
   'Duration in days'(test: nodeunit.Test) {
     const duration = Duration.days(1);
 

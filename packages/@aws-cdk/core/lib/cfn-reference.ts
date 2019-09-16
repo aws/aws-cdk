@@ -90,7 +90,14 @@ export class CfnReference extends Reference {
   public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
-    const token = this.replacementTokens.get(Stack.of(context.scope));
+    const consumingStack = Stack.of(context.scope);
+    const token = this.replacementTokens.get(consumingStack);
+
+    // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
+    // tslint:disable-next-line:max-line-length
+    //   throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
+    // }
+
     if (token) {
       return token.resolve(context);
     } else {

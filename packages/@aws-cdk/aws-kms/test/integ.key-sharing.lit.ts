@@ -31,7 +31,10 @@ class UseStack extends cdk.Stack {
     super(scope, id, props);
 
     // Use the IKey object here.
-    props.key.addAlias('alias/foo');
+    new kms.Alias(this, 'Alias', {
+      aliasName: 'alias/foo',
+      targetKey: props.key
+    });
   }
 }
 

@@ -15,20 +15,21 @@
 ---
 <!--END STABILITY BANNER-->
 
-This library provides higher-level ECS constructs which follow common architectural patterns. It contains:
+This library provides higher-level Amazon ECS constructs which follow common architectural patterns. It contains:
 
-* Load Balanced Services
+* Application Load Balanced Services
+* Network Load Balanced Services
 * Queue Processing Services
 * Scheduled Tasks (cron jobs)
 
-## Load Balanced Services
+## Application Load Balanced Services
 
-To define a service that is behind a load balancer, instantiate one of the following: 
+To define an Amazon ECS service that is behind an application load balancer, instantiate one of the following: 
 
-* `LoadBalancedEc2Service`
+* `ApplicationLoadBalancedEc2Service`
 
 ```ts
-const loadBalancedEcsService = new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
+const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -40,16 +41,55 @@ const loadBalancedEcsService = new ecsPatterns.LoadBalancedEc2Service(stack, 'Se
 });
 ```
 
-* `LoadBalancedFargateService`
+* `ApplicationLoadBalancedFargateService`
 
 ```ts
-const loadBalancedFargateService = new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 ```
+
+Instead of providing a cluster you can specify a VPC and CDK will create a new ECS cluster. 
+If you deploy multiple services CDK will only create on cluster per VPC.
+
+You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and create a cluster inside this VPC.
+
+## Network Load Balanced Services
+
+To define an Amazon ECS service that is behind a network load balancer, instantiate one of the following: 
+
+* `NetworkLoadBalancedEc2Service`
+
+```ts
+const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  desiredCount: 2,
+  environment: {
+    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+  }
+});
+```
+
+* `NetworkLoadBalancedFargateService`
+
+```ts
+const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+});
+```
+
+The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `cluster`. If you deploy multiple services the CDK will only create one cluster per VPC.
+
+If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
 
 ## Queue Processing Services
 
@@ -96,7 +136,6 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 ## Scheduled Tasks
 
 To define a task that runs periodically, instantiate an `ScheduledEc2Task`:
-
 
 ```ts
 // Instantiate an Amazon EC2 Task to run at a scheduled interval

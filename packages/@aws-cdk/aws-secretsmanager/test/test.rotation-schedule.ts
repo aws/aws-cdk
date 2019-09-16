@@ -11,7 +11,7 @@ export = {
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
       runtime: lambda.Runtime.NODEJS_8_10,
-      code: lambda.Code.inline('export.handler = event => event;'),
+      code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler'
     });
 

@@ -6,6 +6,8 @@ import json
 import traceback
 import logging
 import shutil
+import boto3
+from datetime import datetime
 from uuid import uuid4
 
 from botocore.vendored import requests
@@ -13,6 +15,8 @@ from zipfile import ZipFile
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+cloudfront = boto3.client('cloudfront')
 
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
@@ -40,6 +44,16 @@ def handler(event, context):
             dest_bucket_name   = props['DestinationBucketName']
             dest_bucket_prefix = props.get('DestinationBucketKeyPrefix', '')
             retain_on_delete   = props.get('RetainOnDelete', "true") == "true"
+            distribution_id    = props.get('DistributionId', '')
+
+            default_distribution_path = dest_bucket_prefix
+            if not default_distribution_path.endswith("/"):
+                default_distribution_path += "/"
+            if not default_distribution_path.startswith("/"):
+                default_distribution_path = "/" + default_distribution_path
+            default_distribution_path += "*"
+
+            distribution_paths = props.get('DistributionPaths', [default_distribution_path])
         except KeyError as e:
             cfn_error("missing request resource property %s. props: %s" % (str(e), props))
             return
@@ -84,6 +98,9 @@ def handler(event, context):
         if request_type == "Update" or request_type == "Create":
             s3_deploy(s3_source_zip, s3_dest)
 
+        if distribution_id:
+            cloudfront_invalidate(distribution_id, distribution_paths)
+
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id)
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
@@ -113,6 +130,23 @@ def s3_deploy(s3_source_zip, s3_dest):
     # sync from "contents" to destination
     aws_command("s3", "sync", "--delete", contents_dir, s3_dest)
     shutil.rmtree(workdir)
+
+#---------------------------------------------------------------------------------------------------
+# invalidate files in the CloudFront distribution edge caches
+def cloudfront_invalidate(distribution_id, distribution_paths):
+    invalidation_resp = cloudfront.create_invalidation(
+        DistributionId=distribution_id,
+        InvalidationBatch={
+            'Paths': {
+                'Quantity': len(distribution_paths),
+                'Items': distribution_paths
+            },
+            'CallerReference': str(uuid4()),
+        })
+    # by default, will wait up to 10 minutes
+    cloudfront.get_waiter('invalidation_completed').wait(
+        DistributionId=distribution_id,
+        Id=invalidation_resp['Invalidation']['Id'])
 
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command

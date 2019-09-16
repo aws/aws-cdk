@@ -4,6 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/core');
 import { Stack } from '@aws-cdk/core';
+import { resourceArnSuffix } from './resource-arn-suffix';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
 /**
@@ -32,11 +33,13 @@ export interface CommonEcsRunTaskProps {
   readonly containerOverrides?: ContainerOverride[];
 
   /**
-   * Whether to wait for the task to complete and return the response
+   * The service integration pattern indicates different ways to call RunTask in ECS.
    *
-   * @default true
+   * The valid value for Lambda is FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN.
+   *
+   * @default FIRE_AND_FORGET
    */
-  readonly synchronous?: boolean;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -60,10 +63,25 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
   private securityGroup?: ec2.ISecurityGroup;
   private networkConfiguration?: any;
-  private readonly sync: boolean;
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EcsRunTaskBaseProps) {
-    this.sync = props.synchronous !== false;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+    const supportedPatterns = [
+      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      sfn.ServiceIntegrationPattern.SYNC
+    ];
+
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
+    }
+
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
+     throw new Error('Task Token is missing in containerOverrides (pass Context.taskToken somewhere in containerOverrides)');
+    }
 
     for (const override of this.props.containerOverrides || []) {
       const name = override.containerName;
@@ -86,7 +104,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
 
     return {
-      resourceArn: 'arn:aws:states:::ecs:runTask' + (this.sync ? '.sync' : ''),
+      resourceArn: 'arn:aws:states:::ecs:runTask' + resourceArnSuffix.get(this.integrationPattern),
       parameters: {
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
@@ -139,7 +157,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       }),
     ];
 
-    if (this.sync) {
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
         resources: [stack.formatArn({

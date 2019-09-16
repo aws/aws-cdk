@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-sam",
-  "version": "1.2.0",
+  "version": "1.8.0",
   "description": "The CDK Construct Library for the AWS Serverless Application Model (SAM) resources",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,16 +63,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.2.0",
+    "@aws-cdk/assert": "^1.8.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.2.0"
+    "@aws-cdk/core": "^1.8.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.2.0"
+    "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
     "node": ">= 8.10.0"

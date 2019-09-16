@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
-import { Code } from './code';
+import { Code, CodeConfig } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -76,7 +76,7 @@ export interface FunctionProps {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: any };
+  readonly environment?: { [key: string]: string };
 
   /**
    * The runtime environment for the Lambda function that you are uploading.
@@ -220,6 +220,14 @@ export interface FunctionProps {
    * @default - Logs never expire.
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - A new role is created.
+   */
+  readonly logRetentionRole?: iam.IRole;
 }
 
 /**
@@ -267,11 +275,13 @@ export class Function extends FunctionBase {
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
 
-        if (attrs.securityGroupId) {
+        if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
-            securityGroups: [
-              ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)
-            ]
+            securityGroups: [attrs.securityGroup]
+          });
+        } else if (attrs.securityGroupId) {
+          this._connections = new ec2.Connections({
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
           });
         }
       }
@@ -384,7 +394,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private readonly environment?: { [key: string]: any };
+  private readonly environment: { [key: string]: string };
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -420,10 +430,18 @@ export class Function extends FunctionBase {
       throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
     }
 
+    const code = props.code.bind(this);
+    verifyCodeConfig(code, props.runtime);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
-      code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
+      code: {
+        s3Bucket: code.s3Location && code.s3Location.bucketName,
+        s3Key: code.s3Location && code.s3Location.objectKey,
+        s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
+        zipFile: code.inlineCode
+      },
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
@@ -446,10 +464,8 @@ export class Function extends FunctionBase {
       resourceName: this.physicalName,
       sep: ':',
     });
-    this.runtime = props.runtime;
 
-    // allow code to bind to stack.
-    props.code.bind(this);
+    this.runtime = props.runtime;
 
     if (props.layers) {
       this.addLayers(...props.layers);
@@ -463,9 +479,12 @@ export class Function extends FunctionBase {
     if (props.logRetention) {
       new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retention: props.logRetention
+        retention: props.logRetention,
+        role: props.logRetentionRole
       });
     }
+
+    props.code.bindToResource(resource);
   }
 
   /**
@@ -474,11 +493,7 @@ export class Function extends FunctionBase {
    * @param key The environment variable key.
    * @param value The environment variable's value.
    */
-  public addEnvironment(key: string, value: any): this {
-    if (!this.environment) {
-      // TODO: add metadata
-      return this;
-    }
+  public addEnvironment(key: string, value: string): this {
     this.environment[key] = value;
     return this;
   }
@@ -638,4 +653,16 @@ export class Function extends FunctionBase {
  */
 function extractNameFromArn(arn: string) {
   return Fn.select(6, Fn.split(':', arn));
+}
+
+export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
+  // mutually exclusive
+  if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
+    throw new Error(`lambda.Code must specify one of "inlineCode" or "s3Location" but not both`);
+  }
+
+  // if this is inline code, check that the runtime supports
+  if (code.inlineCode && !runtime.supportsInlineCode) {
+    throw new Error(`Inline source not allowed for ${runtime.name}`);
+  }
 }

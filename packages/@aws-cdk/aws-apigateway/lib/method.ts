@@ -188,7 +188,7 @@ export class Method extends Resource {
 
     integration.bind(this);
 
-    const options = integration.props.options || { };
+    const options = integration._props.options || { };
 
     let credentials;
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
@@ -212,12 +212,12 @@ export class Method extends Resource {
     }
 
     return {
-      type: integration.props.type,
-      uri: integration.props.uri,
+      type: integration._props.type,
+      uri: integration._props.uri,
       cacheKeyParameters: options.cacheKeyParameters,
       cacheNamespace: options.cacheNamespace,
       contentHandling: options.contentHandling,
-      integrationHttpMethod: integration.props.integrationHttpMethod,
+      integrationHttpMethod: integration._props.integrationHttpMethod,
       requestParameters: options.requestParameters,
       requestTemplates: options.requestTemplates,
       passthroughBehavior: options.passthroughBehavior,

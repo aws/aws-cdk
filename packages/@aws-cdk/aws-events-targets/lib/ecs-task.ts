@@ -2,8 +2,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require ('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Stack } from '@aws-cdk/core';
-import custom = require('@aws-cdk/custom-resources');
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 
@@ -70,14 +68,15 @@ export class EcsTask implements events.IRuleTarget {
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
 
     if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
-      this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+      const securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
+      this.securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     }
   }
 
   /**
    * Allows using tasks as target of CloudWatch events
    */
-  public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const policyStatements = [new iam.PolicyStatement({
       actions: ['ecs:RunTask'],
       resources: [this.taskDefinition.taskDefinitionArn],
@@ -111,66 +110,32 @@ export class EcsTask implements events.IRuleTarget {
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
 
-    // Use a custom resource to "enhance" the target with network configuration
-    // when using awsvpc network mode.
-    if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
-      const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
-      const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PRIVATE ? 'DISABLED' : 'ENABLED';
+    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
+    const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
 
-      new custom.AwsCustomResource(this.taskDefinition, 'PutTargets', {
-        // `onCreate´ defaults to `onUpdate` and we don't need an `onDelete` here
-        // because the rule/target will be owned by CF anyway.
-        onUpdate: {
-          service: 'CloudWatchEvents',
-          apiVersion: '2015-10-07',
-          action: 'putTargets',
-          parameters: {
-            Rule: Stack.of(this.taskDefinition).parseArn(rule.ruleArn).resourceName,
-            Targets: [
-              {
-                Arn: arn,
-                Id: id,
-                EcsParameters: {
-                  TaskDefinitionArn: taskDefinitionArn,
-                  LaunchType: this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE',
-                  NetworkConfiguration: {
-                    awsvpcConfiguration: {
-                      Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-                      AssignPublicIp: assignPublicIp,
-                      SecurityGroups: this.securityGroup && [this.securityGroup.securityGroupId],
-                    }
-                  },
-                  TaskCount: taskCount,
-                },
-                Input: JSON.stringify(input),
-                RoleArn: role.roleArn
-              }
-            ]
-          },
-          physicalResourceId: this.taskDefinition.node.uniqueId,
-        },
-        policyStatements: [ // Cannot use automatic policy statements because we need iam:PassRole
-          new iam.PolicyStatement({
-            actions: ['events:PutTargets'],
-            resources: [rule.ruleArn],
-          }),
-          new iam.PolicyStatement({
-            actions: ['iam:PassRole'],
-            resources: [role.roleArn],
-          })
-        ]
-      });
-    }
+    const baseEcsParameters = { taskCount, taskDefinitionArn };
+
+    const ecsParameters: events.CfnRule.EcsParametersProperty = this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
+      ? {
+        ...baseEcsParameters,
+        launchType: this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE',
+        networkConfiguration: {
+          awsVpcConfiguration: {
+            subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
+            assignPublicIp,
+            securityGroups: this.securityGroup && [this.securityGroup.securityGroupId]
+          }
+        }
+      }
+      : baseEcsParameters;
 
     return {
       id: '',
       arn,
       role,
-      ecsParameters: {
-        taskCount,
-        taskDefinitionArn
-      },
-      input: events.RuleTargetInput.fromObject(input)
+      ecsParameters,
+      input: events.RuleTargetInput.fromObject(input),
+      targetResource: this.taskDefinition,
     };
   }
 }

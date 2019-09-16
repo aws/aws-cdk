@@ -12,7 +12,7 @@ test('lambda as notification target', () => {
   const fn = new lambda.Function(stack, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
-    code: lambda.Code.inline(`foo`)
+    code: lambda.Code.fromInline(`foo`)
   });
 
   // WHEN

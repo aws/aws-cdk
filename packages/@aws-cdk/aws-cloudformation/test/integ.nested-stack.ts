@@ -40,7 +40,7 @@ class MyNestedStack extends cfn.NestedStack {
         code: lambda.Code.inline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
-          TOPIC_ARN: props.siblingTopic ? props.siblingTopic.topicArn : undefined,
+          TOPIC_ARN: props.siblingTopic ? props.siblingTopic.topicArn : '',
           QUEUE_URL: props.subscriber.queueUrl // nested stack references a resource in the parent
         }
       });

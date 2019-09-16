@@ -1,8 +1,9 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-    IDependable, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+    IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
+import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetId, subnetName  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
@@ -33,6 +34,13 @@ export interface ISubnet extends IResource {
    * The route table for this subnet
    */
   readonly routeTable: IRouteTable;
+
+  /**
+   * Associate a Network ACL with this subnet
+   *
+   * @param acl The Network ACL to associate
+   */
+  associateNetworkAcl(id: string, acl: INetworkAcl): void;
 }
 
 /**
@@ -95,6 +103,11 @@ export interface IVpc extends IResource {
   addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection;
 
   /**
+   * Adds a new gateway endpoint to this VPC
+   */
+  addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint
+
+  /**
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
@@ -120,7 +133,7 @@ export enum SubnetType {
    *
    * Outbound traffic will be routed via a NAT Gateway. Preference being in
    * the same AZ, but if not available will use another AZ (control by
-   * specifing `maxGateways` on VpcNetwork). This might be used for
+   * specifing `maxGateways` on Vpc). This might be used for
    * experimental cost conscious accounts or accounts where HA outbound
    * traffic is not needed.
    */
@@ -153,7 +166,7 @@ export interface SubnetSelection {
    *
    * At most one of `subnetType` and `subnetName` can be supplied.
    *
-   * @default SubnetType.Private
+   * @default SubnetType.PRIVATE
    */
   readonly subnetType?: SubnetType;
 
@@ -171,7 +184,7 @@ export interface SubnetSelection {
   /**
    * If true, return at most one subnet per AZ
    *
-   * @defautl false
+   * @default false
    */
   readonly onePerAz?: boolean;
 }
@@ -288,6 +301,16 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 
   /**
+   * Adds a new gateway endpoint to this VPC
+   */
+  public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
+    return new GatewayVpcEndpoint(this, id, {
+      vpc: this,
+      ...options
+    });
+  }
+
+  /**
    * Return the subnets appropriate for the placement strategy
    */
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
@@ -319,7 +342,7 @@ abstract class VpcBase extends Resource implements IVpc {
 }
 
 /**
- * Properties that reference an external VpcNetwork
+ * Properties that reference an external Vpc
  */
 export interface VpcAttributes {
   /**
@@ -429,8 +452,10 @@ const NAME_TAG: string = 'Name';
 export interface VpcProps {
 
   /**
-   * The CIDR range to use for the VPC (e.g. '10.0.0.0/16'). Should be a minimum of /28 and maximum size of /16.
-   * The range will be split evenly into two subnets per Availability Zone (one public, one private).
+   * The CIDR range to use for the VPC, e.g. '10.0.0.0/16'.
+   *
+   * Should be a minimum of /28 and maximum size of /16. The range will be
+   * split across all subnets per Availability Zone.
    *
    * @default Vpc.DEFAULT_CIDR_RANGE
    */
@@ -438,6 +463,7 @@ export interface VpcProps {
 
   /**
    * Indicates whether the instances launched in the VPC get public DNS hostnames.
+   *
    * If this attribute is true, instances in the VPC get public DNS hostnames,
    * but only if the enableDnsSupport attribute is also set to true.
    *
@@ -446,11 +472,13 @@ export interface VpcProps {
   readonly enableDnsHostnames?: boolean;
 
   /**
-   * Indicates whether the DNS resolution is supported for the VPC. If this attribute
-   * is false, the Amazon-provided DNS server in the VPC that resolves public DNS hostnames
-   * to IP addresses is not enabled. If this attribute is true, queries to the Amazon
-   * provided DNS server at the 169.254.169.253 IP address, or the reserved IP address
-   * at the base of the VPC IPv4 network range plus two will succeed.
+   * Indicates whether the DNS resolution is supported for the VPC.
+   *
+   * If this attribute is false, the Amazon-provided DNS server in the VPC that
+   * resolves public DNS hostnames to IP addresses is not enabled. If this
+   * attribute is true, queries to the Amazon provided DNS server at the
+   * 169.254.169.253 IP address, or the reserved IP address at the base of the
+   * VPC IPv4 network range plus two will succeed.
    *
    * @default true
    */
@@ -458,9 +486,11 @@ export interface VpcProps {
 
   /**
    * The default tenancy of instances launched into the VPC.
-   * By setting this to dedicated tenancy, instances will be launched on hardware dedicated
-   * to a single AWS customer, unless specifically specified at instance launch time.
-   * Please note, not all instance types are usable with Dedicated tenancy.
+   *
+   * By setting this to dedicated tenancy, instances will be launched on
+   * hardware dedicated to a single AWS customer, unless specifically specified
+   * at instance launch time. Please note, not all instance types are usable
+   * with Dedicated tenancy.
    *
    * @default DefaultInstanceTenancy.Default (shared) tenancy
    */
@@ -469,12 +499,17 @@ export interface VpcProps {
   /**
    * Define the maximum number of AZs to use in this region
    *
-   * If the region has more AZs than you want to use (for example, because of EIP limits),
-   * pick a lower number here. The AZs will be sorted and picked from the start of the list.
+   * If the region has more AZs than you want to use (for example, because of
+   * EIP limits), pick a lower number here. The AZs will be sorted and picked
+   * from the start of the list.
    *
-   * If you pick a higher number than the number of AZs in the region, all AZs in
-   * the region will be selected. To use "all AZs" available to your account, use a
-   * high number (such as 99).
+   * If you pick a higher number than the number of AZs in the region, all AZs
+   * in the region will be selected. To use "all AZs" available to your
+   * account, use a high number (such as 99).
+   *
+   * Be aware that environment-agnostic stacks will be created with access to
+   * only 2 AZs, so to use more than 2 AZs, be sure to specify the account and
+   * region on your stack.
    *
    * @default 3
    */
@@ -486,7 +521,7 @@ export interface VpcProps {
    * For example, if set this to 1 and your subnet configuration is for 3 Public subnets then only
    * one of the Public subnets will have a gateway and all Private subnets will route to this NAT Gateway.
    *
-   * @default maxAZs
+   * @default - One NAT gateway per Availability Zone
    */
   readonly natGateways?: number;
 
@@ -496,6 +531,8 @@ export interface VpcProps {
    * You can pick a specific group of subnets by specifying the group name;
    * the picked subnets must be public subnets.
    *
+   * Only necessary if you have more than one public subnet group.
+   *
    * @default - All public subnets.
    */
   readonly natGatewaySubnets?: SubnetSelection;
@@ -503,32 +540,31 @@ export interface VpcProps {
   /**
    * Configure the subnets to build for each AZ
    *
-   * The subnets are constructed in the context of the VPC so you only need
-   * specify the configuration. The VPC details (VPC ID, specific CIDR,
-   * specific AZ will be calculated during creation)
+   * Each entry in this list configures a Subnet Group; each group will contain a
+   * subnet for each Availability Zone.
    *
-   * For example if you want 1 public subnet, 1 private subnet, and 1 isolated
+   * For example, if you want 1 public subnet, 1 private subnet, and 1 isolated
    * subnet in each AZ provide the following:
+   *
+   * ```ts
    * subnetConfiguration: [
    *    {
    *      cidrMask: 24,
    *      name: 'ingress',
-   *      subnetType: SubnetType.Public,
+   *      subnetType: SubnetType.PUBLIC,
    *    },
    *    {
    *      cidrMask: 24,
    *      name: 'application',
-   *      subnetType: SubnetType.Private,
+   *      subnetType: SubnetType.PRIVATE,
    *    },
    *    {
    *      cidrMask: 28,
    *      name: 'rds',
-   *      subnetType: SubnetType.Isolated,
+   *      subnetType: SubnetType.ISOLATED,
    *    }
    * ]
-   *
-   * `cidrMask` is optional and if not provided the IP space in the VPC will be
-   * evenly divided between the requested subnets.
+   * ```
    *
    * @default - The VPC CIDR will be evenly divided between 1 public and 1
    * private subnet per AZ.
@@ -587,13 +623,18 @@ export enum DefaultInstanceTenancy {
 }
 
 /**
- * Specify configuration parameters for a VPC to be built
+ * Specify configuration parameters for a single subnet group in a VPC.
  */
 export interface SubnetConfiguration {
   /**
-   * The CIDR Mask or the number of leading 1 bits in the routing mask
+   * The number of leading 1 bits in the routing mask.
    *
-   * Valid values are 16 - 28
+   * The number of available IP addresses in each subnet of this group
+   * will be equal to `2^(32 - cidrMask) - 2`.
+   *
+   * Valid values are `16--28`.
+   *
+   * @default - Available IP space is evenly divided across subnets.
    */
   readonly cidrMask?: number;
 
@@ -606,10 +647,10 @@ export interface SubnetConfiguration {
   readonly subnetType: SubnetType;
 
   /**
-   * The common Logical Name for the `VpcSubnet`
+   * Logical name for the subnet group.
    *
-   * This name will be suffixed with an integer correlating to a specific
-   * availability zone.
+   * This name can be used when selecting VPC subnets to distinguish
+   * between different subnet groups of the same type.
    */
   readonly name: string;
 
@@ -627,24 +668,27 @@ export interface SubnetConfiguration {
 }
 
 /**
- * VpcNetwork deploys an AWS VPC, with public and private subnets per Availability Zone.
+ * Define an AWS Virtual Private Cloud
+ *
+ * See the package-level documentation of this package for an overview
+ * of the various dimensions in which you can configure your VPC.
+ *
  * For example:
  *
  * ```ts
- * import { Vpc } from '@aws-cdk/aws-ec2'
+ * import { SubnetType, Vpc } from '@aws-cdk/aws-ec2'
  *
- * const vpc = new Vpc(this, {
+ * const vpc = new Vpc(this, 'TheVPC', {
  *   cidr: "10.0.0.0/16"
  * })
  *
- * // Iterate the public subnets
- * for (let subnet of vpc.publicSubnets) {
- *
- * }
- *
  * // Iterate the private subnets
- * for (let subnet of vpc.privateSubnets) {
+ * const selection = vpc.selectSubnets({
+ *   subnetType: SubnetType.PRIVATE
+ * });
  *
+ * for (const subnet of selection.subnets) {
+ *   // ...
  * }
  * ```
  *
@@ -653,7 +697,7 @@ export interface SubnetConfiguration {
 export class Vpc extends VpcBase {
   /**
    * The default CIDR range used when creating VPCs.
-   * This can be overridden using VpcNetworkProps when creating a VPCNetwork resource.
+   * This can be overridden using VpcProps when creating a VPCNetwork resource.
    * e.g. new VpcResource(this, { cidr: '192.168.0.0./16' })
    */
   public static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
@@ -683,9 +727,27 @@ export class Vpc extends VpcBase {
 
   /**
    * Import an existing VPC from by querying the AWS environment this stack is deployed to.
+   *
+   * This function only needs to be used to use VPCs not defined in your CDK
+   * application. If you are looking to share a VPC between stacks, you can
+   * pass the `Vpc` object between stacks and use it as normal.
+   *
+   * See the package-level documentation of this package for constraints
+   * on importing existing VPCs.
+   *
+   * Calling this method will lead to a lookup when the CDK CLI is executed.
+   * You can therefore not use any values that will only be available at
+   * CloudFormation execution time (i.e., Tokens).
    */
   public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
-    const filter: {[key: string]: string} = options.tags || {};
+    if (Token.isUnresolved(options.vpcId)
+      || Token.isUnresolved(options.vpcName)
+      || Object.values(options.tags || {}).some(Token.isUnresolved)
+      || Object.keys(options.tags || {}).some(Token.isUnresolved)) {
+      throw new Error(`All arguments to Vpc.fromLookup() must be concrete (no Tokens)`);
+    }
+
+    const filter: {[key: string]: string} = makeTagFilter(options.tags);
 
     // We give special treatment to some tags
     if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
@@ -701,6 +763,17 @@ export class Vpc extends VpcBase {
     });
 
     return this.fromVpcAttributes(scope, id, attributes);
+
+    /**
+     * Prefixes all keys in the argument with `tag:`.`
+     */
+    function makeTagFilter(tags: { [name: string]: string } | undefined): { [name: string]: string } {
+      const result: { [name: string]: string } = {};
+      for (const [name, value] of Object.entries(tags || {})) {
+        result[`tag:${name}`] = value;
+      }
+      return result;
+    }
   }
 
   /**
@@ -783,7 +856,7 @@ export class Vpc extends VpcBase {
   private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
   /**
-   * VpcNetwork creates a VPC that spans a whole region.
+   * Vpc creates a VPC that spans a whole region.
    * It will automatically divide the provided VPC CIDR range, and create public and private subnets per Availability Zone.
    * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
    * Network routing for the private subnets will be configured to allow outbound access via a set of resilient NAT Gateways (one per AZ).
@@ -799,6 +872,10 @@ export class Vpc extends VpcBase {
     }
 
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
+    if (Token.isUnresolved(cidrBlock)) {
+      throw new Error(`'cidr' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)`);
+    }
+
     this.networkBuilder = new NetworkBuilder(cidrBlock);
 
     const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
@@ -910,18 +987,11 @@ export class Vpc extends VpcBase {
       }
     }
   }
-  /**
-   * Adds a new gateway endpoint to this VPC
-   */
-  public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
-    return new GatewayVpcEndpoint(this, id, {
-      vpc: this,
-      ...options
-    });
-  }
 
   /**
    * Adds a new S3 gateway endpoint to this VPC
+   *
+   * @deprecated use `addGatewayEndpoint()` instead
    */
   public addS3Endpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
@@ -933,6 +1003,8 @@ export class Vpc extends VpcBase {
 
   /**
    * Adds a new DynamoDB gateway endpoint to this VPC
+   *
+   * @deprecated use `addGatewayEndpoint()` instead
    */
   public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
@@ -1135,6 +1207,8 @@ export class Subnet extends Resource implements ISubnet {
 
   private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
+  private _networkAcl: INetworkAcl;
+
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
 
@@ -1153,7 +1227,12 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
-    this.subnetNetworkAclAssociationId = subnet.attrNetworkAclAssociationId;
+
+    // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
+    // was just created. However, the ACL can be replaced at a later time.
+    this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
+    this.subnetNetworkAclAssociationId = Lazy.stringValue({ produce: () => this._networkAcl.networkAclId });
+    this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
@@ -1190,6 +1269,20 @@ export class Subnet extends Resource implements ISubnet {
   }
 
   /**
+   * Network ACL associated with this Subnet
+   *
+   * Upon creation, this is the default ACL which allows all traffic, except
+   * explicit DENY entries that you add.
+   *
+   * You can replace it with a custom ACL which denies all traffic except
+   * the explic it ALLOW entries that you add by creating a `NetworkAcl`
+   * object and calling `associateNetworkAcl()`.
+   */
+  public get networkAcl(): INetworkAcl {
+    return this._networkAcl;
+  }
+
+  /**
    * Adds an entry to this subnets route table that points to the passed NATGatwayId
    * @param natGatewayId The ID of the NAT gateway
    */
@@ -1200,6 +1293,17 @@ export class Subnet extends Resource implements ISubnet {
       natGatewayId
     });
     this._internetConnectivityEstablished.add(route);
+  }
+
+  public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
+    this._networkAcl = networkAcl;
+
+    const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
+    const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+      networkAcl,
+      subnet: this,
+    });
   }
 }
 
@@ -1373,7 +1477,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
         ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
       // tslint:disable-next-line: max-line-length
-      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read it's .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
     this.availabilityZone = attrs.availabilityZone;
@@ -1382,6 +1486,15 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!
     };
+  }
+
+  public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
+    const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
+    const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+      networkAcl,
+      subnet: this,
+    });
   }
 }
 

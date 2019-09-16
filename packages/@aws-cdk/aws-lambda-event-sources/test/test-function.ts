@@ -5,7 +5,7 @@ export class TestFunction extends lambda.Function {
   constructor(scope: cdk.Construct, id: string) {
     super(scope, id, {
       handler: 'index.handler',
-      code: lambda.Code.inline(`exports.handler = ${handler.toString()}`),
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
       runtime: lambda.Runtime.NODEJS_8_10
     });
   }

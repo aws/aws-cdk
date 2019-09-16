@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import codebuild = require('@aws-cdk/aws-codebuild');
+import codecommit = require('@aws-cdk/aws-codecommit');
 import { Repository } from '@aws-cdk/aws-codecommit';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { Role } from '@aws-cdk/aws-iam';
@@ -109,7 +110,6 @@ export = {
         "BranchName": "master",
         "PollForSourceChanges": true
       },
-      "InputArtifacts": [],
       "Name": "source",
       "OutputArtifacts": [
         {
@@ -175,7 +175,6 @@ export = {
       },
       "InputArtifacts": [{"Name": "OutputYo"}],
       "Name": "BuildChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       },
       {
@@ -189,9 +188,7 @@ export = {
         "ActionMode": "CHANGE_SET_EXECUTE",
         "ChangeSetName": "MyMagicalChangeSet"
       },
-      "InputArtifacts": [],
       "Name": "ExecuteChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       }
     ],
@@ -543,6 +540,122 @@ export = {
   }));
 
   test.done();
+  },
+
+  'cross-account CFN Pipeline': {
+    'correctly creates the deployment Role in the other account'(test: Test) {
+      const app = new cdk.App();
+
+      const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
+        env: {
+          account: '234567890123',
+          region: 'us-west-2',
+        },
+      });
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: codecommit.Repository.fromRepositoryName(pipelineStack, 'Repo', 'RepoName'),
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Deploy',
+            actions: [
+              new cpactions.CloudFormationCreateUpdateStackAction({
+                actionName: 'CFN',
+                stackName: 'MyStack',
+                adminPermissions: true,
+                templatePath: sourceOutput.atPath('template.yaml'),
+                account: '123456789012',
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Deploy",
+            "Actions": [
+              {
+                "Name": "CFN",
+                "RoleArn": { "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                      ":iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50",
+                  ]],
+                },
+                "Configuration": {
+                  "RoleArn": {
+                    "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                        ":iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508",
+                    ]],
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      // the pipeline's BucketPolicy should trust both CFN roles
+      expect(pipelineStack).to(haveResourceLike('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                    ":iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508",
+                  ]],
+                },
+              },
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                    ":iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50",
+                  ]],
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      const otherStack = app.node.findChild('cross-account-support-stack-123456789012') as cdk.Stack;
+      expect(otherStack).to(haveResourceLike('AWS::IAM::Role', {
+        "RoleName": "pipelinestack-support-123loycfnactionrole56af64af3590f311bc50",
+      }));
+      expect(otherStack).to(haveResourceLike('AWS::IAM::Role', {
+        "RoleName": "pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508",
+      }));
+
+      test.done();
+    },
   },
 };
 

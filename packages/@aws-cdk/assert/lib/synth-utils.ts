@@ -27,7 +27,7 @@ export class SynthUtils {
 
     // if this is a nested stack (it has a parent), then just read the template as a string
     if (stack.parentStack) {
-      return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFileName)).toString('utf-8'));
+      return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
     }
 
     return assembly.getStack(stack.stackName);

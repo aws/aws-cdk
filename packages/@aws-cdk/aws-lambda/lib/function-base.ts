@@ -56,9 +56,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
+   * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   addPermission(id: string, permission: Permission): void;
 
+  /**
+   * Adds a statement to the IAM role assumed by the instance.
+   */
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
   /**
@@ -114,12 +118,22 @@ export interface FunctionAttributes {
   readonly role?: iam.IRole;
 
   /**
-   * Id of the securityGroup for this Lambda, if in a VPC.
+   * Id of the security group of this Lambda, if in a VPC.
+   *
+   * This needs to be given in order to support allowing connections
+   * to this Lambda.
+   *
+   * @deprecated use `securityGroup` instead
+   */
+  readonly securityGroupId?: string;
+
+  /**
+   * The security group of this Lambda, if in a VPC.
    *
    * This needs to be given in order to support allowing connections
    * to this Lambda.
    */
-  readonly securityGroupId?: string;
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {
@@ -168,6 +182,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
+   * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
@@ -177,8 +192,9 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
     const principal = this.parsePermissionPrincipal(permission.principal);
     const action = permission.action || 'lambda:InvokeFunction';
+    const scope = permission.scope || this;
 
-    new CfnPermission(this, id, {
+    new CfnPermission(scope, id, {
       action,
       principal,
       functionName: this.functionArn,
@@ -188,6 +204,9 @@ export abstract class FunctionBase extends Resource implements IFunction {
     });
   }
 
+  /**
+   * Adds a statement to the IAM role assumed by the instance.
+   */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
@@ -285,8 +304,12 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.ServicePrincipal).service;
     }
 
+    if (`arn` in principal) {
+      return (principal as iam.ArnPrincipal).arn;
+    }
+
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
-      'Supported: AccountPrincipal, ServicePrincipal');
+      'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
   }
 }
 

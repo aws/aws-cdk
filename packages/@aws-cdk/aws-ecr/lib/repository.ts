@@ -179,7 +179,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions,
       resourceArns: [this.repositoryArn],
-      resourceSelfArns: ['*'],
+      resourceSelfArns: [],
       resource: this,
     });
   }

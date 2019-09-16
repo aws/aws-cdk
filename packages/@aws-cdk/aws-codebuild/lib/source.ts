@@ -143,9 +143,14 @@ export enum EventAction {
   PULL_REQUEST_CREATED = 'PULL_REQUEST_CREATED',
 
   /**
-   * Updating an Pull Request.
+   * Updating a Pull Request.
    */
   PULL_REQUEST_UPDATED = 'PULL_REQUEST_UPDATED',
+
+  /**
+   * Merging a Pull Request.
+   */
+  PULL_REQUEST_MERGED = 'PULL_REQUEST_MERGED',
 
   /**
    * Re-opening a previously closed Pull Request.

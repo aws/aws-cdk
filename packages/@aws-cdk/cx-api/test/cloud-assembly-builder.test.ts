@@ -52,7 +52,7 @@ test('cloud assembly builder', () => {
     }
   }));
 
-  const assembly = session.build();
+  const assembly = session.buildAssembly();
   const manifest = assembly.manifest;
 
   // THEN

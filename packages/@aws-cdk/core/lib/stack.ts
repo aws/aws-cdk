@@ -161,12 +161,12 @@ export class Stack extends Construct implements ITaggable {
   public readonly parentStack?: Stack;
 
   /**
-   * The filename of the CloudFormation template emitted into the cloud assembly
+   * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
-   * @experimental
+   * @example MyStack.template.json
    */
-  public readonly templateFileName: string;
+  public readonly templateFile: string;
 
   /**
    * Logical ID generation strategy
@@ -213,7 +213,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
 
-    this.templateFileName = `${this.stackName}.template.json`;
+    this.templateFile = `${this.stackName}.template.json`;
   }
 
   /**
@@ -224,6 +224,7 @@ export class Stack extends Construct implements ITaggable {
       scope: this,
       prefix: [],
       resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+      preparing: false
     });
   }
 
@@ -316,7 +317,8 @@ export class Stack extends Construct implements ITaggable {
    * The Amazon domain suffix for the region in which this stack is defined
    */
   public get urlSuffix(): string {
-    return new ScopedAws(this).urlSuffix;
+    // Since URL Suffix always follows partition, it is unscoped like partition is.
+    return Aws.URL_SUFFIX;
   }
 
   /**
@@ -556,10 +558,9 @@ export class Stack extends Construct implements ITaggable {
 
   protected synthesize(session: ISynthesisSession): void {
     const builder = session.assembly;
-    const template = this.templateFileName;
 
     // write the CloudFormation template as a JSON file
-    const outPath = path.join(builder.outdir, template);
+    const outPath = path.join(builder.outdir, this.templateFile);
     fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
 
     // if this is a nested stack, do not emit it as a cloud assembly artifact (it will be registered as an s3 asset instead)
@@ -571,7 +572,7 @@ export class Stack extends Construct implements ITaggable {
     const meta = this.collectMetadata();
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
-      templateFile: template
+      templateFile: this.templateFile
     };
 
     // add an artifact that represents this stack

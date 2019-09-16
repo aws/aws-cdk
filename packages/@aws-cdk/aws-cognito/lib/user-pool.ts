@@ -189,6 +189,18 @@ export interface UserPoolTriggers {
   readonly preSignUp?: lambda.IFunction;
 
   /**
+   * A pre-token-generation AWS Lambda trigger.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   */
+  readonly preTokenGeneration?: lambda.IFunction;
+
+  /**
+   * A user-migration AWS Lambda trigger.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   */
+  readonly userMigration?: lambda.IFunction;
+
+  /**
    * Verifies the authentication challenge response.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
@@ -484,6 +496,28 @@ export class UserPool extends Resource implements IUserPool {
   public addPreSignUpTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreSignUp');
     this.triggers = { ...this.triggers, preSignUp: fn.functionArn };
+  }
+
+  /**
+   * Attach 'Pre Token Generation' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   * @param fn the lambda function to attach
+   */
+  public addPreTokenGenerationTrigger(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn, 'PreTokenGeneration');
+    this.triggers = { ...this.triggers, preTokenGeneration: fn.functionArn };
+  }
+
+  /**
+   * Attach 'User Migration' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   * @param fn the lambda function to attach
+   */
+  public addUserMigrationTrigger(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn, 'UserMigration');
+    this.triggers = { ...this.triggers, userMigration: fn.functionArn };
   }
 
   /**

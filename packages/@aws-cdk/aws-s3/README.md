@@ -191,3 +191,39 @@ const bucket = new Bucket(this, 'MyBlockedBucket', {
 When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+
+
+### Website redirection
+
+You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.
+
+[redirection policy]: https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html#advanced-conditional-redirects
+
+#### Static redirection
+
+You can statically redirect a to a given Bucket URL or any other host name with `websiteRedirect`:
+
+```ts
+const bucket = new Bucket(this, 'MyRedirectedBucket', {
+    websiteRedirect: { hostName: 'www.example.com' }
+});
+```
+
+#### Routing rules
+
+Alternatively, you can also define multiple `websiteRoutingRules`, to define complex, conditional redirections:
+
+```ts
+const bucket = new Bucket(this, 'MyRedirectedBucket', {
+  websiteRoutingRules: [{
+    hostName: 'www.example.com',
+    httpRedirectCode: '302',
+    protocol: RedirectProtocol.HTTPS,
+    replaceKey: ReplaceKey.prefixWith('test/'),
+    condition: {
+      httpErrorCodeReturnedEquals: '200',
+      keyPrefixEquals: 'prefix',
+    }
+  }]
+});
+```

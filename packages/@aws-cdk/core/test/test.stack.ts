@@ -284,6 +284,103 @@ export = {
     test.done();
   },
 
+  'Stacks can be children of other stacks (substack) and they will be synthesized separately'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const parentStack = new Stack(app, 'parent');
+    const childStack = new Stack(parentStack, 'child');
+    new CfnResource(parentStack, 'MyParentResource', { type: 'Resource::Parent' });
+    new CfnResource(childStack, 'MyChildResource', { type: 'Resource::Child' });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(assembly.getStack(parentStack.stackName).template, { Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
+    test.deepEqual(assembly.getStack(childStack.stackName).template, { Resources: { MyChildResource: { Type: 'Resource::Child' } } });
+    test.done();
+  },
+
+  'cross-stack reference (substack references parent stack)'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parentStack = new Stack(app, 'parent');
+    const childStack = new Stack(parentStack, 'child');
+
+    // WHEN (a resource from the child stack references a resource from the parent stack)
+    const parentResource = new CfnResource(parentStack, 'MyParentResource', { type: 'Resource::Parent' });
+    new CfnResource(childStack, 'MyChildResource', {
+      type: 'Resource::Child',
+      properties: {
+        ChildProp: parentResource.getAtt('AttOfParentResource')
+      }
+    });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+      Resources: { MyParentResource: { Type: 'Resource::Parent' } },
+      Outputs: { ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
+        Value: { 'Fn::GetAtt': [ 'MyParentResource', 'AttOfParentResource' ] },
+        Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' } }
+      }
+    });
+    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+      Resources: {
+        MyChildResource: {
+          Type: 'Resource::Child',
+          Properties: {
+            ChildProp: {
+              'Fn::ImportValue': 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E'
+            }
+          }
+        }
+      }
+    });
+    test.done();
+  },
+
+  'cross-stack reference (parent stack references substack)'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parentStack = new Stack(app, 'parent');
+    const childStack = new Stack(parentStack, 'child');
+
+    // WHEN (a resource from the child stack references a resource from the parent stack)
+    const childResource = new CfnResource(childStack, 'MyChildResource', { type: 'Resource::Child' });
+    new CfnResource(parentStack, 'MyParentResource', {
+      type: 'Resource::Parent',
+      properties: {
+        ParentProp: childResource.getAtt('AttributeOfChildResource')
+      }
+    });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+      Resources: {
+        MyParentResource: {
+          Type: 'Resource::Parent',
+          Properties: {
+            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' }
+          }
+        }
+      }
+    });
+
+    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+      Resources: {
+        MyChildResource: { Type: 'Resource::Child' } },
+      Outputs: {
+        ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
+          Value: { 'Fn::GetAtt': [ 'MyChildResource', 'AttributeOfChildResource' ] },
+          Export: { Name: 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' }
+        }
+      }
+    });
+    test.done();
+  },
+
   'cannot create cyclic reference between stacks'(test: Test) {
     // GIVEN
     const app = new App();
@@ -335,6 +432,25 @@ export = {
     test.throws(() => {
       ConstructNode.prepare(app.node);
     }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
+
+    test.done();
+  },
+
+  'urlSuffix does not imply a stack dependency'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+
+    // WHEN
+    new CfnOutput(second, 'Output', {
+      value: first.urlSuffix
+    });
+
+    // THEN
+    app.synth();
+
+    test.equal(second.dependencies.length, 0);
 
     test.done();
   },
@@ -439,6 +555,26 @@ export = {
     test.done();
   },
 
+  'Stack.of() works for substacks'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const parentStack = new Stack(app, 'ParentStack');
+    const parentResource = new CfnResource(parentStack, 'ParentResource', { type: 'parent::resource' });
+
+    // we will define a substack under the /resource/... just for giggles.
+    const childStack = new Stack(parentResource, 'ChildStack');
+    const childResource = new CfnResource(childStack, 'ChildResource', { type: 'child::resource' });
+
+    // THEN
+    test.same(Stack.of(parentStack), parentStack);
+    test.same(Stack.of(parentResource), parentStack);
+    test.same(Stack.of(childStack), childStack);
+    test.same(Stack.of(childResource), childStack);
+    test.done();
+  },
+
   'stack.availabilityZones falls back to Fn::GetAZ[0],[2] if region is not specified'(test: Test) {
     // GIVEN
     const app = new App();
@@ -452,6 +588,20 @@ export = {
       { "Fn::Select": [ 0, { "Fn::GetAZs": "" } ] },
       { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
     ]);
+    test.done();
+  },
+
+  'stack.templateFile contains the name of the cloudformation output'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack1 = new Stack(app, 'MyStack1');
+    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+
+    // THEN
+    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+    test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
     test.done();
   }
 };
