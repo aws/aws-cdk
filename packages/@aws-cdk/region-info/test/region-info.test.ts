@@ -24,6 +24,6 @@ test('built-in data features known regions', () => {
   const regions = RegionInfo.regions;
 
   for (const expected of AWS_REGIONS) {
-    expect(regions).toContain(expected);
+    expect(regions.map(region => region.name)).toContain(expected);
   }
 });
