@@ -17,8 +17,8 @@
 
 > __Status: Experimental__
 
-This library allows populating an S3 bucket with the contents of a .zip file
-from another S3 bucket or from local disk.
+This library allows populating an S3 bucket with the contents of .zip files
+from other S3 buckets or from local disk.
 
 The following example defines a publicly accessible S3 bucket with web hosting
 enabled and populates it from a local directory on disk.
@@ -30,7 +30,7 @@ const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
-  source: s3deploy.Source.asset('./website-dist'),
+  sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
   destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
 });
@@ -82,7 +82,7 @@ const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distributio
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
-  source: s3deploy.Source.asset('./website-dist'),
+  sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
   distribution,
   distributionPaths: ['/images/*.png'],

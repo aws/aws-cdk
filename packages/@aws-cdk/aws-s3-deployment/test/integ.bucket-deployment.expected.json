@@ -51,10 +51,10 @@
             "Arn"
           ]
         },
-        "SourceBucketName": {
-          "Ref": "DeployMeAssetS3Bucket646A811D"
-        },
-        "SourceObjectKey": {
+        "SourceBucketNames": [{
+          "Ref": "DeployMeAsset1S3Bucket8ED384CC"
+        }],
+        "SourceObjectKeys": [{
           "Fn::Join": [
             "",
             [
@@ -65,7 +65,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployMeAssetS3VersionKey5A12D51F"
+                        "Ref": "DeployMeAsset1S3VersionKeyA278D1EB"
                       }
                     ]
                   }
@@ -78,7 +78,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployMeAssetS3VersionKey5A12D51F"
+                        "Ref": "DeployMeAsset1S3VersionKeyA278D1EB"
                       }
                     ]
                   }
@@ -86,7 +86,7 @@
               }
             ]
           ]
-        },
+        }],
         "DestinationBucketName": {
           "Ref": "Destination920A3C57"
         },
@@ -149,7 +149,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployMeAssetS3Bucket646A811D"
+                        "Ref": "DeployMeAsset1S3Bucket8ED384CC"
                       }
                     ]
                   ]
@@ -164,7 +164,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployMeAssetS3Bucket646A811D"
+                        "Ref": "DeployMeAsset1S3Bucket8ED384CC"
                       },
                       "/*"
                     ]
@@ -223,7 +223,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithPrefixAssetS3Bucket8B33F071"
+                        "Ref": "DeployWithPrefixAsset2S3Bucket914A0CA9"
                       }
                     ]
                   ]
@@ -238,7 +238,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithPrefixAssetS3Bucket8B33F071"
+                        "Ref": "DeployWithPrefixAsset2S3Bucket914A0CA9"
                       },
                       "/*"
                     ]
@@ -360,10 +360,10 @@
             "Arn"
           ]
         },
-        "SourceBucketName": {
-          "Ref": "DeployWithPrefixAssetS3Bucket8B33F071"
-        },
-        "SourceObjectKey": {
+        "SourceBucketNames": [{
+          "Ref": "DeployWithPrefixAsset2S3Bucket914A0CA9"
+        }],
+        "SourceObjectKeys": [{
           "Fn::Join": [
             "",
             [
@@ -374,7 +374,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithPrefixAssetS3VersionKey45049418"
+                        "Ref": "DeployWithPrefixAsset2S3VersionKeyB49C1C8C"
                       }
                     ]
                   }
@@ -387,7 +387,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithPrefixAssetS3VersionKey45049418"
+                        "Ref": "DeployWithPrefixAsset2S3VersionKeyB49C1C8C"
                       }
                     ]
                   }
@@ -395,7 +395,7 @@
               }
             ]
           ]
-        },
+        }],
         "DestinationBucketName": {
           "Ref": "Destination281A09BDF"
         },
@@ -407,17 +407,17 @@
     }
   },
   "Parameters": {
-    "DeployMeAssetS3Bucket646A811D": {
+    "DeployMeAsset1S3Bucket8ED384CC": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployMe/Asset\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployMe/Asset1\""
     },
-    "DeployMeAssetS3VersionKey5A12D51F": {
+    "DeployMeAsset1S3VersionKeyA278D1EB": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployMe/Asset\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployMe/Asset1\""
     },
-    "DeployMeAssetArtifactHash31436FAA": {
+    "DeployMeAsset1ArtifactHashCB325942": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployMe/Asset\""
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployMe/Asset1\""
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket6E5FB2B7": {
       "Type": "String",
@@ -431,17 +431,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
-    "DeployWithPrefixAssetS3Bucket8B33F071": {
+    "DeployWithPrefixAsset2S3Bucket914A0CA9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset2\""
     },
-    "DeployWithPrefixAssetS3VersionKey45049418": {
+    "DeployWithPrefixAsset2S3VersionKeyB49C1C8C": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithPrefix/Asset2\""
     },
-    "DeployWithPrefixAssetArtifactHash9495ADE8": {
+    "DeployWithPrefixAsset2ArtifactHash0DA6A973": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset2\""
     }
   }
 }
