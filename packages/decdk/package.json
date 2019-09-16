@@ -120,6 +120,7 @@
     "@aws-cdk/aws-robomaker": "^1.8.0",
     "@aws-cdk/aws-route53": "^1.8.0",
     "@aws-cdk/aws-route53-targets": "^1.8.0",
+    "@aws-cdk/aws-route53-patterns": "^1.8.0",
     "@aws-cdk/aws-route53resolver": "^1.8.0",
     "@aws-cdk/aws-s3": "^1.8.0",
     "@aws-cdk/aws-s3-assets": "^1.8.0",

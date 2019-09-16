@@ -1,0 +1,16 @@
+*.js
+tsconfig.json
+tslint.json
+*.js.map
+*.d.ts
+*.generated.ts
+dist
+lib/generated/resources.ts
+.jsii
+
+.LAST_BUILD
+.nyc_output
+coverage
+.nycrc
+.LAST_PACKAGE
+*.snk
