@@ -33,7 +33,7 @@ export function verifyManifestVersion(manifetVersion: string) {
   // if framework < cli, we require a newer framework version
   if (semver.lt(frameworkVersion, toolkitVersion)) {
     throw new Error(
-      `CDK CLI can only be used with apps created by CDK >= ${toolkitVersion}`);
+      `CDK CLI can only be used with apps created by CDK >= ${CLOUD_ASSEMBLY_VERSION}`);
   }
 }
 

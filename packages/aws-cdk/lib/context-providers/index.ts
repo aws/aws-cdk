@@ -42,6 +42,15 @@ export async function provideContextValues(
   }
 }
 
+/**
+ * Register a context provider
+ *
+ * (Only available for testing right now).
+ */
+export function registerContextProvider(name: string, provider: ProviderConstructor) {
+  availableContextProviders[name] = provider;
+}
+
 const availableContextProviders: ProviderMap = {
   [cxapi.AVAILABILITY_ZONE_PROVIDER]: AZContextProviderPlugin,
   [cxapi.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
