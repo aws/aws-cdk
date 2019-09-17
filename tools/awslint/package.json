@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -b && chmod +x bin/awslint",
-    "lint": "tslint && pkglint",
+    "lint": "tslint -p . && pkglint",
     "test": "echo ok",
     "watch": "tsc -b -w",
     "build+test+package": "npm run build+test",
