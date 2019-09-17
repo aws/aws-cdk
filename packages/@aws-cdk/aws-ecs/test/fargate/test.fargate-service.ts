@@ -459,8 +459,7 @@ export = {
         listener.addTargets("target", {
           port: 80,
           targets: [service.loadBalancerTarget({
-            containerName: "MainContainer",
-            containerPort: 8001
+            containerName: "MainContainer"
           })]
         });
 
@@ -469,12 +468,24 @@ export = {
           LoadBalancers: [
             {
               ContainerName: "MainContainer",
-              ContainerPort: 8001,
+              ContainerPort: 8000,
               TargetGroupArn: {
                 Ref: "lblistenertargetGroupC7489D1E"
               }
             }
           ],
+        }));
+
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+          Description: "Load balancer to target",
+          FromPort: 8000,
+          ToPort: 8000,
+        }));
+
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+          Description: "Load balancer to target",
+          FromPort: 8000,
+          ToPort: 8000
         }));
 
         test.done();
@@ -579,7 +590,7 @@ export = {
               protocol: ecs.Protocol.TCP
             })]
           });
-        }, /Container port using the protocol does not exist./);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMapping()"?/);
 
         test.done();
       },
@@ -614,7 +625,7 @@ export = {
               containerPort: 8002,
             })]
           });
-        }, /Container port using the protocol does not exist./);
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMapping()"?/);
 
         test.done();
       },
@@ -649,7 +660,7 @@ export = {
               containerPort: 8001,
             })]
           });
-        }, /Container does not exist./);
+        }, /No container named 'SideContainer'. Did you call "addContainer()"?/);
 
         test.done();
       }

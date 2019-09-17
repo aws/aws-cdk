@@ -1,6 +1,7 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
-import { ContainerDefinition, ContainerDefinitionOptions, Protocol } from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
 
@@ -294,36 +295,37 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
-   * Returns the host port that match the provided container name and container port.
-   *
-   * @internal
+   * Validate the existence of the input target and set default values.
    */
-  public _findHostPort(target: LoadBalancerTargetOptions): HostPort {
-    const container = this.findContainer(target.containerName);
-    if (container === undefined) {
-      throw new Error("Container does not exist.");
+  public validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
+    const targetContainer = this.findContainer(options.containerName);
+    if (targetContainer === undefined) {
+      throw new Error(`No container named '${options.containerName}'. Did you call "addContainer()"?`);
     }
-    const portMapping = container._findPortMapping(target.containerPort, target.protocol || Protocol.TCP);
+    const targetProtocol = options.protocol || Protocol.TCP;
+    const targetContainerPort = options.containerPort || targetContainer.containerPort;
+    const portMapping = targetContainer._findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
-      throw new Error("Container port using the protocol does not exist.");
-    }
-    if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
-      return {
-        port: portMapping.hostPort,
-        protocol: portMapping.protocol || Protocol.TCP
-      };
-    }
-
-    if (this.networkMode === NetworkMode.BRIDGE) {
-      return {
-        port: 0,
-        protocol: portMapping.protocol || Protocol.TCP
-      };
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMapping()"?`);
     }
     return {
-      port: portMapping.containerPort,
-      protocol: portMapping.protocol || Protocol.TCP
+      containerName: options.containerName,
+      portMapping
     };
+  }
+
+  /**
+   * Returns the port range to be opened that match the provided container name and container port.
+   */
+  public findPortRange(portMapping: PortMapping): ec2.Port {
+    if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
+      return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
+    }
+    if (this.networkMode === NetworkMode.BRIDGE) {
+      return EPHEMERAL_PORT_RANGE;
+    }
+    return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
   }
 
   /**
@@ -430,6 +432,11 @@ export class TaskDefinition extends TaskDefinitionBase {
 }
 
 /**
+ * The port range to open up for dynamic port mapping
+ */
+const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
+
+/**
  * The networking mode to use for the containers in the task.
  */
 export enum NetworkMode {
@@ -510,24 +517,22 @@ export interface Host {
 }
 
 /**
- * The port number as well as the protocol of a container host port.
- *
- * @internal
+ * Properties for an ECS target.
  */
-export interface HostPort {
+export interface LoadBalancerTarget {
   /**
-   * Port number of the container.
+   * The name of the container.
    */
-  readonly port: number;
+  readonly containerName: string;
 
   /**
-   * Protocol of the port.
+   * The port mapping of the target.
    */
-  readonly protocol: Protocol;
+  readonly portMapping: PortMapping
 }
 
 /**
- * Properties for defining an ECS target.
+ * Properties for defining an ECS target. The port mapping for it must already have been created through addPortMapping().
  */
 export interface LoadBalancerTargetOptions {
   /**
@@ -537,11 +542,15 @@ export interface LoadBalancerTargetOptions {
 
   /**
    * The port number of the container.
+   *
+   * @default - Container port of the first added port mapping.
    */
-  readonly containerPort: number;
+  readonly containerPort?: number;
 
   /**
-   * The protocol used for the port mapping.
+   * The protocol used for the port mapping. Only applicable when using application load balancers.
+   *
+   * @default Protocol.TCP
    */
   readonly protocol?: Protocol;
 }

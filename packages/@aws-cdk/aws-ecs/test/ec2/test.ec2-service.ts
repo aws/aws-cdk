@@ -1351,6 +1351,45 @@ export = {
       }));
 
       test.done();
+    },
+
+    'can attach any container and port as a target'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.HOST });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+      });
+      container.addPortMappings({ containerPort: 808 });
+      container.addPortMappings({ containerPort: 8080 });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      // WHEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      lb.addTarget(service.classicLoadBalancerTarget({
+        containerName: "web",
+        containerPort: 8080
+      }));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        LoadBalancers: [
+          {
+            ContainerName: "web",
+            ContainerPort: 8080,
+            LoadBalancerName: { Ref: "LB8A12904C" }
+          }
+        ]
+      }));
+
+      test.done();
     }
   },
 

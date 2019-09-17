@@ -242,10 +242,9 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
-### Include a load balancer
+### Include an application/network load balancer
 
-`Services` are load balancing targets and can be directly attached to load
-balancers:
+`Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
 
 ```ts
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
@@ -257,6 +256,51 @@ const listener = lb.addListener('Listener', { port: 80 });
 const target = listener.addTargets('ECS', {
   port: 80,
   targets: [service]
+});
+```
+
+Note that in the example above, if you have multiple containers with multiple ports, then only the first essential container along with its first added container port will be registered as target. To have more control over which container and port to register as targets:
+
+```ts
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
+const service = new ecs.FargateService(this, 'Service', { /* ... */ });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
+const listener = lb.addListener('Listener', { port: 80 });
+const target = listener.addTargets('ECS', {
+  port: 80,
+  targets: [service.loadBalancerTarget({
+    containerName
+    containerPort
+    protocol
+  })]
+});
+```
+
+### Include a classic load balancer
+`Services` can also be directly attached to a classic load balancer as targets:
+
+```ts
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
+
+const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+lb.addTarget(service);
+```
+
+Similarly, if you want to have more control over load balancer targeting:
+
+```ts
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
+
+const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+lb.addTarget(service.classicLoadBalancerTarget{
+  containerName,
+  containerPort
 });
 ```
 

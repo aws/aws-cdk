@@ -280,38 +280,29 @@ export abstract class BaseService extends Resource
   /**
    * This method is called to attach this service to an Application Load Balancer.
    *
-   * Don't call this function directly. Instead, call listener.addTarget()
+   * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    const ret = this.attachToELBv2(targetGroup);
-
-    // Open up security groups. For dynamic port mapping, we won't know the port range
-    // in advance so we need to open up all ports.
-    const port = this.taskDefinition.defaultContainer!.ingressPort;
-    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(port);
-    targetGroup.registerConnectable(this, portRange);
-
-    return ret;
+    return this.defaultLoadBalancerTarget.attachToApplicationTargetGroup(targetGroup);
   }
 
+  /**
+   * This method is called to register the specified ECS target in this service to a target group.
+   *
+   * Don't call this function alone. Instead, call `listener.addTargets(service.loadBalancerTarget())` or
+   * `targetGroup.addTarget(service.loadBalancerTarget())` to add this target to a load balancer.
+   */
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
     const self = this;
-    const hostPort = this.taskDefinition._findHostPort(options);
+    const target = this.taskDefinition.validateTarget(options);
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-        let portRange: ec2.Port;
-        if (hostPort.protocol === Protocol.TCP) {
-          portRange = hostPort.port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(hostPort.port);
-        } else {
-          portRange = hostPort.port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.udp(hostPort.port);
-        }
-        targetGroup.registerConnectable(self, portRange);
-        return self.attachToELBv2(targetGroup, options);
+        targetGroup.registerConnectable(self, self.taskDefinition.findPortRange(target.portMapping));
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort);
       },
-
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, options);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort);
       },
     };
   }
@@ -358,11 +349,11 @@ export abstract class BaseService extends Resource
   /**
    * This method is called to attach this service to a Network Load Balancer.
    *
-   * Don't call this function directly. Instead, call listener.addTarget()
+   * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    return this.attachToELBv2(targetGroup);
+    return this.defaultLoadBalancerTarget.attachToNetworkTargetGroup(targetGroup);
   }
 
   /**
@@ -445,25 +436,16 @@ export abstract class BaseService extends Resource
   /**
    * Shared logic for attaching to an ELBv2
    */
-  private attachToELBv2(targetGroup: elbv2.ITargetGroup, options?: LoadBalancerTargetOptions): elbv2.LoadBalancerTargetProps {
+  private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
-    if (!options) {
-      this.loadBalancers.push({
-        targetGroupArn: targetGroup.targetGroupArn,
-        containerName: this.taskDefinition.defaultContainer!.containerName,
-        containerPort: this.taskDefinition.defaultContainer!.containerPort,
-
-      });
-    } else {
-      this.loadBalancers.push({
-        targetGroupArn: targetGroup.targetGroupArn,
-        containerName: options.containerName,
-        containerPort: options.containerPort,
-      });
-    }
+    this.loadBalancers.push({
+      targetGroupArn: targetGroup.targetGroupArn,
+      containerName,
+      containerPort,
+    });
 
     // Service creation can only happen after the load balancer has
     // been associated with our target group(s), so add ordering dependency.
@@ -471,6 +453,12 @@ export abstract class BaseService extends Resource
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
+  }
+
+  private get defaultLoadBalancerTarget() {
+    return this.loadBalancerTarget({
+      containerName: this.taskDefinition.defaultContainer!.containerName
+    });
   }
 
   /**
@@ -566,11 +554,6 @@ export abstract class BaseService extends Resource
     });
   }
 }
-
-/**
- * The port range to open up for dynamic port mapping
- */
-const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
 
 /**
  * The options to enabling AWS Cloud Map for an Amazon ECS service.
