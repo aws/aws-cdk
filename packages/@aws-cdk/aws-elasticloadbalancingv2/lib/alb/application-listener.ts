@@ -124,7 +124,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
     this.certificateArns = [];
-    this.certificateArns.push(...(props.certificateArns || []));
+
+    // Attach certificates
+    if (props.certificateArns) {
+      this.addCertificateArns("ListenerCertificate", props.certificateArns);
+    }
 
     // This listener edits the securitygroup of the load balancer,
     // but adds its own default port.
@@ -143,8 +147,20 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Add one or more certificates to this listener.
    */
-  public addCertificateArns(_id: string, arns: string[]): void {
-    this.certificateArns.push(...arns);
+  public addCertificateArns(id: string, arns: string[]): void {
+    const [first, ...rest] = arns;
+    const additionalCertArns = this.certificateArns.length ? arns : rest;
+
+    if (!this.certificateArns.length && typeof first === "string") {
+      this.certificateArns.push(first);
+    }
+
+    if (additionalCertArns.length) {
+      new ApplicationListenerCertificate(this, id, {
+        listener: this,
+        certificateArns: additionalCertArns
+      });
+    }
   }
 
   /**
