@@ -5,7 +5,7 @@ import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, Cfn
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
-import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetId, subnetName  } from './util';
+import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpcLookupOptions } from './vpc-lookup';
@@ -162,22 +162,40 @@ export enum SubnetType {
  */
 export interface SubnetSelection {
   /**
-   * Place the instances in the subnets of the given type
+   * Select all subnets of the given type
    *
-   * At most one of `subnetType` and `subnetName` can be supplied.
+   * At most one of `subnetType` and `subnetGroupName` can be supplied.
    *
    * @default SubnetType.PRIVATE
    */
   readonly subnetType?: SubnetType;
 
   /**
-   * Place the instances in the subnets with the given name
+   * Select the subnet group with the given name
    *
-   * (This is the name supplied in subnetConfiguration).
+   * Select the subnet group with the given name. This only needs
+   * to be used if you have multiple subnet groups of the same type
+   * and you need to distinguish between them. Otherwise, prefer
+   * `subnetType`.
    *
-   * At most one of `subnetType` and `subnetName` can be supplied.
+   * This field does not select individual subnets, it selects all subnets that
+   * share the given subnet group name. This is the name supplied in
+   * `subnetConfiguration`.
    *
-   * @default name
+   * At most one of `subnetType` and `subnetGroupName` can be supplied.
+   *
+   * @default - Selection by type instead of by name
+   */
+  readonly subnetGroupName?: string;
+
+  /**
+   * Alias for `subnetGroupName`
+   *
+   * Select the subnet group with the given name. This only needs
+   * to be used if you have multiple subnet groups of the same type
+   * and you need to distinguish between them.
+   *
+   * @deprecated Use `subnetGroupName` instead
    */
   readonly subnetName?: string;
 
@@ -315,29 +333,48 @@ abstract class VpcBase extends Resource implements IVpc {
    */
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
     selection = reifySelectionDefaults(selection);
-    let subnets: ISubnet[] = [];
 
-    if (selection.subnetName !== undefined) { // Select by name
-      const allSubnets =  [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
-      subnets = allSubnets.filter(s => subnetName(s) === selection.subnetName);
-    } else { // Select by type
-      subnets = {
-        [SubnetType.ISOLATED]: this.isolatedSubnets,
-        [SubnetType.PRIVATE]: this.privateSubnets,
-        [SubnetType.PUBLIC]: this.publicSubnets,
-      }[selection.subnetType || SubnetType.PRIVATE];
+    if (selection.subnetGroupName !== undefined) { // Select by name
+      return this.selectSubnetObjectsByName(selection.subnetGroupName);
 
-      if (selection.onePerAz && subnets.length > 0) {
-        // Restrict to at most one subnet group
-        subnets = subnets.filter(s => subnetName(s) === subnetName(subnets[0]));
-      }
+    } else {
+      const type = selection.subnetType || SubnetType.PRIVATE;
+      return this.selectSubnetObjectsByType(type, !!selection.onePerAz);
+    }
+  }
+
+  private selectSubnetObjectsByName(groupName: string) {
+    const allSubnets =  [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
+    const subnets = allSubnets.filter(s => subnetGroupNameFromConstructId(s) === groupName);
+
+    if (subnets.length === 0) {
+      const names = Array.from(new Set(allSubnets.map(subnetGroupNameFromConstructId)));
+      throw new Error(`There are no subnet groups with name '${groupName}' in this VPC. Available names: ${names}`);
+    }
+
+    return subnets;
+  }
+
+  private selectSubnetObjectsByType(subnetType: SubnetType, onePerAz: boolean) {
+    const allSubnets = {
+      [SubnetType.ISOLATED]: this.isolatedSubnets,
+      [SubnetType.PRIVATE]: this.privateSubnets,
+      [SubnetType.PUBLIC]: this.publicSubnets,
+    };
+
+    let subnets = allSubnets[subnetType];
+
+    if (onePerAz && subnets.length > 0) {
+      // Restrict to at most one subnet group
+      subnets = subnets.filter(s => subnetGroupNameFromConstructId(s) === subnetGroupNameFromConstructId(subnets[0]));
     }
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
     // see ImportedVpc
 
     if (subnets.length === 0) {
-      throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
+      const availableTypes = Object.entries(allSubnets).filter(([_, subs]) => subs.length > 0).map(([typeName, _]) => typeName);
+      throw new Error(`There are no '${subnetType}' subnet groups in this VPC. Available types: ${availableTypes}`);
     }
 
     return subnets;
@@ -1440,28 +1477,22 @@ class ImportedVpc extends VpcBase {
  * Returns "private subnets" by default.
  */
 function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-  if (placement.subnetType !== undefined && placement.subnetName !== undefined) {
-    throw new Error('Only one of subnetType and subnetName can be supplied');
+  if (placement.subnetName !== undefined) {
+    if (placement.subnetGroupName !== undefined) {
+      throw new Error(`Please use only 'subnetGroupName' ('subnetName' is deprecated and has the same behavior)`);
+    }
+    placement = {...placement, subnetGroupName: placement.subnetName };
   }
 
-  if (placement.subnetType === undefined && placement.subnetName === undefined) {
+  if (placement.subnetType !== undefined && placement.subnetGroupName !== undefined) {
+    throw new Error(`Only one of 'subnetType' and 'subnetGroupName' can be supplied`);
+  }
+
+  if (placement.subnetType === undefined && placement.subnetGroupName === undefined) {
     return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz };
   }
 
   return placement;
-}
-
-/**
- * Describe the given placement strategy
- */
-function describeSelection(placement: SubnetSelection): string {
-  if (placement.subnetType !== undefined) {
-    return `'${defaultSubnetName(placement.subnetType)}' subnets`;
-  }
-  if (placement.subnetName !== undefined) {
-    return `subnets named '${placement.subnetName}'`;
-  }
-  return JSON.stringify(placement);
 }
 
 class CompositeDependable implements IDependable {
