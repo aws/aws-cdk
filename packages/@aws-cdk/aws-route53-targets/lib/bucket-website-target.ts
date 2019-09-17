@@ -29,7 +29,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
 
     return {
       hostedZoneId,
-      dnsName: this.bucket.bucketRegionalDomainName,
+      dnsName: this.bucket.bucketWebsiteDomainName,
     };
   }
 }
