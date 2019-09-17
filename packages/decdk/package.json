@@ -153,7 +153,8 @@
     "jsii-reflect": "^0.16.0",
     "jsonschema": "^1.2.4",
     "yaml": "1.6.0",
-    "yargs": "^14.0.0"
+    "yargs": "^14.0.0",
+    "@aws-cdk/aws-qldb": "^1.8.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
