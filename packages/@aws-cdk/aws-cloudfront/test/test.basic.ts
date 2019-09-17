@@ -318,7 +318,6 @@ export = {
               "Enabled": true,
               "IPV6Enabled": true,
               "HttpVersion": "http2",
-              "CacheBehaviors": []
             }
           }
         }
