@@ -761,5 +761,8 @@
   "qldbsession": {
     "prefix": "qldb-session",
     "name": "QLDBSession"
+  },
+  "workmailmessageflow": {
+    "name": "WorkMailMessageFlow"
   }
 }
