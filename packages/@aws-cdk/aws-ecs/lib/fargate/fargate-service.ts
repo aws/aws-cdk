@@ -108,6 +108,17 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
   }
+  
+  /**
+   * This method is called to attach this service to an Application Load Balancer.
+   *
+   * Don't call this function directly. Instead, call listener.addTarget()
+   * to add this service to a load balancer.
+   */
+  attachToApplicationTargetGroup(targetGroup) {
+    // Fargate will register healthy tasks to the load balancer, so do not rely on base service behavior
+    return this.attachToELBv2(targetGroup);
+  }  
 }
 
 /**
