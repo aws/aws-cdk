@@ -76,7 +76,7 @@ export interface FunctionProps {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: any };
+  readonly environment?: { [key: string]: string };
 
   /**
    * The runtime environment for the Lambda function that you are uploading.
@@ -220,6 +220,14 @@ export interface FunctionProps {
    * @default - Logs never expire.
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - A new role is created.
+   */
+  readonly logRetentionRole?: iam.IRole;
 }
 
 /**
@@ -267,11 +275,13 @@ export class Function extends FunctionBase {
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
 
-        if (attrs.securityGroupId) {
+        if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
-            securityGroups: [
-              ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)
-            ]
+            securityGroups: [attrs.securityGroup]
+          });
+        } else if (attrs.securityGroupId) {
+          this._connections = new ec2.Connections({
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
           });
         }
       }
@@ -384,7 +394,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private readonly environment?: { [key: string]: any };
+  private readonly environment: { [key: string]: string };
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -469,7 +479,8 @@ export class Function extends FunctionBase {
     if (props.logRetention) {
       new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retention: props.logRetention
+        retention: props.logRetention,
+        role: props.logRetentionRole
       });
     }
 
@@ -482,11 +493,7 @@ export class Function extends FunctionBase {
    * @param key The environment variable key.
    * @param value The environment variable's value.
    */
-  public addEnvironment(key: string, value: any): this {
-    if (!this.environment) {
-      // TODO: add metadata
-      return this;
-    }
+  public addEnvironment(key: string, value: string): this {
     this.environment[key] = value;
     return this;
   }

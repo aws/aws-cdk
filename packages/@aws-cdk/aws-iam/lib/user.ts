@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -10,7 +10,15 @@ import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface IUser extends IIdentity {
+  /**
+   * The user's name
+   * @attribute
+   */
   readonly userName: string;
+
+  /**
+   * Adds this user to a group.
+   */
   addToGroup(group: IGroup): void;
 }
 
@@ -97,7 +105,53 @@ export interface UserProps {
   readonly passwordResetRequired?: boolean;
 }
 
-export class User extends Resource implements IIdentity {
+/**
+ * Define a new IAM user
+ */
+export class User extends Resource implements IIdentity, IUser {
+  /**
+   * Import an existing user given a username
+   */
+  public static fromUserName(scope: Construct, id: string, userName: string): IUser {
+    const arn = Stack.of(scope).formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'user',
+      resourceName: userName
+    });
+
+    class Import extends Resource implements IUser {
+      public readonly grantPrincipal: IPrincipal = this;
+      public readonly userName: string = userName;
+      public readonly assumeRoleAction: string = 'sts:AssumeRole';
+      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
+      private defaultPolicy?: Policy;
+
+      public addToPolicy(statement: PolicyStatement): boolean {
+        if (!this.defaultPolicy) {
+          this.defaultPolicy = new Policy(this, 'Policy');
+          this.defaultPolicy.attachToUser(this);
+        }
+        this.defaultPolicy.addStatements(statement);
+        return true;
+      }
+
+      public addToGroup(_group: IGroup): void {
+        throw new Error('Cannot add imported User to Group');
+      }
+
+      public attachInlinePolicy(_policy: Policy): void {
+        throw new Error('Cannot add inline policy to imported User');
+      }
+
+      public addManagedPolicy(_policy: IManagedPolicy): void {
+        throw new Error('Cannot add managed policy to imported User');
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 

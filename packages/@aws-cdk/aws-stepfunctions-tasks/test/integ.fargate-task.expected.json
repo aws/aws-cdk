@@ -147,8 +147,7 @@
             "TaskDefTaskRole1EDB4A67",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "TaskDefTheContainerAssetImageAdoptRepository997406C3": {
@@ -412,7 +411,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": "vpc-60900905"
       }
     },

@@ -41,12 +41,12 @@ export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
 }
 
 /**
- * A scheduled Ec2 task that will be initiated off of cloudwatch events.
+ * A scheduled EC2 task that will be initiated off of cloudwatch events.
  */
 export class ScheduledEc2Task extends ScheduledTaskBase {
 
   /**
-   * The ECS service in this construct
+   * The EC2 task definition in this construct.
    */
   public readonly taskDefinition: Ec2TaskDefinition;
 

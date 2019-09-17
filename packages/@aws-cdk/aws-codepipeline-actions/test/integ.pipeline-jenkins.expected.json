@@ -111,7 +111,6 @@
                   },
                   "S3ObjectKey": "some/path"
                 },
-                "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
@@ -170,7 +169,6 @@
                   }
                 ],
                 "Name": "JenkinsTest",
-                "OutputArtifacts": [],
                 "RunOrder": 1
               },
               {
@@ -189,7 +187,6 @@
                   }
                 ],
                 "Name": "JenkinsTest2",
-                "OutputArtifacts": [],
                 "RunOrder": 1
               }
             ],

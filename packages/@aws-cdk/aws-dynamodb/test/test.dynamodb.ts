@@ -29,7 +29,7 @@ const GSI_NAME = 'MyGSI';
 const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.STRING };
 const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.BINARY };
 const GSI_NON_KEY = 'gsiNonKey';
-function* GSI_GENERATOR() {
+function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const globalSecondaryIndexProps: GlobalSecondaryIndexProps = {
@@ -40,7 +40,7 @@ function* GSI_GENERATOR() {
     n++;
   }
 }
-function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string) {
+function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, never> {
   let n = 0;
   while (true) {
     yield `${nonKeyPrefix}${n}`;
@@ -52,7 +52,7 @@ function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string) {
 const LSI_NAME = 'MyLSI';
 const LSI_SORT_KEY: Attribute = { name: 'lsiSortKey', type: AttributeType.NUMBER };
 const LSI_NON_KEY = 'lsiNonKey';
-function* LSI_GENERATOR() {
+function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
@@ -1181,6 +1181,23 @@ export = {
         },
         "Users": [ { "Ref": "user2C2B57AE" } ]
       }));
+      test.done();
+    },
+
+    '"grantStreamRead" should fail if streaming is not enabled on table"'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        }
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      test.throws(() => table.grantStreamRead(user), /DynamoDB Streams must be enabled on the table my-table/);
+
       test.done();
     },
 

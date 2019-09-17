@@ -461,7 +461,6 @@
               "IpProtocol": "-1"
             }
           ],
-          "SecurityGroupIngress": [],
           "VpcId": {
             "Fn::ImportValue": "k8s-vpc:ExportsOutputRefvpcA2121C384D1B3CDE"
           }
@@ -782,7 +781,6 @@
               "IpProtocol": "-1"
             }
           ],
-          "SecurityGroupIngress": [],
           "Tags": [
             {
               "Key": "Name",
@@ -931,6 +929,26 @@
                 ]
               ]
             }
+          ],
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "k8s-cluster/cluster22/Nodes"
+            },
+            {
+              "Key": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "kubernetes.io/cluster/",
+                    {
+                      "Ref": "cluster227BD1CB20"
+                    }
+                  ]
+                ]
+              },
+              "Value": "owned"
+            }
           ]
         }
       },
@@ -969,7 +987,7 @@
                   {
                     "Ref": "cluster227BD1CB20"
                   },
-                  " --use-max-pods 17"
+                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
                 ]
               ]
             }
@@ -1126,7 +1144,22 @@
               "aws eks update-kubeconfig --name ",
               {
                 "Ref": "cluster227BD1CB20"
-              }
+              },
+              " --region test-region"
+            ]
+          ]
+        }
+      },
+      "cluster22GetTokenCommand99DB9B02": {
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "aws eks get-token --cluster-name ",
+              {
+                "Ref": "cluster227BD1CB20"
+              },
+              " --region test-region"
             ]
           ]
         }

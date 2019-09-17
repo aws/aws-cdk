@@ -3,8 +3,7 @@
     "TemplateRepo2326F199": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "template-repo",
-        "Triggers": []
+        "RepositoryName": "template-repo"
       }
     },
     "PipelineArtifactsBucketEncryptionKey01D58D69": {
@@ -126,6 +125,20 @@
                 "SSEAlgorithm": "aws:kms"
               }
             }
+          ]
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-awscdkcodepipelinecloudformationpipeline7dbde619",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn"
           ]
         }
       },
@@ -283,7 +296,6 @@
                   "BranchName": "master",
                   "PollForSourceChanges": true
                 },
-                "InputArtifacts": [],
                 "Name": "Source",
                 "OutputArtifacts": [
                   {
@@ -329,7 +341,6 @@
                   }
                 ],
                 "Name": "PrepareChanges",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
@@ -345,9 +356,7 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "ApproveChanges",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineDeployApproveChangesCodePipelineActionRole5AA6E21B",
@@ -368,9 +377,7 @@
                   "ActionMode": "CHANGE_SET_EXECUTE",
                   "ChangeSetName": "StagedChangeSet"
                 },
-                "InputArtifacts": [],
                 "Name": "ExecuteChanges",
-                "OutputArtifacts": [],
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineDeployExecuteChangesCodePipelineActionRole6AA2756F",
@@ -386,10 +393,7 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Fn::GetAtt": [
-                "PipelineArtifactsBucketEncryptionKey01D58D69",
-                "Arn"
-              ]
+              "Ref": "PipelineArtifactsBucketEncryptionKey01D58D69"
             },
             "Type": "KMS"
           },

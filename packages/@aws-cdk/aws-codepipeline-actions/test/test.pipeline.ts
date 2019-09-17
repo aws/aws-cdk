@@ -247,7 +247,6 @@ export = {
           },
           "PollForSourceChanges": false
           },
-          "InputArtifacts": [],
           "Name": "GH",
           "OutputArtifacts": [
           {
@@ -268,9 +267,7 @@ export = {
           "Provider": "Manual",
           "Version": "1"
           },
-          "InputArtifacts": [],
           "Name": "Boo",
-          "OutputArtifacts": [],
           "RunOrder": 1
         }
         ],

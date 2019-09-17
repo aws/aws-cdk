@@ -345,6 +345,33 @@ export = {
     );
 
     test.done();
+  },
+
+  'imported cluster with imported security group honors allowAllOutbound'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterEndpointAddress: 'addr',
+      clusterIdentifier: 'identifier',
+      instanceEndpointAddresses: ['addr'],
+      instanceIdentifiers: ['identifier'],
+      port: 3306,
+      readerEndpointAddress: 'reader-address',
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false
+      }),
+    });
+
+    // WHEN
+    cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'sg-123456789',
+    }));
+
+    test.done();
   }
 };
 
