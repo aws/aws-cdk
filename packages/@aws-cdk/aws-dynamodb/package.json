@@ -81,7 +81,7 @@
     "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "stable"
 }
