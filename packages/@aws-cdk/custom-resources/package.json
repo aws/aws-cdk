@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.CustomResources",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
       },
       "python": {
         "distName": "aws-cdk.custom-resources",
@@ -72,12 +73,12 @@
     "@types/aws-lambda": "^8.10.31",
     "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.13",
-    "aws-sdk": "^2.527.0",
+    "aws-sdk": "^2.529.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
-    "nock": "^10.0.6",
+    "nock": "^11.3.4",
     "pkglint": "file:../../../tools/pkglint",
     "sinon": "^7.4.2"
   },

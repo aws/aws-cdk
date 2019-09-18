@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.CloudFront",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudfront",
@@ -63,7 +64,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^1.8.0",
-    "aws-sdk": "^2.527.0",
+    "aws-sdk": "^2.529.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",

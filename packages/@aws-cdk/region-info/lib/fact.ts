@@ -3,6 +3,14 @@
  */
 export class Fact {
   /**
+   * @returns the list of names of AWS regions for which there is at least one registered fact. This
+   *          may not be an exhaustive list of all available AWS regions.
+   */
+  public static get regions(): string[] {
+    return Object.keys(this.database);
+  }
+
+  /**
    * Retrieves a fact from this Fact database.
    *
    * @param region the name of the region (e.g: `us-east-1`)

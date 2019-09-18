@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import regionInfo = require('@aws-cdk/region-info');
+import { RegionInfo } from '@aws-cdk/region-info';
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
@@ -235,7 +235,7 @@ export class AppStacks {
             stack.template.Resources = {};
           }
           const resourcePresent = stack.environment.region === cxapi.UNKNOWN_REGION
-            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES';
+            || RegionInfo.get(stack.environment.region).cdkMetadataResourceAvailable;
           if (resourcePresent) {
             if (!stack.template.Resources.CDKMetadata) {
               stack.template.Resources.CDKMetadata = {
@@ -244,6 +244,16 @@ export class AppStacks {
                   Modules: modules
                 }
               };
+              if (stack.environment.region === cxapi.UNKNOWN_REGION) {
+                stack.template.Conditions = stack.template.Conditions || {};
+                const condName = 'CDKMetadataAvailable';
+                if (!stack.template.Conditions[condName]) {
+                  stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
+                  stack.template.Resources.CDKMetadata.Condition = condName;
+                } else {
+                  warning(`The stack ${stack.name} already includes a ${condName} condition`);
+                }
+              }
             } else {
               warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
             }
@@ -431,4 +441,35 @@ function setsEqual<A>(a: Set<A>, b: Set<A>) {
     if (!b.has(x)) { return false; }
   }
   return true;
+}
+
+function _makeCdkMetadataAvailableCondition() {
+  return _fnOr(RegionInfo.regions
+    .filter(ri => ri.cdkMetadataResourceAvailable)
+    .map(ri => ({ 'Fn::Equals': [{ Ref: 'AWS::Region' }, ri.name] })));
+}
+
+/**
+ * This takes a bunch of operands and crafts an `Fn::Or` for those. Funny thing is `Fn::Or` requires
+ * at least 2 operands and at most 10 operands, so we have to... do this.
+ */
+function _fnOr(operands: any[]): any {
+  if (operands.length === 0) {
+    throw new Error('Cannot build `Fn::Or` with zero operands!');
+  }
+  if (operands.length === 1) {
+    return operands[0];
+  }
+  if (operands.length <= 10) {
+    return { 'Fn::Or': operands };
+  }
+  return _fnOr(_inGroupsOf(operands, 10).map(group => _fnOr(group)));
+}
+
+function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
+  const result = new Array<T[]>();
+  for (let i = 0; i < array.length; i += maxGroup) {
+    result.push(array.slice(i, i + maxGroup));
+  }
+  return result;
 }

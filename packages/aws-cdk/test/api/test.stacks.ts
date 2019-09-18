@@ -93,8 +93,11 @@ export = testCase({
         Type: 'AWS::CDK::Metadata',
         Properties: {
           Modules: `${require('../../package.json').name}=${require('../../package.json').version}`
-        }
+        },
+        Condition: 'CDKMetadataAvailable',
       });
+
+      test.notEqual(null, result.template.Conditions && result.template.Conditions.CDKMetadataAvailable);
 
       test.done();
     },
