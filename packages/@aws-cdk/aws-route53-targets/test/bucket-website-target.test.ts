@@ -73,7 +73,7 @@ test('use S3 bucket website as record target (fromBucketName)', () => {
                   [
                     "test.s3-website-us-east-1.",
                     {
-                      "Ref": "AWS::URLSuffix"
+                      Ref: "AWS::URLSuffix"
                     }
                   ]
                 ]
