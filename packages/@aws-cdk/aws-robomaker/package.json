@@ -12,7 +12,8 @@
         "packageId": "Amazon.CDK.AWS.RoboMaker",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.robomaker",
