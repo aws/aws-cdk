@@ -99,6 +99,43 @@ export = {
     test.done();
   },
 
+  'ingress is added to child stack SG instead of parent stack'(test: Test) {
+    // GIVEN
+    const fixture = new TestFixture(true);
+
+    const parentGroup = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
+      vpc: fixture.vpc,
+      port: 8008,
+      targets: [new FakeSelfRegisteringTarget(fixture.stack, 'Target', fixture.vpc)],
+    });
+
+    // listener requires at least one rule for ParentStack to create
+    fixture.listener.addTargetGroups('Default', { targetGroups: [parentGroup] });
+
+    const childStack = new cdk.Stack(fixture.app, 'childStack');
+
+    // WHEN
+    const childGroup = new elbv2.ApplicationTargetGroup(childStack, 'TargetGroup', {
+      // We're assuming the 2nd VPC is peered to the 1st, or something.
+      vpc: fixture.vpc,
+      port: 8008,
+      targets: [new FakeSelfRegisteringTarget(childStack, 'Target', fixture.vpc)],
+    });
+
+    new elbv2.ApplicationListenerRule(childStack, 'ListenerRule', {
+      listener: fixture.listener,
+      targetGroups: [childGroup],
+      priority: 100,
+      hostHeader: 'www.foo.com'
+    });
+
+    // THEN
+    expectSameStackSGRules(fixture.stack);
+    expectedImportedSGRules(childStack);
+
+    test.done();
+  },
+
   'SG peering works on exported/imported load balancer'(test: Test) {
     // GIVEN
     const fixture = new TestFixture(false);
