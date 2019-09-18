@@ -545,9 +545,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    this.albTargetGroup = targetGroup;
+    if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
+      // Copy onto self if it's a concrete type. We need this for autoscaling
+      // based on request count, which we cannot do with an imported TargetGroup.
+      this.albTargetGroup = targetGroup;
+    }
+
     targetGroup.registerConnectable(this);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
@@ -555,7 +560,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }

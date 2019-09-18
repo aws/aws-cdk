@@ -220,7 +220,7 @@ export abstract class BaseService extends Resource
    * Don't call this function directly. Instead, call listener.addTarget()
    * to add this service to a load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     const ret = this.attachToELBv2(targetGroup);
 
     // Open up security groups. For dynamic port mapping, we won't know the port range
@@ -238,7 +238,7 @@ export abstract class BaseService extends Resource
    * Don't call this function directly. Instead, call listener.addTarget()
    * to add this service to a load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attachToELBv2(targetGroup);
   }
 
