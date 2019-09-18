@@ -227,3 +227,9 @@ const bucket = new Bucket(this, 'MyRedirectedBucket', {
   }]
 });
 ```
+
+### Filling the bucket as part of deployment
+
+To put files into a bucket as part of a deployment (for example, to host a
+website), see the `@aws-ck/aws-s3-deployment` package, which provides a
+resource that can do just that.
