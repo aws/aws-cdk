@@ -126,7 +126,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.certificateArns = [];
 
     // Attach certificates
-    if (props.certificateArns) {
+    if (props.certificateArns && props.certificateArns.length > 0) {
       this.addCertificateArns("ListenerCertificate", props.certificateArns);
     }
 
@@ -146,16 +146,20 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * Add one or more certificates to this listener.
+   *
+   * After the first certificate, this creates ApplicationListenerCertificates
+   * resources since cloudformation requires the certificates array on the
+   * listener resource to have a length of 1.
    */
   public addCertificateArns(id: string, arns: string[]): void {
-    const [first, ...rest] = arns;
-    const additionalCertArns = this.certificateArns.length ? arns : rest;
+    const additionalCertArns = [...arns];
 
-    if (!this.certificateArns.length && typeof first === "string") {
+    if (this.certificateArns.length === 0 && additionalCertArns.length > 0) {
+      const first = additionalCertArns.splice(0, 1)[0];
       this.certificateArns.push(first);
     }
 
-    if (additionalCertArns.length) {
+    if (additionalCertArns.length > 0) {
       new ApplicationListenerCertificate(this, id, {
         listener: this,
         certificateArns: additionalCertArns
