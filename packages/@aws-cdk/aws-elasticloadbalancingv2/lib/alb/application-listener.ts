@@ -249,7 +249,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
-    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
+    connectable.connections.allowFrom(this.loadBalancer, portRange, 'Load balancer to target');
   }
 
   /**
