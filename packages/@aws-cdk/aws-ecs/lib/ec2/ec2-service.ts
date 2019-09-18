@@ -1,8 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
-import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
@@ -92,7 +91,7 @@ export interface IEc2Service extends IService {
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IEc2Service {
 
   /**
    * Imports from the specified service ARN.
@@ -191,39 +190,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Registers the service as a target of a Classic Load Balancer (CLB).
-   *
-   * Don't call this. Call `loadBalancer.addTarget()` instead.
-   */
-  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    return this.defaultCLBLoadBalancerTarget.attachToClassicLB(loadBalancer);
-  }
-
-  /**
-   * This method is called to register the specified ECS target in this service to a target group.
-   *
-   * Don't call this function alone. Instead, call `lb.addTarget(service.loadBalancerTarget())`
-   * to add this target to a load balancer.
-   */
-  public classicLoadBalancerTarget(options: LoadBalancerTargetOptions): elb.ILoadBalancerTarget {
-    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
-    }
-    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or AwsVpc instead.");
-    }
-    const self = this;
-    const target = this.taskDefinition.validateTarget(options);
-    const connections = self.connections;
-    return {
-      connections,
-      attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-        return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort);
-      },
-    };
-  }
-
-  /**
    * Validates this Ec2Service.
    */
   protected validate(): string[] {
@@ -232,20 +198,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }
     return ret;
-  }
-
-  private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number) {
-    this.loadBalancers.push({
-      loadBalancerName: loadBalancer.loadBalancerName,
-      containerName,
-      containerPort
-    });
-  }
-
-  private get defaultCLBLoadBalancerTarget() {
-    return this.classicLoadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName
-    });
   }
 }
 

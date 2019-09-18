@@ -271,9 +271,8 @@ const listener = lb.addListener('Listener', { port: 80 });
 const target = listener.addTargets('ECS', {
   port: 80,
   targets: [service.loadBalancerTarget({
-    containerName
-    containerPort
-    protocol
+    containerName: 'MyContainer',
+    containerPort: 12345
   })]
 });
 ```
@@ -287,6 +286,7 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
 const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+lb.addListener({ externalPort: 80 });
 lb.addTarget(service);
 ```
 
@@ -298,9 +298,10 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
 const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
-lb.addTarget(service.classicLoadBalancerTarget{
-  containerName,
-  containerPort
+lb.addListener({ externalPort: 80 });
+lb.addTarget(service.loadBalancerTarget{
+  containerName: 'MyContainer',
+  containerPort: 80
 });
 ```
 

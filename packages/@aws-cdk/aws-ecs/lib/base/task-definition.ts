@@ -296,8 +296,10 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   /**
    * Validate the existence of the input target and set default values.
+   *
+   * @internal
    */
-  public validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
+  public _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
     const targetContainer = this.findContainer(options.containerName);
     if (targetContainer === undefined) {
       throw new Error(`No container named '${options.containerName}'. Did you call "addContainer()"?`);
@@ -317,8 +319,10 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   /**
    * Returns the port range to be opened that match the provided container name and container port.
+   *
+   * @internal
    */
-  public findPortRange(portMapping: PortMapping): ec2.Port {
+  public _portRangeFromPortMapping(portMapping: PortMapping): ec2.Port {
     if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
     }
@@ -422,12 +426,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Returns the container that match the provided containerName.
    */
   private findContainer(containerName: string): ContainerDefinition | undefined {
-    for (const container of this.containers) {
-      if (container.containerName === containerName) {
-        return container;
-      }
-    }
-    return undefined;
+    return this.containers.find(c => c.containerName === containerName);
   }
 }
 
@@ -518,6 +517,8 @@ export interface Host {
 
 /**
  * Properties for an ECS target.
+ *
+ * @internal
  */
 export interface LoadBalancerTarget {
   /**
@@ -541,7 +542,7 @@ export interface LoadBalancerTargetOptions {
   readonly containerName: string;
 
   /**
-   * The port number of the container.
+   * The port number of the container. Only applicable when using application/network load balancers.
    *
    * @default - Container port of the first added port mapping.
    */

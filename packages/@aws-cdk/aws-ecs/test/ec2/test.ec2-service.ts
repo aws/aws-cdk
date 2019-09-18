@@ -928,31 +928,7 @@ export = {
       test.done();
     },
 
-    'allows network mode of task definition to be AwsVpc'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.AWS_VPC });
-      const container = taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        memoryLimitMiB: 1024,
-      });
-      container.addPortMappings({ containerPort: 808 });
-      const service = new ecs.Ec2Service(stack, 'Service', {
-        cluster,
-        taskDefinition
-      });
-
-      // THEN
-      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
-      service.attachToClassicLB(lb);
-
-      test.done();
-    },
-
-    'throws when network mode of task definition is bridge'(test: Test) {
+    'allows network mode of task definition to be bridge'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -971,9 +947,33 @@ export = {
 
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      service.attachToClassicLB(lb);
+
+      test.done();
+    },
+
+    'throws when network mode of task definition is AwsVpc'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.AWS_VPC });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+      });
+      container.addPortMappings({ containerPort: 808 });
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition
+      });
+
+      // THEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       test.throws(() => {
         service.attachToClassicLB(lb);
-      }, /Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead./);
+      }, /Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
 
       test.done();
     },
@@ -999,7 +999,7 @@ export = {
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       test.throws(() => {
         service.attachToClassicLB(lb);
-      }, /Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or AwsVpc instead./);
+      }, /Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
 
       test.done();
     }
@@ -1373,7 +1373,7 @@ export = {
 
       // WHEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
-      lb.addTarget(service.classicLoadBalancerTarget({
+      lb.addTarget(service.loadBalancerTarget({
         containerName: "web",
         containerPort: 8080
       }));
