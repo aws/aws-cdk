@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-kms",
-  "version": "1.6.1",
+  "version": "1.8.0",
   "description": "CDK Constructs for AWS KMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.KMS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-kms",
@@ -62,20 +63,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.6.1",
+    "@aws-cdk/assert": "^1.8.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.6.1",
-    "@aws-cdk/core": "^1.6.1"
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.6.1",
-    "@aws-cdk/core": "^1.6.1"
+    "@aws-cdk/aws-iam": "^1.8.0",
+    "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
     "node": ">= 8.10.0"

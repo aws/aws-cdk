@@ -135,5 +135,12 @@ export class SubscriptionFilter {
     return new SubscriptionFilter(conditions);
   }
 
+  /**
+   * Returns a subscription filter for attribute key matching.
+   */
+  public static existsFilter() {
+    return new SubscriptionFilter([{ exists: true }]);
+  }
+
   constructor(public readonly conditions: any[] = []) {}
 }

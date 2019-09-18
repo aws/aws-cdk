@@ -59,9 +59,13 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
 export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
 
   /**
-   * The ECS service in this construct
+   * The EC2 service in this construct.
    */
   public readonly service: Ec2Service;
+  /**
+   * The EC2 task definition in this construct
+   */
+  public readonly taskDefinition: Ec2TaskDefinition;
 
   /**
    * Constructs a new instance of the QueueProcessingEc2Service class.
@@ -70,8 +74,8 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef');
-    taskDefinition.addContainer('QueueProcessingContainer', {
+    this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef');
+    this.taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
@@ -87,7 +91,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     this.service = new Ec2Service(this, 'QueueProcessingService', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition
+      taskDefinition: this.taskDefinition
     });
     this.configureAutoscalingForService(this.service);
   }

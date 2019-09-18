@@ -84,94 +84,32 @@ test("Can use Fargate taskdef as EventRule target", () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('Custom::AWS', {
-    Update: {
-      service: "CloudWatchEvents",
-      apiVersion: "2015-10-07",
-      action: "putTargets",
-      parameters: {
-        Rule: {
-          "Fn::Select": [
-            1,
-            {
-              "Fn::Split": [
-                "/",
-                {
-                  "Fn::Select": [
-                    5,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::GetAtt": [
-                            "Rule4C995B7F",
-                            "Arn"
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        Targets: [
-          {
-            Arn: {
-              "Fn::GetAtt": [
-                "EcsCluster97242B84",
-                "Arn"
-              ]
-            },
-            Id: "Target0",
-            EcsParameters: {
-              TaskDefinitionArn: {
-                Ref: "TaskDef54694570"
-              },
-              LaunchType: "FARGATE",
-              NetworkConfiguration: {
-                awsvpcConfiguration: {
-                  Subnets: [
-                    {
-                      Ref: "VpcPrivateSubnet1Subnet536B997A"
-                    }
-                  ],
-                  AssignPublicIp: "DISABLED",
-                  SecurityGroups: [
-                    {
-                      "Fn::GetAtt": [
-                        "TaskDefSecurityGroupD50E7CF0",
-                        "GroupId"
-                      ]
-                    }
-                  ]
-                }
-              },
-              TaskCount: 1
-            },
-            Input: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",\"$.detail.event\"]}]}",
-            RoleArn: {
-              "Fn::GetAtt": [
-                "TaskDefEventsRoleFB3B67B8",
-                "Arn"
-              ]
-            }
-          }
-        ]
-      },
-      physicalResourceId: taskDefinition.node.uniqueId
-    }
-  });
-
-  // THEN
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
         EcsParameters: {
           TaskCount: 1,
-          TaskDefinitionArn: { Ref: "TaskDef54694570" }
+          TaskDefinitionArn: { Ref: "TaskDef54694570" },
+          LaunchType: "FARGATE",
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: "VpcPrivateSubnet1Subnet536B997A"
+                }
+              ],
+              AssignPublicIp: "DISABLED",
+              SecurityGroups: [
+                {
+                  "Fn::GetAtt": [
+                    "TaskDefSecurityGroupD50E7CF0",
+                    "GroupId"
+                  ]
+                }
+              ]
+            }
+          },
         },
         InputTransformer: {
           InputPathsMap: {
@@ -286,25 +224,37 @@ test("Isolated subnet does not have AssignPublicIp=true", () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('Custom::AWS', {
-    Update: {
-      service: "CloudWatchEvents",
-      apiVersion: "2015-10-07",
-      action: "putTargets",
-      parameters: {
-        Targets: [
-          {
-            EcsParameters: {
-              LaunchType: "FARGATE",
-              NetworkConfiguration: {
-                awsvpcConfiguration: {
-                  AssignPublicIp: "DISABLED",
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: "TaskDef54694570" },
+          LaunchType: "FARGATE",
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: "VpcIsolatedSubnet1SubnetE48C5737"
                 }
-              },
-            },
-          }
-        ]
+              ],
+              AssignPublicIp: "DISABLED",
+              SecurityGroups: [
+                {
+                  "Fn::GetAtt": [
+                    "TaskDefSecurityGroupD50E7CF0",
+                    "GroupId"
+                  ]
+                }
+              ]
+            }
+          },
+        },
+        Input: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",\"yay\"]}]}",
+        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
+        Id: "Target0"
       }
-    }
+    ],
   });
 });
