@@ -30,7 +30,7 @@ export = {
         ]
       },
       "SourceBucketNames": [{
-        "Ref": "DeployAssetEF287ES3BucketD6239C14"
+        "Ref": "DeployAsset1S3BucketC03B223F"
       }],
       "SourceObjectKeys": [{
         "Fn::Join": [
@@ -43,7 +43,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAssetEF287ES3VersionKey82A24C80"
+                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
                     }
                   ]
                 }
@@ -56,7 +56,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAssetEF287ES3VersionKey82A24C80"
+                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
                     }
                   ]
                 }
@@ -96,10 +96,10 @@ export = {
       },
       "SourceBucketNames": [
         {
-          "Ref": "DeployAssetEF287ES3BucketD6239C14"
+          "Ref": "DeployAsset2S3Bucket155AFD20"
         },
         {
-          "Ref": "DeployAssetC7C0F3S3Bucket97184BA7"
+          "Ref": "DeployAsset3S3Bucket57BF2F6F"
         }
       ],
       "SourceObjectKeys": [
@@ -114,7 +114,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAssetEF287ES3VersionKey82A24C80"
+                        "Ref": "DeployAsset2S3VersionKey8324D51E"
                       }
                     ]
                   }
@@ -127,7 +127,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAssetEF287ES3VersionKey82A24C80"
+                        "Ref": "DeployAsset2S3VersionKey8324D51E"
                       }
                     ]
                   }
@@ -147,7 +147,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAssetC7C0F3S3VersionKey3F8D58BC"
+                        "Ref": "DeployAsset3S3VersionKeyDB628286"
                       }
                     ]
                   }
@@ -160,7 +160,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAssetC7C0F3S3VersionKey3F8D58BC"
+                        "Ref": "DeployAsset3S3VersionKeyDB628286"
                       }
                     ]
                   }
