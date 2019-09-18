@@ -228,7 +228,6 @@ export = {
               actions: [new FakeBuildAction({
                 actionName: 'Build',
                 input: sourceOutput,
-                region: replicationRegion,
               })],
             },
           ],
