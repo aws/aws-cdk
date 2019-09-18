@@ -22,7 +22,66 @@ test('use S3 bucket website as record target', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: { "Fn::GetAtt": [ "Bucket83908E77", "WebsiteURL"] },
+      DNSName: {
+        "Fn::Select": [
+          2,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "WebsiteURL"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      HostedZoneId: "Z3AQBSTGFYJSTF"
+    },
+  });
+});
+
+test('use S3 bucket website as record target (fromBucketName)', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'test', {env: {region: 'us-east-1'}});
+
+  const bucketWebsite = s3.Bucket.fromBucketName(stack, 'Bucket', 'test');
+
+  // WHEN
+  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
+  new route53.ARecord(zone, 'Alias', {
+    zone,
+    recordName: '_foo',
+    target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    AliasTarget: {
+      DNSName: {
+        "Fn::Select": [
+          2,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    "test.s3-website-us-east-1.",
+                    {
+                      Ref: "AWS::URLSuffix"
+                    }
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
       HostedZoneId: "Z3AQBSTGFYJSTF"
     },
   });
