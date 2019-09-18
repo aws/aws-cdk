@@ -22,7 +22,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
     "stripInternal": true,
-    "target": "ES2017"
+    "target": "ES2018"
   },
   "include": [
     "**/*.ts"
