@@ -283,6 +283,11 @@ abstract class VpcBase extends Resource implements IVpc {
   protected readonly natDependencies = new Array<IConstruct>();
 
   /**
+   * If this is set to true, don't error out on trying to select subnets
+   */
+  protected incompleteSubnetDefinition: boolean = false;
+
+  /**
    * Returns IDs of selected subnets
    */
   public selectSubnets(selection: SubnetSelection = {}): SelectedSubnets {
@@ -347,7 +352,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const allSubnets =  [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
     const subnets = allSubnets.filter(s => subnetGroupNameFromConstructId(s) === groupName);
 
-    if (subnets.length === 0) {
+    if (subnets.length === 0 && !this.incompleteSubnetDefinition) {
       const names = Array.from(new Set(allSubnets.map(subnetGroupNameFromConstructId)));
       throw new Error(`There are no subnet groups with name '${groupName}' in this VPC. Available names: ${names}`);
     }
@@ -369,7 +374,10 @@ abstract class VpcBase extends Resource implements IVpc {
       subnets = subnets.filter(s => subnetGroupNameFromConstructId(s) === subnetGroupNameFromConstructId(subnets[0]));
     }
 
-    if (subnets.length === 0) {
+    // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
+    // see ImportedVpc
+
+    if (subnets.length === 0 && !this.incompleteSubnetDefinition) {
       const availableTypes = Object.entries(allSubnets).filter(([_, subs]) => subs.length > 0).map(([typeName, _]) => typeName);
       throw new Error(`There are no '${subnetType}' subnet groups in this VPC. Available types: ${availableTypes}`);
     }
@@ -759,7 +767,7 @@ export class Vpc extends VpcBase {
    * Import an exported VPC
    */
   public static fromVpcAttributes(scope: Construct, id: string, attrs: VpcAttributes): IVpc {
-    return new ImportedVpc(scope, id, attrs);
+    return new ImportedVpc(scope, id, attrs, false);
   }
 
   /**
@@ -796,10 +804,10 @@ export class Vpc extends VpcBase {
     const attributes = ContextProvider.getValue(scope, {
       provider: cxapi.VPC_PROVIDER,
       props: { filter } as cxapi.VpcContextQuery,
-      dummyValue: DUMMY_VPC_PROPS
+      dummyValue: undefined
     }).value;
 
-    return this.fromVpcAttributes(scope, id, attributes);
+    return new ImportedVpc(scope, id, attributes || DUMMY_VPC_PROPS, attributes === undefined);
 
     /**
      * Prefixes all keys in the argument with `tag:`.`
@@ -1418,12 +1426,13 @@ class ImportedVpc extends VpcBase {
   public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
 
-  constructor(scope: Construct, id: string, props: VpcAttributes) {
+  constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
     this.availabilityZones = props.availabilityZones;
     this.vpnGatewayId = props.vpnGatewayId;
+    this.incompleteSubnetDefinition = isIncomplete;
 
     // tslint:disable:max-line-length
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
