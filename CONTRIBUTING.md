@@ -318,7 +318,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com/aws/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -342,7 +342,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com/aws/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -557,15 +557,14 @@ $ CDK_TEST_BUILD=false lr test
 To debug your CDK application along with the CDK repository,
 
 1. Clone the CDK repository locally and build the repository. See [Workflows](#workflows) section for the different build options.
-2. Open the CDK application (assume it's `hello-cdk` in these steps) and the CDK repository as a [VS code multi-root workspace](https://code.visualstudio.com/docs/editor/multi-root-workspaces).
-3. Change the `app` property in your CDK app's `cdk.json` file to enable the inspector agent, i.e.
+2. Build the CDK application using the appropriate npm script (typically, `npm run build`) and then run the `link-all.sh` script as so -
 
-  ```json
-  {
-    "app": "node --inspect-brk bin/hello-cdk.js"
-  }
-  ```
+   ```
+   cd /path/to/cdk/app
+   /path/to/aws-cdk/link-all.sh
+   ```
 
+3. Open the CDK application (assume it's `hello-cdk` in these steps) and the CDK repository as a [VS code multi-root workspace](https://code.visualstudio.com/docs/editor/multi-root-workspaces).
 4. Open the [workspace settings file](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings) and verify that the following two folders must already exist
 
   ```json
@@ -601,6 +600,7 @@ To debug your CDK application along with the CDK repository,
   *Go [here](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) for more about launch configurations.*
 
 6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
+7. Any time you modify the CDK app or any of the CDK modules, they need to be re-built and depending on the change the `link-all.sh` script from step#2, may need to be re-run. Only then, would VS code recognize the change and potentially the breakpoint.
 
 ## Related Repositories
 

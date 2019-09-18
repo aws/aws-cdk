@@ -293,46 +293,6 @@ describe('IAM role', () => {
     });
   });
 
-  test('fromRoleArn', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/S3Access');
-
-    // THEN
-    expect(importedRole.roleArn).toEqual('arn:aws:iam::123456789012:role/S3Access');
-    expect(importedRole.roleName).toEqual('S3Access');
-  });
-
-  test('add policy to imported role', () => {
-    // GIVEN
-    const stack = new Stack();
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MyRole');
-
-    // WHEN
-    importedRole.addToPolicy(new PolicyStatement({
-      actions: ['s3:*'],
-      resources: ['xyz']
-    }));
-
-    // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "s3:*",
-            Effect: "Allow",
-            Resource: "xyz"
-          }
-        ],
-        Version: "2012-10-17"
-      },
-      Roles: [ "MyRole" ]
-    });
-
-  });
-
   test('can supply permissions boundary managed policy', () => {
     // GIVEN
     const stack = new Stack();
