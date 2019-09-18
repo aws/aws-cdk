@@ -1,6 +1,7 @@
 import s3 = require('@aws-cdk/aws-s3');
 import s3_assets = require('@aws-cdk/aws-s3-assets');
 import cdk = require('@aws-cdk/core');
+import crypto = require('crypto');
 
 export interface SourceConfig {
   /**
@@ -24,8 +25,6 @@ export interface ISource {
    */
   bind(context: cdk.Construct): SourceConfig;
 }
-
-let uniqueSourceId = 0;
 
 /**
  * Specifies bucket deployment source.
@@ -54,9 +53,14 @@ export class Source {
    * @param path The path to a local .zip file or a directory
    */
   public static asset(path: string): ISource {
+    const pathHash = crypto.createHash('md5')
+      .update(path)
+      .digest('hex')
+      .substring(0, 6)
+      .toUpperCase();
     return {
       bind(context: cdk.Construct): SourceConfig {
-        const asset = new s3_assets.Asset(context, `Asset${++uniqueSourceId}`, { path });
+        const asset = new s3_assets.Asset(context, `Asset${pathHash}`, { path });
         if (!asset.isZipArchive) {
           throw new Error(`Asset path must be either a .zip file or a directory`);
         }

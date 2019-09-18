@@ -119,10 +119,12 @@ def s3_deploy(s3_source_zips, s3_dest):
     contents_dir=os.path.join(workdir, 'contents')
     os.mkdir(contents_dir)
 
+    # create a path to download the zip files
+    archive=os.path.join(workdir, 'archive.zip')
+    logger.info("archive: %s" % archive)
+
     # download the archive from the source and extract to "contents"
     for s3_source_zip in s3_source_zips:
-        archive=os.path.join(workdir, str(uuid4()))
-        logger.info("archive: %s" % archive)
         aws_command("s3", "cp", s3_source_zip, archive)
         logger.info("| extracting archive to: %s\n" % contents_dir)
         with ZipFile(archive, "r") as zip:

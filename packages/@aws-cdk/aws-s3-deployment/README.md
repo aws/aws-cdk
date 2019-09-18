@@ -40,13 +40,15 @@ This is what happens under the hood:
 
 1. When this stack is deployed (either via `cdk deploy` or via CI/CD), the
    contents of the local `website-dist` directory will be archived and uploaded
-   to an intermediary assets bucket.
+   to an intermediary assets bucket. If there is more than one source, they will
+   be individually uploaded.
 2. The `BucketDeployment` construct synthesizes a custom CloudFormation resource
    of type `Custom::CDKBucketDeployment` into the template. The source bucket/key
    is set to point to the assets bucket.
 3. The custom resource downloads the .zip archive, extracts it and issues `aws
    s3 sync --delete` against the destination bucket (in this case
-   `websiteBucket`).
+   `websiteBucket`). If there is more than one source, the sources will be 
+   downloaded and merged pre-deployment at this step.
 
 ## Supported sources
 

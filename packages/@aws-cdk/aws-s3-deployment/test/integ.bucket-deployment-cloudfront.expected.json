@@ -54,7 +54,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"
+                        "Ref": "DeployWithInvalidationAssetEF287ES3Bucket04F187B0"
                       }
                     ]
                   ]
@@ -69,7 +69,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"
+                        "Ref": "DeployWithInvalidationAssetEF287ES3Bucket04F187B0"
                       },
                       "/*"
                     ]
@@ -210,8 +210,7 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https",
-            "Compress": true
+            "ViewerProtocolPolicy": "redirect-to-https"
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,
@@ -246,7 +245,7 @@
           ]
         },
         "SourceBucketNames": [
-          {"Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"}
+          {"Ref": "DeployWithInvalidationAssetEF287ES3Bucket04F187B0"}
         ],
         "SourceObjectKeys": [{
           "Fn::Join": [
@@ -259,7 +258,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithInvalidationAsset1S3VersionKeyF91F6A51"
+                        "Ref": "DeployWithInvalidationAssetEF287ES3VersionKey9C8D43BE"
                       }
                     ]
                   }
@@ -272,7 +271,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithInvalidationAsset1S3VersionKeyF91F6A51"
+                        "Ref": "DeployWithInvalidationAssetEF287ES3VersionKey9C8D43BE"
                       }
                     ]
                   }
@@ -309,17 +308,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
-    "DeployWithInvalidationAsset1S3BucketB5658DC9": {
+    "DeployWithInvalidationAssetEF287ES3Bucket04F187B0": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithInvalidation/AssetEF287E\""
     },
-    "DeployWithInvalidationAsset1S3VersionKeyF91F6A51": {
+    "DeployWithInvalidationAssetEF287ES3VersionKey9C8D43BE": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithInvalidation/AssetEF287E\""
     },
-    "DeployWithInvalidationAsset1ArtifactHash1EB4DA88": {
+    "DeployWithInvalidationAssetEF287EArtifactHashB321854C": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithInvalidation/AssetEF287E\""
     }
   }
 }
