@@ -705,7 +705,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     let toReturn = {
       allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
-      compress: input.compress,
+      compress: input.compress !== false,
       defaultTtl: input.defaultTtl && input.defaultTtl.toSeconds(),
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
