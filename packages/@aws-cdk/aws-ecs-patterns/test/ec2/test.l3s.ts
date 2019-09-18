@@ -21,12 +21,14 @@ export = {
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        }
+      },
       desiredCount: 2,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-      }
     });
 
     // THEN - stack contains a load balancer and a service
@@ -67,12 +69,14 @@ export = {
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       vpc,
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        }
+      },
       desiredCount: 2,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-      }
     });
 
     // THEN - stack does not contain a LaunchConfiguration
@@ -93,7 +97,9 @@ export = {
     test.throws(() => new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       vpc,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+      }
     }));
 
     test.done();
@@ -110,7 +116,9 @@ export = {
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryReservationMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('test')
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test')
+      }
     });
 
     // THEN - stack contains a load balancer and a service
@@ -136,12 +144,14 @@ export = {
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        }
+      },
       desiredCount: 2,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-      }
     });
 
     // THEN - stack contains a load balancer and a service
@@ -193,13 +203,15 @@ export = {
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        },
+      },
       desiredCount: 2,
-      enableLogging: false,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-      }
     });
 
     // THEN - stack contains a load balancer and a service
@@ -240,7 +252,9 @@ export = {
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
       domainName: 'api.example.com',
       domainZone: zone,
       certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
@@ -350,7 +364,9 @@ export = {
     test.throws(() => {
       new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
         cluster,
-        image: ecs.ContainerImage.fromRegistry('test'),
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
         domainName: 'api.example.com'
       });
     });
@@ -404,16 +420,18 @@ export = {
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('test'),
-      desiredCount: 2,
-      enableLogging: false,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        },
+        logDriver: new AwsLogDriver({
+          streamPrefix: "TestStream"
+        }),
       },
-      logDriver: new AwsLogDriver({
-        streamPrefix: "TestStream"
-      })
+      desiredCount: 2,
     });
 
     // THEN - stack contains a load balancer and a service
@@ -453,13 +471,15 @@ export = {
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: true,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        }
+      },
       desiredCount: 2,
-      enableLogging: true,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-      }
     });
 
     // THEN - stack contains a load balancer and a service
@@ -484,6 +504,76 @@ export = {
               "awslogs-region": { Ref: "AWS::Region" }
             }
           },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+  'test Fargate loadbalanced construct with both image and taskDefinition provided'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+    taskDefinition.addContainer("web", {
+      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      memoryLimitMiB: 512
+    });
+
+    // WHEN
+    test.throws(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: true,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+          TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        },
+      },
+      desiredCount: 2,
+      taskDefinition
+    }));
+
+    test.done();
+  },
+  'test Fargate application loadbalanced construct with taskDefinition provided'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer("passedTaskDef", {
+      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      memoryLimitMiB: 512
+    });
+    container.addPortMappings({
+      containerPort: 80,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      desiredCount: 2,
+      memoryLimitMiB: 1024,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: "amazon/amazon-ecs-sample",
+          Memory: 512,
+          Name: "passedTaskDef",
+          PortMappings: [
+            {
+              ContainerPort: 80,
+              Protocol: "tcp"
+            }
+          ],
         }
       ]
     }));
