@@ -81,7 +81,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.8.0",
     "@aws-cdk/aws-codecommit": "^1.8.0",
-    "aws-sdk": "^2.529.0",
+    "aws-sdk": "^2.531.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
@@ -120,7 +120,7 @@
     "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "stable"
 }
