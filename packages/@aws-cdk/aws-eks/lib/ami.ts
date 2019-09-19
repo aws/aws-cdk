@@ -32,7 +32,7 @@ export class EksOptimizedAmi extends ec2.GenericLinuxImage implements ec2.IMachi
   }
 }
 
-const LATEST_KUBERNETES_VERSION = '1.13';
+const LATEST_KUBERNETES_VERSION = '1.14';
 
 /**
  * Whether the worker nodes should support GPU or just normal instances
