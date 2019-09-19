@@ -48,7 +48,7 @@ function installDeps(pkg, location, ...depLists) {
           if (!locks.dependencies) {
             locks.dependencies = {};
           }
-          locks.dependencies[name] = { version, dev };
+          locks.dependencies = insert(locks.dependencies, name, { version, dev });
         }
       });
   }
@@ -64,7 +64,14 @@ function installDeps(pkg, location, ...depLists) {
     // a lock-file from scratch, so if there was none, let npm do it's thing instead of trying to replicate.
     execSync(`npm install --package-lock-only ${paths.join(' ')}`, { cwd: location, shell: true });
   }
+}
 
+function insert(deps, name, value) {
+  const result = {};
+  for (const key of [name, ...Object.keys(deps)].sort()) {
+    result[key] = key === name ? value : deps[key];
+  }
+  return result;
 }
 
 function findIndent(path) {

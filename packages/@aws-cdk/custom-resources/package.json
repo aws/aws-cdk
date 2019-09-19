@@ -71,7 +71,6 @@
     "@aws-cdk/aws-events": "^1.8.0",
     "@aws-cdk/aws-ssm": "^1.8.0",
     "@types/aws-lambda": "^8.10.31",
-    "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.13",
     "aws-sdk": "^2.531.0",
     "aws-sdk-mock": "^4.5.0",
