@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.SES",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-ses",
@@ -86,7 +87,7 @@
     "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "experimental"
 }

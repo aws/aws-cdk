@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.SQS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-sqs",
@@ -65,7 +66,7 @@
     "@aws-cdk/assert": "^1.8.0",
     "@aws-cdk/aws-kms": "^1.8.0",
     "@aws-cdk/aws-s3": "^1.8.0",
-    "aws-sdk": "^2.528.0",
+    "aws-sdk": "^2.531.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
@@ -85,7 +86,7 @@
     "@aws-cdk/core": "^1.8.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
