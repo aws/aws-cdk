@@ -134,6 +134,7 @@
     "@aws-cdk/aws-servicecatalog": "^1.8.0",
     "@aws-cdk/aws-servicediscovery": "^1.8.0",
     "@aws-cdk/aws-ses": "^1.8.0",
+    "@aws-cdk/aws-ses-actions": "^1.8.0",
     "@aws-cdk/aws-sns": "^1.8.0",
     "@aws-cdk/aws-sns-subscriptions": "^1.8.0",
     "@aws-cdk/aws-sqs": "^1.8.0",
