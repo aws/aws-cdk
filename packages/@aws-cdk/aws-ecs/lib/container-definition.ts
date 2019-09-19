@@ -448,6 +448,22 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
+   * Returns the host port for the requested container port if it exists
+   *
+   * @internal
+   */
+  public _findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
+    for (const portMapping of this.portMappings) {
+      const p = portMapping.protocol || Protocol.TCP;
+      const c = portMapping.containerPort;
+      if (c === containerPort && p === protocol) {
+        return portMapping;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * The inbound rules associated with the security group the task or service will use.
    *
    * This property is only used for tasks that use the awsvpc network mode.
