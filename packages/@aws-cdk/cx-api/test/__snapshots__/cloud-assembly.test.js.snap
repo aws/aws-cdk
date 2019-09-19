@@ -1,12 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`assembly a single cloudformation stack 1`] = `
+exports[`assembly a single cloudformation stack and metadata 1`] = `
 Object {
   "environment": "aws://37736633/us-region-1",
   "properties": Object {
     "templateFile": "template.json",
   },
   "type": "aws:cloudformation:stack",
+}
+`;
+
+exports[`assembly a single cloudformation stack and metadata 2`] = `
+Object {
+  "properties": Object {
+    "file": "my-cdk-metadata.json",
+  },
+  "type": "cdk:metadata",
 }
 `;
 

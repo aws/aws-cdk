@@ -27,6 +27,13 @@ test('cloud assembly builder', () => {
     },
   });
 
+  session.addArtifact('metadata-artifact', {
+    type: ArtifactType.CDK_METADATA,
+    properties: {
+      file: 'foo.metadata.json'
+    }
+  });
+
   session.addMissing({
     key: 'foo',
     provider: 'context-provider',
@@ -63,6 +70,12 @@ test('cloud assembly builder', () => {
       { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
     ],
     artifacts: {
+      'metadata-artifact': {
+        type: 'cdk:metadata',
+        properties: {
+          file: 'foo.metadata.json'
+        }
+      },
       'my-first-artifact': {
         type: 'aws:cloudformation:stack',
         environment: 'aws://1222344/us-east-1',

@@ -1,0 +1,9 @@
+{
+  "version": "0.36.0",
+  "artifacts": {
+    "MyCDKMetadata": {
+      "type": "cdk:metadata",
+      "properties": {}
+    }
+  }
+}

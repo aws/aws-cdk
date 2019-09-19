@@ -1,6 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Construct, ConstructNode } from './construct';
+import { ConstructTreeMetadata } from './private/construct-tree-metadata';
 import { collectRuntimeInformation } from './private/runtime-info';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
@@ -132,6 +133,11 @@ export class App extends Construct {
 
     this._assembly = assembly;
     return assembly;
+  }
+
+  protected prepare(): void {
+    // Add internal constructs here
+    new ConstructTreeMetadata(this);
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

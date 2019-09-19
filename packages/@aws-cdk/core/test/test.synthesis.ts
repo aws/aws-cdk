@@ -24,8 +24,20 @@ export = {
 
     // THEN
     test.same(app.synth(), session); // same session if we synth() again
-    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json' ]);
-    test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {});
+    test.deepEqual(list(session.directory), [ 'cdk.out', 'construct-tree-metadata.json', 'manifest.json' ]);
+    test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {
+      ConstructTreeMetadata: {
+        type: 'cdk:metadata',
+        properties: { file: 'construct-tree-metadata.json' }
+      }
+    });
+    test.deepEqual(readJson(session.directory, 'construct-tree-metadata.json'), {
+      id: 'App',
+      path: '',
+      children: [
+        { id: 'ConstructTreeMetadata', path: 'ConstructTreeMetadata' }
+      ]
+    });
     test.done();
   },
 
@@ -38,11 +50,7 @@ export = {
     const session = app.synth();
 
     // THEN
-    test.deepEqual(list(session.directory), [
-      'cdk.out',
-      'manifest.json',
-      'one-stack.template.json'
-    ]);
+    test.ok(list(session.directory).includes('one-stack.template.json'));
     test.done();
   },
 
@@ -70,16 +78,17 @@ export = {
     const session = app.synth();
 
     // THEN
-    test.deepEqual(list(session.directory), [
-      'cdk.out',
-      'foo.json',
-      'manifest.json',
-      'one-stack.template.json'
-    ]);
+    test.ok(list(session.directory).includes('one-stack.template.json'));
+    test.ok(list(session.directory).includes('foo.json'));
+
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
       version: cxapi.CLOUD_ASSEMBLY_VERSION,
       artifacts: {
+        'ConstructTreeMetadata': {
+          type: 'cdk:metadata',
+          properties: { file: 'construct-tree-metadata.json' }
+        },
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://12345/bar',

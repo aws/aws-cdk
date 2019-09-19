@@ -54,9 +54,9 @@ export = {
 
     const stack1 = response.stacks[0];
     test.deepEqual(stack1.name, 'stack1');
-    test.deepEqual(stack1.environment.account, 12345);
-    test.deepEqual(stack1.environment.region, 'us-east-1');
-    test.deepEqual(stack1.environment.name, 'aws://12345/us-east-1');
+    test.deepEqual(stack1.environment!.account, 12345);
+    test.deepEqual(stack1.environment!.region, 'us-east-1');
+    test.deepEqual(stack1.environment!.name, 'aws://12345/us-east-1');
     test.deepEqual(stack1.template, { Resources:
       { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
         s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } } } });
@@ -71,7 +71,7 @@ export = {
 
     const stack2 = response.stacks[1];
     test.deepEqual(stack2.name, 'stack2');
-    test.deepEqual(stack2.environment.name, 'aws://unknown-account/unknown-region');
+    test.deepEqual(stack2.environment!.name, 'aws://unknown-account/unknown-region');
     test.deepEqual(stack2.template, { Resources:
       { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
         s1c2r1D1791C01: { Type: 'ResourceType1' },

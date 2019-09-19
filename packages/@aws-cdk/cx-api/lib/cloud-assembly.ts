@@ -3,6 +3,7 @@ import os = require('os');
 import path = require('path');
 import { ArtifactManifest, CloudArtifact } from './cloud-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
+import { MetadataCloudArtifact } from './metadata-cloud-artifact';
 import { topologicalSort } from './toposort';
 import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from './versioning';
 
@@ -90,7 +91,7 @@ export class CloudAssembly {
    * @param id The artifact ID
    */
   public tryGetArtifact(id: string): CloudArtifact | undefined {
-    return this.stacks.find(a => a.id === id);
+    return this.artifacts.find(a => a.id === id);
   }
 
   /**
@@ -107,6 +108,25 @@ export class CloudAssembly {
 
     if (!(artifact instanceof CloudFormationStackArtifact)) {
       throw new Error(`Artifact ${stackName} is not a CloudFormation stack`);
+    }
+
+    return artifact;
+  }
+
+  /**
+   * Returns a metadata artifact from this assembly.
+   * @param id the identifier of the metadata artifact in this assembly
+   * @throws if there is no metadata artifact by that name
+   * @returns a `MetadataCloudArtifact` object.
+   */
+  public getMetadata(id: string): MetadataCloudArtifact {
+    const artifact = this.tryGetArtifact(id);
+    if (!artifact) {
+      throw new Error(`Unable to find artifact with id "${id}"`);
+    }
+
+    if (!(artifact instanceof MetadataCloudArtifact)) {
+      throw new Error(`Artifact ${id} is not of type Metadata`);
     }
 
     return artifact;

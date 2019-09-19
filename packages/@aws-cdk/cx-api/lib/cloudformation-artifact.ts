@@ -41,6 +41,9 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     if (!artifact.properties || !artifact.properties.templateFile) {
       throw new Error(`Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest`);
     }
+    if (!artifact.environment) {
+      throw new Error('Invalid CloudFormation stack artifact. Missing environment');
+    }
     const properties = (this.manifest.properties || {}) as AwsCloudFormationStackProperties;
     this.templateFile = properties.templateFile;
     this.parameters = properties.parameters || { };

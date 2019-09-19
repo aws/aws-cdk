@@ -19,6 +19,11 @@ export enum ArtifactType {
    * The artifact is an AWS CloudFormation stack.
    */
   AWS_CLOUDFORMATION_STACK = 'aws:cloudformation:stack',
+
+  /**
+   * The artifact contains metadata generated out of the CDK application.
+   */
+  CDK_METADATA = 'cdk:metadata',
 }
 
 /**
@@ -33,7 +38,7 @@ export interface ArtifactManifest {
   /**
    * The environment into which this artifact is deployed.
    */
-  readonly environment: string; // format: aws://account/region
+  readonly environment?: string; // format: aws://account/region
 
   /**
    * Associated metadata.
@@ -80,7 +85,8 @@ export class CloudArtifact {
     switch (artifact.type) {
       case ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);
-
+      case ArtifactType.CDK_METADATA:
+        return new MetadataCloudArtifact(assembly, id, artifact);
       default:
         throw new Error(`unsupported artifact type: ${artifact.type}`);
     }
@@ -99,7 +105,7 @@ export class CloudArtifact {
   /**
    * The environment into which to deploy this artifact.
    */
-  public readonly environment: Environment;
+  public readonly environment?: Environment;
 
   /**
    * IDs of all dependencies. Used when topologically sorting the artifacts within the cloud assembly.
@@ -114,7 +120,7 @@ export class CloudArtifact {
 
   protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: ArtifactManifest) {
     this.manifest = manifest;
-    this.environment = EnvironmentUtils.parse(manifest.environment);
+    this.environment = manifest.environment === undefined ? undefined : EnvironmentUtils.parse(manifest.environment);
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
   }
@@ -182,3 +188,4 @@ export class CloudArtifact {
 
 // needs to be defined at the end to avoid a cyclic dependency
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
+import { MetadataCloudArtifact } from './metadata-cloud-artifact';

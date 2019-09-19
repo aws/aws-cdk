@@ -13,14 +13,13 @@ test('empty assembly', () => {
   expect(assembly.manifest).toMatchSnapshot();
 });
 
-test('assembly a single cloudformation stack', () => {
+test('assembly a single cloudformation stack and metadata', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'single-stack'));
-  expect(assembly.artifacts).toHaveLength(1);
+  expect(assembly.artifacts).toHaveLength(2);
   expect(assembly.stacks).toHaveLength(1);
   expect(assembly.manifest.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
-  expect(assembly.artifacts[0]).toEqual(assembly.stacks[0]);
 
   const stack = assembly.stacks[0];
   expect(stack.manifest).toMatchSnapshot();
@@ -32,6 +31,17 @@ test('assembly a single cloudformation stack', () => {
   expect(stack.manifest.metadata).toEqual(undefined);
   expect(stack.originalName).toEqual('MyStackName');
   expect(stack.name).toEqual('MyStackName');
+
+  const annotationsArtifact = assembly.getMetadata('MyCDKMetadata');
+  expect(annotationsArtifact.file).toEqual('my-cdk-metadata.json');
+  expect(annotationsArtifact.manifest).toMatchSnapshot();
+
+  expect(() => assembly.getMetadata('invalid-id')).toThrow(/Unable to find artifact with id/);
+  expect(() => assembly.getMetadata('MyStackName')).toThrow(/is not of type Metadata/);
+});
+
+test('assembly with invalid metadata type', () => {
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-metadata-type'))).toThrow(/Invalid MetadataCloudArtifact/);
 });
 
 test('assembly with missing context', () => {
