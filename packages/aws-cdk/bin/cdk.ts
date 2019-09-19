@@ -13,7 +13,7 @@ import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../l
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setVerbose, success } from '../lib/logging';
+import { data, debug, error, print, setNoColor, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
@@ -43,6 +43,7 @@ async function parseCommandLineArguments() {
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
+    .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .command([ 'list [STACKS..]', 'ls [STACKS..]' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
