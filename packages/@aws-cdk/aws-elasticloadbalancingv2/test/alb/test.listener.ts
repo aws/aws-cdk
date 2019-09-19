@@ -95,6 +95,30 @@ export = {
     test.done();
   },
 
+  'HTTPS listener can add certificate after construction'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    listener.addCertificateArns("Arns", ['cert']);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Certificates: [
+        { CertificateArn: "cert" }
+      ],
+    }));
+
+    test.done();
+  },
+
   'Can configure targetType on TargetGroups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -643,6 +667,62 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'security-group-id'
+    }));
+
+    test.done();
+  },
+
+  'Can pass multiple certificate arns to application listener constructor'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'HTTPS'
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    }));
+
+    test.done();
+  },
+
+  'Can add additional certificates via addCertficateArns to application listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    listener.addCertificateArns("ListenerCertificateX", ['cert3']);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'HTTPS'
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert3' }],
     }));
 
     test.done();
