@@ -223,7 +223,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithPrefixAsset2S3Bucket914A0CA9"
+                        "Ref": "DeployWithPrefixAsset1S3BucketB954F7C6"
                       }
                     ]
                   ]
@@ -238,7 +238,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithPrefixAsset2S3Bucket914A0CA9"
+                        "Ref": "DeployWithPrefixAsset1S3BucketB954F7C6"
                       },
                       "/*"
                     ]
@@ -361,7 +361,7 @@
           ]
         },
         "SourceBucketNames": [{
-          "Ref": "DeployWithPrefixAsset2S3Bucket914A0CA9"
+          "Ref": "DeployWithPrefixAsset1S3BucketB954F7C6"
         }],
         "SourceObjectKeys": [{
           "Fn::Join": [
@@ -374,7 +374,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithPrefixAsset2S3VersionKeyB49C1C8C"
+                        "Ref": "DeployWithPrefixAsset1S3VersionKeyC9498C3B"
                       }
                     ]
                   }
@@ -387,7 +387,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithPrefixAsset2S3VersionKeyB49C1C8C"
+                        "Ref": "DeployWithPrefixAsset1S3VersionKeyC9498C3B"
                       }
                     ]
                   }
@@ -431,17 +431,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
-    "DeployWithPrefixAsset2S3Bucket914A0CA9": {
+    "DeployWithPrefixAsset1S3BucketB954F7C6": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset2\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset1\""
     },
-    "DeployWithPrefixAsset2S3VersionKeyB49C1C8C": {
+    "DeployWithPrefixAsset1S3VersionKeyC9498C3B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithPrefix/Asset2\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithPrefix/Asset1\""
     },
-    "DeployWithPrefixAsset2ArtifactHash0DA6A973": {
+    "DeployWithPrefixAsset1ArtifactHash5137152F": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset2\""
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset1\""
     }
   }
 }

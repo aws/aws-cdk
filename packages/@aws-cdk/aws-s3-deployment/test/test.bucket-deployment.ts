@@ -96,10 +96,10 @@ export = {
       },
       "SourceBucketNames": [
         {
-          "Ref": "DeployAsset2S3Bucket155AFD20"
+          "Ref": "DeployAsset1S3BucketC03B223F"
         },
         {
-          "Ref": "DeployAsset3S3Bucket57BF2F6F"
+          "Ref": "DeployAsset2S3Bucket155AFD20"
         }
       ],
       "SourceObjectKeys": [
@@ -114,7 +114,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
                       }
                     ]
                   }
@@ -127,7 +127,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
                       }
                     ]
                   }
@@ -147,7 +147,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset3S3VersionKeyDB628286"
+                        "Ref": "DeployAsset2S3VersionKey8324D51E"
                       }
                     ]
                   }
@@ -160,7 +160,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset3S3VersionKeyDB628286"
+                        "Ref": "DeployAsset2S3VersionKey8324D51E"
                       }
                     ]
                   }

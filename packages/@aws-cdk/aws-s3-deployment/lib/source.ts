@@ -25,8 +25,6 @@ export interface ISource {
   bind(context: cdk.Construct): SourceConfig;
 }
 
-let nextUniqueId = 0;
-
 /**
  * Specifies bucket deployment source.
  *
@@ -56,7 +54,11 @@ export class Source {
   public static asset(path: string): ISource {
     return {
       bind(context: cdk.Construct): SourceConfig {
-        const asset = new s3_assets.Asset(context, `Asset${++nextUniqueId}`, { path });
+        let id = 1;
+        while (context.node.tryFindChild(`Asset${id}`)) {
+          id++;
+        }
+        const asset = new s3_assets.Asset(context, `Asset${id}`, { path });
         if (!asset.isZipArchive) {
           throw new Error(`Asset path must be either a .zip file or a directory`);
         }
