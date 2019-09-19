@@ -13,7 +13,7 @@ import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../l
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setNoColor, setVerbose, success } from '../lib/logging';
+import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
