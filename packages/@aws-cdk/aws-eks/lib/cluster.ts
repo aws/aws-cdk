@@ -5,7 +5,7 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import path = require('path');
-import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
+import { EksOptimizedImage, nodeTypeForInstanceType } from './ami';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -449,7 +449,7 @@ export class Cluster extends Resource implements ICluster {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EksOptimizedAmi({
+      machineImage: new EksOptimizedImage({
         nodeType: nodeTypeForInstanceType(options.instanceType),
         kubernetesVersion: this.version,
       }),

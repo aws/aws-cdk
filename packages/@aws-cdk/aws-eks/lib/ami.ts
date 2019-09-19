@@ -1,4 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import ssm = require('@aws-cdk/aws-ssm');
+import { Construct } from "@aws-cdk/core/lib/construct";
 
 /**
  * Properties for EksOptimizedAmi
@@ -21,6 +23,8 @@ export interface EksOptimizedAmiProps {
 
 /**
  * Source for EKS optimized AMIs
+ *
+ * @deprecated see {@link EksOptimizedImage}
  */
 export class EksOptimizedAmi extends ec2.GenericLinuxImage implements ec2.IMachineImage {
   constructor(props: EksOptimizedAmiProps = {}) {
@@ -29,6 +33,41 @@ export class EksOptimizedAmi extends ec2.GenericLinuxImage implements ec2.IMachi
       throw new Error(`We don't have an AMI for kubernetes version ${version}`);
     }
     super(EKS_AMI[version][props.nodeType || NodeType.NORMAL]);
+  }
+}
+
+/**
+ * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
+ */
+export class EksOptimizedImage implements ec2.IMachineImage {
+  private readonly nodeType?: NodeType;
+  private readonly kubernetesVersion?: string;
+
+  private readonly amiParameterName: string;
+
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
+  public constructor(props: EksOptimizedAmiProps) {
+    this.nodeType = props && props.nodeType;
+    this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
+      + ( this.nodeType === NodeType.NORMAL ? "amazon-linux-2/" : "" )
+      + ( this.nodeType === NodeType.GPU ? " amazon-linux2-gpu/" : "" )
+      + "recommended/image_id";
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX
+    };
   }
 }
 
@@ -56,9 +95,9 @@ export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 /**
  * Select AMI to use based on the AWS Region being deployed
  *
- * TODO: Create dynamic mappign by searching SSM Store
- *
  * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html
+ *
+ * @deprecated Retrieved using the SSM store, see {@link EksOptimizedImage}
  */
 const EKS_AMI: {[version: string]: {[type: string]: {[region: string]: string}}} = {
   '1.10': parseTable(`
