@@ -126,6 +126,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     protected readonly outputPath?: string;
     protected readonly resultPath?: string;
     protected readonly branches: StateGraph[] = [];
+    protected dynamicMap?: StateGraph;
     protected defaultChoice?: State;
 
     /**
@@ -273,13 +274,20 @@ export abstract class State extends cdk.Construct implements IChainable {
     }
 
     /**
-     * Add a paralle branch to this state
+     * Add a parallel branch to this state
      */
     protected addBranch(branch: StateGraph) {
         this.branches.push(branch);
         if (this.containingGraph) {
             branch.registerSuperGraph(this.containingGraph);
         }
+    }
+
+    /**
+     * Add a dynamic map to this state
+     */
+    protected addDynamicBranch(graph: StateGraph) {
+        this.dynamicMap = graph;
     }
 
     /**
@@ -332,6 +340,19 @@ export abstract class State extends cdk.Construct implements IChainable {
         return {
             Branches: this.branches.map(b => b.toGraphJson())
         };
+    }
+
+    /**
+     * Render dynamic parallel branches in ASL JSON format
+     */
+    protected renderDynamicMap(): any {
+        if (this.dynamicMap) {
+            return {
+                Iterator: this.dynamicMap.toGraphJson()
+            };
+        } else {
+            return;
+        }
     }
 
     /**

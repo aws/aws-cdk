@@ -13,6 +13,7 @@ export * from './step-functions-task';
 export * from './states/choice';
 export * from './states/fail';
 export * from './states/parallel';
+export * from './states/map';
 export * from './states/pass';
 export * from './states/state';
 export * from './states/succeed';

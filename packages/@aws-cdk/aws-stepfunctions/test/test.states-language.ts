@@ -369,6 +369,34 @@ export = {
             });
 
             test.done();
+        },
+
+        'basic dynamic map'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+
+            // WHEN
+            const task1 = new stepfunctions.Map(stack, 'State One', {
+                inputPath: "$.shipped"
+            });
+
+            const task2 = new stepfunctions.Pass(stack, 'State Two');
+            const innerChain = stepfunctions.Chain.start(task2);
+
+            task1.dynamicBranch(innerChain);
+            const chain = stepfunctions.Chain
+                .start(task1);
+
+            // THEN
+            test.deepEqual(render(chain), {
+                StartAt: 'State One',
+                States: {
+                    'State One': { Type: 'Pass', Next: 'State Two' },
+                    'State Two': { Type: 'Pass', End: true },
+                }
+            });
+
+            test.done();
         }
     },
 
