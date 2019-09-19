@@ -524,7 +524,7 @@ export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
 
-    const CDK_LOGO_URL = 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png';
+    const CDK_LOGO_URL = 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png';
     expectJSON(this.name, pkg, 'jsii.targets.dotnet.iconUrl', CDK_LOGO_URL);
   }
 }
