@@ -86,6 +86,15 @@ export interface BaseServiceOptions {
   readonly cloudMapOptions?: CloudMapOptions;
 
   /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
+   *
+   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION or PropagatedTagSource.NONE
+   *
+   * @default PropagatedTagSource.NONE
+   */
+  readonly propagateTags?: PropagatedTagSource;
+
+  /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
    * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
    *
@@ -105,15 +114,6 @@ export interface BaseServiceProps extends BaseServiceOptions {
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE
    */
   readonly launchType: LaunchType;
-
-  /**
-   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
-   *
-   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION or PropagatedTagSource.NONE
-   *
-   * @default PropagatedTagSource.NONE
-   */
-  readonly propagateTags?: PropagatedTagSource;
 }
 
 /**

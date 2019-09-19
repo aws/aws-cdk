@@ -90,11 +90,18 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
+                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
       launchType: LaunchType.FARGATE,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
+      propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,

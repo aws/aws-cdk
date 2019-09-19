@@ -19,13 +19,7 @@ changed-type:@aws-cdk/aws-dynamodb.Table.tableStreamArn
 incompatible-argument:@aws-cdk/aws-apigateway.LambdaRestApi.addModel
 incompatible-argument:@aws-cdk/aws-apigateway.Model.<initializer>
 incompatible-argument:@aws-cdk/aws-apigateway.RestApi.addModel
-<<<<<<< HEAD
 incompatible-argument:@aws-cdk/aws-apigateway.ProxyResource.addProxy
 incompatible-argument:@aws-cdk/aws-apigateway.Resource.addProxy
 incompatible-argument:@aws-cdk/aws-apigateway.ResourceBase.addProxy
 incompatible-argument:@aws-cdk/aws-apigateway.IResource.addProxy
-=======
-removed:@aws-cdk/aws-ecs.BaseServiceOptions.propagateTags
-removed:@aws-cdk/aws-ecs.Ec2ServiceProps.propagateTags
-removed:@aws-cdk/aws-ecs.FargateServiceProps.propagateTags
->>>>>>> Add allowed breaking change
