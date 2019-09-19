@@ -1,5 +1,4 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -92,7 +91,7 @@ export interface IEc2Service extends IService {
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IEc2Service {
 
   /**
    * Imports from the specified service ARN.
@@ -188,26 +187,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     for (const constraint of constraints) {
       this.constraints.push(...constraint.toJson());
     }
-  }
-
-  /**
-   * Registers the service as a target of a Classic Load Balancer (CLB).
-   *
-   * Don't call this. Call `loadBalancer.addTarget()` instead.
-   */
-  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
-    }
-    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or AwsVpc instead.");
-    }
-
-    this.loadBalancers.push({
-      loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.containerName,
-      containerPort: this.taskDefinition.defaultContainer!.containerPort,
-    });
   }
 
   /**
