@@ -229,7 +229,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * @default Average over 5 minutes
    */
   public metricUnhealthyHostCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('UnhealthyHostCount', {
+    return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
       ...props
     });
