@@ -362,7 +362,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, 'AWS::EC2::Image::Id');
     return {
       imageId: ami,
       osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
@@ -433,7 +433,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, 'AWS::EC2::Image::Id');
     return {
       imageId: ami,
       osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
