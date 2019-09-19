@@ -874,6 +874,7 @@ export = {
                 project,
                 input: sourceOutput,
                 outputs: [new codepipeline.Artifact()],
+                validateCrossAccountOutputs: false,
               }),
             ],
           },

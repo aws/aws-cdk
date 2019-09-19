@@ -60,6 +60,21 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default CodeBuildActionType.BUILD
    */
   readonly type?: CodeBuildActionType;
+
+  /**
+   * Whether to validate if the action,
+   * if it references a project in a different account,
+   * does not have any outputs.
+   * This is a known CodeBuild limitation.
+   * If the action is cross-account, and has outputs,
+   * and this property is true (which is the default),
+   * an exception will be thrown.
+   * You can set this to false to skip this validation.
+   *
+   * @default true
+   * @see https://github.com/aws/aws-cdk/issues/4169
+   */
+  readonly validateCrossAccountOutputs?: boolean;
 }
 
 /**
@@ -83,8 +98,21 @@ export class CodeBuildAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
+    // check for a cross-account action if there are any outputs
+    if (this.props.validateCrossAccountOutputs !== false &&
+        (this.actionProperties.outputs || []).length > 0) {
+      const pipelineStack = cdk.Stack.of(scope);
+      const projectStack = cdk.Stack.of(this.props.project);
+      if (pipelineStack.account !== projectStack.account) {
+        throw new Error('A cross-account CodeBuild action cannot have outputs. ' +
+          'This is a know CodeBuild limitation. ' +
+          'See https://github.com/aws/aws-cdk/issues/4169 for details. ' +
+          'You can pass the validateCrossAccountOutputs property as false to skip this validation');
+      }
+    }
+
     // grant the Pipeline role the required permissions to this Project
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
