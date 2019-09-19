@@ -19,6 +19,7 @@ coverage/
 .LAST_BUILD
 *.sw[a-z]
 *~
+.idea
 
 # We don't want tsconfig at the root
 /tsconfig.json

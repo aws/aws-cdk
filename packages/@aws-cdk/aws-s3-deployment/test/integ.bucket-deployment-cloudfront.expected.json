@@ -54,7 +54,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithInvalidationAssetS3Bucket5AB066D5"
+                        "Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"
                       }
                     ]
                   ]
@@ -69,7 +69,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithInvalidationAssetS3Bucket5AB066D5"
+                        "Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"
                       },
                       "/*"
                     ]
@@ -245,10 +245,10 @@
             "Arn"
           ]
         },
-        "SourceBucketName": {
-          "Ref": "DeployWithInvalidationAssetS3Bucket5AB066D5"
-        },
-        "SourceObjectKey": {
+        "SourceBucketNames": [
+          {"Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"}
+        ],
+        "SourceObjectKeys": [{
           "Fn::Join": [
             "",
             [
@@ -259,7 +259,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithInvalidationAssetS3VersionKeyE1BCADA7"
+                        "Ref": "DeployWithInvalidationAsset1S3VersionKeyF91F6A51"
                       }
                     ]
                   }
@@ -272,7 +272,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployWithInvalidationAssetS3VersionKeyE1BCADA7"
+                        "Ref": "DeployWithInvalidationAsset1S3VersionKeyF91F6A51"
                       }
                     ]
                   }
@@ -280,7 +280,7 @@
               }
             ]
           ]
-        },
+        }],
         "DestinationBucketName": {
           "Ref": "Destination3E3DC043D"
         },
@@ -309,17 +309,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
-    "DeployWithInvalidationAssetS3Bucket5AB066D5": {
+    "DeployWithInvalidationAsset1S3BucketB5658DC9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
     },
-    "DeployWithInvalidationAssetS3VersionKeyE1BCADA7": {
+    "DeployWithInvalidationAsset1S3VersionKeyF91F6A51": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithInvalidation/Asset\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
     },
-    "DeployWithInvalidationAssetArtifactHash7FFB2867": {
+    "DeployWithInvalidationAsset1ArtifactHash1EB4DA88": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset\""
+      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
     }
   }
 }

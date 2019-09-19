@@ -23,7 +23,7 @@ class TestBucketDeployment extends cdk.Stack {
     });
 
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
-      source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket: bucket,
       distribution,
       distributionPaths: ['/images/*.png'],
