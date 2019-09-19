@@ -62,7 +62,7 @@ export interface MapProps {
 
     /**
      * MaxConcurrency
-     * 
+     *
      * An upper bound on the number of iterations you want running at once. Default value of 0
      *
      * @default false
