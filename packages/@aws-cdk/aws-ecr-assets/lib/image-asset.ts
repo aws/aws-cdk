@@ -1,11 +1,11 @@
 import assets = require('@aws-cdk/assets');
 import ecr = require('@aws-cdk/aws-ecr');
 import cdk = require('@aws-cdk/core');
-import {Token} from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import {AdoptedRepository} from './adopted-repository';
+import { AdoptedRepository } from './adopted-repository';
 
 export interface DockerImageAssetProps extends assets.CopyOptions {
   /**
@@ -75,17 +75,17 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
 
-    let excludes: string[] = ['.dockerignore'];
+    let exclude: string[] = ['.dockerignore'];
 
     const ignore = path.join(dir, '.dockerignore');
 
     if (fs.existsSync(ignore)) {
-      excludes = [...excludes, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
+      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
     }
 
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
-      exclude: excludes,
+      exclude,
       sourcePath: dir
     });
 
@@ -121,7 +121,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     //
     // If adoption fails (because the repository might be twice-adopted), we
     // haven't already started using the image.
-    this.repository = new AdoptedRepository(this, 'AdoptRepository', {repositoryName});
+    this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName });
     this.imageUri = `${this.repository.repositoryUri}@sha256:${imageSha}`;
   }
 }

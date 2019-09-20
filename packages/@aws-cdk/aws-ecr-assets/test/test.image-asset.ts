@@ -182,6 +182,23 @@ export = {
     test.done();
   },
 
+  'docker directory is staged without files specified in .dockerignore'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'dockerignore-image')
+    });
+
+    const session = app.synth();
+
+    test.ok(fs.existsSync(path.join(session.directory, `asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
+    test.ok(!fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/foobar.txt')));
+
+    test.done();
+  },
+
   'fails if using tokens in build args keys or values'(test: Test) {
     // GIVEN
     const stack = new Stack();
