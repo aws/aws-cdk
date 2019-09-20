@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ConstructNode, Stack } from '../lib';
+import { Construct, ConstructNode, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 
 export = {
@@ -108,6 +108,34 @@ export = {
         ],
       }
     });
+
+    test.done();
+  },
+
+  'context provider errors are attached to tree'(test: Test) {
+    const contextProps = { provider: 'bloop' };
+    const contextKey = 'bloop:account=12345:region=us-east-1';  // Depends on the mangling algo
+
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+
+    // NOTE: error key is inlined here because it's part of the CX-API
+    // compatibility surface.
+    stack.node.setContext(contextKey, { $providerError: 'I had a boo-boo' });
+    const construct = new Construct(stack, 'Child');
+
+    // Verify that we got the right hardcoded key above, give a descriptive error if not
+    test.equals(ContextProvider.getKey(construct, contextProps).key, contextKey);
+
+    // WHEN
+    ContextProvider.getValue(construct, {
+      ...contextProps,
+      dummyValue: undefined,
+    });
+
+    // THEN
+    const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
+    test.equals(error && error.data, 'I had a boo-boo');
 
     test.done();
   },
