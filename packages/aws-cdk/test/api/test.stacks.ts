@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test, testCase } from 'nodeunit';
 import { SDK } from '../../lib';
 import { AppStacks, DefaultSelection } from '../../lib/api/cxapp/stacks';
+import { registerContextProvider } from '../../lib/context-providers';
 import { Configuration } from '../../lib/settings';
 import { testAssembly } from '../util';
 
@@ -126,6 +127,35 @@ export = testCase({
       test.done();
     }
   },
+
+  async 'stop executing if context providers are not making progress'(test: Test) {
+    registerContextProvider('testprovider', class {
+      public async getValue(_: {[key: string]: any}): Promise<any> {
+        return 'foo';
+      }
+    });
+
+    const stacks = new AppStacks({
+      configuration: new Configuration(),
+      aws: new SDK(),
+      synthesizer: async () => testAssembly({
+        stacks: [ {
+          stackName: 'thestack',
+          template: { resource: 'noerrorresource' },
+        }],
+        // Always return the same missing keys, synthesis should still finish.
+        missing: [
+          { key: 'abcdef', props: {}, provider: 'testprovider' }
+        ]
+      }),
+    });
+
+    // WHEN
+    await stacks.selectStacks(['thestack'], { defaultBehavior: DefaultSelection.AllStacks });
+
+    // THEN: the test finishes normally
+    test.done();
+  },
 });
 
 function testStacks({ env, versionReporting = true }: { env?: string, versionReporting?: boolean } = {}) {
@@ -136,22 +166,24 @@ function testStacks({ env, versionReporting = true }: { env?: string, versionRep
     configuration,
     aws: new SDK(),
     synthesizer: async () => testAssembly({
-      stackName: 'withouterrors',
-      env,
-      template: { resource: 'noerrorresource' },
-    },
-    {
-      stackName: 'witherrors',
-      env,
-      template: { resource: 'errorresource' },
-      metadata: {
-        '/resource': [
-          {
-            type: cxapi.ERROR_METADATA_KEY,
-            data: 'this is an error'
-          }
-        ]
+      stacks: [{
+        stackName: 'withouterrors',
+        env,
+        template: { resource: 'noerrorresource' },
       },
+      {
+        stackName: 'witherrors',
+        env,
+        template: { resource: 'errorresource' },
+        metadata: {
+          '/resource': [
+            {
+              type: cxapi.ERROR_METADATA_KEY,
+              data: 'this is an error'
+            }
+          ]
+        },
+      }]
     }),
   });
 }
