@@ -428,7 +428,7 @@ export class Stack extends Construct implements ITaggable {
     const value = ContextProvider.getValue(this, {
       provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
       dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
-    });
+    }).value;
 
     if (!Array.isArray(value)) {
       throw new Error(`Provider ${cxapi.AVAILABILITY_ZONE_PROVIDER} expects a list`);
