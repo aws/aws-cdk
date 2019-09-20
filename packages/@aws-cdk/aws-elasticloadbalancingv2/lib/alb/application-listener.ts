@@ -124,7 +124,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
     this.certificateArns = [];
-    this.certificateArns.push(...(props.certificateArns || []));
+
+    // Attach certificates
+    if (props.certificateArns && props.certificateArns.length > 0) {
+      this.addCertificateArns("ListenerCertificate", props.certificateArns);
+    }
 
     // This listener edits the securitygroup of the load balancer,
     // but adds its own default port.
@@ -142,9 +146,25 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * Add one or more certificates to this listener.
+   *
+   * After the first certificate, this creates ApplicationListenerCertificates
+   * resources since cloudformation requires the certificates array on the
+   * listener resource to have a length of 1.
    */
-  public addCertificateArns(_id: string, arns: string[]): void {
-    this.certificateArns.push(...arns);
+  public addCertificateArns(id: string, arns: string[]): void {
+    const additionalCertArns = [...arns];
+
+    if (this.certificateArns.length === 0 && additionalCertArns.length > 0) {
+      const first = additionalCertArns.splice(0, 1)[0];
+      this.certificateArns.push(first);
+    }
+
+    if (additionalCertArns.length > 0) {
+      new ApplicationListenerCertificate(this, id, {
+        listener: this,
+        certificateArns: additionalCertArns
+      });
+    }
   }
 
   /**
@@ -249,7 +269,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
-    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
+    connectable.connections.allowFrom(this.loadBalancer, portRange, 'Load balancer to target');
   }
 
   /**

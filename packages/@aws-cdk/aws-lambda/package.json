@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.Lambda",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-lambda",
@@ -69,9 +70,8 @@
     "@aws-cdk/assert": "^1.8.0",
     "@types/aws-lambda": "^8.10.31",
     "@types/lodash": "^4.14.138",
-    "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.13",
-    "aws-sdk": "^2.528.0",
+    "aws-sdk": "^2.531.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
@@ -107,7 +107,7 @@
     "@aws-cdk/cx-api": "^1.8.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
