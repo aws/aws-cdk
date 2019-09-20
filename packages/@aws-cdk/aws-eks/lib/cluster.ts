@@ -775,9 +775,9 @@ class ImportedCluster extends Resource implements ICluster {
  */
 export interface EksOptimizedImageProps {
   /**
-   * What instance type to retrieve the image for (normal or GPU-optimized)
+   * What instance type to retrieve the image for (standard or GPU-optimized)
    *
-   * @default Normal
+   * @default NodeType.STANDARD
    */
   readonly nodeType?: NodeType;
 
@@ -807,7 +807,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.NORMAL ? "amazon-linux-2/" : "" )
+      + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
       + ( this.nodeType === NodeType.GPU ? " amazon-linux2-gpu/" : "" )
       + "recommended/image_id";
   }
@@ -827,13 +827,13 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 const LATEST_KUBERNETES_VERSION = '1.13';
 
 /**
- * Whether the worker nodes should support GPU or just normal instances
+ * Whether the worker nodes should support GPU or just standard instances
  */
 export enum NodeType {
   /**
-   * Normal instances
+   * Standard instances
    */
-  NORMAL = 'Normal',
+  STANDARD = 'Standard',
 
   /**
    * GPU instances
@@ -842,5 +842,5 @@ export enum NodeType {
 }
 
 export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.NORMAL;
+  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.STANDARD;
 }
