@@ -215,10 +215,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       port: 80
     };
 
-    if (props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS && props.certificate !== undefined) {
+    if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    const protocol = props.certificate ? ApplicationProtocol.HTTPS : (props.protocol ? props.protocol : ApplicationProtocol.HTTP);
+    const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     this.listener = this.loadBalancer.addListener('PublicListener', {
       protocol,
