@@ -771,9 +771,9 @@ class ImportedCluster extends Resource implements ICluster {
 }
 
 /**
- * Properties for EksOptimizedAmi
+ * Properties for EksOptimizedImage
  */
-export interface EksOptimizedAmiProps {
+export interface EksOptimizedImageProps {
   /**
    * What instance type to retrieve the image for (normal or GPU-optimized)
    *
@@ -801,7 +801,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
-  public constructor(props: EksOptimizedAmiProps) {
+  public constructor(props: EksOptimizedImageProps) {
     this.nodeType = props && props.nodeType;
     this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
 
