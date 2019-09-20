@@ -784,7 +784,7 @@ export interface EksOptimizedImageProps {
   /**
    * The Kubernetes version to use
    *
-   * @default The latest version
+   * @default - The latest version
    */
   readonly kubernetesVersion?: string;
 }
