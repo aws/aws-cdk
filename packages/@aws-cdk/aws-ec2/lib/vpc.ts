@@ -805,7 +805,7 @@ export class Vpc extends VpcBase {
       provider: cxapi.VPC_PROVIDER,
       props: { filter } as cxapi.VpcContextQuery,
       dummyValue: undefined
-    });
+    }).value;
 
     return new ImportedVpc(scope, id, attributes || DUMMY_VPC_PROPS, attributes === undefined);
 

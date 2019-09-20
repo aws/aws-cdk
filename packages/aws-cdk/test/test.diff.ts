@@ -10,14 +10,16 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
 import { testAssembly } from './util';
 
-const FIXED_RESULT = testAssembly(    {
-  stackName: 'A',
-  template: { resource: 'A' },
-},
-{
-  stackName: 'B',
-  depends: [ 'A' ],
-  template: { resource: 'B' },
+const FIXED_RESULT = testAssembly({
+  stacks: [{
+    stackName: 'A',
+    template: { resource: 'A' },
+  },
+  {
+    stackName: 'B',
+    depends: ['A'],
+    template: { resource: 'B' },
+  }]
 });
 
 const appStacks = new AppStacks({

@@ -87,7 +87,7 @@ export class HostedZone extends Resource implements IHostedZone {
       provider: cxapi.HOSTED_ZONE_PROVIDER,
       dummyValue: DEFAULT_HOSTED_ZONE,
       props: query
-    });
+    }).value;
 
     // CDK handles the '.' at the end, so remove it here
     if (response.Name.endsWith('.')) {

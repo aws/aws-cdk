@@ -200,18 +200,32 @@ export class AppStacks {
     const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
+    let previouslyMissingKeys: Set<string> | undefined;
     while (true) {
       const assembly = await this.props.synthesizer(this.props.aws, this.props.configuration);
 
       if (assembly.manifest.missing) {
-        debug(`Some context information is missing. Fetching...`);
+        const missingKeys = missingContextKeys(assembly.manifest.missing);
 
-        await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
+        let tryLookup = true;
+        if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
+          debug(`Not making progress trying to resolve environmental context. Giving up.`);
+          tryLookup = false;
+        }
 
-        // Cache the new context to disk
-        await this.props.configuration.saveContext();
+        previouslyMissingKeys = missingKeys;
 
-        continue;
+        if (tryLookup) {
+          debug(`Some context information is missing. Fetching...`);
+
+          await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
+
+          // Cache the new context to disk
+          await this.props.configuration.saveContext();
+
+          // Execute again
+          continue;
+        }
       }
 
       if (trackVersions && assembly.runtime) {
@@ -412,6 +426,21 @@ export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+/**
+ * Return all keys of misisng context items
+ */
+function missingContextKeys(missing?: cxapi.MissingContext[]): Set<string> {
+  return new Set((missing || []).map(m => m.key));
+}
+
+function setsEqual<A>(a: Set<A>, b: Set<A>) {
+  if (a.size !== b.size) { return false; }
+  for (const x of a) {
+    if (!b.has(x)) { return false; }
+  }
+  return true;
 }
 
 function _makeCdkMetadataAvailableCondition() {

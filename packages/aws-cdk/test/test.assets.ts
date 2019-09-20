@@ -7,25 +7,27 @@ export = {
   async 'prepare assets'(test: Test) {
     // GIVEN
     const assembly = testAssembly({
-      stackName: 'SomeStack',
-      template: {
-        Resources: {
-          SomeResource: {
-            Type: 'AWS::Something::Something'
+      stacks: [{
+        stackName: 'SomeStack',
+        template: {
+          Resources: {
+            SomeResource: {
+              Type: 'AWS::Something::Something'
+            }
           }
-        }
-      },
-      assets: [
-        {
-          sourceHash: 'source-hash',
-          path: __filename,
-          id: 'SomeStackSomeResource4567',
-          packaging: 'file',
-          s3BucketParameter: 'BucketParameter',
-          s3KeyParameter: 'KeyParameter',
-          artifactHashParameter: 'ArtifactHashParameter',
-        }
-      ]
+        },
+        assets: [
+          {
+            sourceHash: 'source-hash',
+            path: __filename,
+            id: 'SomeStackSomeResource4567',
+            packaging: 'file',
+            s3BucketParameter: 'BucketParameter',
+            s3KeyParameter: 'KeyParameter',
+            artifactHashParameter: 'ArtifactHashParameter',
+          }
+        ]
+      }]
     });
 
     const toolkit = new FakeToolkit();

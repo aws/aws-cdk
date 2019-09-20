@@ -36,3 +36,8 @@ export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
  * Omits stack traces from construct metadata entries.
  */
 export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
+
+/**
+ * If a context value is an object with this key, it indicates an error
+ */
+export const PROVIDER_ERROR_KEY = '$providerError';
