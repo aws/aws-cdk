@@ -107,9 +107,9 @@ export interface StringParameterProps extends ParameterOptions {
   /**
    * The type of the string parameter
    *
-   * @default "String"
+   * @default ParameterType.STRING
    */
-  readonly type?: string;
+  readonly type?: ParameterType;
 }
 
 /**
@@ -152,9 +152,12 @@ abstract class ParameterBase extends Resource implements IParameter {
   }
 }
 
-const STRING_PARAM_TYPE = 'String';
-const SECURE_STRING_PARAM_TYPE = 'SecureString';
-const STRINGLIST_PARAM_TYPE = 'StringList';
+export enum ParameterType {
+  STRING = 'String',
+  SECURE_STRING = 'SecureString',
+  STRING_LIST = 'StringList',
+  AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
+}
 
 export interface StringParameterAttributes {
   /**
@@ -172,9 +175,9 @@ export interface StringParameterAttributes {
   /**
    * The type of the string parameter
    *
-   * @default "String"
+   * @default ParameterType.STRING
    */
-  readonly type?: string;
+  readonly type?: ParameterType;
 }
 
 export interface SecureStringParameterAttributes {
@@ -210,7 +213,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       throw new Error(`parameterName cannot be an empty string`);
     }
 
-    const type = attrs.type || STRING_PARAM_TYPE;
+    const type = attrs.type || ParameterType.STRING;
 
     const stringValue = attrs.version
       ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
@@ -235,7 +238,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
-      public readonly parameterType = SECURE_STRING_PARAM_TYPE;
+      public readonly parameterType = ParameterType.SECURE_STRING;
       public readonly stringValue = stringValue;
     }
 
@@ -266,7 +269,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
   public static valueForStringParameter(scope: Construct, parameterName: string, version?: number): string {
-    return StringParameter.valueForTypedStringParameter(scope, parameterName, STRING_PARAM_TYPE, version);
+    return StringParameter.valueForTypedStringParameter(scope, parameterName, ParameterType.STRING, version);
   }
 
   /**
@@ -276,7 +279,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param type The type of the SSM parameter.
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
-  public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = STRING_PARAM_TYPE, version?: number): string {
+  public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = ParameterType.STRING, version?: number): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
@@ -319,7 +322,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
-      type: props.type || STRING_PARAM_TYPE,
+      type: props.type || ParameterType.STRING,
       value: props.stringValue,
     });
 
@@ -344,7 +347,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     class Import extends ParameterBase {
       public readonly parameterName = stringListParameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
-      public readonly parameterType = STRINGLIST_PARAM_TYPE;
+      public readonly parameterType = ParameterType.STRING_LIST;
       public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.SSM, stringListParameterName).toString());
     }
 
@@ -373,7 +376,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
-      type: STRINGLIST_PARAM_TYPE,
+      type: ParameterType.STRING_LIST,
       value: props.stringListValue.join(','),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);
