@@ -87,13 +87,13 @@ export = {
     };
 
     try {
-      await prepareContainerAsset('.', asset, toolkit, false);
+      await prepareContainerAsset('.', asset, toolkit, false, false);
     } catch (e) {
       if (!/STOPTEST/.test(e.toString())) { throw e; }
     }
 
     // THEN
-    const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--target', 'a-target', '--tag', `uri:latest`, '/foo'];
+    const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', `uri:latest`, '/foo', '--target', 'a-target'];
     test.ok(shellStub.calledWith(command));
 
     prepareEcrRepositoryStub.restore();

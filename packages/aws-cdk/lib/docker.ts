@@ -62,15 +62,17 @@ export async function prepareContainerAsset(assemblyDir: string,
     }
 
     const buildArgs = ([] as string[]).concat(...Object.entries(asset.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`]));
-    if (asset.target) {
-      buildArgs.concat(['--target', `${asset.target}`]);
-    }
+
     const baseCommand = [
       'docker', 'build',
       ...buildArgs,
       '--tag', latest,
       contextPath
     ];
+
+    if (asset.target) {
+      baseCommand.push('--target', asset.target);
+    }
 
     const command = ci
       ? [...baseCommand, '--cache-from', latest] // This does not fail if latest is not available
