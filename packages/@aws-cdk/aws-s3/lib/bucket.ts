@@ -883,7 +883,7 @@ export class Bucket extends BucketBase {
       ? false
       : attrs.bucketWebsiteNewUrlFormat;
 
-    const websiteUrl = newUrlFormat
+    const websiteDomain = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`
       : `${bucketName}.s3-website-${region}.${urlSuffix}`;
 
@@ -891,8 +891,8 @@ export class Bucket extends BucketBase {
       public readonly bucketName = bucketName!;
       public readonly bucketArn = parseBucketArn(scope, attrs);
       public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
-      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || websiteUrl;
-      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl || websiteUrl));
+      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
+      public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
