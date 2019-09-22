@@ -140,7 +140,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
   }
 
-  public addProxy(options?: ResourceOptions): ProxyResource {
+  public addProxy(options?: ProxyResourceOptions): ProxyResource {
     return new ProxyResource(this, '{proxy+}', { parent: this, ...options });
   }
 
