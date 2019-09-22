@@ -10,23 +10,32 @@ pull_request_rules:
         method: squash
         strict_method: merge
       delete_head_branch: {}
-      dismiss_reviews: {}
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - -title~=(WIP|wip)
-      - -label~=^(blocked|do-not-merge)
+      - -label~=(blocked|do-not-merge)
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
-      - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
+      - status-success~=AWS CodeBuild us-east-1
       - status-success=Semantic Pull Request
+  - name: automatically merge dependabot
+    actions:
+      comment:
+        message: Thanks for keeping us safe, @dependabot! ❤️
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - author~=dependabot(-preview)?\[bot\]
+      - status-success~=AWS CodeBuild us-east-1
   - name: comment checklist
     actions:
-      label:
-        add: [ automerge-enabled ]
       comment:
         message: |
           Thanks so much for taking the time to contribute to the AWS CDK ❤️
@@ -53,22 +62,24 @@ pull_request_rules:
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
-      - -label~=^(automerge-enabled)
       - base=master
-  - name: comment on CI fail
-    actions:
-      comment:
-        message: Continuous integration build failed
-    conditions:
-      - author!=dependabot[bot]
-      - author!=dependabot-preview[bot]
-      - status-failure=AWS CodeBuild us-east-1 (aws-cdk-build)
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
+        # List out all the people whose work is okay to provisionally approve
+      - author!=eladb
+      - author!=RomainMuller
+      - author!=garnaat
+      - author!=nija-at
+      - author!=shivlaks
+      - author!=skinny85
+      - author!=rix0rrr
+      - author!=NGL321
+      - author!=Jerry-AWS
+      - author!=SomayaB
       - base=master
   - name: if fails conventional commits
     actions:

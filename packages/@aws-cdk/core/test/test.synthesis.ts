@@ -78,7 +78,7 @@ export = {
     ]);
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: '0.36.0',
+      version: cxapi.CLOUD_ASSEMBLY_VERSION,
       artifacts: {
         'my-random-construct': {
           type: 'aws:cloudformation:stack',

@@ -41,7 +41,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 ## Getting Started
 
-For day-to-day development and normal contributions, [Node.js 8.11](https://nodejs.org/download/release/v8.11.0/)
+For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
 should be sufficient.
 
 ```console
@@ -53,7 +53,7 @@ $ ./build.sh
 If you wish to produce language bindings through `pack.sh`, you will need the following toolchains
 installed, or use the Docker workflow.
 
- - [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
+ - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
  - [.NET Core 2.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)

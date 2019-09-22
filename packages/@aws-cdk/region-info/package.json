@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.RegionInfo",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.region-info",
@@ -85,7 +86,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "experimental"
 }

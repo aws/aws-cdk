@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "CDK Constructs for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.Lambda",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-lambda",
@@ -66,48 +67,47 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
+    "@aws-cdk/assert": "^1.9.0",
     "@types/aws-lambda": "^8.10.31",
     "@types/lodash": "^4.14.138",
-    "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.13",
-    "aws-sdk": "^2.526.0",
+    "aws-sdk": "^2.531.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "lodash": "^4.17.15",
-    "nock": "^10.0.6",
+    "nock": "^11.3.4",
     "pkglint": "file:../../../tools/pkglint",
     "sinon": "^7.4.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.8.0",
-    "@aws-cdk/aws-ec2": "^1.8.0",
-    "@aws-cdk/aws-events": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-logs": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/aws-s3-assets": "^1.8.0",
-    "@aws-cdk/aws-sqs": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/cx-api": "^1.8.0"
+    "@aws-cdk/aws-cloudwatch": "^1.9.0",
+    "@aws-cdk/aws-ec2": "^1.9.0",
+    "@aws-cdk/aws-events": "^1.9.0",
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-logs": "^1.9.0",
+    "@aws-cdk/aws-s3": "^1.9.0",
+    "@aws-cdk/aws-s3-assets": "^1.9.0",
+    "@aws-cdk/aws-sqs": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0",
+    "@aws-cdk/cx-api": "^1.9.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.8.0",
-    "@aws-cdk/aws-ec2": "^1.8.0",
-    "@aws-cdk/aws-events": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-logs": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/aws-s3-assets": "^1.8.0",
-    "@aws-cdk/aws-sqs": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/cx-api": "^1.8.0"
+    "@aws-cdk/aws-cloudwatch": "^1.9.0",
+    "@aws-cdk/aws-ec2": "^1.9.0",
+    "@aws-cdk/aws-events": "^1.9.0",
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-logs": "^1.9.0",
+    "@aws-cdk/aws-s3": "^1.9.0",
+    "@aws-cdk/aws-s3-assets": "^1.9.0",
+    "@aws-cdk/aws-sqs": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0",
+    "@aws-cdk/cx-api": "^1.9.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [

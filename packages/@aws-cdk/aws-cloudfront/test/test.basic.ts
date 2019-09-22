@@ -53,7 +53,8 @@ export = {
                     "QueryString": false
                   },
                   "TargetOriginId": "origin1",
-                  "ViewerProtocolPolicy": "redirect-to-https"
+                  "ViewerProtocolPolicy": "redirect-to-https",
+                  "Compress": true
                 },
                 "DefaultRootObject": "index.html",
                 "Enabled": true,
@@ -156,7 +157,8 @@ export = {
                 "ForwardedValues": {
                   "QueryString": false,
                   "Cookies": { "Forward": "none" }
-                }
+                },
+                "Compress": true
               },
               "Enabled": true,
               "IPV6Enabled": true,
@@ -234,7 +236,8 @@ export = {
                 },
                 "TrustedSigners": [
                   "1234"
-                ]
+                ],
+                "Compress": true
               },
               "Enabled": true,
               "IPV6Enabled": true,
@@ -309,7 +312,84 @@ export = {
                 "ForwardedValues": {
                   "QueryString": false,
                   "Cookies": { "Forward": "none" }
+                },
+                "Compress": true
+              },
+              "Enabled": true,
+              "IPV6Enabled": true,
+              "HttpVersion": "http2",
+            }
+          }
+        }
+      }
+    });
+    test.done();
+  },
+
+  'distribution with disabled compression'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              compress: false
+            }
+          ]
+        }
+      ]
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "Bucket83908E77": {
+          "Type": "AWS::S3::Bucket",
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        },
+        "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
+          "Type": "AWS::CloudFront::Distribution",
+          "Properties": {
+            "DistributionConfig": {
+              "DefaultRootObject": "index.html",
+              "Origins": [
+                {
+                  "DomainName": {
+                    "Fn::GetAtt": [
+                      "Bucket83908E77",
+                      "RegionalDomainName"
+                    ]
+                  },
+                  "Id": "origin1",
+                  "S3OriginConfig": {}
                 }
+              ],
+              "ViewerCertificate": {
+                "CloudFrontDefaultCertificate": true
+              },
+              "PriceClass": "PriceClass_100",
+              "DefaultCacheBehavior": {
+                "AllowedMethods": [
+                  "GET",
+                  "HEAD"
+                ],
+                "CachedMethods": [
+                  "GET",
+                  "HEAD"
+                ],
+                "TargetOriginId": "origin1",
+                "ViewerProtocolPolicy": "redirect-to-https",
+                "ForwardedValues": {
+                  "QueryString": false,
+                  "Cookies": { "Forward": "none" }
+                },
+                "Compress": false
               },
               "Enabled": true,
               "IPV6Enabled": true,
