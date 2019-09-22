@@ -29,7 +29,7 @@ labels: feature-request, status/needs-triage
 ### Other
 
 <!-- 
-e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, 
+e.g. detailed explanation, stacktraces, related issues, suggestions on how to fix, 
 links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc
 -->
 
