@@ -62,24 +62,14 @@ test('use S3 bucket website as record target (fromBucketName)', () => {
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: {
-        "Fn::Select": [
-          2,
-          {
-            "Fn::Split": [
-              "/",
-              {
-                "Fn::Join": [
-                  "",
-                  [
-                    "test.s3-website-us-east-1.",
-                    {
-                      Ref: "AWS::URLSuffix"
-                    }
-                  ]
-                ]
-              }
-            ]
-          }
+        "Fn::Join": [
+          "",
+          [
+            "test.s3-website-us-east-1.",
+            {
+              Ref: "AWS::URLSuffix"
+            }
+          ]
         ]
       },
       HostedZoneId: "Z3AQBSTGFYJSTF"
