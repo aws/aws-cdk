@@ -89,6 +89,7 @@ export class App extends Construct {
   private readonly runtimeInfo: boolean;
   private readonly outdir?: string;
   private readonly constructTreeMetadata: boolean;
+  private _prepared?: boolean;
 
   /**
    * Initializes a CDK application.
@@ -120,6 +121,8 @@ export class App extends Construct {
       // doesn't bite manual calling of the function.
       process.once('beforeExit', () => this.synth());
     }
+
+    this._prepared = false;
   }
 
   /**
@@ -145,10 +148,13 @@ export class App extends Construct {
   }
 
   protected prepare(): void {
-    // Add internal constructs here
+    if (this._prepared) {
+      return;
+    }
     if (this.constructTreeMetadata) {
       new ConstructTreeMetadata(this);
     }
+    this._prepared = true;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {
