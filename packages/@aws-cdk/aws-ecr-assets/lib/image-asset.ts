@@ -34,6 +34,13 @@ export interface DockerImageAssetProps extends assets.CopyOptions {
    * @default - no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   *
+   * @default - no target
+   */
+  readonly target?: string;
 }
 
 /**
@@ -95,7 +102,8 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       sourceHash: this.sourceHash,
       imageNameParameter: imageNameParameter.logicalId,
       repositoryName: props.repositoryName,
-      buildArgs: props.buildArgs
+      buildArgs: props.buildArgs,
+      target: props.target
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);

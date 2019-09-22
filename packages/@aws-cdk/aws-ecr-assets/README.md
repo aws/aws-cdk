@@ -50,6 +50,15 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 });
 ```
 
+You can optionally pass a target to the `docker build` command by specifying
+the `target` property:
+
+```typescript
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  target: 'a-target'
+})
+```
 ### Pull Permissions
 
 Depending on the consumer of your image asset, you will need to make sure

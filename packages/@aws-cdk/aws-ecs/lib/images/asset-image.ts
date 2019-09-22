@@ -13,6 +13,13 @@ export interface AssetImageProps {
    * @default none
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   *
+   * @default none
+   */
+  readonly target?: string;
 }
 
 /**
@@ -32,6 +39,7 @@ export class AssetImage extends ContainerImage {
     const asset = new DockerImageAsset(scope, 'AssetImage', {
       directory: this.directory,
       buildArgs: this.props.buildArgs,
+      target: this.props.target,
     });
     asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 
