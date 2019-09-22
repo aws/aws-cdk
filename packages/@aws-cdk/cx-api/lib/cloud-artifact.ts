@@ -1,5 +1,4 @@
 import { CloudAssembly } from './cloud-assembly';
-import { Environment, EnvironmentUtils } from './environment';
 import {
   ERROR_METADATA_KEY,
   INFO_METADATA_KEY,
@@ -103,11 +102,6 @@ export class CloudArtifact {
   public readonly messages: SynthesisMessage[];
 
   /**
-   * The environment into which to deploy this artifact.
-   */
-  public readonly environment?: Environment;
-
-  /**
    * IDs of all dependencies. Used when topologically sorting the artifacts within the cloud assembly.
    * @internal
    */
@@ -120,7 +114,6 @@ export class CloudArtifact {
 
   protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: ArtifactManifest) {
     this.manifest = manifest;
-    this.environment = manifest.environment === undefined ? undefined : EnvironmentUtils.parse(manifest.environment);
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
   }

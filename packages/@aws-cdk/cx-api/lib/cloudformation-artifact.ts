@@ -3,6 +3,7 @@ import path = require('path');
 import { ASSET_METADATA, AssetMetadataEntry } from './assets';
 import { ArtifactManifest, AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
+import { Environment, EnvironmentUtils } from './environment';
 
 export class CloudFormationStackArtifact extends CloudArtifact {
   /**
@@ -35,6 +36,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly name: string;
 
+  /**
+   * The environment into which to deploy this artifact.
+   */
+  public readonly environment: Environment;
+
   constructor(assembly: CloudAssembly, name: string, artifact: ArtifactManifest) {
     super(assembly, name, artifact);
 
@@ -44,6 +50,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     if (!artifact.environment) {
       throw new Error('Invalid CloudFormation stack artifact. Missing environment');
     }
+    this.environment = EnvironmentUtils.parse(artifact.environment);
     const properties = (this.manifest.properties || {}) as AwsCloudFormationStackProperties;
     this.templateFile = properties.templateFile;
     this.parameters = properties.parameters || { };
