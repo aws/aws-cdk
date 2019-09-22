@@ -21,7 +21,7 @@ describe('DNS Validated Certificate Handler', () => {
 
   beforeEach(() => {
     handler.withDefaultResponseURL(ResponseURL);
-    handler.withWaiter(function () {
+    handler.withWaiter(function() {
       // Mock waiter is merely a self-fulfilling promise
       return {
         promise: () => {
@@ -32,7 +32,7 @@ describe('DNS Validated Certificate Handler', () => {
       };
     });
     handler.withSleep(spySleep);
-    console.log = function () { };
+    console.log = function() { };
   });
   afterEach(() => {
     // Restore waiters and logger
@@ -75,13 +75,13 @@ describe('DNS Validated Certificate Handler', () => {
 
     const describeCertificateFake = sinon.stub();
     describeCertificateFake.onFirstCall().resolves({
-      CertificateArn: testCertificateArn,
       Certificate: {
+        CertificateArn: testCertificateArn
       }
     });
     describeCertificateFake.resolves({
-      CertificateArn: testCertificateArn,
       Certificate: {
+        CertificateArn: testCertificateArn,
         DomainValidationOptions: [{
           ValidationStatus: 'SUCCESS',
           ResourceRecord: {
@@ -144,12 +144,12 @@ describe('DNS Validated Certificate Handler', () => {
 
   test('Fails after at most 10 attempts if no DomainValidationOptions are available', () => {
     const requestCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
+      CertificateArn: testCertificateArn
     });
 
     const describeCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
       Certificate: {
+        CertificateArn: testCertificateArn
       }
     });
 
@@ -188,8 +188,8 @@ describe('DNS Validated Certificate Handler', () => {
     });
 
     const describeCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
       Certificate: {
+        CertificateArn: testCertificateArn
       }
     });
 
@@ -229,8 +229,8 @@ describe('DNS Validated Certificate Handler', () => {
     });
 
     const describeCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn,
       Certificate: {
+        CertificateArn: testCertificateArn
       }
     });
 
@@ -260,12 +260,19 @@ describe('DNS Validated Certificate Handler', () => {
         expect(request.isDone()).toBe(true);
         expect(spySleep.callCount).toBeLessThan(10);
         const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
-        expect(totalSleep).toBeLessThan(360 *1000);
+        expect(totalSleep).toBeLessThan(360 * 1000);
       });
   });
 
 
   test('Deletes a certificate if RequestType is Delete', () => {
+    const describeCertificateFake = sinon.fake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+      }
+    });
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
     const deleteCertificateFake = sinon.fake.resolves({});
     AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
 
@@ -283,6 +290,9 @@ describe('DNS Validated Certificate Handler', () => {
         }
       })
       .expectResolve(() => {
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
         sinon.assert.calledWith(deleteCertificateFake, sinon.match({
           CertificateArn: testCertificateArn
         }));
@@ -293,6 +303,10 @@ describe('DNS Validated Certificate Handler', () => {
   test('Delete operation is idempotent', () => {
     const error = new Error();
     error.name = 'ResourceNotFoundException';
+
+    const describeCertificateFake = sinon.fake.rejects(error);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
     const deleteCertificateFake = sinon.fake.rejects(error);
     AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
 
@@ -310,6 +324,55 @@ describe('DNS Validated Certificate Handler', () => {
         }
       })
       .expectResolve(() => {
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        sinon.assert.neverCalledWith(deleteCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Delete operation succeeds if certificate becomes not-in-use', () => {
+    const usedByArn = 'arn:aws:cloudfront::123456789012:distribution/d111111abcdef8';
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        InUseBy: [usedByArn],
+      }
+    });
+    describeCertificateFake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        InUseBy: [],
+      }
+    });
+
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const deleteCertificateFake = sinon.fake.resolves({});
+    AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Delete',
+        RequestId: testRequestId,
+        PhysicalResourceId: testCertificateArn,
+        ResourceProperties: {
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
         sinon.assert.calledWith(deleteCertificateFake, sinon.match({
           CertificateArn: testCertificateArn
         }));
@@ -317,7 +380,91 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
-  test('Delete operation fails if error is encountered', () => {
+  test('Delete operation fails within 360s and 10 attempts if certificate is in-use', () => {
+    const usedByArn = 'arn:aws:cloudfront::123456789012:distribution/d111111abcdef8';
+
+    const describeCertificateFake = sinon.fake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        InUseBy: [usedByArn],
+      }
+    });
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const error = new Error();
+    error.name = 'ResourceInUseException';
+    const deleteCertificateFake = sinon.fake.rejects(error);
+    AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'FAILED';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Delete',
+        RequestId: testRequestId,
+        PhysicalResourceId: testCertificateArn,
+        ResourceProperties: {
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        sinon.assert.neverCalledWith(deleteCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
+        expect(totalSleep).toBeLessThan(360 * 1000);
+        expect(spySleep.callCount).toBeLessThan(10);
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Delete operation fails if some other error is encountered during describe', () => {
+    const error = new Error();
+    error.name = 'SomeOtherException';
+
+    const describeCertificateFake = sinon.fake.rejects(error);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const deleteCertificateFake = sinon.fake.resolves({});
+    AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'FAILED';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Delete',
+        RequestId: testRequestId,
+        PhysicalResourceId: testCertificateArn,
+        ResourceProperties: {
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        sinon.assert.neverCalledWith(deleteCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Delete operation fails if some other error is encountered during delete', () => {
+    const describeCertificateFake = sinon.fake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn
+      }
+    });
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
     const error = new Error();
     error.name = 'SomeOtherException';
     const deleteCertificateFake = sinon.fake.rejects(error);
@@ -337,6 +484,9 @@ describe('DNS Validated Certificate Handler', () => {
         }
       })
       .expectResolve(() => {
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
         sinon.assert.calledWith(deleteCertificateFake, sinon.match({
           CertificateArn: testCertificateArn
         }));
