@@ -82,8 +82,17 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
 
+    let exclude: string[] = ['.dockerignore'];
+
+    const ignore = path.join(dir, '.dockerignore');
+
+    if (fs.existsSync(ignore)) {
+      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
+    }
+
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
+      exclude,
       sourcePath: dir
     });
 
@@ -126,7 +135,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
 }
 
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {
-  for (const [ key, value ] of Object.entries(buildArgs || {})) {
+  for (const [key, value] of Object.entries(buildArgs || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
       throw new Error(`Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment`);
     }
