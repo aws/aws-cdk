@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "case": "^1.6.2",
-    "colors": "^1.3.3",
+    "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
     "semver": "^6.3.0",
     "yargs": "^14.0.0"
