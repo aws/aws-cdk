@@ -74,7 +74,7 @@ export interface IResource extends IResourceBase {
    * Adds a greedy proxy resource ("{proxy+}") and an ANY method to this route.
    * @param options Default integration and method options.
    */
-  addProxy(options?: ResourceOptions): ProxyResource;
+  addProxy(options?: ProxyResourceOptions): ProxyResource;
 
   /**
    * Defines a new method for this resource.
@@ -235,13 +235,7 @@ export class Resource extends ResourceBase {
   }
 }
 
-export interface ProxyResourceProps extends ResourceOptions {
-  /**
-   * The parent resource of this resource. You can either pass another
-   * `Resource` object or a `RestApi` object here.
-   */
-  readonly parent: IResource;
-
+export interface ProxyResourceOptions extends ResourceOptions {
   /**
    * Adds an "ANY" method to this resource. If set to `false`, you will have to explicitly
    * add methods to this resource after it's created.
@@ -249,6 +243,14 @@ export interface ProxyResourceProps extends ResourceOptions {
    * @default true
    */
   readonly anyMethod?: boolean;
+}
+
+export interface ProxyResourceProps extends ProxyResourceOptions {
+  /**
+   * The parent resource of this resource. You can either pass another
+   * `Resource` object or a `RestApi` object here.
+   */
+  readonly parent: IResource;
 }
 
 /**
@@ -280,7 +282,7 @@ export class ProxyResource extends Resource {
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.
     if (this.parentResource && this.parentResource.path === '/') {
-      this.parentResource.addMethod(httpMethod);
+      this.parentResource.addMethod(httpMethod, integration, options);
     }
     return super.addMethod(httpMethod, integration, options);
   }
