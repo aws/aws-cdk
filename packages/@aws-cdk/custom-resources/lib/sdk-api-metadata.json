@@ -743,5 +743,26 @@
   },
   "eventbridge": {
     "name": "EventBridge"
+  },
+  "lakeformation": {
+    "name": "LakeFormation"
+  },
+  "forecastservice": {
+    "prefix": "forecast",
+    "name": "ForecastService"
+  },
+  "forecastqueryservice": {
+    "prefix": "forecastquery",
+    "name": "ForecastQueryService"
+  },
+  "qldb": {
+    "name": "QLDB"
+  },
+  "qldbsession": {
+    "prefix": "qldb-session",
+    "name": "QLDBSession"
+  },
+  "workmailmessageflow": {
+    "name": "WorkMailMessageFlow"
   }
 }

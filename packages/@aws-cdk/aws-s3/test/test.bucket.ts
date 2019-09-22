@@ -1548,6 +1548,58 @@ export = {
       test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
     },
+    'exports the WebsiteDomain'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index.html'
+      });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), {
+        'Fn::Select': [
+          2,
+          {
+            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ]
+          }
+        ]
+      });
+      test.done();
+    },
+    'exports the WebsiteURL for imported buckets'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Website', 'my-test-bucket');
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), {
+        'Fn::Join': [
+          '',
+          [
+            'http://my-test-bucket.s3-website-',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' }
+          ]
+        ]
+      });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), {
+        'Fn::Join': [
+          '',
+          [
+            'my-test-bucket.s3-website-',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' }
+          ]
+        ]
+      });
+      test.done();
+    },
+    'exports the WebsiteURL for imported buckets with url'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'Website', {
+        bucketName: 'my-test-bucket',
+        bucketWebsiteUrl: 'http://my-test-bucket.my-test.suffix',
+      });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), 'http://my-test-bucket.my-test.suffix');
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), 'my-test-bucket.my-test.suffix');
+      test.done();
+    },
     'adds RedirectAllRequestsTo property'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {

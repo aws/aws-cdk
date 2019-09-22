@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "1.4.0",
+  "version": "1.9.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -19,7 +19,8 @@
         "packageId": "Amazon.CDK.AppDelivery",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.app-delivery",
@@ -40,21 +41,21 @@
     "build+test": "npm run build && npm test"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.4.0",
-    "@aws-cdk/aws-codebuild": "^1.4.0",
-    "@aws-cdk/aws-codepipeline": "^1.4.0",
-    "@aws-cdk/aws-codepipeline-actions": "^1.4.0",
-    "@aws-cdk/aws-events": "^1.4.0",
-    "@aws-cdk/aws-iam": "^1.4.0",
-    "@aws-cdk/core": "^1.4.0",
-    "@aws-cdk/cx-api": "^1.4.0"
+    "@aws-cdk/aws-cloudformation": "^1.9.0",
+    "@aws-cdk/aws-codebuild": "^1.9.0",
+    "@aws-cdk/aws-codepipeline": "^1.9.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.9.0",
+    "@aws-cdk/aws-events": "^1.9.0",
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0",
+    "@aws-cdk/cx-api": "^1.9.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.4.0",
-    "@aws-cdk/aws-s3": "^1.4.0",
+    "@aws-cdk/assert": "^1.9.0",
+    "@aws-cdk/aws-s3": "^1.9.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "fast-check": "^1.16.0",
+    "fast-check": "^1.16.2",
     "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {
@@ -74,17 +75,17 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.4.0",
-    "@aws-cdk/aws-codebuild": "^1.4.0",
-    "@aws-cdk/aws-codepipeline": "^1.4.0",
-    "@aws-cdk/aws-codepipeline-actions": "^1.4.0",
-    "@aws-cdk/aws-events": "^1.4.0",
-    "@aws-cdk/aws-iam": "^1.4.0",
-    "@aws-cdk/core": "^1.4.0",
-    "@aws-cdk/cx-api": "^1.4.0"
+    "@aws-cdk/aws-cloudformation": "^1.9.0",
+    "@aws-cdk/aws-codebuild": "^1.9.0",
+    "@aws-cdk/aws-codepipeline": "^1.9.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.9.0",
+    "@aws-cdk/aws-events": "^1.9.0",
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0",
+    "@aws-cdk/cx-api": "^1.9.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "experimental"
 }

@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -60,7 +50,7 @@
         "HandlerServiceRoleFCDC14AE"
       ]
     },
-    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANY133739C8": {
+    "apiANYApiPermissionawscdkapigwaliasintegapiF4DF08ACANYBCED9DDA": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -101,7 +91,7 @@
         }
       }
     },
-    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANY872335B7": {
+    "apiANYApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYC10548C8": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -138,7 +128,7 @@
         }
       }
     },
-    "HandlerApiPermissionawscdkapigwaliasintegapiF4DF08ACANYproxyD4D13682": {
+    "apiproxyANYApiPermissionawscdkapigwaliasintegapiF4DF08ACANYproxy80933581": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -179,7 +169,7 @@
         }
       }
     },
-    "HandlerApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYproxyFF16208A": {
+    "apiproxyANYApiPermissionTestawscdkapigwaliasintegapiF4DF08ACANYproxyCF8E3D8C": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -222,7 +212,7 @@
         "Name": "api"
       }
     },
-    "apiDeployment149F12949ab8cbc5717926c7a1a01815778330c4": {
+    "apiDeployment149F1294105e69daf383d35e4d5131c97d37f9f8": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -243,7 +233,7 @@
           "Ref": "apiC8550315"
         },
         "DeploymentId": {
-          "Ref": "apiDeployment149F12949ab8cbc5717926c7a1a01815778330c4"
+          "Ref": "apiDeployment149F1294105e69daf383d35e4d5131c97d37f9f8"
         },
         "StageName": "prod"
       }
@@ -257,17 +247,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "apigateway.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "apigateway.amazonaws.com"
               }
             }
           ],

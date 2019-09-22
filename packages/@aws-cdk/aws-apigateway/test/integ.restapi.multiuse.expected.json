@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -60,7 +50,7 @@
         "HelloServiceRole1E55EA16"
       ]
     },
-    "HelloApiPermissionrestapimultiuseexamplehelloapi9FD0148DGEThello305E0522": {
+    "helloapihelloGETApiPermissionrestapimultiuseexamplehelloapi9FD0148DGEThello2FD34BC2": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -101,7 +91,7 @@
         }
       }
     },
-    "HelloApiPermissionTestrestapimultiuseexamplehelloapi9FD0148DGEThello8476E396": {
+    "helloapihelloGETApiPermissionTestrestapimultiuseexamplehelloapi9FD0148DGEThelloA58B2FAE": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -138,7 +128,7 @@
         }
       }
     },
-    "HelloApiPermissionrestapimultiuseexamplesecondapi5CB05B89GEThello268B558F": {
+    "secondapihelloGETApiPermissionrestapimultiuseexamplesecondapi5CB05B89GEThello2D6C1879": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -179,7 +169,7 @@
         }
       }
     },
-    "HelloApiPermissionTestrestapimultiuseexamplesecondapi5CB05B89GEThelloFF28C5F8": {
+    "secondapihelloGETApiPermissionTestrestapimultiuseexamplesecondapi5CB05B89GEThelloB0B3B749": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -222,7 +212,7 @@
         "Name": "hello-api"
       }
     },
-    "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2": {
+    "helloapiDeploymentFA89AEEC331621072ce7985d6b7954c9edc6b823": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -242,7 +232,7 @@
           "Ref": "helloapi4446A35B"
         },
         "DeploymentId": {
-          "Ref": "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2"
+          "Ref": "helloapiDeploymentFA89AEEC331621072ce7985d6b7954c9edc6b823"
         },
         "StageName": "prod"
       }
@@ -256,17 +246,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "apigateway.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "apigateway.amazonaws.com"
               }
             }
           ],
@@ -363,7 +343,7 @@
         "Name": "second-api"
       }
     },
-    "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70": {
+    "secondapiDeployment20F2C700049800d8702d4c66b5ee8e4a9eed7b35": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -383,7 +363,7 @@
           "Ref": "secondapi730EF3C7"
         },
         "DeploymentId": {
-          "Ref": "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70"
+          "Ref": "secondapiDeployment20F2C700049800d8702d4c66b5ee8e4a9eed7b35"
         },
         "StageName": "prod"
       }
@@ -397,17 +377,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "apigateway.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "apigateway.amazonaws.com"
               }
             }
           ],

@@ -227,17 +227,7 @@ test('lambda subscription', () => {
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "lambda.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "lambda.amazonaws.com"
                 }
               }
             ],
@@ -421,17 +411,7 @@ test('multiple subscriptions', () => {
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "lambda.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "lambda.amazonaws.com"
                 }
               }
             ],

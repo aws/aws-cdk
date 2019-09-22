@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -70,6 +69,14 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default false
    */
   readonly daemon?: boolean;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default PropagatedTagSource.SERVICE
+   */
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -84,7 +91,7 @@ export interface IEc2Service extends IService {
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IEc2Service {
 
   /**
    * Imports from the specified service ARN.
@@ -125,8 +132,10 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
-      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
+      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
+      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
+      enableECSManagedTags: props.enableECSManagedTags,
     },
     {
       cluster: props.cluster.clusterName,
@@ -178,26 +187,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     for (const constraint of constraints) {
       this.constraints.push(...constraint.toJson());
     }
-  }
-
-  /**
-   * Registers the service as a target of a Classic Load Balancer (CLB).
-   *
-   * Don't call this. Call `loadBalancer.addTarget()` instead.
-   */
-  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
-    }
-    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
-    }
-
-    this.loadBalancers.push({
-      loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.containerName,
-      containerPort: this.taskDefinition.defaultContainer!.containerPort,
-    });
   }
 
   /**

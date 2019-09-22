@@ -88,13 +88,18 @@ into a different region than your Pipeline is in.
 
 It works like this:
 
-```ts
+```typescript
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   // ...
   crossRegionReplicationBuckets: {
     // note that a physical name of the replication Bucket must be known at synthesis time
-    'us-west-1': s3.Bucket.fromBucketName(this, 'UsWest1ReplicationBucket',
-      'my-us-west-1-replication-bucket'),
+    'us-west-1': s3.Bucket.fromBucketAttributes(this, 'UsWest1ReplicationBucket', {
+      bucketName: 'my-us-west-1-replication-bucket',
+      // optional KMS key
+      encryptionKey: kms.Key.fromKeyArn(this, 'UsWest1ReplicationKey',
+        'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012'
+      ),
+    }),
   },
 });
 
@@ -127,6 +132,53 @@ $ cdk deploy MyMainStack
 
 See [the AWS docs here](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html)
 for more information on cross-region CodePipelines.
+
+#### Creating an encrypted replication bucket
+
+If you're passing a replication bucket created in a different stack,
+like this:
+
+```typescript
+const replicationStack = new Stack(app, 'ReplicationStack', {
+  env: {
+    region: 'us-west-1',
+  },
+});
+const key = new kms.Key(replicationStack, 'ReplicationKey');
+const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
+  // like was said above - replication buckets need a set physical name
+  bucketName: PhysicalName.GENERATE_IF_NEEDED,
+  encryptionKey: key, // does not work!
+});
+
+// later...
+new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+  crossRegionReplicationBuckets: {
+    'us-west-1': replicationBucket,
+  },
+});
+```
+
+When trying to encrypt it
+(and note that if any of the cross-region actions happen to be cross-account as well,
+the bucket *has to* be encrypted - otherwise the pipeline will fail at runtime),
+you cannot use a key directly - KMS keys don't have physical names,
+and so you can't reference them across environments.
+
+In this case, you need to use an alias in place of the key when creating the bucket:
+
+```typescript
+const key = new kms.Key(replicationStack, 'ReplicationKey');
+const alias = new kms.Alias(replicationStack, 'ReplicationAlias', {
+  // aliasName is required
+  aliasName: PhysicalName.GENERATE_IF_NEEDED,
+  targetKey: key,
+});
+const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
+  bucketName: PhysicalName.GENERATE_IF_NEEDED,
+  encryptionKey: alias,
+});
+```
 
 ### Events
 

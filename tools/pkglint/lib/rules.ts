@@ -516,6 +516,20 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
+ * JSII .NET namespace is required and must look sane
+ */
+export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
+  public readonly name = 'jsii/dotnet/icon-url';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const CDK_LOGO_URL = 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png';
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.iconUrl', CDK_LOGO_URL);
+  }
+}
+
+/**
  * Strong-naming all .NET assemblies is required.
  */
 export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
@@ -716,7 +730,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 8.10.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.3.0');
   }
 }
 

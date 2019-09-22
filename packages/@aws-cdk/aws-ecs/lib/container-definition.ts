@@ -233,6 +233,13 @@ export interface ContainerDefinitionOptions {
    * @default - No Linux paramters.
    */
   readonly linuxParameters?: LinuxParameters;
+
+  /**
+   * The number of GPUs assigned to the container.
+   *
+   * @default - No GPUs assigned.
+   */
+  readonly gpuCount?: number;
 }
 
 /**
@@ -323,6 +330,11 @@ export class ContainerDefinition extends cdk.Construct {
    */
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
+    if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
+      if (props.memoryLimitMiB < props.memoryReservationMiB) {
+        throw new Error(`MemoryLimitMiB should not be less than MemoryReservationMiB.`);
+      }
+    }
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
@@ -436,6 +448,22 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
+   * Returns the host port for the requested container port if it exists
+   *
+   * @internal
+   */
+  public _findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
+    for (const portMapping of this.portMappings) {
+      const p = portMapping.protocol || Protocol.TCP;
+      const c = portMapping.containerPort;
+      if (c === containerPort && p === protocol) {
+        return portMapping;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * The inbound rules associated with the security group the task or service will use.
    *
    * This property is only used for tasks that use the awsvpc network mode.
@@ -477,7 +505,7 @@ export class ContainerDefinition extends cdk.Construct {
       command: this.props.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: cdk.Lazy.anyValue({ produce: () => renderArray(this.containerDependencies, renderContainerDependency) }),
+      dependsOn: cdk.Lazy.anyValue({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
@@ -488,18 +516,18 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: cdk.Lazy.anyValue({ produce: () => renderArray(this.mountPoints, renderMountPoint) }),
+      mountPoints: cdk.Lazy.anyValue({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
       name: this.containerName,
-      portMappings: cdk.Lazy.anyValue({ produce: () => renderArray(this.portMappings, renderPortMapping) }),
+      portMappings: cdk.Lazy.anyValue({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
-      ulimits: cdk.Lazy.anyValue({ produce: () => renderArray(this.ulimits, renderUlimit) }),
+      ulimits: cdk.Lazy.anyValue({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
-      volumesFrom: cdk.Lazy.anyValue({ produce: () => renderArray(this.volumesFrom, renderVolumeFrom) }),
+      volumesFrom: cdk.Lazy.anyValue({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
       secrets: this.props.secrets && Object.entries(this.props.secrets)
         .map(([k, v]) => {
           if (taskDefinition) {
@@ -512,8 +540,9 @@ export class ContainerDefinition extends cdk.Construct {
         }),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
-      links: cdk.Lazy.listValue({ produce: () => renderArray(this.links, l => l) }),
+      links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
+      resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
     };
   }
 }
@@ -569,13 +598,6 @@ export interface HealthCheck {
   readonly timeout?: cdk.Duration;
 }
 
-function renderArray<T1, T2>(array: ReadonlyArray<T1>, render: (value: T1) => T2): T2[] | undefined {
-  if (array.length < 1) {
-    return undefined;
-  }
-  return array.map(render);
-}
-
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
   const ret = [];
   for (const [key, value] of Object.entries(env)) {
@@ -612,6 +634,14 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   }
 
   return hcCommand.concat(cmd);
+}
+
+function renderResourceRequirements(gpuCount: number): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+  if (gpuCount === 0) { return undefined; }
+  return [{
+    type: 'GPU',
+    value: gpuCount.toString(),
+  }];
 }
 
 /**

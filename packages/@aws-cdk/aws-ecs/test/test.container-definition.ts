@@ -7,9 +7,52 @@ import ecs = require('../lib');
 
 export = {
   "When creating a Task Definition": {
-    // Validating portMapping inputs
+    "add a container using default props"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      new ecs.ContainerDefinition(stack, "Container", {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Image: "/aws/aws-example-app",
+            Memory: 2048,
+            Name: "Container"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    "throws when MemoryLimit is less than MemoryReservationLimit"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // THEN
+      test.throws(() => {
+        new ecs.ContainerDefinition(stack, "Container", {
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+          taskDefinition,
+          memoryLimitMiB: 512,
+          memoryReservationMiB: 1024,
+        });
+      }, /MemoryLimitMiB should not be less than MemoryReservationMiB./);
+
+      test.done();
+    },
+
     "With network mode AwsVpc": {
-      "Host port should be the same as container port"(test: Test) {
+      "throws when Host port is different from container port"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -29,6 +72,27 @@ export = {
           });
         });
 
+        test.done();
+      },
+
+      "Host port is the same as container port"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.AWS_VPC,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        container.addPortMappings({
+          containerPort: 8080,
+          hostPort: 8080
+        });
+
+        // THEN no exception raised
         test.done();
       },
 
@@ -55,7 +119,7 @@ export = {
     },
 
     "With network mode Host ": {
-      "Host port should be the same as container port"(test: Test) {
+      "throws when Host port is different from container port"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -75,6 +139,27 @@ export = {
           });
         });
 
+        test.done();
+      },
+
+      "when host port is the same as container port"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.HOST,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        container.addPortMappings({
+          containerPort: 8080,
+          hostPort: 8080
+        });
+
+        // THEN no exception raised
         test.done();
       },
 
@@ -126,6 +211,47 @@ export = {
     },
 
     "With network mode Bridge": {
+      "when Host port is empty "(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        container.addPortMappings({
+          containerPort: 8080,
+        });
+
+        // THEN no exception raises
+        test.done();
+      },
+
+      "when Host port is not empty "(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        container.addPortMappings({
+          containerPort: 8080,
+          hostPort: 8084
+        });
+
+        // THEN no exception raises
+        test.done();
+      },
+
       "allows adding links"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
@@ -149,6 +275,58 @@ export = {
         test.done();
       },
     }
+  },
+
+  "Container Port": {
+    "should return the first container port in PortMappings"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+
+      const container = taskDefinition.addContainer("Container", {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+        memoryLimitMiB: 2048,
+      });
+
+      // WHEN
+      container.addPortMappings({
+        containerPort: 8080,
+      });
+
+      container.addPortMappings({
+        containerPort: 8081,
+      });
+      const actual = container.containerPort;
+
+      // THEN
+      const expected = 8080;
+      test.equal(actual, expected, "containerPort should return the first container port in PortMappings");
+      test.done();
+    },
+
+    "throws when calling containerPort with no PortMappings"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+
+      const container = taskDefinition.addContainer("MyContainer", {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+        memoryLimitMiB: 2048
+      });
+
+      // THEN
+      test.throws(() => {
+        const actual = container.containerPort;
+        const expected = 8080;
+        test.equal(actual, expected);
+      }, /Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+
+      test.done();
+    },
   },
 
   "Ingress Port": {
@@ -176,6 +354,28 @@ export = {
         test.equal(actual, expected, "Ingress port should be the same as container port");
         test.done();
       },
+
+      "throws when calling ingressPort with no PortMappings"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.AWS_VPC,
+        });
+
+        const container = taskDefinition.addContainer("MyContainer", {
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+          memoryLimitMiB: 2048
+        });
+
+        // THEN
+        test.throws(() => {
+          const actual = container.ingressPort;
+          const expected = 8080;
+          test.equal(actual, expected);
+        }, /Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+
+        test.done();
+      },
     },
 
     "With network mode Host ": {
@@ -201,7 +401,7 @@ export = {
         const expected = 8080;
         test.equal(actual, expected);
         test.done();
-      },
+      }
     },
 
     "With network mode Bridge": {
@@ -252,7 +452,7 @@ export = {
         const expected = 0;
         test.equal(actual, expected);
         test.done();
-      },
+      }
     },
   },
 
@@ -284,6 +484,38 @@ export = {
 
     test.done();
 
+  },
+
+  'Given GPU count parameter': {
+    'will add resource requirements to container definition'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        gpuCount: 4,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            ResourceRequirements: [
+              {
+                Type: "GPU",
+                Value: "4"
+              }
+            ]
+          }
+        ]
+      }));
+
+      test.done();
+    },
   },
 
   'can add secret environment variables to the container definition'(test: Test) {
@@ -437,6 +669,7 @@ export = {
 
     test.done();
   },
+
   'can set Health Check with defaults'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -465,6 +698,39 @@ export = {
         }
       ]
     }));
+
+    test.done();
+  },
+
+  'throws when setting Health Check with no commands'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: []
+      }
+    });
+
+    // THEN
+    test.throws(() => {
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            HealthCheck: {
+              Command: [],
+              Interval: 30,
+              Retries: 3,
+              Timeout: 5
+            },
+          }
+        ]
+      }));
+    }, /At least one argument must be supplied for health check command./);
 
     test.done();
   },
@@ -620,7 +886,74 @@ export = {
     test.done();
   },
 
+  '_linkContainer works properly': {
+    'when the props passed in is an essential container'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      const container = taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        essential: true
+      });
+
+      // THEN
+      test.equal(taskDefinition.defaultContainer, container);
+
+      test.done();
+    },
+
+    'when the props passed in is not an essential container'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        essential: false
+      });
+
+      // THEN
+      test.equal(taskDefinition.defaultContainer, undefined);
+
+      test.done();
+    }
+  },
+
   'Can specify linux parameters': {
+    'with only required properties set, it correctly sets default properties'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters');
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Capabilities: {},
+            }
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
     'before calling addContainer'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -651,8 +984,6 @@ export = {
                 Add: ["ALL"],
                 Drop: ["KILL"]
               },
-              Devices: [],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -695,8 +1026,6 @@ export = {
                 Add: ["ALL"],
                 Drop: ["SETUID"]
               },
-              Devices: [],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -739,7 +1068,6 @@ export = {
                   HostPath: "a/b/c"
                 }
               ],
-              Tmpfs: [],
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
@@ -778,7 +1106,6 @@ export = {
           {
             Image: 'test',
             LinuxParameters: {
-              Devices: [],
               Tmpfs: [
                 {
                   ContainerPath: "a/b/c",
@@ -795,6 +1122,5 @@ export = {
       test.done();
     }
   },
-
   // render extra hosts test
 };

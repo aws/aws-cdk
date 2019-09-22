@@ -51,17 +51,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -218,7 +208,7 @@
             "Name": {
               "Ref": "DummyParameter53662B67"
             },
-            "WithDecryption": true
+            "WithDecryption": "TRUE:BOOLEAN"
           },
           "physicalResourceIdPath": "Parameter.ARN"
         },
@@ -229,7 +219,7 @@
             "Name": {
               "Ref": "DummyParameter53662B67"
             },
-            "WithDecryption": true
+            "WithDecryption": "TRUE:BOOLEAN"
           },
           "physicalResourceIdPath": "Parameter.ARN"
         }

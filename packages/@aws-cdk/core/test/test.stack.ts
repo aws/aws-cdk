@@ -436,6 +436,25 @@ export = {
     test.done();
   },
 
+  'urlSuffix does not imply a stack dependency'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+
+    // WHEN
+    new CfnOutput(second, 'Output', {
+      value: first.urlSuffix
+    });
+
+    // THEN
+    app.synth();
+
+    test.equal(second.dependencies.length, 0);
+
+    test.done();
+  },
+
   'stack with region supplied via props returns literal value'(test: Test) {
     // GIVEN
     const app = new App();
@@ -569,6 +588,20 @@ export = {
       { "Fn::Select": [ 0, { "Fn::GetAZs": "" } ] },
       { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
     ]);
+    test.done();
+  },
+
+  'stack.templateFile contains the name of the cloudformation output'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack1 = new Stack(app, 'MyStack1');
+    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+
+    // THEN
+    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+    test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
     test.done();
   }
 };

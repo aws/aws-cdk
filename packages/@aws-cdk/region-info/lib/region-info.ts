@@ -5,6 +5,14 @@ import { Fact, FactName } from './fact';
  */
 export class RegionInfo {
   /**
+   * @returns the list of names of AWS regions for which there is at least one registered fact. This
+   *          may not be an exaustive list of all available AWS regions.
+   */
+  public static get regions(): RegionInfo[] {
+    return Fact.regions.map(RegionInfo.get);
+  }
+
+  /**
    * Obtain region info for a given region name.
    *
    * @param name the name of the region (e.g: us-east-1)

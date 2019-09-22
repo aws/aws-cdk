@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -60,7 +50,7 @@
         "BooksHandlerServiceRole5B6A8847"
       ]
     },
-    "BooksHandlerApiPermissionrestapibooksexamplebooksapi4538F335GETbooks727D645E": {
+    "booksapibooksGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooks391776D8": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -101,7 +91,7 @@
         }
       }
     },
-    "BooksHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksCC375808": {
+    "booksapibooksGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooks01FB3D1B": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -138,7 +128,7 @@
         }
       }
     },
-    "BooksHandlerApiPermissionrestapibooksexamplebooksapi4538F335POSTbooksFDED8A87": {
+    "booksapibooksPOSTApiPermissionrestapibooksexamplebooksapi4538F335POSTbooksDFEC643F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -179,7 +169,7 @@
         }
       }
     },
-    "BooksHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335POSTbooks4667899F": {
+    "booksapibooksPOSTApiPermissionTestrestapibooksexamplebooksapi4538F335POSTbooks1C6D24C8": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -225,17 +215,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -276,7 +256,7 @@
         "BookHandlerServiceRole894768AD"
       ]
     },
-    "BookHandlerApiPermissionrestapibooksexamplebooksapi4538F335GETbooksbookidA10D3CE2": {
+    "booksapibooksbookidGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooksbookidBB91DFBD": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -317,7 +297,7 @@
         }
       }
     },
-    "BookHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksbookidAB5191B6": {
+    "booksapibooksbookidGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksbookidA0230B08": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -354,7 +334,7 @@
         }
       }
     },
-    "BookHandlerApiPermissionrestapibooksexamplebooksapi4538F335DELETEbooksbookidB3A85313": {
+    "booksapibooksbookidDELETEApiPermissionrestapibooksexamplebooksapi4538F335DELETEbooksbookid76C1C947": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -395,7 +375,7 @@
         }
       }
     },
-    "BookHandlerApiPermissionTestrestapibooksexamplebooksapi4538F335DELETEbooksbookid9308C830": {
+    "booksapibooksbookidDELETEApiPermissionTestrestapibooksexamplebooksapi4538F335DELETEbooksbookid09D6CB8A": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -441,17 +421,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -492,7 +462,7 @@
         "HelloServiceRole1E55EA16"
       ]
     },
-    "HelloApiPermissionrestapibooksexamplebooksapi4538F335ANYE385693C": {
+    "booksapiANYApiPermissionrestapibooksexamplebooksapi4538F335ANY73B3CDDC": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -533,7 +503,7 @@
         }
       }
     },
-    "HelloApiPermissionTestrestapibooksexamplebooksapi4538F335ANY46B0DA7B": {
+    "booksapiANYApiPermissionTestrestapibooksexamplebooksapi4538F335ANYB0D7D8AC": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -576,7 +546,7 @@
         "Name": "books-api"
       }
     },
-    "booksapiDeployment308B08F1c828b08824c062376eba921738884f85": {
+    "booksapiDeployment308B08F1038c4647da4cb72c7574b891fb62b77f": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -601,7 +571,7 @@
           "Ref": "booksapiE1885304"
         },
         "DeploymentId": {
-          "Ref": "booksapiDeployment308B08F1c828b08824c062376eba921738884f85"
+          "Ref": "booksapiDeployment308B08F1038c4647da4cb72c7574b891fb62b77f"
         },
         "StageName": "prod"
       }
@@ -615,17 +585,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "apigateway.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "apigateway.amazonaws.com"
               }
             }
           ],

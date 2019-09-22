@@ -1,6 +1,6 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import { App, Lazy, Stack } from '@aws-cdk/core';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
@@ -11,7 +11,7 @@ import { DockerImageAsset } from '../lib';
 export = {
   'test instantiating Asset Image'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
     new DockerImageAsset(stack, 'Image', {
@@ -31,7 +31,7 @@ export = {
 
   'with build args'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
     const asset = new DockerImageAsset(stack, 'Image', {
@@ -47,9 +47,28 @@ export = {
     test.done();
   },
 
+  'with target'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const asset = new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b'
+      },
+      target: 'a-target'
+    });
+
+    // THEN
+    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
+    test.done();
+  },
+
   'asset.repository.grantPull can be used to grant a principal permissions to use the image'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const user = new iam.User(stack, 'MyUser');
     const asset = new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image')
@@ -106,7 +125,7 @@ export = {
 
   'asset.repository.addToResourcePolicy can be used to modify the ECR resource policy via the adoption custom resource'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const asset = new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image')
     });
@@ -141,7 +160,7 @@ export = {
 
   'fails if the directory does not exist'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // THEN
     test.throws(() => {
@@ -154,7 +173,7 @@ export = {
 
   'fails if the directory does not contain a Dockerfile'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // THEN
     test.throws(() => {
@@ -166,8 +185,8 @@ export = {
   },
 
   'docker directory is staged if asset staging is enabled'(test: Test) {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack');
+    const app = new App();
+    const stack = new Stack(app, 'stack');
 
     new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image')
@@ -177,6 +196,43 @@ export = {
 
     test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile')));
     test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
+    test.done();
+  },
+
+  'docker directory is staged without files specified in .dockerignore'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'dockerignore-image')
+    });
+
+    const session = app.synth();
+
+    test.ok(fs.existsSync(path.join(session.directory, `asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
+    test.ok(!fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/foobar.txt')));
+
+    test.done();
+  },
+
+  'fails if using tokens in build args keys or values'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const token = Lazy.stringValue({ produce: () => 'foo' });
+    const expected = /Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment/;
+
+    // THEN
+    test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: { [token]: 'value' }
+    }), expected);
+
+    test.throws(() => new DockerImageAsset(stack, 'MyAsset2', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: { key: token }
+    }), expected);
+
     test.done();
   }
 };

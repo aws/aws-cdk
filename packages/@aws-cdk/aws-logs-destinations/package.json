@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-logs-destinations",
-  "version": "1.4.0",
+  "version": "1.9.0",
   "description": "Log Destinations for AWS CloudWatch Logs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.Logs.Destinations",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-logs-destinations",
@@ -70,30 +71,30 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.4.0",
+    "@aws-cdk/assert": "^1.9.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.4.0",
-    "@aws-cdk/aws-kinesis": "^1.4.0",
-    "@aws-cdk/aws-lambda": "^1.4.0",
-    "@aws-cdk/aws-logs": "^1.4.0",
-    "@aws-cdk/core": "^1.4.0"
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-kinesis": "^1.9.0",
+    "@aws-cdk/aws-lambda": "^1.9.0",
+    "@aws-cdk/aws-logs": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.4.0",
-    "@aws-cdk/aws-kinesis": "^1.4.0",
-    "@aws-cdk/aws-lambda": "^1.4.0",
-    "@aws-cdk/aws-logs": "^1.4.0",
-    "@aws-cdk/core": "^1.4.0"
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-kinesis": "^1.9.0",
+    "@aws-cdk/aws-lambda": "^1.9.0",
+    "@aws-cdk/aws-logs": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "stable"
 }

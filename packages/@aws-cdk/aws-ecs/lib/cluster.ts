@@ -47,7 +47,7 @@ export interface ClusterProps {
  */
 export class Cluster extends Resource implements ICluster {
   /**
-   * This method adds attributes from a specified cluster to this cluster.
+   * Import an existing cluster to the stack from its attributes.
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
@@ -581,11 +581,9 @@ class ImportedCluster extends Resource implements ICluster {
       resourceName: props.clusterName
     });
 
-    let i = 1;
-    for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
-      i++;
-    }
+    this.connections = new ec2.Connections({
+      securityGroups: props.securityGroups
+    });
   }
 
   public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {

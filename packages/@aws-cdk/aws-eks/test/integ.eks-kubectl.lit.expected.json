@@ -416,17 +416,7 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "eks.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "eks.amazonaws.com"
                 }
               }
             ],
@@ -471,7 +461,6 @@
               "IpProtocol": "-1"
             }
           ],
-          "SecurityGroupIngress": [],
           "VpcId": {
             "Fn::ImportValue": "k8s-vpc:ExportsOutputRefvpcA2121C384D1B3CDE"
           }
@@ -507,17 +496,7 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "lambda.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "lambda.amazonaws.com"
                 }
               }
             ],
@@ -802,7 +781,6 @@
               "IpProtocol": "-1"
             }
           ],
-          "SecurityGroupIngress": [],
           "Tags": [
             {
               "Key": "Name",
@@ -951,6 +929,26 @@
                 ]
               ]
             }
+          ],
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "k8s-cluster/cluster22/Nodes"
+            },
+            {
+              "Key": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "kubernetes.io/cluster/",
+                    {
+                      "Ref": "cluster227BD1CB20"
+                    }
+                  ]
+                ]
+              },
+              "Value": "owned"
+            }
           ]
         }
       },
@@ -989,7 +987,7 @@
                   {
                     "Ref": "cluster227BD1CB20"
                   },
-                  " --use-max-pods 17"
+                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
                 ]
               ]
             }
@@ -1138,16 +1136,31 @@
       }
     },
     "Outputs": {
-      "cluster22ClusterNameC4896469": {
+      "cluster22ConfigCommand96B20279": {
         "Value": {
-          "Ref": "cluster227BD1CB20"
+          "Fn::Join": [
+            "",
+            [
+              "aws eks update-kubeconfig --name ",
+              {
+                "Ref": "cluster227BD1CB20"
+              },
+              " --region test-region"
+            ]
+          ]
         }
       },
-      "cluster22NodesInstanceRoleARNEE60B01D": {
+      "cluster22GetTokenCommand99DB9B02": {
         "Value": {
-          "Fn::GetAtt": [
-            "cluster22NodesInstanceRole51CD052F",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "aws eks get-token --cluster-name ",
+              {
+                "Ref": "cluster227BD1CB20"
+              },
+              " --region test-region"
+            ]
           ]
         }
       }

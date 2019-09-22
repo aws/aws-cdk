@@ -1,6 +1,7 @@
 import assets = require('@aws-cdk/assets');
 import ecr = require('@aws-cdk/aws-ecr');
 import cdk = require('@aws-cdk/core');
+import { Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
@@ -19,16 +20,27 @@ export interface DockerImageAssetProps extends assets.CopyOptions {
    * from a Kubernetes Pod. Note, this is only the repository name, without the
    * registry and the tag parts.
    *
-   * @default automatically derived from the asset's ID.
+   * @default - automatically derived from the asset's ID.
    */
   readonly repositoryName?: string;
 
   /**
-   * Build args to pass to the `docker build` command
+   * Build args to pass to the `docker build` command.
    *
-   * @default no build args are passed
+   * Since Docker build arguments are resolved before deployment, keys and
+   * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
+   * `queue.queueUrl`).
+   *
+   * @default - no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   *
+   * @default - no target
+   */
+  readonly target?: string;
 }
 
 /**
@@ -49,7 +61,6 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
   public repository: ecr.IRepository;
 
   public readonly sourceHash: string;
-  public readonly artifactHash: string;
 
   /**
    * Directory where the source files are stored
@@ -58,6 +69,9 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
 
   constructor(scope: cdk.Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
+
+    // verify buildArgs do not use tokens in neither keys nor values
+    validateBuildArgs(props.buildArgs);
 
     // resolve full path
     const dir = path.resolve(props.directory);
@@ -68,8 +82,17 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
 
+    let exclude: string[] = ['.dockerignore'];
+
+    const ignore = path.join(dir, '.dockerignore');
+
+    if (fs.existsSync(ignore)) {
+      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
+    }
+
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
+      exclude,
       sourcePath: dir
     });
 
@@ -88,7 +111,8 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       sourceHash: this.sourceHash,
       imageNameParameter: imageNameParameter.logicalId,
       repositoryName: props.repositoryName,
-      buildArgs: props.buildArgs
+      buildArgs: props.buildArgs,
+      target: props.target
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
@@ -107,6 +131,13 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     // haven't already started using the image.
     this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName });
     this.imageUri = `${this.repository.repositoryUri}@sha256:${imageSha}`;
-    this.artifactHash = imageSha;
+  }
+}
+
+function validateBuildArgs(buildArgs?: { [key: string]: string }) {
+  for (const [key, value] of Object.entries(buildArgs || {})) {
+    if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
+      throw new Error(`Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment`);
+    }
   }
 }

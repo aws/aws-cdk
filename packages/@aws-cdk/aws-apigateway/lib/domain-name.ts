@@ -53,7 +53,7 @@ export interface IDomainName extends IResource {
   readonly domainNameAliasDomainName: string;
 
   /**
-   * Thje Route53 hosted zone ID to use in order to connect a record set to this domain through an alias.
+   * The Route53 hosted zone ID to use in order to connect a record set to this domain through an alias.
    *
    * @attribute DistributionHostedZoneId,RegionalHostedZoneId
    */
