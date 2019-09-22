@@ -50,6 +50,13 @@ export interface AppProps {
    * @default - no additional context
    */
   readonly context?: { [key: string]: string };
+
+  /**
+   * Include construct tree metadata as part of the Cloud Assembly.
+   *
+   * @default true
+   */
+  readonly constructTreeMetadata?: boolean;
 }
 
 /**
@@ -81,6 +88,7 @@ export class App extends Construct {
   private _assembly?: CloudAssembly;
   private readonly runtimeInfo: boolean;
   private readonly outdir?: string;
+  private readonly constructTreeMetadata: boolean;
 
   /**
    * Initializes a CDK application.
@@ -104,6 +112,7 @@ export class App extends Construct {
     // both are reverse logic
     this.runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
+    this.constructTreeMetadata = props.constructTreeMetadata === undefined ? true : props.constructTreeMetadata;
 
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
@@ -137,7 +146,9 @@ export class App extends Construct {
 
   protected prepare(): void {
     // Add internal constructs here
-    new ConstructTreeMetadata(this);
+    if (this.constructTreeMetadata) {
+      new ConstructTreeMetadata(this);
+    }
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

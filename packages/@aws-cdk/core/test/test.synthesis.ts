@@ -41,6 +41,15 @@ export = {
     test.done();
   },
 
+  'synthesis respects disabling construct tree metadata'(test: Test) {
+    const app = new cdk.App({
+      constructTreeMetadata: false,
+    });
+    const assembly = app.synth();
+    test.deepEqual(list(assembly.directory), [ 'cdk.out', 'manifest.json' ]);
+    test.done();
+  },
+
   'single empty stack'(test: Test) {
     // GIVEN
     const app = createModernApp();
