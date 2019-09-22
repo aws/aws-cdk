@@ -99,6 +99,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   *
+   * @default no build target
+   */
+  readonly target?: string;
 }
 
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
