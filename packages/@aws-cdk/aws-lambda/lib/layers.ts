@@ -192,7 +192,9 @@ export class LayerVersion extends LayerVersionBase {
       licenseInfo: props.license,
     });
 
-    props.code.bindToResource(resource);
+    props.code.bindToResource(resource, {
+      resourceProperty: 'Content'
+    });
 
     this.layerVersionArn = resource.ref;
     this.compatibleRuntimes = props.compatibleRuntimes;
