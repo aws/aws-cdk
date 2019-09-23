@@ -966,7 +966,7 @@
         "Type": "AWS::AutoScaling::LaunchConfiguration",
         "Properties": {
           "ImageId": {
-            "Ref": "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           },
           "InstanceType": "t2.medium",
           "IamInstanceProfile": {
@@ -1136,7 +1136,7 @@
         "Type": "String",
         "Description": "Artifact hash for asset \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
       },
-      "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
         "Type": "AWS::SSM::Parameter::Value<String>",
         "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
       }

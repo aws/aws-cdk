@@ -905,7 +905,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "m5.large",
         "IamInstanceProfile": {
@@ -1226,7 +1226,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t3.large",
         "IamInstanceProfile": {
@@ -1369,7 +1369,7 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"integ-eks-spot/myCluster/KubernetesResourceHandler/Code\""
     },
-    "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
       "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
     }
