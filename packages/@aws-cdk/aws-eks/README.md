@@ -45,11 +45,6 @@ cluster.addResource('mypod', {
 });
 ```
 
-**NOTE**: in order to determine the default AMI for for Amazon EKS instances the
-`eks.Cluster` resource must be defined within a stack that is configured with an
-explicit `env.region`. See [Environments](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)
-in the AWS CDK Developer Guide for more details.
-
 Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
 
 ### Capacity

@@ -965,7 +965,9 @@
       "cluster22NodesLaunchConfig184BF3BA": {
         "Type": "AWS::AutoScaling::LaunchConfiguration",
         "Properties": {
-          "ImageId": "ami-12345",
+          "ImageId": {
+            "Ref": "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
           "InstanceType": "t2.medium",
           "IamInstanceProfile": {
             "Ref": "cluster22NodesInstanceProfile3D4963ED"
@@ -1133,6 +1135,10 @@
       "cluster22KubernetesResourceHandlerCodeArtifactHash8138542A": {
         "Type": "String",
         "Description": "Artifact hash for asset \"k8s-cluster/cluster22/KubernetesResourceHandler/Code\""
+      },
+      "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+        "Type": "AWS::SSM::Parameter::Value<String>",
+        "Default": "/aws/service/eks/optimized-ami/1.13/amazon-linux-2/recommended/image_id"
       }
     },
     "Outputs": {

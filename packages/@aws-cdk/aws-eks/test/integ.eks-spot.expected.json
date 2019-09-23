@@ -904,7 +904,9 @@
     "myClusterDefaultCapacityLaunchConfigCF6D4B81": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-12345",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "m5.large",
         "IamInstanceProfile": {
           "Ref": "myClusterDefaultCapacityInstanceProfileE7E48198"
@@ -1223,7 +1225,9 @@
     "myClusterspotLaunchConfig6681F311": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-12345",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t3.large",
         "IamInstanceProfile": {
           "Ref": "myClusterspotInstanceProfile93D80EE5"
@@ -1364,6 +1368,10 @@
     "myClusterKubernetesResourceHandlerCodeArtifactHashAEE3F837": {
       "Type": "String",
       "Description": "Artifact hash for asset \"integ-eks-spot/myCluster/KubernetesResourceHandler/Code\""
+    },
+    "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.13/amazon-linux-2/recommended/image_id"
     }
   },
   "Outputs": {
