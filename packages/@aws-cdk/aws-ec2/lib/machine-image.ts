@@ -63,7 +63,7 @@ export class WindowsImage implements IMachineImage  {
    */
   public getImage(scope: Construct): MachineImageConfig {
     const parameterName = this.imageParameterName();
-    const ami = ssm.StringParameter.valueForStringParameter(scope, parameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
     return {
       imageId: ami,
       userData: this.props.userData,
@@ -151,7 +151,7 @@ export class AmazonLinuxImage implements IMachineImage {
     ].filter(x => x !== undefined); // Get rid of undefineds
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
-    const ami = ssm.StringParameter.valueForStringParameter(scope, parameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
 
     return {
       imageId: ami,
