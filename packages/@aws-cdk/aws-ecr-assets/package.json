@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ecr-assets",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Docker image assets deployed to ECR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-ecr-assets",
@@ -60,34 +60,34 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
+    "@aws-cdk/assert": "^1.9.0",
     "@types/proxyquire": "^1.3.28",
-    "aws-cdk": "^1.8.0",
+    "aws-cdk": "^1.9.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "pkglint": "file:../../../tools/pkglint",
     "proxyquire": "^2.1.3"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^1.8.0",
-    "@aws-cdk/aws-cloudformation": "^1.8.0",
-    "@aws-cdk/aws-ecr": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/cx-api": "^1.8.0"
+    "@aws-cdk/assets": "^1.9.0",
+    "@aws-cdk/aws-cloudformation": "^1.9.0",
+    "@aws-cdk/aws-ecr": "^1.9.0",
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-lambda": "^1.9.0",
+    "@aws-cdk/aws-s3": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0",
+    "@aws-cdk/cx-api": "^1.9.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^1.8.0",
-    "@aws-cdk/aws-cloudformation": "^1.8.0",
-    "@aws-cdk/aws-ecr": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/cx-api": "^1.8.0"
+    "@aws-cdk/assets": "^1.9.0",
+    "@aws-cdk/aws-cloudformation": "^1.9.0",
+    "@aws-cdk/aws-ecr": "^1.9.0",
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-lambda": "^1.9.0",
+    "@aws-cdk/aws-s3": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0",
+    "@aws-cdk/cx-api": "^1.9.0"
   },
   "nyc": {
     "statements": 70
