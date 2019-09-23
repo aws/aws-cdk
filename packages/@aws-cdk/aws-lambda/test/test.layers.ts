@@ -1,4 +1,4 @@
-import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import cxapi = require('@aws-cdk/cx-api');
