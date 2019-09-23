@@ -99,7 +99,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
-      propagateTaskTagsFrom: props.propagateTaskTagsFrom,
+      propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
     });
     this.addServiceAsTarget(this.service);

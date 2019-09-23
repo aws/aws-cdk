@@ -82,7 +82,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
-      propagateTaskTagsFrom: props.propagateTaskTagsFrom,
+      propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
     });
     this.configureAutoscalingForService(this.service);

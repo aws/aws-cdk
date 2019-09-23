@@ -109,7 +109,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - none
    */
-  readonly propagateTaskTagsFrom?: PropagatedTagSource;
+  readonly propagateTags?: PropagatedTagSource;
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
