@@ -91,6 +91,15 @@ new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
 });
 ```
 
+## Memory Limit
+
+The default memory limit for the deployment resource is 128MiB. If you need to
+copy larger files, you can use the `memoryLimit` configuration to specify the
+size of the AWS Lambda resource handler.
+
+> NOTE: a new AWS Lambda handler will be created in your stack for each memory
+> limit configuration.
+
 ## Notes
 
  * This library uses an AWS CloudFormation custom resource which about 10MiB in
