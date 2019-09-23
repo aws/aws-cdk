@@ -152,10 +152,26 @@ abstract class ParameterBase extends Resource implements IParameter {
   }
 }
 
+/**
+ * SSM parameter type
+ */
 export enum ParameterType {
+  /**
+   * String
+   */
   STRING = 'String',
+  /**
+   * Secure String
+   * Parameter Store uses an AWS Key Management Service (KMS) customer master key (CMK) to encrypt the parameter value.
+   */
   SECURE_STRING = 'SecureString',
+  /**
+   * String List
+   */
   STRING_LIST = 'StringList',
+  /**
+   * An Amazon EC2 image ID, such as ami-0ff8a91507f77f867
+   */
   AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
 }
 
