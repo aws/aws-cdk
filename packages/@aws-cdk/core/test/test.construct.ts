@@ -3,14 +3,13 @@ import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
 // tslint:disable:variable-name
-// tslint:disable:max-line-length
 
 export = {
   'the "Root" construct is a special construct which can be used as the root of the tree'(test: Test) {
     const root = new Root();
     test.equal(root.node.id, '', 'if not specified, name of a root construct is an empty string');
     test.ok(!root.node.scope, 'no parent');
-    test.equal(root.node.children.length, 0, 'a construct is created without children'); // no children
+    test.equal(root.node.children.length, 1);
     test.done();
   },
 
@@ -100,7 +99,7 @@ export = {
     const child = new Construct(root, 'Child1');
     new Construct(root, 'Child2');
     test.equal(child.node.children.length, 0, 'no children');
-    test.equal(root.node.children.length, 2, 'two children are expected');
+    test.equal(root.node.children.length, 3, 'three children are expected');
     test.done();
   },
 
@@ -126,9 +125,9 @@ export = {
     const t = createTree();
 
     test.equal(t.root.toString(), '<root>');
-    test.equal(t.child1_1_1.toString(), 'Child1/Child11/Child111');
-    test.equal(t.child2.toString(), 'Child2');
-    test.equal(toTreeString(t.root), 'App\n  Construct [Child1]\n    Construct [Child11]\n      Construct [Child111]\n    Construct [Child12]\n  Construct [Child2]\n    Construct [Child21]\n');
+    test.equal(t.child1_1_1.toString(), 'HighChild/Child1/Child11/Child111');
+    test.equal(t.child2.toString(), 'HighChild/Child2');
+    test.equal(toTreeString(t.root), 'App\n  Tree [Tree]\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
     test.done();
   },
 
@@ -139,28 +138,30 @@ export = {
     };
 
     const t = createTree(context);
-    test.equal(t.root.node.tryGetContext('ctx1'), 12);
+    test.equal(t.child1_2.node.tryGetContext('ctx1'), 12);
     test.equal(t.child1_1_1.node.tryGetContext('ctx2'), 'hello');
     test.done();
   },
 
+  // tslint:disable-next-line:max-line-length
   'construct.setContext(k,v) sets context at some level and construct.getContext(key) will return the lowermost value defined in the stack'(test: Test) {
     const root = new Root();
-    root.node.setContext('c1', 'root');
-    root.node.setContext('c2', 'root');
+    const highChild = new Construct(root, 'highChild');
+    highChild.node.setContext('c1', 'root');
+    highChild.node.setContext('c2', 'root');
 
-    const child1 = new Construct(root, 'child1');
+    const child1 = new Construct(highChild, 'child1');
     child1.node.setContext('c2', 'child1');
     child1.node.setContext('c3', 'child1');
 
-    const child2 = new Construct(root, 'child2');
+    const child2 = new Construct(highChild, 'child2');
     const child3 = new Construct(child1, 'child1child1');
     child3.node.setContext('c1', 'child3');
     child3.node.setContext('c4', 'child3');
 
-    test.equal(root.node.tryGetContext('c1'), 'root');
-    test.equal(root.node.tryGetContext('c2'), 'root');
-    test.equal(root.node.tryGetContext('c3'), undefined);
+    test.equal(highChild.node.tryGetContext('c1'), 'root');
+    test.equal(highChild.node.tryGetContext('c2'), 'root');
+    test.equal(highChild.node.tryGetContext('c3'), undefined);
 
     test.equal(child1.node.tryGetContext('c1'), 'root');
     test.equal(child1.node.tryGetContext('c2'), 'child1');
@@ -195,15 +196,15 @@ export = {
   'construct.pathParts returns an array of strings of all names from root to node'(test: Test) {
     const tree = createTree();
     test.deepEqual(tree.root.node.path, '');
-    test.deepEqual(tree.child1_1_1.node.path, 'Child1/Child11/Child111');
-    test.deepEqual(tree.child2.node.path, 'Child2');
+    test.deepEqual(tree.child1_1_1.node.path, 'HighChild/Child1/Child11/Child111');
+    test.deepEqual(tree.child2.node.path, 'HighChild/Child2');
     test.done();
   },
 
   'if a root construct has a name, it should be included in the path'(test: Test) {
     const tree = createTree({});
     test.deepEqual(tree.root.node.path, '');
-    test.deepEqual(tree.child1_1_1.node.path, 'Child1/Child11/Child111');
+    test.deepEqual(tree.child1_1_1.node.path, 'HighChild/Child1/Child11/Child111');
     test.done();
   },
 
@@ -302,7 +303,7 @@ export = {
     new MyBeautifulConstruct(root, 'mbc2');
     new MyBeautifulConstruct(root, 'mbc3');
     new MyBeautifulConstruct(root, 'mbc4');
-    test.equal(root.node.children.length, 4);
+    test.ok(root.node.children.length >= 4);
     test.done();
   },
 
@@ -416,7 +417,7 @@ export = {
 
   'ancestors returns a list of parents up to root'(test: Test) {
     const { child1_1_1 } = createTree();
-    test.deepEqual(child1_1_1.node.scopes.map(x => x.node.id), [ '', 'Child1', 'Child11', 'Child111' ]);
+    test.deepEqual(child1_1_1.node.scopes.map(x => x.node.id), [ '', 'HighChild', 'Child1', 'Child11', 'Child111' ]);
     test.done();
   },
 
@@ -481,12 +482,13 @@ export = {
 
 function createTree(context?: any) {
   const root = new Root();
+  const highChild = new Construct(root, 'HighChild');
   if (context) {
-    Object.keys(context).forEach(key => root.node.setContext(key, context[key]));
+    Object.keys(context).forEach(key => highChild.node.setContext(key, context[key]));
   }
 
-  const child1 = new Construct(root, 'Child1');
-  const child2 = new Construct(root, 'Child2');
+  const child1 = new Construct(highChild, 'Child1');
+  const child2 = new Construct(highChild, 'Child2');
   const child1_1 = new Construct(child1, 'Child11');
   const child1_2 = new Construct(child1, 'Child12');
   const child1_1_1 = new Construct(child1_1, 'Child111');

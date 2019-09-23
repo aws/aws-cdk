@@ -1,8 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Construct, ConstructNode } from './construct';
-import { ConstructTreeMetadata } from './private/construct-tree-metadata';
 import { collectRuntimeInformation } from './private/runtime-info';
+import { Tree } from './private/tree';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -56,7 +56,7 @@ export interface AppProps {
    *
    * @default true
    */
-  readonly constructTreeMetadata?: boolean;
+  readonly treeMetadata?: boolean;
 }
 
 /**
@@ -88,8 +88,6 @@ export class App extends Construct {
   private _assembly?: CloudAssembly;
   private readonly runtimeInfo: boolean;
   private readonly outdir?: string;
-  private readonly constructTreeMetadata: boolean;
-  private _prepared?: boolean;
 
   /**
    * Initializes a CDK application.
@@ -113,7 +111,6 @@ export class App extends Construct {
     // both are reverse logic
     this.runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
-    this.constructTreeMetadata = props.constructTreeMetadata === undefined ? true : props.constructTreeMetadata;
 
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
@@ -122,7 +119,9 @@ export class App extends Construct {
       process.once('beforeExit', () => this.synth());
     }
 
-    this._prepared = false;
+    if (props.treeMetadata === undefined || props.treeMetadata) {
+      new Tree(this);
+    }
   }
 
   /**
@@ -145,16 +144,6 @@ export class App extends Construct {
 
     this._assembly = assembly;
     return assembly;
-  }
-
-  protected prepare(): void {
-    if (this._prepared) {
-      return;
-    }
-    if (this.constructTreeMetadata) {
-      new ConstructTreeMetadata(this);
-    }
-    this._prepared = true;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

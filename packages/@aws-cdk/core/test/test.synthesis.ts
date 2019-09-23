@@ -24,26 +24,29 @@ export = {
 
     // THEN
     test.same(app.synth(), session); // same session if we synth() again
-    test.deepEqual(list(session.directory), [ 'cdk.out', 'construct-tree-metadata.json', 'manifest.json' ]);
+    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json', 'tree.json' ]);
     test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {
-      ConstructTreeMetadata: {
+      Tree: {
         type: 'cdk:metadata',
-        properties: { file: 'construct-tree-metadata.json' }
+        properties: { file: 'tree.json' }
       }
     });
-    test.deepEqual(readJson(session.directory, 'construct-tree-metadata.json'), {
-      id: 'App',
-      path: '',
-      children: [
-        { id: 'ConstructTreeMetadata', path: 'ConstructTreeMetadata' }
-      ]
+    test.deepEqual(readJson(session.directory, 'tree.json'), {
+      version: 'tree-0.1',
+      tree: {
+        id: 'App',
+        path: '',
+        children: [
+          { id: 'Tree', path: 'Tree' }
+        ]
+      }
     });
     test.done();
   },
 
-  'synthesis respects disabling construct tree metadata'(test: Test) {
+  'synthesis respects disabling tree metadata'(test: Test) {
     const app = new cdk.App({
-      constructTreeMetadata: false,
+      treeMetadata: false,
     });
     const assembly = app.synth();
     test.deepEqual(list(assembly.directory), [ 'cdk.out', 'manifest.json' ]);
@@ -94,9 +97,9 @@ export = {
     test.deepEqual(session.manifest, {
       version: cxapi.CLOUD_ASSEMBLY_VERSION,
       artifacts: {
-        'ConstructTreeMetadata': {
+        'Tree': {
           type: 'cdk:metadata',
-          properties: { file: 'construct-tree-metadata.json' }
+          properties: { file: 'tree.json' }
         },
         'my-random-construct': {
           type: 'aws:cloudformation:stack',

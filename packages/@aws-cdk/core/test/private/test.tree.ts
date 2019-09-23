@@ -14,34 +14,37 @@ export = {
     new MyResource(group2, 'resource3');
 
     const assembly = app.synth();
-    const annotationsFile = assembly.getMetadata('ConstructTreeMetadata').file;
+    const annotationsFile = assembly.getMetadata('Tree').file;
 
     test.deepEqual(readJson(assembly.directory, annotationsFile), {
-      id: 'App',
-      path: '',
-      children: [
-        {
-          id: 'mystack',
-          path: 'mystack',
-          children: [
-            {
-              id: 'group1',
-              path: 'mystack/group1'
-            },
-            {
-              id: 'group2',
-              path: 'mystack/group2',
-              children: [
-                { id: 'resource3', path: 'mystack/group2/resource3' }
-              ]
-            }
-          ]
-        },
-        {
-          id: 'ConstructTreeMetadata',
-          path: 'ConstructTreeMetadata'
-        }
-      ]
+      version: 'tree-0.1',
+      tree: {
+        id: 'App',
+        path: '',
+        children: [
+          {
+            id: 'Tree',
+            path: 'Tree'
+          },
+          {
+            id: 'mystack',
+            path: 'mystack',
+            children: [
+              {
+                id: 'group1',
+                path: 'mystack/group1'
+              },
+              {
+                id: 'group2',
+                path: 'mystack/group2',
+                children: [
+                  { id: 'resource3', path: 'mystack/group2/resource3' }
+                ]
+              }
+            ]
+          },
+        ]
+      }
     });
     test.done();
   },
