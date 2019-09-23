@@ -243,7 +243,7 @@ export = {
     });
 
     // THEN
-    test.notEqual(table.node.defaultChild, undefined);
+    test.ok(table.node.defaultChild instanceof glue.CfnTable);
     test.done();
   },
 
