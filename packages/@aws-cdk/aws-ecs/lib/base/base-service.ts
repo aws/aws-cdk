@@ -1,11 +1,12 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -20,6 +21,12 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+}
+
+/**
+ * Interface for ECS load balancer target.
+ */
+export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
 }
 
 /**
@@ -113,7 +120,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
-  implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
+  implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
 
   /**
    * The security groups which manage the allowed network traffic for the service.
@@ -217,29 +224,66 @@ export abstract class BaseService extends Resource
   /**
    * This method is called to attach this service to an Application Load Balancer.
    *
-   * Don't call this function directly. Instead, call listener.addTarget()
+   * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
   public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    const ret = this.attachToELBv2(targetGroup);
+    return this.defaultLoadBalancerTarget.attachToApplicationTargetGroup(targetGroup);
+  }
 
-    // Open up security groups. For dynamic port mapping, we won't know the port range
-    // in advance so we need to open up all ports.
-    const port = this.taskDefinition.defaultContainer!.ingressPort;
-    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(port);
-    targetGroup.registerConnectable(this, portRange);
+  /**
+   * Registers the service as a target of a Classic Load Balancer (CLB).
+   *
+   * Don't call this. Call `loadBalancer.addTarget()` instead.
+   */
+  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
+    return this.defaultLoadBalancerTarget.attachToClassicLB(loadBalancer);
+  }
 
-    return ret;
+  /**
+   * Return a load balancing target for a specific container and port.
+   *
+   * Use this function to create a load balancer target if you want to load balance to
+   * another container than the first essential container or the first mapped port on
+   * the container.
+   *
+   * Use the return value of this function where you would normally use a load balancer
+   * target, instead of the `Service` object itself.
+   *
+   * @example
+   *
+   * listener.addTarget(service.loadBalancerTarget({
+   *   containerName: 'MyContainer',
+   *   containerPort: 1234
+   * }));
+   */
+  public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+    const self = this;
+    const target = this.taskDefinition._validateTarget(options);
+    const connections = self.connections;
+    return {
+      attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+        targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort);
+      },
+      attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort);
+      },
+      connections,
+      attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
+        return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort);
+      }
+    };
   }
 
   /**
    * This method is called to attach this service to a Network Load Balancer.
    *
-   * Don't call this function directly. Instead, call listener.addTarget()
+   * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    return this.attachToELBv2(targetGroup);
+    return this.defaultLoadBalancerTarget.attachToNetworkTargetGroup(targetGroup);
   }
 
   /**
@@ -320,17 +364,35 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * Shared logic for attaching to an ELB
+   */
+  private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
+    if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
+      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.");
+    }
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
+      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.");
+    }
+
+    this.loadBalancers.push({
+      loadBalancerName: loadBalancer.loadBalancerName,
+      containerName,
+      containerPort
+    });
+  }
+
+  /**
    * Shared logic for attaching to an ELBv2
    */
-  private attachToELBv2(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
+  private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDefinition.defaultContainer!.containerName,
-      containerPort: this.taskDefinition.defaultContainer!.containerPort,
+      containerName,
+      containerPort,
     });
 
     // Service creation can only happen after the load balancer has
@@ -339,6 +401,12 @@ export abstract class BaseService extends Resource
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
+  }
+
+  private get defaultLoadBalancerTarget() {
+    return this.loadBalancerTarget({
+      containerName: this.taskDefinition.defaultContainer!.containerName
+    });
   }
 
   /**
@@ -434,11 +502,6 @@ export abstract class BaseService extends Resource
     });
   }
 }
-
-/**
- * The port range to open up for dynamic port mapping
- */
-const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
 
 /**
  * The options to enabling AWS Cloud Map for an Amazon ECS service.

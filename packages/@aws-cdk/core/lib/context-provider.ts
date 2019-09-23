@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from './construct';
 import { Stack } from './stack';
 import { Token } from './token';
@@ -81,7 +82,7 @@ export class ContextProvider {
     };
   }
 
-  public static getValue(scope: Construct, options: GetContextValueOptions): any {
+  public static getValue(scope: Construct, options: GetContextValueOptions): GetContextValueResult {
     const stack = Stack.of(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
@@ -93,17 +94,33 @@ export class ContextProvider {
 
     const { key, props } = this.getKey(scope, options);
     const value = scope.node.tryGetContext(key);
+    const providerError = extractProviderError(value);
 
-    // if context is missing, report and return a dummy value
-    if (value === undefined) {
+    // if context is missing or an error occurred during context retrieval,
+    // report and return a dummy value.
+    if (value === undefined || providerError !== undefined) {
       stack.reportMissingContext({ key, props, provider: options.provider, });
-      return options.dummyValue;
+
+      if (providerError !== undefined) {
+        scope.node.addError(providerError);
+      }
+      return { value: options.dummyValue };
     }
 
-    return value;
+    return { value };
   }
 
   private constructor() { }
+}
+
+/**
+ * If the context value represents an error, return the error message
+ */
+function extractProviderError(value: any): string | undefined {
+  if (typeof value === 'object' && value !== null) {
+    return value[cxapi.PROVIDER_ERROR_KEY];
+  }
+  return undefined;
 }
 
 /**

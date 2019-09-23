@@ -433,6 +433,237 @@ export = {
       }));
 
       test.done();
+    },
+
+    'allows specify any existing container name and port in a service': {
+      'with default setting'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ContainerImage.fromRegistry('hello'),
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001 });
+
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+        listener.addTargets("target", {
+          port: 80,
+          targets: [service.loadBalancerTarget({
+            containerName: "MainContainer"
+          })]
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::ECS::Service', {
+          LoadBalancers: [
+            {
+              ContainerName: "MainContainer",
+              ContainerPort: 8000,
+              TargetGroupArn: {
+                Ref: "lblistenertargetGroupC7489D1E"
+              }
+            }
+          ],
+        }));
+
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+          Description: "Load balancer to target",
+          FromPort: 8000,
+          ToPort: 8000,
+        }));
+
+        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+          Description: "Load balancer to target",
+          FromPort: 8000,
+          ToPort: 8000
+        }));
+
+        test.done();
+      },
+
+      'with TCP protocol'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ContainerImage.fromRegistry('hello'),
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001, protocol: ecs.Protocol.TCP });
+
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+
+        // THEN
+        listener.addTargets("target", {
+          port: 80,
+          targets: [service.loadBalancerTarget({
+            containerName: "MainContainer",
+            containerPort: 8001,
+            protocol: ecs.Protocol.TCP
+          })]
+        });
+
+        test.done();
+      },
+
+      'with UDP protocol'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ContainerImage.fromRegistry('hello'),
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001, protocol: ecs.Protocol.UDP });
+
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+
+        // THEN
+        listener.addTargets("target", {
+          port: 80,
+          targets: [service.loadBalancerTarget({
+            containerName: "MainContainer",
+            containerPort: 8001,
+            protocol: ecs.Protocol.UDP
+          })]
+        });
+
+        test.done();
+      },
+
+      'throws when protocol does not match'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ContainerImage.fromRegistry('hello'),
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001, protocol: ecs.Protocol.UDP });
+
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+
+        // THEN
+        test.throws(() => {
+          listener.addTargets("target", {
+            port: 80,
+            targets: [service.loadBalancerTarget({
+              containerName: "MainContainer",
+              containerPort: 8001,
+              protocol: ecs.Protocol.TCP
+            })]
+          });
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMapping()"?/);
+
+        test.done();
+      },
+
+      'throws when port does not match'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ContainerImage.fromRegistry('hello'),
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001 });
+
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+
+        // THEN
+        test.throws(() => {
+          listener.addTargets("target", {
+            port: 80,
+            targets: [service.loadBalancerTarget({
+              containerName: "MainContainer",
+              containerPort: 8002,
+            })]
+          });
+        }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMapping()"?/);
+
+        test.done();
+      },
+
+      'throws when container does not exist'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const container = taskDefinition.addContainer('MainContainer', {
+          image: ContainerImage.fromRegistry('hello'),
+        });
+        container.addPortMappings({ containerPort: 8000 });
+        container.addPortMappings({ containerPort: 8001 });
+
+        const service = new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition
+        });
+
+        // WHEN
+        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+        const listener = lb.addListener("listener", { port: 80 });
+
+        // THEN
+        test.throws(() => {
+          listener.addTargets("target", {
+            port: 80,
+            targets: [service.loadBalancerTarget({
+              containerName: "SideContainer",
+              containerPort: 8001,
+            })]
+          });
+        }, /No container named 'SideContainer'. Did you call "addContainer()"?/);
+
+        test.done();
+      }
     }
   },
 
