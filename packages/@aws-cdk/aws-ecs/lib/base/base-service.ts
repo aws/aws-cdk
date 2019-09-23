@@ -8,6 +8,7 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -21,6 +22,63 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+}
+
+/**
+ * Properties for ECS container targets.
+ */
+export interface TargetProps {
+  /**
+   * Name of the container.
+   */
+  readonly containerName: string,
+
+  /**
+   * Container targets of the container.
+   */
+  readonly containerTargets: ContainerTargetProps[]
+}
+
+/**
+ * Properties for registering a container target.
+ */
+export interface ContainerTargetProps {
+  /**
+   * Container port number to be registered.
+   */
+  readonly containerPort: number,
+
+  /**
+   * Protocol of the container port.
+   *
+   * @default Protocol.TCP
+   */
+  readonly protocol?: Protocol,
+
+  /**
+   * Setting to create and attach target groups.
+   */
+  readonly targetGroups: TargetGroupProps [],
+}
+
+/**
+ * The interface for creating and attaching a target group.
+ */
+export interface TargetGroupProps {
+  /**
+   * ID for a target group to be created.
+   */
+  readonly targetGroupId: string,
+
+  /**
+   * Properties for adding new targets to a listener.
+   */
+  readonly addTargetGroupProps?: elbv2.AddApplicationTargetsProps | elbv2.AddNetworkTargetsProps,
+
+  /**
+   * Listener for the target group to attach to.
+   */
+  readonly listener: elbv2.IApplicationListener | elbv2.INetworkListener
 }
 
 /**
@@ -274,6 +332,68 @@ export abstract class BaseService extends Resource
         return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort);
       }
     };
+  }
+
+  /**
+   * Use this function to create all load balancer targets to be registered in this service, add them to
+   * target groups, and attach target groups to listeners accordingly.
+   *
+   * @example
+   *
+   * service.registerContainerTargets([
+   *   {
+   *     containerName: "web",
+   *     containerTargets: [
+   *       {
+   *         containerPort: 80,
+   *         targetGroups: [
+   *           {
+   *             targetGroupId: "ECS",
+   *             listener,
+   *           }
+   *         ]
+   *       }
+   *     ]
+   *   }
+   * ]
+   */
+  public registerContainerTargets(containers: TargetProps[]) {
+    for (const container of containers) {
+      for (const containerTarget of container.containerTargets) {
+        const target = {
+          containerName: container.containerName,
+          containerPort: containerTarget.containerPort,
+          protocol: containerTarget.protocol
+        };
+        for (const targetGroupProp of containerTarget.targetGroups) {
+          if (targetGroupProp.listener instanceof elbv2.ApplicationListener) {
+            const props = (targetGroupProp.addTargetGroupProps || {}) as elbv2.AddApplicationTargetsProps;
+            targetGroupProp.listener.addTargets(targetGroupProp.targetGroupId, {
+              ... props,
+              targets: [
+                this.loadBalancerTarget({
+                  ...target
+                })
+              ],
+              port: props.port !== undefined ? props.port : (props.protocol === undefined ? 80 :
+                    (props.protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80))
+            });
+          }
+          if (targetGroupProp.listener instanceof elbv2.NetworkListener) {
+            const props = (targetGroupProp.addTargetGroupProps || {}) as elbv2.AddNetworkTargetsProps;
+            targetGroupProp.listener.addTargets(targetGroupProp.targetGroupId, {
+              ... props,
+              targets: [
+                this.loadBalancerTarget({
+                  ...target
+                })
+              ],
+              port: props.port !== undefined ? props.port : 80
+            });
+          }
+        }
+      }
+    }
   }
 
   /**
