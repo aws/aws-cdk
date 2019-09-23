@@ -1,6 +1,8 @@
 import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/core';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
+import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
+import { MockIntegration } from './integrations';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
 
@@ -85,6 +87,11 @@ export interface IResource extends IResourceBase {
    * @returns The newly created `Method` object.
    */
   addMethod(httpMethod: string, target?: Integration, options?: MethodOptions): Method;
+
+  /**
+   * TODO
+   */
+  addCorsPreflight(options: CorsOptions): Method;
 }
 
 export interface ResourceOptions {
@@ -142,6 +149,46 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
   public addProxy(options?: ProxyResourceOptions): ProxyResource {
     return new ProxyResource(this, '{proxy+}', { parent: this, ...options });
+  }
+
+  public addCorsPreflight(options: CorsOptions) {
+
+    const headers = options.allowHeaders || Cors.DEFAULT_HEADERS;
+    const methods = options.allowMethods || Cors.ALL_METHODS;
+    const origin  = options.allowOrigin;
+
+    const integrationResponseParams: { [p: string]: string } = { };
+    integrationResponseParams['method.response.header.Access-Control-Allow-Headers'] = `'${headers.join(',')}'`;
+    integrationResponseParams['method.response.header.Access-Control-Allow-Origin'] = `'${origin}'`;
+    integrationResponseParams['method.response.header.Access-Control-Allow-Methods'] = `'${methods.join(',')}'`;
+
+    if (options.allowCredentials) {
+      integrationResponseParams['method.response.header.Access-Control-Allow-Credentials'] = `'true'`;
+    }
+
+    const methodReponseParams: { [p: string]: boolean } = { };
+    for (const key of Object.keys(integrationResponseParams)) {
+      methodReponseParams[key] = true;
+    }
+
+    const statusCode = options.statusCode !== undefined ? options.statusCode : 204;
+
+    return this.addMethod('OPTIONS', new MockIntegration({
+      integrationResponses: [
+        {
+          statusCode: `${statusCode}`,
+          responseParameters: integrationResponseParams,
+        }
+      ],
+      requestTemplates: { 'application/json': '{ statusCode: 200 }' }
+    }), {
+      methodResponses: [
+        {
+          statusCode: `${statusCode}`,
+          responseParameters: methodReponseParams
+        }
+      ]
+    });
   }
 
   public getResource(pathPart: string): IResource | undefined {
