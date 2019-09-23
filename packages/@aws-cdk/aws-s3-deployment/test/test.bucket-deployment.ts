@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import cloudfront = require('@aws-cdk/aws-cloudfront');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -394,4 +394,41 @@ export = {
     }));
     test.done();
   },
+
+  'memoryLimit can be used to specify the memory limit for the deployment resource handler'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+
+    // we define 3 deployments with 2 different memory configurations
+
+    new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      memoryLimit: 256
+    });
+
+    new s3deploy.BucketDeployment(stack, 'Deploy256-2', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      memoryLimit: 256
+    });
+
+    new s3deploy.BucketDeployment(stack, 'Deploy1024', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      memoryLimit: 1024
+    });
+
+    // THEN
+
+    // we expect to find only two handlers, one for each configuration
+
+    expect(stack).to(countResources('AWS::Lambda::Function', 2));
+    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256  }));
+    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 1024 }));
+    test.done();
+  }
 };
