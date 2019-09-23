@@ -9,7 +9,7 @@ PREVIOUS_KUBE_VERSION=$1
 LATEST_KUBE_VERSION=$2
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
-EKS_PATH="$SCRIPT_PATH/../packages/@aws-cdk/aws-eks"
+EKS_PATH="$SCRIPT_PATH/.."
 
 sed -i "s/const LATEST_KUBERNETES_VERSION = '${PREVIOUS_KUBE_VERSION}/const LATEST_KUBERNETES_VERSION = '${LATEST_KUBE_VERSION}/" "$EKS_PATH/lib/cluster.ts"
 
