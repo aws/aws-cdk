@@ -824,6 +824,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   }
 }
 
+// MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
 const LATEST_KUBERNETES_VERSION = '1.14';
 
 /**
