@@ -68,7 +68,7 @@ export class NestedStack extends Stack {
     return x != null && typeof(x) === 'object' && NESTED_STACK_SYMBOL in x;
   }
 
-  public readonly templateFileName: string;
+  public readonly templateFile: string;
 
   /**
    * The stack this stack is nested in.
@@ -106,11 +106,11 @@ export class NestedStack extends Stack {
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
     // this is the file name of the synthesized template file within the cloud assembly
-    this.templateFileName = `${this.node.uniqueId}.nested.template.json`;
+    this.templateFile = `${this.node.uniqueId}.nested.template.json`;
 
     const asset = new s3_assets.SynthesizedAsset(parentScope, 'Asset', {
       packaging: s3_assets.AssetPackaging.FILE,
-      assemblyPath: this.templateFileName,
+      assemblyPath: this.templateFile,
       sourceHash: this.node.uniqueId
     });
 
