@@ -36,6 +36,7 @@ async function parseCommandLineArguments() {
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
+    .option('endpointFile', { type: 'string', default: undefined, desc: 'Overwrite service endpoints in AWS SDK.' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
@@ -96,6 +97,7 @@ async function initCommandLine() {
     profile: argv.profile,
     proxyAddress: argv.proxy,
     ec2creds: argv.ec2creds,
+    endpointFile: argv.endpointFile,
   });
   const configuration = new Configuration(argv);
   await configuration.load();

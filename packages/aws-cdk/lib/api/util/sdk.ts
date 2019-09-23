@@ -30,6 +30,10 @@ export interface ISDK {
   defaultAccount(): Promise<string | undefined>;
 }
 
+interface ServiceEndpoints {
+  [serviceName: string]: string
+}
+
 export interface SDKOptions {
   /**
    * Profile name to use
@@ -53,6 +57,22 @@ export interface SDKOptions {
    * @default Automatically determine.
    */
   ec2creds?: boolean;
+
+  /**
+   * Change the endpoint addresses of the aws sdk services
+   *
+   * The file must be a json file with {"serviceName": "url"}
+   * E.g.
+   *
+   * {
+   *  "cloudformation": "http://localhost:4581",
+   *  "s3": "http://localhost:4572"
+   * }
+   *
+   * @default Online AWS cloud endpoints
+   */
+
+   endpointFile?: string;
 }
 
 /**
@@ -69,6 +89,7 @@ export interface SDKOptions {
 export class SDK implements ISDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
   private readonly credentialsCache: CredentialsCache;
+  private readonly endpointCache: EndpointCache;
   private readonly profile?: string;
 
   /**
@@ -105,6 +126,8 @@ export class SDK implements ISDK {
       });
     }
 
+    this.endpointCache = new EndpointCache(options.endpointFile);
+
     this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
@@ -113,6 +136,7 @@ export class SDK implements ISDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.CloudFormation({
       ...this.retryOptions,
+      endpoint: await this.endpointCache.getEndpoint('cloudformation'),
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
@@ -122,6 +146,7 @@ export class SDK implements ISDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.EC2({
       ...this.retryOptions,
+      endpoint: await this.endpointCache.getEndpoint('ec2'),
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
@@ -131,6 +156,7 @@ export class SDK implements ISDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.SSM({
       ...this.retryOptions,
+      endpoint: await this.endpointCache.getEndpoint('ssm'),
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
@@ -140,6 +166,7 @@ export class SDK implements ISDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.S3({
       ...this.retryOptions,
+      endpoint: await this.endpointCache.getEndpoint('s3'),
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
@@ -149,6 +176,7 @@ export class SDK implements ISDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.Route53({
       ...this.retryOptions,
+      endpoint: await this.endpointCache.getEndpoint('route53'),
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode),
     });
@@ -158,6 +186,7 @@ export class SDK implements ISDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.ECR({
       ...this.retryOptions,
+      endpoint: await this.endpointCache.getEndpoint('ecr'),
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
@@ -325,6 +354,36 @@ class DefaultAWSAccount {
       debug('Unable to determine the default AWS account (did you configure "aws configure"?):', e);
       return undefined;
     }
+  }
+}
+
+class EndpointCache {
+  private serviceEndpoints: ServiceEndpoints;
+
+  constructor(private readonly endpointFile?: string) {}
+
+  public async getEndpoint(serviceName: string): Promise<string | undefined> {
+    if (!this.endpointFile) {
+      return undefined;
+    }
+
+    if (!this.serviceEndpoints) {
+      const fileEndpoints = await readIfPossible(this.endpointFile);
+      if (fileEndpoints) {
+        try {
+          this.serviceEndpoints = JSON.parse(fileEndpoints);
+          debug('Using custom service endpoints:', this.serviceEndpoints);
+        } catch (e) {
+          debug('Unable to parse endpoints file:', e);
+        }
+      }
+    }
+
+    if (this.serviceEndpoints[serviceName]) {
+      return this.serviceEndpoints[serviceName];
+    }
+
+    return undefined;
   }
 }
 
