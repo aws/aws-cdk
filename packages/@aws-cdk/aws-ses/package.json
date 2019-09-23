@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ses",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "The CDK Construct Library for AWS::SES",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-ses",
@@ -63,28 +63,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
+    "@aws-cdk/assert": "^1.9.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/aws-sns": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-kms": "^1.9.0",
+    "@aws-cdk/aws-lambda": "^1.9.0",
+    "@aws-cdk/aws-s3": "^1.9.0",
+    "@aws-cdk/aws-sns": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "@aws-cdk/aws-sns": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-kms": "^1.9.0",
+    "@aws-cdk/aws-lambda": "^1.9.0",
+    "@aws-cdk/aws-s3": "^1.9.0",
+    "@aws-cdk/aws-sns": "^1.9.0",
+    "@aws-cdk/core": "^1.9.0"
   },
   "engines": {
     "node": ">= 10.3.0"

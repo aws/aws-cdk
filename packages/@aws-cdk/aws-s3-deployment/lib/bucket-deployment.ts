@@ -5,15 +5,15 @@ import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import path = require('path');
-import { ISource } from './source';
+import {ISource, SourceConfig} from './source';
 
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 
 export interface BucketDeploymentProps {
   /**
-   * The source from which to deploy the contents of this bucket.
+   * The sources from which to deploy the contents of this bucket.
    */
-  readonly source: ISource;
+  readonly sources: ISource[];
 
   /**
    * The S3 bucket to sync the contents of the zip file to.
@@ -74,9 +74,9 @@ export class BucketDeployment extends cdk.Construct {
       timeout: cdk.Duration.minutes(15)
     });
 
-    const source = props.source.bind(this);
+    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
+    sources.forEach(source => source.bucket.grantRead(handler));
 
-    source.bucket.grantRead(handler);
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {
       handler.addToRolePolicy(new iam.PolicyStatement({
@@ -90,8 +90,8 @@ export class BucketDeployment extends cdk.Construct {
       provider: cloudformation.CustomResourceProvider.lambda(handler),
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketName: source.bucket.bucketName,
-        SourceObjectKey: source.zipObjectKey,
+        SourceBucketNames: sources.map(source => source.bucket.bucketName),
+        SourceObjectKeys: sources.map(source => source.zipObjectKey),
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
