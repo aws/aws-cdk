@@ -1,0 +1,32 @@
+#!/bin/bash
+# Script to run a given test against the monorepo.
+#
+# Set up paths so that `cdk` binary is on the path, and make it
+# so that `npm install` symlinks from the monorepo package directories.
+set -eu
+
+cli_dir=$(cd $(dirname $0)/../.. && pwd)
+repo_root=$(cd $cli_dir/../.. && pwd)
+
+export REPO_ROOT="$repo_root"
+export ORIGINAL_NPM="$(which npm)"
+
+export PATH="$cli_dir/bin:$cli_dir/test/integ/cli-wrappers:$PATH"
+"$@"
+
+
+function install_dep() {
+  local dep=$1
+
+  if [ -n "${CDK_REPO}" ]; then
+    mkdir -p node_modules/@aws-cdk
+    local source="${CDK_REPO}/packages/${dep}"
+    local target="$PWD/node_modules/${dep}"
+    echo "| symlinking dependency ${target} => ${source}"
+    ln -s ${source} ${target}
+  else
+    echo "| installing dependency ${dep}"
+    npm i --no-save ${dep}
+  fi
+}
+
