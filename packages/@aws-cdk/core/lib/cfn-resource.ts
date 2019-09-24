@@ -272,8 +272,12 @@ export class CfnResource extends CfnRefElement {
   }
 
   protected get cfnProperties(): { [key: string]: any } {
-    const tags = TagManager.isTaggable(this) ? this.tags.renderTags() : {};
-    return deepMerge(this._cfnProperties || {}, {tags});
+    if (TagManager.isTaggable(this) && this.tags.renderTags() !== undefined) {
+      const tags: {[key: string]: any} = {};
+      tags[this.tags.tagPropertyName] = this.tags.renderTags();
+      return deepMerge(this._cfnProperties || {}, tags);
+    }
+    return this._cfnProperties;
   }
 
   protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
