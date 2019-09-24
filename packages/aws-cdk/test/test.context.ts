@@ -2,7 +2,7 @@ import fs = require('fs-extra');
 import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
-import { Configuration } from '../lib/settings';
+import { Configuration, TRANSIENT_CONTEXT_KEY } from '../lib/settings';
 
 const state: {
   previousWorkingDir?: string;
@@ -133,6 +133,38 @@ export = {
 
     // WHEN
     test.deepEqual(config.context.all, { foo: 'bar', boo: 'far' });
+
+    test.done();
+  },
+
+  async 'can save and load'(test: Test) {
+    // GIVEN
+    const config1 = await new Configuration().load();
+    config1.context.set('some_key', 'some_value');
+    await config1.saveContext();
+    test.equal(config1.context.get('some_key'), 'some_value');
+
+    // WHEN
+    const config2 = await new Configuration().load();
+
+    // THEN
+    test.equal(config2.context.get('some_key'), 'some_value');
+
+    test.done();
+  },
+
+  async 'transient values arent saved to disk'(test: Test) {
+    // GIVEN
+    const config1 = await new Configuration().load();
+    config1.context.set('some_key', { [TRANSIENT_CONTEXT_KEY]: true, value: 'some_value' });
+    await config1.saveContext();
+    test.equal(config1.context.get('some_key').value, 'some_value');
+
+    // WHEN
+    const config2 = await new Configuration().load();
+
+    // THEN
+    test.equal(config2.context.get('some_key'), undefined);
 
     test.done();
   },

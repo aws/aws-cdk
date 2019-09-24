@@ -12,5 +12,6 @@ dist
 *.snk
 
 !lib/init-templates/*/*/tsconfig.json
+!test/integ/cli/**/*.js
 
 *.tsbuildinfo

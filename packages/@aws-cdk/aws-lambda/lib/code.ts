@@ -90,7 +90,7 @@ export abstract class Code {
    * class to bind to it. Specifically it's required to allow assets to add
    * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bindToResource(_resource: CfnResource) {
+  public bindToResource(_resource: CfnResource, _options?: ResourceBindOptions) {
     return;
   }
 }
@@ -192,14 +192,25 @@ export class AssetCode extends Code {
     };
   }
 
-  public bindToResource(resource: CfnResource) {
+  public bindToResource(resource: CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
       throw new Error(`bindToResource() must be called after bind()`);
     }
 
-      // https://github.com/aws/aws-cdk/issues/1432
-    this.asset.addResourceMetadata(resource, 'Code');
+    const resourceProperty = options.resourceProperty || 'Code';
+
+    // https://github.com/aws/aws-cdk/issues/1432
+    this.asset.addResourceMetadata(resource, resourceProperty);
   }
+}
+
+export interface ResourceBindOptions {
+  /**
+   * The name of the CloudFormation property to annotate with asset metadata.
+   * @see https://github.com/aws/aws-cdk/issues/1432
+   * @default Code
+   */
+  readonly resourceProperty?: string;
 }
 
 /**
