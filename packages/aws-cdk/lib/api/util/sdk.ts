@@ -87,7 +87,7 @@ export interface SDKOptions {
 export class SDK implements ISDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
   private readonly credentialsCache: CredentialsCache;
-  private readonly endpoints: ServiceEndpoints;
+  private readonly endpoints: ServiceEndpoints = {};
   private readonly profile?: string;
 
   /**
