@@ -178,7 +178,7 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     unhealthyThreshold: hc.unhealthyThreshold || 2,
   };
 
-  (Object.keys(healthCheck) as (keyof CfnVirtualNode.HealthCheckProperty)[])
+  (Object.keys(healthCheck) as Array<keyof CfnVirtualNode.HealthCheckProperty>)
     .filter((key) => HEALTH_CHECK_PROPERTY_THRESHOLDS[key] && typeof healthCheck[key] === 'number')
     .map((key) => {
       const [min, max] = HEALTH_CHECK_PROPERTY_THRESHOLDS[key]!;
