@@ -222,10 +222,12 @@ class TestApp {
   private readonly app: cdk.App;
 
   constructor() {
+    const account = '123456789012';
+    const region = 'bermuda-triangle';
     const context = {
-      'availability-zones:123456789012:bermuda-triangle': 'bermuda-triangle-1a'
+      [`availability-zones:${account}:${region}`]: `${region}-1a`
     };
     this.app = new cdk.App({ context });
-    this.stack = new cdk.Stack(this.app, 'MyStack', { env: { account: '123456789012', region: 'bermuda-triangle' } });
+    this.stack = new cdk.Stack(this.app, 'MyStack', { env: { account, region } });
   }
 }
