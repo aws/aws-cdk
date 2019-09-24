@@ -22,7 +22,7 @@ export enum ArtifactType {
   /**
    * The artifact contains metadata generated out of the CDK application.
    */
-  CDK_METADATA = 'cdk:metadata',
+  CDK_TREE = 'cdk:tree',
 }
 
 /**
@@ -84,8 +84,8 @@ export class CloudArtifact {
     switch (artifact.type) {
       case ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);
-      case ArtifactType.CDK_METADATA:
-        return new MetadataCloudArtifact(assembly, id, artifact);
+      case ArtifactType.CDK_TREE:
+        return new TreeCloudArtifact(assembly, id, artifact);
       default:
         throw new Error(`unsupported artifact type: ${artifact.type}`);
     }
@@ -181,4 +181,4 @@ export class CloudArtifact {
 
 // needs to be defined at the end to avoid a cyclic dependency
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
-import { MetadataCloudArtifact } from './metadata-cloud-artifact';
+import { TreeCloudArtifact } from './tree-cloud-artifact';

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`assembly a single cloudformation stack and metadata 1`] = `
+exports[`assembly a single cloudformation stack and tree metadata 1`] = `
 Object {
   "environment": "aws://37736633/us-region-1",
   "properties": Object {
@@ -10,12 +10,12 @@ Object {
 }
 `;
 
-exports[`assembly a single cloudformation stack and metadata 2`] = `
+exports[`assembly a single cloudformation stack and tree metadata 2`] = `
 Object {
   "properties": Object {
-    "file": "my-cdk-metadata.json",
+    "file": "foo.tree.json",
   },
-  "type": "cdk:metadata",
+  "type": "cdk:tree",
 }
 `;
 

@@ -27,10 +27,10 @@ test('cloud assembly builder', () => {
     },
   });
 
-  session.addArtifact('metadata-artifact', {
-    type: ArtifactType.CDK_METADATA,
+  session.addArtifact('tree-artifact', {
+    type: ArtifactType.CDK_TREE,
     properties: {
-      file: 'foo.metadata.json'
+      file: 'foo.tree.json'
     }
   });
 
@@ -70,10 +70,10 @@ test('cloud assembly builder', () => {
       { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
     ],
     artifacts: {
-      'metadata-artifact': {
-        type: 'cdk:metadata',
+      'tree-artifact': {
+        type: 'cdk:tree',
         properties: {
-          file: 'foo.metadata.json'
+          file: 'foo.tree.json'
         }
       },
       'my-first-artifact': {

@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Construct, ConstructNode } from './construct';
 import { collectRuntimeInformation } from './private/runtime-info';
-import { Tree } from './private/tree';
+import { TreeMetadata } from './private/tree-metadata';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -120,7 +120,7 @@ export class App extends Construct {
     }
 
     if (props.treeMetadata === undefined || props.treeMetadata) {
-      new Tree(this);
+      new TreeMetadata(this);
     }
   }
 

@@ -27,7 +27,7 @@ export = {
     test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json', 'tree.json' ]);
     test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {
       Tree: {
-        type: 'cdk:metadata',
+        type: 'cdk:tree',
         properties: { file: 'tree.json' }
       }
     });
@@ -98,7 +98,7 @@ export = {
       version: cxapi.CLOUD_ASSEMBLY_VERSION,
       artifacts: {
         'Tree': {
-          type: 'cdk:metadata',
+          type: 'cdk:tree',
           properties: { file: 'tree.json' }
         },
         'my-random-construct': {

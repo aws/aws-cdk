@@ -127,7 +127,7 @@ export = {
     test.equal(t.root.toString(), '<root>');
     test.equal(t.child1_1_1.toString(), 'HighChild/Child1/Child11/Child111');
     test.equal(t.child2.toString(), 'HighChild/Child2');
-    test.equal(toTreeString(t.root), 'App\n  Tree [Tree]\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
+    test.equal(toTreeString(t.root), 'App\n  TreeMetadata [Tree]\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
     test.done();
   },
 

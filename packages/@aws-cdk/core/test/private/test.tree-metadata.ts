@@ -4,7 +4,7 @@ import path = require('path');
 import { App, Construct, Resource, Stack } from '../../lib/index';
 
 export = {
-  'annotations are generated as expected'(test: Test) {
+  'tree metadata is generated as expected'(test: Test) {
     const app = new App();
 
     const stack = new Stack(app, 'mystack');
@@ -14,9 +14,10 @@ export = {
     new MyResource(group2, 'resource3');
 
     const assembly = app.synth();
-    const annotationsFile = assembly.getMetadata('Tree').file;
+    const treeArtifact = assembly.tree();
+    test.ok(treeArtifact);
 
-    test.deepEqual(readJson(assembly.directory, annotationsFile), {
+    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
       version: 'tree-0.1',
       tree: {
         id: 'App',

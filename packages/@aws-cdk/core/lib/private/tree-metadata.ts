@@ -8,12 +8,12 @@ const FILE_PATH = 'tree.json';
 
 /**
  * Construct that is automatically attached to the top-level `App`.
- * This generates, as part of synthesis, a file containing metadata of the `Construct`s in the construct tree.
+ * This generates, as part of synthesis, a file containing the construct tree and the metadata for each node in the tree.
  * The output is in a tree format so as to preserve the construct hierarchy.
  *
  * @experimental
  */
-export class Tree extends Construct {
+export class TreeMetadata extends Construct {
   constructor(scope: Construct) {
     super(scope, 'Tree');
   }
@@ -43,7 +43,7 @@ export class Tree extends Construct {
     fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, undefined, 2), { encoding: 'utf-8' });
 
     builder.addArtifact('Tree', {
-      type: ArtifactType.CDK_METADATA,
+      type: ArtifactType.CDK_TREE,
       properties: {
         file: FILE_PATH
       }
