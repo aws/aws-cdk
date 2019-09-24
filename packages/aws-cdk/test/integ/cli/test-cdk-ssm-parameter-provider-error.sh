@@ -15,7 +15,7 @@ function cdk_synth() {
 }
 
 assert "cdk_synth ${STACK_NAME_PREFIX}-missing-ssm-parameter -c test:ssm-parameter-name=${parameterName}" <<HERE
-[Error at /cdk-toolkit-integration-missing-ssm-parameter] SSM parameter not available in account 993655754359, region us-east-1: /does/not/exist
+[Error at /${STACK_NAME_PREFIX}-missing-ssm-parameter] SSM parameter not available in account ${account}, region ${region}: /does/not/exist
 Found errors
 HERE
 
