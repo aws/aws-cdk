@@ -21,7 +21,9 @@ export class AccountAccessKeyCache {
    * @param filePath Path to the cache file
    */
   constructor(filePath?: string) {
-    this.cacheFile = filePath || path.join(os.homedir(), '.cdk', 'cache', 'accounts.json');
+    const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
+
+    this.cacheFile = filePath || path.join(CDK_HOME, 'cache', 'accounts.json');
   }
 
   /**

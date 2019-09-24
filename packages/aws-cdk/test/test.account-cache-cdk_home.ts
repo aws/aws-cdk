@@ -5,10 +5,10 @@ import { AccountAccessKeyCache } from '../lib/api/util/account-cache';
 
 export = {
   async 'setUp'(cb: ICallbackFunction) {
-    process.env.CDK_HOME = '/tmp/cdk-home-should-not-be-used';
+    process.env.CDK_HOME = '/tmp/cdk-home-cache-test';
 
     const self = this as any;
-    const dir = await fs.mkdtemp('/tmp/account-cache-test');
+    const dir = await fs.mkdtemp(process.env.CDK_HOME);
     self.file = path.join(dir, 'cache.json');
     self.cache = new AccountAccessKeyCache(self.file);
     return cb();
