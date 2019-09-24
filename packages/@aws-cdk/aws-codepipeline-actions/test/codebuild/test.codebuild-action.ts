@@ -9,7 +9,7 @@ import cpactions = require('../../lib');
 
 export = {
   'a cross-account CodeBuild action with outputs': {
-    'causes an error by default'(test: Test) {
+    'causes an error'(test: Test) {
       const app = new App();
 
       const projectStack = new Stack(app, 'ProjectStack', {
@@ -60,51 +60,6 @@ export = {
       test.throws(() => {
         buildStage.addAction(buildAction2);
       }, /https:\/\/github\.com\/aws\/aws-cdk\/issues\/4169/);
-
-      test.done();
-    },
-
-    'works if validateCrossAccountOutputs is passed as false'(test: Test) {
-      const app = new App();
-
-      const projectStack = new Stack(app, 'ProjectStack', {
-        env: {
-          region: 'us-west-2',
-          account: '012345678901',
-        },
-      });
-      const project = new codebuild.PipelineProject(projectStack, 'Project');
-
-      const pipelineStack = new Stack(app, 'PipelineStack', {
-        env: {
-          region: 'us-west-2',
-          account: '123456789012',
-        },
-      });
-      const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
-        stages: [
-          {
-            stageName: 'Source',
-            actions: [new cpactions.CodeCommitSourceAction({
-              actionName: 'CodeCommit',
-              repository: codecommit.Repository.fromRepositoryName(pipelineStack, 'Repo', 'repo-name'),
-              output: sourceOutput,
-            })],
-          },
-        ],
-      });
-      const buildStage = pipeline.addStage({
-        stageName: 'Build',
-      });
-
-      buildStage.addAction(new cpactions.CodeBuildAction({
-        actionName: 'Build2',
-        input: sourceOutput,
-        project,
-        outputs: [new codepipeline.Artifact()],
-        validateCrossAccountOutputs: false,
-      }));
 
       test.done();
     },
