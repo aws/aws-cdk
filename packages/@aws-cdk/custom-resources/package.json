@@ -79,7 +79,7 @@
     "cfn2ts": "file:../../../tools/cfn2ts",
     "nock": "^11.3.5",
     "pkglint": "file:../../../tools/pkglint",
-    "sinon": "^7.4.2"
+    "sinon": "^7.5.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "^1.9.0",
