@@ -128,13 +128,13 @@ export class SDK implements ISDK {
       try {
         this.endpoints = JSON.parse(options.endpoints);
       } catch (_e) {
-        this.endpoints = options.endpoints.split(/,/g).reduce((acc, entry) => {
+        this.endpoints = options.endpoints.split(/,/g).reduce<ServiceEndpoints>((acc, entry) => {
           const [service, url] = entry.split('=');
           if (service && url) {
             acc[service] = url;
           }
           return acc;
-        }, {} as ServiceEndpoints);
+        }, {});
       }
     }
 
