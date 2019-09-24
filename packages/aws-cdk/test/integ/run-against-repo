@@ -8,25 +8,14 @@ set -eu
 cli_dir=$(cd $(dirname $0)/../.. && pwd)
 repo_root=$(cd $cli_dir/../.. && pwd)
 
+if [[ ! -f $repo_root/package.json ]]; then
+    echo "$repo_root does not seem to be the root of the aws-cdk repository." >&2
+    exit 1
+fi
+
 export REPO_ROOT="$repo_root"
-export ORIGINAL_NPM="$(which npm)"
+export ORIGINAL_NPM="$(type -p npm)"
 
-export PATH="$cli_dir/bin:$cli_dir/test/integ/cli-wrappers:$PATH"
-"$@"
-
-
-function install_dep() {
-  local dep=$1
-
-  if [ -n "${CDK_REPO}" ]; then
-    mkdir -p node_modules/@aws-cdk
-    local source="${CDK_REPO}/packages/${dep}"
-    local target="$PWD/node_modules/${dep}"
-    echo "| symlinking dependency ${target} => ${source}"
-    ln -s ${source} ${target}
-  else
-    echo "| installing dependency ${dep}"
-    npm i --no-save ${dep}
-  fi
-}
-
+export PATH="$cli_dir/bin:$cli_dir/test/integ/run-wrappers/repo:$PATH"
+hash -r
+exec "$@"

@@ -64,7 +64,7 @@ function prepare_fixture() {
         @aws-cdk/aws-ec2
 
     echo "| setup complete at: $PWD"
-    echo "| 'cdk' is: $(which cdk)"
+    echo "| 'cdk' is: $(type -p cdk)"
 
     export FIXTURE_PREPARED=1
   fi
