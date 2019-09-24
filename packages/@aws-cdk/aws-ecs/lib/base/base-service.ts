@@ -76,9 +76,9 @@ export interface TargetGroupProps {
   readonly addTargetGroupProps?: elbv2.AddApplicationTargetsProps | elbv2.AddNetworkTargetsProps,
 
   /**
-   * Listener for the target group to attach to.
+   * Listener for the target group to attach to [disable-awslint:ref-via-interface].
    */
-  readonly listener: elbv2.IApplicationListener | elbv2.INetworkListener
+  readonly listener: elbv2.ApplicationListener | elbv2.NetworkListener
 }
 
 /**
@@ -366,31 +366,7 @@ export abstract class BaseService extends Resource
           protocol: containerTarget.protocol
         };
         for (const targetGroupProp of containerTarget.targetGroups) {
-          if (targetGroupProp.listener instanceof elbv2.ApplicationListener) {
-            const props = (targetGroupProp.addTargetGroupProps || {}) as elbv2.AddApplicationTargetsProps;
-            targetGroupProp.listener.addTargets(targetGroupProp.targetGroupId, {
-              ... props,
-              targets: [
-                this.loadBalancerTarget({
-                  ...target
-                })
-              ],
-              port: props.port !== undefined ? props.port : (props.protocol === undefined ? 80 :
-                    (props.protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80))
-            });
-          }
-          if (targetGroupProp.listener instanceof elbv2.NetworkListener) {
-            const props = (targetGroupProp.addTargetGroupProps || {}) as elbv2.AddNetworkTargetsProps;
-            targetGroupProp.listener.addTargets(targetGroupProp.targetGroupId, {
-              ... props,
-              targets: [
-                this.loadBalancerTarget({
-                  ...target
-                })
-              ],
-              port: props.port !== undefined ? props.port : 80
-            });
-          }
+          this.addToListener(targetGroupProp.targetGroupId, targetGroupProp.listener, target, targetGroupProp.addTargetGroupProps || {});
         }
       }
     }
@@ -473,6 +449,27 @@ export abstract class BaseService extends Resource
         securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
       }
     };
+  }
+
+  private addToListener(id: string, listener: elbv2.ApplicationListener | elbv2.NetworkListener,
+                        target: LoadBalancerTargetOptions, props: elbv2.AddApplicationTargetsProps | elbv2.AddNetworkTargetsProps) {
+    let port: number;
+    if (listener instanceof elbv2.ApplicationListener) {
+      const protocol = (props as elbv2.AddApplicationTargetsProps).protocol;
+      port = props.port !== undefined ? props.port : (protocol === undefined ? 80 :
+        (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80));
+    } else {
+      port = props.port !== undefined ? props.port : 80;
+    }
+    listener.addTargets(id, {
+      ... props,
+      targets: [
+        this.loadBalancerTarget({
+          ...target
+        })
+      ],
+      port
+    });
   }
 
   private renderServiceRegistry(registry: ServiceRegistry): CfnService.ServiceRegistryProperty {
