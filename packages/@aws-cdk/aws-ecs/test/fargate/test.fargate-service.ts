@@ -847,9 +847,72 @@ export = {
 
           test.done();
         },
+
+        'with any target group port and protocol'(test: Test) {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+          const container = taskDefinition.addContainer('MainContainer', {
+            image: ContainerImage.fromRegistry('hello'),
+          });
+          container.addPortMappings({ containerPort: 8000 });
+
+          const service = new ecs.FargateService(stack, 'Service', {
+            cluster,
+            taskDefinition
+          });
+
+          // WHEN
+          const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+          const listener = lb.addListener("listener", { port: 80 });
+
+          service.registerContainerTargets([
+            {
+              containerName: "MainContainer",
+              containerTargets: [
+                {
+                  containerPort: 8000,
+                  targetGroups: [
+                    {
+                      targetGroupId: "target1",
+                      listener,
+                      addTargetGroupProps: {
+                        port: 83,
+                        protocol: elbv2.ApplicationProtocol.HTTP
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]);
+
+          // THEN
+          expect(stack).to(haveResource('AWS::ECS::Service', {
+            LoadBalancers: [
+              {
+                ContainerName: "MainContainer",
+                ContainerPort: 8000,
+                TargetGroupArn: {
+                  Ref: "lblistenertarget1Group1A1A5C9E"
+                }
+              }
+            ],
+          }));
+
+          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+            Port: 83,
+            Protocol: "HTTP",
+          }));
+
+          test.done();
+        },
       },
+
       'when network load balancers': {
-          'with default target group port'(test: Test) {
+        'with default target group port'(test: Test) {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -901,6 +964,67 @@ export = {
 
           expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 80,
+            Protocol: "TCP",
+          }));
+
+          test.done();
+        },
+
+        'with any target group port'(test: Test) {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+          const container = taskDefinition.addContainer('MainContainer', {
+            image: ContainerImage.fromRegistry('hello'),
+          });
+          container.addPortMappings({ containerPort: 8000 });
+
+          const service = new ecs.FargateService(stack, 'Service', {
+            cluster,
+            taskDefinition
+          });
+
+          // WHEN
+          const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
+          const listener = lb.addListener("listener", { port: 80 });
+
+          service.registerContainerTargets([
+            {
+              containerName: "MainContainer",
+              containerTargets: [
+                {
+                  containerPort: 8000,
+                  targetGroups: [
+                    {
+                      targetGroupId: "target1",
+                      addTargetGroupProps: {
+                        port: 81
+                      },
+                      listener
+                    }
+                  ]
+                }
+              ]
+            }
+          ]);
+
+          // THEN
+          expect(stack).to(haveResource('AWS::ECS::Service', {
+            LoadBalancers: [
+              {
+                ContainerName: "MainContainer",
+                ContainerPort: 8000,
+                TargetGroupArn: {
+                  Ref: "lblistenertarget1Group1A1A5C9E"
+                }
+              }
+            ],
+          }));
+
+          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+            Port: 81,
             Protocol: "TCP",
           }));
 
