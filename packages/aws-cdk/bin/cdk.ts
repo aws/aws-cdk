@@ -75,7 +75,8 @@ async function parseCommandLineArguments() {
     .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
-      'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
+      'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
+      'The CDK creates a .cdk cache directory, by default in your user home directory. You can set the CDK_HOME environement variable to change that directory.',
     ].join('\n\n'))
     .argv;
 }
