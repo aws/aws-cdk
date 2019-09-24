@@ -66,7 +66,7 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 
-  formatter.warning(`(NOTE: There may be security-related changes not in this list. See http://bit.ly/cdk-2EhF7Np)`);
+  formatter.warning(`(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)`);
   formatter.printSectionFooter();
 }
 
