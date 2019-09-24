@@ -164,6 +164,10 @@ const HEALTH_CHECK_PROPERTY_THRESHOLDS: {[key in (keyof CfnVirtualNode.HealthChe
 function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVirtualNode.HealthCheckProperty | undefined {
   if (hc === undefined) { return undefined; }
 
+  if (hc.protocol === Protocol.TCP && hc.path) {
+    throw new Error('The path property cannot be set with Protocol.TCP');
+  }
+
   const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min

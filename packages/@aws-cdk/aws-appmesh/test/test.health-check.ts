@@ -110,4 +110,22 @@ export = {
 
     test.done();
   },
+  'throws if path and Protocol.TCP'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
+      healthCheck: {
+        protocol,
+        path: '/'
+      }
+    });
+
+    // THEN
+    test.doesNotThrow(() => toThrow(appmesh.Protocol.HTTP));
+    test.throws(() => toThrow(appmesh.Protocol.TCP), /The path property cannot be set with Protocol.TCP/);
+
+    test.done();
+  },
 };
