@@ -223,6 +223,30 @@ export = {
     test.done();
   },
 
+  'table.node.defaultChild'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    // WHEN
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING
+      }],
+      compressed: true,
+      dataFormat: glue.DataFormat.Json,
+    });
+
+    // THEN
+    test.ok(table.node.defaultChild instanceof glue.CfnTable);
+    test.done();
+  },
+
   'encrypted table': {
     'SSE-S3'(test: Test) {
       const stack = new cdk.Stack();
