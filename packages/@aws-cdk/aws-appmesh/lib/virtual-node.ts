@@ -185,10 +185,10 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
       const value = healthCheck[key]!;
 
       if (value < min) {
-        throw new Error(`The value of '${key}' is below the minimum threshold (expected ${min}, got ${value})`);
+        throw new Error(`The value of '${key}' is below the minimum threshold (expected >=${min}, got ${value})`);
       }
       if (value > max) {
-        throw new Error(`The value of '${key}' is above the maximum threshold (expected ${max}, got ${value})`);
+        throw new Error(`The value of '${key}' is above the maximum threshold (expected <=${max}, got ${value})`);
       }
     });
 
