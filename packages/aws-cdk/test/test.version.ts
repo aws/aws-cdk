@@ -72,6 +72,20 @@ export = {
     test.done();
   },
 
+  async 'Uses CDK_HOME if set'(test: Test) {
+    test.expect(1);
+    process.env.CDK_HOME = '/tmp/cdk-home';
+    const cachePath = path.join(process.env.CDK_HOME, 'cache', 'repo-version-ttl');
+
+    const cache = new VersionCheckTTL(undefined, 100);
+    await cache.update();
+    const storedVersion = fs.readFileSync(cachePath, 'utf8');
+    test.equal(storedVersion, '');
+
+    delete process.env.CDK_HOME;
+    test.done();
+  },
+
   'No homedir for the given user'(test: Test) {
     test.expect(1);
     sinon.stub(os, 'homedir').returns('');

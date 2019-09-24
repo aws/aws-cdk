@@ -24,13 +24,21 @@ function commit(): string {
 
 export class VersionCheckTTL {
   public static timestampFilePath(): string {
-    // Get the home directory from the OS, first. Fallback to $HOME.
-    const homedir = os.userInfo().homedir || os.homedir();
-    if (!homedir || !homedir.trim()) {
-      throw new Error('Cannot determine home directory');
+    let CDK_HOME;
+    if (!process.env.CDK_HOME) {
+      // Get the home directory from the OS, first. Fallback to $HOME.
+      const homedir = os.userInfo().homedir || os.homedir();
+      if (!homedir || !homedir.trim()) {
+        throw new Error('Cannot determine home directory');
+      }
+
+      CDK_HOME = path.join(homedir, '.cdk');
+    } else {
+      CDK_HOME = path.resolve(process.env.CDK_HOME);
     }
+
     // Using the same path from account-cache.ts
-    return path.join(homedir, '.cdk', 'cache', 'repo-version-ttl');
+    return path.join(CDK_HOME, 'cache', 'repo-version-ttl');
   }
 
   private readonly file: string;
