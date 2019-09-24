@@ -19,13 +19,13 @@ export = {
       }
     });
     const stack = new cdk.Stack(app, 'MyStack');
-    const asset = new Asset(stack, 'MyAsset', {
+    new Asset(stack, 'MyAsset', {
       path: SAMPLE_ASSET_DIR
     });
 
     // verify that metadata contains an "aws:cdk:asset" entry with
     // the correct information
-    const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
+    const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
 
     // verify that now the template contains parameters for this asset
@@ -59,9 +59,9 @@ export = {
 
     const synth = app.synth().getStack(stack.stackName);
     const meta = synth.manifest.metadata || {};
-    test.ok(meta['/my-stack/MyAsset']);
-    test.ok(meta['/my-stack/MyAsset'][0]);
-    test.deepEqual(meta['/my-stack/MyAsset'][0].data, {
+    test.ok(meta['/my-stack']);
+    test.ok(meta['/my-stack'][0]);
+    test.deepEqual(meta['/my-stack'][0].data, {
       path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       id: "mystackMyAssetD6B1B593",
       packaging: "zip",
@@ -77,8 +77,8 @@ export = {
   '"file" assets'(test: Test) {
     const stack = new cdk.Stack();
     const filePath = path.join(__dirname, 'file-asset.txt');
-    const asset = new Asset(stack, 'MyAsset', { path: filePath });
-    const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
+    new Asset(stack, 'MyAsset', { path: filePath });
+    const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
 
     // synthesize first so "prepare" is called
