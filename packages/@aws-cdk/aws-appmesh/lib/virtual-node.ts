@@ -148,9 +148,23 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 }
 
+/**
+ * Minimum and maximum thresholds for HeathCheck numeric properties
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_HealthCheckPolicy.html
+ */
+const HEALTH_CHECK_PROPERTY_THRESHOLDS: {[key in (keyof CfnVirtualNode.HealthCheckProperty)]?: [number, number]} = {
+  healthyThreshold: [2, 10],
+  intervalMillis: [5000, 300000],
+  port: [1, 65535],
+  timeoutMillis: [2000, 60000],
+  unhealthyThreshold: [2, 10],
+};
+
 function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVirtualNode.HealthCheckProperty | undefined {
   if (hc === undefined) { return undefined; }
-  return {
+
+  const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
     path: hc.path || hc.protocol === Protocol.HTTP ? '/' : undefined,
@@ -159,6 +173,22 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
     unhealthyThreshold: hc.unhealthyThreshold || 2,
   };
+
+  (Object.keys(healthCheck) as (keyof CfnVirtualNode.HealthCheckProperty)[])
+    .filter((key) => HEALTH_CHECK_PROPERTY_THRESHOLDS[key] && typeof healthCheck[key] === 'number')
+    .map((key) => {
+      const [min, max] = HEALTH_CHECK_PROPERTY_THRESHOLDS[key]!;
+      const value = healthCheck[key]!;
+
+      if (value < min) {
+        throw new Error(`The value of '${key}' is below the minimum threshold (expected ${min}, got ${value})`);
+      }
+      if (value > max) {
+        throw new Error(`The value of '${key}' is above the maximum threshold (expected ${max}, got ${value})`);
+      }
+    });
+
+  return healthCheck;
 }
 
 /**
