@@ -4,8 +4,9 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
+import { Token } from '@aws-cdk/core';
 import path = require('path');
-import {ISource, SourceConfig} from './source';
+import { ISource, SourceConfig } from './source';
 
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 
@@ -55,6 +56,17 @@ export interface BucketDeploymentProps {
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
+
+  /**
+   * The amount of memory (in MiB) to allocate to the AWS Lambda function which
+   * replicates the files from the CDK bucket to the destination bucket.
+   *
+   * If you are deploying large files, you will need to increase this number
+   * accordingly.
+   *
+   * @default 128
+   */
+  readonly memoryLimit?: number;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -66,12 +78,13 @@ export class BucketDeployment extends cdk.Construct {
     }
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8756C',
+      uuid: this.renderSingletonUuid(props.memoryLimit),
       code: lambda.Code.fromAsset(handlerCodeBundle),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
-      timeout: cdk.Duration.minutes(15)
+      timeout: cdk.Duration.minutes(15),
+      memorySize: props.memoryLimit
     });
 
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
@@ -99,5 +112,22 @@ export class BucketDeployment extends cdk.Construct {
         DistributionPaths: props.distributionPaths
       }
     });
+  }
+
+  private renderSingletonUuid(memoryLimit?: number) {
+    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+
+    // if user specify a custom memory limit, define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    if (memoryLimit) {
+      if (Token.isUnresolved(memoryLimit)) {
+        throw new Error(`Can't use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler`);
+      }
+
+      uuid += `-${memoryLimit.toString()}MiB`;
+    }
+
+    return uuid;
   }
 }

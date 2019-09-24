@@ -1,4 +1,4 @@
-# Targets for AWS ELBv2 LoadBalancers
+# Targets for AWS Elastic Load Balancing V2
 <!--BEGIN STABILITY BANNER-->
 
 ---
