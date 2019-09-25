@@ -693,7 +693,7 @@ export = {
     });
 
     // THEN
-    test.notEqual(asg.node.defaultChild, undefined);
+    test.ok(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
 
     test.done();
   },
