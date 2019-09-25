@@ -203,12 +203,7 @@ export interface ITaggable {
   readonly tags: TagManager;
 }
 
-export interface TagManagerProps {
-  /**
-   * The CloudFormation Resource Name
-   */
-  readonly resourceTypeName: string;
-
+export interface TagManagerOptions {
   /**
    * The name of the property in CloudFormation for these tags
    *
@@ -216,16 +211,6 @@ export interface TagManagerProps {
    * @default tags
    */
   readonly tagPropertyName?: string;
-
-  /**
-   * The type or format of the tags
-   */
-  readonly tagType: TagType;
-
-  /**
-   * The initial tags from the CloudFormation properites
-   */
-  readonly cfnInitialTags?: any;
 }
 /**
  * TagManager facilitates a common implementation of tagging for Constructs.
@@ -253,13 +238,13 @@ export class TagManager {
   private readonly resourceTypeName: string;
   private readonly initialTagPriority = 50;
 
-  constructor(props: TagManagerProps) {
-    this.resourceTypeName = props.resourceTypeName;
-    this.tagFormatter = TAG_FORMATTERS[props.tagType];
-    if (props.cfnInitialTags !== undefined) {
-      this._setTag(...this.tagFormatter.parseTags(props.cfnInitialTags, this.initialTagPriority));
+  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options?: TagManagerOptions) {
+    this.resourceTypeName = resourceTypeName;
+    this.tagFormatter = TAG_FORMATTERS[tagType];
+    if (tagStructure !== undefined) {
+      this._setTag(...this.tagFormatter.parseTags(tagStructure, this.initialTagPriority));
     }
-    this.tagPropertyName = props.tagPropertyName || 'tags';
+    this.tagPropertyName = options !== undefined ? options.tagPropertyName || 'tags' : 'tags';
   }
 
   /**

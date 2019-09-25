@@ -298,7 +298,7 @@ export default class CodeGenerator {
       this.code.line();
       for (const prop of Object.values(propMap)) {
         if (schema.isTagPropertyName(upcaseFirst(prop)) && schema.isTaggableResource(spec)) {
-          this.code.line(`this.tags = new ${TAG_MANAGER}({ tagType: ${tagType(spec)}, resourceTypeName: ${cfnResourceTypeName}, cfnInitialTags: props.${prop}, tagPropertyName: '${prop}'});`);
+          this.code.line(`this.tags = new ${TAG_MANAGER}(${tagType(spec)}, ${cfnResourceTypeName}, props.${prop}, { tagPropertyName: '${prop}' });`);
         } else {
           this.code.line(`this.${prop} = props.${prop};`);
         }
@@ -712,14 +712,16 @@ function tokenizableType(alternatives: string[]): boolean {
 }
 
 function tagType(resource: schema.TaggableResource): string {
-  if (schema.isTaggableResourceStandard(resource)) {
-    return `${TAG_TYPE}.STANDARD`;
-  }
-  if (schema.isTaggableResourceAutoScalingGroup(resource)) {
-    return `${TAG_TYPE}.AUTOSCALING_GROUP`;
-  }
-  if (schema.isTaggableResourceJson(resource) || schema.isTaggableResourceStringMap(resource)) {
-    return `${TAG_TYPE}.MAP`;
+  for (const prop of Object.values(resource.Properties)) {
+    if (schema.isTagPropertyStandard(prop)) {
+      return `${TAG_TYPE}.STANDARD`;
+    }
+    if (schema.isTagPropertyAutoScalingGroup(prop)) {
+      return `${TAG_TYPE}.AUTOSCALING_GROUP`;
+    }
+    if (schema.isTagPropertyJson(prop) || schema.isTagPropertyStringMap(prop)) {
+      return `${TAG_TYPE}.MAP`;
+    }
   }
   return `${TAG_TYPE}.NOT_TAGGABLE`;
 }

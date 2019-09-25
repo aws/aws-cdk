@@ -1,8 +1,5 @@
 import { Documented, PrimitiveType } from './base-types';
-import { isTagProperty, isTagPropertyAutoScalingGroup, isTagPropertyJson,
-  isTagPropertyName, isTagPropertyStandard, isTagPropertyStringMap, Property,
-  TagProperty, TagPropertyAutoScalingGroup, TagPropertyJson, TagPropertyStandard,
-  TagPropertyStringMap } from './property';
+import { isTagProperty, isTagPropertyName, Property, TagProperty } from './property';
 
 export interface ResourceType extends Documented {
   /**
@@ -39,37 +36,6 @@ export interface TaggableResource extends ResourceType {
   }
 }
 
-export interface TaggableResourceStandard extends TaggableResource {
-  Properties: {
-    Tags: TagPropertyStandard;
-    UserPoolTags: TagPropertyStandard;
-    [name: string]: Property;
-  }
-}
-
-export interface TaggableResourceAutoScalingGroup extends TaggableResource {
-  Properties: {
-    Tags: TagPropertyAutoScalingGroup;
-    UserPoolTags: TagPropertyAutoScalingGroup;
-    [name: string]: Property;
-  }
-}
-
-export interface TaggableResourceJson extends TaggableResource {
-  Properties: {
-    Tags: TagPropertyJson;
-    UserPoolTags: TagPropertyJson;
-    [name: string]: Property;
-  }
-}
-
-export interface TaggableResourceStringMap extends TaggableResource {
-  Properties: {
-    Tags: TagPropertyStringMap;
-    UserPoolTags: TagPropertyStringMap;
-    [name: string]: Property;
-  }
-}
 export type Attribute = PrimitiveAttribute | ListAttribute;
 
 export interface PrimitiveAttribute {
@@ -105,22 +71,6 @@ export function isTaggableResource(spec: ResourceType): spec is TaggableResource
     }
   }
   return false;
-}
-
-export function isTaggableResourceStandard(resource: TaggableResource): resource is TaggableResourceStandard {
-  return isTagPropertyStandard(tagProperty(resource));
-}
-
-export function isTaggableResourceAutoScalingGroup(resource: TaggableResource): resource is TaggableResourceAutoScalingGroup {
-  return isTagPropertyAutoScalingGroup(tagProperty(resource));
-}
-
-export function isTaggableResourceJson(resource: TaggableResource): resource is TaggableResourceJson {
-  return isTagPropertyJson(tagProperty(resource));
-}
-
-export function isTaggableResourceStringMap(resource: TaggableResource): resource is TaggableResourceStringMap {
-  return isTagPropertyStringMap(tagProperty(resource));
 }
 
 export function isPrimitiveAttribute(spec: Attribute): spec is PrimitiveAttribute {
@@ -194,8 +144,4 @@ export enum ResourceScrutinyType {
 
 export function isResourceScrutinyType(str: string): str is ResourceScrutinyType {
   return (ResourceScrutinyType as any)[str] !== undefined;
-}
-
-function tagProperty(spec: TaggableResource): Property {
-  return spec.Properties.Tags || spec.Properties.UserPoolTags;
 }

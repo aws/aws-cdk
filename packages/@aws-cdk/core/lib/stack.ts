@@ -200,11 +200,7 @@ export class Stack extends Construct implements ITaggable {
     this.environment = environment;
 
     this.stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
-    this.tags = new TagManager({
-      tagType: TagType.KEY_VALUE,
-      resourceTypeName: 'aws:cdk:stack',
-      cfnInitialTags: props.tags,
-    });
+    this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
