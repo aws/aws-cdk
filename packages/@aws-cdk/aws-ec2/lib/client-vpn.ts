@@ -5,7 +5,7 @@ import {
   CfnClientVpnRoute,
   CfnClientVpnTargetNetworkAssociation
 } from './ec2.generated';
-import { ISubnet } from './vpc';
+import {ISubnet} from './vpc';
 
 export interface IClientVpnEndpoint extends cdk.IResource {
   /**
@@ -84,16 +84,37 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
 
     this.clientVpnEndpointId = clientVpnEndpoint.ref;
   }
+
+  public addRoute(scope: cdk.Construct, id: string, options: ClientVpnRouteOptions): ClientVpnRoute {
+    return new ClientVpnRoute(scope, id, {
+      clientVpnEndpoint: this,
+      ...options
+    });
+  }
+
+  public addTargetNetworkAssociation(scope: cdk.Construct, id: string, subnet: ISubnet): ClientVpnTargetNetworkAssociation {
+    return new ClientVpnTargetNetworkAssociation(scope, id, {
+      clientVpnEndpoint: this,
+      subnet,
+    });
+  }
+
+  public addAuthorizationRule(scope: cdk.Construct, id: string, options: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
+    return new ClientVpnAuthorizationRule(scope, id, {
+      clientVpnEndpoint: this,
+      ...options,
+    });
+  }
 }
 
 export interface ClientVpnRouteOptions {
   readonly description?: string;
   readonly destinationCidrBlock: string;
+  readonly targetSubnet: ISubnet;
 }
 
 export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
   readonly clientVpnEndpoint: IClientVpnEndpoint;
-  readonly targetSubnet: ISubnet;
 }
 
 /**
@@ -114,9 +135,12 @@ export class ClientVpnRoute extends cdk.Resource {
   }
 }
 
-export interface ClientVpnTargetNetworkAssociationProps {
-  readonly clientVpnEndpoint: IClientVpnEndpoint;
+export interface ClientVpnTargetNetworkAssociationOptions {
   readonly subnet: ISubnet;
+}
+
+export interface ClientVpnTargetNetworkAssociationProps extends ClientVpnTargetNetworkAssociationOptions {
+  readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
 
 /**
