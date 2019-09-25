@@ -700,6 +700,19 @@
           "DNSName"
         ]
       }
+    },
+    "HttpsServiceServiceURLA7303487": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpsServiceDNS5E40A908"
+            }
+          ]
+        ]
+      }
     }
   }
 }

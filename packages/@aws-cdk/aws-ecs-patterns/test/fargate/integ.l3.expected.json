@@ -657,6 +657,22 @@
           "DNSName"
         ]
       }
+    },
+    "L3ServiceURL0F065F2D": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "L3LB212FC0E0",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
     }
   }
 }
