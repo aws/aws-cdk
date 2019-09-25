@@ -23,13 +23,13 @@ if [[ ! -f $dist_root/build.json ]]; then
   exit 1
 fi
 
-#serve_npm_packages
+serve_npm_packages
 
 # Install the CLI and put it on the path
 (cd $npmws && npm install aws-cdk)
 export PATH=$npmws/node_modules/.bin:$PATH
 
-#verify_installed_cli_version
+verify_installed_cli_version
 prepare_java_packages
 prepare_nuget_packages
 prepare_python_packages

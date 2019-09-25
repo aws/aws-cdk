@@ -2,7 +2,7 @@
 #------------------------------------------------------------------
 # setup
 #------------------------------------------------------------------
-set -e
+set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 source ${scriptdir}/common.bash
 
@@ -10,7 +10,13 @@ header TypeScript
 
 #------------------------------------------------------------------
 
-for template in app sample-app lib; do
+if [[ "${1:-}" == "" ]]; then
+    templates="app sample-app lib"
+else
+    templates="$@"
+fi
+
+for template in $templates; do
     echo "Trying template $template"
 
     setup
