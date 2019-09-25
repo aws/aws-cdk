@@ -16,8 +16,8 @@
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "integ-cli": "CDK_REPO=$PWD/../.. test/integ/cli/test.sh",
-    "integ-init": "CDK_DIST=$PWD/../../dist test/integ/init/test-all.sh"
+    "integ-cli": "test/integ/run-against-repo test/integ/cli/test.sh",
+    "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
     "pre": [
@@ -55,7 +55,7 @@
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
     "pkglint": "file:../../tools/pkglint",
-    "sinon": "^7.4.2"
+    "sinon": "^7.5.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "^1.9.0",
