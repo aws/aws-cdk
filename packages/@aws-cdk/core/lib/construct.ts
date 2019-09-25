@@ -655,9 +655,6 @@ function ignore(_x: any) {
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
-
-import { Reference } from './reference';
-
 const PATH_SEP_REGEX = new RegExp(`${ConstructNode.PATH_SEP}`, 'g');
 
 /**
