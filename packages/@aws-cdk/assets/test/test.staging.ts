@@ -53,7 +53,8 @@ export = {
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
       'cdk.out',
       'manifest.json',
-      'stack.template.json'
+      'stack.template.json',
+      'tree.json',
     ]);
     test.done();
   }
