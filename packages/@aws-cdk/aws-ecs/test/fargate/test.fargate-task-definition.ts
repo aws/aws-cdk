@@ -26,16 +26,10 @@ export = {
     "support lazy cpu and memory values"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
         cpu: cdk.Lazy.numberValue({produce: () => 128}),
         memoryLimitMiB: cdk.Lazy.numberValue({produce: () => 1024})
-      });
-
-      taskDefinition.addVolume({
-        host: {
-          sourcePath: "/tmp/cache",
-        },
-        name: "scratch"
       });
 
       // THEN
