@@ -244,19 +244,23 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       this.listener.addCertificateArns('Arns', [this.certificate.certificateArn]);
     }
 
+    let domainName = this.loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new ARecord(this, "DNS", {
+      const record = new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
         target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
       });
+
+      domainName = record.domainName;
     }
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
   }
 
   protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
