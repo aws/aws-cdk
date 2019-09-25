@@ -167,7 +167,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
-      ResourceId: { "Fn::GetAtt": [ "apiC8550315", "RootResourceId" ] },
+      ResourceId: { "Fn::GetAtt": ["apiC8550315", "RootResourceId"] },
       Integration: {
         RequestParameters: { foo: "bar" },
         Type: 'MOCK'
@@ -326,5 +326,257 @@ export = {
       }
 
     }
+  },
+
+  'addCorsPreflight': {
+
+    'adds an OPTIONS method to a resource'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigin: 'https://amazon.com'
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'allowCredentials'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigin: 'https://amazon.com',
+        allowCredentials: true
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+                "method.response.header.Access-Control-Allow-Credentials": "'true'"
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Credentials": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'allowMethods'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigin: 'https://aws.amazon.com',
+        allowMethods: [ 'GET', 'PUT' ]
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,PUT'",
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'allowMethods ANY will expand to all supported methods'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigin: 'https://aws.amazon.com',
+        allowMethods: [ 'ANY' ]
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'allowMethods ANY cannot be used with any other method'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // THEN
+      test.throws(() => resource.addCorsPreflight({
+        allowOrigin: 'https://aws.amazon.com',
+        allowMethods: [ 'ANY', 'PUT' ]
+      }), /ANY cannot be used with any other method. Received: ANY,PUT/);
+
+      test.done();
+    },
+
+    'statusCode can be used to set the response status code'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigin: 'https://aws.amazon.com',
+        statusCode: 200
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              },
+              "StatusCode": "200"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+            },
+            "StatusCode": "200"
+          }
+        ]
+      }));
+      test.done();
+    },
+
   }
+
+
 };
