@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry,
+import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry,
   Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
@@ -590,7 +590,7 @@ export = {
 
       const vpc = new Vpc(stack, 'VpcNetwork');
 
-      test.notEqual(vpc.publicSubnets[0].node.defaultChild, undefined);
+      test.ok(vpc.publicSubnets[0].node.defaultChild instanceof CfnSubnet);
 
       test.done();
     },
