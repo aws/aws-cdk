@@ -712,14 +712,18 @@ function tokenizableType(alternatives: string[]): boolean {
 }
 
 function tagType(resource: schema.TaggableResource): string {
-  for (const prop of Object.values(resource.Properties)) {
-    if (schema.isTagPropertyStandard(prop)) {
+  for (const name of Object.keys(resource.Properties)) {
+    if (!schema.isTagPropertyName(name)) {
+      continue;
+    }
+    if (schema.isTagPropertyStandard(resource.Properties[name])) {
       return `${TAG_TYPE}.STANDARD`;
     }
-    if (schema.isTagPropertyAutoScalingGroup(prop)) {
+    if (schema.isTagPropertyAutoScalingGroup(resource.Properties[name])) {
       return `${TAG_TYPE}.AUTOSCALING_GROUP`;
     }
-    if (schema.isTagPropertyJson(prop) || schema.isTagPropertyStringMap(prop)) {
+    if (schema.isTagPropertyJson(resource.Properties[name]) ||
+      schema.isTagPropertyStringMap(resource.Properties[name])) {
       return `${TAG_TYPE}.MAP`;
     }
   }
