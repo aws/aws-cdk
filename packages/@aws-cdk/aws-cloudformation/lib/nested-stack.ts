@@ -110,12 +110,7 @@ export class NestedStack extends Stack {
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      templateUrl: Lazy.stringValue({
-        produce: () => {
-          // if (!this._templateUrl) { throw new Error(`nested stack template is not synthesized`); }
-          return this._templateUrl;
-        }
-      }),
+      templateUrl: Lazy.stringValue({ produce: () => this._templateUrl }),
       parameters: Lazy.anyValue({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notifications ? props.notifications.map(n => n.topicArn) : undefined,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
@@ -133,44 +128,6 @@ export class NestedStack extends Stack {
         }
       }
     });
-  }
-
-  // public synthesize(session: ISynthesisSession) {
-  //   super.synthesize(session);
-  //
-  // }
-
-  /**
-   * If a file asset is added to the nested stack, we also need to add it to the
-   * parent and wire the parameters.
-   *
-   * @param asset
-   */
-  public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    const parent = this.parentStack!;
-    return parent.addFileAsset(asset);
-    //
-    //
-    // const proxyParameter = (type: string, logicalId: string) => {
-    //   const p = new CfnParameter(parent, `${this.node.uniqueId}.${asset.sourceHash}.${type}`, {
-    //     type: 'String',
-    //     description: `Proxy for asset parameter "${asset.sourceHash}.${type}" within the nested stack "${this.node.path}"`
-    //   });
-    //
-    //   this.parameters[logicalId] = p.valueAsString;
-    //   return p.logicalId;
-    // };
-    //
-    // parent.addFileAsset({
-    //   sourceHash: asset.sourceHash,
-    //   sourcePath: asset.sourcePath,
-    //   packaging: asset.packaging
-    //
-    //   ...asset,
-    //   s3BucketParameter: proxyParameter('bucket', asset.s3BucketParameter),
-    //   s3KeyParameter: proxyParameter('key', asset.s3KeyParameter),
-    //   artifactHashParameter: proxyParameter('hash', asset.artifactHashParameter)
-    // });
   }
 
   /**

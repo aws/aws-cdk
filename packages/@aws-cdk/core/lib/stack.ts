@@ -451,6 +451,12 @@ export class Stack extends Construct implements ITaggable {
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
+    // if this is a nested stack, we will add the file asset to the parent
+    // references will be resolved automatically
+    if (this.parentStack) {
+      return this.parentStack.addFileAsset(asset);
+    }
+
     let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
