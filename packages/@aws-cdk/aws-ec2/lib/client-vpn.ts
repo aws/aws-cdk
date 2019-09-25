@@ -16,12 +16,41 @@ export interface IClientVpnEndpoint extends cdk.IResource {
 }
 
 export interface IClientAuthenticationRequestOptions {
-  readonly activeDirectory?: {directoryId: string};
-  readonly mutualAuthentication?: {clientRootCertificateChainArn: string};
+  /**
+   * Information about the Active Directory to be used
+   */
+  readonly activeDirectory?: {
+    /**
+     * The ID of the Active Directory to be used for authentication
+     */
+    directoryId: string
+  };
+  /**
+   * Information about the authentication certificates to be used
+   */
+  readonly mutualAuthentication?: {
+    /**
+     * The ARN of the client certificate
+     */
+    clientRootCertificateChainArn: string
+  };
+  /**
+   * The type of client authentication to be used.
+   * Specify {@link ClientRequestAuthenticationType.CERTIFICATE} to use certificate-based authentication,
+   * or {@link ClientRequestAuthenticationType.DIRECTORY_SERVICE} to use Active Directory authentication.
+   */
   readonly type: ClientRequestAuthenticationType;
 }
 
+/**
+ * Authentication method to be used by a Client VPN endpoint
+ */
 export class ClientAuthenticationRequest {
+  /**
+   * Active Directory authentication
+   *
+   * @param directoryId The ID of the Active Directory to be used for authentication
+   */
   public static activeDirectory(directoryId: string): ClientAuthenticationRequest {
     return new ClientAuthenticationRequest({
       activeDirectory: {directoryId},
@@ -29,6 +58,14 @@ export class ClientAuthenticationRequest {
     });
   }
 
+  // TODO replace with acm.Certificate?
+  /**
+   * Certificate-based authentication
+   *
+   * @param clientRootCertificateChainArn The ARN of the client certificate.
+   * The certificate must be signed by a certificate authority (CA)
+   * and it must be provisioned in AWS Certificate Manager (ACM).
+   */
   public static mutualAuthentication(clientRootCertificateChainArn: string): ClientAuthenticationRequest {
     return new ClientAuthenticationRequest({
       mutualAuthentication: {clientRootCertificateChainArn},
@@ -104,7 +141,7 @@ export interface ClientVpnEndpointProps {
   readonly authenticationOptions: ClientAuthenticationRequest[];
   readonly clientCidrBlock: string;
   readonly connectionLog: ConnectionLog;
-  // TODO replace with serverCertificate object?
+  // TODO replace with acm.Certificate?
   readonly serverCertificateArn: string;
   readonly description?: string;
   readonly dnsServers?: string[];
