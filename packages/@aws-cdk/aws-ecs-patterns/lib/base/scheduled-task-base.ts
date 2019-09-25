@@ -43,7 +43,7 @@ export interface ScheduledTaskBaseProps {
 
 export interface ScheduledTaskImageProps {
   /**
-   * The image used to start a container. One of image or taskDefinition must be specified.
+   * The image used to start a container. Image or taskDefinition must be specified, but not both.
    *
    * @default - none
    */

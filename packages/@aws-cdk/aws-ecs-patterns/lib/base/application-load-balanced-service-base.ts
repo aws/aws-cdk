@@ -28,7 +28,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly vpc?: IVpc;
 
   /**
-   * The properties required to create a new task definition. One of TaskDefinition or TaskImageOptions needs to be defined.
+   * The properties required to create a new task definition. TaskDefinition or TaskImageOptions must be specified, but not both.
    *
    * @default none
    */
@@ -126,7 +126,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
 
 export interface ApplicationLoadBalancedTaskImageOptions {
   /**
-   * The image used to start a container. One of image or taskDefinition must be specified.
+   * The image used to start a container. Image or taskDefinition must be specified, not both.
    *
    * @default - none
    */

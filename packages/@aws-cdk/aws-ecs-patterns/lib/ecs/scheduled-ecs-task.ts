@@ -7,16 +7,16 @@ import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } fr
  */
 export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
   /**
-   * The properties to define if using an existing TaskDefinition in this construct. Only one of
-   * ScheduledEc2TaskDefinitionOptions or ScheduledEc2TaskImageOptions can be defined.
+   * The properties to define if using an existing TaskDefinition in this construct.
+   * ScheduledEc2TaskDefinitionOptions or ScheduledEc2TaskImageOptions must be defined, but not both.
    *
    * @default none
    */
   readonly scheduledEc2TaskDefinitionOptions?: ScheduledEc2TaskDefinitionOptions;
 
   /**
-   * The properties to define if the construct is to create a TaskDefinition. Only one of
-   * ScheduledEc2TaskDefinitionOptions or ScheduledEc2TaskImageOptions can be defined.
+   * The properties to define if the construct is to create a TaskDefinition.
+   * ScheduledEc2TaskDefinitionOptions or ScheduledEc2TaskImageOptions must be defined, but not both.
    *
    * @default none
    */

@@ -7,16 +7,16 @@ import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } fr
  */
 export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
   /**
-   * The properties to define if using an existing TaskDefinition in this construct. Only one of
-   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions can be defined.
+   * The properties to define if using an existing TaskDefinition in this construct.
+   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions must be defined, but not both.
    *
    * @default none
    */
   readonly scheduledFargateTaskDefinitionOptions?: ScheduledFargateTaskDefinitionOptions;
 
   /**
-   * The properties to define if the construct is to create a TaskDefinition. Only one of
-   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions can be defined.
+   * The properties to define if the construct is to create a TaskDefinition.
+   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions can be defined, but not both.
    *
    * @default none
    */
@@ -67,7 +67,7 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
  */
 export interface ScheduledFargateTaskDefinitionOptions extends ScheduledTaskBaseProps {
   /**
-   * The task definition to use for tasks in the service. One of image or taskDefinition must be specified.
+   * The task definition to use for tasks in the service. Image or taskDefinition must be specified, but not both.
    *
    * [disable-awslint:ref-via-interface]
    *
