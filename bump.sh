@@ -10,7 +10,7 @@ export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 /bin/bash ./install.sh
 
-npx lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
+npx lerna version --force-publish=* --no-git-tag-version --no-push ${ver}
 
 # Update CHANGELOG.md only at the root
 cat > /tmp/context.json <<HERE
