@@ -16,7 +16,7 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
 
   /**
    * The properties to define if the construct is to create a TaskDefinition.
-   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions can be defined, but not both.
+   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions must be defined, but not both.
    *
    * @default none
    */
