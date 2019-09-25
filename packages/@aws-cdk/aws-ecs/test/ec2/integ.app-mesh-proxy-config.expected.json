@@ -809,12 +809,18 @@
             "Image": "amazon/amazon-ecs-sample",
             "Memory": 256,
             "Name": "web"
+          },
+          {
+            "Essential": true,
+            "Image": "envoyproxy/envoy",
+            "Memory": 256,
+            "Name": "envoy"
           }
         ],
         "Family": "awsecsintegTaskDef6FDFB69A",
         "NetworkMode": "awsvpc",
         "ProxyConfiguration": {
-          "ContainerName": "web",
+          "ContainerName": "envoy",
           "ProxyConfigurationProperties": [
             {
               "Name": "IgnoredUID",
@@ -909,7 +915,7 @@
   },
   "Parameters": {
     "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
   }

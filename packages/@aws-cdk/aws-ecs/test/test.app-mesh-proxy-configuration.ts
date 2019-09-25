@@ -10,7 +10,7 @@ export = {
 
     // WHEN
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-      containerName: "web",
+      containerName: "envoy",
       properties: {
         ignoredUID: 1337,
         ignoredGID: 1338,
@@ -25,11 +25,15 @@ export = {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
     });
+    taskDefinition.addContainer("envoy", {
+      memoryLimitMiB: 1024,
+      image: ecs.ContainerImage.fromRegistry("envoyproxy/envoy")
+    });
 
     // THEN
     expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
       ProxyConfiguration: {
-        ContainerName: "web",
+        ContainerName: "envoy",
         ProxyConfigurationProperties: [
           {
             Name: "IgnoredUID",
@@ -72,7 +76,7 @@ export = {
 
     // WHEN
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-      containerName: "web",
+      containerName: "envoy",
       properties: {
         ignoredUID: 1337,
         appPorts: [80, 81],
@@ -84,11 +88,15 @@ export = {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
     });
+    taskDefinition.addContainer("envoy", {
+      memoryLimitMiB: 1024,
+      image: ecs.ContainerImage.fromRegistry("envoyproxy/envoy")
+    });
 
     // THEN
     expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
       ProxyConfiguration: {
-        ContainerName: "web",
+        ContainerName: "envoy",
         ProxyConfigurationProperties: [
           {
             Name: "IgnoredUID",
@@ -119,17 +127,21 @@ export = {
 
     // WHEN
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-      containerName: "web",
+      containerName: "envoy",
     })});
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
     });
+    taskDefinition.addContainer("envoy", {
+      memoryLimitMiB: 1024,
+      image: ecs.ContainerImage.fromRegistry("envoyproxy/envoy")
+    });
 
     // THEN
     expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
       ProxyConfiguration: {
-        ContainerName: "web",
+        ContainerName: "envoy",
         Type: "APPMESH"
       }
     }));
@@ -143,7 +155,7 @@ export = {
     // THEN
     test.throws(() => {
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-        containerName: "web",
+        containerName: "envoy",
         properties: {
           appPorts: [80, 81],
           proxyIngressPort: 80,

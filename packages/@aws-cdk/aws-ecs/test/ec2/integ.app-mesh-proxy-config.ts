@@ -14,7 +14,7 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 });
 
 const prox = ecs.ProxyConfigurations.appMeshProxyConfiguration({
-  containerName: 'web',
+  containerName: 'envoy',
   properties: {
     ignoredUID: 1337,
     proxyIngressPort: 15000,
@@ -27,6 +27,11 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode
 
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 256,
+});
+
+taskDefinition.addContainer('envoy', {
+  image: ecs.ContainerImage.fromRegistry("envoyproxy/envoy"),
   memoryLimitMiB: 256,
 });
 
