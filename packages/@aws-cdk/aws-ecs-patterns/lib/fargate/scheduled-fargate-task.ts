@@ -60,9 +60,6 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
 }
 
 /**
-<<<<<<< HEAD
- * A scheduled Fargate task that will be initiated off of CloudWatch Events.
-=======
  * The properties for the ScheduledFargateTask using a task definition.
  */
 export interface ScheduledFargateTaskDefinitionOptions extends ScheduledTaskBaseProps {
@@ -78,7 +75,6 @@ export interface ScheduledFargateTaskDefinitionOptions extends ScheduledTaskBase
 
 /**
  * A scheduled Fargate task that will be initiated off of CloudWatch Events.
->>>>>>> Add LB and TaskDef properties to ecs-patterns
  */
 export class ScheduledFargateTask extends ScheduledTaskBase {
   /**
