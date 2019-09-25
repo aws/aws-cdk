@@ -960,11 +960,43 @@
         ]
       }
     },
+    "L3ServiceURL0F065F2D": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "L3LB212FC0E0",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
     "L3bLoadBalancerDNSED096132": {
       "Value": {
         "Fn::GetAtt": [
           "L3bLBB8FADA4E",
           "DNSName"
+        ]
+      }
+    },
+    "L3bServiceURL0EDED888": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "L3bLBB8FADA4E",
+                "DNSName"
+              ]
+            }
+          ]
         ]
       }
     }
