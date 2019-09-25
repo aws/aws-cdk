@@ -301,7 +301,9 @@ export = {
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
       domainName: 'api.example.com',
       domainZone: zone,
       protocol: ApplicationProtocol.HTTPS
@@ -384,7 +386,9 @@ export = {
     test.throws(() => {
       new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
         cluster,
-        image: ecs.ContainerImage.fromRegistry('test'),
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
         protocol: ApplicationProtocol.HTTP,
         certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
       });
@@ -403,7 +407,9 @@ export = {
     test.throws(() => {
       new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
         cluster,
-        image: ecs.ContainerImage.fromRegistry('test'),
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
         protocol: ApplicationProtocol.HTTPS
       });
     });
