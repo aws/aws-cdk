@@ -88,7 +88,7 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
   public addRoute(scope: cdk.Construct, id: string, options: ClientVpnRouteOptions): ClientVpnRoute {
     return new ClientVpnRoute(scope, id, {
       clientVpnEndpoint: this,
-      ...options
+      ...options,
     });
   }
 
