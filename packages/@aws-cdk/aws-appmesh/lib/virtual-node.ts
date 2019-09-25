@@ -179,7 +179,7 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
   };
 
   (Object.keys(healthCheck) as Array<keyof CfnVirtualNode.HealthCheckProperty>)
-    .filter((key) => 
+    .filter((key) =>
         HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
           typeof healthCheck[key] === 'number' &&
           !cdk.Token.isUnresolved(healthCheck[key])
