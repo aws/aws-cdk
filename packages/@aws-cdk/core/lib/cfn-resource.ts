@@ -6,8 +6,8 @@ import { CfnRefElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct';
+import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
-import { IResolvable } from './resolvable';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
@@ -131,7 +131,7 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string): IResolvable {
+  public getAtt(attributeName: string): Reference {
     return CfnReference.for(this, attributeName);
   }
 

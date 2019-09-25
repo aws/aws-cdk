@@ -1,8 +1,9 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { EnvironmentUtils } from '@aws-cdk/cx-api';
+import crypto = require('crypto');
 import fs = require('fs');
 import path = require('path');
-import { FileAssetLocation, FileAssetSource } from './assets';
+import { FileAssetLocation, FileAssetPackaging , FileAssetSource } from './assets';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
@@ -82,20 +83,6 @@ export class Stack extends Construct implements ITaggable {
   public readonly templateOptions: ITemplateOptions = {};
 
   /**
-   * The concrete CloudFormation physical stack name.
-   *
-   * This is either the name defined explicitly in the `stackName` prop or
-   * allocated based on the stack's location in the construct tree. Stacks that
-   * are directly defined under the app use their construct `id` as their stack
-   * name. Stacks that are defined deeper within the tree will use a hashed naming
-   * scheme based on the construct path to ensure uniqueness.
-   *
-   * If you wish to obtain the deploy-time AWS::StackName intrinsic,
-   * you can use `Aws.stackName` directly.
-   */
-  public readonly stackName: string;
-
-  /**
    * The AWS region into which this stack will be deployed (e.g. `us-west-2`).
    *
    * This value is resolved according to the following rules:
@@ -162,6 +149,14 @@ export class Stack extends Construct implements ITaggable {
   public readonly parentStack?: Stack;
 
   /**
+   * An attribute (late-bound) that represents the URL of the template file
+   * in the deployment bucket.
+   *
+   * @experimental
+   */
+  public readonly templateUrl: string;
+
+  /**
    * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
@@ -191,6 +186,9 @@ export class Stack extends Construct implements ITaggable {
    */
   private _assetParameters?: Construct;
 
+  private _templateUrl?: string;
+  private readonly _stackName: string;
+
   /**
    * Creates a new stack.
    *
@@ -212,7 +210,7 @@ export class Stack extends Construct implements ITaggable {
     this.region = region;
     this.environment = environment;
 
-    this.stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
+    this._stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
@@ -220,6 +218,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     this.templateFile = `${this.stackName}.template.json`;
+    this.templateUrl = Lazy.stringValue({ produce: () => this._templateUrl || '<unresolved>' });
   }
 
   /**
@@ -307,6 +306,22 @@ export class Stack extends Construct implements ITaggable {
    */
   public get dependencies(): Stack[] {
     return Array.from(this._stackDependencies.values()).map(d => d.stack);
+  }
+
+  /**
+   * The concrete CloudFormation physical stack name.
+   *
+   * This is either the name defined explicitly in the `stackName` prop or
+   * allocated based on the stack's location in the construct tree. Stacks that
+   * are directly defined under the app use their construct `id` as their stack
+   * name. Stacks that are defined deeper within the tree will use a hashed naming
+   * scheme based on the construct path to ensure uniqueness.
+   *
+   * If you wish to obtain the deploy-time AWS::StackName intrinsic,
+   * you can use `Aws.stackName` directly.
+   */
+  public get stackName(): string {
+    return this._stackName;
   }
 
   /**
@@ -451,8 +466,8 @@ export class Stack extends Construct implements ITaggable {
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    // if this is a nested stack, we will add the file asset to the parent
-    // references will be resolved automatically
+
+    // assets are always added at the top-level stack
     if (this.parentStack) {
       return this.parentStack.addFileAsset(asset);
     }
@@ -476,6 +491,8 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;
+
+    // key is prefix|postfix
     const encodedKey = params.objectKeyParameter.valueAsString;
 
     const s3Prefix = Fn.select(0, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
@@ -556,7 +573,6 @@ export class Stack extends Construct implements ITaggable {
    * Find all dependencies as well and add the appropriate DependsOn fields.
    */
   protected prepare() {
-
     // Note: it might be that the properties of the CFN object aren't valid.
     // This will usually be preventatively caught in a construct's validate()
     // and turned into a nicely descriptive error, but we're running prepare()
@@ -593,7 +609,7 @@ export class Stack extends Construct implements ITaggable {
 
       // if one side is a nested stack (has "parentStack"), we let it create the reference
       // since it has more knowledge about the world.
-      const consumedValue = factory.createCrossReference(this, reference);
+      const consumedValue = factory.prepareCrossReference(this, reference);
 
       // if the reference has already been assigned a value for the consuming stack, carry on.
       if (!reference.hasValueForStack(this)) {
@@ -617,6 +633,22 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.tags.hasTags()) {
       this.node.addMetadata(cxapi.STACK_TAGS_METADATA_KEY, this.tags.renderTags());
+    }
+
+    if (this.parentStack) {
+      // add the nested stack template as an asset
+      const cfn = JSON.stringify(this._toCloudFormation());
+      const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
+      const parent = this.parentStack;
+      const templateLocation = parent.addFileAsset({
+        packaging: FileAssetPackaging.FILE,
+        sourceHash: templateHash,
+        sourcePath: this.templateFile
+      });
+
+      // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
+      // be resolved as cross-stack references like any other (see "multi" tests).
+      this._templateUrl = `https://s3.${parent.region}.${parent.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
     }
   }
 
@@ -699,7 +731,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @returns a token that can be used to reference the value from the producing stack.
    */
-  protected createCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
+  protected prepareCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
     const targetStack = Stack.of(reference.target);
 
     // Ensure a singleton "Exports" scoping Construct
@@ -974,6 +1006,7 @@ import { CfnParameter } from './cfn-parameter';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
+import { Lazy } from './lazy';
 import { Intrinsic } from './private/intrinsic';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';

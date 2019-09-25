@@ -703,9 +703,9 @@ export = {
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: { Type: 'String', Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: { Type: 'String', Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cArtifactHash7DC546E0: { Type: 'String', Description: 'Artifact hash for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      AssetParametersb2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84fS3Bucket3DB431CB: { Type: 'String', Description: 'S3 bucket for asset "b2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84f"' },
-      AssetParametersb2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84fS3VersionKeyBFFDABE9: { Type: 'String', Description: 'S3 key for asset version "b2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84f"' },
-      AssetParametersb2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84fArtifactHash8EA52875: { Type: 'String', Description: 'Artifact hash for asset "b2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84f"' }
+      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfS3Bucket76ACFB38: { Type: 'String', Description: 'S3 bucket for asset "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
+      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfS3VersionKey04162EF1: { Type: 'String', Description: 'S3 key for asset version "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
+      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfArtifactHashF227ADD3: { Type: 'String', Description: 'Artifact hash for asset "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' }
     });
 
     // proxy asset params to nested stack
@@ -749,9 +749,9 @@ export = {
       AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637: { Type: 'String', Description: 'S3 bucket for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
       AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2: { Type: 'String', Description: 'S3 key for asset version "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
       AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281ArtifactHash373B14D2: { Type: 'String', Description: 'Artifact hash for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
-      AssetParameters61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240cS3Bucket0D38DC05: { Type: 'String', Description: 'S3 bucket for asset "61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240c"' },
-      AssetParameters61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240cS3VersionKey44C32A65: { Type: 'String', Description: 'S3 key for asset version "61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240c"' },
-      AssetParameters61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240cArtifactHash264B64F3: { Type: 'String', Description: 'Artifact hash for asset "61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240c"' }
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3Bucket3C4265E9: { Type: 'String', Description: 'S3 bucket for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3VersionKey8E981535: { Type: 'String', Description: 'S3 key for asset version "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71ArtifactHash45A28583: { Type: 'String', Description: 'Artifact hash for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' }
     });
 
     // asset proxy parameters are passed to the nested stack

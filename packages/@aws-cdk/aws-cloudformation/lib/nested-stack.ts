@@ -1,7 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
 import { Aws, CfnOutput, CfnParameter, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
-import crypto = require('crypto');
-import { FileAssetLocation, FileAssetPackaging , FileAssetSource } from '../../core/lib/assets';
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -43,11 +41,12 @@ export interface NestedStackProps {
 }
 
 /**
- * A nested CloudFormation stack.
+ * A CloudFormation nested stack.
  *
- * This means that it must have a non-nested Stack as an ancestor, into which an
- * `AWS::CloudFormation::Stack` resource will be synthesized into the parent
- * stack.
+ * When you apply template changes to update a top-level stack, CloudFormation
+ * updates the top-level stack and initiates an update to its nested stacks.
+ * CloudFormation updates the resources of modified nested stacks, but does not
+ * update the resources of unmodified nested stacks.
  *
  * Furthermore, this stack will not be treated as an independent deployment
  * artifact (won't be listed in "cdk list" or deployable through "cdk deploy"),
@@ -67,36 +66,17 @@ export class NestedStack extends Stack {
   }
 
   public readonly templateFile: string;
-
-  /**
-   * The stack this stack is nested in.
-   */
   public readonly parentStack?: Stack;
-
-  /**
-   * An attribute that represents the name of the nested stack.
-   *
-   * If this is referenced from the parent stack, it will return a token that parses the name from the stack ID.
-   * If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackName" }`
-   *
-   * @example mystack-mynestedstack-sggfrhxhum7w
-   * @attribute
-   */
-  public readonly stackName: string;
 
   private readonly parameters: { [name: string]: string };
   private readonly resource: CfnStack;
-  private _templateUrl?: string;
+  private readonly _contextualStackId: string;
+  private readonly _contextualStackName: string;
 
   constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
     const parentStack = findParentStack(scope);
 
-    super(scope, id, {
-      env: {
-        account: parentStack.account,
-        region: parentStack.region
-      },
-    });
+    super(scope, id, { env: { account: parentStack.account, region: parentStack.region } });
 
     this.parentStack = parentStack;
 
@@ -110,69 +90,52 @@ export class NestedStack extends Stack {
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      templateUrl: Lazy.stringValue({ produce: () => this._templateUrl }),
+      templateUrl: this.templateUrl,
       parameters: Lazy.anyValue({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notifications ? props.notifications.map(n => n.topicArn) : undefined,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
 
-    this.stackName = Token.asString({
-      resolve: (context: IResolveContext) => {
-        const stack = Stack.of(context.scope);
-        if (stack === this) {
-          return Aws.STACK_NAME;
-        } else {
-          // resource.ref returns the stack ARN, so we need to split by "/" and select the 2nd component, which is the stack name:
-          // arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786
-          return Fn.select(1, Fn.split('/', this.resource.ref));
-        }
-      }
-    });
+    // context-aware stack name: if resolved from within this stack, return AWS::StackName
+    // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource
+    // which resolves the ARN of the stack. We need to extract the stack name, which is the second
+    // component after splitting by "/"
+    this._contextualStackName = this.contextualAttribute(Aws.STACK_NAME, Fn.select(1, Fn.split('/', this.resource.ref)));
+    this._contextualStackId = this.contextualAttribute(Aws.STACK_ID, this.resource.ref);
+  }
+
+  /**
+   * An attribute that represents the name of the nested stack.
+   *
+   * This is a context aware attribute:
+   * - If this is referenced from the parent stack, it will return a token that parses the name from the stack ID.
+   * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackName" }`
+   *
+   * @example mystack-mynestedstack-sggfrhxhum7w
+   * @attribute
+   */
+  public get stackName() {
+    return this._contextualStackName;
   }
 
   /**
    * An attribute that represents the ID of the stack.
    *
-   * If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
-   *
-   * If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackId" }`
+   * This is a context aware attribute:
+   * - If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
+   * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackId" }`
    *
    * @example arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786
    * @attribute
    */
-  public get stackId(): string {
-    return Token.asString({
-      resolve: (context: IResolveContext) => {
-        const stack = Stack.of(context.scope);
-        if (stack === this) {
-          return Aws.STACK_ID;
-        } else {
-          return this.resource.ref;
-        }
-      }
-    });
+  public get stackId() {
+    return this._contextualStackId;
   }
 
-  protected prepare() {
-    const cfn = JSON.stringify((this as any)._toCloudFormation());
-
-    const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
-    const parent = this.parentStack!;
-
-    const templateLocation = parent.addFileAsset({
-      packaging: FileAssetPackaging.FILE,
-      sourceHash: templateHash,
-      sourcePath: this.templateFile
-    });
-
-    // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
-    // be resolved as cross-stack references like any other (see "multi" tests).
-    this._templateUrl = `https://s3.${parent.region}.${parent.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
-
-    super.prepare();
-  }
-
-  protected createCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
+  /**
+   * Called by the base "prepare" method when a reference is found.
+   */
+  protected prepareCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
     const targetStack = Stack.of(reference.target);
 
     // the nested stack references a resource from the parent stack:
@@ -198,20 +161,20 @@ export class NestedStack extends Stack {
     // output from one and pass as parameter to the other
     if (targetStack.parentStack && targetStack.parentStack === sourceStack.parentStack) {
       const outputValue = this.getCreateOutputForReference(reference);
-      return (sourceStack as any).createCrossReference(sourceStack, outputValue);
+      return (sourceStack as NestedStack).prepareCrossReference(sourceStack, outputValue);
     }
 
     // nested stack references a value from some other non-nested stack:
     // normal export/import, with dependency between the parents
     if (sourceStack.parentStack && sourceStack.parentStack !== targetStack) {
-      return super.createCrossReference(sourceStack, reference);
+      return super.prepareCrossReference(sourceStack, reference);
     }
 
     // some non-nested stack (that is not the parent) references a resource inside the nested stack:
     // we output the value and let our parent export it
     if (!sourceStack.parentStack && targetStack.parentStack && targetStack.parentStack !== sourceStack) {
       const outputValue = this.getCreateOutputForReference(reference);
-      return (targetStack.parentStack as any).createCrossReference(sourceStack, outputValue);
+      return (targetStack.parentStack as NestedStack).prepareCrossReference(sourceStack, outputValue);
     }
 
     throw new Error('unexpected nested stack cross reference');
@@ -225,6 +188,18 @@ export class NestedStack extends Stack {
     }
 
     return this.resource.getAtt(`Outputs.${outputId}`);
+  }
+
+  private contextualAttribute(innerValue: string, outerValue: string) {
+    return Token.asString({
+      resolve: (context: IResolveContext) => {
+        if (Stack.of(context.scope) === this) {
+          return innerValue;
+        } else {
+          return outerValue;
+        }
+      }
+    });
   }
 }
 
