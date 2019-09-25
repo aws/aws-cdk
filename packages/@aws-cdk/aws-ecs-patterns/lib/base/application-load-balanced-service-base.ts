@@ -196,7 +196,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   public readonly cluster: ICluster;
 
   /**
-   * The log driver to use for logging if logging is enabled.
+   * The log driver to use for logging.
    */
   public readonly logDriver?: LogDriver;
 
