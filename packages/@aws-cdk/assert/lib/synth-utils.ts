@@ -15,10 +15,41 @@ export class SynthUtils {
   }
 
   /**
+   * Synthesizes the stack and returns the resulting CloudFormation template.
+   */
+  public static toCloudFormation(stack: Stack, options: SynthesisOptions = { }): any {
+    const synth = this._synthesizeWithNested(stack, options);
+    if (synth instanceof cxapi.CloudFormationStackArtifact) {
+      return synth.template;
+    } else {
+      return synth;
+    }
+  }
+
+  /**
+   * @returns Returns a subset of the synthesized CloudFormation template (only specific resource types).
+   */
+  public static subset(stack: Stack, options: SubsetOptions): any {
+    const template = this.toCloudFormation(stack);
+    if (template.Resources) {
+      for (const [key, resource] of Object.entries(template.Resources)) {
+        if (options.resourceTypes && !options.resourceTypes.includes((resource as any).Type)) {
+          delete template.Resources[key];
+        }
+      }
+    }
+
+    return template;
+  }
+
+  /**
    * Synthesizes the stack and returns a `CloudFormationStackArtifact` which can be inspected.
    * Supports nested stacks as well as normal stacks.
+   *
+   * @return CloudFormationStackArtifact for normal stacks or the actual template for nested stacks
+   * @internal
    */
-  public static synthesizeWithNested(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
+  public static _synthesizeWithNested(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
     const root = stack.node.root;
 
@@ -31,35 +62,6 @@ export class SynthUtils {
     }
 
     return assembly.getStack(stack.stackName);
-  }
-
-  /**
-   * Synthesizes the stack and returns the resulting CloudFormation template.
-   */
-  public static toCloudFormation(stack: Stack, options: SynthesisOptions = { }): any {
-    const synth = this.synthesizeWithNested(stack, options);
-    if (synth instanceof cxapi.CloudFormationStackArtifact) {
-      return synth.template;
-    } else {
-      return synth;
-    }
-  }
-
-  /**
-   * @returns Returns a subset of the synthesized CloudFormation template (only specific resource types).
-   */
-  public static subset(stack: Stack, options: SubsetOptions): any {
-    const synth = this.synthesize(stack);
-    const template = synth instanceof cxapi.CloudFormationStackArtifact ? synth.template : synth;
-    if (template.Resources) {
-      for (const [key, resource] of Object.entries(template.Resources)) {
-        if (options.resourceTypes && !options.resourceTypes.includes((resource as any).Type)) {
-          delete template.Resources[key];
-        }
-      }
-    }
-
-    return template;
   }
 }
 
