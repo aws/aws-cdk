@@ -2,7 +2,7 @@ FROM amazonlinux:2
 
 WORKDIR /app
 
-ENV NODE_VERSION 8.16.0
+ENV NODE_VERSION 10.3.0
 
 RUN yum -y --security update \
   && yum install -y \
