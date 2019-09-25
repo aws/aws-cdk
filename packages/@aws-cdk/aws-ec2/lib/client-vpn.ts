@@ -73,7 +73,7 @@ export class ClientAuthenticationRequest {
     });
   }
 
-  private constructor(public readonly props: IClientAuthenticationRequestOptions) {
+  private constructor(public readonly options: IClientAuthenticationRequestOptions) {
   }
 }
 
@@ -123,7 +123,7 @@ export class ConnectionLog {
     return new ConnectionLog({cloudwatchLogStream: stream.logStreamName, enabled});
   }
 
-  private constructor(public readonly props: IConnectionLogOptions) {
+  private constructor(public readonly options: IConnectionLogOptions) {
   }
 }
 
@@ -163,8 +163,8 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
     super(scope, id);
 
     const clientVpnEndpoint = new CfnClientVpnEndpoint(this, 'Resource', {
-      authenticationOptions: props.authenticationOptions.map(({props}) => props),
-      connectionLogOptions: props.connectionLog && props.connectionLog.props,
+      authenticationOptions: props.authenticationOptions.map(({options}) => options),
+      connectionLogOptions: props.connectionLog && props.connectionLog.options,
       serverCertificateArn: props.serverCertificateArn,
       clientCidrBlock: props.clientCidrBlock,
       description: props.description,
