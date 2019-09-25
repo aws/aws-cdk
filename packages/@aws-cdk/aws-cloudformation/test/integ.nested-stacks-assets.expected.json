@@ -1,30 +1,4 @@
 {
-  "Parameters": {
-    "NestedNestedStackAssetS3BucketD2D79A5D": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"nested-stacks-assets/Nested.NestedStack/Asset\""
-    },
-    "NestedNestedStackAssetS3VersionKeyDB274B5F": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"nested-stacks-assets/Nested.NestedStack/Asset\""
-    },
-    "NestedNestedStackAssetArtifactHash4FE531E9": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"nested-stacks-assets/Nested.NestedStack/Asset\""
-    },
-    "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66bucket": {
-      "Type": "String",
-      "Description": "Proxy for asset parameter \"nestedstacksassetsNestedHandlerCodeE594CF66.bucket\" within the nested stack \"nested-stacks-assets/Nested\""
-    },
-    "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66key": {
-      "Type": "String",
-      "Description": "Proxy for asset parameter \"nestedstacksassetsNestedHandlerCodeE594CF66.key\" within the nested stack \"nested-stacks-assets/Nested\""
-    },
-    "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66hash": {
-      "Type": "String",
-      "Description": "Proxy for asset parameter \"nestedstacksassetsNestedHandlerCodeE594CF66.hash\" within the nested stack \"nested-stacks-assets/Nested\""
-    }
-  },
   "Resources": {
     "NestedNestedStackNestedNestedStackResourceDEFDAA4D": {
       "Type": "AWS::CloudFormation::Stack",
@@ -43,7 +17,7 @@
               },
               "/",
               {
-                "Ref": "NestedNestedStackAssetS3BucketD2D79A5D"
+                "Ref": "AssetParameters98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31S3Bucket0876368C"
               },
               "/",
               {
@@ -53,7 +27,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "NestedNestedStackAssetS3VersionKeyDB274B5F"
+                        "Ref": "AssetParameters98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31S3VersionKeyBC20473D"
                       }
                     ]
                   }
@@ -66,7 +40,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "NestedNestedStackAssetS3VersionKeyDB274B5F"
+                        "Ref": "AssetParameters98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31S3VersionKeyBC20473D"
                       }
                     ]
                   }
@@ -76,17 +50,40 @@
           ]
         },
         "Parameters": {
-          "HandlerCodeS3Bucket8DD11ED9": {
-            "Ref": "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66bucket"
+          "referencetonestedstacksassetsAssetParametersb13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148aS3BucketE2268D38Ref": {
+            "Ref": "AssetParametersb13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148aS3BucketC5E2D427"
           },
-          "HandlerCodeS3VersionKey0BB5191E": {
-            "Ref": "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66key"
-          },
-          "HandlerCodeArtifactHashD7814EF8": {
-            "Ref": "nestedstacksassetsNested51BEE8E8nestedstacksassetsNestedHandlerCodeE594CF66hash"
+          "referencetonestedstacksassetsAssetParametersb13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148aS3VersionKeyD31C6796Ref": {
+            "Ref": "AssetParametersb13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148aS3VersionKey31422F11"
           }
         }
       }
+    }
+  },
+  "Parameters": {
+    "AssetParametersb13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148aS3BucketC5E2D427": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148a\""
+    },
+    "AssetParametersb13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148aS3VersionKey31422F11": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148a\""
+    },
+    "AssetParametersb13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148aArtifactHash2897446E": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b13aad60258df1fbe5fb1312a7b2f8f25c03b3e07113782f7c12f00e023e148a\""
+    },
+    "AssetParameters98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31S3Bucket0876368C": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31\""
+    },
+    "AssetParameters98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31S3VersionKeyBC20473D": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31\""
+    },
+    "AssetParameters98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31ArtifactHashD76B2EBF": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"98f8ad3306cb7b1ad230ab055443a77f113b2497530f8c6165825de3ea68ad31\""
     }
   }
 }

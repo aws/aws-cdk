@@ -1,10 +1,10 @@
 import assets = require('@aws-cdk/assets');
 import iam = require('@aws-cdk/aws-iam');
+import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import { AssetPackaging, SynthesizedAsset } from './synthesized-asset';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
@@ -31,7 +31,23 @@ export interface AssetProps extends assets.CopyOptions {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends SynthesizedAsset {
+export class Asset extends cdk.Construct implements assets.IAsset {
+  /**
+   * Attribute that represents the name of the bucket this asset exists in.
+   */
+  public readonly s3BucketName: string;
+
+  /**
+   * Attribute which represents the S3 object key of this asset.
+   */
+  public readonly s3ObjectKey: string;
+
+  /**
+   * Attribute which represents the S3 URL of this asset.
+   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   */
+  public readonly s3Url: string;
+
   /**
    * The path to the asset (stringinfied token).
    *
@@ -41,34 +57,54 @@ export class Asset extends SynthesizedAsset {
   public readonly assetPath: string;
 
   /**
+   * The S3 bucket in which this asset resides.
+   */
+  public readonly bucket: s3.IBucket;
+
+  /**
    * Indicates if this asset is a zip archive. Allows constructs to ensure that the
    * correct file type was used.
    */
   public readonly isZipArchive: boolean;
 
+  public readonly sourceHash: string;
+
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
+    super(scope, id);
 
     // stage the asset source (conditionally).
-    const staging = new assets.Staging(scope, id + '.Stage', {
+    const staging = new assets.Staging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
     });
-
-    super(scope, id, {
-      sourceHash: staging.sourceHash,
-      assemblyPath: staging.stagedPath,
-      packaging: determinePackaging(staging.sourcePath),
-      readers: props.readers
-    });
+    this.sourceHash = staging.sourceHash;
 
     this.assetPath = staging.stagedPath;
 
     const packaging = determinePackaging(staging.sourcePath);
 
     // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === AssetPackaging.ZIP_DIRECTORY
+    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
       ? true
       : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
+
+    const stack = cdk.Stack.of(this);
+
+    const location = stack.addFileAsset({
+      packaging,
+      sourceHash: staging.sourceHash,
+      sourcePath: staging.stagedPath
+    });
+
+    this.s3BucketName = location.bucketName;
+    this.s3ObjectKey = location.objectKey;
+    this.s3Url = location.s3Url;
+
+    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
+
+    for (const reader of (props.readers || [])) {
+      this.grantRead(reader);
+    }
   }
 
   /**
@@ -98,19 +134,26 @@ export class Asset extends SynthesizedAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
+
+  /**
+   * Grants read permissions to the principal on the assets bucket.
+   */
+  public grantRead(grantee: iam.IGrantable) {
+    this.bucket.grantRead(grantee);
+  }
 }
 
-function determinePackaging(assetPath: string): AssetPackaging {
+function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
   if (!fs.existsSync(assetPath)) {
     throw new Error(`Cannot find asset at ${assetPath}`);
   }
 
   if (fs.statSync(assetPath).isDirectory()) {
-    return AssetPackaging.ZIP_DIRECTORY;
+    return cdk.FileAssetPackaging.ZIP_DIRECTORY;
   }
 
   if (fs.statSync(assetPath).isFile()) {
-    return AssetPackaging.FILE;
+    return cdk.FileAssetPackaging.FILE;
   }
 
   throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);

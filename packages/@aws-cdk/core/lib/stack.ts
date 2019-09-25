@@ -2,12 +2,13 @@ import cxapi = require('@aws-cdk/cx-api');
 import { EnvironmentUtils } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import path = require('path');
+import { FileAssetLocation, FileAssetSource } from './assets';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
-import { resolve } from './private/resolve';
+import { findTokens , resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
@@ -186,6 +187,11 @@ export class Stack extends Construct implements ITaggable {
   private readonly _missingContext = new Array<cxapi.MissingContext>();
 
   /**
+   * Includes all parameters synthesized for assets (lazy).
+   */
+  private _assetParameters?: Construct;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
@@ -338,6 +344,13 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Indicates if this is a nested stack, in which case `parentStack` will include a reference to it's parent.
+   */
+  public get nested(): boolean {
+    return this.parentStack !== undefined;
+  }
+
+  /**
    * Creates an ARN from components.
    *
    * If `partition`, `region` or `account` are not specified, the stack's
@@ -437,8 +450,35 @@ export class Stack extends Construct implements ITaggable {
     return value;
   }
 
-  public addFileAsset(asset: cxapi.FileAssetMetadataEntry) {
-    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
+  public addFileAsset(asset: FileAssetSource): FileAssetLocation {
+    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
+    if (!params) {
+      params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
+
+      const metadata: cxapi.FileAssetMetadataEntry = {
+        path: asset.sourcePath,
+        id: asset.sourceHash,
+        packaging: asset.packaging,
+        sourceHash: asset.sourceHash,
+
+        s3BucketParameter: params.bucketNameParameter.logicalId,
+        s3KeyParameter: params.objectKeyParameter.logicalId,
+        artifactHashParameter: params.artifactHashParameter.logicalId,
+      };
+
+      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+    }
+
+    const bucketName = params.bucketNameParameter.valueAsString;
+    const encodedKey = params.objectKeyParameter.valueAsString;
+
+    const s3Prefix = Fn.select(0, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
+    const s3Filename = Fn.select(1, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
+    const objectKey = `${s3Prefix}${s3Filename}`;
+
+    const s3Url = `https://s3.${this.region}.${this.urlSuffix}/${bucketName}/${objectKey}`;
+
+    return { bucketName, objectKey, s3Url };
   }
 
   /**
@@ -510,31 +550,49 @@ export class Stack extends Construct implements ITaggable {
    * Find all dependencies as well and add the appropriate DependsOn fields.
    */
   protected prepare() {
+
+    // Note: it might be that the properties of the CFN object aren't valid.
+    // This will usually be preventatively caught in a construct's validate()
+    // and turned into a nicely descriptive error, but we're running prepare()
+    // before validate(). Swallow errors that occur because the CFN layer
+    // doesn't validate completely.
+    //
+    // This does make the assumption that the error will not be rectified,
+    // but the error will be thrown later on anyway. If the error doesn't
+    // get thrown down the line, we may miss references.
+    // } catch (e) {
+    //   if (e.type !== 'CfnSynthesisError') { throw e; }
+    // }
+
+    const fragments = cfnElements(this).map(x => x._toCloudFormation());
+    const tokens = findTokens(this, fragments);
+
     // References (originating from this stack)
-    for (const ref of this.node.references) {
+    for (const reference of tokens) {
+
       // skip if this is not a CfnReference
-      if (!CfnReference.isCfnReference(ref.reference)) { continue; }
-
-      const producingStack = Stack.of(ref.reference.target);
-      const consumingStack = Stack.of(ref.source);
-
-      // skip if this reference is consumed by a different stack (node.reference
-      // will return all references that originate within the stack's scope,
-      // which can include references that originated from child stacks.
-      if (consumingStack !== this) { continue; }
-
-      // skip if this is an internal reference.
-      if (producingStack === this) { continue; }
-
-      if (consumingStack.node.root !== producingStack.node.root) {
-        throw new Error(
-          `Cannot reference across apps. ` +
-          `Consuming and producing stacks must be defined within the same CDK app.`);
+      if (!CfnReference.isCfnReference(reference)) {
+        continue;
       }
 
-      // tell producing stack to process the cross reference and then tell the consuming
-      // stack to process the cross reference. the producing stack gets the priority
-      producingStack.prepareCrossReference(ref.source, ref.reference);
+      const targetStack = Stack.of(reference.target);
+
+      // skip if this is not a cross-stack reference
+      if (targetStack === this) {
+        continue;
+      }
+
+      // determine which stack should create the cross reference
+      const factory = this.determineCrossReferenceFactory(targetStack);
+
+      // if one side is a nested stack (has "parentStack"), we let it create the reference
+      // since it has more knowledge about the world.
+      const consumedValue = factory.createCrossReference(this, reference);
+
+      // if the reference has already been assigned a value for the consuming stack, carry on.
+      if (!reference.hasValueForStack(this)) {
+        reference.assignValueForStack(this, consumedValue);
+      }
     }
 
     // Resource dependencies
@@ -561,10 +619,11 @@ export class Stack extends Construct implements ITaggable {
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
-    fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
+    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
+    fs.writeFileSync(outPath, text);
 
     // if this is a nested stack, do not emit it as a cloud assembly artifact (it will be registered as an s3 asset instead)
-    if (this.parentStack) {
+    if (this.nested) {
       return;
     }
 
@@ -634,20 +693,19 @@ export class Stack extends Construct implements ITaggable {
    *
    * @returns a token that can be used to reference the value from the producing stack.
    */
-  protected createCrossReference(source: IConstruct, reference: Reference): IResolvable {
-    const producingStack = Stack.of(reference.target);
-    const consumingStack = Stack.of(source);
+  protected createCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
+    const targetStack = Stack.of(reference.target);
 
     // Ensure a singleton "Exports" scoping Construct
     // This mostly exists to trigger LogicalID munging, which would be
     // disabled if we parented constructs directly under Stack.
     // Also it nicely prevents likely construct name clashes
-    const exportsScope = producingStack.getCreateExportsScope();
+    const exportsScope = targetStack.getCreateExportsScope();
 
     // Ensure a singleton CfnOutput for this value
-    const resolved = producingStack.resolve(reference);
+    const resolved = targetStack.resolve(reference);
     const id = 'Output' + JSON.stringify(resolved);
-    const exportName = producingStack.generateExportName(exportsScope, id);
+    const exportName = targetStack.generateExportName(exportsScope, id);
     const output = exportsScope.node.tryFindChild(id) as CfnOutput;
     if (!output) {
       new CfnOutput(exportsScope, id, { value: Token.asString(reference), exportName });
@@ -655,58 +713,13 @@ export class Stack extends Construct implements ITaggable {
 
     // add a dependency on the producing stack - it has to be deployed before this stack can consume the exported value
     // if the producing stack is a nested stack (i.e. has a parent), the dependency is taken on the parent.
-    const producerDependency = producingStack.parentStack ? producingStack.parentStack : producingStack;
-    const consumerDependency = consumingStack.parentStack ? consumingStack.parentStack : consumingStack;
-    consumerDependency.addDependency(producerDependency, `${source.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+    const producerDependency = targetStack.parentStack ? targetStack.parentStack : targetStack;
+    const consumerDependency = sourceStack.parentStack ? sourceStack.parentStack : sourceStack;
+    consumerDependency.addDependency(producerDependency, `${sourceStack.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
     return new Intrinsic({ 'Fn::ImportValue': exportName });
-  }
-
-  /**
-   * Automatically called during "prepare" for each reference produced by this
-   * stack, giving it an opportunity to morph the reference to support various
-   * cross-stack references.
-   *
-   * This callback is called _before_ `onCrossReferenceConsumed` in order to
-   * allow the producer of the reference to determine the behavior.
-   *
-   * @param source
-   * @param reference
-   * @param consumingStack
-   *
-   * @experimental
-   */
-  private prepareCrossReference(source: IConstruct, reference: CfnReference) {
-    const consumingStack = Stack.of(source);
-    const producingStack = this;
-
-    let creatingStack;
-
-    if (consumingStack.parentStack) {
-      creatingStack = consumingStack;
-    }
-
-    if (producingStack.parentStack) {
-      creatingStack = producingStack;
-    }
-
-    if (!creatingStack && consumingStack.environment === producingStack.environment) {
-      creatingStack = producingStack;
-    }
-
-    if (!creatingStack) {
-      throw new Error(`Stack "${consumingStack.node.path}" cannot consume a cross reference from stack "${producingStack.node.path}". ` +
-      `Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack`);
-    }
-
-    const consumedValue = creatingStack.createCrossReference(source, reference);
-
-    // if the reference has already been assigned a value for the consuming stack, carry on.
-    if (!reference.hasValueForStack(consumingStack)) {
-      reference.assignValueForStack(consumingStack, consumedValue);
-    }
   }
 
   private getCreateExportsScope() {
@@ -810,6 +823,36 @@ export class Stack extends Construct implements ITaggable {
     const exportName = prefix + makeUniqueId(components);
     return exportName;
   }
+
+  private get assetParameters() {
+    if (!this._assetParameters) {
+      this._assetParameters = new Construct(this, 'AssetParameters');
+    }
+    return this._assetParameters;
+  }
+
+  private determineCrossReferenceFactory(target: Stack) {
+    // unsupported: stacks from different apps
+    if (target.node.root !== this.node.root) {
+      throw new Error(
+        `Cannot reference across apps. ` +
+        `Consuming and producing stacks must be defined within the same CDK app.`);
+    }
+
+    // unsupported: stacks are not in the same environment
+    if (target.environment !== this.environment) {
+      throw new Error(
+        `Stack "${this.node.path}" cannot consume a cross reference from stack "${target.node.path}". ` +
+        `Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack`);
+    }
+
+    // if one of the stacks is a nested stack, go ahead and give it the right to make the cross reference
+    if (target.nested) { return target; }
+    if (this.nested) { return this; }
+
+    // both stacks are top-level (non-nested), the taret (producing stack) gets to make the reference
+    return target;
+  }
 }
 
 function merge(template: any, part: any) {
@@ -887,44 +930,41 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
   return into;
 }
 
-// export enum AutomaticCrossReferences {
-//   /**
-//    * Cross references are completely disabled from/to this stack.
-//    */
-//   DISABLE,
+class FileAssetParameters extends Construct {
+  public readonly bucketNameParameter: CfnParameter;
+  public readonly objectKeyParameter: CfnParameter;
+  public readonly artifactHashParameter: CfnParameter;
 
-//   /**
-//    * This stack will not be allowed to reference a resource from another stack that is not a nested stack.
-//    */
-//   DISABLE_IMPORT,
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
 
-//   /**
-//    * Other non-nested stacks will not be allowed to reference resources from within this stack.
-//    */
-//   DISABLE_EXPORT,
+    // add parameters for s3 bucket and s3 key. those will be set by
+    // the toolkit or by CI/CD when the stack is deployed and will include
+    // the name of the bucket and the S3 key where the code lives.
 
-//   /**
-//    * Automatic synthesis of cross references is enabled.
-//    *
-//    * When a resource is referenced across stacks within the same environment, a
-//    * CloudFormation exported Output is synthesized in the producing stack and an
-//    * Fn::ImportValue is used in the consuming stack.
-//    */
-//   EXPORT_IMPORT,
+    this.bucketNameParameter = new CfnParameter(this, 'S3Bucket', {
+      type: 'String',
+      description: `S3 bucket for asset "${id}"`,
+    });
 
-//   /**
-//    * Treat this as a nested stack when processing references.
-//    *
-//    * When a resource in a nested stack is referenced by a parent stack.
-//    */
-//   NESTED,
-// }
+    this.objectKeyParameter = new CfnParameter(this, 'S3VersionKey', {
+      type: 'String',
+      description: `S3 key for asset version "${id}"`
+    });
+
+    this.artifactHashParameter   = new CfnParameter(this, 'ArtifactHash', {
+      description: `Artifact hash for asset "${id}"`,
+      type: 'String',
+    });
+  }
+}
 
 // These imports have to be at the end to prevent circular imports
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { CfnOutput } from './cfn-output';
+import { CfnParameter } from './cfn-parameter';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';

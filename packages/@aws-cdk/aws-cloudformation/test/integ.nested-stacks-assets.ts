@@ -8,7 +8,7 @@ class NestedStack extends cfn.NestedStack {
     super(scope, id);
 
     new lambda.Function(this, 'Handler', {
-      code: lambda.Code.asset(path.join(__dirname, '../lib')), // a random directory
+      code: lambda.Code.asset(path.join(__dirname, 'asset-directory-fixture')),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler'
     });

@@ -85,12 +85,12 @@ export = {
     // THEN
     test.deepEqual(assembly.getStack(parent.stackName).assets, [{
       path: 'parentstacknestedstack844892C0.nested.template.json',
-      id: 'parentstacknestedstackNestedStackAsset10DB6EC4',
+      id: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
       packaging: 'file',
-      sourceHash: 'parentstacknestedstack844892C0',
-      s3BucketParameter: 'nestedstackNestedStackAssetS3Bucket350B4266',
-      s3KeyParameter: 'nestedstackNestedStackAssetS3VersionKeyBF292B3B',
-      artifactHashParameter: 'nestedstackNestedStackAssetArtifactHash8E66D593'
+      sourceHash: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
+      s3BucketParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345',
+      s3KeyParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6',
+      artifactHashParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096ArtifactHash8DE450C7'
     }]);
     test.done();
   },
@@ -121,20 +121,6 @@ export = {
 
     // the parent template includes the parameters and the nested stack resource which points to the s3 url
     expect(parent).toMatch({
-      Parameters: {
-        nestedstackNestedStackAssetS3Bucket350B4266: {
-          Type: "String",
-          Description: "S3 bucket for asset \"parent-stack/nested-stack.NestedStack/Asset\""
-        },
-        nestedstackNestedStackAssetS3VersionKeyBF292B3B: {
-          Type: "String",
-          Description: "S3 key for asset version \"parent-stack/nested-stack.NestedStack/Asset\""
-        },
-        nestedstackNestedStackAssetArtifactHash8E66D593: {
-          Type: "String",
-          Description: "Artifact hash for asset \"parent-stack/nested-stack.NestedStack/Asset\""
-        }
-      },
       Resources: {
         nestedstackNestedStacknestedstackNestedStackResource71CDD241: {
           Type: "AWS::CloudFormation::Stack",
@@ -144,18 +130,62 @@ export = {
                 "",
                 [
                   "https://s3.",
-                  { Ref: "AWS::Region" },
+                  {
+                    Ref: "AWS::Region"
+                  },
                   ".",
-                  { Ref: "AWS::URLSuffix" },
+                  {
+                    Ref: "AWS::URLSuffix"
+                  },
                   "/",
-                  { Ref: "nestedstackNestedStackAssetS3Bucket350B4266" },
+                  {
+                    Ref: "AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345"
+                  },
                   "/",
-                  { "Fn::Select": [0, { "Fn::Split": ["||", { Ref: "nestedstackNestedStackAssetS3VersionKeyBF292B3B" }] }] },
-                  { "Fn::Select": [1, { "Fn::Split": ["||", { Ref: "nestedstackNestedStackAssetS3VersionKeyBF292B3B" }] }] }
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            Ref: "AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            Ref: "AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6"
+                          }
+                        ]
+                      }
+                    ]
+                  }
                 ]
               ]
             }
           }
+        }
+      },
+      Parameters: {
+        AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345: {
+          Type: "String",
+          Description: "S3 bucket for asset \"c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096\""
+        },
+        AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6: {
+          Type: "String",
+          Description: "S3 key for asset version \"c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096\""
+        },
+        AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096ArtifactHash8DE450C7: {
+          Type: "String",
+          Description: "Artifact hash for asset \"c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096\""
         }
       }
     });
@@ -366,7 +396,7 @@ export = {
       },
       Outputs: {
         ExportsOutputFnGetAttResourceInStack2MyAttributeC15F1009: {
-          Value: { "Fn::GetAtt": [ "ResourceInStack2", "MyAttribute" ] },
+          Value: { "Fn::GetAtt": ["ResourceInStack2", "MyAttribute"] },
           Export: { Name: "Stack2:ExportsOutputFnGetAttResourceInStack2MyAttributeC15F1009" }
         }
       }
@@ -436,7 +466,7 @@ export = {
     // parent stack (stack1) should export this value
     test.deepEqual(assembly.getStack(stack1.stackName).template.Outputs, {
       ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3: {
-        Value: { 'Fn::GetAtt': [ 'NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B', 'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute' ] },
+        Value: { 'Fn::GetAtt': ['NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B', 'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute'] },
         Export: { Name: 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3' }
       }
     });
@@ -662,29 +692,27 @@ export = {
     expect(nested1).to(haveResource('Resource::1'));
     const nested2Template = SynthUtils.toCloudFormation(nested1);
     test.deepEqual(nested2Template.Parameters, {
-      Nested2NestedStackAssetS3BucketE2A8CC0B: { Type: 'String', Description: 'S3 bucket for asset "stack/Nested1/Nested2.NestedStack/Asset"' },
-      Nested2NestedStackAssetS3VersionKey08AAB71C: { Type: 'String', Description: 'S3 key for asset version "stack/Nested1/Nested2.NestedStack/Asset"' },
-      Nested2NestedStackAssetArtifactHash850D4B8C: { Type: 'String', Description: 'Artifact hash for asset "stack/Nested1/Nested2.NestedStack/Asset"' }
+      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Type: 'String' },
+      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Type: 'String' },
     });
 
     // parent stack should have two sets of parameters. one for the first nested stack and the second
     // for the second nested stack, passed in as parameters to the first
     const template = SynthUtils.toCloudFormation(parent);
     test.deepEqual(template.Parameters, {
-      Nested1NestedStackAssetS3Bucket330ED98A: { Type: 'String', Description: 'S3 bucket for asset "stack/Nested1.NestedStack/Asset"' },
-      Nested1NestedStackAssetS3VersionKeyE52B2824: { Type: 'String', Description: 'S3 key for asset version "stack/Nested1.NestedStack/Asset"' },
-      Nested1NestedStackAssetArtifactHashD180A344: { Type: 'String', Description: 'Artifact hash for asset "stack/Nested1.NestedStack/Asset"' },
-      stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90bucket: { Type: 'String', Description: 'Proxy for asset parameter "stackNested1Nested2NestedStackAsset86465D90.bucket" within the nested stack "stack/Nested1"' },
-      stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90key: { Type: 'String', Description: 'Proxy for asset parameter "stackNested1Nested2NestedStackAsset86465D90.key" within the nested stack "stack/Nested1"' },
-      stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90hash: { Type: 'String', Description: 'Proxy for asset parameter "stackNested1Nested2NestedStackAsset86465D90.hash" within the nested stack "stack/Nested1"' }
+      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: { Type: 'String', Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
+      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: { Type: 'String', Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
+      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cArtifactHash7DC546E0: { Type: 'String', Description: 'Artifact hash for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
+      AssetParametersb2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84fS3Bucket3DB431CB: { Type: 'String', Description: 'S3 bucket for asset "b2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84f"' },
+      AssetParametersb2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84fS3VersionKeyBFFDABE9: { Type: 'String', Description: 'S3 key for asset version "b2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84f"' },
+      AssetParametersb2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84fArtifactHash8EA52875: { Type: 'String', Description: 'Artifact hash for asset "b2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84f"' }
     });
 
     // proxy asset params to nested stack
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        Nested2NestedStackAssetS3BucketE2A8CC0B: { Ref: "stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90bucket" },
-        Nested2NestedStackAssetS3VersionKey08AAB71C: { Ref: "stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90key" },
-        Nested2NestedStackAssetArtifactHash850D4B8C: { Ref: "stackNested16BADEE08stackNested1Nested2NestedStackAsset86465D90hash" }
+        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Ref: "AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6" },
+        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Ref: "AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA" }
       }
     }));
 
@@ -701,7 +729,7 @@ export = {
 
     // WHEN
     const asset = new s3_assets.Asset(nested, 'asset', {
-      path: __filename
+      path: path.join(__dirname, 'asset-fixture.txt')
     });
 
     new CfnResource(nested, 'NestedResource', {
@@ -718,20 +746,19 @@ export = {
 
     // two sets of asset parameters: one for the nested stack itself and one as a proxy for the asset within the stack
     test.deepEqual(template.Parameters, {
-      NestedStackNestedStackAssetS3Bucket292742BB: { Type: 'String', Description: 'S3 bucket for asset "ParentStack/NestedStack.NestedStack/Asset"' },
-      NestedStackNestedStackAssetS3VersionKey39EF7642: { Type: 'String', Description: 'S3 key for asset version "ParentStack/NestedStack.NestedStack/Asset"' },
-      NestedStackNestedStackAssetArtifactHash49340D38: { Type: 'String', Description: 'Artifact hash for asset "ParentStack/NestedStack.NestedStack/Asset"' },
-      ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEbucket: { Type: 'String', Description: 'Proxy for asset parameter "ParentStackNestedStackasset74F6B2AE.bucket" within the nested stack "ParentStack/NestedStack"' },
-      ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEkey: { Type: 'String', Description: 'Proxy for asset parameter "ParentStackNestedStackasset74F6B2AE.key" within the nested stack "ParentStack/NestedStack"' },
-      ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEhash: { Type: 'String', Description: 'Proxy for asset parameter "ParentStackNestedStackasset74F6B2AE.hash" within the nested stack "ParentStack/NestedStack"' }
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637: { Type: 'String', Description: 'S3 bucket for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2: { Type: 'String', Description: 'S3 key for asset version "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281ArtifactHash373B14D2: { Type: 'String', Description: 'Artifact hash for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
+      AssetParameters61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240cS3Bucket0D38DC05: { Type: 'String', Description: 'S3 bucket for asset "61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240c"' },
+      AssetParameters61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240cS3VersionKey44C32A65: { Type: 'String', Description: 'S3 key for asset version "61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240c"' },
+      AssetParameters61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240cArtifactHash264B64F3: { Type: 'String', Description: 'Artifact hash for asset "61a046a93ce83ccf47b3f35a57ef1cf04ea38017c8b0a13008be4f18bd00240c"' }
     });
 
     // asset proxy parameters are passed to the nested stack
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        assetS3BucketAC69B279: { Ref: "ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEbucket" },
-        assetS3VersionKey99C8DE32: { Ref: "ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEkey" },
-        assetArtifactHash409B3ECC: { Ref: "ParentStackNestedStackDF0C31D6ParentStackNestedStackasset74F6B2AEhash" }
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref: { Ref: "AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637" },
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref: { Ref: "AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2" },
       }
     }));
 

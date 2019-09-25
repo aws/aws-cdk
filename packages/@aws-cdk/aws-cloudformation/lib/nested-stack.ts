@@ -1,9 +1,7 @@
-import s3_assets = require('@aws-cdk/aws-s3-assets');
 import sns = require('@aws-cdk/aws-sns');
-import {
-  Aws, CfnOutput, CfnParameter, Construct, Duration, Fn, IConstruct,
-  IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import { Aws, CfnOutput, CfnParameter, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
+import crypto = require('crypto');
+import { FileAssetLocation, FileAssetPackaging , FileAssetSource } from '../../core/lib/assets';
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -88,6 +86,7 @@ export class NestedStack extends Stack {
 
   private readonly parameters: { [name: string]: string };
   private readonly resource: CfnStack;
+  private _templateUrl?: string;
 
   constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
     const parentStack = findParentStack(scope);
@@ -108,16 +107,15 @@ export class NestedStack extends Stack {
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${this.node.uniqueId}.nested.template.json`;
 
-    const asset = new s3_assets.SynthesizedAsset(parentScope, 'Asset', {
-      packaging: s3_assets.AssetPackaging.FILE,
-      assemblyPath: this.templateFile,
-      sourceHash: this.node.uniqueId
-    });
-
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      templateUrl: asset.s3Url,
+      templateUrl: Lazy.stringValue({
+        produce: () => {
+          // if (!this._templateUrl) { throw new Error(`nested stack template is not synthesized`); }
+          return this._templateUrl;
+        }
+      }),
       parameters: Lazy.anyValue({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notifications ? props.notifications.map(n => n.topicArn) : undefined,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
@@ -129,7 +127,7 @@ export class NestedStack extends Stack {
         if (stack === this) {
           return Aws.STACK_NAME;
         } else {
-          // resource.ref returns the stack ID, so we need to split by "/" and select the 2nd component, which is the stack name:
+          // resource.ref returns the stack ARN, so we need to split by "/" and select the 2nd component, which is the stack name:
           // arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786
           return Fn.select(1, Fn.split('/', this.resource.ref));
         }
@@ -137,31 +135,42 @@ export class NestedStack extends Stack {
     });
   }
 
+  // public synthesize(session: ISynthesisSession) {
+  //   super.synthesize(session);
+  //
+  // }
+
   /**
    * If a file asset is added to the nested stack, we also need to add it to the
    * parent and wire the parameters.
    *
    * @param asset
    */
-  public addFileAsset(asset: cxapi.FileAssetMetadataEntry) {
+  public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     const parent = this.parentStack!;
-
-    const proxyParameter = (type: string, logicalId: string) => {
-      const p = new CfnParameter(parent, `${this.node.uniqueId}.${asset.id}.${type}`, {
-        type: 'String',
-        description: `Proxy for asset parameter "${asset.id}.${type}" within the nested stack "${this.node.path}"`
-      });
-
-      this.parameters[logicalId] = p.valueAsString;
-      return p.logicalId;
-    };
-
-    parent.addFileAsset({
-      ...asset,
-      s3BucketParameter: proxyParameter('bucket', asset.s3BucketParameter),
-      s3KeyParameter: proxyParameter('key', asset.s3KeyParameter),
-      artifactHashParameter: proxyParameter('hash', asset.artifactHashParameter)
-    });
+    return parent.addFileAsset(asset);
+    //
+    //
+    // const proxyParameter = (type: string, logicalId: string) => {
+    //   const p = new CfnParameter(parent, `${this.node.uniqueId}.${asset.sourceHash}.${type}`, {
+    //     type: 'String',
+    //     description: `Proxy for asset parameter "${asset.sourceHash}.${type}" within the nested stack "${this.node.path}"`
+    //   });
+    //
+    //   this.parameters[logicalId] = p.valueAsString;
+    //   return p.logicalId;
+    // };
+    //
+    // parent.addFileAsset({
+    //   sourceHash: asset.sourceHash,
+    //   sourcePath: asset.sourcePath,
+    //   packaging: asset.packaging
+    //
+    //   ...asset,
+    //   s3BucketParameter: proxyParameter('bucket', asset.s3BucketParameter),
+    //   s3KeyParameter: proxyParameter('key', asset.s3KeyParameter),
+    //   artifactHashParameter: proxyParameter('hash', asset.artifactHashParameter)
+    // });
   }
 
   /**
@@ -187,13 +196,31 @@ export class NestedStack extends Stack {
     });
   }
 
-  protected createCrossReference(source: IConstruct, reference: Reference): IResolvable {
-    const consumingStack = Stack.of(source);
-    const producingStack = Stack.of(reference.target);
+  protected prepare() {
+    const cfn = JSON.stringify((this as any)._toCloudFormation());
+
+    const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
+    const parent = this.parentStack!;
+
+    const templateLocation = parent.addFileAsset({
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: templateHash,
+      sourcePath: this.templateFile
+    });
+
+    // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
+    // be resolved as cross-stack references like any other (see "multi" tests).
+    this._templateUrl = `https://s3.${parent.region}.${parent.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
+
+    super.prepare();
+  }
+
+  protected createCrossReference(sourceStack: Stack, reference: Reference): IResolvable {
+    const targetStack = Stack.of(reference.target);
 
     // the nested stack references a resource from the parent stack:
     // we pass it through a as a cloudformation parameter
-    if (producingStack === consumingStack.parentStack) {
+    if (targetStack === sourceStack.parentStack) {
       const paramId = `reference-to-${reference.target.node.uniqueId}.${reference.displayName}`;
       let param = this.node.tryFindChild(paramId) as CfnParameter;
       if (!param) {
@@ -206,33 +233,31 @@ export class NestedStack extends Stack {
 
     // parent stack references a resource from the nested stack:
     // we output it from the nested stack and use "Fn::GetAtt" as the reference value
-    if (producingStack === this && producingStack.parentStack === consumingStack) {
+    if (targetStack === this && targetStack.parentStack === sourceStack) {
       return this.getCreateOutputForReference(reference);
     }
 
     // sibling nested stacks (same parent):
     // output from one and pass as parameter to the other
-    if (producingStack.parentStack && producingStack.parentStack === consumingStack.parentStack) {
+    if (targetStack.parentStack && targetStack.parentStack === sourceStack.parentStack) {
       const outputValue = this.getCreateOutputForReference(reference);
-      return (consumingStack as any).createCrossReference(source, outputValue);
+      return (sourceStack as any).createCrossReference(sourceStack, outputValue);
     }
 
     // nested stack references a value from some other non-nested stack:
     // normal export/import, with dependency between the parents
-    if (consumingStack.parentStack && consumingStack.parentStack !== producingStack) {
-      return super.createCrossReference(source, reference);
+    if (sourceStack.parentStack && sourceStack.parentStack !== targetStack) {
+      return super.createCrossReference(sourceStack, reference);
     }
 
     // some non-nested stack (that is not the parent) references a resource inside the nested stack:
     // we output the value and let our parent export it
-    if (!consumingStack.parentStack && producingStack.parentStack && producingStack.parentStack !== consumingStack) {
+    if (!sourceStack.parentStack && targetStack.parentStack && targetStack.parentStack !== sourceStack) {
       const outputValue = this.getCreateOutputForReference(reference);
-      return (producingStack.parentStack as any).createCrossReference(source, outputValue);
+      return (targetStack.parentStack as any).createCrossReference(sourceStack, outputValue);
     }
 
-    throw new Error('unexpected');
-
-    return super.createCrossReference(source, reference);
+    throw new Error('unexpected nested stack cross reference');
   }
 
   private getCreateOutputForReference(reference: Reference) {
