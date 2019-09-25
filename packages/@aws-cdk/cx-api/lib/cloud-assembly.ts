@@ -1,9 +1,10 @@
 import fs = require('fs');
 import os = require('os');
 import path = require('path');
-import { ArtifactManifest, CloudArtifact } from './cloud-artifact';
+import { ArtifactManifest, ArtifactType, CloudArtifact } from './cloud-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
+import { TreeCloudArtifact } from './tree-cloud-artifact';
 import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from './versioning';
 
 /**
@@ -90,7 +91,7 @@ export class CloudAssembly {
    * @param id The artifact ID
    */
   public tryGetArtifact(id: string): CloudArtifact | undefined {
-    return this.stacks.find(a => a.id === id);
+    return this.artifacts.find(a => a.id === id);
   }
 
   /**
@@ -110,6 +111,27 @@ export class CloudAssembly {
     }
 
     return artifact;
+  }
+
+  /**
+   * Returns the tree metadata artifact from this assembly.
+   * @throws if there is no metadata artifact by that name
+   * @returns a `TreeCloudArtifact` object if there is one defined in the manifest, `undefined` otherwise.
+   */
+  public tree(): TreeCloudArtifact | undefined {
+    const trees = this.artifacts.filter(a => a.manifest.type === ArtifactType.CDK_TREE);
+    if (trees.length === 0) {
+      return undefined;
+    } else if (trees.length > 1) {
+      throw new Error(`Multiple artifacts of type ${ArtifactType.CDK_TREE} found in manifest`);
+    }
+    const tree = trees[0];
+
+    if (!(tree instanceof TreeCloudArtifact)) {
+      throw new Error(`"Tree" artifact is not of expected type`);
+    }
+
+    return tree;
   }
 
   /**

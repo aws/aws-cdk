@@ -103,6 +103,13 @@ export interface StringParameterProps extends ParameterOptions {
    * The value of the parameter. It may not reference another parameter and ``{{}}`` cannot be used in the value.
    */
   readonly stringValue: string;
+
+  /**
+   * The type of the string parameter
+   *
+   * @default ParameterType.STRING
+   */
+  readonly type?: ParameterType;
 }
 
 /**
@@ -145,9 +152,28 @@ abstract class ParameterBase extends Resource implements IParameter {
   }
 }
 
-const STRING_PARAM_TYPE = 'String';
-const SECURE_STRING_PARAM_TYPE = 'SecureString';
-const STRINGLIST_PARAM_TYPE = 'StringList';
+/**
+ * SSM parameter type
+ */
+export enum ParameterType {
+  /**
+   * String
+   */
+  STRING = 'String',
+  /**
+   * Secure String
+   * Parameter Store uses an AWS Key Management Service (KMS) customer master key (CMK) to encrypt the parameter value.
+   */
+  SECURE_STRING = 'SecureString',
+  /**
+   * String List
+   */
+  STRING_LIST = 'StringList',
+  /**
+   * An Amazon EC2 image ID, such as ami-0ff8a91507f77f867
+   */
+  AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
+}
 
 export interface StringParameterAttributes {
   /**
@@ -161,6 +187,13 @@ export interface StringParameterAttributes {
    * @default The latest version will be retrieved.
    */
   readonly version?: number;
+
+  /**
+   * The type of the string parameter
+   *
+   * @default ParameterType.STRING
+   */
+  readonly type?: ParameterType;
 }
 
 export interface SecureStringParameterAttributes {
@@ -196,14 +229,16 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       throw new Error(`parameterName cannot be an empty string`);
     }
 
+    const type = attrs.type || ParameterType.STRING;
+
     const stringValue = attrs.version
       ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: 'AWS::SSM::Parameter::Value<String>', default: attrs.parameterName }).valueAsString;
+      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
-      public readonly parameterType = STRING_PARAM_TYPE;
+      public readonly parameterType = type;
       public readonly stringValue = stringValue;
     }
 
@@ -219,7 +254,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
-      public readonly parameterType = SECURE_STRING_PARAM_TYPE;
+      public readonly parameterType = ParameterType.SECURE_STRING;
       public readonly stringValue = stringValue;
     }
 
@@ -250,13 +285,24 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
   public static valueForStringParameter(scope: Construct, parameterName: string, version?: number): string {
+    return StringParameter.valueForTypedStringParameter(scope, parameterName, ParameterType.STRING, version);
+  }
+
+  /**
+   * Returns a token that will resolve (during deployment) to the string value of an SSM string parameter.
+   * @param scope Some scope within a stack
+   * @param parameterName The name of the SSM parameter.
+   * @param type The type of the SSM parameter.
+   * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
+   */
+  public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = ParameterType.STRING, version?: number): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
 
     if (exists) { return exists.stringValue; }
 
-    return this.fromStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
+    return this.fromStringParameterAttributes(stack, id, { parameterName, version, type }).stringValue;
   }
 
   /**
@@ -292,7 +338,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
-      type: STRING_PARAM_TYPE,
+      type: props.type || ParameterType.STRING,
       value: props.stringValue,
     });
 
@@ -317,7 +363,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     class Import extends ParameterBase {
       public readonly parameterName = stringListParameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
-      public readonly parameterType = STRINGLIST_PARAM_TYPE;
+      public readonly parameterType = ParameterType.STRING_LIST;
       public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.SSM, stringListParameterName).toString());
     }
 
@@ -346,7 +392,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
-      type: STRINGLIST_PARAM_TYPE,
+      type: ParameterType.STRING_LIST,
       value: props.stringListValue.join(','),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);

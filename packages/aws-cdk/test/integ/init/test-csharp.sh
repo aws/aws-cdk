@@ -4,16 +4,15 @@
 #------------------------------------------------------------------
 set -e
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/../common/util.bash
+source ${scriptdir}/common.bash
 header C#
-prepare_toolkit
-prepare_nuget_packages
 #------------------------------------------------------------------
 
 # Run the test
-appdir=$(mktemp -d)
-cd ${appdir}
+setup
 
 cdk init -l csharp -t app
-dotnet build src
-cdk synth hello-cdk-1
+dotnet build \
+    --source https://api.nuget.org/v3/index.json \
+    src
+cdk synth
