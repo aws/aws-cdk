@@ -655,7 +655,7 @@
               "HealthCheck": {
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
-                "Path": "/",
+                "Path": "/check-path",
                 "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
@@ -710,7 +710,7 @@
               "HealthCheck": {
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
-                "Path": "/",
+                "Path": "/check-path2",
                 "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
@@ -753,7 +753,7 @@
               "HealthCheck": {
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
-                "Path": "/",
+                "Path": "/check-path3",
                 "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,

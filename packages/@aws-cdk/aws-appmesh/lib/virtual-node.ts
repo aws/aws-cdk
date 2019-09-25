@@ -153,7 +153,7 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
   return {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-    path: hc.path || hc.protocol === Protocol.HTTP ? '/' : undefined,
+    path: hc.path || (hc.protocol === Protocol.HTTP ? '/' : undefined),
     port: hc.port || pm.port,
     protocol: hc.protocol || pm.protocol,
     timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
