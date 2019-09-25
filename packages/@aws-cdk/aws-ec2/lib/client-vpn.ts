@@ -23,16 +23,47 @@ export interface IClientAuthenticationRequest {
 }
 
 export interface IConnectionLogOptions {
+  /**
+   * The name of the CloudWatch Logs log group
+   */
   readonly cloudwatchLogGroup?: string;
+  /**
+   * The name of the CloudWatch Logs log stream to which the connection data is published
+   */
   readonly cloudwatchLogStream?: string;
+  /**
+   * Indicates whether connection logging is enabled
+   */
   readonly enabled: boolean;
 }
 
+/**
+ * Client connection logging options for the Client VPN endpoint.
+ * If enabled, data about client connections is sent to a Cloudwatch Logs log stream.
+ *
+ * The following information is logged:
+ * * Client connection requests
+ * * Client connection results (successful and unsuccessful)
+ * * Reasons for unsuccessful client connection requests
+ * * Client connection termination time
+ */
 export class ConnectionLog {
+  /**
+   * Log client connection information into a CloudWatch log group
+   *
+   * @param group CloudWatch log group
+   * @param enabled Whether connection logging is enabled
+   */
   public static group(group: logs.ILogGroup, enabled = true): ConnectionLog {
     return new ConnectionLog({cloudwatchLogGroup: group.logGroupName, enabled});
   }
 
+  /**
+   * Log client connection information into a CloudWatch log stream
+   *
+   * @param stream CloudWatch log stream
+   * @param enabled Whether connection logging is enabled
+   */
   public static stream(stream: logs.ILogStream, enabled = true): ConnectionLog {
     return new ConnectionLog({cloudwatchLogStream: stream.logStreamName, enabled});
   }
