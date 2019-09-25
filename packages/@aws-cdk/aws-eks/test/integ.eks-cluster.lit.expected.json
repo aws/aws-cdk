@@ -1050,7 +1050,9 @@
     "EKSClusterNodesLaunchConfig921F1106": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-12345",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.medium",
         "IamInstanceProfile": {
           "Ref": "EKSClusterNodesInstanceProfile0F2DB3B9"
@@ -1207,6 +1209,10 @@
     "EKSClusterKubernetesResourceHandlerCodeArtifactHashA13FF2C6": {
       "Type": "String",
       "Description": "Artifact hash for asset \"eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Code\""
+    },
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
     }
   },
   "Outputs": {

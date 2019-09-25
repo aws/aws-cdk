@@ -34,6 +34,13 @@ export interface DockerImageAssetProps extends assets.CopyOptions {
    * @default - no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   *
+   * @default - no target
+   */
+  readonly target?: string;
 }
 
 /**
@@ -75,8 +82,17 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
 
+    let exclude: string[] = ['.dockerignore'];
+
+    const ignore = path.join(dir, '.dockerignore');
+
+    if (fs.existsSync(ignore)) {
+      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
+    }
+
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
+      exclude,
       sourcePath: dir
     });
 
@@ -95,7 +111,8 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       sourceHash: this.sourceHash,
       imageNameParameter: imageNameParameter.logicalId,
       repositoryName: props.repositoryName,
-      buildArgs: props.buildArgs
+      buildArgs: props.buildArgs,
+      target: props.target
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
@@ -118,7 +135,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
 }
 
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {
-  for (const [ key, value ] of Object.entries(buildArgs || {})) {
+  for (const [key, value] of Object.entries(buildArgs || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
       throw new Error(`Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment`);
     }
