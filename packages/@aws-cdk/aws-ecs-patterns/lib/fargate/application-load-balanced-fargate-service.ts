@@ -62,7 +62,11 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
  */
 export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalancedServiceBase {
 
+  /**
+   * Determines whether the service will be assigned a public IP address.
+   */
   public readonly assignPublicIp: boolean;
+
   /**
    * The Fargate service in this construct.
    */

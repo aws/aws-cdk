@@ -72,8 +72,8 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * A queue for which to process items from.
    *
-   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'.
-   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html
+   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'. See
+   * [CreateQueue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html)
    *
    * @default 'SQSQueue with CloudFormation-generated name'
    */
@@ -89,8 +89,8 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
    *
-   * Maps a range of metric values to a particular scaling behavior.
-   * https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html
+   * Maps a range of metric values to a particular scaling behavior. See
+   * [Simple and Step Scaling Policies for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html)
    *
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
@@ -204,6 +204,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
     });
   }
 
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;

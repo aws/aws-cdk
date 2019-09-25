@@ -39,8 +39,10 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * If you are using containers in a task with the bridge network mode and you specify a container port and not a host port,
    * your container automatically receives a host port in the ephemeral port range.
    *
-   * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
+   *
+   * For more information, see
+   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
    *
    * @default 80
    */
@@ -165,17 +167,30 @@ export interface ApplicationLoadBalancedServiceBaseProps {
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
+
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
   public readonly desiredCount: number;
 
+  /**
+   * The Application Load Balancer for the service.
+   */
   public readonly loadBalancer: ApplicationLoadBalancer;
 
+  /**
+   * The listener for the service.
+   */
   public readonly listener: ApplicationListener;
 
+  /**
+   * The target group for the service.
+   */
   public readonly targetGroup: ApplicationTargetGroup;
 
+  /**
+   * Certificate Manager certificate to associate with the load balancer.
+   */
   public readonly certificate: ICertificate;
 
   /**
@@ -183,6 +198,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
    */
   public readonly cluster: ICluster;
 
+  /**
+   * The log driver to use for logging.
+   */
   public readonly logDriver?: LogDriver;
 
   /**
@@ -263,6 +281,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
   }
 
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
@@ -270,6 +291,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
+  /**
+   * Adds service as a target of the target group.
+   */
   protected addServiceAsTarget(service: BaseService) {
     this.targetGroup.addTarget(service);
   }
