@@ -15,7 +15,7 @@ export interface IClientVpnEndpoint extends cdk.IResource {
   readonly clientVpnEndpointId: string;
 }
 
-export interface IClientAuthenticationRequestOptions {
+interface IClientAuthenticationRequestOptions {
   /**
    * Information about the Active Directory to be used
    */
@@ -77,7 +77,7 @@ export class ClientAuthenticationRequest {
   }
 }
 
-export interface IConnectionLogOptions {
+interface IConnectionLogOptions {
   /**
    * The name of the CloudWatch Logs log group
    */
