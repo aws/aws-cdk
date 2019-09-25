@@ -21,7 +21,7 @@ class TestStack extends Stack {
     twitch.addMethod('GET', backend);    // GET /twitch
     twitch.addMethod('POST', backend);   // POST /twitch
     twitch.addMethod('DELETE', backend); // DELETE /twitch
-    twitch.addCorsPreflight({ allowOrigin: '*' });
+    twitch.addCorsPreflight({ allowOrigins: [ 'https://google.com', 'https://www.test-cors.org' ] });
   }
 }
 

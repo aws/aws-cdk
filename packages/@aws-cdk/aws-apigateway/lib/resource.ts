@@ -154,7 +154,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   public addCorsPreflight(options: CorsOptions) {
     const headers = options.allowHeaders || Cors.DEFAULT_HEADERS;
     let methods = options.allowMethods || Cors.ALL_METHODS;
-    const origin  = options.allowOrigin;
+    const origin  = options.allowOrigins[0];
 
     if (methods.includes('ANY')) {
       if (methods.length > 1) {
@@ -162,6 +162,10 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       }
 
       methods = Cors.ALL_METHODS;
+    }
+
+    if (options.allowOrigins.length === 0) {
+      throw new Error('allowOrigins must contain at least one origin');
     }
 
     const integrationResponseParams: { [p: string]: string } = { };
@@ -185,9 +189,10 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
         {
           statusCode: `${statusCode}`,
           responseParameters: integrationResponseParams,
+          responseTemplates: renderResponseTemplate()
         }
       ],
-      requestTemplates: { 'application/json': '{ statusCode: 200 }' }
+      requestTemplates: { 'application/json': '{ statusCode: 200 }' },
     }), {
       methodResponses: [
         {
@@ -196,6 +201,29 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
         }
       ]
     });
+
+    function renderResponseTemplate() {
+      const origins = options.allowOrigins.slice(1);
+
+      if (origins.length === 0) {
+        return undefined;
+      }
+
+      const template = new Array<string>();
+
+      template.push(`#set($origin = $input.params("Origin"))`);
+      template.push(`#if($origin == "") #set($origin = $input.params("origin")) #end`);
+
+      const condition = origins.map(o => `$origin.matches("${o}")`).join(' || ');
+
+      template.push(`#if(${condition})`);
+      template.push(`  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)`);
+      template.push('#end');
+
+      return {
+        'application/json': template.join('\n')
+      };
+    }
   }
 
   public getResource(pathPart: string): IResource | undefined {

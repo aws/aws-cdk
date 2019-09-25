@@ -338,7 +338,7 @@ export = {
 
       // WHEN
       resource.addCorsPreflight({
-        allowOrigin: 'https://amazon.com'
+        allowOrigins: ['https://amazon.com']
       });
 
       // THEN
@@ -383,7 +383,7 @@ export = {
 
       // WHEN
       resource.addCorsPreflight({
-        allowOrigin: 'https://amazon.com',
+        allowOrigins: ['https://amazon.com'],
         allowCredentials: true
       });
 
@@ -431,8 +431,8 @@ export = {
 
       // WHEN
       resource.addCorsPreflight({
-        allowOrigin: 'https://aws.amazon.com',
-        allowMethods: [ 'GET', 'PUT' ]
+        allowOrigins: ['https://aws.amazon.com'],
+        allowMethods: ['GET', 'PUT']
       });
 
       // THEN
@@ -477,8 +477,8 @@ export = {
 
       // WHEN
       resource.addCorsPreflight({
-        allowOrigin: 'https://aws.amazon.com',
-        allowMethods: [ 'ANY' ]
+        allowOrigins: ['https://aws.amazon.com'],
+        allowMethods: ['ANY']
       });
 
       // THEN
@@ -523,8 +523,8 @@ export = {
 
       // THEN
       test.throws(() => resource.addCorsPreflight({
-        allowOrigin: 'https://aws.amazon.com',
-        allowMethods: [ 'ANY', 'PUT' ]
+        allowOrigins: ['https://aws.amazon.com'],
+        allowMethods: ['ANY', 'PUT']
       }), /ANY cannot be used with any other method. Received: ANY,PUT/);
 
       test.done();
@@ -538,7 +538,7 @@ export = {
 
       // WHEN
       resource.addCorsPreflight({
-        allowOrigin: 'https://aws.amazon.com',
+        allowOrigins: ['https://aws.amazon.com'],
         statusCode: 200
       });
 
@@ -575,6 +575,68 @@ export = {
       }));
       test.done();
     },
+
+    'allowOrigins must contain at least one origin'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      test.throws(() => resource.addCorsPreflight({
+        allowOrigins: []
+      }), /allowOrigins must contain at least one origin/);
+
+      test.done();
+    },
+
+    'allowOrigins can be used to specify multiple origins'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigins: ['https://twitch.tv', 'https://amazon.com', 'https://aws.amazon.com']
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://twitch.tv'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              },
+              "ResponseTemplates": {
+                "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\"https://amazon.com\") || $origin.matches(\"https://aws.amazon.com\"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
+    }
 
   }
 
