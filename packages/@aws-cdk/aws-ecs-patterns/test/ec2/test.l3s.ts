@@ -3,6 +3,7 @@ import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import { AwsLogDriver } from '@aws-cdk/aws-ecs';
+import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -176,7 +177,8 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
-      Port: 80
+      Port: 80,
+      Protocol: 'HTTP'
     }));
 
     test.done();
@@ -249,8 +251,72 @@ export = {
 
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 443,
+      Protocol: 'HTTPS',
       Certificates: [{
         CertificateArn: "helloworld"
+      }]
+    }));
+
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 1,
+      LaunchType: "FARGATE",
+    }));
+
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: 'api.example.com.',
+      HostedZoneId: {
+        Ref: "HostedZoneDB99F866"
+      },
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] },
+      }
+    }));
+
+    test.done();
+  },
+
+  'test Fargateloadbalanced construct with TLS and default certificate'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      domainName: 'api.example.com',
+      domainZone: zone,
+      protocol: ApplicationProtocol.HTTPS
+    });
+
+    // THEN - stack contains a load balancer, a service, and a certificate
+    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+      ServiceToken: {
+      'Fn::GetAtt': [
+        'ServiceCertificateCertificateRequestorFunctionB69CD117',
+        'Arn'
+        ]
+      },
+      DomainName: 'api.example.com',
+      HostedZoneId: {
+        Ref: "HostedZoneDB99F866"
+      }
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
+      Protocol: 'HTTPS',
+      Certificates: [{
+        CertificateArn: { 'Fn::GetAtt': [
+          'ServiceCertificateCertificateRequestorResource0FC297E9',
+          'Arn'
+        ]}
       }]
     }));
 
@@ -291,6 +357,44 @@ export = {
 
     test.done();
   },
+
+  'errors when setting both HTTP protocol and certificate'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    test.throws(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        image: ecs.ContainerImage.fromRegistry('test'),
+        protocol: ApplicationProtocol.HTTP,
+        certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
+      });
+    });
+
+    test.done();
+  },
+
+  'errors when setting HTTPS protocol but not domain name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    test.throws(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        image: ecs.ContainerImage.fromRegistry('test'),
+        protocol: ApplicationProtocol.HTTPS
+      });
+    });
+
+    test.done();
+  },
+
   'test Fargate loadbalanced construct with optional log driver input'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
