@@ -1,7 +1,7 @@
-import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -64,9 +64,11 @@ export interface ApplicationLoadBalancedServiceBaseProps {
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
-   * Setting this option will set the load balancer port to 443.
+   * Setting this option will set the load balancer protocol to HTTPS.
    *
-   * @default - No certificate associated with the load balancer.
+   * @default - No certificate associated with the load balancer, if using
+   * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
+   * created for the load balancer's specified domain name.
    */
   readonly certificate?: ICertificate;
 
@@ -90,6 +92,17 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default true
    */
   readonly enableLogging?: boolean;
+
+  /**
+   * The protocol for connections from clients to the load balancer.
+   * The load balancer port is determined from the protocol (port 80 for
+   * HTTP, port 443 for HTTPS).  A domain name and zone must be also be
+   * specified if using HTTPS.
+   *
+   * @default HTTP. If a certificate is specified, the protocol will be
+   * set by default to HTTPS.
+   */
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -175,6 +188,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
    */
   public readonly targetGroup: ApplicationTargetGroup;
 
+  public readonly certificate: ICertificate;
+
   /**
    * The cluster that hosts the service.
    */
@@ -215,29 +230,52 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       port: 80
     };
 
+    if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
+      throw new Error('The HTTPS protocol must be used when a certificate is given');
+    }
+    const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+
     this.listener = this.loadBalancer.addListener('PublicListener', {
-      port: props.certificate !== undefined ? 443 : 80,
+      protocol,
       open: true
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
-    if (props.certificate !== undefined) {
-      this.listener.addCertificateArns('Arns', [props.certificate.certificateArn]);
+    if (protocol === ApplicationProtocol.HTTPS) {
+      if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
+        throw new Error('A domain name and zone is required when using the HTTPS protocol');
+      }
+
+      if (props.certificate !== undefined) {
+        this.certificate = props.certificate;
+      } else {
+        this.certificate = new DnsValidatedCertificate(this, 'Certificate', {
+          domainName: props.domainName,
+          hostedZone: props.domainZone
+        });
+      }
+    }
+    if (this.certificate !== undefined) {
+      this.listener.addCertificateArns('Arns', [this.certificate.certificateArn]);
     }
 
+    let domainName = this.loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new ARecord(this, "DNS", {
+      const record = new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
         target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
       });
+
+      domainName = record.domainName;
     }
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
   }
 
   /**
