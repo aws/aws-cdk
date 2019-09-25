@@ -4,6 +4,7 @@ import os = require('os');
 import path = require('path');
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { ISDK } from './util/sdk';
+import {Tag} from "./cxapp/stacks";
 
 // tslint:disable:max-line-length
 
@@ -26,6 +27,9 @@ export interface BootstrapEnvironmentProps {
    * @default - the default KMS key for S3 will be used.
    */
   readonly kmsKeyId?: string;
+
+
+  tags?: Tag[];
 }
 
 /** @experimental */
@@ -83,5 +87,5 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
   });
 
   const assembly = builder.buildAssembly();
-  return await deployStack({ stack: assembly.getStack(toolkitStackName), sdk: aws, roleArn });
+  return await deployStack({ stack: assembly.getStack(toolkitStackName), sdk: aws, roleArn, tags:props.tags });
 }
