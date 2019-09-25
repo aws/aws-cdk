@@ -190,11 +190,6 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
-   * Setting this option will set the load balancer protocol to HTTPS.
-   *
-   * @default - No certificate associated with the load balancer, if using
-   * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
-   * created for the load balancer's specified domain name.
    */
   public readonly certificate: ICertificate;
 
