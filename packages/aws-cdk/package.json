@@ -49,7 +49,7 @@
     "@types/table": "^4.0.6",
     "@types/uuid": "^3.4.5",
     "@types/yaml": "^1.0.2",
-    "@types/yargs": "^13.0.2",
+    "@types/yargs": "^13.0.3",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../tools/cdk-build-tools",
     "jszip": "^3.2.2",
