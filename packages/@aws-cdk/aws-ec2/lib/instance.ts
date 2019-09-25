@@ -1,5 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 
+import { IGrantable, IPrincipal } from '@aws-cdk/aws-iam';
 import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
@@ -14,7 +15,7 @@ import { IVpc, SubnetSelection } from './vpc';
  */
 const NAME_TAG: string = 'Name';
 
-export interface IInstance extends IResource, IConnectable {
+export interface IInstance extends IResource, IConnectable, IGrantable {
   /**
    * The instance's ID
    *
@@ -190,6 +191,11 @@ export class Instance extends Resource implements IInstance {
   public readonly role: iam.IRole;
 
   /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: IPrincipal;
+
+  /**
    * UserData for the instance
    */
   public readonly userData: UserData;
@@ -244,6 +250,7 @@ export class Instance extends Resource implements IInstance {
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+    this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [this.role.roleName]
