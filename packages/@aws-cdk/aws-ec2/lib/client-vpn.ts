@@ -15,11 +15,29 @@ export interface IClientVpnEndpoint extends cdk.IResource {
   readonly clientVpnEndpointId: string;
 }
 
-// TODO helper class if activeDirectory and mutualAuthentication mutually exclusive?
-export interface IClientAuthenticationRequest {
-  readonly activeDirectoryId?: string;
-  readonly mutualAuthenticationClientRootCertificateChainArn?: string;
+export interface IClientAuthenticationRequestOptions {
+  readonly activeDirectory?: {directoryId: string};
+  readonly mutualAuthentication?: {clientRootCertificateChainArn: string};
   readonly type: ClientRequestAuthenticationType;
+}
+
+export class ClientAuthenticationRequest {
+  public static activeDirectory(directoryId: string): ClientAuthenticationRequest {
+    return new ClientAuthenticationRequest({
+      activeDirectory: {directoryId},
+      type: ClientRequestAuthenticationType.DIRECTORY_SERVICE
+    });
+  }
+
+  public static mutualAuthentication(clientRootCertificateChainArn: string): ClientAuthenticationRequest {
+    return new ClientAuthenticationRequest({
+      mutualAuthentication: {clientRootCertificateChainArn},
+      type: ClientRequestAuthenticationType.CERTIFICATE
+    });
+  }
+
+  private constructor(public readonly props: IClientAuthenticationRequestOptions) {
+  }
 }
 
 export interface IConnectionLogOptions {
@@ -83,7 +101,7 @@ export interface ITagSpecification {
 }
 
 export interface ClientVpnEndpointProps {
-  readonly authenticationOptions: IClientAuthenticationRequest[];
+  readonly authenticationOptions: ClientAuthenticationRequest[];
   readonly clientCidrBlock: string;
   readonly connectionLog: ConnectionLog;
   // TODO replace with serverCertificate object?
@@ -108,14 +126,7 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
     super(scope, id);
 
     const clientVpnEndpoint = new CfnClientVpnEndpoint(this, 'Resource', {
-      authenticationOptions: props.authenticationOptions.map(
-        ({activeDirectoryId, mutualAuthenticationClientRootCertificateChainArn, type}) => ({
-          activeDirectory: activeDirectoryId ? {directoryId: activeDirectoryId} : undefined,
-          mutualAuthentication: mutualAuthenticationClientRootCertificateChainArn ?
-            {clientRootCertificateChainArn: mutualAuthenticationClientRootCertificateChainArn} :
-            undefined,
-          type,
-        })),
+      authenticationOptions: props.authenticationOptions.map(({props}) => props),
       connectionLogOptions: props.connectionLog && props.connectionLog.props,
       serverCertificateArn: props.serverCertificateArn,
       clientCidrBlock: props.clientCidrBlock,
