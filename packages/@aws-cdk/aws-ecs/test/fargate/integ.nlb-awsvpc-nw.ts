@@ -36,22 +36,16 @@ scaling.scaleOnCpuUtilization('ReasonableCpu', { targetUtilizationPercent: 10 })
 const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('PublicListener', { port: 80});
 
-service.registerContainerTargets([
+service.registerContainerTargets(
   {
-    containerName: "web",
-    containerTargets: [
-      {
-        containerPort: 80,
-        targetGroups: [
-          {
-            targetGroupId: "ECS",
-            listener
-          }
-        ]
-      }
-    ]
+    containerTarget: {
+      containerName: 'web',
+      containerPort: 80
+    },
+    listener,
+    targetGroupId: 'ECS',
   }
-]);
+);
 
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName, });
 

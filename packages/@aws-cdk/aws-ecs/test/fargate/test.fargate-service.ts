@@ -688,22 +688,16 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets([
+          service.registerContainerTargets(
             {
-              containerName: "MainContainer",
-              containerTargets: [
-                {
-                  containerPort: 8000,
-                  targetGroups: [
-                    {
-                      targetGroupId: "target1",
-                      listener
-                    }
-                  ]
-                }
-              ]
+              containerTarget: {
+                containerName: 'MainContainer',
+                containerPort: 8000
+              },
+              listener,
+              targetGroupId: 'target1',
             }
-          ]);
+          );
 
           // THEN
           expect(stack).to(haveResource('AWS::ECS::Service', {
@@ -746,25 +740,19 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets([
+          service.registerContainerTargets(
             {
-              containerName: "MainContainer",
-              containerTargets: [
-                {
-                  containerPort: 8000,
-                  targetGroups: [
-                    {
-                      targetGroupId: "target1",
-                      listener,
-                      addTargetGroupProps: {
-                        protocol: elbv2.ApplicationProtocol.HTTP
-                      }
-                    }
-                  ]
-                }
-              ]
+              containerTarget: {
+                containerName: 'MainContainer',
+                containerPort: 8000
+              },
+              listener,
+              targetGroupId: 'target1',
+              addTargetGroupProps: {
+                protocol: elbv2.ApplicationProtocol.HTTP
+              }
             }
-          ]);
+          );
 
           // THEN
           expect(stack).to(haveResource('AWS::ECS::Service', {
@@ -807,25 +795,19 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets([
+          service.registerContainerTargets(
             {
-              containerName: "MainContainer",
-              containerTargets: [
-                {
-                  containerPort: 8000,
-                  targetGroups: [
-                    {
-                      targetGroupId: "target1",
-                      listener,
-                      addTargetGroupProps: {
-                        protocol: elbv2.ApplicationProtocol.HTTPS
-                      }
-                    }
-                  ]
-                }
-              ]
+              containerTarget: {
+                containerName: 'MainContainer',
+                containerPort: 8000
+              },
+              listener,
+              targetGroupId: 'target1',
+              addTargetGroupProps: {
+                protocol: elbv2.ApplicationProtocol.HTTPS
+              }
             }
-          ]);
+          );
 
           // THEN
           expect(stack).to(haveResource('AWS::ECS::Service', {
@@ -868,26 +850,20 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets([
+          service.registerContainerTargets(
             {
-              containerName: "MainContainer",
-              containerTargets: [
-                {
-                  containerPort: 8000,
-                  targetGroups: [
-                    {
-                      targetGroupId: "target1",
-                      listener,
-                      addTargetGroupProps: {
-                        port: 83,
-                        protocol: elbv2.ApplicationProtocol.HTTP
-                      }
-                    }
-                  ]
-                }
-              ]
+              containerTarget: {
+                containerName: 'MainContainer',
+                containerPort: 8000
+              },
+              listener,
+              targetGroupId: 'target1',
+              addTargetGroupProps: {
+                port: 83,
+                protocol: elbv2.ApplicationProtocol.HTTP
+              }
             }
-          ]);
+          );
 
           // THEN
           expect(stack).to(haveResource('AWS::ECS::Service', {
@@ -932,22 +908,16 @@ export = {
           const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets([
+          service.registerContainerTargets(
             {
-              containerName: "MainContainer",
-              containerTargets: [
-                {
-                  containerPort: 8000,
-                  targetGroups: [
-                    {
-                      targetGroupId: "target1",
-                      listener
-                    }
-                  ]
-                }
-              ]
+              containerTarget: {
+                containerName: 'MainContainer',
+                containerPort: 8000
+              },
+              listener,
+              targetGroupId: 'target1',
             }
-          ]);
+          );
 
           // THEN
           expect(stack).to(haveResource('AWS::ECS::Service', {
@@ -990,25 +960,19 @@ export = {
           const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets([
+          service.registerContainerTargets(
             {
-              containerName: "MainContainer",
-              containerTargets: [
-                {
-                  containerPort: 8000,
-                  targetGroups: [
-                    {
-                      targetGroupId: "target1",
-                      addTargetGroupProps: {
-                        port: 81
-                      },
-                      listener
-                    }
-                  ]
-                }
-              ]
+              containerTarget: {
+                containerName: 'MainContainer',
+                containerPort: 8000
+              },
+              listener,
+              targetGroupId: 'target1',
+              addTargetGroupProps: {
+                port: 81
+              }
             }
-          ]);
+          );
 
           // THEN
           expect(stack).to(haveResource('AWS::ECS::Service', {

@@ -8,7 +8,6 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
-import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -24,61 +23,26 @@ export interface IService extends IResource {
   readonly serviceArn: string;
 }
 
-/**
- * Properties for ECS container targets.
- */
-export interface TargetProps {
+export interface EcsTarget {
   /**
-   * Name of the container.
+   * Properties for defining an ECS target.
    */
-  readonly containerName: string,
+  readonly containerTarget: LoadBalancerTargetOptions,
 
-  /**
-   * Container targets of the container.
-   */
-  readonly containerTargets: ContainerTargetProps[]
-}
-
-/**
- * Properties for registering a container target.
- */
-export interface ContainerTargetProps {
-  /**
-   * Container port number to be registered.
-   */
-  readonly containerPort: number,
-
-  /**
-   * Protocol of the container port.
-   *
-   * @default Protocol.TCP
-   */
-  readonly protocol?: Protocol,
-
-  /**
-   * Setting to create and attach target groups.
-   */
-  readonly targetGroups: TargetGroupProps [],
-}
-
-/**
- * The interface for creating and attaching a target group.
- */
-export interface TargetGroupProps {
   /**
    * ID for a target group to be created.
    */
   readonly targetGroupId: string,
 
   /**
+   * Listener for the target group to attach to [disable-awslint:ref-via-interface].
+   */
+  readonly listener: elbv2.ApplicationListener | elbv2.NetworkListener,
+
+  /**
    * Properties for adding new targets to a listener.
    */
   readonly addTargetGroupProps?: elbv2.AddApplicationTargetsProps | elbv2.AddNetworkTargetsProps,
-
-  /**
-   * Listener for the target group to attach to [disable-awslint:ref-via-interface].
-   */
-  readonly listener: elbv2.ApplicationListener | elbv2.NetworkListener
 }
 
 /**
@@ -340,35 +304,20 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
-   * service.registerContainerTargets([
+   * service.registerContainerTargets(
    *   {
-   *     containerName: "web",
-   *     containerTargets: [
-   *       {
-   *         containerPort: 80,
-   *         targetGroups: [
-   *           {
-   *             targetGroupId: "ECS",
-   *             listener,
-   *           }
-   *         ]
-   *       }
-   *     ]
-   *   }
-   * ]
+   *     containerTarget: {
+   *       containerName: 'web',
+   *       containerPort: 80,
+   *     },
+   *     targetGroupId: 'ECS',
+   *     listener
+   *   },
+   * )
    */
-  public registerContainerTargets(containers: TargetProps[]) {
-    for (const container of containers) {
-      for (const containerTarget of container.containerTargets) {
-        const target = {
-          containerName: container.containerName,
-          containerPort: containerTarget.containerPort,
-          protocol: containerTarget.protocol
-        };
-        for (const targetGroupProp of containerTarget.targetGroups) {
-          this.addToListener(targetGroupProp.targetGroupId, targetGroupProp.listener, target, targetGroupProp.addTargetGroupProps || {});
-        }
-      }
+  public registerContainerTargets(...targets: EcsTarget[]) {
+    for (const target of targets) {
+      this.addToListener(target.targetGroupId, target.listener, target.containerTarget, target.addTargetGroupProps || {});
     }
   }
 
