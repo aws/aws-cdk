@@ -23,6 +23,30 @@ export = {
       test.done();
     },
 
+    "support lazy cpu and memory values"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: cdk.Lazy.numberValue({produce: () => 128}),
+        memoryLimitMiB: cdk.Lazy.numberValue({produce: () => 1024})
+      });
+
+      taskDefinition.addVolume({
+        host: {
+          sourcePath: "/tmp/cache",
+        },
+        name: "scratch"
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        Cpu: "128",
+        Memory: "1024"
+      }));
+
+      test.done();
+    },
+
     "with all properties set"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
