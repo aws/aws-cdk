@@ -68,7 +68,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^1.9.0",
-    "@types/aws-lambda": "^8.10.31",
+    "@types/aws-lambda": "^8.10.32",
     "@types/lodash": "^4.14.139",
     "@types/sinon": "^7.0.13",
     "aws-sdk": "^2.534.0",
@@ -79,7 +79,7 @@
     "lodash": "^4.17.15",
     "nock": "^11.3.5",
     "pkglint": "file:../../../tools/pkglint",
-    "sinon": "^7.4.2"
+    "sinon": "^7.5.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "^1.9.0",
