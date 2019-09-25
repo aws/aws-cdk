@@ -125,8 +125,11 @@ export = {
 },
 
 'setContext(k,v) can be used to set context programmatically'(test: Test) {
-  const prog = new App();
-  prog.node.setContext('foo', 'bar');
+  const prog = new App({
+    context: {
+      foo: 'bar'
+    }
+  });
   test.deepEqual(prog.node.tryGetContext('foo'), 'bar');
   test.done();
 },
