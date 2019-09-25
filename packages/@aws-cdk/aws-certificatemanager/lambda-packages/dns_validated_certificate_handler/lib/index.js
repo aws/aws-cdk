@@ -11,6 +11,7 @@ let defaultResponseURL;
 let waiter;
 let sleep = defaultSleep;
 let random = Math.random;
+let maxAttempts = 10;
 
 /**
  * Upload a CloudFormation response object to S3.
@@ -99,8 +100,7 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
   console.log('Waiting for ACM to provide DNS records for validation...');
 
   let record;
-  const maxAttempts = 10;
-  for (let attempt = 0; attempt < maxAttempts - 1 && !record; attempt++) {
+  for (let attempt = 0; attempt < maxAttempts && !record; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
@@ -175,8 +175,7 @@ const deleteCertificate = async function(arn, region) {
     console.log(`Waiting for certificate ${arn} to become unused`);
 
     let inUseByResources;
-    const maxAttempts = 10;
-    for (let attempt = 0; attempt < maxAttempts - 1; attempt++) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const { Certificate } = await acm.describeCertificate({
         CertificateArn: arn
       }).promise();
@@ -306,4 +305,18 @@ exports.withRandom = function(r) {
  */
 exports.resetRandom = function() {
   random = Math.random;
+}
+
+/**
+ * @private
+ */
+exports.withMaxAttempts = function(ma) {
+  maxAttempts = ma;
+}
+
+/**
+ * @private
+ */
+exports.resetMaxAttempts = function() {
+  maxAttempts = 10;
 }

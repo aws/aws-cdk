@@ -38,12 +38,13 @@ describe('DNS Validated Certificate Handler', () => {
     // Restore waiters and logger
     handler.resetWaiter();
     handler.resetSleep();
+    handler.resetMaxAttempts();
     AWS.restore();
     console.log = origLog;
     spySleep.resetHistory();
   });
 
-  test('Fails if the event payload is empty', () => {
+  test('Empty event payload fails', () => {
     const request = nock(ResponseURL).put('/', body => {
       return body.Status === 'FAILED' && body.Reason === 'Unsupported request type undefined';
     }).reply(200);
@@ -54,7 +55,7 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
-  test('Fails if the request type is bogus', () => {
+  test('Bogus operation fails', () => {
     const bogusType = 'bogus';
     const request = nock(ResponseURL).put('/', body => {
       return body.Status === 'FAILED' && body.Reason === 'Unsupported request type ' + bogusType;
@@ -68,7 +69,7 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
-  test('Requests a certificate if RequestType is Create', () => {
+  test('Create operation requests a certificate', () => {
     const requestCertificateFake = sinon.fake.resolves({
       CertificateArn: testCertificateArn,
     });
@@ -142,46 +143,7 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
-  test('Fails after at most 10 attempts if no DomainValidationOptions are available', () => {
-    const requestCertificateFake = sinon.fake.resolves({
-      CertificateArn: testCertificateArn
-    });
-
-    const describeCertificateFake = sinon.fake.resolves({
-      Certificate: {
-        CertificateArn: testCertificateArn
-      }
-    });
-
-    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
-    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
-
-    const request = nock(ResponseURL).put('/', body => {
-      return body.Status === 'FAILED' &&
-        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
-    }).reply(200);
-
-    return LambdaTester(handler.certificateRequestHandler)
-      .event({
-        RequestType: 'Create',
-        RequestId: testRequestId,
-        ResourceProperties: {
-          DomainName: testDomainName,
-          HostedZoneId: testHostedZoneId,
-          Region: 'us-east-1',
-        }
-      })
-      .expectResolve(() => {
-        sinon.assert.calledWith(requestCertificateFake, sinon.match({
-          DomainName: testDomainName,
-          ValidationMethod: 'DNS'
-        }));
-        expect(request.isDone()).toBe(true);
-        expect(spySleep.callCount).toBeLessThan(10);
-      });
-  });
-
-  test('Fails after at more than 60 seconds', () => {
+  test('Create operation fails after more than 60s if certificate has no DomainValidationOptions', () => {
     handler.withRandom(() => 0);
     const requestCertificateFake = sinon.fake.resolves({
       CertificateArn: testCertificateArn,
@@ -222,7 +184,7 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
-  test('Fails after at less than 360 seconds', () => {
+  test('Create operation fails within 360s and 10 attempts if certificate has no DomainValidationOptions', () => {
     handler.withRandom(() => 1);
     const requestCertificateFake = sinon.fake.resolves({
       CertificateArn: testCertificateArn,
@@ -258,14 +220,66 @@ describe('DNS Validated Certificate Handler', () => {
           ValidationMethod: 'DNS'
         }));
         expect(request.isDone()).toBe(true);
-        expect(spySleep.callCount).toBeLessThan(10);
+        expect(spySleep.callCount).toBe(10);
         const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
         expect(totalSleep).toBeLessThan(360 * 1000);
       });
   });
 
+  test('Create operation with a maximum of 1 attempts describes the certificate once', () => {
+    handler.withMaxAttempts(1);
 
-  test('Deletes a certificate if RequestType is Delete', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+
+    const describeCertificateFake = sinon.fake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [{
+          ValidationStatus: 'SUCCESS',
+          ResourceRecord: {
+            Name: testRRName,
+            Type: 'CNAME',
+            Value: testRRValue
+          }
+        }]
+      }
+    });
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const changeResourceRecordSetsFake = sinon.fake.resolves({
+      ChangeInfo: {
+        Id: 'bogus'
+      }
+    });
+    AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledOnce(describeCertificateFake);
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn,
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Delete operation deletes the certificate', () => {
     const describeCertificateFake = sinon.fake.resolves({
       Certificate: {
         CertificateArn: testCertificateArn,
@@ -418,7 +432,7 @@ describe('DNS Validated Certificate Handler', () => {
         }));
         const totalSleep = spySleep.getCalls().map(call => call.args[0]).reduce((p, n) => p + n, 0);
         expect(totalSleep).toBeLessThan(360 * 1000);
-        expect(spySleep.callCount).toBeLessThan(10);
+        expect(spySleep.callCount).toBe(10);
         expect(request.isDone()).toBe(true);
       });
   });
@@ -472,6 +486,43 @@ describe('DNS Validated Certificate Handler', () => {
 
     const request = nock(ResponseURL).put('/', body => {
       return body.Status === 'FAILED';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Delete',
+        RequestId: testRequestId,
+        PhysicalResourceId: testCertificateArn,
+        ResourceProperties: {
+          Region: 'us-east-1',
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(describeCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        sinon.assert.calledWith(deleteCertificateFake, sinon.match({
+          CertificateArn: testCertificateArn
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Delete operation with a maximum of 1 attempts describes the certificate once', () => {
+    handler.withMaxAttempts(1);
+
+    const describeCertificateFake = sinon.fake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+      }
+    });
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+
+    const deleteCertificateFake = sinon.fake.resolves({});
+    AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
     }).reply(200);
 
     return LambdaTester(handler.certificateRequestHandler)
