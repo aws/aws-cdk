@@ -1,3 +1,4 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 
 /**
@@ -41,5 +42,17 @@ export class InstanceIdTarget implements elbv2.IApplicationLoadBalancerTarget, e
       targetType: elbv2.TargetType.INSTANCE,
       targetJson: { id: this.instanceId, port: this.port }
     };
+  }
+}
+
+export class InstanceTarget extends InstanceIdTarget {
+  /**
+   * Create a new Instance target
+   *
+   * @param instance Instance to register to
+   * @param port Override the default port for the target group
+   */
+  constructor(instance: ec2.Instance, port?: number) {
+    super(instance.instanceId, port);
   }
 }
