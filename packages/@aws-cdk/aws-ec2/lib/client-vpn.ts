@@ -8,13 +8,6 @@ import {
 } from './ec2.generated';
 import {ISubnet} from './vpc';
 
-export interface IClientVpnEndpoint extends cdk.IResource {
-  /**
-   * The id of the Client VPN Endpoint
-   */
-  readonly clientVpnEndpointId: string;
-}
-
 interface IClientAuthenticationRequestOptions {
   /**
    * Information about the Active Directory to be used
@@ -191,6 +184,16 @@ export interface ClientVpnEndpointProps {
   readonly transportProtocol?: ClientVpnEndpointProtocol;
 }
 
+export interface IClientVpnEndpoint extends cdk.IResource {
+  /**
+   * The id of the Client VPN Endpoint
+   */
+  readonly clientVpnEndpointId: string;
+  readonly routes: ClientVpnRoute[];
+  readonly targetNetworkAssociations: ClientVpnRoute[];
+  readonly authorizationRules: ClientVpnRoute[];
+}
+
 /**
  * Define a Client VPN Endpoint
  *
@@ -202,6 +205,9 @@ export interface ClientVpnEndpointProps {
 export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoint {
 
   public readonly clientVpnEndpointId: string;
+  public readonly routes: ClientVpnRoute[] = [];
+  public readonly targetNetworkAssociations: ClientVpnRoute[] = [];
+  public readonly authorizationRules: ClientVpnRoute[] = [];
 
   constructor(scope: cdk.Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
@@ -221,25 +227,36 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
     this.clientVpnEndpointId = clientVpnEndpoint.ref;
   }
 
-  public addRoute(scope: cdk.Construct, id: string, options: ClientVpnRouteOptions): ClientVpnRoute {
-    return new ClientVpnRoute(scope, id, {
+  public addRoute(options: ClientVpnRouteOptions): ClientVpnRoute {
+    const route = new ClientVpnRoute(this, `Route-${this.routes.length}`, {
       clientVpnEndpoint: this,
       ...options,
     });
+
+    this.routes.push(route);
+    return route;
   }
 
-  public addTargetNetworkAssociation(scope: cdk.Construct, id: string, subnet: ISubnet): ClientVpnTargetNetworkAssociation {
-    return new ClientVpnTargetNetworkAssociation(scope, id, {
-      clientVpnEndpoint: this,
-      subnet,
-    });
+  public addTargetNetworkAssociation(subnet: ISubnet): ClientVpnTargetNetworkAssociation {
+    const association = new ClientVpnTargetNetworkAssociation(
+      this,
+      `TargetNetworkAssociation-${this.targetNetworkAssociations.length}`, {
+        clientVpnEndpoint: this,
+        subnet,
+      });
+
+    this.targetNetworkAssociations.push(association);
+    return association;
   }
 
-  public addAuthorizationRule(scope: cdk.Construct, id: string, options: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
-    return new ClientVpnAuthorizationRule(scope, id, {
+  public addAuthorizationRule(options: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
+    const rule = new ClientVpnAuthorizationRule(this, `AuthorizationRule-${this.authorizationRules.length}`, {
       clientVpnEndpoint: this,
       ...options,
     });
+
+    this.authorizationRules.push(rule);
+    return rule;
   }
 }
 
@@ -268,6 +285,8 @@ export class ClientVpnRoute extends cdk.Resource {
       destinationCidrBlock: props.destinationCidrBlock,
       targetVpcSubnetId: props.targetSubnet.subnetId,
     });
+
+    props.clientVpnEndpoint.routes.push(this);
   }
 }
 
@@ -292,6 +311,8 @@ export class ClientVpnTargetNetworkAssociation extends cdk.Resource {
       clientVpnEndpointId: props.clientVpnEndpoint.clientVpnEndpointId,
       subnetId: props.subnet.subnetId,
     });
+
+    props.clientVpnEndpoint.targetNetworkAssociations.push(this);
   }
 }
 
@@ -322,6 +343,8 @@ export class ClientVpnAuthorizationRule extends cdk.Resource {
       authorizeAllGroups: props.authorizeAllGroups,
       description: props.description,
     });
+
+    props.clientVpnEndpoint.authorizationRules.push(this);
   }
 }
 
