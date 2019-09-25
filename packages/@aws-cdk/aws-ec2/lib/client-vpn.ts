@@ -1,3 +1,4 @@
+import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/core');
 import {
   CfnClientVpnAuthorizationRule,
@@ -22,10 +23,22 @@ export interface IClientAuthenticationRequest {
 }
 
 export interface IConnectionLogOptions {
-  // TODO replace with cloudwatch object?
   readonly cloudwatchLogGroup?: string;
   readonly cloudwatchLogStream?: string;
   readonly enabled: boolean;
+}
+
+export class ConnectionLog {
+  public static group(group: logs.ILogGroup, enabled = true): ConnectionLog {
+    return new ConnectionLog({cloudwatchLogGroup: group.logGroupName, enabled});
+  }
+
+  public static stream(stream: logs.ILogStream, enabled = true): ConnectionLog {
+    return new ConnectionLog({cloudwatchLogStream: stream.logStreamName, enabled});
+  }
+
+  private constructor(public readonly props: IConnectionLogOptions) {
+  }
 }
 
 export interface ITagSpecificationTag {
@@ -41,7 +54,7 @@ export interface ITagSpecification {
 export interface ClientVpnEndpointProps {
   readonly authenticationOptions: IClientAuthenticationRequest[];
   readonly clientCidrBlock: string;
-  readonly connectionLogOptions: IConnectionLogOptions;
+  readonly connectionLog: ConnectionLog;
   // TODO replace with serverCertificate object?
   readonly serverCertificateArn: string;
   readonly description?: string;
@@ -72,7 +85,7 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
             undefined,
           type,
         })),
-      connectionLogOptions: props.connectionLogOptions,
+      connectionLogOptions: props.connectionLog && props.connectionLog.props,
       serverCertificateArn: props.serverCertificateArn,
       clientCidrBlock: props.clientCidrBlock,
       description: props.description,

@@ -72,6 +72,7 @@
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "^1.9.0",
     "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-logs": "^1.9.0",
     "@aws-cdk/aws-ssm": "^1.9.0",
     "@aws-cdk/core": "^1.9.0",
     "@aws-cdk/cx-api": "^1.9.0"
@@ -80,6 +81,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-cloudwatch": "^1.9.0",
     "@aws-cdk/aws-iam": "^1.9.0",
+    "@aws-cdk/aws-logs": "^1.9.0",
     "@aws-cdk/aws-ssm": "^1.9.0",
     "@aws-cdk/core": "^1.9.0",
     "@aws-cdk/cx-api": "^1.9.0"
