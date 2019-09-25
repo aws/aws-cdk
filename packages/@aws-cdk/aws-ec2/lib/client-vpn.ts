@@ -142,7 +142,6 @@ export interface ClientVpnAuthorizationRuleOptions {
   readonly description?: string;
 }
 
-
 export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationRuleOptions {
   readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
