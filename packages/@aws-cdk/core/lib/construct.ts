@@ -399,40 +399,6 @@ export class ConstructNode {
     return false;
   }
 
-  // /**
-  //  * Record a reference originating from this construct node
-  //  */
-  // public addReference(..._refs: IResolvable[]) {
-  //   throw new Error('deprecated');
-  //   // for (const ref of refs) {
-  //   //   if (Reference.isReference(ref)) {
-  //   //     this._references.add(ref);
-  //   //   }
-  //   // }
-  // }
-
-  // /**
-  //  * Return all references originating from this node or any of its children
-  //  */
-  // public get references(): OutgoingReference[] {
-  //   throw new Error('deprecated');
-  //   // const ret = new Set<OutgoingReference>();
-  //   //
-  //   // function recurse(node: ConstructNode) {
-  //   //   for (const reference of node._references) {
-  //   //     ret.add({ source: node.host, reference });
-  //   //   }
-  //   //
-  //   //   for (const child of node.children) {
-  //   //     recurse(child.node);
-  //   //   }
-  //   // }
-  //   //
-  //   // recurse(this);
-  //   //
-  //   // return Array.from(ret);
-  // }
-
   /**
    * Add an ordering dependency on another Construct.
    *
@@ -655,21 +621,6 @@ export interface Dependency {
    * Target of the dependency
    */
   readonly target: IConstruct;
-}
-
-/**
- * Represents a reference that originates from a specific construct.
- */
-export interface OutgoingReference {
-  /**
-   * The originating construct.
-   */
-  readonly source: IConstruct;
-
-  /**
-   * The reference.
-   */
-  readonly reference: Reference;
 }
 
 /**
