@@ -1,4 +1,5 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import ecr_assets = require('@aws-cdk/aws-ecr-assets');
 import s3_assets = require('@aws-cdk/aws-s3-assets');
 import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
 import fs = require('fs');
@@ -764,6 +765,43 @@ export = {
 
     // parent stack should have 2 assets
     test.deepEqual(assembly.getStack(parent.stackName).assets.length, 2);
+    test.done();
+  },
+
+  'docker image assets are wired through the top-level stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parent = new Stack(app, 'my-stack');
+    const nested = new NestedStack(parent, 'nested-stack');
+
+    // WHEN
+    new ecr_assets.DockerImageAsset(nested, 'docker-image', {
+      directory: path.join(__dirname, 'asset-docker-fixture'),
+      repositoryName: 'repoName',
+      buildArgs: { key: 'value', boom: 'bam' },
+      target: 'buildTarget'
+    });
+
+    // THEN
+    const parentParams = SynthUtils.toCloudFormation(parent).Parameters;
+    test.ok(parentParams.AssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageName27B32C1A);
+    const nestedParams = SynthUtils.toCloudFormation(nested).Parameters;
+    test.ok(nestedParams.referencetomystackAssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageNameED31E0D1Ref);
+
+    expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
+      Parameters: {
+        referencetomystackAssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageNameED31E0D1Ref: {
+          Ref: "AssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageName27B32C1A"
+        },
+        referencetomystackAssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3Bucket6A7166F6Ref: {
+          Ref: "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB"
+        },
+        referencetomystackAssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey6B0123FCRef: {
+          Ref: "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7"
+        }
+      }
+    }));
+
     test.done();
   }
 };

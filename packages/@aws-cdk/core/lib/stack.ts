@@ -3,10 +3,11 @@ import { EnvironmentUtils } from '@aws-cdk/cx-api';
 import crypto = require('crypto');
 import fs = require('fs');
 import path = require('path');
-import { FileAssetLocation, FileAssetPackaging , FileAssetSource } from './assets';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation , FileAssetPackaging, FileAssetSource } from './assets';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
+import { DockerImageAssetParameters, FileAssetParameters } from './private/asset-parameters';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { findTokens , resolve } from './private/resolve';
@@ -477,7 +478,7 @@ export class Stack extends Construct implements ITaggable {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
       const metadata: cxapi.FileAssetMetadataEntry = {
-        path: asset.sourcePath,
+        path: asset.fileName,
         id: asset.sourceHash,
         packaging: asset.packaging,
         sourceHash: asset.sourceHash,
@@ -502,6 +503,41 @@ export class Stack extends Construct implements ITaggable {
     const s3Url = `https://s3.${this.region}.${this.urlSuffix}/${bucketName}/${objectKey}`;
 
     return { bucketName, objectKey, s3Url };
+  }
+
+  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+    if (this.parentStack) {
+      return this.parentStack.addDockerImageAsset(asset);
+    }
+
+    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as DockerImageAssetParameters;
+    if (!params) {
+      params = new DockerImageAssetParameters(this.assetParameters, asset.sourceHash);
+
+      const metadata: cxapi.ContainerImageAssetMetadataEntry = {
+        id: this.node.uniqueId,
+        packaging: 'container-image',
+        path: asset.directoryName,
+        sourceHash: asset.sourceHash,
+        imageNameParameter: params.imageNameParameter.logicalId,
+        repositoryName: asset.repositoryName,
+        buildArgs: asset.dockerBuildArgs,
+        target: asset.dockerBuildTarget
+      };
+
+      this.node.addMetadata(cxapi.ASSET_METADATA, metadata);
+    }
+
+    // Parse repository name and tag from the parameter (<REPO_NAME>@sha256:<TAG>)
+    // Example: cdk/cdkexampleimageb2d7f504@sha256:72c4f956379a43b5623d529ddd969f6826dde944d6221f445ff3e7add9875500
+    const components = Fn.split('@sha256:', params.imageNameParameter.valueAsString);
+    const repositoryName = Fn.select(0, components).toString();
+    const imageSha = Fn.select(1, components).toString();
+    const imageUri = `${this.account}.dkr.ecr.${this.region}.${this.urlSuffix}/${repositoryName}@sha256:${imageSha}`;
+
+    return {
+      imageUri, repositoryName
+    };
   }
 
   /**
@@ -643,7 +679,7 @@ export class Stack extends Construct implements ITaggable {
       const templateLocation = parent.addFileAsset({
         packaging: FileAssetPackaging.FILE,
         sourceHash: templateHash,
-        sourcePath: this.templateFile
+        fileName: this.templateFile
       });
 
       // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
@@ -968,41 +1004,11 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
   return into;
 }
 
-class FileAssetParameters extends Construct {
-  public readonly bucketNameParameter: CfnParameter;
-  public readonly objectKeyParameter: CfnParameter;
-  public readonly artifactHashParameter: CfnParameter;
-
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    // add parameters for s3 bucket and s3 key. those will be set by
-    // the toolkit or by CI/CD when the stack is deployed and will include
-    // the name of the bucket and the S3 key where the code lives.
-
-    this.bucketNameParameter = new CfnParameter(this, 'S3Bucket', {
-      type: 'String',
-      description: `S3 bucket for asset "${id}"`,
-    });
-
-    this.objectKeyParameter = new CfnParameter(this, 'S3VersionKey', {
-      type: 'String',
-      description: `S3 key for asset version "${id}"`
-    });
-
-    this.artifactHashParameter   = new CfnParameter(this, 'ArtifactHash', {
-      description: `Artifact hash for asset "${id}"`,
-      type: 'String',
-    });
-  }
-}
-
 // These imports have to be at the end to prevent circular imports
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { CfnOutput } from './cfn-output';
-import { CfnParameter } from './cfn-parameter';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
