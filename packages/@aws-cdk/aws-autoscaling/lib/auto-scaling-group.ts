@@ -294,7 +294,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
     if (this.albTargetGroup === undefined) {
-      throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
+      throw new Error('Attach the AutoScalingGroup to a non-imported Application Load Balancer before calling scaleOnRequestCount()');
     }
 
     const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
@@ -546,6 +546,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Attach to ELBv2 Application Target Group
    */
   public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+    if (this.albTargetGroup !== undefined) {
+      throw new Error('Cannot add AutoScalingGroup to 2nd Target Group');
+    }
+
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
       // Copy onto self if it's a concrete type. We need this for autoscaling
