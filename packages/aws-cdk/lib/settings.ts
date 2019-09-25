@@ -3,13 +3,14 @@ import os = require('os');
 import fs_path = require('path');
 import { Tag } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
+import { getCdkHome } from "./os";
 import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
 
 export const PROJECT_CONFIG = 'cdk.json';
 export const PROJECT_CONTEXT = 'cdk.context.json';
-export const USER_DEFAULTS = process.env.CDK_HOME ? fs_path.join(process.env.CDK_HOME, '.cdk.json') : '~/.cdk.json';
+export const USER_DEFAULTS = fs_path.join(getCdkHome(false), '.cdk.json');
 
 /**
  * If a context value is an object with this key set to a truthy value, it won't be saved to cdk.context.json

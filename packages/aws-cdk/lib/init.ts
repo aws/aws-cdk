@@ -1,9 +1,9 @@
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import os = require('os');
 import path = require('path');
 import { error, print, warning } from './logging';
+import { getCdkHome } from "./os";
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
@@ -13,7 +13,6 @@ const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
-const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
 
 /**
  * Initialize a CDK package in the current directory
@@ -157,7 +156,7 @@ export class InitTemplate {
              .replace(/%name\.camelCased%/g, camelCase(project.name))
              .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
              .replace(/%cdk-version%/g, cdkVersion)
-             .replace(/%cdk-home%/g, CDK_HOME)
+             .replace(/%cdk-home%/g, getCdkHome())
              .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
              .replace(/%python-executable%/g, pythonExecutable())
              .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));

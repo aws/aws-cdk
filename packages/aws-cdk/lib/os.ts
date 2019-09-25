@@ -1,5 +1,7 @@
 import child_process = require("child_process");
 import colors = require('colors/safe');
+import * as os from "os";
+import * as path from "path";
 import { debug } from "./logging";
 
 export interface ShellOptions extends child_process.SpawnOptions {
@@ -95,4 +97,20 @@ function windowsEscape(x: string): string {
   // Now escape all special characters
   const shellMeta = new Set<string>(['"', '&', '^', '%']);
   return x.split('').map(c => shellMeta.has(x) ? '^' + c : c).join('');
+}
+
+/**
+ * Return the CDK_HOME path, or ~/.cdk
+ */
+export function getCdkHome(cacheDirectory = true): string {
+  if (process.env.CDK_HOME) {
+    return path.resolve(process.env.CDK_HOME);
+  }
+  // Get the home directory from the OS, first. Fallback to $HOME.
+  const homedir = os.userInfo().homedir || os.homedir();
+  if (!homedir || !homedir.trim()) {
+    throw new Error('Cannot determine home directory');
+  }
+
+  return cacheDirectory ? path.join(homedir, '.cdk') : homedir;
 }

@@ -1,12 +1,12 @@
 import { exec as _exec } from 'child_process';
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import os = require('os');
 import path = require('path');
 import semver = require('semver');
 import { promisify } from 'util';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
+import { getCdkHome } from "./os";
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
@@ -20,19 +20,6 @@ function versionNumber(): string {
 
 function commit(): string {
   return require('../build-info.json').commit;
-}
-
-function getCdkHome(): string {
-  if (process.env.CDK_HOME) {
-    return path.resolve(process.env.CDK_HOME);
-  }
-  // Get the home directory from the OS, first. Fallback to $HOME.
-  const homedir = os.userInfo().homedir || os.homedir();
-  if (!homedir || !homedir.trim()) {
-    throw new Error('Cannot determine home directory');
-  }
-
-  return path.join(homedir, '.cdk');
 }
 
 export class VersionCheckTTL {
