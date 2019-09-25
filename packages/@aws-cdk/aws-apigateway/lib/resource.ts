@@ -152,10 +152,17 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   }
 
   public addCorsPreflight(options: CorsOptions) {
-
     const headers = options.allowHeaders || Cors.DEFAULT_HEADERS;
-    const methods = options.allowMethods || Cors.ALL_METHODS;
+    let methods = options.allowMethods || Cors.ALL_METHODS;
     const origin  = options.allowOrigin;
+
+    if (methods.includes('ANY')) {
+      if (methods.length > 1) {
+        throw new Error(`ANY cannot be used with any other method. Received: ${methods.join(',')}`);
+      }
+
+      methods = Cors.ALL_METHODS;
+    }
 
     const integrationResponseParams: { [p: string]: string } = { };
     integrationResponseParams['method.response.header.Access-Control-Allow-Headers'] = `'${headers.join(',')}'`;
