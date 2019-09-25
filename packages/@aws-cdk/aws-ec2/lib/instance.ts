@@ -158,6 +158,16 @@ export interface InstanceProps {
    * @default - CDK generated name
    */
   readonly instanceName?: string;
+
+  /**
+   * Specifies whether to enable an instance launched in a VPC to perform NAT.
+   * This controls whether source/destination checking is enabled on the instance.
+   * A value of true means that checking is enabled, and false means that checking is disabled.
+   * The value must be false for the instance to perform NAT.
+   *
+   * @default true
+   */
+  readonly sourceDestCheck?: boolean;
 }
 
 /**
@@ -274,6 +284,7 @@ export class Instance extends Resource implements IInstance {
       userData: userDataToken,
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
+      sourceDestCheck: props.sourceDestCheck,
     });
     this.instance.node.addDependency(this.role);
 
@@ -327,5 +338,4 @@ export class Instance extends Resource implements IInstance {
       };
     }
   }
-
 }
