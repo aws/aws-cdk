@@ -6,6 +6,7 @@ import {
   CfnClientVpnRoute,
   CfnClientVpnTargetNetworkAssociation
 } from './ec2.generated';
+import {CIDR_VALIDATION_REGEXES} from "./peer";
 import {ISubnet} from './vpc';
 
 interface IClientAuthenticationRequestOptions {
@@ -136,7 +137,6 @@ export interface ClientVpnEndpointProps {
    */
   readonly authenticationOptions: ClientAuthenticationRequest[];
 
-  // TODO use helper, > 22 constraint
   /**
    * The IPv4 address range, in CIDR notation, from which to assign client IP addresses
    * The address range cannot overlap with the local CIDR of the VPC in which the associated subnet is located,
@@ -158,7 +158,6 @@ export interface ClientVpnEndpointProps {
    * A brief description of the Client VPN endpoint
    */
   readonly description?: string;
-  // TODO <= 2 constraint
   /**
    * Information about the DNS servers to be used for DNS resolution.
    * A Client VPN endpoint can have up to two DNS servers.
@@ -211,6 +210,22 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
 
   constructor(scope: cdk.Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
+
+    if (!cdk.Token.isUnresolved(props.clientCidrBlock)) {
+      const cidrMatch = props.clientCidrBlock.match(CIDR_VALIDATION_REGEXES.ipv4);
+
+      if (!cidrMatch) {
+        throw new Error(`Invalid IPv4 CIDR: "${props.clientCidrBlock}"`);
+      }
+
+      if (!cidrMatch[2] || Number(cidrMatch[2]) < 22) {
+        throw new Error(`CIDR mask should be 22 or greater (got "${cidrMatch[2]}")`);
+      }
+    }
+
+    if (props.dnsServers && !cdk.Token.isUnresolved(props.dnsServers) && props.dnsServers.length > 2) {
+      throw new Error(`A Client VPN endpoint cannot have more than 2 DNS servers, got ${props.dnsServers.length}`);
+    }
 
     const clientVpnEndpoint = new CfnClientVpnEndpoint(this, 'Resource', {
       authenticationOptions: props.authenticationOptions.map(({options}) => options),
