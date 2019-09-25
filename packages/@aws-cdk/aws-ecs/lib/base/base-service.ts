@@ -227,7 +227,7 @@ export abstract class BaseService extends Resource
    * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.defaultLoadBalancerTarget.attachToApplicationTargetGroup(targetGroup);
   }
 
@@ -282,7 +282,7 @@ export abstract class BaseService extends Resource
    * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.defaultLoadBalancerTarget.attachToNetworkTargetGroup(targetGroup);
   }
 
