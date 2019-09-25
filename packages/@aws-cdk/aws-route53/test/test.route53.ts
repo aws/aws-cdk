@@ -219,13 +219,15 @@ export = {
 
 class TestApp {
   public readonly stack: cdk.Stack;
-  private readonly app = new cdk.App();
+  private readonly app: cdk.App;
 
   constructor() {
     const account = '123456789012';
     const region = 'bermuda-triangle';
-    this.app.node.setContext(`availability-zones:${account}:${region}`,
-      [`${region}-1a`]);
+    const context = {
+      [`availability-zones:${account}:${region}`]: `${region}-1a`
+    };
+    this.app = new cdk.App({ context });
     this.stack = new cdk.Stack(this.app, 'MyStack', { env: { account, region } });
   }
 }

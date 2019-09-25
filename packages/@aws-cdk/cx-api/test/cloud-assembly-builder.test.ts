@@ -27,6 +27,13 @@ test('cloud assembly builder', () => {
     },
   });
 
+  session.addArtifact('tree-artifact', {
+    type: ArtifactType.CDK_TREE,
+    properties: {
+      file: 'foo.tree.json'
+    }
+  });
+
   session.addMissing({
     key: 'foo',
     provider: 'context-provider',
@@ -63,6 +70,12 @@ test('cloud assembly builder', () => {
       { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
     ],
     artifacts: {
+      'tree-artifact': {
+        type: 'cdk:tree',
+        properties: {
+          file: 'foo.tree.json'
+        }
+      },
       'my-first-artifact': {
         type: 'aws:cloudformation:stack',
         environment: 'aws://1222344/us-east-1',

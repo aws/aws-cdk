@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Construct, ConstructNode } from './construct';
 import { collectRuntimeInformation } from './private/runtime-info';
+import { TreeMetadata } from './private/tree-metadata';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -49,6 +50,13 @@ export interface AppProps {
    * @default - no additional context
    */
   readonly context?: { [key: string]: string };
+
+  /**
+   * Include construct tree metadata as part of the Cloud Assembly.
+   *
+   * @default true
+   */
+  readonly treeMetadata?: boolean;
 }
 
 /**
@@ -109,6 +117,10 @@ export class App extends Construct {
       // synth() guarantuees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
       process.once('beforeExit', () => this.synth());
+    }
+
+    if (props.treeMetadata === undefined || props.treeMetadata) {
+      new TreeMetadata(this);
     }
   }
 

@@ -11,16 +11,16 @@ test('empty assembly', () => {
   expect(assembly.stacks).toEqual([]);
   expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
   expect(assembly.manifest).toMatchSnapshot();
+  expect(assembly.tree()).toBeUndefined();
 });
 
-test('assembly a single cloudformation stack', () => {
+test('assembly a single cloudformation stack and tree metadata', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'single-stack'));
-  expect(assembly.artifacts).toHaveLength(1);
+  expect(assembly.artifacts).toHaveLength(2);
   expect(assembly.stacks).toHaveLength(1);
   expect(assembly.manifest.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
-  expect(assembly.artifacts[0]).toEqual(assembly.stacks[0]);
 
   const stack = assembly.stacks[0];
   expect(stack.manifest).toMatchSnapshot();
@@ -32,6 +32,24 @@ test('assembly a single cloudformation stack', () => {
   expect(stack.manifest.metadata).toEqual(undefined);
   expect(stack.originalName).toEqual('MyStackName');
   expect(stack.name).toEqual('MyStackName');
+
+  const treeArtifact = assembly.tree();
+  expect(treeArtifact).toBeDefined();
+  expect(treeArtifact!.file).toEqual('foo.tree.json');
+  expect(treeArtifact!.manifest).toMatchSnapshot();
+});
+
+test('assembly with invalid tree metadata', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'invalid-manifest-type-tree'));
+  expect(() => assembly.tree()).toThrow(/Multiple artifacts/);
+});
+
+test('assembly with tree metadata having no file property specified', () => {
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'tree-no-file-property'))).toThrow(/Invalid TreeCloudArtifact/);
+});
+
+test('assembly with cloudformation artifact having no environment property specified', () => {
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-manifest-type-cloudformation'))).toThrow(/Invalid CloudFormation stack artifact/);
 });
 
 test('assembly with missing context', () => {

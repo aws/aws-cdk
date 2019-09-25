@@ -24,8 +24,32 @@ export = {
 
     // THEN
     test.same(app.synth(), session); // same session if we synth() again
-    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json' ]);
-    test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {});
+    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json', 'tree.json' ]);
+    test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {
+      Tree: {
+        type: 'cdk:tree',
+        properties: { file: 'tree.json' }
+      }
+    });
+    test.deepEqual(readJson(session.directory, 'tree.json'), {
+      version: 'tree-0.1',
+      tree: {
+        id: 'App',
+        path: '',
+        children: [
+          { id: 'Tree', path: 'Tree' }
+        ]
+      }
+    });
+    test.done();
+  },
+
+  'synthesis respects disabling tree metadata'(test: Test) {
+    const app = new cdk.App({
+      treeMetadata: false,
+    });
+    const assembly = app.synth();
+    test.deepEqual(list(assembly.directory), [ 'cdk.out', 'manifest.json' ]);
     test.done();
   },
 
@@ -38,11 +62,7 @@ export = {
     const session = app.synth();
 
     // THEN
-    test.deepEqual(list(session.directory), [
-      'cdk.out',
-      'manifest.json',
-      'one-stack.template.json'
-    ]);
+    test.ok(list(session.directory).includes('one-stack.template.json'));
     test.done();
   },
 
@@ -70,16 +90,17 @@ export = {
     const session = app.synth();
 
     // THEN
-    test.deepEqual(list(session.directory), [
-      'cdk.out',
-      'foo.json',
-      'manifest.json',
-      'one-stack.template.json'
-    ]);
+    test.ok(list(session.directory).includes('one-stack.template.json'));
+    test.ok(list(session.directory).includes('foo.json'));
+
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
       version: cxapi.CLOUD_ASSEMBLY_VERSION,
       artifacts: {
+        'Tree': {
+          type: 'cdk:tree',
+          properties: { file: 'tree.json' }
+        },
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://12345/bar',
