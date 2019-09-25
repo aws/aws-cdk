@@ -164,7 +164,7 @@ export interface InstanceProps {
    * A value of true means that checking is enabled, and false means that checking is disabled.
    * The value must be false for the instance to perform NAT.
    *
-   * @@default true
+   * @default true
    */
   readonly sourceDestCheck?: boolean;
 }
