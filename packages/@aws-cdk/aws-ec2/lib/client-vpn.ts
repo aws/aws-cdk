@@ -138,20 +138,64 @@ export interface ITagSpecification {
 }
 
 export interface ClientVpnEndpointProps {
+  /**
+   * Information about the authentication method to be used to authenticate clients
+   */
   readonly authenticationOptions: ClientAuthenticationRequest[];
+
+  // TODO use helper, > 22 constraint
+  /**
+   * The IPv4 address range, in CIDR notation, from which to assign client IP addresses
+   * The address range cannot overlap with the local CIDR of the VPC in which the associated subnet is located,
+   * or the routes that you add manually.
+   * The address range cannot be changed after the Client VPN endpoint has been created.
+   * The CIDR block should be /22 or greater.
+   */
   readonly clientCidrBlock: string;
+  /**
+   * Information about the client connection logging options
+   */
   readonly connectionLog: ConnectionLog;
   // TODO replace with acm.Certificate?
+  /**
+   * The ARN of the server certificate
+   */
   readonly serverCertificateArn: string;
+  /**
+   * A brief description of the Client VPN endpoint
+   */
   readonly description?: string;
+  // TODO <= 2 constraint
+  /**
+   * Information about the DNS servers to be used for DNS resolution.
+   * A Client VPN endpoint can have up to two DNS servers.
+   * If no DNS server is specified, the DNS address configured on the device is used for the DNS server.
+   */
   readonly dnsServers?: string[];
-  readonly splitTunnel: boolean;
+  /**
+   * Indicates whether split-tunnel is enabled on the AWS Client VPN endpoint
+   *
+   * @default false
+   * @see [Split-Tunnel on AWS Client VPN Endpoints]{@link https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/split-tunnel-vpn.html}
+   */
+  readonly splitTunnel?: boolean;
+  /**
+   * The tags to apply to the Client VPN endpoint during creation
+   */
   readonly tagsSpecifications?: ITagSpecification[];
-  readonly transportProtocol: ClientVpnEndpointProtocol;
+  /**
+   * The transport protocol to be used by the VPN session
+   *
+   * @default ClientVpnEndpointProtocol.UDP
+   */
+  readonly transportProtocol?: ClientVpnEndpointProtocol;
 }
 
 /**
  * Define a Client VPN Endpoint
+ *
+ * A Client VPN endpoint is the resource you create and configure to enable and manage client VPN sessions.
+ * It is the destination endpoint at which all client VPN sessions are terminated.
  *
  * @resource AWS::EC2::ClientVpnEndpoint
  */
