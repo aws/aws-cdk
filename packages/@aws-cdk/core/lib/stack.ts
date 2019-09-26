@@ -287,10 +287,6 @@ export class Stack extends Construct implements ITaggable {
    * Add a dependency between this stack and another stack
    */
   public addDependency(stack: Stack, reason?: string) {
-    if (process.env.CDK_DEBUG_DEPS) {
-      // tslint:disable-next-line:no-console
-      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${stack.node.path}" because: ${reason}`);
-    }
     if (stack === this) { return; }  // Can ignore a dependency on self
 
     reason = reason || 'dependency added using stack.addDependency()';
@@ -300,6 +296,11 @@ export class Stack extends Construct implements ITaggable {
         throw new Error(`'${stack.node.path}' depends on '${this.node.path}' (${dep.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
     this._stackDependencies.add({ stack, reason });
+
+    if (process.env.CDK_DEBUG_DEPS) {
+      // tslint:disable-next-line:no-console
+      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${stack.node.path}" because: ${reason}`);
+    }
   }
 
   /**

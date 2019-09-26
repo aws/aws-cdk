@@ -918,6 +918,22 @@
         ]
       }
     },
+    "FargateServiceServiceURL47701F45": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "FargateServiceLBB353E155",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
     "LoadBalancerDNS": {
       "Value": {
         "Fn::GetAtt": [

@@ -41,7 +41,7 @@ export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
 }
 
 /**
- * A scheduled EC2 task that will be initiated off of cloudwatch events.
+ * A scheduled EC2 task that will be initiated off of CloudWatch Events.
  */
 export class ScheduledEc2Task extends ScheduledTaskBase {
 

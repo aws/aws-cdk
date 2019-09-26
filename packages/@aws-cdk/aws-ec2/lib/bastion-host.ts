@@ -1,4 +1,4 @@
-import { IRole, PolicyStatement } from "@aws-cdk/aws-iam";
+import { IPrincipal, IRole, PolicyStatement } from "@aws-cdk/aws-iam";
 import { CfnOutput, Construct, Stack } from "@aws-cdk/core";
 import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from ".";
 import { Connections } from "./connections";
@@ -82,6 +82,11 @@ export class BastionHostLinux extends Construct implements IInstance {
   public readonly role: IRole;
 
   /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: IPrincipal;
+
+  /**
    * The underlying instance resource
    */
   public readonly instance: Instance;
@@ -137,6 +142,7 @@ export class BastionHostLinux extends Construct implements IInstance {
 
     this.connections = this.instance.connections;
     this.role = this.instance.role;
+    this.grantPrincipal = this.instance.role;
     this.instanceId = this.instance.instanceId;
     this.instancePrivateIp = this.instance.instancePrivateIp;
     this.instanceAvailabilityZone = this.instance.instanceAvailabilityZone;
