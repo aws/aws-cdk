@@ -112,32 +112,4 @@ export = {
 
     test.done();
   },
-
-  'maximumBatchingWindow'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
-    const q = new sqs.Queue(stack, 'Q');
-
-    // WHEN
-    fn.addEventSource(new sources.SqsEventSource(q, {
-      maximumBatchingWindow: cdk.Duration.minutes(2),
-    }));
-
-    // THEN
-    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "Q63C6E3AB",
-          "Arn"
-        ]
-      },
-      "FunctionName": {
-        "Ref": "Fn9270CBC0"
-      },
-      "MaximumBatchingWindowInSeconds": 120,
-    }));
-
-    test.done();
-  },
 };

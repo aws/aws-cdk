@@ -1,6 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sqs = require('@aws-cdk/aws-sqs');
-import {Duration} from "@aws-cdk/core";
 
 export interface SqsEventSourceProps {
   /**
@@ -13,14 +12,6 @@ export interface SqsEventSourceProps {
    * @default 10
    */
   readonly batchSize?: number;
-
-  /**
-   * The maximum amount of time to gather records before invoking the function.
-   * Maximum of Duration.minutes(5)
-   *
-   * @default TODO
-   */
-  readonly maximumBatchingWindow?: Duration;
 }
 
 /**
@@ -37,7 +28,6 @@ export class SqsEventSource implements lambda.IEventSource {
     target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
       batchSize: this.props.batchSize,
       eventSourceArn: this.queue.queueArn,
-      maximumBatchingWindow: this.props.maximumBatchingWindow,
     });
 
     this.queue.grantConsumeMessages(target);
