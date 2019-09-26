@@ -35,7 +35,7 @@
           "Enabled": true,
           "Name": "FirstRule",
           "Recipients": [
-            "amazon.com"
+            "cdk-ses-receipt-test@yopmail.com"
           ],
           "ScanEnabled": true,
           "TlsPolicy": "Require"

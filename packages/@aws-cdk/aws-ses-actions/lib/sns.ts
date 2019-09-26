@@ -17,7 +17,7 @@ export enum EmailEncoding {
 }
 
 /**
- * Construction properties for a Sns action.
+ * Construction properties for a SNS action.
  */
 export interface SnsProps {
   /**

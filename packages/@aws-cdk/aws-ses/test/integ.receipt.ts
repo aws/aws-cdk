@@ -11,7 +11,7 @@ const ruleSet = new ses.ReceiptRuleSet(stack, 'RuleSet', {
 
 ruleSet.addRule('FirstRule', {
   receiptRuleName: 'FirstRule',
-  recipients: ['amazon.com'],
+  recipients: ['cdk-ses-receipt-test@yopmail.com'],
   scanEnabled: true,
   tlsPolicy: ses.TlsPolicy.REQUIRE
 });
