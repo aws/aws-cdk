@@ -2,7 +2,7 @@
 
 `cdk-assets` is a tool in the AWS CDK toolchain responsible to package and publish assets as part of the deployment process of CDK applications.
 
-This document specifies the requirements for this tool derived from the [continuous delivery design document](design/continuous-delivery.md).
+This document specifies the requirements for this tool derived from the [continuous delivery design document](./continuous-delivery.md).
 
 ## Asset Manifest
 
