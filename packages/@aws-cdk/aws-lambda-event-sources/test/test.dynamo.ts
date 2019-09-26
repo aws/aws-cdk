@@ -224,7 +224,7 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumBatchingWindow: Duration.seconds(301),
+        maximumBatchingWindow: cdk.Duration.seconds(301),
         startingPosition: lambda.StartingPosition.LATEST
       })), /maximumBatchingWindow cannot be over 300 seconds/);
 
