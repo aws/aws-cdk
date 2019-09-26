@@ -22,22 +22,7 @@ test('use S3 bucket website as record target', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: {
-        "Fn::Select": [
-          2,
-          {
-            "Fn::Split": [
-              "/",
-              {
-                "Fn::GetAtt": [
-                  "Bucket83908E77",
-                  "WebsiteURL"
-                ]
-              }
-            ]
-          }
-        ]
-      },
+      DNSName: "s3-website-us-east-1.amazonaws.com",
       HostedZoneId: "Z3AQBSTGFYJSTF"
     },
   });
@@ -61,17 +46,7 @@ test('use S3 bucket website as record target (fromBucketName)', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: {
-        "Fn::Join": [
-          "",
-          [
-            "test.s3-website-us-east-1.",
-            {
-              Ref: "AWS::URLSuffix"
-            }
-          ]
-        ]
-      },
+      DNSName: "s3-website-us-east-1.amazonaws.com",
       HostedZoneId: "Z3AQBSTGFYJSTF"
     },
   });
