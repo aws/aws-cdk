@@ -1,0 +1,718 @@
+{
+  "Resources": {
+    "Vpc8378EB38": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-https-integ/Vpc"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet1Subnet5C2D37C4": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/17",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-https-integ/Vpc/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet1RouteTable6C95E38E": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-https-integ/Vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet1RouteTableAssociation97140677": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+        },
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+        }
+      }
+    },
+    "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VpcIGWD7BA715C"
+        }
+      },
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ]
+    },
+    "VpcPublicSubnet1EIPD7E02669": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "VpcPublicSubnet1NATGateway4D7517AA": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "VpcPublicSubnet1EIPD7E02669",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-https-integ/Vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "VpcPrivateSubnet1Subnet536B997A": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/17",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-https-integ/Vpc/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      }
+    },
+    "VpcPrivateSubnet1RouteTableB2C5B500": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-https-integ/Vpc/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+        },
+        "SubnetId": {
+          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+        }
+      }
+    },
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+        }
+      }
+    },
+    "VpcIGWD7BA715C": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-fargate-https-integ/Vpc"
+          }
+        ]
+      }
+    },
+    "VpcVPCGWBF912B6E": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "InternetGatewayId": {
+          "Ref": "VpcIGWD7BA715C"
+        }
+      }
+    },
+    "FargateCluster7CCD5F93": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "ZoneA5DE4B68": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "Name": "example.com."
+      }
+    },
+    "HttpsServiceLB2B7D4391": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "HttpsServiceLBSecurityGroup3315ED72",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "Type": "application"
+      },
+      "DependsOn": [
+        "VpcPublicSubnet1DefaultRoute3DA9E72A"
+      ]
+    },
+    "HttpsServiceLBSecurityGroup3315ED72": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB awsfargatehttpsintegHttpsServiceLBCF9E1632",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 443",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "HttpsServiceLBSecurityGrouptoawsfargatehttpsintegHttpsServiceSecurityGroup7F7B1B9D8009693239": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Fn::GetAtt": [
+            "HttpsServiceLBSecurityGroup3315ED72",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "HttpsServiceSecurityGroup1DB8E541",
+            "GroupId"
+          ]
+        },
+        "FromPort": 80,
+        "ToPort": 80
+      }
+    },
+    "HttpsServiceLBPublicListenerA29C2E85": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "HttpsServiceLBPublicListenerECSGroupB82D39F0"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "HttpsServiceLB2B7D4391"
+        },
+        "Port": 443,
+        "Protocol": "HTTPS",
+        "Certificates": [
+          {
+            "CertificateArn": {
+              "Fn::GetAtt": [
+                "HttpsServiceCertificateCertificateRequestorResource8FEA57AA",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "HttpsServiceLBPublicListenerECSGroupB82D39F0": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "HttpsServiceCertificateCertificateRequestorFunctionServiceRole8C94B3C2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "HttpsServiceCertificateCertificateRequestorFunctionServiceRoleDefaultPolicy67F01126": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "acm:RequestCertificate",
+                "acm:DescribeCertificate",
+                "acm:DeleteCertificate"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "route53:GetChange",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "route53:changeResourceRecordSets",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:route53:::hostedzone/",
+                    {
+                      "Ref": "ZoneA5DE4B68"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "HttpsServiceCertificateCertificateRequestorFunctionServiceRoleDefaultPolicy67F01126",
+        "Roles": [
+          {
+            "Ref": "HttpsServiceCertificateCertificateRequestorFunctionServiceRole8C94B3C2"
+          }
+        ]
+      }
+    },
+    "HttpsServiceCertificateCertificateRequestorFunction2154F89F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "HttpsServiceCertificateCertificateRequestorFunctionCodeS3Bucket7CB97C4F"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "HttpsServiceCertificateCertificateRequestorFunctionCodeS3VersionKey6CF8F6B8"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "HttpsServiceCertificateCertificateRequestorFunctionCodeS3VersionKey6CF8F6B8"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.certificateRequestHandler",
+        "Role": {
+          "Fn::GetAtt": [
+            "HttpsServiceCertificateCertificateRequestorFunctionServiceRole8C94B3C2",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs8.10",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "HttpsServiceCertificateCertificateRequestorFunctionServiceRoleDefaultPolicy67F01126",
+        "HttpsServiceCertificateCertificateRequestorFunctionServiceRole8C94B3C2"
+      ]
+    },
+    "HttpsServiceCertificateCertificateRequestorResource8FEA57AA": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "HttpsServiceCertificateCertificateRequestorFunction2154F89F",
+            "Arn"
+          ]
+        },
+        "DomainName": "test.example.com",
+        "HostedZoneId": {
+          "Ref": "ZoneA5DE4B68"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "HttpsServiceDNS5E40A908": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "test.example.com.",
+        "Type": "A",
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "HttpsServiceLB2B7D4391",
+              "DNSName"
+            ]
+          },
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "HttpsServiceLB2B7D4391",
+              "CanonicalHostedZoneID"
+            ]
+          }
+        },
+        "HostedZoneId": {
+          "Ref": "ZoneA5DE4B68"
+        }
+      }
+    },
+    "HttpsServiceTaskDefTaskRole0B461899": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "HttpsServiceTaskDef7A8C3AFB": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": "amazon/amazon-ecs-sample",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "HttpsServiceTaskDefwebLogGroup66A85C3A"
+                },
+                "awslogs-stream-prefix": "HttpsService",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ]
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "HttpsServiceTaskDefExecutionRole95184BE8",
+            "Arn"
+          ]
+        },
+        "Family": "awsfargatehttpsintegHttpsServiceTaskDef8DF846FB",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "HttpsServiceTaskDefTaskRole0B461899",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "HttpsServiceTaskDefwebLogGroup66A85C3A": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "HttpsServiceTaskDefExecutionRole95184BE8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "HttpsServiceTaskDefExecutionRoleDefaultPolicy593CA896": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "HttpsServiceTaskDefwebLogGroup66A85C3A",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "HttpsServiceTaskDefExecutionRoleDefaultPolicy593CA896",
+        "Roles": [
+          {
+            "Ref": "HttpsServiceTaskDefExecutionRole95184BE8"
+          }
+        ]
+      }
+    },
+    "HttpsService8599769C": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "TaskDefinition": {
+          "Ref": "HttpsServiceTaskDef7A8C3AFB"
+        },
+        "Cluster": {
+          "Ref": "FargateCluster7CCD5F93"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "web",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "HttpsServiceLBPublicListenerECSGroupB82D39F0"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "HttpsServiceSecurityGroup1DB8E541",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+              }
+            ]
+          }
+        }
+      },
+      "DependsOn": [
+        "HttpsServiceLBPublicListenerECSGroupB82D39F0",
+        "HttpsServiceLBPublicListenerA29C2E85"
+      ]
+    },
+    "HttpsServiceSecurityGroup1DB8E541": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-fargate-https-integ/HttpsService/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "HttpsServiceSecurityGroupfromawsfargatehttpsintegHttpsServiceLBSecurityGroup2B62793C8017B5B73E": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 80,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "HttpsServiceSecurityGroup1DB8E541",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "HttpsServiceLBSecurityGroup3315ED72",
+            "GroupId"
+          ]
+        },
+        "ToPort": 80
+      }
+    }
+  },
+  "Parameters": {
+    "HttpsServiceCertificateCertificateRequestorFunctionCodeS3Bucket7CB97C4F": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"aws-fargate-https-integ/HttpsService/Certificate/CertificateRequestorFunction/Code\""
+    },
+    "HttpsServiceCertificateCertificateRequestorFunctionCodeS3VersionKey6CF8F6B8": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"aws-fargate-https-integ/HttpsService/Certificate/CertificateRequestorFunction/Code\""
+    },
+    "HttpsServiceCertificateCertificateRequestorFunctionCodeArtifactHashC69E3CE8": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-fargate-https-integ/HttpsService/Certificate/CertificateRequestorFunction/Code\""
+    }
+  },
+  "Outputs": {
+    "HttpsServiceLoadBalancerDNSE2E79469": {
+      "Value": {
+        "Fn::GetAtt": [
+          "HttpsServiceLB2B7D4391",
+          "DNSName"
+        ]
+      }
+    },
+    "HttpsServiceServiceURLA7303487": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpsServiceDNS5E40A908"
+            }
+          ]
+        ]
+      }
+    }
+  }
+}
