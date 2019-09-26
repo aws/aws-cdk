@@ -3,9 +3,9 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import ssm = require('@aws-cdk/aws-ssm');
 import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import path = require('path');
-import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -449,7 +449,7 @@ export class Cluster extends Resource implements ICluster {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EksOptimizedAmi({
+      machineImage: new EksOptimizedImage({
         nodeType: nodeTypeForInstanceType(options.instanceType),
         kubernetesVersion: this.version,
       }),
@@ -768,4 +768,80 @@ class ImportedCluster extends Resource implements ICluster {
       i++;
     }
   }
+}
+
+/**
+ * Properties for EksOptimizedImage
+ */
+export interface EksOptimizedImageProps {
+  /**
+   * What instance type to retrieve the image for (standard or GPU-optimized)
+   *
+   * @default NodeType.STANDARD
+   */
+  readonly nodeType?: NodeType;
+
+  /**
+   * The Kubernetes version to use
+   *
+   * @default - The latest version
+   */
+  readonly kubernetesVersion?: string;
+}
+
+/**
+ * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
+ */
+export class EksOptimizedImage implements ec2.IMachineImage {
+  private readonly nodeType?: NodeType;
+  private readonly kubernetesVersion?: string;
+
+  private readonly amiParameterName: string;
+
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
+  public constructor(props: EksOptimizedImageProps) {
+    this.nodeType = props && props.nodeType;
+    this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
+
+    // set the SSM parameter name
+    this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
+      + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
+      + ( this.nodeType === NodeType.GPU ? " amazon-linux2-gpu/" : "" )
+      + "recommended/image_id";
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX
+    };
+  }
+}
+
+// MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
+const LATEST_KUBERNETES_VERSION = '1.14';
+
+/**
+ * Whether the worker nodes should support GPU or just standard instances
+ */
+export enum NodeType {
+  /**
+   * Standard instances
+   */
+  STANDARD = 'Standard',
+
+  /**
+   * GPU instances
+   */
+  GPU = 'GPU',
+}
+
+export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
+  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.STANDARD;
 }

@@ -30,6 +30,15 @@ export abstract class UserData {
     return new WindowsUserData();
   }
 
+  /**
+   * Create a userdata object with custom content
+   */
+  public static custom(content: string): UserData {
+    const userData = new CustomUserData();
+    userData.addCommands(content);
+    return userData;
+  }
+
   public static forOperatingSystem(os: OperatingSystemType): UserData {
     switch (os) {
       case OperatingSystemType.LINUX: return UserData.forLinux();
@@ -78,5 +87,21 @@ class WindowsUserData extends UserData {
 
   public render(): string {
     return `<powershell>${this.lines.join('\n')}</powershell>`;
+  }
+}
+
+class CustomUserData extends UserData {
+  private readonly lines: string[] = [];
+
+  constructor() {
+    super();
+  }
+
+  public addCommands(...commands: string[]) {
+    this.lines.push(...commands);
+  }
+
+  public render(): string {
+    return this.lines.join('\n');
   }
 }

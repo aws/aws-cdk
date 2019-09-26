@@ -2,7 +2,7 @@
 
 const aws = require('aws-sdk');
 
-const defaultSleep = function (ms) {
+const defaultSleep = function(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
@@ -11,6 +11,7 @@ let defaultResponseURL;
 let waiter;
 let sleep = defaultSleep;
 let random = Math.random;
+let maxAttempts = 10;
 
 /**
  * Upload a CloudFormation response object to S3.
@@ -23,7 +24,7 @@ let random = Math.random;
  * @param {string} [reason] reason for failure, if any, to convey to the user
  * @returns {Promise} Promise that is resolved on success, or rejected on connection error or HTTP error response
  */
-let report = function (event, context, responseStatus, physicalResourceId, responseData, reason) {
+let report = function(event, context, responseStatus, physicalResourceId, responseData, reason) {
   return new Promise((resolve, reject) => {
     const https = require('https');
     const { URL } = require('url');
@@ -76,7 +77,7 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
+const requestCertificate = async function(requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
   const route53 = new aws.Route53();
@@ -99,8 +100,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
   console.log('Waiting for ACM to provide DNS records for validation...');
 
   let record;
-  const maxAttempts = 10;
-  for (let attempt = 0; attempt < maxAttempts - 1 && !record; attempt++) {
+  for (let attempt = 0; attempt < maxAttempts && !record; attempt++) {
     const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
@@ -168,12 +168,37 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
  *
  * @param {string} arn The certificate ARN
  */
-const deleteCertificate = async function (arn, region) {
+const deleteCertificate = async function(arn, region) {
   const acm = new aws.ACM({ region });
 
-  console.log(`Deleting certificate ${arn}`);
-
   try {
+    console.log(`Waiting for certificate ${arn} to become unused`);
+
+    let inUseByResources;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const { Certificate } = await acm.describeCertificate({
+        CertificateArn: arn
+      }).promise();
+
+      inUseByResources = Certificate.InUseBy || [];
+
+      if (inUseByResources.length) {
+        // Exponential backoff with jitter based on 200ms base
+        // component of backoff fixed to ensure minimum total wait time on
+        // slow targets.
+        const base = Math.pow(2, attempt);
+        await sleep(random() * base * 50 + base * 150);
+      } else {
+        break
+      }
+    }
+
+    if (inUseByResources.length) {
+      throw new Error(`Response from describeCertificate did not contain an empty InUseBy list after ${maxAttempts} attempts.`)
+    }
+
+    console.log(`Deleting certificate ${arn}`);
+
     await acm.deleteCertificate({
       CertificateArn: arn
     }).promise();
@@ -187,7 +212,7 @@ const deleteCertificate = async function (arn, region) {
 /**
  * Main handler, invoked by Lambda
  */
-exports.certificateRequestHandler = async function (event, context) {
+exports.certificateRequestHandler = async function(event, context) {
   var responseData = {};
   var physicalResourceId;
   var certificateArn;
@@ -229,28 +254,28 @@ exports.certificateRequestHandler = async function (event, context) {
 /**
  * @private
  */
-exports.withReporter = function (reporter) {
+exports.withReporter = function(reporter) {
   report = reporter;
 };
 
 /**
  * @private
  */
-exports.withDefaultResponseURL = function (url) {
+exports.withDefaultResponseURL = function(url) {
   defaultResponseURL = url;
 };
 
 /**
  * @private
  */
-exports.withWaiter = function (w) {
+exports.withWaiter = function(w) {
   waiter = w;
 };
 
 /**
  * @private
  */
-exports.resetWaiter = function () {
+exports.resetWaiter = function() {
   waiter = undefined;
 };
 
@@ -280,4 +305,18 @@ exports.withRandom = function(r) {
  */
 exports.resetRandom = function() {
   random = Math.random;
+}
+
+/**
+ * @private
+ */
+exports.withMaxAttempts = function(ma) {
+  maxAttempts = ma;
+}
+
+/**
+ * @private
+ */
+exports.resetMaxAttempts = function() {
+  maxAttempts = 10;
 }

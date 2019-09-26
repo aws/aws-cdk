@@ -47,6 +47,25 @@ export = {
     test.done();
   },
 
+  'with target'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const asset = new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b'
+      },
+      target: 'a-target'
+    });
+
+    // THEN
+    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
+    test.done();
+  },
+
   'asset.repository.grantPull can be used to grant a principal permissions to use the image'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -177,6 +196,23 @@ export = {
 
     test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile')));
     test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
+    test.done();
+  },
+
+  'docker directory is staged without files specified in .dockerignore'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'dockerignore-image')
+    });
+
+    const session = app.synth();
+
+    test.ok(fs.existsSync(path.join(session.directory, `asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
+    test.ok(!fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/foobar.txt')));
+
     test.done();
   },
 
