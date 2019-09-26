@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct, Lazy, Resource, Token } from '@aws-cdk/core';
 import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
 
 /**
@@ -77,10 +77,21 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
-      cpu: props.cpu !== undefined ? String(props.cpu) : '256',
-      memoryMiB: props.memoryLimitMiB !== undefined ? String(props.memoryLimitMiB) : '512',
+      cpu: props.cpu !== undefined ? stringifyNumber(props.cpu) : '256',
+      memoryMiB: props.memoryLimitMiB !== undefined ? stringifyNumber(props.memoryLimitMiB) : '512',
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
     });
+  }
+}
+
+/**
+ * Stringify a number directly or lazily if it's a Token
+ */
+function stringifyNumber(x: number) {
+  if (Token.isUnresolved(x)) {
+    return Lazy.stringValue({ produce: context => `${context.resolve(x)}` });
+  } else {
+    return `${x}`;
   }
 }
