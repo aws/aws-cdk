@@ -72,6 +72,21 @@ export interface CorsOptions {
    * @default - cache is enabled
    */
   readonly disableCache?: boolean;
+
+  /**
+   * The Access-Control-Expose-Headers response header indicates which headers
+   * can be exposed as part of the response by listing their names.
+   *
+   * If you want clients to be able to access other headers, you have to list
+   * them using the Access-Control-Expose-Headers header.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+   *
+   * @default - only the 6 CORS-safelisted response headers are exposed:
+   * Cache-Control, Content-Language, Content-Type, Expires, Last-Modified,
+   * Pragma
+   */
+  readonly exposeHeaders?: string[];
 }
 
 export class Cors {

@@ -162,13 +162,13 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   }
 
   public addCorsPreflight(options: CorsOptions) {
-    const integrationResponseParams: { [p: string]: string } = { };
+    const headers: { [name: string]: string } = { };
 
     //
     // Access-Control-Allow-Headers
 
-    const headers = options.allowHeaders || Cors.DEFAULT_HEADERS;
-    integrationResponseParams['method.response.header.Access-Control-Allow-Headers'] = `'${headers.join(',')}'`;
+    const allowHeaders = options.allowHeaders || Cors.DEFAULT_HEADERS;
+    headers['Access-Control-Allow-Headers'] = `'${allowHeaders.join(',')}'`;
 
     //
     // Access-Control-Allow-Origin
@@ -179,28 +179,28 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     // we use the first origin here and if there are more origins in the list, we
     // will match against them in the response velocity template
-    integrationResponseParams['method.response.header.Access-Control-Allow-Origin'] = `'${options.allowOrigins[0]}'`;
+    headers['Access-Control-Allow-Origin'] = `'${options.allowOrigins[0]}'`;
 
     //
     // Access-Control-Allow-Methods
 
-    let methods = options.allowMethods || Cors.ALL_METHODS;
+    let allowMethods = options.allowMethods || Cors.ALL_METHODS;
 
-    if (methods.includes('ANY')) {
-      if (methods.length > 1) {
-        throw new Error(`ANY cannot be used with any other method. Received: ${methods.join(',')}`);
+    if (allowMethods.includes('ANY')) {
+      if (allowMethods.length > 1) {
+        throw new Error(`ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`);
       }
 
-      methods = Cors.ALL_METHODS;
+      allowMethods = Cors.ALL_METHODS;
     }
 
-    integrationResponseParams['method.response.header.Access-Control-Allow-Methods'] = `'${methods.join(',')}'`;
+    headers['Access-Control-Allow-Methods'] = `'${allowMethods.join(',')}'`;
 
     //
     // Access-Control-Allow-Credentials
 
     if (options.allowCredentials) {
-      integrationResponseParams['method.response.header.Access-Control-Allow-Credentials'] = `'true'`;
+      headers['Access-Control-Allow-Credentials'] = `'true'`;
     }
 
     //
@@ -221,18 +221,33 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     }
 
     if (maxAgeSeconds) {
-      integrationResponseParams['method.response.header.Access-Control-Max-Age'] = `'${maxAgeSeconds}'`;
+      headers['Access-Control-Max-Age'] = `'${maxAgeSeconds}'`;
     }
 
-    const methodReponseParams: { [p: string]: boolean } = { };
-    for (const key of Object.keys(integrationResponseParams)) {
-      methodReponseParams[key] = true;
+    //
+    // Access-Control-Expose-Headers
+    //
+
+    if (options.exposeHeaders) {
+      headers['Access-Control-Expose-Headers'] = `'${options.exposeHeaders.join(',')}'`;
     }
 
     //
     // statusCode
 
     const statusCode = options.statusCode !== undefined ? options.statusCode : 204;
+
+    //
+    // prepare responseParams
+
+    const integrationResponseParams: { [p: string]: string } = { };
+    const methodReponseParams: { [p: string]: boolean } = { };
+
+    for (const [ name, value ] of Object.entries(headers)) {
+      const key = `method.response.header.${name}`;
+      integrationResponseParams[key] = value;
+      methodReponseParams[key] = true;
+    }
 
     return this.addMethod('OPTIONS', new MockIntegration({
       requestTemplates: { 'application/json': '{ statusCode: 200 }' },

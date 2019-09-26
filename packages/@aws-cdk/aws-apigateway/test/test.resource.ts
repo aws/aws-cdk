@@ -748,6 +748,54 @@ export = {
       }), /The options "maxAge" and "disableCache" are mutually exclusive/);
 
       test.done();
+    },
+
+    'exposeHeaders can be used to specify Access-Control-Expose-Headers'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigins: ['https://amazon.com'],
+        exposeHeaders: [ 'Authorization', 'Foo' ]
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+                "method.response.header.Access-Control-Expose-Headers": "'Authorization,Foo'",
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Expose-Headers": true,
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
     }
   }
 };
