@@ -42,7 +42,7 @@ service.registerContainerTargets(
       containerName: 'web',
       containerPort: 80
     },
-    listener,
+    listener: ecs.ListenerConfig.networkListenerConfig(listener),
     targetGroupId: 'ECS',
   }
 );

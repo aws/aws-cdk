@@ -35,14 +35,9 @@ export interface EcsTarget {
   readonly targetGroupId: string,
 
   /**
-   * Listener for the target group to attach to [disable-awslint:ref-via-interface].
+   * Listener and properties for adding target group to the listener.
    */
-  readonly listener: elbv2.ApplicationListener | elbv2.NetworkListener,
-
-  /**
-   * Properties for adding new targets to a listener.
-   */
-  readonly addTargetGroupProps?: elbv2.AddApplicationTargetsProps | elbv2.AddNetworkTargetsProps,
+  readonly listener: ListenerConfig,
 }
 
 /**
@@ -136,6 +131,71 @@ export interface BaseServiceProps extends BaseServiceOptions {
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE
    */
   readonly launchType: LaunchType;
+}
+
+/**
+ * Base class for configuring listener when registering targets.
+ */
+export abstract class ListenerConfig {
+  /**
+   * Create a config for adding target group to ALB listener.
+   */
+  public static applicationListenerConfig(listener: elbv2.ApplicationListener, props?: elbv2.AddApplicationTargetsProps): ListenerConfig {
+    return new ApplicationListenerConfig(listener, props);
+  }
+
+  /**
+   * Create a config for adding target group to NLB listener.
+   */
+  public static networkListenerConfig(listener: elbv2.NetworkListener, props?: elbv2.AddNetworkTargetsProps): ListenerConfig {
+    return new NetworkListenerConfig(listener, props);
+  }
+
+  /**
+   * Attach target group to listener.
+   */
+  public abstract addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService): void;
+}
+
+class ApplicationListenerConfig extends ListenerConfig {
+  constructor(private readonly listener: elbv2.ApplicationListener, private readonly props?: elbv2.AddApplicationTargetsProps) {
+    super();
+  }
+
+  public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
+    const props = this.props || {};
+    const protocol = props.protocol;
+    const port = props.port !== undefined ? props.port : (protocol === undefined ? 80 :
+      (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80));
+    this.listener.addTargets(id, {
+      ... props,
+      targets: [
+        service.loadBalancerTarget({
+          ...target
+        })
+      ],
+      port
+    });
+  }
+}
+
+class NetworkListenerConfig extends ListenerConfig {
+  constructor(private readonly listener: elbv2.NetworkListener, private readonly props?: elbv2.AddNetworkTargetsProps) {
+    super();
+  }
+
+  public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
+    const port = this.props !== undefined ? this.props.port : 80;
+    this.listener.addTargets(id, {
+      ... this.props,
+      targets: [
+        service.loadBalancerTarget({
+          ...target
+        })
+      ],
+      port
+    });
+  }
 }
 
 /**
@@ -311,13 +371,15 @@ export abstract class BaseService extends Resource
    *       containerPort: 80,
    *     },
    *     targetGroupId: 'ECS',
-   *     listener
+   *     listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
+   *       protocol: elbv2.ApplicationProtocol.HTTPS
+   *     }),
    *   },
    * )
    */
   public registerContainerTargets(...targets: EcsTarget[]) {
     for (const target of targets) {
-      this.addToListener(target.targetGroupId, target.listener, target.containerTarget, target.addTargetGroupProps || {});
+      target.listener.addTargets(target.targetGroupId, target.containerTarget, this);
     }
   }
 
@@ -398,27 +460,6 @@ export abstract class BaseService extends Resource
         securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
       }
     };
-  }
-
-  private addToListener(id: string, listener: elbv2.ApplicationListener | elbv2.NetworkListener,
-                        target: LoadBalancerTargetOptions, props: elbv2.AddApplicationTargetsProps | elbv2.AddNetworkTargetsProps) {
-    let port: number;
-    if (listener instanceof elbv2.ApplicationListener) {
-      const protocol = (props as elbv2.AddApplicationTargetsProps).protocol;
-      port = props.port !== undefined ? props.port : (protocol === undefined ? 80 :
-        (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80));
-    } else {
-      port = props.port !== undefined ? props.port : 80;
-    }
-    listener.addTargets(id, {
-      ... props,
-      targets: [
-        this.loadBalancerTarget({
-          ...target
-        })
-      ],
-      port
-    });
   }
 
   private renderServiceRegistry(registry: ServiceRegistry): CfnService.ServiceRegistryProperty {

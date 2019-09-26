@@ -694,7 +694,7 @@ export = {
                 containerName: 'MainContainer',
                 containerPort: 8000
               },
-              listener,
+              listener: ecs.ListenerConfig.applicationListenerConfig(listener),
               targetGroupId: 'target1',
             }
           );
@@ -746,11 +746,10 @@ export = {
                 containerName: 'MainContainer',
                 containerPort: 8000
               },
-              listener,
-              targetGroupId: 'target1',
-              addTargetGroupProps: {
+              listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
                 protocol: elbv2.ApplicationProtocol.HTTP
-              }
+              }),
+              targetGroupId: 'target1',
             }
           );
 
@@ -801,11 +800,10 @@ export = {
                 containerName: 'MainContainer',
                 containerPort: 8000
               },
-              listener,
-              targetGroupId: 'target1',
-              addTargetGroupProps: {
+              listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
                 protocol: elbv2.ApplicationProtocol.HTTPS
-              }
+              }),
+              targetGroupId: 'target1',
             }
           );
 
@@ -856,12 +854,11 @@ export = {
                 containerName: 'MainContainer',
                 containerPort: 8000
               },
-              listener,
-              targetGroupId: 'target1',
-              addTargetGroupProps: {
+              listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
                 port: 83,
                 protocol: elbv2.ApplicationProtocol.HTTP
-              }
+              }),
+              targetGroupId: 'target1'
             }
           );
 
@@ -914,7 +911,7 @@ export = {
                 containerName: 'MainContainer',
                 containerPort: 8000
               },
-              listener,
+              listener: ecs.ListenerConfig.networkListenerConfig(listener),
               targetGroupId: 'target1',
             }
           );
@@ -966,11 +963,10 @@ export = {
                 containerName: 'MainContainer',
                 containerPort: 8000
               },
-              listener,
-              targetGroupId: 'target1',
-              addTargetGroupProps: {
+              listener: ecs.ListenerConfig.networkListenerConfig(listener, {
                 port: 81
-              }
+              }),
+              targetGroupId: 'target1'
             }
           );
 
