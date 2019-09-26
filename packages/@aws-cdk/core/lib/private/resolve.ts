@@ -167,10 +167,10 @@ export function resolve(obj: any, options: IResolveOptions): any {
 /**
  * Find all Tokens that are used in the given structure
  */
-export function findTokens(scope: IConstruct, obj: any): IResolvable[] {
+export function findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
   const resolver = new RememberingTokenResolver(new StringConcat());
 
-  resolve(obj, { scope, prefix: [], resolver, preparing: true });
+  resolve(fn(), { scope, prefix: [], resolver, preparing: true });
 
   return resolver.tokens;
 }

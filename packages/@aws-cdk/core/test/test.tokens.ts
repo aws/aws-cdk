@@ -310,7 +310,7 @@ export = {
     };
 
     // THEN
-    const tokens = findTokens(new Stack(), s);
+    const tokens = findTokens(new Stack(), () => s);
     test.ok(tokens.some(t => t === innerToken), 'Cannot find innerToken');
     test.ok(tokens.some(t => t === token), 'Cannot find token');
     test.done();

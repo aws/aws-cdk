@@ -610,21 +610,7 @@ export class Stack extends Construct implements ITaggable {
    * Find all dependencies as well and add the appropriate DependsOn fields.
    */
   protected prepare() {
-    // Note: it might be that the properties of the CFN object aren't valid.
-    // This will usually be preventatively caught in a construct's validate()
-    // and turned into a nicely descriptive error, but we're running prepare()
-    // before validate(). Swallow errors that occur because the CFN layer
-    // doesn't validate completely.
-    //
-    // This does make the assumption that the error will not be rectified,
-    // but the error will be thrown later on anyway. If the error doesn't
-    // get thrown down the line, we may miss references.
-    // } catch (e) {
-    //   if (e.type !== 'CfnSynthesisError') { throw e; }
-    // }
-
-    const fragments = cfnElements(this).map(x => x._toCloudFormation());
-    const tokens = findTokens(this, fragments);
+    const tokens = this.findTokens();
 
     // References (originating from this stack)
     for (const reference of tokens) {
@@ -927,6 +913,33 @@ export class Stack extends Construct implements ITaggable {
 
     // both stacks are top-level (non-nested), the taret (producing stack) gets to make the reference
     return target;
+  }
+
+  /**
+   * Returns all the tokens used within the scope of the current stack.
+   */
+  private findTokens() {
+    return findTokens(this, () => cfnElements(this).map(x => {
+      try {
+        return x._toCloudFormation();
+
+      } catch (e) {
+        // Note: it might be that the properties of the CFN object aren't valid.
+        // This will usually be preventatively caught in a construct's validate()
+        // and turned into a nicely descriptive error, but we're running prepare()
+        // before validate(). Swallow errors that occur because the CFN layer
+        // doesn't validate completely.
+        //
+        // This does make the assumption that the error will not be rectified,
+        // but the error will be thrown later on anyway. If the error doesn't
+        // get thrown down the line, we may miss references.
+        if (e.type === 'CfnSynthesisError') {
+          return undefined;
+        }
+
+        throw e;
+      }
+    }));
   }
 }
 

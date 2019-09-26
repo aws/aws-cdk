@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
 import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack } from '../lib';
+import { validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { toCloudFormation } from './util';
 
@@ -281,6 +282,26 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'CfnSynthesisError is ignored when preparing cross references'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+
+    // WHEN
+    class CfnTest extends CfnResource {
+      public _toCloudFormation() {
+        validateString({ xoo: 123 }).assertSuccess(); // throws CfnSynthesisError
+        return super._toCloudFormation();
+      }
+    }
+
+    new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
+
+    // THEN
+    ConstructNode.prepare(stack.node);
     test.done();
   },
 
