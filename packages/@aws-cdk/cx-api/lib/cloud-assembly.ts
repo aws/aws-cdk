@@ -156,7 +156,10 @@ export class CloudAssembly {
   private renderArtifacts() {
     const result = new Array<CloudArtifact>();
     for (const [ name, artifact ] of Object.entries(this.manifest.artifacts || { })) {
-      result.push(CloudArtifact.fromManifest(this, name, artifact));
+      const cloudartifact = CloudArtifact.fromManifest(this, name, artifact);
+      if (cloudartifact) {
+        result.push(cloudartifact);
+      }
     }
 
     return topologicalSort(result, x => x.id, x => x._dependencyIDs);

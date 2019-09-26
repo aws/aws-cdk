@@ -64,8 +64,8 @@ test('assembly with multiple stacks', () => {
 });
 
 test('fails for invalid artifact type', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-artifact-type')))
-    .toThrow('unsupported artifact type: who:am:i');
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'invalid-artifact-type'));
+  expect(assembly.tryGetArtifact('MyArt')).toBeUndefined();
 });
 
 test('fails for invalid environment format', () => {
