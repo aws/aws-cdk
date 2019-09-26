@@ -21,15 +21,12 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
       ].join(' '));
     }
 
-    const hostedZoneId = RegionInfo.get(region).s3StaticWebsiteHostedZoneId;
+    const {s3StaticWebsiteHostedZoneId: hostedZoneId, s3StaticWebsiteEndpoint: dnsName} = RegionInfo.get(region);
 
-    if (!hostedZoneId) {
+    if (!hostedZoneId || !dnsName) {
       throw new Error(`Bucket website target is not supported for the "${region}" region`);
     }
 
-    return {
-      hostedZoneId,
-      dnsName: this.bucket.bucketWebsiteDomainName,
-    };
+    return {hostedZoneId, dnsName};
   }
 }

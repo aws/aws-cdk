@@ -25,13 +25,6 @@ This library contains Route53 Alias Record targets for:
     target: route53.RecordTarget.fromAlias(new alias.CloudFrontTarget(distribution)),
   });
   ```
-* S3 Bucket WebSite
-  ```ts
-  new route53.ARecord(this, 'AliasRecord', {
-    zone,
-    target: route53.RecordTarget.fromAlias(new alias.BucketWebsiteTarget(bucket)),
-  });
-  ```
 * ELBv2 load balancers
   ```ts
   new route53.ARecord(this, 'AliasRecord', {
@@ -46,6 +39,27 @@ This library contains Route53 Alias Record targets for:
     zone,
     target: route53.RecordTarget.fromAlias(new alias.ClassicLoadBalancerTarget(elb)),
     // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
+  });
+  ```
+* S3 Bucket WebSite:
+
+**Important:** The Bucket name must strictly match the full DNS name. 
+See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/getting-started.html) for more info. 
+  ```ts
+  const [recordName, domainName] = ['www', 'example.com'];
+  
+  const bucketWebsite = new Bucket(this, 'BucketWebsite', {
+    bucketName: [recordName, domainName].join('.'), // www.example.com
+    publicReadAccess: true,
+    websiteIndexDocument: 'index.html',
+  });
+  
+  const zone = HostedZone.fromLookup(this, 'Zone', {domainName}); // example.com
+
+  new route53.ARecord(this, 'AliasRecord', {
+    zone,
+    recordName, // www
+    target: route53.RecordTarget.fromAlias(new alias.BucketWebsiteTarget(bucket)),
   });
   ```
 
