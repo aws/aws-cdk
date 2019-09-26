@@ -1,5 +1,6 @@
 import { green } from 'colors/safe';
 
+import { AssetTypeHandler } from './api/asset-type-handler';
 import { CredentialProviderSource } from './api/aws-auth/credentials';
 import { error } from './logging';
 
@@ -49,6 +50,12 @@ export class PluginHost {
    */
   public readonly credentialProviderSources = new Array<CredentialProviderSource>();
 
+  /**
+   * Access the currently registered CredentialProviderSources. New sources can
+   * be registered using the +registerCredentialProviderSource+ method.
+   */
+  public readonly assetTypeHandlers = new Map<String, AssetTypeHandler>();
+  
   constructor() {
     if (PluginHost.instance && PluginHost.instance !== this) {
       throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
@@ -86,5 +93,16 @@ export class PluginHost {
    */
   public registerCredentialProviderSource(source: CredentialProviderSource) {
     this.credentialProviderSources.push(source);
+  }
+
+  /**
+   * Allows plug-ins to register new asset types for preprocessing before a stack
+   * is deployed.
+   *
+   * @param type the name of the new asset type.
+   * @param handler the async handler to process the asset type.
+   */
+  public registerAssetTypeHandler(handler: AssetTypeHandler) {
+    this.assetTypeHandlers.set(handler.name, handler);
   }
 }

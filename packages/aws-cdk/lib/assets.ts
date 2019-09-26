@@ -9,6 +9,7 @@ import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
+import { PluginHost } from './plugin';
 
 // tslint:disable-next-line:max-line-length
 export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
@@ -57,6 +58,10 @@ async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry
     case 'container-image':
       return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse, ci);
     default:
+      const pluginHandler = PluginHost.instance.assetTypeHandlers.get(asset.packaging);
+      if (pluginHandler !== undefined) {
+        return await pluginHandler.prepare(assemblyDir, asset, toolkitInfo, reuse, ci);
+      }
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
