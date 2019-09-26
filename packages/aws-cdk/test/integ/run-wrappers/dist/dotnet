@@ -1,0 +1,10 @@
+#!/bin/bash
+set -eu
+if [[ "${1:-}" == "build" ]]; then
+  shift
+  exec $ORIGINAL_DOTNET build \
+    --source $NUGET_SOURCE \
+    "$@"
+fi
+
+exec $ORIGINAL_DOTNET "$@"

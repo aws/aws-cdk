@@ -175,8 +175,6 @@ function prepare_python_packages() {
   # later which will re-hijack ours with a 'pip' binary. Use a function instead,
   # the real logic will reside in "pip_"
 
-  ORIGINAL_PIP=$(type -p pip) || { echo "No 'pip' found" >&2; exit 1; }
-  export ORIGINAL_PIP
   export PYTHON_WHEELS=$dist_root/python
 
   if [ ! -d "$PYTHON_WHEELS" ]; then
@@ -188,5 +186,5 @@ function prepare_python_packages() {
 }
 
 function pip() {
-  exec pip_ "$@"
+  pip_ "$@"
 }
