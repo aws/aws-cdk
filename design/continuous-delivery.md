@@ -62,9 +62,9 @@ bootstrap => source => build => synthesis => mutate => publish => deploy
 1. **bootstrap**: manually pre-provision resources required to deploy CDK apps into this environment (such as an S3 bucket, ECR repository and various IAM roles that trust the central deployment account).
 2. **source**: the code is pulled from a source repository (e.g. CodeCommit, GitHub or S3), like any other app.
 3. **build**: compiles the CDK app code into an executable program (user-defined).
-4. **synthesis**: invokes the compiled executable to produce a [cloud assembly](https://github.com/aws/aws-cdk/blob/master/design/cloud-assembly.md) from the app. It includes a CloudFormation template for each stack and asset sources (docker images, s3 files, etc) that must be prepared and published to the asset store in each environment that consumes them.
+4. **synthesis**: invokes the compiled executable to produce a [cloud assembly](https://github.com/aws/aws-cdk/blob/master/design/cloud-assembly.md) from the app. It includes a CloudFormation template for each stack and asset sources (docker images, s3 files, etc) that must be packaged and published to the asset store in each environment that consumes them.
 5. **mutate**: update stack(s) required by the pipeline. This includes pipeline resources and other auxiliary resources such as regional replication buckets. These stacks are limited to 50KiB and are not allowed to use assets, so they can be deployed without bootstrapping resources.
-6. **publish**: prepare and publish all assets to asset stores (S3 bucket, ECR repository) so they can be consumed.
+6. **publish**: package and publish all assets to asset stores (S3 bucket, ECR repository) so they can be consumed.
 7. **deploy**: stage(s), stacks are deployed to the various environments through some orchestration process (e.g. deploy first to this region, run these canaries, wait for errors, continue to the next stage, etc).
 
 NOTE: The deployment phase can include any number of stack deployment actions. Each deployment action is responsible deploy a single stack, along with any assets it references.
@@ -174,7 +174,7 @@ During synthesis, the CDK app will _copy the sources_ of all assets from their o
 
 **Asset Providers**
 
-Users should be able to vend custom asset providers to allow customizing how assets are being referenced or prepared.
+Users should be able to vend custom asset providers to allow customizing how assets are being referenced or packaged.
 
 For example, a company might have an internal system that manages software artifacts. They can internally vend custom implementations for the `lambda.Code` and `ecs.ContainerImage` classes which will allow users to reference these artifacts and synthesize placeholders into the cloud assembly, which will later be resolved during the publishing stage and identified through a user-defined unique identifier.
 
@@ -267,10 +267,10 @@ In CodePipeline, we will implement this stage using a CodeBuild action which run
 
 ## Publishing
 
-**cdk-publish** is responsible for _preparing_ and _publishing_ application assets to "**asset stores**" in AWS environments so they can be consumed by stacks deployed to these environments.
+The [**cdk-assets**](design/cdk-assets.md) tool is responsible for _packaging_ and _publishing_ application assets to "**asset stores**" in AWS environments so they can be consumed by stacks deployed to these environments.
 
 ```shell
-cdk-publish cdk.out [ASSET-ID,ASSET-ID,...]
+cdk-assets publish cdk.out [ASSET-ID,ASSET-ID,...]
 ```
 
 The input is the *cloud assembly* (`cdk.out`), which includes an asset manifest `assets.json`:
@@ -279,11 +279,11 @@ The manifest is synthesized by the app and, for each asset (identified by their 
 
 A list of asset IDs (source hashes) can also be included in order to only publish a subset of the assets. This can be used to implement concurrent publishing of assets (e.g. through CodePipeline).
 
-Then, for each asset, cdk-publish will perform the following operation:
+Then, for each asset, cdk-assets will perform the following operation:
 
 1. Assume the **publishing IAM role** in the target environment.
 2. Check if the asset is already published to this location. Assets are identified by their source hash. If it is, skip.
-3. If the asset doesn’t exists locally (e.g. docker image already exists, zip file already exists in local cache), prepare (docker build, zip directory).
+3. If the asset doesn’t exists locally (e.g. docker image already exists, zip file already exists in local cache), package (docker build, zip directory).
 4. Publish the asset to the target location.
 
 In order for the publish to be able to execute `docker build`, this command must be executed in an environment that has docker available (in CodeBuild this means the project must be "privileged").
@@ -528,7 +528,7 @@ This will update all the stacks with names that begin with "pipeline-". Namely, 
 
 Notice that this stage happens **before** the publish stage. This is because the structure of the publish stage is dependent on which assets the app uses (we synthesize an action per asset for maximal parallelism), so we want to make sure the pipeline will be updated before publishing.
 
-> NOTE: if there is a constraint that does not allow the pipeline to be updated before publishing, it simply means that we have to publish all assets from a single action (`cdk-publish *`).
+> NOTE: if there is a constraint that does not allow the pipeline to be updated before publishing, it simply means that we have to publish all assets from a single action (`cdk-assets publish cdk.out`).
 
 In our example, there are 3 pipeline stacks:
 
@@ -542,12 +542,12 @@ Once we deploy these stacks, our pipeline will be ready to deploy the rest of ou
 
 The next stage in the process is the publishing stage.
 
-In our example, this stage will consist of two CodeBuild actions that will run the following commands concurrently. These command will prepare & upload the asset to all the environments. It will consult `assets.json` to determine the exact location into which to publish each asset and which cross-account role to assume.
+In our example, this stage will consist of two CodeBuild actions that will run the following commands concurrently. These command will package & upload the asset to all the environments. It will consult `assets.json` to determine the exact location into which to publish each asset and which cross-account role to assume.
 
 The first action will run this command:
 
 ```shell
-cdk-publish cdk.out d31ca1aef8d1b68217852e7aea70b1e857d107b47637d5160f9f9a1b24882d2a
+cdk-assets publish cdk.out d31ca1aef8d1b68217852e7aea70b1e857d107b47637d5160f9f9a1b24882d2a
 ```
 
 This will build the docker image from `cdk.out/my-image` using `CustomDockerFile` as a dockerfile. Then, it will assume the roles in the destinations specified in `assets.json` and push the image to the specified ECR locations.
@@ -555,7 +555,7 @@ This will build the docker image from `cdk.out/my-image` using `CustomDockerFile
 The second action will run this command:
 
 ```shell
-cdk-publish cdk.out a0bae29e7b47044a66819606c65d26a92b1e844f4b3124a5539efc0167a09e57
+cdk-assets publish cdk.out a0bae29e7b47044a66819606c65d26a92b1e844f4b3124a5539efc0167a09e57
 ```
 
 This will create a zip archive from the files under `asset.a0bae29e7b47044a66819606c65d26a92b1e844f4b3124a5539efc0167a09e57`, and then will assume the roles and upload the file to the destination S3 locations.
