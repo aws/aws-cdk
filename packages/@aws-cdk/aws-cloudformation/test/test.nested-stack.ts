@@ -1,6 +1,6 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import ecr_assets = require('@aws-cdk/aws-ecr-assets');
 import s3_assets = require('@aws-cdk/aws-s3-assets');
+import sns = require('@aws-cdk/aws-sns');
 import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
 import fs = require('fs');
 import { Test } from 'nodeunit';
@@ -775,29 +775,29 @@ export = {
     const nested = new NestedStack(parent, 'nested-stack');
 
     // WHEN
-    new ecr_assets.DockerImageAsset(nested, 'docker-image', {
-      directory: path.join(__dirname, 'asset-docker-fixture'),
-      repositoryName: 'repoName',
-      buildArgs: { key: 'value', boom: 'bam' },
-      target: 'buildTarget'
+    const location = nested.addDockerImageAsset({
+      directoryName: 'my-image',
+      dockerBuildArgs: { key: 'value', boom: 'bam' },
+      dockerBuildTarget: 'buildTarget',
+      sourceHash: 'hash-of-source',
+    });
+
+    // use the asset, so the parameters will be wired.
+    new sns.Topic(nested, 'MyTopic', {
+      displayName: `image location is ${location.imageUri}`
     });
 
     // THEN
     const parentParams = SynthUtils.toCloudFormation(parent).Parameters;
-    test.ok(parentParams.AssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageName27B32C1A);
     const nestedParams = SynthUtils.toCloudFormation(nested).Parameters;
-    test.ok(nestedParams.referencetomystackAssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageNameED31E0D1Ref);
+    test.ok(parentParams.AssetParametershashofsourceImageName1CFB7817);
+    test.ok(nestedParams.referencetomystackAssetParametershashofsourceImageName7D5F0882Ref);
 
+    // verify parameter is passed to nested stack
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetomystackAssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageNameED31E0D1Ref: {
-          Ref: "AssetParameters4cf7029bde90639281b09ed0333d1913c7eca2b61591e41d85a8ff3a4cf723a8ImageName27B32C1A"
-        },
-        referencetomystackAssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3Bucket6A7166F6Ref: {
-          Ref: "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB"
-        },
-        referencetomystackAssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey6B0123FCRef: {
-          Ref: "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7"
+        referencetomystackAssetParametershashofsourceImageName7D5F0882Ref: {
+          Ref: "AssetParametershashofsourceImageName1CFB7817"
         }
       }
     }));
