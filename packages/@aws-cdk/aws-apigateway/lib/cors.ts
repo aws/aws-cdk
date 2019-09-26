@@ -1,4 +1,5 @@
 import { Duration } from '@aws-cdk/core';
+import { ALL_METHODS } from './util';
 
 export interface CorsOptions {
   /**
@@ -24,7 +25,7 @@ export interface CorsOptions {
    * indicate which HTTP headers can be used during the actual request.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
-   * @default
+   * @default Cors.DEFAULT_HEADERS
    */
   readonly allowHeaders?: string[];
 
@@ -33,7 +34,7 @@ export interface CorsOptions {
    * methods allowed when accessing the resource in response to a preflight request.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
-   * @default
+   * @default Cors.ALL_METHODS
    */
   readonly allowMethods?: string[];
 
@@ -90,7 +91,13 @@ export interface CorsOptions {
 }
 
 export class Cors {
-  // TODO: dedup with utils.ts/ALLOWED_METHODS
-  public static readonly ALL_METHODS = [ 'OPTIONS', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'HEAD' ];
+  /**
+   * All HTTP methods.
+   */
+  public static readonly ALL_METHODS = ALL_METHODS;
+
+  /**
+   * The set of default headers allowed for CORS and useful for API Gateway.
+   */
   public static readonly DEFAULT_HEADERS = [ 'Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent' ];
 }
