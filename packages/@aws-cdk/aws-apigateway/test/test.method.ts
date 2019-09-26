@@ -578,5 +578,32 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'use default requestParameters'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        requestParameters: {"method.request.path.proxy": true}
+      }
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RequestParameters: {
+        "method.request.path.proxy": true
+      }
+    }));
+
+    test.done();
+  },
 };
