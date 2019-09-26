@@ -53,7 +53,7 @@ export interface TaskProps {
      * @default $
      */
     readonly resultPath?: string;
-    
+
     /**
      * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
      *
