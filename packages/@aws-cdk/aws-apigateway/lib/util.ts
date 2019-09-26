@@ -1,7 +1,7 @@
 import { format as formatUrl } from 'url';
 import jsonSchema = require('./json-schema');
 
-export const ALL_METHODS = [ 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT' ];
+export const ALL_METHODS = [ 'OPTIONS', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'HEAD' ];
 
 const ALLOWED_METHODS = [ 'ANY', ...ALL_METHODS ];
 
