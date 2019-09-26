@@ -102,7 +102,7 @@ test("throws if bucket name doesn't match full record domain name: new Bucket", 
   const stack = new Stack(app, 'test', {env: {region: 'us-east-1'}});
 
   // FIXME bucketName is unresolved?
-  const bucketWebsite = new s3.Bucket(stack, 'Bucket', { bucketName: ['different', bucketName].join('.') });
+  const bucketWebsite = new s3.Bucket(stack, 'Bucket', { bucketName: invalidBucketName });
 
   // WHEN
   const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName });
