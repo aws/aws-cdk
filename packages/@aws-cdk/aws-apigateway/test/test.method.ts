@@ -592,13 +592,17 @@ export = {
     });
 
     // WHEN
-    new apigateway.Method(stack, 'my-method', {
+    new apigateway.Method(stack, 'defaultRequestParameters', {
       httpMethod: 'POST',
       resource: api.root,
+      options: {
+        operationName: 'defaultRequestParameters'
+      }
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      OperationName: 'defaultRequestParameters',
       RequestParameters: {
         "method.request.path.proxy": true
       }
