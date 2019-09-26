@@ -16,7 +16,7 @@ import semver = require('semver');
  *   updated (as the current verison in package.json has already been released!)
  * - The request does not have versioning yet, only the response.
  */
-export const CLOUD_ASSEMBLY_VERSION = '0.36.0';
+export const CLOUD_ASSEMBLY_VERSION = '1.10.0';
 
 /**
  * Look at the type of response we get and upgrade it to the latest expected version
