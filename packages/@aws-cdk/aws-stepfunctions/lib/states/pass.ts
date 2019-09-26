@@ -96,8 +96,8 @@ export interface PassProps {
      * @default No injected result
      */
     readonly result?: Result;
-    
-     /**
+
+    /**
      * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
      *
      * @see
