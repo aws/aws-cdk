@@ -1,7 +1,7 @@
-import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -39,8 +39,10 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * If you are using containers in a task with the bridge network mode and you specify a container port and not a host port,
    * your container automatically receives a host port in the ephemeral port range.
    *
-   * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
+   *
+   * For more information, see
+   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
    *
    * @default 80
    */
@@ -62,9 +64,11 @@ export interface ApplicationLoadBalancedServiceBaseProps {
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
-   * Setting this option will set the load balancer port to 443.
+   * Setting this option will set the load balancer protocol to HTTPS.
    *
-   * @default - No certificate associated with the load balancer.
+   * @default - No certificate associated with the load balancer, if using
+   * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
+   * created for the load balancer's specified domain name.
    */
   readonly certificate?: ICertificate;
 
@@ -88,6 +92,17 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default true
    */
   readonly enableLogging?: boolean;
+
+  /**
+   * The protocol for connections from clients to the load balancer.
+   * The load balancer port is determined from the protocol (port 80 for
+   * HTTP, port 443 for HTTPS).  A domain name and zone must be also be
+   * specified if using HTTPS.
+   *
+   * @default HTTP. If a certificate is specified, the protocol will be
+   * set by default to HTTPS.
+   */
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -152,21 +167,40 @@ export interface ApplicationLoadBalancedServiceBaseProps {
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
+
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
   public readonly desiredCount: number;
 
+  /**
+   * The Application Load Balancer for the service.
+   */
   public readonly loadBalancer: ApplicationLoadBalancer;
 
+  /**
+   * The listener for the service.
+   */
   public readonly listener: ApplicationListener;
 
+  /**
+   * The target group for the service.
+   */
   public readonly targetGroup: ApplicationTargetGroup;
+
+  /**
+   * Certificate Manager certificate to associate with the load balancer.
+   */
+  public readonly certificate: ICertificate;
+
   /**
    * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
 
+  /**
+   * The log driver to use for logging.
+   */
   public readonly logDriver?: LogDriver;
 
   /**
@@ -199,31 +233,57 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       port: 80
     };
 
+    if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
+      throw new Error('The HTTPS protocol must be used when a certificate is given');
+    }
+    const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+
     this.listener = this.loadBalancer.addListener('PublicListener', {
-      port: props.certificate !== undefined ? 443 : 80,
+      protocol,
       open: true
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
-    if (props.certificate !== undefined) {
-      this.listener.addCertificateArns('Arns', [props.certificate.certificateArn]);
+    if (protocol === ApplicationProtocol.HTTPS) {
+      if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
+        throw new Error('A domain name and zone is required when using the HTTPS protocol');
+      }
+
+      if (props.certificate !== undefined) {
+        this.certificate = props.certificate;
+      } else {
+        this.certificate = new DnsValidatedCertificate(this, 'Certificate', {
+          domainName: props.domainName,
+          hostedZone: props.domainZone
+        });
+      }
+    }
+    if (this.certificate !== undefined) {
+      this.listener.addCertificateArns('Arns', [this.certificate.certificateArn]);
     }
 
+    let domainName = this.loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new ARecord(this, "DNS", {
+      const record = new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
         target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(this.loadBalancer)),
       });
+
+      domainName = record.domainName;
     }
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'ServiceURL', { value: protocol.toLowerCase() + '://' + domainName });
   }
 
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
@@ -231,6 +291,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
+  /**
+   * Adds service as a target of the target group.
+   */
   protected addServiceAsTarget(service: BaseService) {
     this.targetGroup.addTarget(service);
   }

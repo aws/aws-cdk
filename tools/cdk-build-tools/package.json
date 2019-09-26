@@ -32,12 +32,12 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
     "@types/jest": "^24.0.18",
-    "@types/yargs": "^13.0.2",
+    "@types/yargs": "^13.0.3",
     "pkglint": "file:../pkglint"
   },
   "dependencies": {
     "awslint": "file:../awslint",
-    "colors": "^1.3.3",
+    "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
     "jsii": "^0.17.0",

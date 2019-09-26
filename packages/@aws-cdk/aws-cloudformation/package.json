@@ -66,7 +66,7 @@
     "@aws-cdk/assert": "^1.9.0",
     "@aws-cdk/aws-events": "^1.9.0",
     "@aws-cdk/aws-ssm": "^1.9.0",
-    "@types/aws-lambda": "^8.10.31",
+    "@types/aws-lambda": "^8.10.33",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
