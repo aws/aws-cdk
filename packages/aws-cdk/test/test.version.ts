@@ -72,17 +72,17 @@ export = {
     test.done();
   },
 
-  async 'Uses CDK_HOME if set'(test: Test) {
+  async 'Uses CDK_CACHE_DIR if set'(test: Test) {
     test.expect(1);
-    process.env.CDK_HOME = '/tmp/cdk-home';
-    const cachePath = path.join(process.env.CDK_HOME, 'cache', 'repo-version-ttl');
+    process.env.CDK_CACHE_DIR = '/tmp/cdk-home';
+    const cachePath = path.join(process.env.CDK_CACHE_DIR, 'cache', 'repo-version-ttl');
 
     const cache = new VersionCheckTTL(undefined, 100);
     await cache.update();
     const storedVersion = fs.readFileSync(cachePath, 'utf8');
     test.equal(storedVersion, '');
 
-    delete process.env.CDK_HOME;
+    delete process.env.CDK_CACHE_DIR;
     test.done();
   },
 

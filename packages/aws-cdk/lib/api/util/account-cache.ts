@@ -1,7 +1,7 @@
 import fs = require('fs-extra');
 import path = require('path');
 import { debug } from '../../logging';
-import { getCdkHome } from "../../os";
+import { getCdkCache } from "../../os";
 
 /**
  * Disk cache which maps access key IDs to account IDs.
@@ -21,7 +21,7 @@ export class AccountAccessKeyCache {
    * @param filePath Path to the cache file
    */
   constructor(filePath?: string) {
-    this.cacheFile = filePath || path.join(getCdkHome(), 'cache', 'accounts.json');
+    this.cacheFile = filePath || path.join(getCdkCache(), 'cache', 'accounts.json');
   }
 
   /**

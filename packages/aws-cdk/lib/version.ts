@@ -6,7 +6,7 @@ import semver = require('semver');
 import { promisify } from 'util';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
-import { getCdkHome } from "./os";
+import { getCdkCache } from "./os";
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
@@ -25,7 +25,7 @@ function commit(): string {
 export class VersionCheckTTL {
   public static timestampFilePath(): string {
     // Using the same path from account-cache.ts
-    return path.join(getCdkHome(), 'cache', 'repo-version-ttl');
+    return path.join(getCdkCache(), 'cache', 'repo-version-ttl');
   }
 
   private readonly file: string;

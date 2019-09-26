@@ -3,7 +3,7 @@ import colors = require('colors/safe');
 import fs = require('fs-extra');
 import path = require('path');
 import { error, print, warning } from './logging';
-import { getCdkHome } from "./os";
+import { getCdkCache } from "./os";
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
@@ -156,7 +156,7 @@ export class InitTemplate {
              .replace(/%name\.camelCased%/g, camelCase(project.name))
              .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
              .replace(/%cdk-version%/g, cdkVersion)
-             .replace(/%cdk-home%/g, getCdkHome())
+             .replace(/%cdk-home%/g, getCdkCache())
              .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
              .replace(/%python-executable%/g, pythonExecutable())
              .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));

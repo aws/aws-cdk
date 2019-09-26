@@ -67,7 +67,7 @@ async function parseCommandLineArguments() {
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
-      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in $CDK_HOME/.cdk.json)', choices: initTemplateLanuages })
+      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'List the available templates' }))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
@@ -76,8 +76,8 @@ async function parseCommandLineArguments() {
     .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
-      'The CDK creates a .cdk directory, by default in your user home directory. You can set the CDK_HOME environement variable to change that directory.',
-      'If one of cdk.json or $CDK_HOME/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
+      'The CDK creates a cache .cdk-cache directory in your system temporary directory, which you can override with the CDK_CACHE_DIR environement variable.',
+      'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
     ].join('\n\n'))
     .argv;
 }

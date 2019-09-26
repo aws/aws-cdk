@@ -168,7 +168,7 @@ On top of passing configuration through command-line arguments, it is possible t
 configuration's order of precedence is:
 1. Command-line arguments
 2. Project configuration (`./cdk.json`)
-3. User configuration (`$CDK_HOME/.cdk.json` if CDK_HOME is set, otherwise `~/.cdk.json`)
+3. User configuration (`~/.cdk.json`)
 
 #### JSON Configuration files
 Some of the interesting keys that can be used in the JSON configuration files:

@@ -100,17 +100,10 @@ function windowsEscape(x: string): string {
 }
 
 /**
- * Return the CDK_HOME path, or ~/.cdk
+ * Return the CDK_CACHE_DIR path if set, or $TEMP/.cdk-cache
  */
-export function getCdkHome(cacheDirectory = true): string {
-  if (process.env.CDK_HOME) {
-    return path.resolve(process.env.CDK_HOME);
-  }
-  // Get the home directory from the OS, first. Fallback to $HOME.
-  const homedir = os.userInfo().homedir || os.homedir();
-  if (!homedir || !homedir.trim()) {
-    throw new Error('Cannot determine home directory');
-  }
-
-  return cacheDirectory ? path.join(homedir, '.cdk') : homedir;
+export function getCdkCache(): string {
+  return process.env.CDK_CACHE_DIR ? 
+    path.resolve(process.env.CDK_CACHE_DIR) : 
+    path.join(os.tmpdir(), '.cdk-cache');
 }

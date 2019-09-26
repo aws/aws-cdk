@@ -5,7 +5,7 @@ import { AccountAccessKeyCache } from '../lib/api/util/account-cache';
 
 export = {
   async 'setUp'(cb: ICallbackFunction) {
-    process.env.CDK_HOME = '/tmp/cdk-home-should-not-be-used';
+    process.env.CDK_CACHE_DIR = '/tmp/cdk-home-should-not-be-used';
 
     const self = this as any;
     const dir = await fs.mkdtemp('/tmp/account-cache-test');
@@ -17,7 +17,7 @@ export = {
   async 'tearDown'(cb: ICallbackFunction) {
     const self = this as any;
     await fs.remove(path.dirname(self.file));
-    delete process.env.CDK_HOME;
+    delete process.env.CDK_CACHE_DIR;
     cb();
   },
 
