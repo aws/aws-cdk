@@ -6,7 +6,7 @@ import {RegionInfo} from '@aws-cdk/region-info';
 /**
  * Use a S3 as an alias record target
  */
-export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
+export class BucketWebsiteTarget implements route53.IValidatableAliasRecordTarget {
   constructor(private readonly bucket: s3.IBucket) {
   }
 
@@ -28,5 +28,20 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
     }
 
     return {hostedZoneId, dnsName};
+  }
+
+  public validate(record: route53.CfnRecordSet): void {
+    const {bucketName} = this.bucket;
+    if (Token.isUnresolved(record.name) || Token.isUnresolved(bucketName)) {
+      return;
+    }
+
+    const recordName = record.name.replace(/\.$/, '');
+    if (recordName !== bucketName) {
+      throw new Error([
+        'The bucket name must match the full DNS record name ',
+        `(bucket name was "${bucketName}", record name was "${recordName}")`
+      ].join(''));
+    }
   }
 }

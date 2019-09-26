@@ -6,6 +6,7 @@ import targets = require('../lib');
 
 const [recordName, zoneName] = ['foo', 'test.public'];
 const bucketName = [recordName, zoneName].join('.');
+const invalidBucketName = ['invalid', bucketName].join('.');
 
 test('use S3 bucket website as record target', () => {
   // GIVEN
@@ -92,4 +93,47 @@ test('throws if bucket website hosting is unavailable (cn-northwest-1)', () => {
       target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
     });
   }).toThrow(/Bucket website target is not supported/);
+});
+
+
+test("throws if bucket name doesn't match full record domain name: new Bucket", () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'test', {env: {region: 'us-east-1'}});
+
+  // FIXME bucketName is unresolved?
+  const bucketWebsite = new s3.Bucket(stack, 'Bucket', { bucketName: ['different', bucketName].join('.') });
+
+  // WHEN
+  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName });
+
+  // THEN
+  expect(() => {
+    new route53.ARecord(zone, 'Alias', {
+      zone,
+      recordName,
+      target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
+    });
+  }).toThrow(/The bucket name must match the full DNS record name/);
+});
+
+
+test("throws if bucket name doesn't match full record domain name: fromBucketName", () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'test', {env: {region: 'us-east-1'}});
+
+  const bucketWebsite = s3.Bucket.fromBucketName(stack, 'Bucket', invalidBucketName);
+
+  // WHEN
+  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName });
+
+  // THEN
+  expect(() => {
+    new route53.ARecord(zone, 'Alias', {
+      zone,
+      recordName,
+      target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
+    });
+  }).toThrow(/The bucket name must match the full DNS record name/);
 });

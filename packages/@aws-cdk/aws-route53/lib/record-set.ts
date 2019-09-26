@@ -1,5 +1,5 @@
 import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
-import { IAliasRecordTarget } from './alias-record-target';
+import { IAliasRecordTarget, isValidatableAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
@@ -117,17 +117,23 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
+    const {aliasTarget} = props.target;
+
+    const ttl = aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
       type: props.recordType,
       resourceRecords: props.target.values,
-      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
+      aliasTarget: aliasTarget && aliasTarget.bind(this),
       ttl,
       comment: props.comment
     });
+
+    if (aliasTarget && isValidatableAliasRecordTarget(aliasTarget)) {
+      aliasTarget.validate(recordSet);
+    }
 
     this.domainName = recordSet.ref;
   }
