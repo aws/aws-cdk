@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
 
@@ -636,9 +636,118 @@ export = {
         ]
       }));
       test.done();
+    },
+
+    'maxAge can be used to specify Access-Control-Max-Age'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigins: ['https://amazon.com'],
+        maxAge: Duration.minutes(60)
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+                "method.response.header.Access-Control-Max-Age": `'${60 * 60}'`
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Max-Age": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'disableCache will set Max-Age to -1'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // WHEN
+      resource.addCorsPreflight({
+        allowOrigins: ['https://amazon.com'],
+        disableCache: true
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+        Integration: {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+                "method.response.header.Access-Control-Max-Age": `'-1'`
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        MethodResponses: [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Max-Age": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'maxAge and disableCache are mutually exclusive'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const resource = api.root.addResource('MyResource');
+
+      // THEN
+      test.throws(() => resource.addCorsPreflight({
+        allowOrigins: ['https://amazon.com'],
+        disableCache: true,
+        maxAge: Duration.seconds(10)
+      }), /The options "maxAge" and "disableCache" are mutually exclusive/);
+
+      test.done();
     }
-
   }
-
-
 };

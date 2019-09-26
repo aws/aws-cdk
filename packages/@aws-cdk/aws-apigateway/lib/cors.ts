@@ -1,3 +1,5 @@
+import { Duration } from '@aws-cdk/core';
+
 export interface CorsOptions {
   /**
    * Specifies the response status code returned from the OPTIONS method.
@@ -49,6 +51,27 @@ export interface CorsOptions {
    * @default false
    */
   readonly allowCredentials?: boolean;
+
+  /**
+   * The Access-Control-Max-Age response header indicates how long the results of
+   * a preflight request (that is the information contained in the
+   * Access-Control-Allow-Methods and Access-Control-Allow-Headers headers)
+   * can be cached.
+   *
+   * To disable caching altogther use `disableCache: true`.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
+   * @default - browser-specific (see reference)
+   */
+  readonly maxAge?: Duration;
+
+  /**
+   * Sets Access-Control-Max-Age to -1, which means that caching is disabled.
+   * This option cannot be used with `maxAge`.
+   *
+   * @default - cache is enabled
+   */
+  readonly disableCache?: boolean;
 }
 
 export class Cors {

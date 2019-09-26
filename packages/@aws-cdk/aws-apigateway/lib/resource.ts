@@ -152,9 +152,29 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   }
 
   public addCorsPreflight(options: CorsOptions) {
+    const integrationResponseParams: { [p: string]: string } = { };
+
+    //
+    // Access-Control-Allow-Headers
+
     const headers = options.allowHeaders || Cors.DEFAULT_HEADERS;
+    integrationResponseParams['method.response.header.Access-Control-Allow-Headers'] = `'${headers.join(',')}'`;
+
+    //
+    // Access-Control-Allow-Origin
+
+    if (options.allowOrigins.length === 0) {
+      throw new Error('allowOrigins must contain at least one origin');
+    }
+
+    // we use the first origin here and if there are more origins in the list, we
+    // will match against them in the response velocity template
+    integrationResponseParams['method.response.header.Access-Control-Allow-Origin'] = `'${options.allowOrigins[0]}'`;
+
+    //
+    // Access-Control-Allow-Methods
+
     let methods = options.allowMethods || Cors.ALL_METHODS;
-    const origin  = options.allowOrigins[0];
 
     if (methods.includes('ANY')) {
       if (methods.length > 1) {
@@ -164,17 +184,34 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       methods = Cors.ALL_METHODS;
     }
 
-    if (options.allowOrigins.length === 0) {
-      throw new Error('allowOrigins must contain at least one origin');
-    }
-
-    const integrationResponseParams: { [p: string]: string } = { };
-    integrationResponseParams['method.response.header.Access-Control-Allow-Headers'] = `'${headers.join(',')}'`;
-    integrationResponseParams['method.response.header.Access-Control-Allow-Origin'] = `'${origin}'`;
     integrationResponseParams['method.response.header.Access-Control-Allow-Methods'] = `'${methods.join(',')}'`;
+
+    //
+    // Access-Control-Allow-Credentials
 
     if (options.allowCredentials) {
       integrationResponseParams['method.response.header.Access-Control-Allow-Credentials'] = `'true'`;
+    }
+
+    //
+    // Access-Control-Max-Age
+
+    let maxAgeSeconds;
+
+    if (options.maxAge && options.disableCache) {
+      throw new Error(`The options "maxAge" and "disableCache" are mutually exclusive`);
+    }
+
+    if (options.maxAge) {
+      maxAgeSeconds = options.maxAge.toSeconds();
+    }
+
+    if (options.disableCache) {
+      maxAgeSeconds = -1;
+    }
+
+    if (maxAgeSeconds) {
+      integrationResponseParams['method.response.header.Access-Control-Max-Age'] = `'${maxAgeSeconds}'`;
     }
 
     const methodReponseParams: { [p: string]: boolean } = { };
@@ -182,26 +219,23 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       methodReponseParams[key] = true;
     }
 
+    //
+    // statusCode
+
     const statusCode = options.statusCode !== undefined ? options.statusCode : 204;
 
     return this.addMethod('OPTIONS', new MockIntegration({
-      integrationResponses: [
-        {
-          statusCode: `${statusCode}`,
-          responseParameters: integrationResponseParams,
-          responseTemplates: renderResponseTemplate()
-        }
-      ],
       requestTemplates: { 'application/json': '{ statusCode: 200 }' },
+      integrationResponses: [
+        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() }
+      ],
     }), {
       methodResponses: [
-        {
-          statusCode: `${statusCode}`,
-          responseParameters: methodReponseParams
-        }
+        { statusCode: `${statusCode}`, responseParameters: methodReponseParams }
       ]
     });
 
+    // renders the response template to match all possible origins (if we have more than one)
     function renderResponseTemplate() {
       const origins = options.allowOrigins.slice(1);
 
