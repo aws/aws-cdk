@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import {Duration} from "@aws-cdk/core/lib/duration";
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
@@ -172,4 +173,63 @@ export = {
 
     test.done();
   },
+
+  'specific maximumBatchingWindow'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      maximumBatchingWindow: Duration.minutes(2),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "MaximumBatchingWindowInSeconds": 120,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
+
+  'throws if maximumBatchingWindow > 300 seconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maximumBatchingWindow: Duration.seconds(301),
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /maximumBatchingWindow cannot be over 300 seconds/);
+
+    test.done();
+  },
+
 };

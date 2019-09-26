@@ -1,5 +1,6 @@
 import kinesis = require('@aws-cdk/aws-kinesis');
 import lambda = require('@aws-cdk/aws-lambda');
+import {Duration} from "@aws-cdk/core";
 
 export interface KinesisEventSourceProps {
   /**
@@ -17,6 +18,14 @@ export interface KinesisEventSourceProps {
    * Where to begin consuming the Kinesis stream.
    */
   readonly startingPosition: lambda.StartingPosition;
+
+  /**
+   * The maximum amount of time to gather records before invoking the function.
+   * Maximum of Duration.minutes(5)
+   *
+   * @default TODO
+   */
+  readonly maximumBatchingWindow?: Duration;
 }
 
 /**
@@ -34,6 +43,7 @@ export class KinesisEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       startingPosition: this.props.startingPosition,
       eventSourceArn: this.stream.streamArn,
+      maximumBatchingWindow: this.props.maximumBatchingWindow,
     });
 
     this.stream.grantRead(target);

@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import {Duration} from "@aws-cdk/core/lib/duration";
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -109,6 +110,34 @@ export = {
     test.throws(() => fn.addEventSource(new sources.SqsEventSource(q, {
       batchSize: 11
     })), /Maximum batch size must be between 1 and 10 inclusive \(given 11\)/);
+
+    test.done();
+  },
+
+  'maximumBatchingWindow'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maximumBatchingWindow: Duration.minutes(2),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "Q63C6E3AB",
+          "Arn"
+        ]
+      },
+      "FunctionName": {
+        "Ref": "Fn9270CBC0"
+      },
+      "MaximumBatchingWindowInSeconds": 120,
+    }));
 
     test.done();
   },

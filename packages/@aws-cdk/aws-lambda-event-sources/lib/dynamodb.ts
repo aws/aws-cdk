@@ -1,5 +1,6 @@
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
+import { Duration } from "@aws-cdk/core";
 
 export interface DynamoEventSourceProps {
   /**
@@ -17,6 +18,14 @@ export interface DynamoEventSourceProps {
    * Where to begin consuming the DynamoDB stream.
    */
   readonly startingPosition: lambda.StartingPosition;
+
+  /**
+   * The maximum amount of time to gather records before invoking the function.
+   * Maximum of Duration.minutes(5)
+   *
+   * @default TODO
+   */
+  readonly maximumBatchingWindow?: Duration;
 }
 
 /**
@@ -37,7 +46,8 @@ export class DynamoEventSource implements lambda.IEventSource {
     target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`, {
       batchSize: this.props.batchSize || 100,
       eventSourceArn: this.table.tableStreamArn,
-      startingPosition: this.props.startingPosition
+      startingPosition: this.props.startingPosition,
+      maximumBatchingWindow: this.props.maximumBatchingWindow,
     });
 
     this.table.grantStreamRead(target);
