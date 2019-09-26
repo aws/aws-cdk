@@ -23,7 +23,7 @@ export interface DynamoEventSourceProps {
    * The maximum amount of time to gather records before invoking the function.
    * Maximum of Duration.minutes(5)
    *
-   * @default TODO
+   * @default Duration.seconds(0)
    */
   readonly maximumBatchingWindow?: Duration;
 }
