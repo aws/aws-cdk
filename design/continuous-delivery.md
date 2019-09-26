@@ -267,7 +267,9 @@ In CodePipeline, we will implement this stage using a CodeBuild action which run
 
 ## Publishing
 
-The [**cdk-assets**](design/cdk-assets.md) tool is responsible for _packaging_ and _publishing_ application assets to "**asset stores**" in AWS environments so they can be consumed by stacks deployed to these environments.
+The [`cdk-assets`](./cdk-assets.md) tool is responsible for _packaging_ and _publishing_ application assets to "**asset stores**" in AWS environments so they can be consumed by stacks deployed to these environments.
+
+See the [cdk-assets specification](./cdk-assets.md) for additional details.
 
 ```shell
 cdk-assets publish cdk.out [ASSET-ID,ASSET-ID,...]
