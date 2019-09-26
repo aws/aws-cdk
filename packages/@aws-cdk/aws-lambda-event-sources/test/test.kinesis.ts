@@ -1,5 +1,4 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import {Duration} from "@aws-cdk/core/lib/duration";
 import kinesis = require('@aws-cdk/aws-kinesis');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
@@ -133,7 +132,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
-      maximumBatchingWindow: Duration.minutes(2),
+      maximumBatchingWindow: cdk.Duration.minutes(2),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 

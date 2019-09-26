@@ -1,5 +1,4 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import {Duration} from "@aws-cdk/core/lib/duration";
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -122,7 +121,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.SqsEventSource(q, {
-      maximumBatchingWindow: Duration.minutes(2),
+      maximumBatchingWindow: cdk.Duration.minutes(2),
     }));
 
     // THEN
