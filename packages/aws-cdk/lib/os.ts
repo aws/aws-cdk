@@ -103,7 +103,7 @@ function windowsEscape(x: string): string {
  * Return the CDK_CACHE_DIR path if set, or $TEMP/.cdk-cache
  */
 export function getCdkCache(): string {
-  return process.env.CDK_CACHE_DIR ? 
-    path.resolve(process.env.CDK_CACHE_DIR) : 
+  return process.env.CDK_CACHE_DIR ?
+    path.resolve(process.env.CDK_CACHE_DIR) :
     path.join(os.tmpdir(), '.cdk-cache');
 }
