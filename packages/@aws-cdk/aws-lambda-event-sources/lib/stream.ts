@@ -37,6 +37,10 @@ export abstract class StreamEventSource implements lambda.IEventSource {
     }
   }
 
+  public bind(_target: lambda.IFunction): void {
+    throw new Error('Cannot bind StreamEventSource, use DynamoEventSource or KinesisEventSource');
+  }
+
   protected getEventSourceMappingOptions(eventSourceArn: string): lambda.EventSourceMappingOptions {
     return {
       eventSourceArn,
@@ -44,9 +48,5 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       startingPosition: this.props.startingPosition,
       maxBatchingWindow: this.props.maxBatchingWindow,
     };
-  }
-
-  public bind(_target: lambda.IFunction): void {
-    throw new Error('Cannot bind StreamEventSource, use DynamoEventSource or KinesisEventSource');
   }
 }
