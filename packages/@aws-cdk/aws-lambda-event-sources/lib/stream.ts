@@ -32,16 +32,14 @@ export interface StreamEventSourceProps {
 
 /**
  * Use an stream as an event source for AWS Lambda.
- * 
+ *
  * @internal
  */
 export abstract class StreamEventSource implements lambda.IEventSource {
   protected constructor(protected readonly props: StreamEventSourceProps) {
   }
 
-  public bind(_target: lambda.IFunction): void {
-    throw new Error('Cannot bind StreamEventSource, use DynamoEventSource or KinesisEventSource');
-  }
+  public abstract bind(_target: lambda.IFunction): void;
 
   protected enrichMappingOptions(options: lambda.EventSourceMappingOptions): lambda.EventSourceMappingOptions {
     return {
