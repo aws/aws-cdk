@@ -51,6 +51,8 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - base=master
+      - -merged
+      - -closed
   - name: remove stale reviews
     actions:
       dismiss_reviews: {}
@@ -69,6 +71,8 @@ pull_request_rules:
       - author!=Jerry-AWS
       - author!=SomayaB
       - base=master
+      - -merged
+      - -closed
   - name: if fails conventional commits
     actions:
       comment:
@@ -77,3 +81,5 @@ pull_request_rules:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
       - status-failure=Semantic Pull Request
+      - -merged
+      - -closed
