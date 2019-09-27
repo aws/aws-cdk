@@ -79,15 +79,16 @@ export class CloudArtifact {
    * @param assembly The cloud assembly from which to load the artifact
    * @param id The artifact ID
    * @param artifact The artifact manifest
+   * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
    */
-  public static fromManifest(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact {
+  public static fromManifest(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact | undefined {
     switch (artifact.type) {
       case ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);
       case ArtifactType.CDK_TREE:
         return new TreeCloudArtifact(assembly, id, artifact);
       default:
-        throw new Error(`unsupported artifact type: ${artifact.type}`);
+        return undefined;
     }
   }
 

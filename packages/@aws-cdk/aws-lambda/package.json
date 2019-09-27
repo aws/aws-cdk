@@ -69,9 +69,9 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.9.0",
     "@types/aws-lambda": "^8.10.33",
-    "@types/lodash": "^4.14.139",
+    "@types/lodash": "^4.14.140",
     "@types/sinon": "^7.0.13",
-    "aws-sdk": "^2.535.0",
+    "aws-sdk": "^2.537.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
