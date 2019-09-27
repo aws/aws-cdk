@@ -1,5 +1,5 @@
 {
-  "version": "0.36.0",
+  "version": "1.10.0",
   "missing": {
     "key": "missing:context:key",
     "provider": "context-provider",
