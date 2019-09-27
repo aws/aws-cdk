@@ -126,7 +126,7 @@ export class Method extends Resource {
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
       authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE,
       authorizerId: authorizer && authorizer.authorizerId,
-      requestParameters: options.requestParameters,
+      requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
