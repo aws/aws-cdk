@@ -1,7 +1,7 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import {Duration} from "@aws-cdk/core";
 
-export interface StreamingEventSourceProps {
+export interface StreamEventSourceProps {
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
    * source at the time of invoking your function. Your function receives an
@@ -31,7 +31,7 @@ export interface StreamingEventSourceProps {
  * Use an stream as an event source for AWS Lambda.
  */
 export abstract class StreamEventSource implements lambda.IEventSource {
-  protected constructor(protected readonly props: StreamingEventSourceProps, protected readonly maxBatchSize: number) {
+  protected constructor(protected readonly props: StreamEventSourceProps, protected readonly maxBatchSize: number) {
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > maxBatchSize)) {
       throw new Error(`Maximum batch size must be between 1 and ${maxBatchSize} inclusive (given ${this.props.batchSize})`);
     }
