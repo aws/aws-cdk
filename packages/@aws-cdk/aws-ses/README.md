@@ -18,8 +18,15 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ### Email receiving
-Create a receipt rule set with rules and actions:
+Create a receipt rule set with rules and actions (actions can be found in the
+`@aws-cdk/aws-ses-actions` package):
+
 ```ts
+import s3 = require('@aws-cdk/aws-s3');
+import ses = require('@aws-cdk/aws-ses');
+import actions = require('@aws-cdk/aws-ses-actions');
+import sns = require('@aws-cdk/aws-sns');
+
 const bucket = new s3.Bucket(stack, 'Bucket');
 const topic = new sns.Topic(stack, 'Topic');
 
@@ -67,8 +74,6 @@ awsRule.addAction(new actions.Sns({
 }));
 ```
 When using `addRule`, the new rule is added after the last added rule unless `after` is specified.
-
-Actions can be found in the `@aws-cdk/aws-ses-actions` package.
 
 #### Drop spams
 A rule to drop spam can be added by setting `dropSpam` to `true`:
