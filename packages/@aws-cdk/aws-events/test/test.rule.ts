@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import { CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
@@ -28,6 +28,26 @@ export = {
         }
       }
     });
+    test.done();
+  },
+
+  'can get rule name'(test: Test) {
+    const stack = new cdk.Stack();
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+    });
+
+    new CfnResource(stack, 'Res', {
+      type: 'Test::Resource',
+      properties: {
+        RuleName: rule.ruleName
+      }
+    });
+
+    expect(stack).to(haveResource('Test::Resource', {
+      RuleName: { Ref: 'MyRuleA44AB831' }
+    }));
+
     test.done();
   },
 
@@ -366,10 +386,11 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:of:rule');
+    const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:aws:events:us-east-2:123456789012:rule/example');
 
     // THEN
-    test.deepEqual(importedRule.ruleArn, 'arn:of:rule');
+    test.deepEqual(importedRule.ruleArn, 'arn:aws:events:us-east-2:123456789012:rule/example');
+    test.deepEqual(importedRule.ruleName, 'example');
     test.done();
   },
 
