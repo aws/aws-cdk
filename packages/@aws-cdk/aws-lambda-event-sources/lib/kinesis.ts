@@ -19,7 +19,7 @@ export class KinesisEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(`KinesisEventSource:${this.stream.node.uniqueId}`,
-      this.getEventSourceMappingOptions(this.stream.streamArn)
+      this.enrichMappingOptions({eventSourceArn: this.stream.streamArn})
     );
 
     this.stream.grantRead(target);

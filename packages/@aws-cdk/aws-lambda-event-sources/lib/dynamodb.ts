@@ -23,7 +23,7 @@ export class DynamoEventSource extends StreamEventSource {
     }
 
     target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`,
-      this.getEventSourceMappingOptions(this.table.tableStreamArn)
+      this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn})
     );
 
     this.table.grantStreamRead(target);
