@@ -234,5 +234,19 @@ export = {
     }), expected);
 
     test.done();
+  },
+
+  'fails if using token as repositoryName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const token = Lazy.stringValue({ produce: () => 'foo' });
+
+    // THEN
+    test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
+      directory: path.join(__dirname, 'demo-image'),
+      repositoryName: token
+    }), /Cannot use Token as value of 'repositoryName'/);
+
+    test.done();
   }
 };
