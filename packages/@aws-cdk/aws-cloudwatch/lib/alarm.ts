@@ -4,7 +4,7 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
-import { normalizeStatistic } from './util.statistic';
+import { parseStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
   /**
@@ -147,7 +147,8 @@ export class Alarm extends Resource implements IAlarm {
       ...dropUndef({
         // Alarm overrides
         period: props.period && props.period.toSeconds(),
-        statistic: props.statistic && normalizeStatistic(props.statistic),
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
       })
     });
 
@@ -247,4 +248,26 @@ function dropUndef<T extends object>(x: T): T {
     }
   }
   return ret;
+}
+
+function renderIfSimpleStatistic(statistic?: string): string | undefined {
+  if (statistic === undefined) { return undefined; }
+
+  const parsed = parseStatistic(statistic);
+  if (parsed.type === 'simple') {
+    return parsed.statistic;
+  }
+  return undefined;
+}
+
+function renderIfExtendedStatistic(statistic?: string): string | undefined {
+  if (statistic === undefined) { return undefined; }
+
+  const parsed = parseStatistic(statistic);
+  if (parsed.type === 'percentile') {
+    // Already percentile. Avoid parsing because we might get into
+    // floating point rounding issues, return as-is but lowercase the p.
+    return statistic.toLowerCase();
+  }
+  return undefined;
 }
