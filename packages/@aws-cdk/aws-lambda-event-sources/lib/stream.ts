@@ -36,10 +36,7 @@ export interface StreamEventSourceProps {
  * @internal
  */
 export abstract class StreamEventSource implements lambda.IEventSource {
-  protected constructor(protected readonly props: StreamEventSourceProps, protected readonly maxBatchSize: number) {
-    if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > maxBatchSize)) {
-      throw new Error(`Maximum batch size must be between 1 and ${maxBatchSize} inclusive (given ${this.props.batchSize})`);
-    }
+  protected constructor(protected readonly props: StreamEventSourceProps) {
   }
 
   public bind(_target: lambda.IFunction): void {

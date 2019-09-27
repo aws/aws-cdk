@@ -10,7 +10,11 @@ export interface DynamoEventSourceProps extends StreamEventSourceProps {
  */
 export class DynamoEventSource extends StreamEventSource {
   constructor(private readonly table: dynamodb.Table, props: DynamoEventSourceProps) {
-    super(props, 1000);
+    super(props);
+
+    if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 1000)) {
+      throw new Error(`Maximum batch size must be between 1 and 1000 inclusive (given ${this.props.batchSize})`);
+    }
   }
 
   public bind(target: lambda.IFunction) {
