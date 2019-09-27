@@ -206,8 +206,10 @@ export class Trail extends Resource {
     });
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
-    const s3BucketPolicy = this.s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
-    trail.node.addDependency(s3BucketPolicy);
+    // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
+    if (this.s3bucket.policy) {
+      trail.node.addDependency(this.s3bucket.policy);
+    }
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
     // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated

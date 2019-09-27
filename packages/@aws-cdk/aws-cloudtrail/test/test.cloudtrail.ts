@@ -96,6 +96,22 @@ export = {
       expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
       test.done();
     },
+
+    'with imported s3 bucket'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'SomeBucket');
+
+      // WHEN
+      new Trail(stack, 'Trail', { bucket });
+
+      expect(stack).to(haveResource('AWS::CloudTrail::Trail', {
+        S3BucketName: 'SomeBucket'
+      }));
+
+      test.done();
+    },
+
     'with cloud watch logs': {
       'enabled'(test: Test) {
         const stack = getTestStack();
