@@ -45,7 +45,7 @@ export interface EventSourceMappingOptions {
    *
    * @default Duration.seconds(0)
    */
-  readonly maximumBatchingWindow?: cdk.Duration;
+  readonly maxBatchingWindow?: cdk.Duration;
 }
 
 export interface EventSourceMappingProps extends EventSourceMappingOptions {
@@ -71,8 +71,8 @@ export class EventSourceMapping extends Resource {
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
-    if (props.maximumBatchingWindow && props.maximumBatchingWindow.toSeconds() > 300) {
-      throw new Error(`maximumBatchingWindow cannot be over 300 seconds, got ${props.maximumBatchingWindow.toSeconds()}`);
+    if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
+      throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
     new CfnEventSourceMapping(this, 'Resource', {
@@ -81,7 +81,7 @@ export class EventSourceMapping extends Resource {
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
-      maximumBatchingWindowInSeconds: props.maximumBatchingWindow && props.maximumBatchingWindow.toSeconds(),
+      maximumBatchingWindowInSeconds: props.maxBatchingWindow && props.maxBatchingWindow.toSeconds(),
     });
   }
 }

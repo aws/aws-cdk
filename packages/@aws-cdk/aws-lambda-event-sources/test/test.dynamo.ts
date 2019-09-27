@@ -173,7 +173,7 @@ export = {
     test.done();
   },
 
-  'specific maximumBatchingWindow'(test: Test) {
+  'specific maxBatchingWindow'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -187,7 +187,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      maximumBatchingWindow: cdk.Duration.minutes(2),
+      maxBatchingWindow: cdk.Duration.minutes(2),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 
@@ -209,7 +209,7 @@ export = {
     test.done();
   },
 
-  'throws if maximumBatchingWindow > 300 seconds'(test: Test) {
+  'throws if maxBatchingWindow > 300 seconds'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -224,9 +224,9 @@ export = {
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
-        maximumBatchingWindow: cdk.Duration.seconds(301),
+        maxBatchingWindow: cdk.Duration.seconds(301),
         startingPosition: lambda.StartingPosition.LATEST
-      })), /maximumBatchingWindow cannot be over 300 seconds/);
+      })), /maxBatchingWindow cannot be over 300 seconds/);
 
     test.done();
   },

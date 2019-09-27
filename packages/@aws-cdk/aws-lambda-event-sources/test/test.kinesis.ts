@@ -124,7 +124,7 @@ export = {
     test.done();
   },
 
-  'specific maximumBatchingWindow'(test: Test) {
+  'specific maxBatchingWindow'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -132,7 +132,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
-      maximumBatchingWindow: cdk.Duration.minutes(2),
+      maxBatchingWindow: cdk.Duration.minutes(2),
       startingPosition: lambda.StartingPosition.LATEST
     }));
 

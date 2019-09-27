@@ -25,7 +25,7 @@ export interface KinesisEventSourceProps {
    *
    * @default Duration.seconds(0)
    */
-  readonly maximumBatchingWindow?: Duration;
+  readonly maxBatchingWindow?: Duration;
 }
 
 /**
@@ -43,7 +43,7 @@ export class KinesisEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       startingPosition: this.props.startingPosition,
       eventSourceArn: this.stream.streamArn,
-      maximumBatchingWindow: this.props.maximumBatchingWindow,
+      maxBatchingWindow: this.props.maxBatchingWindow,
     });
 
     this.stream.grantRead(target);

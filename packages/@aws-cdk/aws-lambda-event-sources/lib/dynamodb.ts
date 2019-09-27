@@ -25,7 +25,7 @@ export interface DynamoEventSourceProps {
    *
    * @default Duration.seconds(0)
    */
-  readonly maximumBatchingWindow?: Duration;
+  readonly maxBatchingWindow?: Duration;
 }
 
 /**
@@ -47,7 +47,7 @@ export class DynamoEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       eventSourceArn: this.table.tableStreamArn,
       startingPosition: this.props.startingPosition,
-      maximumBatchingWindow: this.props.maximumBatchingWindow,
+      maxBatchingWindow: this.props.maxBatchingWindow,
     });
 
     this.table.grantStreamRead(target);
