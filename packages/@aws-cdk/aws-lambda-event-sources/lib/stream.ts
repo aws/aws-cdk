@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import {Duration} from "@aws-cdk/core";
+import {Duration} from '@aws-cdk/core';
 
 export interface StreamEventSourceProps {
   /**
