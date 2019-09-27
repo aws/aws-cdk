@@ -1,6 +1,7 @@
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
-import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
+import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 
@@ -110,7 +111,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   }
 
   public readonly receiptRuleName: string;
-  private readonly renderedActions = new Array<ReceiptRuleActionProps>();
+  private readonly actions = new Array<CfnReceiptRule.ActionProperty>();
 
   constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
     super(scope, id, {
@@ -120,7 +121,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after ? props.after.receiptRuleName : undefined,
       rule: {
-        actions: Lazy.anyValue({ produce: () => this.getRenderedActions() }),
+        actions: Lazy.anyValue({ produce: () => this.renderActions() }),
         enabled: props.enabled === undefined ? true : props.enabled,
         name: this.physicalName,
         recipients: props.recipients,
@@ -132,8 +133,8 @@ export class ReceiptRule extends Resource implements IReceiptRule {
 
     this.receiptRuleName = resource.ref;
 
-    if (props.actions) {
-      props.actions.forEach(action => this.addAction(action));
+    for (const action of props.actions || []) {
+      this.addAction(action);
     }
   }
 
@@ -141,17 +142,15 @@ export class ReceiptRule extends Resource implements IReceiptRule {
    * Adds an action to this receipt rule.
    */
   public addAction(action: IReceiptRuleAction) {
-    const renderedAction = action.render();
-
-    this.renderedActions.push(renderedAction);
+    this.actions.push(action.bind(this));
   }
 
-  private getRenderedActions() {
-    if (this.renderedActions.length === 0) {
+  private renderActions() {
+    if (this.actions.length === 0) {
       return undefined;
     }
 
-    return this.renderedActions;
+    return this.actions;
   }
 }
 
@@ -178,12 +177,22 @@ export class DropSpamReceiptRule extends Construct {
       uuid: '224e77f9-a32e-4b4d-ac32-983477abba16'
     });
 
+    fn.addPermission('AllowSes', {
+      action: 'lambda:InvokeFunction',
+      principal: new iam.ServicePrincipal('ses.amazonaws.com'),
+      sourceAccount: Aws.ACCOUNT_ID
+    });
+
     this.rule = new ReceiptRule(this, 'Rule', {
       actions: [
-        new ReceiptRuleLambdaAction({
-          function: fn,
-          invocationType: LambdaInvocationType.REQUEST_RESPONSE
-        })
+        {
+          bind: () => ({
+            lambdaAction: {
+              functionArn: fn.functionArn,
+              invocationType: 'RequestResponse',
+            }
+          })
+        },
       ],
       scanEnabled: true,
       ruleSet: props.ruleSet
