@@ -1,6 +1,6 @@
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
-import {StreamEventSource, StreamEventSourceProps} from "./stream";
+import {StreamEventSource, StreamEventSourceProps} from './stream';
 
 export interface DynamoEventSourceProps extends StreamEventSourceProps {
 }
