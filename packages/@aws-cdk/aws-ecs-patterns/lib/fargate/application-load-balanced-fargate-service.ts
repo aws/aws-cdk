@@ -109,6 +109,8 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      propagateTags: props.propagateTags,
+      enableECSManagedTags: props.enableECSManagedTags,
     });
     this.addServiceAsTarget(this.service);
   }

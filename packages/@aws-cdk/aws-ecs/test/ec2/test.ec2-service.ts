@@ -7,7 +7,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
-import { LaunchType } from '../../lib/base/base-service';
+import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -693,6 +693,29 @@ export = {
       // THEN
       expect(stack).notTo(haveResource("AWS::ECS::Service", {
         PlacementConstraints: undefined
+      }));
+
+      test.done();
+    },
+
+    "with both propagateTags and propagateTaskTagsFrom defined"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      test.throws(() => new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+        propagateTags: PropagatedTagSource.SERVICE,
+        propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
       }));
 
       test.done();

@@ -74,7 +74,8 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
-   * @default PropagatedTagSource.SERVICE
+   * @deprecated Use `propagateTags` instead.
+   * @default PropagatedTagSource.NONE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
@@ -127,6 +128,13 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
+                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+
     super(scope, id, {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
@@ -134,7 +142,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
-      propagateTags: props.propagateTaskTagsFrom === undefined ? PropagatedTagSource.NONE : props.propagateTaskTagsFrom,
+      propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     },
     {
