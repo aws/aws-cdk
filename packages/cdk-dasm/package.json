@@ -1,6 +1,6 @@
 {
   "name": "cdk-dasm",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "AWS CDK disassembler: convert CloudFormation to code",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
