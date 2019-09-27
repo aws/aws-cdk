@@ -37,7 +37,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
     }
   }
 
-  protected getEventSourceMappingOptions (eventSourceArn: string): lambda.EventSourceMappingOptions {
+  protected getEventSourceMappingOptions(eventSourceArn: string): lambda.EventSourceMappingOptions {
     return {
       eventSourceArn,
       batchSize: this.props.batchSize || 100,
