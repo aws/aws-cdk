@@ -73,9 +73,9 @@
       }
     },
     "B08E7C7AF": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "BNotificationsEB8DA980": {
       "Type": "Custom::S3BucketNotifications",
@@ -187,7 +187,11 @@
         },
         "Runtime": "nodejs8.10",
         "Timeout": 300
-      }
+      },
+      "DependsOn": [
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+      ]
     }
   }
 }
