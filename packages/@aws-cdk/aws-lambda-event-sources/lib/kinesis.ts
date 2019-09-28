@@ -11,7 +11,7 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
 export class KinesisEventSource extends StreamEventSource {
   constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
     super(props);
-    
+
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
       throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
     }
