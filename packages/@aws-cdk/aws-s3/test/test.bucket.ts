@@ -460,7 +460,7 @@ export = {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar' ]}));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar:baz' ]}));
 
       expect(stack).toMatch({
         "Resources": {
@@ -478,7 +478,7 @@ export = {
               "PolicyDocument": {
                 "Statement": [
                   {
-                    "Action": "bar",
+                    "Action": "bar:baz",
                     "Effect": "Allow",
                     "Resource": "foo"
                   }
