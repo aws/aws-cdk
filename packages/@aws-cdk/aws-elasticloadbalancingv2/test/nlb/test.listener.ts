@@ -99,16 +99,12 @@ export = {
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
     group.configureHealthCheck({
-      timeout: cdk.Duration.hours(1),
-      interval: cdk.Duration.seconds(30),
-      path: '/test',
+      interval: cdk.Duration.seconds(30)
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckPath: "/test",
-      HealthCheckTimeoutSeconds: 3600,
+      HealthCheckIntervalSeconds: 30
     }));
 
     test.done();
@@ -196,18 +192,16 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('PublicListener', { port: 80 });
-    const interval = 60;
-    listener.addTargets('ECS', {
+    const targetGroup = listener.addTargets('ECS', {
       port: 80,
       healthCheck: {
-        interval: cdk.Duration.seconds(interval)
+        interval: cdk.Duration.seconds(60)
       }
     });
 
-    test.throws(() => (listener as any).validate(),
-      Error,
-      `/Health check interval '${interval}' not supported. Must be one of the following values/`
-    );
+    const validationErrors: string[] = (targetGroup as any).validate();
+    const intervalError = validationErrors.find((err) => /Health check interval '60' not supported. Must be one of the following values/.test(err));
+    test.notEqual(intervalError, undefined, 'Failed to return health check interval validation error');
 
     test.done();
   },
