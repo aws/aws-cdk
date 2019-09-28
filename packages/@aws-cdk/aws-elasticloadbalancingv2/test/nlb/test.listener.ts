@@ -196,14 +196,18 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('PublicListener', { port: 80 });
-
     const interval = 60;
-    test.throws(() => listener.addTargets('ECS', {
+    listener.addTargets('ECS', {
       port: 80,
       healthCheck: {
         interval: cdk.Duration.seconds(interval)
       }
-    }), Error, `/Health check interval '${interval}' not supported. Must be one of the following values/`);
+    });
+
+    test.throws(() => (listener as any).validate(),
+      Error,
+      `/Health check interval '${interval}' not supported. Must be one of the following values/`
+    );
 
     test.done();
   },
