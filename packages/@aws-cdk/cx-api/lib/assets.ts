@@ -26,12 +26,7 @@ export const ASSET_RESOURCE_METADATA_PROPERTY_KEY = 'aws:asset:property';
  */
 export const ASSET_PREFIX_SEPARATOR = '||';
 
-interface BaseAssetMetadataEntry {
-  /**
-   * Requested packaging style
-   */
-  readonly packaging: string;
-
+export interface BaseAssetMetadataEntry {
   /**
    * Logical identifier for the asset
    */
@@ -73,7 +68,7 @@ export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
 
 export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
-   * Type of asset
+   * Requested packaging style
    */
   readonly packaging: 'container-image';
 
@@ -108,4 +103,11 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly target?: string;
 }
 
-export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
+export interface CustomAssetMetadataEntry extends BaseAssetMetadataEntry {
+  /**
+   * Requested packaging style
+   */
+  readonly packaging: Exclude<string, 'file' | 'zip' | 'container-image'>;
+}
+
+export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry | CustomAssetMetadataEntry;

@@ -14,7 +14,7 @@ export interface AssetTypeHandler {
 
   /**
    * Prepares the given asset type for deployment
-   * 
+   *
    * @param assemblyDir the base directory of the stack.
    * @param asset the metadata describing the asset.
    * @param toolkitInfo the runtime configuration of the cdk.
@@ -22,10 +22,10 @@ export interface AssetTypeHandler {
    * @param ci wether or not the deployment is running in a CI process.
    */
   prepare(
-    assemblyDir: string, 
-    asset: cxapi.AssetMetadataEntry, 
-    toolkitInfo: ToolkitInfo, 
-    reuse: boolean, 
+    assemblyDir: string,
+    asset: cxapi.AssetMetadataEntry,
+    toolkitInfo: ToolkitInfo,
+    reuse: boolean,
     ci?: boolean
   ): Promise<CloudFormation.Parameter[]>;
 

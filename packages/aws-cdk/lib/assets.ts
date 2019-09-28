@@ -52,18 +52,18 @@ export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, to
 async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
-      return await prepareZipAsset(assemblyDir, asset, toolkitInfo, reuse);
+      return await prepareZipAsset(assemblyDir, asset as cxapi.FileAssetMetadataEntry, toolkitInfo, reuse);
     case 'file':
-      return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
+      return await prepareFileAsset(assemblyDir, asset as cxapi.FileAssetMetadataEntry, toolkitInfo, reuse);
     case 'container-image':
-      return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse, ci);
+      return await prepareContainerAsset(assemblyDir, asset as cxapi.ContainerImageAssetMetadataEntry, toolkitInfo, reuse, ci);
     default:
       const pluginHandler = PluginHost.instance.assetTypeHandlers.get(asset.packaging);
       if (pluginHandler !== undefined) {
         return await pluginHandler.prepare(assemblyDir, asset, toolkitInfo, reuse, ci);
       }
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
+      throw new Error(`Unsupported packaging type: ${asset.packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
 
