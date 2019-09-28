@@ -191,6 +191,23 @@ export = {
     test.done();
   },
 
+  'Invalid Listener Target Healthcheck Interval'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+
+    const interval = 60;
+    test.throws(() => listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(interval)
+      }
+    }), Error, `/Health check interval '${interval}' not supported. Must be one of the following values/`);
+
+    test.done();
+  },
+
   'Protocol & certs TLS listener'(test: Test) {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');

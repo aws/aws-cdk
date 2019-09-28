@@ -90,6 +90,20 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
+
+  protected validate(): string[]  {
+    const ret = super.validate();
+
+    const allowedIntervals = [10, 30];
+    if (this.healthCheck && this.healthCheck.interval) {
+      const seconds = this.healthCheck.interval.toSeconds();
+      if (!allowedIntervals.includes(seconds)) {
+        ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`)
+      }
+    }
+
+    return ret;
+  }
 }
 
 /**
