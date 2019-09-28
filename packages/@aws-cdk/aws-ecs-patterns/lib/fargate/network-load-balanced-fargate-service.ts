@@ -71,6 +71,9 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
  */
 export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServiceBase {
 
+  /**
+   * Determines whether the service will be assigned a public IP address.
+   */
   public readonly assignPublicIp: boolean;
 
   /**
