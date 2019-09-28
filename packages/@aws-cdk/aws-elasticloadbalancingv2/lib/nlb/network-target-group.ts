@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/core');
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
+         TargetGroupBase, TargetGroupImportProps, HealthCheck } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { INetworkListener } from './network-listener';
@@ -94,12 +94,23 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   protected validate(): string[]  {
     const ret = super.validate();
 
+    const healthCheck: HealthCheck = this.healthCheck || {};
+
     const allowedIntervals = [10, 30];
-    if (this.healthCheck && this.healthCheck.interval) {
-      const seconds = this.healthCheck.interval.toSeconds();
+    if (healthCheck.interval) {
+      const seconds = healthCheck.interval.toSeconds();
       if (!allowedIntervals.includes(seconds)) {
-        ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`)
+        ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
       }
+    }
+    if (healthCheck.path) {
+      ret.push('Health check paths are not supported for TCP health checks');
+    }
+    if (healthCheck.protocol && healthCheck.protocol !== Protocol.TCP && healthCheck.protocol !== Protocol.TLS) {
+      ret.push(`Health check protocol '${healthCheck.protocol}' is not supported. Must be one of [TCP, TLS]`);
+    }
+    if (healthCheck.timeout) {
+      ret.push('Custom health check timeouts are not supported for health checks for target groups with the TCP protocol');
     }
 
     return ret;
