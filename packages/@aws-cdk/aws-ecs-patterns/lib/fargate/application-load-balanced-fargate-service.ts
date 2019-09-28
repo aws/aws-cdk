@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
@@ -84,6 +84,11 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
    * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
+
+  /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedFargateService class.

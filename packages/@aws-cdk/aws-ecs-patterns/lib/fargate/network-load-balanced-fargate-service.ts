@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, FargateService, FargateTaskDefinition, PortMapping } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -80,6 +80,11 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
    * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
+
+  /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
 
   /**
    * Constructs a new instance of the NetworkLoadBalancedFargateService class.

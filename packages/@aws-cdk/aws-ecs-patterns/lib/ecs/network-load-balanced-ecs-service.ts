@@ -1,4 +1,4 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, Ec2Service, Ec2TaskDefinition, PortMapping } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -75,6 +75,11 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
    * The EC2 Task Definition in this construct.
    */
   public readonly taskDefinition: Ec2TaskDefinition;
+
+  /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
 
   /**
    * Constructs a new instance of the NetworkLoadBalancedEc2Service class.
