@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/core');
-import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupBase, TargetGroupImportProps, HealthCheck } from '../shared/base-target-group';
+import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { INetworkListener } from './network-listener';
