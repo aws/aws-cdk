@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
@@ -77,6 +77,11 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   public readonly taskDefinition: FargateTaskDefinition;
 
   /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
+
+  /**
    * Constructs a new instance of the ApplicationLoadBalancedFargateService class.
    */
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancedFargateServiceProps) {
@@ -92,13 +97,13 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = this.taskDefinition.addContainer(containerName, {
+    this.container = this.taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
       environment: props.environment,
       secrets: props.secrets,
     });
-    container.addPortMappings({
+    this.container.addPortMappings({
       containerPort: props.containerPort || 80,
     });
 

@@ -1,4 +1,4 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
@@ -69,6 +69,11 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
   public readonly taskDefinition: Ec2TaskDefinition;
 
   /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
+
+  /**
    * Constructs a new instance of the ApplicationLoadBalancedEc2Service class.
    */
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancedEc2ServiceProps) {
@@ -80,7 +85,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = this.taskDefinition.addContainer(containerName, {
+    this.container = this.taskDefinition.addContainer(containerName, {
       image: props.image,
       cpu: props.cpu,
       memoryLimitMiB: props.memoryLimitMiB,
@@ -89,7 +94,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       secrets: props.secrets,
       logging: this.logDriver,
     });
-    container.addPortMappings({
+    this.container.addPortMappings({
       containerPort: props.containerPort || 80
     });
 

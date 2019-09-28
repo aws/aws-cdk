@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, FargateService, FargateTaskDefinition, PortMapping } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -73,6 +73,11 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
   public readonly taskDefinition: FargateTaskDefinition;
 
   /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
+
+  /**
    * Constructs a new instance of the NetworkLoadBalancedFargateService class.
    */
   constructor(scope: Construct, id: string, props: NetworkLoadBalancedFargateServiceProps) {
@@ -88,15 +93,18 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
     });
 
     const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = this.taskDefinition.addContainer(containerName, {
+    this.container = this.taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
       environment: props.environment,
       secrets: props.secrets,
     });
-    container.addPortMappings({
+
+    const portMapping: PortMapping = {
       containerPort: props.containerPort || 80,
-    });
+      hostPort: props.hostPort ? props.hostPort : props.publicLoadBalancer ? 80 : undefined
+    };
+    this.container.addPortMappings(portMapping);
 
     this.service = new FargateService(this, "Service", {
       cluster: this.cluster,

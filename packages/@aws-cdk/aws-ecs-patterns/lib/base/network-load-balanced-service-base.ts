@@ -41,11 +41,21 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    *
    * For more information, see
-   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
    *
    * @default 80
    */
   readonly containerPort?: number;
+
+  /**
+   * The port number on the container instance to reserve for your container.
+   *
+   * For more information, see
+   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+   *
+   * @default 80
+   */
+  readonly hostPort?: number;
 
   /**
    * Determines whether the Load Balancer will be internet-facing.
@@ -216,11 +226,12 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = new NetworkLoadBalancer(this, 'LB', lbProps);
 
+    const hostPort = props.hostPort || 80;
     const targetProps = {
-      port: 80
+      port: hostPort
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: 80 });
+    this.listener = this.loadBalancer.addListener('PublicListener', { port: hostPort });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
