@@ -70,6 +70,11 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   * Execution role associated with this function
+   */
+  readonly role?: iam.IRole;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -91,6 +96,7 @@ export class BucketDeployment extends cdk.Construct {
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
+      role: props.role,
       memorySize: props.memoryLimit
     });
 
