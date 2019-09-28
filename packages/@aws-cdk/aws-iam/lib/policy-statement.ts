@@ -22,6 +22,13 @@ export class PolicyStatement {
   private readonly condition: { [key: string]: any } = { };
 
   constructor(props: PolicyStatementProps = {}) {
+    // Validate actions
+    for (const action of [...props.actions || [], ...props.notActions || []]) {
+      if (!/^(\*|[a-zA-Z0-9]+:[a-zA-Z0-9*]+)$/.test(action)) {
+        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+      }
+    }
+
     this.effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
