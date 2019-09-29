@@ -54,8 +54,8 @@ export class PluginHost {
    * Access the currently registered CredentialProviderSources. New sources can
    * be registered using the +registerCredentialProviderSource+ method.
    */
-  public readonly assetTypeHandlers = new Map<String, AssetTypeHandler>();
-  
+  public readonly assetTypeHandlers = new Map<string, AssetTypeHandler>();
+
   constructor() {
     if (PluginHost.instance && PluginHost.instance !== this) {
       throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
