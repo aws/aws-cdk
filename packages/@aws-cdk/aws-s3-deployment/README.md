@@ -67,7 +67,7 @@ in which case the contents will be retained.
 
 ## Objects metadata
 
-You can specify metadata to bet set on the objects in your deployment.
+You can specify metadata to be set on the objects in your deployment.
 There are 2 types of metadata in S3: system-defined metadata and user-defined metadata.
 System-defined metadata have a special purpose, for example cache-control defines how long to keep an object cached.
 User-defined metadata are not used by S3 and keys always begin with `x-amzn-meta-` (if this is not provided, it is added automatically)
