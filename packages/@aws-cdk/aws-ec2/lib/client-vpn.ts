@@ -7,7 +7,8 @@ import {
   CfnClientVpnTargetNetworkAssociation
 } from './ec2.generated';
 import {CIDR_VALIDATION_REGEXES} from "./peer";
-import {ISubnet} from './vpc';
+import {ISubnet, Vpc} from './vpc';
+import { SecurityGroup } from './security-group';
 
 interface IClientAuthenticationRequestOptions {
   /**
@@ -133,6 +134,11 @@ export interface ITagSpecification {
 
 export interface ClientVpnEndpointProps {
   /**
+   * The VPC in which to create your Client Vpn.
+   */
+  readonly vpc: Vpc;
+
+  /**
    * Information about the authentication method to be used to authenticate clients
    */
   readonly authenticationOptions: ClientAuthenticationRequest[];
@@ -147,23 +153,29 @@ export interface ClientVpnEndpointProps {
   readonly clientCidrBlock: string;
   /**
    * Information about the client connection logging options
+   *
+   * @default - Creates a new {@link LogGroup}
    */
-  readonly connectionLog: ConnectionLog;
+  readonly connectionLog?: ConnectionLog;
+
   // TODO replace with acm.Certificate?
   /**
    * The ARN of the server certificate
    */
   readonly serverCertificateArn: string;
+
   /**
    * A brief description of the Client VPN endpoint
    */
   readonly description?: string;
+
   /**
    * Information about the DNS servers to be used for DNS resolution.
    * A Client VPN endpoint can have up to two DNS servers.
    * If no DNS server is specified, the DNS address configured on the device is used for the DNS server.
    */
   readonly dnsServers?: string[];
+
   /**
    * Indicates whether split-tunnel is enabled on the AWS Client VPN endpoint
    *
@@ -171,10 +183,12 @@ export interface ClientVpnEndpointProps {
    * @see [Split-Tunnel on AWS Client VPN Endpoints]{@link https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/split-tunnel-vpn.html}
    */
   readonly splitTunnel?: boolean;
+
   /**
    * The tags to apply to the Client VPN endpoint during creation
    */
   readonly tagsSpecifications?: ITagSpecification[];
+
   /**
    * The transport protocol to be used by the VPN session
    *
@@ -204,9 +218,11 @@ export interface IClientVpnEndpoint extends cdk.IResource {
 export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoint {
 
   public readonly clientVpnEndpointId: string;
+  public readonly vpc: Vpc;
   public readonly routes: ClientVpnRoute[] = [];
   public readonly targetNetworkAssociations: ClientVpnRoute[] = [];
   public readonly authorizationRules: ClientVpnRoute[] = [];
+  public readonly securityGroup: SecurityGroup;
 
   constructor(scope: cdk.Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
@@ -229,7 +245,7 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
 
     const clientVpnEndpoint = new CfnClientVpnEndpoint(this, 'Resource', {
       authenticationOptions: props.authenticationOptions.map(({options}) => options),
-      connectionLogOptions: props.connectionLog && props.connectionLog.options,
+      connectionLogOptions: (props.connectionLog ? props.connectionLog : ConnectionLog.group(new logs.LogGroup(scope, 'Log'))).options,
       serverCertificateArn: props.serverCertificateArn,
       clientCidrBlock: props.clientCidrBlock,
       description: props.description,
@@ -240,6 +256,26 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
     });
 
     this.clientVpnEndpointId = clientVpnEndpoint.ref;
+
+    this.vpc = props.vpc;
+    this.securityGroup = new SecurityGroup(this, 'SecurityGroup', {
+      vpc: props.vpc,
+      allowAllOutbound: false,
+    });
+
+    // TODO
+    /*new cloudformation.AwsCustomResource(this, 'ApplySecurityGroupsToClientVpnTargetNetwork', {
+      onUpdate: {
+        service: 'EC2',
+        action: 'applySecurityGroupsToClientVpnTargetNetwork',
+        parameters: {
+          ClientVpnEndpointId: clientVpnEndpoint.ref,
+          VpcId: props.vpc.vpcId,
+          SecurityGroupIds: [this.securityGroup.securityGroupId],
+        },
+        physicalResourceId: this.securityGroup.securityGroupId,
+      },
+    });*/
   }
 
   public addRoute(options: ClientVpnRouteOptions): ClientVpnRoute {
@@ -252,7 +288,14 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
     return route;
   }
 
+  /**
+   * Each subnet must belong to a different Availability Zone.
+   *
+   * @param subnet
+   */
   public addTargetNetworkAssociation(subnet: ISubnet): ClientVpnTargetNetworkAssociation {
+    // TODO check "Each subnet must belong to a different Availability Zone."
+
     const association = new ClientVpnTargetNetworkAssociation(
       this,
       `TargetNetworkAssociation-${this.targetNetworkAssociations.length}`, {
