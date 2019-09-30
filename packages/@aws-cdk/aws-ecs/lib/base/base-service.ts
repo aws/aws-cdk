@@ -8,6 +8,7 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -25,19 +26,33 @@ export interface IService extends IResource {
 
 export interface EcsTarget {
   /**
-   * Properties for defining an ECS target.
+   * The name of the container.
    */
-  readonly containerTarget: LoadBalancerTargetOptions,
+  readonly containerName: string;
+
+  /**
+   * The port number of the container. Only applicable when using application/network load balancers.
+   *
+   * @default - Container port of the first added port mapping.
+   */
+  readonly containerPort?: number;
+
+  /**
+   * The protocol used for the port mapping. Only applicable when using application load balancers.
+   *
+   * @default Protocol.TCP
+   */
+  readonly protocol?: Protocol;
 
   /**
    * ID for a target group to be created.
    */
-  readonly targetGroupId: string,
+  readonly newTargetGroupId: string;
 
   /**
    * Listener and properties for adding target group to the listener.
    */
-  readonly listener: ListenerConfig,
+  readonly listener: ListenerConfig;
 }
 
 /**
@@ -140,14 +155,14 @@ export abstract class ListenerConfig {
   /**
    * Create a config for adding target group to ALB listener.
    */
-  public static applicationListenerConfig(listener: elbv2.ApplicationListener, props?: elbv2.AddApplicationTargetsProps): ListenerConfig {
+  public static applicationListener(listener: elbv2.ApplicationListener, props?: elbv2.AddApplicationTargetsProps): ListenerConfig {
     return new ApplicationListenerConfig(listener, props);
   }
 
   /**
    * Create a config for adding target group to NLB listener.
    */
-  public static networkListenerConfig(listener: elbv2.NetworkListener, props?: elbv2.AddNetworkTargetsProps): ListenerConfig {
+  public static networkListener(listener: elbv2.NetworkListener, props?: elbv2.AddNetworkTargetsProps): ListenerConfig {
     return new NetworkListenerConfig(listener, props);
   }
 
@@ -364,22 +379,26 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
-   * service.registerContainerTargets(
+   * service.registerLoadBalancerTargets(
    *   {
    *     containerTarget: {
    *       containerName: 'web',
    *       containerPort: 80,
    *     },
    *     targetGroupId: 'ECS',
-   *     listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
+   *     listener: ecs.ListenerConfig.applicationListener(listener, {
    *       protocol: elbv2.ApplicationProtocol.HTTPS
    *     }),
    *   },
    * )
    */
-  public registerContainerTargets(...targets: EcsTarget[]) {
+  public registerLoadBalancerTargets(...targets: EcsTarget[]) {
     for (const target of targets) {
-      target.listener.addTargets(target.targetGroupId, target.containerTarget, this);
+      target.listener.addTargets(target.newTargetGroupId, {
+        containerName: target.containerName,
+        containerPort: target.containerPort,
+        protocol: target.protocol
+      }, this);
     }
   }
 

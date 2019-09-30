@@ -688,14 +688,12 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets(
+          service.registerLoadBalancerTargets(
             {
-              containerTarget: {
-                containerName: 'MainContainer',
-                containerPort: 8000
-              },
-              listener: ecs.ListenerConfig.applicationListenerConfig(listener),
-              targetGroupId: 'target1',
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.applicationListener(listener),
+              newTargetGroupId: 'target1',
             }
           );
 
@@ -740,16 +738,14 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets(
+          service.registerLoadBalancerTargets(
             {
-              containerTarget: {
-                containerName: 'MainContainer',
-                containerPort: 8000
-              },
-              listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.applicationListener(listener, {
                 protocol: elbv2.ApplicationProtocol.HTTP
               }),
-              targetGroupId: 'target1',
+              newTargetGroupId: 'target1',
             }
           );
 
@@ -794,16 +790,14 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets(
+          service.registerLoadBalancerTargets(
             {
-              containerTarget: {
-                containerName: 'MainContainer',
-                containerPort: 8000
-              },
-              listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.applicationListener(listener, {
                 protocol: elbv2.ApplicationProtocol.HTTPS
               }),
-              targetGroupId: 'target1',
+              newTargetGroupId: 'target1',
             }
           );
 
@@ -848,17 +842,15 @@ export = {
           const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets(
+          service.registerLoadBalancerTargets(
             {
-              containerTarget: {
-                containerName: 'MainContainer',
-                containerPort: 8000
-              },
-              listener: ecs.ListenerConfig.applicationListenerConfig(listener, {
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.applicationListener(listener, {
                 port: 83,
                 protocol: elbv2.ApplicationProtocol.HTTP
               }),
-              targetGroupId: 'target1'
+              newTargetGroupId: 'target1'
             }
           );
 
@@ -905,14 +897,12 @@ export = {
           const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets(
+          service.registerLoadBalancerTargets(
             {
-              containerTarget: {
-                containerName: 'MainContainer',
-                containerPort: 8000
-              },
-              listener: ecs.ListenerConfig.networkListenerConfig(listener),
-              targetGroupId: 'target1',
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.networkListener(listener),
+              newTargetGroupId: 'target1',
             }
           );
 
@@ -957,16 +947,14 @@ export = {
           const lb = new elbv2.NetworkLoadBalancer(stack, "lb", { vpc });
           const listener = lb.addListener("listener", { port: 80 });
 
-          service.registerContainerTargets(
+          service.registerLoadBalancerTargets(
             {
-              containerTarget: {
-                containerName: 'MainContainer',
-                containerPort: 8000
-              },
-              listener: ecs.ListenerConfig.networkListenerConfig(listener, {
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.networkListener(listener, {
                 port: 81
               }),
-              targetGroupId: 'target1'
+              newTargetGroupId: 'target1'
             }
           );
 
