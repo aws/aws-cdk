@@ -1,7 +1,7 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "lib/index.js",
   "repository": {
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
     "@types/jest": "^24.0.18",
-    "@types/yargs": "^13.0.2",
+    "@types/yargs": "^13.0.3",
     "pkglint": "file:../pkglint"
   },
   "dependencies": {

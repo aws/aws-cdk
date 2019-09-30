@@ -132,7 +132,7 @@ export = {
 
     // WHEN
     asset.repository.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['BOOM'],
+      actions: ['BAM:BOOM'],
       principals: [new iam.ServicePrincipal('test.service')]
     }));
 
@@ -144,7 +144,7 @@ export = {
       "PolicyDocument": {
         "Statement": [
           {
-            "Action": "BOOM",
+            "Action": "BAM:BOOM",
             "Effect": "Allow",
             "Principal": {
               "Service": "test.service"
@@ -232,6 +232,20 @@ export = {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: { key: token }
     }), expected);
+
+    test.done();
+  },
+
+  'fails if using token as repositoryName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const token = Lazy.stringValue({ produce: () => 'foo' });
+
+    // THEN
+    test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
+      directory: path.join(__dirname, 'demo-image'),
+      repositoryName: token
+    }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
   }
