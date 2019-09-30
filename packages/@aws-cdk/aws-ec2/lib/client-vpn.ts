@@ -222,9 +222,6 @@ export interface IClientVpnEndpoint extends cdk.IResource {
    * The id of the Client VPN Endpoint
    */
   readonly clientVpnEndpointId: string;
-  readonly routes: ClientVpnRoute[];
-  readonly targetNetworkAssociations: ClientVpnRoute[];
-  readonly authorizationRules: ClientVpnRoute[];
 }
 
 /**
@@ -240,10 +237,11 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
 
   public readonly clientVpnEndpointId: string;
   public readonly vpc: Vpc;
-  public readonly routes: ClientVpnRoute[] = [];
-  public readonly targetNetworkAssociations: ClientVpnRoute[] = [];
-  public readonly authorizationRules: ClientVpnRoute[] = [];
   public readonly securityGroup: SecurityGroup;
+
+  private routeCount = 0;
+  private targetNetworkAssociationCount = 0;
+  private authorizationRuleCount = 0;
 
   constructor(scope: cdk.Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
@@ -300,13 +298,10 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
   }
 
   public addRoute(options: ClientVpnRouteOptions): ClientVpnRoute {
-    const route = new ClientVpnRoute(this, `Route-${this.routes.length}`, {
+    return new ClientVpnRoute(this, `Route-${++this.routeCount}`, {
       clientVpnEndpoint: this,
       ...options,
     });
-
-    this.routes.push(route);
-    return route;
   }
 
   /**
@@ -317,25 +312,19 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
   public addTargetNetworkAssociation(subnet: ISubnet): ClientVpnTargetNetworkAssociation {
     // TODO check "Each subnet must belong to a different Availability Zone."
 
-    const association = new ClientVpnTargetNetworkAssociation(
+    return new ClientVpnTargetNetworkAssociation(
       this,
-      `TargetNetworkAssociation-${this.targetNetworkAssociations.length}`, {
+      `TargetNetworkAssociation-${++this.targetNetworkAssociationCount}`, {
         clientVpnEndpoint: this,
         subnet,
       });
-
-    this.targetNetworkAssociations.push(association);
-    return association;
   }
 
   public addAuthorizationRule(options: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
-    const rule = new ClientVpnAuthorizationRule(this, `AuthorizationRule-${this.authorizationRules.length}`, {
+    return new ClientVpnAuthorizationRule(this, `AuthorizationRule-${++this.authorizationRuleCount}`, {
       clientVpnEndpoint: this,
       ...options,
     });
-
-    this.authorizationRules.push(rule);
-    return rule;
   }
 }
 
@@ -373,8 +362,6 @@ export class ClientVpnRoute extends cdk.Resource {
       destinationCidrBlock: props.destinationCidrBlock,
       targetVpcSubnetId: props.targetSubnet.subnetId,
     });
-
-    props.clientVpnEndpoint.routes.push(this);
   }
 }
 
@@ -400,8 +387,6 @@ export class ClientVpnTargetNetworkAssociation extends cdk.Resource {
       clientVpnEndpointId: props.clientVpnEndpoint.clientVpnEndpointId,
       subnetId: props.subnet.subnetId,
     });
-
-    props.clientVpnEndpoint.targetNetworkAssociations.push(this);
   }
 }
 
@@ -441,8 +426,6 @@ export class ClientVpnAuthorizationRule extends cdk.Resource {
       authorizeAllGroups: props.authorizeAllGroups,
       description: props.description,
     });
-
-    props.clientVpnEndpoint.authorizationRules.push(this);
   }
 }
 
