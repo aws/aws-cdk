@@ -290,6 +290,7 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
       allowAllOutbound: false,
     });
 
+    // TODO Replace with https://github.com/aws-cloudformation/aws-cloudformation-coverage-roadmap/issues/199
     // TODO
     /*new cloudformation.AwsCustomResource(this, 'ApplySecurityGroupsToClientVpnTargetNetwork', {
       onUpdate: {
