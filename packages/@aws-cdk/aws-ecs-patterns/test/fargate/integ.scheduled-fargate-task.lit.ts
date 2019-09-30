@@ -18,11 +18,13 @@ class EventStack extends cdk.Stack {
     // Create the scheduled task
     new ScheduledFargateTask(this, 'ScheduledFargateTask', {
       cluster,
-      image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
+      scheduledFargateTaskImageOptions: {
+        image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
+        memoryLimitMiB: 512,
+        cpu: 256,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
       desiredTaskCount: 2,
-      memoryLimitMiB: 512,
-      cpu: 256,
-      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
     });
   }
