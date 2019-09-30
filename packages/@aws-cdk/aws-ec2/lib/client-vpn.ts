@@ -7,8 +7,8 @@ import {
   CfnClientVpnTargetNetworkAssociation
 } from './ec2.generated';
 import {CIDR_VALIDATION_REGEXES} from "./peer";
+import {SecurityGroup} from './security-group';
 import {ISubnet, SubnetSelection, Vpc} from './vpc';
-import { SecurityGroup } from './security-group';
 
 interface IActiveDirectoryAuthenticationRequestOptions {
   /**
