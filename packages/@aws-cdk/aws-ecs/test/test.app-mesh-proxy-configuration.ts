@@ -121,13 +121,21 @@ export = {
     test.done();
   },
 
-  "correctly sets appMeshProxyConfiguration with no properties set"(test: Test) {
+  "correctly sets appMeshProxyConfiguration with empty egressIgnoredPorts and egressIgnoredIPs"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
       containerName: "envoy",
+      properties: {
+        ignoredUID: 1337,
+        appPorts: [80, 81],
+        proxyIngressPort: 80,
+        proxyEgressPort: 81,
+        egressIgnoredIPs: [],
+        egressIgnoredPorts: []
+      }
     })});
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
@@ -142,6 +150,24 @@ export = {
     expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
       ProxyConfiguration: {
         ContainerName: "envoy",
+        ProxyConfigurationProperties: [
+          {
+            Name: "IgnoredUID",
+            Value: "1337"
+          },
+          {
+            Name: "AppPorts",
+            Value: "80,81"
+          },
+          {
+            Name: "ProxyIngressPort",
+            Value: "80"
+          },
+          {
+            Name: "ProxyEgressPort",
+            Value: "81"
+          }
+        ],
         Type: "APPMESH"
       }
     }));

@@ -58,7 +58,7 @@ export interface AppMeshProxyConfigurationConfigProps {
   /**
    * The set of network configuration parameters to provide the Container Network Interface (CNI) plugin.
    */
-  readonly properties?: AppMeshProxyConfigurationProps;
+  readonly properties: AppMeshProxyConfigurationProps;
 }
 
 /**
@@ -90,47 +90,40 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
   public bind(_scope: Construct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty {
     const configProps = this.props.properties;
     const configType = "APPMESH";
-    if (configProps) {
-      return {
-        containerName: this.props.containerName,
-        proxyConfigurationProperties: removePropsEmpty([
-          {
-            name: "IgnoredUID",
-            value: String(configProps.ignoredUID)
-          },
-          {
-            name: "IgnoredGID",
-            value: String(configProps.ignoredGID)
-          },
-          {
-            name: "AppPorts",
-            value: String(configProps.appPorts)
-          },
-          {
-            name: "ProxyIngressPort",
-            value: String(configProps.proxyIngressPort)
-          },
-          {
-            name: "ProxyEgressPort",
-            value: String(configProps.proxyEgressPort)
-          },
-          {
-            name: "EgressIgnoredPorts",
-            value: String(configProps.egressIgnoredPorts)
-          },
-          {
-            name: "EgressIgnoredIPs",
-            value: String(configProps.egressIgnoredIPs)
-          }
-        ]),
-        type: configType
-      };
-    } else {
-      return {
-        containerName: this.props.containerName,
-        type: configType
-      };
-    }
+    return {
+      containerName: this.props.containerName,
+      proxyConfigurationProperties: removePropsEmpty([
+        {
+          name: "IgnoredUID",
+          value: String(configProps.ignoredUID)
+        },
+        {
+          name: "IgnoredGID",
+          value: String(configProps.ignoredGID)
+        },
+        {
+          name: "AppPorts",
+          value: String(configProps.appPorts)
+        },
+        {
+          name: "ProxyIngressPort",
+          value: String(configProps.proxyIngressPort)
+        },
+        {
+          name: "ProxyEgressPort",
+          value: String(configProps.proxyEgressPort)
+        },
+        {
+          name: "EgressIgnoredPorts",
+          value: String((configProps.egressIgnoredPorts && configProps.egressIgnoredPorts.length) ? configProps.egressIgnoredPorts : undefined)
+        },
+        {
+          name: "EgressIgnoredIPs",
+          value: String((configProps.egressIgnoredIPs && configProps.egressIgnoredIPs.length) ? configProps.egressIgnoredIPs : undefined)
+        }
+      ]),
+      type: configType
+    };
   }
 }
 
