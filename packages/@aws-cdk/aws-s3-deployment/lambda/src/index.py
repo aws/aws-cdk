@@ -21,6 +21,15 @@ cloudfront = boto3.client('cloudfront')
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
 
+SYSTEM_DEFINED_METADATA_KEYS = {
+    "cache-control",
+    "content-disposition",
+    "content-encoding",
+    "content-language",
+    "content-type",
+    "expires"
+}
+
 def handler(event, context):
 
     def cfn_error(message=None):
@@ -45,6 +54,7 @@ def handler(event, context):
             dest_bucket_prefix = props.get('DestinationBucketKeyPrefix', '')
             retain_on_delete   = props.get('RetainOnDelete', "true") == "true"
             distribution_id    = props.get('DistributionId', '')
+            objects_metadata   = props.get('ObjectsMetadata', '')
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
@@ -98,6 +108,9 @@ def handler(event, context):
         if request_type == "Update" or request_type == "Create":
             s3_deploy(s3_source_zips, s3_dest)
 
+        if objects_metadata:
+            set_objects_metadata(s3_dest, objects_metadata)
+
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
 
@@ -148,6 +161,24 @@ def cloudfront_invalidate(distribution_id, distribution_paths):
     cloudfront.get_waiter('invalidation_completed').wait(
         DistributionId=distribution_id,
         Id=invalidation_resp['Invalidation']['Id'])
+
+#---------------------------------------------------------------------------------------------------
+# set metadata
+def set_objects_metadata(s3_dest, objects_metadata):
+    for object_key, object_metadata in objects_metadata.items():
+        if len(object_metadata) == 0:
+            continue
+
+        format_system_metadata_key = lambda k: k.lower()
+        format_user_metadata_key = lambda k: k.lower() if k.lower().startswith("x-amzn-meta-") else f"x-amzn-meta-{k.lower()}" 
+
+        system_defined_metadata = { format_system_metadata_key(k): v for k, v in object_metadata.items() if k.lower() in SYSTEM_DEFINED_METADATA_KEYS }
+        user_defined_metadata = { format_user_metadata_key(k): v for k, v in object_metadata.items() if not k.lower() in SYSTEM_DEFINED_METADATA_KEYS }
+
+        aws_command("s3", "cp", f"{s3_dest}/{object_key}", f"{s3_dest}/{object_key}",
+                    *(f"--{k.lower()} '{v}'" for k, v in system_defined_metadata.items()),
+                    *(["--metadata", f"'{json.dumps(user_defined_metadata)}'"] if len(user_defined_metadata) > 0 else []),
+                    "--metadata-directive", "REPLACE")
 
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command

@@ -10,6 +10,8 @@ import { ISource, SourceConfig } from './source';
 
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 
+export type ObjectsMetadata = { [objectKey: string]: { [metadataKey: string]: string } };
+
 export interface BucketDeploymentProps {
   /**
    * The sources from which to deploy the contents of this bucket.
@@ -40,6 +42,13 @@ export interface BucketDeploymentProps {
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
+
+  /**
+   * A map of object metadata to set on the specified objects
+   *
+   * @default - No object metadata is set
+   */
+  readonly objectsMetadata?: ObjectsMetadata;
 
   /**
    * The CloudFront distribution using the destination bucket as an origin.
@@ -108,6 +117,7 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        ObjectsMetadata: props.objectsMetadata,
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths
       }

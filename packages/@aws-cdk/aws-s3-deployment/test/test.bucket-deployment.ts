@@ -224,6 +224,29 @@ export = {
     test.done();
   },
 
+  'objectsMetadata can be given'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+      destinationBucket: bucket,
+      objectsMetadata: {
+        "key-1": {
+          "A": "a",
+          "B": 'b'
+        },
+        "key-2": {
+          "C": "c"
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'distribution can be used to provide a CloudFront distribution for invalidation'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
