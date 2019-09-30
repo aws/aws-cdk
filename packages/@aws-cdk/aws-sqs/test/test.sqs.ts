@@ -156,9 +156,9 @@ export = {
     },
 
     'grant() is general purpose'(test: Test) {
-      testGrant((q, p) => q.grant(p, 'hello', 'world'),
-        'hello',
-        'world'
+      testGrant((q, p) => q.grant(p, 'service:hello', 'service:world'),
+        'service:hello',
+        'service:world'
       );
       test.done();
     },

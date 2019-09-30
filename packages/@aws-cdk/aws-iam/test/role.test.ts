@@ -139,12 +139,12 @@ describe('IAM role', () => {
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['myaction'] }));
+    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['service:myaction'] }));
     expect(after).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: "myaction",
+            Action: "service:myaction",
             Effect: "Allow",
             Resource: "myresource"
           }

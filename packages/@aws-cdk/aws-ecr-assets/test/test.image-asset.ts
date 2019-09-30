@@ -132,7 +132,7 @@ export = {
 
     // WHEN
     asset.repository.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['BOOM'],
+      actions: ['BAM:BOOM'],
       principals: [new iam.ServicePrincipal('test.service')]
     }));
 
@@ -144,7 +144,7 @@ export = {
       "PolicyDocument": {
         "Statement": [
           {
-            "Action": "BOOM",
+            "Action": "BAM:BOOM",
             "Effect": "Allow",
             "Principal": {
               "Service": "test.service"
