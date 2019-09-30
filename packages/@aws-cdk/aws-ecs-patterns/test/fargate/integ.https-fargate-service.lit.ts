@@ -22,7 +22,9 @@ class EventStack extends cdk.Stack {
     /// !show
     new ApplicationLoadBalancedFargateService(this, 'HttpsService', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
       protocol: elb.ApplicationProtocol.HTTPS,
       domainName: 'test.example.com',
       domainZone
