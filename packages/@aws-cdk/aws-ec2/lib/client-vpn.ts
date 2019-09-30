@@ -304,13 +304,21 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
       },
     });*/
 
-    props.routes && props.routes.map((options) => this.addRoute(options));
-    props.targetNetworkAssociations && props.targetNetworkAssociations.map((options) =>
-      this.addTargetNetworkAssociations(options)
-    );
-    props.authorizationRules && props.authorizationRules.map((options) =>
-      this.addAuthorizationRule(options)
-    );
+    if (props.routes) {
+      props.routes.map((options) => this.addRoute(options));
+    }
+
+    if (props.targetNetworkAssociations) {
+      props.targetNetworkAssociations.map((options) =>
+        this.addTargetNetworkAssociations(options)
+      );
+    }
+
+    if (props.authorizationRules) {
+      props.authorizationRules.map((options) =>
+        this.addAuthorizationRule(options)
+      );
+    }
   }
 
   public addRoute(options: ClientVpnRouteOptions): ClientVpnRoute {
