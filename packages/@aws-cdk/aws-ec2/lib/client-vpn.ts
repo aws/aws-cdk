@@ -74,7 +74,7 @@ export class ClientAuthenticationRequest {
   }
 }
 
-interface IConnectionLogOptions {
+interface ConnectionLogConfig {
   /**
    * The name of the CloudWatch Logs log group
    */
@@ -122,7 +122,7 @@ export class ConnectionLog {
     return new ConnectionLog({cloudwatchLogStream: stream.logStreamName, enabled});
   }
 
-  private constructor(public readonly options: IConnectionLogOptions) {
+  private constructor(public readonly options: ConnectionLogConfig) {
   }
 }
 
