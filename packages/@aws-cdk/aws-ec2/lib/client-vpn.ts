@@ -39,6 +39,8 @@ interface IClientAuthenticationRequestOptions {
 
 /**
  * Authentication method to be used by a Client VPN endpoint
+ *
+ * @experimental
  */
 export class ClientAuthenticationRequest {
   /**
@@ -96,6 +98,8 @@ interface IConnectionLogOptions {
  * * Client connection results (successful and unsuccessful)
  * * Reasons for unsuccessful client connection requests
  * * Client connection termination time
+ *
+ * @experimental
  */
 export class ConnectionLog {
   /**
@@ -122,16 +126,28 @@ export class ConnectionLog {
   }
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface ITagSpecificationTag {
   readonly key: string;
   readonly value: string;
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface ITagSpecification {
   readonly resourceType: TagSpecificationResourceType;
   readonly tags: ITagSpecificationTag[];
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface ClientVpnEndpointProps {
   /**
    * The VPC in which to create your Client Vpn.
@@ -197,6 +213,10 @@ export interface ClientVpnEndpointProps {
   readonly transportProtocol?: ClientVpnEndpointProtocol;
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface IClientVpnEndpoint extends cdk.IResource {
   /**
    * The id of the Client VPN Endpoint
@@ -214,6 +234,7 @@ export interface IClientVpnEndpoint extends cdk.IResource {
  * It is the destination endpoint at which all client VPN sessions are terminated.
  *
  * @resource AWS::EC2::ClientVpnEndpoint
+ * @experimental
  */
 export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoint {
 
@@ -318,12 +339,20 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
   }
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface ClientVpnRouteOptions {
   readonly description?: string;
   readonly destinationCidrBlock: string;
   readonly targetSubnet: ISubnet;
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
   readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
@@ -332,6 +361,7 @@ export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
  * Define a Client VPN Route
  *
  * @resource AWS::EC2::ClientVpnRoute
+ * @experimental
  */
 export class ClientVpnRoute extends cdk.Resource {
   constructor(scope: cdk.Construct, id: string, props: ClientVpnRouteProps) {
@@ -360,6 +390,7 @@ export interface ClientVpnTargetNetworkAssociationProps extends ClientVpnTargetN
  * Define a Client VPN Target Network Association
  *
  * @resource AWS::EC2::ClientVpnTargetNetworkAssociation
+ * @experimental
  */
 export class ClientVpnTargetNetworkAssociation extends cdk.Resource {
   constructor(scope: cdk.Construct, id: string, props: ClientVpnTargetNetworkAssociationProps) {
@@ -374,6 +405,10 @@ export class ClientVpnTargetNetworkAssociation extends cdk.Resource {
   }
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface ClientVpnAuthorizationRuleOptions {
   readonly targetNetworkCidr: string;
   readonly accessGroupId?: string;
@@ -381,6 +416,10 @@ export interface ClientVpnAuthorizationRuleOptions {
   readonly description?: string;
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationRuleOptions {
   readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
@@ -389,6 +428,7 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
  * Define a Client VPN Target Network Association
  *
  * @resource AWS::EC2::ClientVpnAuthorizationRule
+ * @experimental
  */
 export class ClientVpnAuthorizationRule extends cdk.Resource {
   constructor(scope: cdk.Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
