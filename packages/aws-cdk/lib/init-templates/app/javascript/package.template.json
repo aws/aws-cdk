@@ -5,10 +5,15 @@
     "%name%": "bin/%name%.js"
   },
   "scripts": {
-    "cdk": "cdk"
+    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
+    "cdk": "cdk",
+    "test": "jest"
   },
   "devDependencies": {
-    "aws-cdk": "^%cdk-version%"
+    "@aws-cdk/assert": "^%cdk-version%",
+    "@types/jest": "^24.0.18",
+    "aws-cdk": "^%cdk-version%",
+    "jest": "^24.9.0"
   },
   "dependencies": {
     "@aws-cdk/core": "^%cdk-version%"
