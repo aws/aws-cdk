@@ -749,11 +749,13 @@
   },
   "forecastservice": {
     "prefix": "forecast",
-    "name": "ForecastService"
+    "name": "ForecastService",
+    "cors": true
   },
   "forecastqueryservice": {
     "prefix": "forecastquery",
-    "name": "ForecastQueryService"
+    "name": "ForecastQueryService",
+    "cors": true
   },
   "qldb": {
     "name": "QLDB"

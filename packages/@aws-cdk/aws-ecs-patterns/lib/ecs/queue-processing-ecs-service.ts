@@ -92,7 +92,9 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     this.service = new Ec2Service(this, 'QueueProcessingService', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition: this.taskDefinition
+      taskDefinition: this.taskDefinition,
+      propagateTags: props.propagateTags,
+      enableECSManagedTags: props.enableECSManagedTags,
     });
     this.configureAutoscalingForService(this.service);
   }
