@@ -5,14 +5,16 @@
     "%name%": "bin/%name%.js"
   },
   "scripts": {
-    "test": "tsc",
-    "test:watch": "tsc -w",
-    "cdk": "cdk"
+    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
+    "cdk": "cdk",
+    "test": "jest"
   },
   "devDependencies": {
-    "@types/node": "8.10.45",
-    "typescript": "^3.3.3333",
-    "aws-cdk": "^%cdk-version%"
+    "@aws-cdk/assert": "^%cdk-version%",
+    "@types/node": "8.10.54",
+    "@types/jest": "^24.0.18",
+    "aws-cdk": "^%cdk-version%",
+    "jest": "^24.9.0"
   },
   "dependencies": {
     "@aws-cdk/aws-sns": "^%cdk-version%",

@@ -11,7 +11,9 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
   vpc,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 
 const vpc2 = new ec2.Vpc(stack, 'Vpc2', { maxAzs: 2 });
@@ -19,14 +21,18 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3b', {
   vpc: vpc2,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 
 new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3c', {
   vpc: vpc2,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 
 app.synth();
