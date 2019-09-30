@@ -211,6 +211,10 @@ export interface ClientVpnEndpointProps {
    * @default ClientVpnEndpointProtocol.UDP
    */
   readonly transportProtocol?: ClientVpnEndpointProtocol;
+
+  readonly routes?: ClientVpnRouteOptions[];
+  readonly targetNetworkAssociations?: SubnetSelection[];
+  readonly authorizationRules?: ClientVpnAuthorizationRuleOptions[];
 }
 
 /**
@@ -295,6 +299,14 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
         physicalResourceId: this.securityGroup.securityGroupId,
       },
     });*/
+
+    props.routes && props.routes.map((options) => this.addRoute(options));
+    props.targetNetworkAssociations && props.targetNetworkAssociations.map((options) =>
+      this.addTargetNetworkAssociations(options)
+    );
+    props.authorizationRules && props.authorizationRules.map((options) =>
+      this.addAuthorizationRule(options)
+    );
   }
 
   public addRoute(options: ClientVpnRouteOptions): ClientVpnRoute {
