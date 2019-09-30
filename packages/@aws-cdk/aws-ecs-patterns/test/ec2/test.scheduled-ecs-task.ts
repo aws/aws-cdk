@@ -18,8 +18,10 @@ export = {
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      memoryLimitMiB: 512,
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -76,11 +78,13 @@ export = {
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+        cpu: 2,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
       desiredTaskCount: 2,
-      memoryLimitMiB: 512,
-      cpu: 2,
-      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -144,8 +148,10 @@ export = {
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      memoryReservationMiB: 512,
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryReservationMiB: 512,
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -187,9 +193,11 @@ export = {
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      memoryReservationMiB: 512,
-      command: ["-c", "4", "amazon.com"],
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryReservationMiB: 512,
+        command: ["-c", "4", "amazon.com"],
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
