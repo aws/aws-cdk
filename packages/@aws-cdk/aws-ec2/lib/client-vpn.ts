@@ -7,7 +7,7 @@ import {
   CfnClientVpnTargetNetworkAssociation
 } from './ec2.generated';
 import {CIDR_VALIDATION_REGEXES} from "./peer";
-import {ISubnet, Vpc} from './vpc';
+import {ISubnet, SubnetSelection, Vpc} from './vpc';
 import { SecurityGroup } from './security-group';
 
 interface IClientAuthenticationRequestOptions {
@@ -307,17 +307,20 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
   /**
    * Each subnet must belong to a different Availability Zone.
    *
-   * @param subnet
+   * @param subnetSelection
    */
-  public addTargetNetworkAssociation(subnet: ISubnet): ClientVpnTargetNetworkAssociation {
+  public addTargetNetworkAssociations(subnetSelection: SubnetSelection): ClientVpnTargetNetworkAssociation[] {
     // TODO check "Each subnet must belong to a different Availability Zone."
+    const {subnets} = this.vpc.selectSubnets(subnetSelection);
 
-    return new ClientVpnTargetNetworkAssociation(
-      this,
-      `TargetNetworkAssociation-${++this.targetNetworkAssociationCount}`, {
-        clientVpnEndpoint: this,
-        subnet,
-      });
+    return subnets.map((subnet) =>
+      new ClientVpnTargetNetworkAssociation(
+        this,
+        `TargetNetworkAssociation-${++this.targetNetworkAssociationCount}`, {
+          clientVpnEndpoint: this,
+          subnet,
+        })
+    );
   }
 
   public addAuthorizationRule(options: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
