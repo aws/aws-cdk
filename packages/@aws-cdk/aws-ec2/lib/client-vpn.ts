@@ -10,25 +10,29 @@ import {CIDR_VALIDATION_REGEXES} from "./peer";
 import {ISubnet, SubnetSelection, Vpc} from './vpc';
 import { SecurityGroup } from './security-group';
 
+interface IActiveDirectoryAuthenticationRequestOptions {
+  /**
+   * The ID of the Active Directory to be used for authentication
+   */
+  directoryId: string;
+}
+
+interface IMutualAuthenticationRequestOptions {
+  /**
+   * The ARN of the client certificate
+   */
+  clientRootCertificateChainArn: string;
+}
+
 interface IClientAuthenticationRequestOptions {
   /**
    * Information about the Active Directory to be used
    */
-  readonly activeDirectory?: {
-    /**
-     * The ID of the Active Directory to be used for authentication
-     */
-    directoryId: string
-  };
+  readonly activeDirectory?: IActiveDirectoryAuthenticationRequestOptions;
   /**
    * Information about the authentication certificates to be used
    */
-  readonly mutualAuthentication?: {
-    /**
-     * The ARN of the client certificate
-     */
-    clientRootCertificateChainArn: string
-  };
+  readonly mutualAuthentication?: IMutualAuthenticationRequestOptions;
   /**
    * The type of client authentication to be used.
    * Specify {@link ClientRequestAuthenticationType.CERTIFICATE} to use certificate-based authentication,
