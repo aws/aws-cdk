@@ -35,7 +35,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-cdk/cfnspec": "^1.10.0",
-    "codemaker": "^0.17.0",
+    "codemaker": "^0.17.1",
     "fast-json-patch": "^2.2.1",
     "fs-extra": "^8.1.0",
     "yargs": "^14.0.0"
