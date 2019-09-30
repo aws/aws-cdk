@@ -16,7 +16,9 @@ export = {
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+      },
     });
 
     // THEN
@@ -37,7 +39,9 @@ export = {
     test.throws(() => new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
       vpc,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+      },
     }));
 
     test.done();
@@ -60,8 +64,10 @@ export = {
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-      executionRole
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+        executionRole
+      },
     });
 
     // THEN
@@ -86,8 +92,10 @@ export = {
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-      taskRole
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+        taskRole
+      },
     });
 
     // THEN
@@ -105,8 +113,10 @@ export = {
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-      containerName: 'bob'
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+        containerName: 'bob'
+      },
     });
 
     // THEN
@@ -124,7 +134,9 @@ export = {
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      },
     });
 
     // THEN
@@ -142,7 +154,9 @@ export = {
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      },
       serviceName: 'bob',
     });
     // THEN
@@ -160,7 +174,9 @@ export = {
     // WHEN
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      },
     });
 
     // THEN
@@ -175,7 +191,9 @@ export = {
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      },
       healthCheckGracePeriod: cdk.Duration.seconds(600),
     });
     // THEN

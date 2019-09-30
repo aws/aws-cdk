@@ -14,7 +14,9 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 
 app.synth();

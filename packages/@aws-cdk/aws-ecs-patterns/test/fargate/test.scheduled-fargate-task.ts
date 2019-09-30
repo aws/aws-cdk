@@ -15,8 +15,10 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      memoryLimitMiB: 512,
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -88,11 +90,13 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+        cpu: 2,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
       desiredTaskCount: 2,
-      memoryLimitMiB: 512,
-      cpu: 2,
-      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -170,7 +174,9 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -208,8 +214,10 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      command: ["-c", "4", "amazon.com"],
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        command: ["-c", "4", "amazon.com"],
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
