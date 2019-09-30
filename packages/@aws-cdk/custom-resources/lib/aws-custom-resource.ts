@@ -42,7 +42,7 @@ export interface AwsSdkCall {
    * resource id. Either `physicalResourceId` or `physicalResourceIdPath`
    * must be specified for onCreate or onUpdate calls.
    *
-   * @default no path
+   * @default - no path
    */
   readonly physicalResourceIdPath?: string;
 
@@ -51,7 +51,7 @@ export interface AwsSdkCall {
    * `physicalResourceId` or `physicalResourceIdPath` must be specified for
    * onCreate or onUpdate calls.
    *
-   * @default no physical resource id
+   * @default - no physical resource id
    */
   readonly physicalResourceId?: string;
 
@@ -60,7 +60,7 @@ export interface AwsSdkCall {
    * `Error` object will be tested against this pattern. If there is a match an
    * error will not be thrown.
    *
-   * @default do not catch errors
+   * @default - do not catch errors
    */
   readonly catchErrorPattern?: string;
 
@@ -71,6 +71,13 @@ export interface AwsSdkCall {
    * @default use latest available API version
    */
   readonly apiVersion?: string;
+
+  /**
+   * The region to send service requests to.
+   *
+   * @default - the region where this custom resource is deployed
+   */
+  readonly region?: string;
 
   /**
    * Restrict the data returned by the custom resource to a specific path in
