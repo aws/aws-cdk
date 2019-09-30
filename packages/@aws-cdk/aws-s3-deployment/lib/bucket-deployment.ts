@@ -73,6 +73,8 @@ export interface BucketDeploymentProps {
 
   /**
    * Execution role associated with this function
+   *
+   * @default A role is automatically created
    */
   readonly role?: iam.IRole;
 }
