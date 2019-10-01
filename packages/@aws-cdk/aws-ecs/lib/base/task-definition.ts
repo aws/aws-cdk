@@ -275,7 +275,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
-      networkMode: this.networkMode,
+      networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.anyValue({ produce: () =>
         !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
       }, { omitEmptyArray: true }),
@@ -326,7 +326,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
     }
-    if (this.networkMode === NetworkMode.BRIDGE) {
+    if (this.isEphemeralPortMappingSupported(this.networkMode)) {
       return EPHEMERAL_PORT_RANGE;
     }
     return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
@@ -428,6 +428,18 @@ export class TaskDefinition extends TaskDefinitionBase {
   private findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
   }
+
+  private isEphemeralPortMappingSupported(networkMode: NetworkMode): boolean {
+    return networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.NAT;
+  }
+
+  private renderNetworkMode(networkMode: NetworkMode): string | undefined {
+    // 'NAT' is the only supported network mode for Windows containers,
+    // which is represented as omitted 'networkMode' property in CF template.
+    // See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows_task_IAM_roles.html
+
+    return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
+  }
 }
 
 /**
@@ -461,6 +473,13 @@ export enum NetworkMode {
    * single container instance when port mappings are used.
    */
   HOST = 'host',
+
+  /**
+   * The task utilizes NAT network mode required by Windows containers.
+   *
+   * This is the only network mode supported for Windows containers.
+   */
+  NAT = 'nat'
 }
 
 /**
