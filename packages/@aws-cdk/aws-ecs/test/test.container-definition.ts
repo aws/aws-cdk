@@ -274,7 +274,7 @@ export = {
 
         test.done();
       },
-    }, 
+    },
 
     "With network mode NAT": {
       "produces undefined CF networkMode property"(test: Test) {
@@ -299,7 +299,7 @@ export = {
 
         test.done();
       }
-    }    
+    }
   },
 
   "Container Port": {
