@@ -10,13 +10,22 @@ import {CIDR_VALIDATION_REGEXES} from "./peer";
 import {SecurityGroup} from './security-group';
 import {ISubnet, SubnetSelection, Vpc} from './vpc';
 
+/**
+ * Configuration for the authentication method to be used
+ *
+ * @see ClientAuthenticationRequest
+ */
 interface ClientAuthenticationRequestConfig {
   /**
    * Information about the Active Directory to be used
+   *
+   * @default - none
    */
   readonly activeDirectory?: CfnClientVpnEndpoint.DirectoryServiceAuthenticationRequestProperty;
   /**
    * Information about the authentication certificates to be used
+   *
+   * @default - none
    */
   readonly mutualAuthentication?: CfnClientVpnEndpoint.CertificateAuthenticationRequestProperty;
   /**
@@ -64,13 +73,22 @@ export class ClientAuthenticationRequest {
   }
 }
 
+/**
+ * Configuration for connection logging options
+ *
+ * @see ConnectionLog
+ */
 interface ConnectionLogConfig {
   /**
    * The name of the CloudWatch Logs log group
+   *
+   * @default - none
    */
   readonly cloudwatchLogGroup?: string;
   /**
    * The name of the CloudWatch Logs log stream to which the connection data is published
+   *
+   * @default - none
    */
   readonly cloudwatchLogStream?: string;
   /**
@@ -117,25 +135,9 @@ export class ConnectionLog {
 }
 
 /**
+ * Configuration for Client VPN Endpoint
  *
- * @experimental
- */
-export interface ITagSpecificationTag {
-  readonly key: string;
-  readonly value: string;
-}
-
-/**
- *
- * @experimental
- */
-export interface ITagSpecification {
-  readonly resourceType: TagSpecificationResourceType;
-  readonly tags: ITagSpecificationTag[];
-}
-
-/**
- *
+ * @see ClientVpnEndpoint
  * @experimental
  */
 export interface ClientVpnEndpointProps {
@@ -171,11 +173,6 @@ export interface ClientVpnEndpointProps {
   readonly serverCertificateArn: string;
 
   /**
-   * A brief description of the Client VPN endpoint
-   */
-  readonly description?: string;
-
-  /**
    * Information about the DNS servers to be used for DNS resolution.
    * A Client VPN endpoint can have up to two DNS servers.
    * If no DNS server is specified, the DNS address configured on the device is used for the DNS server.
@@ -191,23 +188,35 @@ export interface ClientVpnEndpointProps {
   readonly splitTunnel?: boolean;
 
   /**
-   * The tags to apply to the Client VPN endpoint during creation
-   */
-  readonly tagsSpecifications?: ITagSpecification[];
-
-  /**
    * The transport protocol to be used by the VPN session
    *
    * @default ClientVpnEndpointProtocol.UDP
    */
   readonly transportProtocol?: ClientVpnEndpointProtocol;
 
+  /**
+   * A brief description of the Client VPN endpoint
+   */
+  readonly description?: string;
+
+  /**
+   * VPN Routes
+   */
   readonly routes?: ClientVpnRouteOptions[];
+
+  /**
+   * Target Network Association
+   */
   readonly targetNetworkAssociations?: SubnetSelection[];
+
+  /**
+   * Authorization Rules
+   */
   readonly authorizationRules?: ClientVpnAuthorizationRuleOptions[];
 }
 
 /**
+ * ClientVpnEndpoint based classes MUST implement
  *
  * @experimental
  */
@@ -263,7 +272,6 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
       clientCidrBlock: props.clientCidrBlock,
       description: props.description,
       splitTunnel: props.splitTunnel,
-      tagSpecifications: props.tagsSpecifications,
       dnsServers: props.dnsServers,
       transportProtocol: props.transportProtocol,
     });
@@ -343,20 +351,46 @@ export class ClientVpnEndpoint extends cdk.Resource implements IClientVpnEndpoin
 }
 
 /**
+ * Configuration for Client VPN Route
  *
+ * @see ClientVpnRoute
  * @experimental
  */
 export interface ClientVpnRouteOptions {
-  readonly description?: string;
+  /**
+   * The IPv4 address range, in CIDR notation, of the route destination.
+   *
+   * @example
+   * * To add a route for Internet access, enter 0.0.0.0/0
+   * * To add a route for a peered VPC, enter the peered VPC's IPv4 CIDR range
+   * * To add a route for an on-premises network, enter the AWS Site-to-Site VPN connection's IPv4 CIDR range
+   * * Route address ranges cannot overlap with the CIDR range specified for client allocation.
+   */
   readonly destinationCidrBlock: string;
+
+  // FIXME Also change to SubnetSelection?
+  /**
+   * The subnet through which you want to route traffic
+   *
+   * The specified subnet must be an existing target network of the Client VPN endpoint.
+   */
   readonly targetSubnet: ISubnet;
+  /**
+   * A brief description of the route.
+   */
+  readonly description?: string;
 }
 
 /**
+ * Configuration for Client VPN Route
  *
+ * @see ClientVpnRoute
  * @experimental
  */
 export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
+  /**
+   * The Client VPN endpont to associate the subnet with
+   */
   readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
 
@@ -370,6 +404,14 @@ export class ClientVpnRoute extends cdk.Resource {
   constructor(scope: cdk.Construct, id: string, props: ClientVpnRouteProps) {
     super(scope, id);
 
+    if (!cdk.Token.isUnresolved(props.destinationCidrBlock)) {
+      const cidrMatch = props.destinationCidrBlock.match(CIDR_VALIDATION_REGEXES.ipv4);
+
+      if (!cidrMatch) {
+        throw new Error(`Invalid IPv4 CIDR: "${props.destinationCidrBlock}"`);
+      }
+    }
+
     new CfnClientVpnRoute(this, 'Resource', {
       clientVpnEndpointId: props.clientVpnEndpoint.clientVpnEndpointId,
       description: props.description,
@@ -379,11 +421,32 @@ export class ClientVpnRoute extends cdk.Resource {
   }
 }
 
+/**
+ * Configuration for Client VPN Target Network Association
+ *
+ * @see ClientVpnTargetNetworkAssociation
+ * @experimental
+ */
 export interface ClientVpnTargetNetworkAssociationOptions {
+  // FIXME Also change to SubnetSelection?
+  // FIXME It would be weird for ClientVpnTargetNetworkAssociation to return multiple associations
+  // FIXME But it could be doable with a static constructor
+  /**
+   * Subnet to associate with the Client VPN endpoint
+   */
   readonly subnet: ISubnet;
 }
 
+/**
+ * Configuration for Client VPN Target Network Association
+ *
+ * @see ClientVpnTargetNetworkAssociation
+ * @experimental
+ */
 export interface ClientVpnTargetNetworkAssociationProps extends ClientVpnTargetNetworkAssociationOptions {
+  /**
+   * The Client VPN endpont to associate the subnet with
+   */
   readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
 
@@ -405,21 +468,41 @@ export class ClientVpnTargetNetworkAssociation extends cdk.Resource {
 }
 
 /**
+ * Configuration for Client VPN Authorization Rule
  *
+ * @see ClientVpnAuthorizationRule
  * @experimental
  */
 export interface ClientVpnAuthorizationRuleOptions {
+  /**
+   * The IPv4 address range, in CIDR notation, of the network for which access is being authorized
+   */
   readonly targetNetworkCidr: string;
+  /**
+   * The ID of the Active Directory group to grant access
+   */
   readonly accessGroupId?: string;
+  /**
+   * Indicates whether to grant access to all clients
+   * If true, grants all clients who successfully establish a VPN connection access to the network.
+   */
   readonly authorizeAllGroups?: boolean;
+  /**
+   * A brief description of the authorization rule
+   */
   readonly description?: string;
 }
 
 /**
+ * Configuration for Client VPN Authorization Rule
  *
+ * @see ClientVpnAuthorizationRule
  * @experimental
  */
 export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationRuleOptions {
+  /**
+   * The Client VPN endpont to attach the authorization rule to
+   */
   readonly clientVpnEndpoint: IClientVpnEndpoint;
 }
 
@@ -433,6 +516,14 @@ export class ClientVpnAuthorizationRule extends cdk.Resource {
   constructor(scope: cdk.Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
     super(scope, id);
 
+    if (!cdk.Token.isUnresolved(props.targetNetworkCidr)) {
+      const cidrMatch = props.targetNetworkCidr.match(CIDR_VALIDATION_REGEXES.ipv4);
+
+      if (!cidrMatch) {
+        throw new Error(`Invalid IPv4 CIDR: "${props.targetNetworkCidr}"`);
+      }
+    }
+
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
       clientVpnEndpointId: props.clientVpnEndpoint.clientVpnEndpointId,
       targetNetworkCidr: props.targetNetworkCidr,
@@ -443,47 +534,31 @@ export class ClientVpnAuthorizationRule extends cdk.Resource {
   }
 }
 
+/**
+ * The supported transport protocols used by VPN sessions
+ */
 export enum ClientVpnEndpointProtocol {
+  /**
+   * TCP
+   */
   TCP = 'tcp',
+  /**
+   * UDP
+   */
   UDP = 'udp',
 }
 
-export enum ClientRequestAuthenticationType {
+/**
+ * Supported types of client authentication
+ */
+enum ClientRequestAuthenticationType {
+  /**
+   * Certificate-based authentication
+   */
   CERTIFICATE = 'certificate-authentication',
-  DIRECTORY_SERVICE = 'directory-service-authentication',
-}
 
-export enum TagSpecificationResourceType {
-  CLIENT_VPN_ENDPOINT = 'client-vpn-endpoint',
-  CUSTOMER_GATEWAY = 'customer-gateway',
-  DEDICATED_HOST = 'dedicated-host',
-  DHCP_OPTIONS = 'dhcp-options',
-  ELASTIC_IP = 'elastic-ip',
-  FLEET = 'fleet',
-  FPGA_IMAGE = 'fpga-image',
-  HOST_RESERVATION = 'host-reservation',
-  IMAGE = 'image',
-  INSTANCE = 'instance',
-  INTERNET_GATEWAY = 'internet-gateway',
-  LAUNCH_TEMPLATE = 'launch-template',
-  NATGATEWAY = 'natgateway',
-  NETWORK_ACL = 'network-acl',
-  NETWORK_INTERFACE = 'network-interface',
-  RESERVED_INSTANCES = 'reserved-instances',
-  ROUTE_TABLE = 'route-table',
-  SECURITY_GROUP = 'security-group',
-  SNAPSHOT = 'snapshot',
-  SPOT_INSTANCES_REQUEST = 'spot-instances-request',
-  SUBNET = 'subnet',
-  TRAFFIC_MIRROR_FILTER = 'traffic-mirror-filter',
-  TRAFFIC_MIRROR_SESSION = 'traffic-mirror-session',
-  TRAFFIC_MIRROR_TARGET = 'traffic-mirror-target',
-  TRANSIT_GATEWAY = 'transit-gateway',
-  TRANSIT_GATEWAY_ATTACHMENT = 'transit-gateway-attachment',
-  TRANSIT_GATEWAY_ROUTE_TABLE = 'transit-gateway-route-table',
-  VOLUME = 'volume',
-  VPC = 'vpc',
-  VPC_PEERING_CONNECTION = 'vpc-peering-connection',
-  VPN_CONNECTION = 'vpn-connection',
-  VPN_GATEWA = 'vpn-gatewa',
+  /**
+   * Active Directory authentication
+   */
+  DIRECTORY_SERVICE = 'directory-service-authentication',
 }
