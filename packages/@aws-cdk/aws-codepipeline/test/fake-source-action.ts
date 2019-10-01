@@ -6,6 +6,8 @@ export interface FakeSourceActionProps extends codepipeline.CommonActionProps {
   output: codepipeline.Artifact;
 
   extraOutputs?: codepipeline.Artifact[];
+
+  region?: string;
 }
 
 export class FakeSourceAction implements codepipeline.IAction {
