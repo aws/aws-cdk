@@ -10,7 +10,7 @@ import {CIDR_VALIDATION_REGEXES} from "./peer";
 import {SecurityGroup} from './security-group';
 import {ISubnet, SubnetSelection, Vpc} from './vpc';
 
-interface IClientAuthenticationRequestOptions {
+interface ClientAuthenticationRequestConfig {
   /**
    * Information about the Active Directory to be used
    */
@@ -60,7 +60,7 @@ export class ClientAuthenticationRequest {
     });
   }
 
-  private constructor(public readonly options: IClientAuthenticationRequestOptions) {
+  private constructor(public readonly options: ClientAuthenticationRequestConfig) {
   }
 }
 
