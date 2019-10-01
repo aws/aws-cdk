@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assets",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Integration of CDK apps with local assets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,10 +64,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.10.0",
+    "@aws-cdk/assert": "^1.10.1",
     "@types/minimatch": "^3.0.3",
     "@types/sinon": "^7.0.13",
-    "aws-cdk": "^1.10.0",
+    "aws-cdk": "^1.10.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "pkglint": "file:../../../tools/pkglint",
@@ -75,14 +75,14 @@
     "ts-mock-imports": "^1.2.6"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.10.0",
-    "@aws-cdk/cx-api": "^1.10.0",
+    "@aws-cdk/core": "^1.10.1",
+    "@aws-cdk/cx-api": "^1.10.1",
     "minimatch": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "^1.10.0",
-    "@aws-cdk/cx-api": "^1.10.0"
+    "@aws-cdk/core": "^1.10.1",
+    "@aws-cdk/cx-api": "^1.10.1"
   },
   "engines": {
     "node": ">= 10.3.0"

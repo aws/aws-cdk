@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/custom-resources",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Constructs for implementing CDK custom resources",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -67,9 +67,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.10.0",
-    "@aws-cdk/aws-events": "^1.10.0",
-    "@aws-cdk/aws-ssm": "^1.10.0",
+    "@aws-cdk/assert": "^1.10.1",
+    "@aws-cdk/aws-events": "^1.10.1",
+    "@aws-cdk/aws-ssm": "^1.10.1",
     "@types/aws-lambda": "^8.10.33",
     "@types/sinon": "^7.0.13",
     "aws-sdk": "^2.538.0",
@@ -82,19 +82,19 @@
     "sinon": "^7.5.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-lambda": "^1.10.0",
-    "@aws-cdk/aws-sns": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0"
+    "@aws-cdk/aws-cloudformation": "^1.10.1",
+    "@aws-cdk/aws-iam": "^1.10.1",
+    "@aws-cdk/aws-lambda": "^1.10.1",
+    "@aws-cdk/aws-sns": "^1.10.1",
+    "@aws-cdk/core": "^1.10.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-lambda": "^1.10.0",
-    "@aws-cdk/aws-sns": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0"
+    "@aws-cdk/aws-cloudformation": "^1.10.1",
+    "@aws-cdk/aws-iam": "^1.10.1",
+    "@aws-cdk/aws-lambda": "^1.10.1",
+    "@aws-cdk/aws-sns": "^1.10.1",
+    "@aws-cdk/core": "^1.10.1"
   },
   "engines": {
     "node": ">= 10.3.0"
