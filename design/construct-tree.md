@@ -4,7 +4,7 @@
 
 This is a strategy for publishing the construct tree which represents a CDK app as a part of the Cloud Assembly that the CDK generates.
 
-***Goal*: Expose the** **`construct tree`** **for CDK Apps as an artifact of the Cloud Assembly**
+**Goal: Expose the `construct tree` for CDK Apps as an artifact of the Cloud Assembly**
 
 This proposal details the motivation behind the goal, requirements, specification of the construct tree, and the proposed design. The scope of the design is focused on defining what the construct tree should include and the approach to produce it as an output.
 
@@ -25,35 +25,34 @@ Developers author their CDK applications by leveraging higher-level intent based
 As an example, the following CDK application for an Application Load Balancer includes constructs from Auto Scaling, VPC, and Application Load Balancing.
 
 ```typescript
-    const vpc = new ec2.Vpc(this, 'VPC');
+const vpc = new ec2.Vpc(this, 'VPC');
 
-    const asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
-      vpc,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-    });
+const asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+  machineImage: new ec2.AmazonLinuxImage(),
+});
 
-    const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-      vpc,
-      internetFacing: true
-    });
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true
+});
 
-    const listener = lb.addListener('Listener', {
-      port: 80,
-    });
+const listener = lb.addListener('Listener', {
+  port: 80,
+});
 
-    listener.addTargets('Target', {
-      port: 80,
-      targets: [asg]
-    });
+listener.addTargets('Target', {
+  port: 80,
+  targets: [asg]
+});
 
-    listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
-    asg.scaleOnRequestCount('AModestLoad', {
-      targetRequestsPerSecond: 1
-    });
+asg.scaleOnRequestCount('AModestLoad', {
+  targetRequestsPerSecond: 1
+});
 ```
-
 
 Running `cdk synth` on this application produces ~800 lines of CloudFormation template and represents over 35 AWS resources spanning 5 services. The generated template is part of the cloud assembly and will be used subsequently by deploy and is staged in the `cdk.out` directory. This showcases the power of the CDK in the ability to define high level abstractions of infrastructure in familiar languages that can be reused.
 
@@ -117,33 +116,30 @@ At a high-level, we will render the `construct tree` through a construct tree da
 
 ### Construct Tree Data Model
 
-A feature will be added to the CDK core module so that any CDK application will produce an artifact called `tree.json` during calls to `cdk synth` and include it as an output to the cloud assembly in `cdk.out`. Developers will be able to opt-out if this functionality is not desired or needed through a flag in the CLI or set it as a preference.
+A feature will be added to the CDK core module so that any CDK application will produce an artifact called `tree.json` during calls to `cdk synth` and include it as an output to the cloud assembly in `cdk.out`.
 
-The construct tree will be a list of paths that are indexed into a flat map of constructs. The file structure itself represents the tree. This information will need to include the following to start rendering a flat map of constructs:
+The construct tree will be a list of paths that are indexed into a map of constructs. The file structure itself represents the tree. This information will need to include the following to start rendering a map of constructs:
 
 ### Construct properties
 
-|Property    |Type    |Required |Description  |
-|---  |---  |---  |---  |
-|id |string |Required |id of the construct within the current scope |
-|path |string |Required |full, absolute path of the construct within the tree |
-|children |Array<Path>  |Not Required |All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
-|metadata |Array<Metadata>  |Not Required |Metadata describing all constructs/resources that are encapsulated by the construct |
+|Property   |Type             |Required     |Description  |
+|---        |---              |---          |---          |
+|id         |string           |Required     |id of the construct within the current scope |
+|path       |string           |Required     |full, absolute path of the construct within the tree |
+|children   |Array<Path>      |Not Required |All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
+|metadata   |Array<Metadata>  |Not Required |Metadata describing all constructs/resources that are encapsulated by the construct  |
 
 ### Metadata Properties
 
 The following metadata properties will be included by the construct that produces the `tree.json` output.
 
-|Property    |Type    |Required    |Description    |
-|---    |---    |---    |---  |
-|sourceLocation    |string    |Required    |location in source code where the construct is defined    |
-|resourceType |string |Required |type of resource (schema / classification terminology TBD) |
-|description    |string |Not Required |description of the construct |
-|renderedView    |Array<Metadata> |Not Required    |constructs can fill in arbitrary. ClouFormation agnostic. CFN constructs could pre-populate it with the output of `this.toCloudFormation()` |
-|errors |Array<Metadata>  |Not Required |array of errors associated with this construct.  |
-|warnings |Array<Metadata>  |Not Required |array of warnings associated with this construct |
-
-This is a temporary placeholder (WIP) of the construct tree in the JSON schema format described above. It’s a representation of the tree for the prototype referenced earlier in the Overview section of the CDK app in the [cdkworkshop](https://cdkworkshop.com/)
+|Property       |Type             |Required     |Description    |
+|---            |---              |---          |---            |
+|sourceLocation |string           |Required     |location in source code where the construct is defined |
+|description    |string           |Not Required |description of the construct |
+|renderedView   |Array<Metadata>  |Not Required |constructs can fill in arbitrary metadata such as configuration. ClouFormation agnostic. CFN constructs could pre-populate it with the output of `this.toCloudFormation()` |
+|errors         |Array<Metadata>  |Not Required |array of errors associated with this construct.  |
+|warnings       |Array<Metadata>  |Not Required |array of warnings associated with this construct |
 
 **TODO** - add detail and a more concrete walkthrough with samples of all the attributes referenced in construct and metadata properties.
 
@@ -153,16 +149,14 @@ This is a temporary placeholder (WIP) of the construct tree in the JSON schema f
   "path": "",
   "metadata": {
     "sourceLocation": "",
-    "resourceType": "AWS::CDK::App"
   },
   "children": [
     {
       "id": "CdkWorkshopStack",
       "path": "CdkWorkshopStack",
-      "resourceType": "AWS::CloudFormation::Stack",
       "metadata": [
         {
-          "sourceLocation": "/Users/shivlaks/Documents/CDK/projects/august/typescript/1.6.1/workshop/lib/cdkworkshop-stack.ts:8:22",
+          "sourceLocation": "/lib/cdkworkshop-stack.ts:8:22",
           "description": "Construct for a CloudFormation Stack",
           "renderedView": [
             {
@@ -182,7 +176,6 @@ This is a temporary placeholder (WIP) of the construct tree in the JSON schema f
         {
           "id": "HelloHandler",
           "path": "CdkWorkshopStack/HelloHandler",
-          "resourceType": "AWS::Lambda::Function",
           "metadata": [
             {
               "sourceLocation": "sample-source-location",
@@ -204,18 +197,14 @@ This is a temporary placeholder (WIP) of the construct tree in the JSON schema f
             {
               "id": "ServiceRole",
               "path": "CdkWorkshopStack/HelloHandler/ServiceRole",
-              "resourceType": "AWS::IAM::Role",
               "metadata": [
                 {
                   "sourceLocation": "sample-source-location",
                   "renderedView": "renderedView",
-                  "errrors": [],
-                  "warnings": []
                 },
                 {
                   "id": "Resource",
                   "path": "CdkWorkshopStack/HelloHandler/Resource",
-                  "resourceType": "AWS::Lambda::Function",
                   "metadata": [
                     {
                       "sourceLocation": "sample-source-location",
@@ -230,7 +219,6 @@ This is a temporary placeholder (WIP) of the construct tree in the JSON schema f
                 {
                   "id": "Code",
                   "path": "CdkWorkshopStack/HelloHandler/Code",
-                  "resourceType": "AWS::CDK::Asset",
                   "metadata": [
                     {
                       "sourceLocation": "sample-source-location"
@@ -250,7 +238,6 @@ This is a temporary placeholder (WIP) of the construct tree in the JSON schema f
                     {
                       "id": "S3VersionKey",
                       "path": "CdkWorkshopStack/HelloHandler/Code/S3VersionKey",
-                      "resourceType": "AWS::S3::Attribute",
                       "metadata": [
                         {
                           "sourceLocation": "sample-source-location"
@@ -260,7 +247,6 @@ This is a temporary placeholder (WIP) of the construct tree in the JSON schema f
                     {
                       "id": "AssetBucket",
                       "path": "CdkWorkshopStack/HelloHandler/Code/AssetBucket",
-                      "resourceType": "AWS::S3::Bucket",
                       "metadata": [
                         {
                           "sourceLocation": "sample-source-location"
@@ -274,7 +260,6 @@ This is a temporary placeholder (WIP) of the construct tree in the JSON schema f
                 {
                   "id": "Resource",
                   "path": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
-                  "resourceType": "AWS::IAM::Role",
                   "metadata": [
                     {
                       "sourceLocation": "sample-source-location",
@@ -309,14 +294,11 @@ The context tree provides the skeleton and the structure for rendering a tree-vi
  */
 export interface IDisplayable {
 
-  // id of the construct within the current scope*
-  readonly id: string
+  // id of the construct within the current scope
+  readonly displayName: string
 
-  // type of the resource (could be a CDK, CloudFormation, third-party, etc)*
-  readonly resourceType: string
-
-  // Other displayable metadata*
-  readonly metadata: [key: string]: string;
+  // Other displayable attributes
+  readonly attributes: [key: string]: string;
 
   /* method that supports extensibility on what can be displayed without
    * adding more methods/properties on IDisplayable
@@ -328,7 +310,6 @@ export interface IDisplayable {
 ## Unresolved Questions
 
 * Experience across all supported languages - nuances, considerations, etc
-* Performance - `synth` can take longer to render with this added construct and additional
 
 ## Future Possibilities
 
