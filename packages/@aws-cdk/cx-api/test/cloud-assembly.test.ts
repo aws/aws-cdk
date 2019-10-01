@@ -88,6 +88,13 @@ test('assets', () => {
   expect(assembly.stacks[0].assets).toMatchSnapshot();
 });
 
+test('can-read-0.36.0', () => {
+  // WHEN
+  new CloudAssembly(path.join(FIXTURES, 'single-stack-0.36'));
+  // THEN: no eexception
+  expect(true).toBeTruthy();
+});
+
 test('dependencies', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'depends'));
   expect(assembly.stacks).toHaveLength(4);
@@ -106,6 +113,6 @@ test('fails for invalid dependencies', () => {
 
 test('verifyManifestVersion', () => {
   verifyManifestVersion(CLOUD_ASSEMBLY_VERSION);
-  expect(() => verifyManifestVersion('0.31.0')).toThrow(`CDK CLI can only be used with apps created by CDK >= ${CLOUD_ASSEMBLY_VERSION}`);
-  expect(() => verifyManifestVersion('99.99.99')).toThrow(`CDK CLI >= 99.99.99 is required to interact with this app`);
+  expect(() => verifyManifestVersion('0.31.0')).toThrow(`A newer version of the CDK framework (>= ${CLOUD_ASSEMBLY_VERSION}) is necessary to interact with this version of the CLI`);
+  expect(() => verifyManifestVersion('99.99.99')).toThrow(`A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app`);
 });
