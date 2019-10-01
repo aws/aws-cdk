@@ -5,7 +5,7 @@ import { ArtifactManifest, ArtifactType, CloudArtifact } from './cloud-artifact'
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
 import { TreeCloudArtifact } from './tree-cloud-artifact';
-import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from './versioning';
+import { CLOUD_ASSEMBLY_VERSION, upgradeAssemblyManifest, verifyManifestVersion } from './versioning';
 
 /**
  * A manifest which describes the cloud assembly.
@@ -73,7 +73,9 @@ export class CloudAssembly {
    */
   constructor(directory: string) {
     this.directory = directory;
-    this.manifest = JSON.parse(fs.readFileSync(path.join(directory, MANIFEST_FILE), 'UTF-8'));
+
+    const manifest = JSON.parse(fs.readFileSync(path.join(directory, MANIFEST_FILE), 'UTF-8'));
+    this.manifest = upgradeAssemblyManifest(manifest);
 
     this.version = this.manifest.version;
     verifyManifestVersion(this.version);

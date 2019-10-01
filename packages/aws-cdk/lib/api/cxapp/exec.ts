@@ -4,6 +4,7 @@ import fs = require('fs-extra');
 import path = require('path');
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
+import { versionNumber } from '../../version';
 import { ISDK } from '../util/sdk';
 
 /** Invokes the cloud executable and returns JSON output */
@@ -72,6 +73,10 @@ export async function execProgram(aws: ISDK, config: Configuration): Promise<cxa
 
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
+
+  // Send version information
+  env[cxapi.CLI_ASM_VERSION_ENV] = cxapi.CLOUD_ASSEMBLY_VERSION;
+  env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
   debug('env:', env);
 
