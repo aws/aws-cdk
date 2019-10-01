@@ -47,8 +47,7 @@ export function verifyManifestVersion(manifetVersion: string) {
 
   // if framework < cli, we require a newer framework version
   if (semver.lt(frameworkVersion, toolkitVersion)) {
-    throw new Error(
-      `A newer version of the CDK framework (>= ${CLOUD_ASSEMBLY_VERSION}) is necessary to interact with this version of the CLI`);
+    throw new Error(`The CDK CLI you are using requires your app to use CDK modules with version >= ${CLOUD_ASSEMBLY_VERSION}`);
   }
 }
 

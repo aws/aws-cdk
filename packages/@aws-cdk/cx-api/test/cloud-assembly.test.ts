@@ -113,6 +113,7 @@ test('fails for invalid dependencies', () => {
 
 test('verifyManifestVersion', () => {
   verifyManifestVersion(CLOUD_ASSEMBLY_VERSION);
-  expect(() => verifyManifestVersion('0.31.0')).toThrow(`A newer version of the CDK framework (>= ${CLOUD_ASSEMBLY_VERSION}) is necessary to interact with this version of the CLI`);
+  // tslint:disable-next-line:max-line-length
+  expect(() => verifyManifestVersion('0.31.0')).toThrow(`The CDK CLI you are using requires your app to use CDK modules with version >= ${CLOUD_ASSEMBLY_VERSION}`);
   expect(() => verifyManifestVersion('99.99.99')).toThrow(`A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app`);
 });
