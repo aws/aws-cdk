@@ -3,7 +3,6 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 
 import appmesh = require('../lib');
-import { Stack } from '@aws-cdk/core';
 
 export = {
   'When adding route to existing VirtualRouter': {
@@ -307,7 +306,7 @@ export = {
 
   'can import a virtual router'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const vr = appmesh.VirtualRouter.fromVirtualRouterName(stack, 'Router', 'MyMesh', 'MyRouter');

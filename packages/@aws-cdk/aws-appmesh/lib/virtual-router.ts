@@ -122,8 +122,8 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Import an existing virtual router given attributes
    */
-  public static fromVirtualRouterAttributes(scope: cdk.Construct, id: string, attributes: VirtualRouterAttributes): IVirtualRouter {
-    return new ImportedVirtualRouter(scope, id, attributes);
+  public static fromVirtualRouterAttributes(scope: cdk.Construct, id: string, attrs: VirtualRouterAttributes): IVirtualRouter {
+    return new ImportedVirtualRouter(scope, id, attrs);
   }
 
   /**
@@ -181,7 +181,7 @@ export class VirtualRouter extends VirtualRouterBase {
 /**
  * Interface with properties ncecessary to import a reusable VirtualRouter
  */
-interface VirtualRouterAttributes {
+export interface VirtualRouterAttributes {
   /**
    * The name of the VirtualRouter
    */
