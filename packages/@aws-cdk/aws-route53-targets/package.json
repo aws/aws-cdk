@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53-targets",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "CDK Constructs for AWS Route53 Alias Targets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -71,12 +71,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.10.0",
-    "@aws-cdk/aws-certificatemanager": "^1.10.0",
-    "@aws-cdk/aws-ec2": "^1.10.0",
-    "@aws-cdk/aws-lambda": "^1.10.0",
-    "@aws-cdk/aws-s3": "^1.10.0",
-    "@aws-cdk/region-info": "^1.10.0",
+    "@aws-cdk/assert": "^1.10.1",
+    "@aws-cdk/aws-certificatemanager": "^1.10.1",
+    "@aws-cdk/aws-ec2": "^1.10.1",
+    "@aws-cdk/aws-lambda": "^1.10.1",
+    "@aws-cdk/aws-s3": "^1.10.1",
+    "@aws-cdk/region-info": "^1.10.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
@@ -84,27 +84,27 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.10.0",
-    "@aws-cdk/aws-cloudfront": "^1.10.0",
-    "@aws-cdk/aws-elasticloadbalancing": "^1.10.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-route53": "^1.10.0",
-    "@aws-cdk/aws-s3": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0",
-    "@aws-cdk/region-info": "^1.10.0"
+    "@aws-cdk/aws-apigateway": "^1.10.1",
+    "@aws-cdk/aws-cloudfront": "^1.10.1",
+    "@aws-cdk/aws-elasticloadbalancing": "^1.10.1",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.10.1",
+    "@aws-cdk/aws-iam": "^1.10.1",
+    "@aws-cdk/aws-route53": "^1.10.1",
+    "@aws-cdk/aws-s3": "^1.10.1",
+    "@aws-cdk/core": "^1.10.1",
+    "@aws-cdk/region-info": "^1.10.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-apigateway": "^1.10.0",
-    "@aws-cdk/aws-cloudfront": "^1.10.0",
-    "@aws-cdk/aws-elasticloadbalancing": "^1.10.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-route53": "^1.10.0",
-    "@aws-cdk/aws-s3": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0",
-    "@aws-cdk/region-info": "^1.10.0"
+    "@aws-cdk/aws-apigateway": "^1.10.1",
+    "@aws-cdk/aws-cloudfront": "^1.10.1",
+    "@aws-cdk/aws-elasticloadbalancing": "^1.10.1",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.10.1",
+    "@aws-cdk/aws-iam": "^1.10.1",
+    "@aws-cdk/aws-route53": "^1.10.1",
+    "@aws-cdk/aws-s3": "^1.10.1",
+    "@aws-cdk/core": "^1.10.1",
+    "@aws-cdk/region-info": "^1.10.1"
   },
   "engines": {
     "node": ">= 10.3.0"

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.1](https://github.com/aws/aws-cdk/compare/v1.10.0...v1.10.1) (2019-10-01)
+
+
+### Bug Fixes
+
+* **cli:** make new CLI work with old assembly versions ([#4307](https://github.com/aws/aws-cdk/issues/4307)) ([9222447](https://github.com/aws/aws-cdk/commit/9222447)), closes [#4294](https://github.com/aws/aws-cdk/issues/4294)
+
+
 ## [1.10.0](https://github.com/aws/aws-cdk/compare/v1.9.0...v1.10.0) (2019-09-27)
 
 
