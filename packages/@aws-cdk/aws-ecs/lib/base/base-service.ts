@@ -222,6 +222,13 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * The CloudMap service created for this service, if any.
+   */
+  public get cloudMapService(): cloudmap.IService | undefined {
+    return this.cloudmapService;
+  }
+
+  /**
    * This method is called to attach this service to an Application Load Balancer.
    *
    * Don't call this function directly. Instead, call `listener.addTargets()`

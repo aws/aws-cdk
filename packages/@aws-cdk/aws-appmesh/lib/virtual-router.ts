@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/core');
 
 import { CfnVirtualRouter } from './appmesh.generated';
-import { IMesh } from './mesh';
+import { IMesh, Mesh } from './mesh';
 import { Route, RouteBaseProps } from './route';
 import { PortMapping, Protocol } from './shared-interfaces';
 
@@ -188,6 +188,11 @@ interface VirtualRouterAttributes {
   /**
    * The AppMesh mesh the VirtualRouter belongs to
    */
+  readonly mesh?: IMesh;
+
+  /**
+   * The name of the AppMesh mesh the VirtualRouter belongs to
+   */
   readonly meshName?: string;
 }
 
@@ -205,13 +210,20 @@ class ImportedVirtualRouter extends VirtualRouterBase {
    */
   public readonly virtualRouterArn: string;
 
-  /**
-   * The AppMesh mesh the VirtualRouter belongs to
-   */
-  public readonly mesh: IMesh;
+  private _mesh?: IMesh;
 
   constructor(scope: cdk.Construct, id: string, props: VirtualRouterAttributes) {
     super(scope, id);
+
+    if (props.mesh) {
+      this._mesh = props.mesh;
+    }
+    if (props.meshName) {
+      if (props.mesh) {
+        throw new Error(`Supply either 'mesh' or 'meshName', but not both`);
+      }
+      this._mesh = Mesh.fromMeshName(this, 'Mesh', props.meshName);
+    }
 
     if (props.virtualRouterArn) {
       this.virtualRouterArn = props.virtualRouterArn;
@@ -226,5 +238,15 @@ class ImportedVirtualRouter extends VirtualRouterBase {
     } else {
       throw new Error('Need either arn or both names');
     }
+  }
+
+  /**
+   * The AppMesh mesh the VirtualRouter belongs to
+   */
+  public get mesh(): IMesh {
+    if (!this._mesh) {
+      throw new Error(`Please supply either 'mesh' or 'meshName' when calling 'fromVirtualRouterAttributes'`);
+    }
+    return this._mesh;
   }
 }

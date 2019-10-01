@@ -51,17 +51,17 @@ export class GenericLogDriver extends LogDriver {
    *
    * @param props the generic log driver configuration options.
    */
-  constructor(private readonly props: GenericLogDriverProps) {
+  constructor(props: GenericLogDriverProps) {
     super();
+
+    this.logDriver = props.logDriver;
+    this.options = props.options || {};
   }
 
   /**
    * Called when the log driver is configured on a container.
    */
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
-    this.logDriver = this.props.logDriver;
-    this.options = this.props.options || {};
-
     return {
       logDriver: this.logDriver,
       options: removeEmpty(this.options),

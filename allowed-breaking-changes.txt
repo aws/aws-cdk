@@ -23,3 +23,4 @@ incompatible-argument:@aws-cdk/aws-apigateway.ProxyResource.addProxy
 incompatible-argument:@aws-cdk/aws-apigateway.Resource.addProxy
 incompatible-argument:@aws-cdk/aws-apigateway.ResourceBase.addProxy
 incompatible-argument:@aws-cdk/aws-apigateway.IResource.addProxy
+incompatible-argument:@aws-cdk/aws-servicediscovery.Service.fromServiceAttributes
