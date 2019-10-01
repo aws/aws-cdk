@@ -230,6 +230,7 @@ export class RestApi extends Resource implements IRestApi {
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters
     });
+    this.node.defaultChild = resource;
 
     this.restApiId = resource.ref;
 
