@@ -14,7 +14,7 @@ const exec = promisify(_exec);
 
 export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
-function versionNumber(): string {
+export function versionNumber(): string {
   return require('../package.json').version.replace(/\+[0-9a-f]+$/, '');
 }
 
