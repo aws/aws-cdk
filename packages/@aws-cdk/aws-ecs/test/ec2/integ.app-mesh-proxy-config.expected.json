@@ -827,16 +827,16 @@
               "Value": "1337"
             },
             {
-              "Name": "AppPorts",
-              "Value": "9080,9081"
-            },
-            {
               "Name": "ProxyIngressPort",
               "Value": "15000"
             },
             {
               "Name": "ProxyEgressPort",
               "Value": "15001"
+            },
+            {
+              "Name": "AppPorts",
+              "Value": "9080,9081"
             },
             {
               "Name": "EgressIgnoredIPs",

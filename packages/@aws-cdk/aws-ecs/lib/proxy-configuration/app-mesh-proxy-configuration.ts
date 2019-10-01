@@ -92,50 +92,20 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
     const configType = "APPMESH";
     return {
       containerName: this.props.containerName,
-      proxyConfigurationProperties: removePropsEmpty([
-        {
-          name: "IgnoredUID",
-          value: String(configProps.ignoredUID)
-        },
-        {
-          name: "IgnoredGID",
-          value: String(configProps.ignoredGID)
-        },
-        {
-          name: "AppPorts",
-          value: String(configProps.appPorts)
-        },
-        {
-          name: "ProxyIngressPort",
-          value: String(configProps.proxyIngressPort)
-        },
-        {
-          name: "ProxyEgressPort",
-          value: String(configProps.proxyEgressPort)
-        },
-        {
-          name: "EgressIgnoredPorts",
-          value: String((configProps.egressIgnoredPorts && configProps.egressIgnoredPorts.length) ? configProps.egressIgnoredPorts : undefined)
-        },
-        {
-          name: "EgressIgnoredIPs",
-          value: String((configProps.egressIgnoredIPs && configProps.egressIgnoredIPs.length) ? configProps.egressIgnoredIPs : undefined)
-        }
-      ]),
+      proxyConfigurationProperties: renderProperties(configProps),
       type: configType
     };
   }
 }
 
-/**
- * Remove undefined values from KeyValuePairProperty
- */
-function removePropsEmpty(pairs: CfnTaskDefinition.KeyValuePairProperty[]): CfnTaskDefinition.KeyValuePairProperty[] {
-  const newPairs = [];
-  for (const pair of pairs) {
-    if (pair.value !== "undefined") {
-      newPairs.push(pair);
+function renderProperties(props: AppMeshProxyConfigurationProps): CfnTaskDefinition.KeyValuePairProperty[] {
+  const ret = [];
+  for (const [k, v] of Object.entries(props)) {
+    const key = String(k);
+    const value = String(v);
+    if (value !== "undefined" && value !== "") {
+      ret.push({ ["name"]: key.charAt(0).toUpperCase() + key.slice(1), ["value"]: value });
     }
   }
-  return newPairs;
+  return ret;
 }
