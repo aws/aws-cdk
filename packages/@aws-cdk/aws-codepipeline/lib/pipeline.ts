@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { IAction, IPipeline, IStage } from "./action";
+import { ActionCategory, IAction, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
 import { FullActionDescriptor } from './full-action-descriptor';
@@ -400,6 +400,11 @@ export class Pipeline extends PipelineBase {
       return {
         artifactBucket: this.artifactBucket,
       };
+    }
+
+    // source actions have to be in the same region as the pipeline
+    if (action.actionProperties.category === ActionCategory.SOURCE) {
+      throw new Error(`Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`);
     }
 
     // check whether we already have a bucket in that region,
