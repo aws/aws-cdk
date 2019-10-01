@@ -120,6 +120,13 @@ export class VirtualRouter extends VirtualRouterBase {
   }
 
   /**
+   * Import an existing virtual router given attributes
+   */
+  public static fromVirtualRouterAttributes(scope: cdk.Construct, id: string, attributes: VirtualRouterAttributes): IVirtualRouter {
+    return new ImportedVirtualRouter(scope, id, attributes);
+  }
+
+  /**
    * The name of the VirtualRouter
    */
   public readonly virtualRouterName: string;
