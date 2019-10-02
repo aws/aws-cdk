@@ -54,6 +54,7 @@ enum FileAssetPackaging {
 interface FileAssetDestination {
   readonly assumeRoleArn?: string;                      // iam role to assume
   readonly assumeRoleExternalId?: string;               // external id to pass to assume-role
+  readonly region: string;
   readonly bucketName: string;
   readonly objectKey: string;
 }
@@ -66,6 +67,7 @@ interface ImageAssetSource {
 }
 
 interface ImageAssetDestination {
+  readonly region: string;
   readonly assumeRoleArn: string;                       // iam role to assume
   readonly assumeRoleExternalId?: string;               // external id to pass to assume-role
   readonly repositoryName: string;                      // ECR repository name
@@ -199,6 +201,8 @@ d31ca1aef8d1b68217852e7aea70b1e857d107b47637d5160f9f9a1b24882d2a image
 a0bae29e7b47044a66819606c65d26a92b1e844f4b3124a5539efc0167a09e57 file
 ```
 
+This information is purely based on the contents of `assets.json`.
+
 ### Programmatic API
 
 The tool should expose a programmatic (library) API, so it can be integrated with other tools such as the AWS CLI and IDEs. The library should be jsii-compliant and released to all languages supported by the AWS CDK.
@@ -213,7 +217,7 @@ class Assets {
   readonly manifest: AssetManifest;
   
   // starts publishing a single asset
-  publish(assetid: string, progress?: Progress): Progress;
+  publish(assetid: string, progress?: Progress): Publish;
 }
 
 interface ProgressEvent {
