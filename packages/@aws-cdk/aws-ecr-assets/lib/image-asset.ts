@@ -63,8 +63,8 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
   constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
 
-    // verify buildArgs do not use tokens in neither keys nor values
-    validateBuildArgs(props.buildArgs);
+    // none of the properties use tokens
+    validateProps(props);
 
     // resolve full path
     const dir = path.resolve(props.directory);
@@ -109,6 +109,16 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName: location.repositoryName });
     this.imageUri = location.imageUri;
   }
+}
+
+function validateProps(props: DockerImageAssetProps) {
+  for (const [key, value] of Object.entries(props)) {
+    if (Token.isUnresolved(value)) {
+      throw new Error(`Cannot use Token as value of '${key}': this value is used before deployment starts`);
+    }
+  }
+
+  validateBuildArgs(props.buildArgs);
 }
 
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {

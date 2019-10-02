@@ -6,6 +6,14 @@ import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } f
  * The properties for the NetworkLoadBalancedEc2Service service.
  */
 export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedServiceBaseProps {
+  /**
+   * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both..
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - none
+   */
+  readonly taskDefinition?: Ec2TaskDefinition;
 
   /**
    * The number of cpu units used by the task.
@@ -71,27 +79,42 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
   /**
    * Constructs a new instance of the NetworkLoadBalancedEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: NetworkLoadBalancedEc2ServiceProps) {
+  constructor(scope: Construct, id: string, props: NetworkLoadBalancedEc2ServiceProps = {}) {
     super(scope, id, props);
 
-    this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
-      executionRole: props.executionRole,
-      taskRole: props.taskRole
-    });
+    if (props.taskDefinition && props.taskImageOptions) {
+      throw new Error('You must specify either a taskDefinition or an image, not both.');
+    } else if (props.taskDefinition) {
+      this.taskDefinition = props.taskDefinition;
+    } else if (props.taskImageOptions) {
+      const taskImageOptions = props.taskImageOptions;
+      this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
+        executionRole: taskImageOptions.executionRole,
+        taskRole: taskImageOptions.taskRole
+      });
 
-    const containerName = props.containerName !== undefined ? props.containerName : 'web';
-    const container = this.taskDefinition.addContainer(containerName, {
-      image: props.image,
-      cpu: props.cpu,
-      memoryLimitMiB: props.memoryLimitMiB,
-      memoryReservationMiB: props.memoryReservationMiB,
-      environment: props.environment,
-      secrets: props.secrets,
-      logging: this.logDriver,
-    });
-    container.addPortMappings({
-      containerPort: props.containerPort || 80
-    });
+      // Create log driver if logging is enabled
+      const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
+      const logDriver = taskImageOptions.logDriver !== undefined
+                          ? taskImageOptions.logDriver : enableLogging
+                            ? this.createAWSLogDriver(this.node.id) : undefined;
+
+      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const container = this.taskDefinition.addContainer(containerName, {
+        image: taskImageOptions.image,
+        cpu: props.cpu,
+        memoryLimitMiB: props.memoryLimitMiB,
+        memoryReservationMiB: props.memoryReservationMiB,
+        environment: taskImageOptions.environment,
+        secrets: taskImageOptions.secrets,
+        logging: logDriver,
+      });
+      container.addPortMappings({
+        containerPort: taskImageOptions.containerPort || 80
+      });
+    } else {
+      throw new Error('You must specify one of: taskDefinition or image');
+    }
 
     this.service = new Ec2Service(this, "Service", {
       cluster: this.cluster,
@@ -100,6 +123,8 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       assignPublicIp: false,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      propagateTags: props.propagateTags,
+      enableECSManagedTags: props.enableECSManagedTags,
     });
     this.addServiceAsTarget(this.service);
   }
