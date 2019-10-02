@@ -35,7 +35,13 @@ export enum Protocol {
   /**
    * TLS
    */
-  TLS = 'TLS'
+  TLS = 'TLS',
+
+  /**
+   *  TCP_UDP
+   */
+  TCP_UDP = 'TCP_UDP',
+ 
 }
 
 /**
