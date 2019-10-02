@@ -53,6 +53,7 @@ async function parseCommandLineArguments() {
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
+      .option('diff', { type: 'boolean', desc: 'Show the diff before deploying the stack(s)' })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
@@ -191,6 +192,12 @@ async function initCommandLine() {
         });
 
       case 'deploy':
+        if (args.diff) {
+          await cli.diff({
+            stackNames: args.STACKS,
+            exclusively: args.exclusively,
+          });
+        }
         return await cli.deploy({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
