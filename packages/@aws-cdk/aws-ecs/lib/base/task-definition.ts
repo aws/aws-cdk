@@ -326,7 +326,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
     }
-    if (this.isEphemeralPortMappingSupported(this.networkMode)) {
+    if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
     return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
@@ -427,10 +427,6 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   private findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
-  }
-
-  private isEphemeralPortMappingSupported(networkMode: NetworkMode): boolean {
-    return networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.NAT;
   }
 
   private renderNetworkMode(networkMode: NetworkMode): string | undefined {
