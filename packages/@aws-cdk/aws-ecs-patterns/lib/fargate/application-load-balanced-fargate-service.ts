@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
@@ -80,10 +80,16 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
    * The Fargate service in this construct.
    */
   public readonly service: FargateService;
+
   /**
    * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
+
+  /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedFargateService class.
@@ -113,13 +119,13 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
                             ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
-      const container = this.taskDefinition.addContainer(containerName, {
+      this.container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         logging: logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
       });
-      container.addPortMappings({
+      this.container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {

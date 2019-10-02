@@ -100,6 +100,16 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default false
    */
   readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The port number on the container instance to reserve for your container.
+   *
+   * For more information, see
+   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+   *
+   * @default 80
+   */
+  readonly hostPort?: number;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
@@ -169,7 +179,7 @@ export interface NetworkLoadBalancedTaskImageOptions {
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    *
    * For more information, see
-   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+   * [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
    *
    * @default 80
    */
@@ -227,12 +237,9 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
 
-    const targetProps = {
-      port: 80
-    };
-
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: 80 });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+    const hostPort = props.hostPort || 80;
+    this.listener = this.loadBalancer.addListener('PublicListener', { port: hostPort });
+    this.targetGroup = this.listener.addTargets('ECS', { port: hostPort });
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {

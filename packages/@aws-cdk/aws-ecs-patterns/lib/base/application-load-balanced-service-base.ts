@@ -191,7 +191,7 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
    *
    * For more information, see
-   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+   * [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
    *
    * @default 80
    */

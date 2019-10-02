@@ -1,4 +1,4 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { ContainerDefinition, Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
@@ -73,10 +73,16 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
    * The EC2 service in this construct.
    */
   public readonly service: Ec2Service;
+
   /**
    * The EC2 Task Definition in this construct.
    */
   public readonly taskDefinition: Ec2TaskDefinition;
+
+  /**
+   * The Container Definition for the service.
+   */
+  public readonly container: ContainerDefinition;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedEc2Service class.
@@ -102,7 +108,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
                             ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
-      const container = this.taskDefinition.addContainer(containerName, {
+      this.container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         cpu: props.cpu,
         memoryLimitMiB: props.memoryLimitMiB,
@@ -111,7 +117,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         secrets: taskImageOptions.secrets,
         logging: logDriver,
       });
-      container.addPortMappings({
+      this.container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80
       });
     } else {
