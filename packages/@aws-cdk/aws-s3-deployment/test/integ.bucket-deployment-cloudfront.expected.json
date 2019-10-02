@@ -1,5 +1,119 @@
 {
   "Resources": {
+    "Destination3E3DC043D": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "DistributionCFDistribution882A7313": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD"
+            ],
+            "CachedMethods": [
+              "GET",
+              "HEAD"
+            ],
+            "Compress": true,
+            "ForwardedValues": {
+              "Cookies": {
+                "Forward": "none"
+              },
+              "QueryString": false
+            },
+            "TargetOriginId": "origin1",
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "Destination3E3DC043D",
+                  "RegionalDomainName"
+                ]
+              },
+              "Id": "origin1",
+              "S3OriginConfig": {}
+            }
+          ],
+          "PriceClass": "PriceClass_100",
+          "ViewerCertificate": {
+            "CloudFrontDefaultCertificate": true
+          }
+        }
+      }
+    },
+    "DeployWithInvalidationCustomResourceE3FF7455": {
+      "Type": "Custom::CDKBucketDeployment",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+            "Arn"
+          ]
+        },
+        "SourceBucketNames": [
+          {
+            "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
+          }
+        ],
+        "SourceObjectKeys": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        ],
+        "DestinationBucketName": {
+          "Ref": "Destination3E3DC043D"
+        },
+        "RetainOnDelete": false,
+        "DistributionId": {
+          "Ref": "DistributionCFDistribution882A7313"
+        },
+        "DistributionPaths": [
+          "/images/*.png"
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -54,7 +168,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
                       }
                     ]
                   ]
@@ -69,7 +183,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
                       },
                       "/*"
                     ]
@@ -134,7 +248,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket6E5FB2B7"
+            "Ref": "AssetParameters1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12cS3BucketA82F6C80"
           },
           "S3Key": {
             "Fn::Join": [
@@ -147,7 +261,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKey426156C0"
+                          "Ref": "AssetParameters1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12cS3VersionKey75196D11"
                         }
                       ]
                     }
@@ -160,7 +274,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKey426156C0"
+                          "Ref": "AssetParameters1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12cS3VersionKey75196D11"
                         }
                       ]
                     }
@@ -184,142 +298,32 @@
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
       ]
-    },
-    "Destination3E3DC043D": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "DistributionCFDistribution882A7313": {
-      "Type": "AWS::CloudFront::Distribution",
-      "Properties": {
-        "DistributionConfig": {
-          "DefaultCacheBehavior": {
-            "AllowedMethods": [
-              "GET",
-              "HEAD"
-            ],
-            "CachedMethods": [
-              "GET",
-              "HEAD"
-            ],
-            "ForwardedValues": {
-              "Cookies": {
-                "Forward": "none"
-              },
-              "QueryString": false
-            },
-            "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https",
-            "Compress": true
-          },
-          "DefaultRootObject": "index.html",
-          "Enabled": true,
-          "HttpVersion": "http2",
-          "IPV6Enabled": true,
-          "Origins": [
-            {
-              "DomainName": {
-                "Fn::GetAtt": [
-                  "Destination3E3DC043D",
-                  "RegionalDomainName"
-                ]
-              },
-              "Id": "origin1",
-              "S3OriginConfig": {}
-            }
-          ],
-          "PriceClass": "PriceClass_100",
-          "ViewerCertificate": {
-            "CloudFrontDefaultCertificate": true
-          }
-        }
-      }
-    },
-    "DeployWithInvalidationCustomResourceE3FF7455": {
-      "Type": "Custom::CDKBucketDeployment",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-            "Arn"
-          ]
-        },
-        "SourceBucketNames": [
-          {"Ref": "DeployWithInvalidationAsset1S3BucketB5658DC9"}
-        ],
-        "SourceObjectKeys": [{
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::Select": [
-                  0,
-                  {
-                    "Fn::Split": [
-                      "||",
-                      {
-                        "Ref": "DeployWithInvalidationAsset1S3VersionKeyF91F6A51"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "Fn::Select": [
-                  1,
-                  {
-                    "Fn::Split": [
-                      "||",
-                      {
-                        "Ref": "DeployWithInvalidationAsset1S3VersionKeyF91F6A51"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          ]
-        }],
-        "DestinationBucketName": {
-          "Ref": "Destination3E3DC043D"
-        },
-        "RetainOnDelete": false,
-        "DistributionId": {
-          "Ref": "DistributionCFDistribution882A7313"
-        },
-        "DistributionPaths": [
-          "/images/*.png"
-        ]
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket6E5FB2B7": {
+    "AssetParameters1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12cS3BucketA82F6C80": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
+      "Description": "S3 bucket for asset \"1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12c\""
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKey426156C0": {
+    "AssetParameters1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12cS3VersionKey75196D11": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
+      "Description": "S3 key for asset version \"1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12c\""
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeArtifactHashEF37AD24": {
+    "AssetParameters1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12cArtifactHash7CB73C9C": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
+      "Description": "Artifact hash for asset \"1321c4ad443c45606a271272965ddd27299faea9f2d88d23fd9e2a239f59d12c\""
     },
-    "DeployWithInvalidationAsset1S3BucketB5658DC9": {
+    "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
+      "Description": "S3 bucket for asset \"fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e\""
     },
-    "DeployWithInvalidationAsset1S3VersionKeyF91F6A51": {
+    "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
+      "Description": "S3 key for asset version \"fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e\""
     },
-    "DeployWithInvalidationAsset1ArtifactHash1EB4DA88": {
+    "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eArtifactHash0E426313": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"test-bucket-deployments-1/DeployWithInvalidation/Asset1\""
+      "Description": "Artifact hash for asset \"fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e\""
     }
   }
 }
