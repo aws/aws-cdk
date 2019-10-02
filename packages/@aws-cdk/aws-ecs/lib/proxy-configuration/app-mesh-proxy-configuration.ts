@@ -104,7 +104,8 @@ function renderProperties(props: AppMeshProxyConfigurationProps): CfnTaskDefinit
     const key = String(k);
     const value = String(v);
     if (value !== "undefined" && value !== "") {
-      ret.push({ ["name"]: key.charAt(0).toUpperCase() + key.slice(1), ["value"]: value });
+      const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+      ret.push({ ["name"]: capitalizedKey, ["value"]: value });
     }
   }
   return ret;
