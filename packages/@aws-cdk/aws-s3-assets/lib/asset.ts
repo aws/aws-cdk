@@ -139,6 +139,9 @@ export class Asset extends cdk.Construct implements assets.IAsset {
    * Grants read permissions to the principal on the assets bucket.
    */
   public grantRead(grantee: iam.IGrantable) {
+    // we give permissions on all files in the bucket since we don't want to
+    // accidentally revoke permission on old versions when deploying a new
+    // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
   }
 }

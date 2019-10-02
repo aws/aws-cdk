@@ -12,7 +12,10 @@ export interface NestedStackProps {
    * to a parameter defined in the embedded template and a value representing
    * the value that you want to set for the parameter.
    *
-   * @default - no parameters are passed to the nested stack
+   * The nested stack construct will automatically synthesize parameters in order
+   * to bind references from the parent stack(s) into the nested stack.
+   *
+   * @default - no user-defined parameters are passed to the nested stack
    */
   readonly parameters?: { [key: string]: string };
 
