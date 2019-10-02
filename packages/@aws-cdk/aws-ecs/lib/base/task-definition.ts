@@ -434,10 +434,6 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   private renderNetworkMode(networkMode: NetworkMode): string | undefined {
-    // 'NAT' is the only supported network mode for Windows containers,
-    // which is represented as omitted 'networkMode' property in CF template.
-    // See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows_task_IAM_roles.html
-
     return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
   }
 }
@@ -477,7 +473,8 @@ export enum NetworkMode {
   /**
    * The task utilizes NAT network mode required by Windows containers.
    *
-   * This is the only network mode supported for Windows containers.
+   * This is the only supported network mode for Windows containers. For more information, see
+   * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
    */
   NAT = 'nat'
 }
