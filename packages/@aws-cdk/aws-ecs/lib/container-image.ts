@@ -4,13 +4,6 @@ import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
 
 /**
- * Regex pattern to check if it is an ECR image URL.
- *
- * @experimental
- */
-const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*).dkr.ecr.([a-zA-Z0-9][a-zA-Z0-9-_]*).amazonaws.com(.cn)?\/.*/;
-
-/**
  * Constructs for types of container images
  */
 export abstract class ContainerImage {
@@ -18,7 +11,7 @@ export abstract class ContainerImage {
    * Reference an image on DockerHub or another online registry
    */
   public static fromRegistry(name: string, props: RepositoryImageProps = {}) {
-    return new RepositoryImage(name, { ...props, ecrRepository: ECR_IMAGE_REGEX.test(name) });
+    return new RepositoryImage(name, props);
   }
 
   /**

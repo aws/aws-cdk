@@ -485,7 +485,26 @@ export = {
       });
 
       // THEN
-      test.deepEqual(container.node.metadata[0].data, 'Proper policies need to be attached before pulling from ECR repository.');
+      test.deepEqual(container.node.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      test.done();
+    },
+
+    "warns when setting containers from ECR repository by creating a RepositoryImage class"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const repo = new ecs.RepositoryImage("ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY");
+
+      // WHEN
+      const container = taskDefinition.addContainer("web", {
+        image: repo,
+        memoryLimitMiB: 512
+      });
+
+      // THEN
+      test.deepEqual(container.node.metadata[0].data, "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
 
       test.done();
     },

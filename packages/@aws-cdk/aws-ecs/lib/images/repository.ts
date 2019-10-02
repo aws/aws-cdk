@@ -1,7 +1,14 @@
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct } from '@aws-cdk/core';
+import { Construct, Token } from '@aws-cdk/core';
 import { ContainerDefinition } from "../container-definition";
 import { ContainerImage, ContainerImageConfig } from "../container-image";
+
+/**
+ * Regex pattern to check if it is an ECR image URL.
+ *
+ * @experimental
+ */
+const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*).dkr.ecr.([a-zA-Z0-9][a-zA-Z0-9-_]*).amazonaws.com(.cn)?\/.*/;
 
 /**
  * The properties for an image hosted in a public or private repository.
@@ -12,13 +19,6 @@ export interface RepositoryImageProps {
    * The supported value is the full ARN of an AWS Secrets Manager secret.
    */
   readonly credentials?: secretsmanager.ISecret;
-
-  /**
-   * Whether the repository is an ECR repository.
-   *
-   * @experimental
-   */
-  readonly ecrRepository?: boolean;
 }
 
 /**
@@ -35,8 +35,9 @@ export class RepositoryImage extends ContainerImage {
   }
 
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
-    if (this.props.ecrRepository) {
-      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository.");
+    // name could be a Token - in that case, skip validation altogether
+    if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
+      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
 
     if (this.props.credentials) {
