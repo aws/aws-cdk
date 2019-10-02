@@ -167,16 +167,22 @@ export abstract class ListenerConfig {
   }
 
   /**
-   * Attach target group to listener.
+   * Create and attach a target group to listener.
    */
   public abstract addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService): void;
 }
 
+/**
+ * Class for configuring application load balancer listener when registering targets.
+ */
 class ApplicationListenerConfig extends ListenerConfig {
   constructor(private readonly listener: elbv2.ApplicationListener, private readonly props?: elbv2.AddApplicationTargetsProps) {
     super();
   }
 
+  /**
+   * Create and attach a target group to listener.
+   */
   public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
     const props = this.props || {};
     const protocol = props.protocol;
@@ -194,11 +200,17 @@ class ApplicationListenerConfig extends ListenerConfig {
   }
 }
 
+/**
+ * Class for configuring network load balancer listener when registering targets.
+ */
 class NetworkListenerConfig extends ListenerConfig {
   constructor(private readonly listener: elbv2.NetworkListener, private readonly props?: elbv2.AddNetworkTargetsProps) {
     super();
   }
 
+  /**
+   * Create and attach a target group to listener.
+   */
   public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
     const port = this.props !== undefined ? this.props.port : 80;
     this.listener.addTargets(id, {
