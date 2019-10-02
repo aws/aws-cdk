@@ -315,7 +315,7 @@ export class RestApi extends Resource implements IRestApi {
   }
 
   /**
-   * Adds a new model.
+   * Adds a new request validator.
    */
   public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
     return new RequestValidator(this, id, {
