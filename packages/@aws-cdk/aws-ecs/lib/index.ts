@@ -30,6 +30,10 @@ export * from './log-drivers/syslog-log-driver';
 export * from './log-drivers/log-driver';
 export * from './log-drivers/log-drivers';
 
+export * from './proxy-configuration/app-mesh-proxy-configuration';
+export * from './proxy-configuration/proxy-configuration';
+export * from './proxy-configuration/proxy-configurations';
+
 // AWS::ECS CloudFormation Resources:
 //
 export * from './ecs.generated';
