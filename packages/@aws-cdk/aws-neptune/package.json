@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-neptune",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "The CDK Construct Library for AWS::Neptune",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,16 +64,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.10.0",
+    "@aws-cdk/assert": "^1.11.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.10.0"
+    "@aws-cdk/core": "^1.11.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.10.0"
+    "@aws-cdk/core": "^1.11.0"
   },
   "engines": {
     "node": ">= 10.3.0"
