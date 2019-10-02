@@ -47,7 +47,7 @@ export = {
     const assembly = app.synth();
 
     // THEN
-    test.deepEqual(assembly.artifacts.length, 1);
+    test.deepEqual(assembly.artifacts.length, 2);
     test.done();
   },
 
