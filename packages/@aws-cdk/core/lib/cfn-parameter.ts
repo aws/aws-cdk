@@ -1,6 +1,6 @@
 import { CfnElement } from './cfn-element';
-import { CfnReference } from './cfn-reference';
 import { Construct } from './construct';
+import { CfnReference } from './private/cfn-reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
 

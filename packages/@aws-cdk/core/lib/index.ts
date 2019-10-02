@@ -10,7 +10,6 @@ export * from './dependency';
 export * from './string-fragments';
 
 export * from './reference';
-export * from './cfn-reference';
 export * from './cfn-condition';
 export * from './cfn-fn';
 export * from './cfn-include';

@@ -3,9 +3,9 @@ import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
-import { CfnReference } from './cfn-reference';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct';
+import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';

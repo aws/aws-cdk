@@ -1,5 +1,5 @@
-import { CfnReference } from './cfn-reference';
 import { Construct } from './construct';
+import { CfnReference } from './private/cfn-reference';
 import { Token } from './token';
 
 const AWS_ACCOUNTID = 'AWS::AccountId';
