@@ -198,7 +198,10 @@ export class ConstructNode {
   }
 
   /**
-   * Returns the child construct that has the id `Default` or `Resource"`
+   * Returns the child construct that has the id `Default` or `Resource"`.
+   * This is usually the construct that provides the bulk of the underlying functionality.
+   * Useful for modifications of the underlying construct that are not avialable at the higher levels.
+   *
    * @throws if there is more than one child
    * @returns a construct or undefined if there is no default child
    */
