@@ -2,6 +2,7 @@ import { Test } from 'nodeunit';
 import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack } from '../lib';
 import { validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
 export = {
@@ -293,8 +294,11 @@ export = {
     // WHEN
     class CfnTest extends CfnResource {
       public _toCloudFormation() {
-        validateString({ xoo: 123 }).assertSuccess(); // throws CfnSynthesisError
-        return super._toCloudFormation();
+        return new PostResolveToken({
+          xoo: 1234
+        }, props => {
+          validateString(props).assertSuccess();
+        });
       }
     }
 

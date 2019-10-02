@@ -919,11 +919,12 @@ export class Stack extends Construct implements ITaggable {
    * Returns all the tokens used within the scope of the current stack.
    */
   private findTokens() {
-    return findTokens(this, () => cfnElements(this).map(x => {
-      try {
-        return x._toCloudFormation();
+    const tokens = new Array<IResolvable>();
 
-      } catch (e) {
+    for (const element of cfnElements(this)) {
+      try {
+        tokens.push(...findTokens(element, () => element._toCloudFormation()));
+      }  catch (e) {
         // Note: it might be that the properties of the CFN object aren't valid.
         // This will usually be preventatively caught in a construct's validate()
         // and turned into a nicely descriptive error, but we're running prepare()
@@ -934,12 +935,13 @@ export class Stack extends Construct implements ITaggable {
         // but the error will be thrown later on anyway. If the error doesn't
         // get thrown down the line, we may miss references.
         if (e.type === 'CfnSynthesisError') {
-          return undefined;
+          continue;
         }
 
         throw e;
       }
-    }));
+    }
+    return tokens;
   }
 }
 
