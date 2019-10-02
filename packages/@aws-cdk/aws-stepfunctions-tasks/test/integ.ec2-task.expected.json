@@ -454,72 +454,22 @@
               "Fn::Join": [
                 "",
                 [
-                  {
-                    "Fn::Select": [
-                      4,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:test-region:12345678:repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "TaskDefTheContainerAssetImageAdoptRepository997406C3",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  ".dkr.ecr.",
-                  {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:test-region:12345678:repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "TaskDefTheContainerAssetImageAdoptRepository997406C3",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  ".",
+                  "12345678.dkr.ecr.test-region.",
                   {
                     "Ref": "AWS::URLSuffix"
                   },
                   "/",
                   {
-                    "Fn::GetAtt": [
-                      "TaskDefTheContainerAssetImageAdoptRepository997406C3",
-                      "RepositoryName"
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "@sha256:",
+                          {
+                            "Ref": "AssetParameters849429eca8deea448d1c953aea3403a3d05d598c09880305dde8e99010d05db3ImageName999B381A"
+                          }
+                        ]
+                      }
                     ]
                   },
                   "@sha256:",
@@ -530,7 +480,7 @@
                         "Fn::Split": [
                           "@sha256:",
                           {
-                            "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
+                            "Ref": "AssetParameters849429eca8deea448d1c953aea3403a3d05d598c09880305dde8e99010d05db3ImageName999B381A"
                           }
                         ]
                       }
@@ -588,7 +538,7 @@
               "Fn::Split": [
                 "@sha256:",
                 {
-                  "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
+                  "Ref": "AssetParameters849429eca8deea448d1c953aea3403a3d05d598c09880305dde8e99010d05db3ImageName999B381A"
                 }
               ]
             }
@@ -745,7 +695,7 @@
                           "Fn::Split": [
                             "@sha256:",
                             {
-                              "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
+                              "Ref": "AssetParameters849429eca8deea448d1c953aea3403a3d05d598c09880305dde8e99010d05db3ImageName999B381A"
                             }
                           ]
                         }
@@ -771,7 +721,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6"
+            "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB"
           },
           "S3Key": {
             "Fn::Join": [
@@ -784,7 +734,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
+                          "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7"
                         }
                       ]
                     }
@@ -797,7 +747,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
+                          "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7"
                         }
                       ]
                     }
@@ -944,21 +894,21 @@
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     },
-    "TaskDefTheContainerAssetImageImageName92ECAC22": {
+    "AssetParameters849429eca8deea448d1c953aea3403a3d05d598c09880305dde8e99010d05db3ImageName999B381A": {
       "Type": "String",
-      "Description": "ECR repository name and tag asset \"aws-ecs-integ2/TaskDef/TheContainer/AssetImage\""
+      "Description": "ECR repository name and tag for asset \"849429eca8deea448d1c953aea3403a3d05d598c09880305dde8e99010d05db3\""
     },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6": {
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-ecs-integ2/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+      "Description": "S3 bucket for asset \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
     },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-ecs-integ2/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+      "Description": "S3 key for asset version \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
     },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeArtifactHash8BCBAA49": {
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1ArtifactHash7E5AE478": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-ecs-integ2/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+      "Description": "Artifact hash for asset \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
     }
   }
 }
