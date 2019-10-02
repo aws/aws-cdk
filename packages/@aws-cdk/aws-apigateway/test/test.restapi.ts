@@ -16,6 +16,7 @@ export = {
     api.root.addMethod('GET'); // must have at least one method
 
     // THEN
+    test.ok(api.node.defaultChild); // ensure defaultChild doesn't fail
     expect(stack).toMatch({
       Resources: {
         myapi4C7BF186: {
