@@ -26,7 +26,6 @@ class ConsumerNestedStack extends cfn.NestedStack {
 }
 
 class ParentStack extends Stack {
-
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
