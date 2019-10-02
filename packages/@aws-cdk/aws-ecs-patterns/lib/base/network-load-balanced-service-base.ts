@@ -34,6 +34,16 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly taskImageOptions?: NetworkLoadBalancedTaskImageOptions;
 
   /**
+   * The port number on the container instance to reserve for your container.
+   *
+   * For more information, see
+   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+   *
+   * @default 80
+   */
+  readonly hostPort?: number;
+
+  /**
    * Determines whether the Load Balancer will be internet-facing.
    *
    * @default true
