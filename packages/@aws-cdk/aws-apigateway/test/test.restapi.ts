@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/a
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { JsonSchemaType, JsonSchemaVersion } from '../lib';
+import { CfnRestApi, JsonSchemaType, JsonSchemaVersion } from '../lib';
 
 // tslint:disable:max-line-length
 
@@ -16,7 +16,6 @@ export = {
     api.root.addMethod('GET'); // must have at least one method
 
     // THEN
-    test.ok(api.node.defaultChild); // ensure defaultChild doesn't fail
     expect(stack).toMatch({
       Resources: {
         myapi4C7BF186: {
@@ -98,6 +97,13 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'defaultChild is set correctly'(test: Test) {
+    const stack = new Stack();
+    const api = new apigateway.RestApi(stack, 'my-api');
+    test.ok(api.node.defaultChild instanceof CfnRestApi);
     test.done();
   },
 
