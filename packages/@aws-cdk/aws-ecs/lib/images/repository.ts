@@ -12,6 +12,13 @@ export interface RepositoryImageProps {
    * The supported value is the full ARN of an AWS Secrets Manager secret.
    */
   readonly credentials?: secretsmanager.ISecret;
+
+  /**
+   * Whether the repository is an ECR repository.
+   *
+   * @experimental
+   */
+  readonly ecrRepository?: boolean;
 }
 
 /**
@@ -27,7 +34,11 @@ export class RepositoryImage extends ContainerImage {
     super();
   }
 
-  public bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+  public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+    if (this.props.ecrRepository) {
+      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository.");
+    }
+
     if (this.props.credentials) {
       this.props.credentials.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
     }

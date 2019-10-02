@@ -472,6 +472,24 @@ export = {
       test.done();
     },
 
+    "warns when setting containers from ECR repository using fromRegistry method"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      // WHEN
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY"),
+        memoryLimitMiB: 512
+      });
+
+      // THEN
+      test.deepEqual(container.node.metadata[0].data, 'Proper policies need to be attached before pulling from ECR repository.');
+
+      test.done();
+    },
+
     "correctly sets containers from asset using default props"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
