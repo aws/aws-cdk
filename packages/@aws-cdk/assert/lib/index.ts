@@ -10,3 +10,4 @@ export * from './assertions/match-template';
 export * from './assertions/and-assertion';
 export * from './assertions/negated-assertion';
 export * from './assertions/count-resources';
+export * from './assertions/construct-lint';

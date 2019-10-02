@@ -1,3 +1,4 @@
+import { Stack } from '@aws-cdk/core';
 import api = require('@aws-cdk/cx-api');
 import { Assertion } from './assertion';
 import { not } from './assertion';
@@ -27,7 +28,7 @@ export abstract class Inspector {
 }
 
 export class StackInspector extends Inspector {
-  constructor(public readonly stack: api.CloudFormationStackArtifact) {
+  constructor(public readonly stack: api.CloudFormationStackArtifact, public readonly cdkStack?: Stack) {
     super();
   }
 

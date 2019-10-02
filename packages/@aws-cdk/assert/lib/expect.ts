@@ -4,7 +4,8 @@ import { StackInspector } from './inspector';
 import { SynthUtils } from './synth-utils';
 
 export function expect(stack: api.CloudFormationStackArtifact | cdk.Stack, skipValidation = false): StackInspector {
-  // if this is already a synthesized stack, then just inspect it.
-  const artifact = stack instanceof api.CloudFormationStackArtifact ? stack : SynthUtils.synthesize(stack, { skipValidation });
-  return new StackInspector(artifact);
+  if (stack instanceof api.CloudFormationStackArtifact) {
+    return new StackInspector(stack);
+  }
+  return new StackInspector(SynthUtils.synthesize(stack, { skipValidation }), stack);
 }
