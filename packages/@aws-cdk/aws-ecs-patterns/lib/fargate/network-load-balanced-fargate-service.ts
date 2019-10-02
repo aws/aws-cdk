@@ -72,10 +72,12 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
 export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServiceBase {
 
   public readonly assignPublicIp: boolean;
+
   /**
    * The Fargate service in this construct.
    */
   public readonly service: FargateService;
+
   /**
    * The Fargate task definition in this construct.
    */
@@ -114,15 +116,18 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
                             ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
-      const container = this.taskDefinition.addContainer(containerName, {
+      this.container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         logging: logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
       });
-      container.addPortMappings({
-        containerPort: taskImageOptions.containerPort || 80,
-      });
+
+      const portMapping: PortMapping = {
+        containerPort: (props.taskImageOptions ? props.taskImageOptions.containerPort : undefined) || 80,
+        hostPort: props.hostPort ? props.hostPort : props.publicLoadBalancer ? 80 : undefined
+      };
+      this.container.addPortMappings(portMapping);
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
     }

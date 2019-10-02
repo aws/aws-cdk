@@ -80,6 +80,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
    * The Fargate service in this construct.
    */
   public readonly service: FargateService;
+
   /**
    * The Fargate task definition in this construct.
    */
@@ -118,13 +119,13 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
                             ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
-      const container = this.taskDefinition.addContainer(containerName, {
+      this.container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         logging: logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
       });
-      container.addPortMappings({
+      this.container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {

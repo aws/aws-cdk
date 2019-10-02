@@ -73,6 +73,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
    * The EC2 service in this construct.
    */
   public readonly service: Ec2Service;
+
   /**
    * The EC2 Task Definition in this construct.
    */
@@ -107,7 +108,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
                             ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
-      const container = this.taskDefinition.addContainer(containerName, {
+      this.container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         cpu: props.cpu,
         memoryLimitMiB: props.memoryLimitMiB,
@@ -116,7 +117,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         secrets: taskImageOptions.secrets,
         logging: logDriver,
       });
-      container.addPortMappings({
+      this.container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80
       });
     } else {

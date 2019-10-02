@@ -71,6 +71,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
    * The ECS service in this construct.
    */
   public readonly service: Ec2Service;
+
   /**
    * The EC2 Task Definition in this construct.
    */
@@ -105,7 +106,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
                             ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
-      const container = this.taskDefinition.addContainer(containerName, {
+      this.container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         cpu: props.cpu,
         memoryLimitMiB: props.memoryLimitMiB,
@@ -114,9 +115,12 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
         secrets: taskImageOptions.secrets,
         logging: logDriver,
       });
-      container.addPortMappings({
-        containerPort: taskImageOptions.containerPort || 80
-      });
+
+      const portMapping: PortMapping = {
+        containerPort: (props.taskImageOptions ? props.taskImageOptions.containerPort : undefined) || 80,
+        hostPort: props.hostPort ? props.hostPort : props.publicLoadBalancer ? 80 : undefined
+      };
+      this.container.addPortMappings(portMapping);
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
     }
