@@ -4,6 +4,9 @@ import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
 
+/**
+ * @experimental
+ */
 export interface NestedStackProps {
 
   /**
@@ -58,6 +61,8 @@ export interface NestedStackProps {
  * Cross references of resource attributes between the parent stack and the
  * nested stack will automatically be translated to stack parameters and
  * outputs.
+ *
+ * @experimental
  */
 export class NestedStack extends Stack {
 
