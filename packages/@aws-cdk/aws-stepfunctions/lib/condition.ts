@@ -177,7 +177,7 @@ enum CompoundOperator {
 class VariableComparison extends Condition {
     constructor(private readonly variable: string, private readonly comparisonOperator: ComparisonOperator, private readonly value: any) {
         super();
-        if (!variable.startsWith('$.') && !variable.startsWith('$[')) {
+        if (!/^\$[.[]/.test(variable)) {
             throw new Error(`Variable reference must start with '$.' or '$[', got '${variable}'`);
         }
     }
