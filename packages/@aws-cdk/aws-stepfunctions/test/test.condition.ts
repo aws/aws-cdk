@@ -2,9 +2,23 @@ import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
 
 export = {
-    'Condition variables must start with $.'(test: Test) {
+    'Condition variables must start with $. or $['(test: Test) {
         test.throws(() => {
             stepfunctions.Condition.stringEquals('a', 'b');
+        });
+
+        test.done();
+    },
+    'Condition variables can start with $.'(test: Test) {
+        test.doesNotThrow(() => {
+            stepfunctions.Condition.stringEquals('$.a', 'b');
+        });
+
+        test.done();
+    },
+    'Condition variables can start with $['(test: Test) {
+        test.doesNotThrow(() => {
+            stepfunctions.Condition.stringEquals('$[0]', 'a');
         });
 
         test.done();
