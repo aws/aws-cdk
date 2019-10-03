@@ -68,12 +68,14 @@ export interface AwsSdkCall {
    * API version to use for the service
    *
    * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html
-   * @default use latest available API version
+   * @default - use latest available API version
    */
   readonly apiVersion?: string;
 
   /**
    * The region to send service requests to.
+   * **Note: Cross-region operations are generally considered an anti-pattern.**
+   * **Consider first deploying a stack in that region.**
    *
    * @default - the region where this custom resource is deployed
    */
