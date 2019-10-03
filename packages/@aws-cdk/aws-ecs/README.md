@@ -242,10 +242,9 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
-### Include a load balancer
+### Include an application/network load balancer
 
-`Services` are load balancing targets and can be directly attached to load
-balancers:
+`Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
 
 ```ts
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
@@ -257,6 +256,52 @@ const listener = lb.addListener('Listener', { port: 80 });
 const target = listener.addTargets('ECS', {
   port: 80,
   targets: [service]
+});
+```
+
+Note that in the example above, if you have multiple containers with multiple ports, then only the first essential container along with its first added container port will be registered as target. To have more control over which container and port to register as targets:
+
+```ts
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
+const service = new ecs.FargateService(this, 'Service', { /* ... */ });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
+const listener = lb.addListener('Listener', { port: 80 });
+const target = listener.addTargets('ECS', {
+  port: 80,
+  targets: [service.loadBalancerTarget({
+    containerName: 'MyContainer',
+    containerPort: 12345
+  })]
+});
+```
+
+### Include a classic load balancer
+`Services` can also be directly attached to a classic load balancer as targets:
+
+```ts
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
+
+const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+lb.addListener({ externalPort: 80 });
+lb.addTarget(service);
+```
+
+Similarly, if you want to have more control over load balancer targeting:
+
+```ts
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
+
+const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+lb.addListener({ externalPort: 80 });
+lb.addTarget(service.loadBalancerTarget{
+  containerName: 'MyContainer',
+  containerPort: 80
 });
 ```
 
@@ -351,4 +396,119 @@ rule.addTarget(new targets.EcsTask({
     }]
   }]
 }));
+```
+
+## Log Drivers
+
+Currently Supported Log Drivers:
+
+- awslogs
+- fluentd
+- gelf
+- journald
+- json-file
+- splunk
+- syslog  
+
+### awslogs Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
+});
+```
+
+### fluentd Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.fluentd()
+});
+```
+
+### gelf Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.gelf()
+});
+```
+
+### journald Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.journald()
+});
+```
+
+### json-file Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.jsonFile()
+});
+```
+
+### splunk Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.splunk()
+});
+```
+
+### syslog Log Driver
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.LogDrivers.syslog()
+});
+```
+
+### Generic Log Driver
+
+A generic log driver object exists to provide a lower level abstraction of the log driver configuration.
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.GenericLogDriver({
+    logDriver: 'fluentd',
+    options: {
+      tag: 'example-tag'
+    }
+  })
+});
 ```

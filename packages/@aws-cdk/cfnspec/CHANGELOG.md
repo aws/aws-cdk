@@ -1,3 +1,74 @@
+# CloudFormation Resource Specification v6.2.0
+
+## New Resource Types
+
+* AWS::EC2::VPCEndpointService
+* AWS::Glue::Workflow
+* AWS::SageMaker::CodeRepository
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker HostInstanceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DocDB::DBCluster EnableCloudwatchLogsExports (__added__)
+* AWS::Glue::DevEndpoint Arguments (__added__)
+* AWS::Glue::DevEndpoint GlueVersion (__added__)
+* AWS::Glue::DevEndpoint NumberOfWorkers (__added__)
+* AWS::Glue::DevEndpoint WorkerType (__added__)
+* AWS::Glue::Job NotificationProperty (__added__)
+* AWS::Glue::Job Timeout (__added__)
+* AWS::Glue::Trigger StartOnCreation (__added__)
+* AWS::Glue::Trigger WorkflowName (__added__)
+* AWS::ServiceDiscovery::Instance InstanceAttributes.PrimitiveType (__changed__)
+  * Old: Map
+  * New: Json
+
+## Property Type Changes
+
+* AWS::Glue::Job.NotificationProperty (__added__)
+* AWS::Glue::Trigger.NotificationProperty (__added__)
+* AWS::Glue::Trigger.Action CrawlerName (__added__)
+* AWS::Glue::Trigger.Action NotificationProperty (__added__)
+* AWS::Glue::Trigger.Action Timeout (__added__)
+* AWS::Glue::Trigger.Condition CrawlState (__added__)
+* AWS::Glue::Trigger.Condition CrawlerName (__added__)
+
+
+# CloudFormation Resource Specification v6.1.0
+
+## New Resource Types
+
+* AWS::QLDB::Ledger
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Config::RemediationConfiguration Automatic (__added__)
+* AWS::Config::RemediationConfiguration ExecutionControls (__added__)
+* AWS::Config::RemediationConfiguration MaximumAutomaticAttempts (__added__)
+* AWS::Config::RemediationConfiguration RetryAttemptSeconds (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.Duration (__added__)
+* AWS::AppMesh::Route.HttpRetryPolicy (__added__)
+* AWS::Config::RemediationConfiguration.ExecutionControls (__added__)
+* AWS::Config::RemediationConfiguration.SsmControls (__added__)
+* AWS::AppMesh::Route.HttpRoute RetryPolicy (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
 # CloudFormation Resource Specification v6.0.0
 
 ## New Resource Types

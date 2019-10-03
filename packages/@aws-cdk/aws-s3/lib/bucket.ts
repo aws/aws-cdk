@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -29,6 +29,12 @@ export interface IBucket extends IResource {
    * @attribute
    */
   readonly bucketWebsiteUrl: string;
+
+  /**
+   * The Domain name of the static website.
+   * @attribute
+   */
+  readonly bucketWebsiteDomainName: string;
 
   /**
    * The IPv4 DNS name of the specified bucket.
@@ -266,6 +272,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
   public abstract readonly bucketWebsiteUrl: string;
+  public abstract readonly bucketWebsiteDomainName: string;
   public abstract readonly bucketRegionalDomainName: string;
   public abstract readonly bucketDualStackDomainName: string;
 
@@ -876,7 +883,7 @@ export class Bucket extends BucketBase {
       ? false
       : attrs.bucketWebsiteNewUrlFormat;
 
-    const websiteUrl = newUrlFormat
+    const websiteDomain = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`
       : `${bucketName}.s3-website-${region}.${urlSuffix}`;
 
@@ -884,7 +891,8 @@ export class Bucket extends BucketBase {
       public readonly bucketName = bucketName!;
       public readonly bucketArn = parseBucketArn(scope, attrs);
       public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
-      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || websiteUrl;
+      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
+      public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
@@ -908,6 +916,7 @@ export class Bucket extends BucketBase {
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
+  public readonly bucketWebsiteDomainName: string;
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
@@ -957,6 +966,7 @@ export class Bucket extends BucketBase {
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketWebsiteDomainName = Fn.select(2, Fn.split('/', this.bucketWebsiteUrl));
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 

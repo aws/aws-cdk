@@ -99,6 +99,22 @@ export = {
   test.done();
 },
 
+'context passed through CDK_CONTEXT has precedence'(test: Test) {
+  process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+    key1: 'val1',
+    key2: 'val2'
+  });
+  const prog = new App({
+    context: {
+      key1: 'val3',
+      key2: 'val4'
+    }
+  });
+  test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
+  test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
+  test.done();
+},
+
 'context from the command line can be used when creating the stack'(test: Test) {
   const output = synthStack('stack2', false, { ctx1: 'HELLO' });
 
@@ -125,8 +141,11 @@ export = {
 },
 
 'setContext(k,v) can be used to set context programmatically'(test: Test) {
-  const prog = new App();
-  prog.node.setContext('foo', 'bar');
+  const prog = new App({
+    context: {
+      foo: 'bar'
+    }
+  });
   test.deepEqual(prog.node.tryGetContext('foo'), 'bar');
   test.done();
 },

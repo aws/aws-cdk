@@ -32,12 +32,14 @@ To define an Amazon ECS service that is behind an application load balancer, ins
 const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
-  image: ecs.ContainerImage.fromRegistry('test'),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+    },
+  },
   desiredCount: 2,
-  environment: {
-    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-  }
 });
 ```
 
@@ -48,12 +50,14 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 ```
 
 Instead of providing a cluster you can specify a VPC and CDK will create a new ECS cluster. 
-If you deploy multiple services CDK will only create on cluster per VPC.
+If you deploy multiple services CDK will only create one cluster per VPC.
 
 You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and create a cluster inside this VPC.
 
@@ -67,12 +71,14 @@ To define an Amazon ECS service that is behind a network load balancer, instanti
 const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
-  image: ecs.ContainerImage.fromRegistry('test'),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+    },
+  },
   desiredCount: 2,
-  environment: {
-    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-  }
 });
 ```
 
@@ -83,7 +89,9 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 ```
 
@@ -139,11 +147,13 @@ To define a task that runs periodically, instantiate an `ScheduledEc2Task`:
 
 ```ts
 // Instantiate an Amazon EC2 Task to run at a scheduled interval
-const ecsScheduledTask = new ScheduledEc2Task(this, 'ScheduledTask', {
+const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
   cluster,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  scheduleExpression: 'rate(1 minute)',
-  environment: [{ name: 'TRIGGER', value: 'CloudWatch Events' }],
-  memoryLimitMiB: 256
+  scheduledEc2TaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 256,
+    environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+  },
+  schedule: events.Schedule.expression('rate(1 minute)')
 });
 ```

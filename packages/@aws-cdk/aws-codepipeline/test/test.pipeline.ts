@@ -46,6 +46,26 @@ export = {
     },
 
     'that is cross-region': {
+      'validates that source actions are in the same account as the pipeline'(test: Test) {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack', { env: { region: 'us-west-1', account: '123456789012' }});
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+        const sourceStage = pipeline.addStage({
+          stageName: 'Source',
+        });
+        const sourceAction = new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: new codepipeline.Artifact(),
+          region: 'ap-southeast-1',
+        });
+
+        test.throws(() => {
+          sourceStage.addAction(sourceAction);
+        }, /Source action 'FakeSource' must be in the same region as the pipeline/);
+
+        test.done();
+      },
+
       'allows passing an Alias in place of the KMS Key in the replication Bucket'(test: Test) {
         const app = new cdk.App();
 
@@ -228,7 +248,6 @@ export = {
               actions: [new FakeBuildAction({
                 actionName: 'Build',
                 input: sourceOutput,
-                region: replicationRegion,
               })],
             },
           ],

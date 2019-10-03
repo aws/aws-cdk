@@ -11,19 +11,20 @@ exec('lerna ls --json --all', { shell: true }, (error, stdout) => {
     process.exit(-1);
   }
   const modules = JSON.parse(stdout.toString('utf8'));
+  const moduleNames = new Set(modules.map(mod => mod.name));
   for (const module of modules.reverse()) {
     const packageInfo = require(join(module.location, 'package.json'));
     if (process.env.VERBOSE) {
       console.log(`Installing local dependencies of ${module.name}`);
     }
-    installDeps(packageInfo, module.location,
+    installDeps(packageInfo, module.location, moduleNames,
       { depList: packageInfo.dependencies },
       { depList: packageInfo.devDependencies, dev: true });
   }
   console.log('Done.');
 });
 
-function installDeps(pkg, location, ...depLists) {
+function installDeps(pkg, location, localModules, ...depLists) {
   const nodeModules = join(location, 'node_modules');
 
   const shrinkWrap = join(location, 'npm-shrinkwrap.json');
@@ -38,7 +39,13 @@ function installDeps(pkg, location, ...depLists) {
       .forEach(([name, version]) => {
         if (linked.has(name)) { return; }
         const matched = version.match(/^file:(.+)$/);
-        if (!matched) { return; }
+        if (!matched) {
+          if (locks && localModules.has(name) && (name in locks.dependencies) && locks.dependencies[name].dev) {
+            // Remove references to local packages from dev dependencies
+            delete locks.dependencies[name];
+          }
+          return;
+        }
         const path = matched[1];
         const modulePath = resolve(location, path);
         installDependency(nodeModules, modulePath);
@@ -48,7 +55,7 @@ function installDeps(pkg, location, ...depLists) {
           if (!locks.dependencies) {
             locks.dependencies = {};
           }
-          locks.dependencies[name] = { version, dev };
+          locks.dependencies = insert(locks.dependencies, name, { version, dev });
         }
       });
   }
@@ -64,7 +71,14 @@ function installDeps(pkg, location, ...depLists) {
     // a lock-file from scratch, so if there was none, let npm do it's thing instead of trying to replicate.
     execSync(`npm install --package-lock-only ${paths.join(' ')}`, { cwd: location, shell: true });
   }
+}
 
+function insert(deps, name, value) {
+  const result = {};
+  for (const key of [name, ...Object.keys(deps)].sort()) {
+    result[key] = key === name ? value : deps[key];
+  }
+  return result;
 }
 
 function findIndent(path) {

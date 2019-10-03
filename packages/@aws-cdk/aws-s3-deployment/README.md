@@ -17,8 +17,8 @@
 
 > __Status: Experimental__
 
-This library allows populating an S3 bucket with the contents of a .zip file
-from another S3 bucket or from local disk.
+This library allows populating an S3 bucket with the contents of .zip files
+from other S3 buckets or from local disk.
 
 The following example defines a publicly accessible S3 bucket with web hosting
 enabled and populates it from a local directory on disk.
@@ -30,7 +30,7 @@ const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
-  source: s3deploy.Source.asset('./website-dist'),
+  sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
   destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
 });
@@ -40,13 +40,15 @@ This is what happens under the hood:
 
 1. When this stack is deployed (either via `cdk deploy` or via CI/CD), the
    contents of the local `website-dist` directory will be archived and uploaded
-   to an intermediary assets bucket.
+   to an intermediary assets bucket. If there is more than one source, they will
+   be individually uploaded.
 2. The `BucketDeployment` construct synthesizes a custom CloudFormation resource
    of type `Custom::CDKBucketDeployment` into the template. The source bucket/key
    is set to point to the assets bucket.
 3. The custom resource downloads the .zip archive, extracts it and issues `aws
    s3 sync --delete` against the destination bucket (in this case
-   `websiteBucket`).
+   `websiteBucket`). If there is more than one source, the sources will be 
+   downloaded and merged pre-deployment at this step.
 
 ## Supported sources
 
@@ -82,12 +84,21 @@ const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distributio
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
-  source: s3deploy.Source.asset('./website-dist'),
+  sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
   distribution,
   distributionPaths: ['/images/*.png'],
 });
 ```
+
+## Memory Limit
+
+The default memory limit for the deployment resource is 128MiB. If you need to
+copy larger files, you can use the `memoryLimit` configuration to specify the
+size of the AWS Lambda resource handler.
+
+> NOTE: a new AWS Lambda handler will be created in your stack for each memory
+> limit configuration.
 
 ## Notes
 
