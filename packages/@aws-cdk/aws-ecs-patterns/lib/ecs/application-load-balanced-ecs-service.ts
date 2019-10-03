@@ -127,6 +127,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       healthCheckGracePeriod: props.healthCheckGracePeriod,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      cloudMapOptions: props.cloudMapOptions,
     });
     this.addServiceAsTarget(this.service);
   }
