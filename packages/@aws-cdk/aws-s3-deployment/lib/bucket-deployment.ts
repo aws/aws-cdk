@@ -7,6 +7,7 @@ import cdk = require("@aws-cdk/core");
 import { Token } from "@aws-cdk/core";
 import crypto = require('crypto');
 import path = require("path");
+import fs = require('fs');
 import { ISource, SourceConfig } from "./source";
 
 const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
