@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, InspectionFailure } from '@aws-cdk/assert';
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/core');
@@ -274,6 +274,31 @@ export = {
 
         test.done();
       },
+    },
+
+    "With network mode NAT": {
+      "produces undefined CF networkMode property"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        new ecs.TaskDefinition(stack, 'TD', {
+          compatibility: ecs.Compatibility.EC2,
+          networkMode: ecs.NetworkMode.NAT
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::ECS::TaskDefinition', (props: any, inspection: InspectionFailure) => {
+          if (props.NetworkMode === undefined) {
+            return true;
+          }
+
+          inspection.failureReason = 'CF template should not have NetworkMode defined for a task definition that relies on NAT network mode.';
+          return false;
+        }));
+
+        test.done();
+      }
     }
   },
 

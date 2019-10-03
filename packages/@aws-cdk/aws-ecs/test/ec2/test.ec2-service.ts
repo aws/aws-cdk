@@ -1088,94 +1088,98 @@ export = {
     },
 
     'correctly setting ingress and egress port': {
-      'with bridge network mode and 0 host port'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
-        const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
-          memoryLimitMiB: 512,
+      'with bridge/NAT network mode and 0 host port'(test: Test) {
+        [NetworkMode.BRIDGE, NetworkMode.NAT].forEach((networkMode: NetworkMode) => {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+          const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode });
+          const container = taskDefinition.addContainer('MainContainer', {
+            image: ContainerImage.fromRegistry('hello'),
+            memoryLimitMiB: 512,
+          });
+          container.addPortMappings({ containerPort: 8000 });
+          container.addPortMappings({ containerPort: 8001 });
+
+          const service = new ecs.Ec2Service(stack, 'Service', {
+            cluster,
+            taskDefinition
+          });
+
+          // WHEN
+          const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+          const listener = lb.addListener("listener", { port: 80 });
+          listener.addTargets("target", {
+            port: 80,
+            targets: [service.loadBalancerTarget({
+              containerName: "MainContainer",
+              containerPort: 8001
+            })]
+          });
+
+          // THEN
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+            Description: "Load balancer to target",
+            FromPort: 32768,
+            ToPort: 65535
+          }));
+
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+            Description: "Load balancer to target",
+            FromPort: 32768,
+            ToPort: 65535
+          }));
         });
-        container.addPortMappings({ containerPort: 8000 });
-        container.addPortMappings({ containerPort: 8001 });
-
-        const service = new ecs.Ec2Service(stack, 'Service', {
-          cluster,
-          taskDefinition
-        });
-
-        // WHEN
-        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
-        const listener = lb.addListener("listener", { port: 80 });
-        listener.addTargets("target", {
-          port: 80,
-          targets: [service.loadBalancerTarget({
-            containerName: "MainContainer",
-            containerPort: 8001
-          })]
-        });
-
-        // THEN
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-          Description: "Load balancer to target",
-          FromPort: 32768,
-          ToPort: 65535
-        }));
-
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-          Description: "Load balancer to target",
-          FromPort: 32768,
-          ToPort: 65535
-        }));
 
         test.done();
       },
 
-      'with bridge network mode and host port other than 0'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
-        const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
-          memoryLimitMiB: 512,
+      'with bridge/NAT network mode and host port other than 0'(test: Test) {
+        [NetworkMode.BRIDGE, NetworkMode.NAT].forEach((networkMode: NetworkMode) => {
+          // GIVEN
+          const stack = new cdk.Stack();
+          const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+          const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+          cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+          const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode });
+          const container = taskDefinition.addContainer('MainContainer', {
+            image: ContainerImage.fromRegistry('hello'),
+            memoryLimitMiB: 512,
+          });
+          container.addPortMappings({ containerPort: 8000 });
+          container.addPortMappings({ containerPort: 8001, hostPort: 80 });
+
+          const service = new ecs.Ec2Service(stack, 'Service', {
+            cluster,
+            taskDefinition
+          });
+
+          // WHEN
+          const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+          const listener = lb.addListener("listener", { port: 80 });
+          listener.addTargets("target", {
+            port: 80,
+            targets: [service.loadBalancerTarget({
+              containerName: "MainContainer",
+              containerPort: 8001
+            })]
+          });
+
+          // THEN
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+            Description: "Load balancer to target",
+            FromPort: 80,
+            ToPort: 80,
+          }));
+
+          expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+            Description: "Load balancer to target",
+            FromPort: 80,
+            ToPort: 80
+          }));
         });
-        container.addPortMappings({ containerPort: 8000 });
-        container.addPortMappings({ containerPort: 8001, hostPort: 80 });
-
-        const service = new ecs.Ec2Service(stack, 'Service', {
-          cluster,
-          taskDefinition
-        });
-
-        // WHEN
-        const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
-        const listener = lb.addListener("listener", { port: 80 });
-        listener.addTargets("target", {
-          port: 80,
-          targets: [service.loadBalancerTarget({
-            containerName: "MainContainer",
-            containerPort: 8001
-          })]
-        });
-
-        // THEN
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-          Description: "Load balancer to target",
-          FromPort: 80,
-          ToPort: 80,
-        }));
-
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
-          Description: "Load balancer to target",
-          FromPort: 80,
-          ToPort: 80
-        }));
 
         test.done();
       },
