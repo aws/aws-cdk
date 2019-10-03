@@ -62,11 +62,18 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
-      const awsService = new (AWS as any)[call.service](call.apiVersion && { apiVersion: call.apiVersion });
+      const awsService = new (AWS as any)[call.service]({
+        apiVersion: call.apiVersion,
+        region: call.region,
+      });
 
       try {
         const response = await awsService[call.action](call.parameters && decodeBooleans(call.parameters)).promise();
-        flatData = flatten(response);
+        flatData = {
+          apiVersion: awsService.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
+          region: awsService.config.region, // For test purposes: check if region was correctly passed.
+          ...flatten(response),
+        };
         data = call.outputPath
           ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
           : flatData;
