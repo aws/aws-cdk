@@ -356,7 +356,7 @@ export = {
           memoryLimitMiB: 512
         });
 
-      // THEN
+        // THEN
         test.throws(() => {
           new ecs.Ec2Service(stack, "Ec2Service", {
             cluster,
@@ -386,7 +386,7 @@ export = {
           memoryLimitMiB: 512
         });
 
-      // THEN
+        // THEN
         test.throws(() => {
           new ecs.Ec2Service(stack, "Ec2Service", {
             cluster,
@@ -499,7 +499,7 @@ export = {
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
         PlacementConstraints: [{
-            Type: "distinctInstance"
+          Type: "distinctInstance"
         }]
       }));
 
@@ -529,8 +529,8 @@ export = {
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
         PlacementConstraints: [{
-            Expression: "attribute:ecs.instance-type =~ t2.*",
-            Type: "memberOf"
+          Expression: "attribute:ecs.instance-type =~ t2.*",
+          Type: "memberOf"
         }]
       }));
 

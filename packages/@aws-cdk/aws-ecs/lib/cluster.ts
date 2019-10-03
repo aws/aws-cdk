@@ -1,12 +1,12 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import {Construct, Duration, IResource, Resource, Stack} from '@aws-cdk/core';
-import {InstanceDrainHook} from './drain-hook/instance-drain-hook';
-import {CfnCluster} from './ecs.generated';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { CfnCluster } from './ecs.generated';
 
 /**
  * The properties used to define an ECS cluster.
@@ -195,6 +195,10 @@ export class Cluster extends Resource implements ICluster {
       autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
     }
 
+    if (options.spotInstanceDraining) {
+      autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+    }
+
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
@@ -252,7 +256,7 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryReservation', props );
+    return this.metric('MemoryReservation', props);
   }
 
   /**
@@ -350,12 +354,12 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "" )
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
-                          + ( this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "" )
-                          + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
-                          + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
-                          + "recommended/image_id";
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
+      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
+      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
+      + "recommended/image_id";
   }
 
   /**
@@ -380,14 +384,14 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * @param hardwareType ECS-optimized AMI variant to use
    */
   public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedImage {
-    return new EcsOptimizedImage({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType});
+    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType });
   }
 
   /**
    * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
    */
   public static amazonLinux(): EcsOptimizedImage {
-    return new EcsOptimizedImage({generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX});
+    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX });
   }
 
   /**
@@ -396,7 +400,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * @param windowsVersion Windows Version to use
    */
   public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedImage {
-    return new EcsOptimizedImage({windowsVersion});
+    return new EcsOptimizedImage({ windowsVersion });
   }
 
   private readonly generation?: ec2.AmazonLinuxGeneration;
@@ -421,12 +425,12 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-        + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "" )
-        + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
-        + ( this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "" )
-        + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
-        + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
-        + "recommended/image_id";
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
+      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
+      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
+      + "recommended/image_id";
   }
 
   /**
@@ -614,6 +618,16 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default Duration.minutes(5)
    */
   readonly taskDrainTime?: Duration;
+
+  /**
+   * Automated Draining for Spot Instances running ECS Services
+   *
+   * [Using Spot Instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html)
+   *
+   * @default true
+   */
+  readonly spotInstanceDraining?: boolean
+
 }
 
 /**
