@@ -83,8 +83,19 @@ export class CodeBuildAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
+    // check for a cross-account action if there are any outputs
+    if ((this.actionProperties.outputs || []).length > 0) {
+      const pipelineStack = cdk.Stack.of(scope);
+      const projectStack = cdk.Stack.of(this.props.project);
+      if (pipelineStack.account !== projectStack.account) {
+        throw new Error('A cross-account CodeBuild action cannot have outputs. ' +
+          'This is a known CodeBuild limitation. ' +
+          'See https://github.com/aws/aws-cdk/issues/4169 for details');
+      }
+    }
+
     // grant the Pipeline role the required permissions to this Project
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
