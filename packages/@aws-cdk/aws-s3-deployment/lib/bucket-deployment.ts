@@ -25,12 +25,12 @@ export type CacheControlDirective =
   | { "s-max-age": cdk.Duration }
   | string;
 export interface SystemDefinedObjectsMetadata {
-  "cache-control"?: CacheControlDirective[];
-  "content-disposition"?: string;
-  "content-encoding"?: string;
-  "content-language"?: string;
-  "content-type"?: string;
-  expires?: string | Date;
+  readonly "cache-control"?: CacheControlDirective[];
+  readonly "content-disposition"?: string;
+  readonly "content-encoding"?: string;
+  readonly "content-language"?: string;
+  readonly "content-type"?: string;
+  readonly expires?: string | Date;
 };
 
 export interface UserDefinedObjectsMetadata {
@@ -38,18 +38,18 @@ export interface UserDefinedObjectsMetadata {
    * Arbitrary metadata key-values
    * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
    */
-  [key: string]: string;
+  readonly [key: string]: string;
 };
 
 export interface ObjectsMetadata {
   /**
    * System-defined objects metadata
    */
-  system?: SystemDefinedObjectsMetadata;
+  readonly system?: SystemDefinedObjectsMetadata;
   /**
    * User-defined objects metadata
    */
-  user?: UserDefinedObjectsMetadata;
+  readonly user?: UserDefinedObjectsMetadata;
 };
 
 function mapUserMetadata(metadata: UserDefinedObjectsMetadata) {
