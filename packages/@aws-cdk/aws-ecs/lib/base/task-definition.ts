@@ -4,6 +4,7 @@ import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
+import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 
 /**
  * The interface for all task definitions.
@@ -63,6 +64,13 @@ export interface CommonTaskDefinitionProps {
    * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * The configuration details for the App Mesh proxy.
+   *
+   * @default - No proxy configuration.
+   */
+  readonly proxyConfiguration?: ProxyConfiguration;
 
   /**
    * The list of volume definitions for the task. For more information, see
@@ -279,6 +287,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       placementConstraints: Lazy.anyValue({ produce: () =>
         !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
       }, { omitEmptyArray: true }),
+      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
