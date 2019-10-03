@@ -45,6 +45,8 @@ export interface AppProps {
   /**
    * Additional context values for the application.
    *
+   * Context set by the CLI or the `context` key in `cdk.json` has precedence.
+   *
    * Context can be read from any construct using `node.getContext(key)`.
    *
    * @default - no additional context
