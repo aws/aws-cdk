@@ -8,15 +8,7 @@ import path = require('path');
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
-export interface AssetProps extends assets.CopyOptions {
-  /**
-   * The disk location of the asset.
-   *
-   * The path should refer to one of the following:
-   * - A regular file or a .zip file, in which case the file will be uploaded as-is to S3.
-   * - A directory, in which case it will be archived into a .zip file and uploaded to S3.
-   */
-  readonly path: string;
+export interface AssetOptions extends assets.CopyOptions {
 
   /**
    * A list of principals that should be able to read this asset from S3.
@@ -25,6 +17,33 @@ export interface AssetProps extends assets.CopyOptions {
    * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
+
+  /**
+   * Custom source hash to use when identifying the specific version of the asset.
+   *
+   * NOTE: the source hash is used in order to identify a specific revision of the asset,
+   * and used for optimizing and caching deployment activities related to this asset such as
+   * packaging, uploading to Amazon S3, etc. If you chose to customize the source hash,
+   * you will need to make sure it is updated every time the source changes, or otherwise
+   * it is possible that some deployments will not be invalidated.
+   *
+   * @default - automatically calculate source hash based on the contents
+   * of the source file or directory.
+   *
+   * @experimental
+   */
+  readonly sourceHash?: string;
+}
+
+export interface AssetProps extends AssetOptions {
+  /**
+   * The disk location of the asset.
+   *
+   * The path should refer to one of the following:
+   * - A regular file or a .zip file, in which case the file will be uploaded as-is to S3.
+   * - A directory, in which case it will be archived into a .zip file and uploaded to S3.
+   */
+  readonly path: string;
 }
 
 /**
@@ -77,7 +96,8 @@ export class Asset extends cdk.Construct implements assets.IAsset {
       ...props,
       sourcePath: path.resolve(props.path),
     });
-    this.sourceHash = staging.sourceHash;
+
+    this.sourceHash = props.sourceHash || staging.sourceHash;
 
     this.assetPath = staging.stagedPath;
 
