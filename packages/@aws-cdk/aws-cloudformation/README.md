@@ -51,3 +51,44 @@ See the following section of the docs on details to write Custom Resources:
 * [Introduction](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html)
 * [Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref.html)
 * [Code Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html)
+
+### Nested Stacks
+
+[Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
+
+As your infrastructure grows, common patterns can emerge in which you declare the same components in multiple templates. You can separate out these common components and create dedicated templates for them. Then use the resource in your template to reference other templates, creating nested stacks.
+
+For example, assume that you have a load balancer configuration that you use for most of your stacks. Instead of copying and pasting the same configurations into your templates, you can create a dedicated template for the load balancer. Then, you just use the resource to reference that template from within other templates.
+
+The following example will define a single top-level stack that contains two nested stacks: each one with a single Amazon S3 bucket:
+
+```ts
+import { Stack, Construct, StackProps } from '@aws-cdk/core';
+import cfn = require('@aws-cdk/aws-cloudformation');
+import s3 = require('@aws-cdk/aws-s3');
+
+class MyNestedStack extends cfn.NestedStack {
+  constructor(scope: Construct, id: string, props: cfn.NestedStackProps) {
+    super(scope, id, props);
+
+    new s3.Bucket(this, 'NestedBucket');  
+  }
+}
+
+class MyParentStack extends Stack {
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, props);
+
+    new MyNestedStack(scope, 'Nested1');
+    new MyNestedStack(scope, 'Nested2');
+  }
+}
+```
+
+Resources references across nested/parent boundaries (even with multiple levels of nesting) will be wired by the AWS CDK
+through CloudFormation parameters and outputs. When a resource from a parent stack is referenced by a nested stack,
+a CloudFormation parameter will automatically be added to the nested stack and assigned from the parent; when a resource
+from a nested stack is referenced by a parent stack, a CloudFormation output will be automatically be added to the
+nested stack and referenced using `Fn::GetAtt "Outputs.Xxx"` from the parent.
+
+Nested stacks also support the use of Docker image and file assets.
