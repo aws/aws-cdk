@@ -67,7 +67,7 @@ in which case the contents will be retained.
 
 ## Objects metadata
 
-You can specify metadata to be set on the objects in your deployment.
+You can specify metadata to be set on all the objects in your deployment.
 There are 2 types of metadata in S3: system-defined metadata and user-defined metadata.
 System-defined metadata have a special purpose, for example cache-control defines how long to keep an object cached.
 User-defined metadata are not used by S3 and keys always begin with `x-amzn-meta-` (if this is not provided, it is added automatically).
@@ -92,9 +92,11 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   destinationBucket: websiteBucket,
   destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
   objectsMetadata: {
-    page_1: {
+    system: {
       "content-type": "text/html", // serve the file as a html file even if it doesn't have a .html extension
-      "cache-control": "max-age=86400", // cache for 1 day
+      "cache-control": [{ "max-age": cdk.Duration.days(1) }] // cache for 1 day
+    },
+    user: {
       "custom-field": "this is page 1 of 100" // you can also give custom metadata
     }
   }
