@@ -5,29 +5,17 @@
     }
   },
   "Parameters": {
-    "SampleAsset1S3Bucket469E18FF": {
+    "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-multi-assets/SampleAsset1\""
+      "Description": "S3 bucket for asset \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
     },
-    "SampleAsset1S3VersionKey63A628F0": {
+    "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-multi-assets/SampleAsset1\""
+      "Description": "S3 key for asset version \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
     },
-    "SampleAsset1ArtifactHash9E24B5F0": {
+    "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-cdk-multi-assets/SampleAsset1\""
-    },
-    "SampleAsset2S3BucketC94C651A": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-multi-assets/SampleAsset2\""
-    },
-    "SampleAsset2S3VersionKey3A7E2CC4": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-multi-assets/SampleAsset2\""
-    },
-    "SampleAsset2ArtifactHash62F55C83": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"aws-cdk-multi-assets/SampleAsset2\""
+      "Description": "Artifact hash for asset \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
     }
   }
 }

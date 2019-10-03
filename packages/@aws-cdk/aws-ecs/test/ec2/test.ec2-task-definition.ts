@@ -222,12 +222,12 @@ export = {
         command: ['CMD env'],
         dnsSearchDomains: ['0.0.0.0'],
         dnsServers: ['1.1.1.1'],
-        dockerLabels: {LABEL: 'label'},
+        dockerLabels: { LABEL: 'label' },
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
         entryPoint: ["/app/node_modules/.bin/cdk"],
-        environment: {TEST_ENVIRONMENT_VARIABLE: "test environment variable value"},
+        environment: { TEST_ENVIRONMENT_VARIABLE: "test environment variable value" },
         essential: true,
-        extraHosts: {EXTRAHOST: 'extra host'},
+        extraHosts: { EXTRAHOST: 'extra host' },
         healthCheck: {
           command: ["curl localhost:8000"],
           interval: cdk.Duration.seconds(20),
@@ -524,116 +524,59 @@ export = {
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
-        ContainerDefinitions: [{
-          Essential: true,
-          Memory: 512,
-          Image: {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    4,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "arn:",
-                              {
-                                Ref: "AWS::Partition"
-                              },
-                              ":ecr:",
-                              {
-                                Ref: "AWS::Region"
-                              },
-                              ":",
-                              {
-                                Ref: "AWS::AccountId"
-                              },
-                              ":repository/",
-                              {
-                                "Fn::GetAtt": [
-                                  "Ec2TaskDefwebAssetImageAdoptRepositoryEA698962",
-                                  "RepositoryName"
-                                ]
-                              }
-                            ]
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                ".dkr.ecr.",
-                {
-                  "Fn::Select": [
-                    3,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "arn:",
-                              {
-                                Ref: "AWS::Partition"
-                              },
-                              ":ecr:",
-                              {
-                                Ref: "AWS::Region"
-                              },
-                              ":",
-                              {
-                                Ref: "AWS::AccountId"
-                              },
-                              ":repository/",
-                              {
-                                "Fn::GetAtt": [
-                                  "Ec2TaskDefwebAssetImageAdoptRepositoryEA698962",
-                                  "RepositoryName"
-                                ]
-                              }
-                            ]
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                ".",
-                {
-                  Ref: "AWS::URLSuffix"
-                },
-                "/",
-                {
-                  "Fn::GetAtt": [
-                    "Ec2TaskDefwebAssetImageAdoptRepositoryEA698962",
-                    "RepositoryName"
-                  ]
-                },
-                "@sha256:",
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "@sha256:",
-                        {
-                          Ref: "Ec2TaskDefwebAssetImageImageNameCBACAA57"
-                        }
-                      ]
-                    }
-                  ]
-                }
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Image: {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    Ref: "AWS::AccountId"
+                  },
+                  ".dkr.ecr.",
+                  {
+                    Ref: "AWS::Region"
+                  },
+                  ".",
+                  {
+                    Ref: "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "@sha256:",
+                          {
+                            Ref: "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "@sha256:",
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "@sha256:",
+                          {
+                            Ref: "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               ]
-            ]
-          },
-          Name: "web"
-        }],
+            },
+            Memory: 512,
+            Name: "web"
+          }
+        ],
       }));
 
       test.done();
@@ -647,7 +590,7 @@ export = {
 
       taskDefinition.addContainer("web", {
         image: ecs.ContainerImage.fromAsset(path.join(__dirname, '..', 'demo-image'), {
-          buildArgs: {HTTP_PROXY: 'http://10.20.30.2:1234'}
+          buildArgs: { HTTP_PROXY: 'http://10.20.30.2:1234' }
         }),
         memoryLimitMiB: 512
       });
@@ -717,10 +660,10 @@ export = {
       container.addContainerDependencies({
         container: dependency1
       },
-      {
-        container: dependency2,
-        condition: ecs.ContainerDependencyCondition.SUCCESS
-      }
+        {
+          container: dependency2,
+          condition: ecs.ContainerDependencyCondition.SUCCESS
+        }
       );
 
       // THEN
@@ -735,13 +678,13 @@ export = {
         {
           Name: "web",
           DependsOn: [{
-              Condition: "HEALTHY",
-              ContainerName: "dependency1"
-            },
-            {
-              Condition: "SUCCESS",
-              ContainerName: "dependency2"
-            }]
+            Condition: "HEALTHY",
+            ContainerName: "dependency1"
+          },
+          {
+            Condition: "SUCCESS",
+            ContainerName: "dependency2"
+          }]
         }]
       }));
 

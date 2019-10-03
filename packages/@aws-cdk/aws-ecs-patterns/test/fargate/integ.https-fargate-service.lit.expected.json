@@ -381,7 +381,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "HttpsServiceCertificateCertificateRequestorFunctionCodeS3Bucket7CB97C4F"
+            "Ref": "AssetParameters0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0S3Bucket0997A4A0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -394,7 +394,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "HttpsServiceCertificateCertificateRequestorFunctionCodeS3VersionKey6CF8F6B8"
+                          "Ref": "AssetParameters0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0S3VersionKey83D9C166"
                         }
                       ]
                     }
@@ -407,7 +407,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "HttpsServiceCertificateCertificateRequestorFunctionCodeS3VersionKey6CF8F6B8"
+                          "Ref": "AssetParameters0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0S3VersionKey83D9C166"
                         }
                       ]
                     }
@@ -679,18 +679,9 @@
     }
   },
   "Parameters": {
-    "HttpsServiceCertificateCertificateRequestorFunctionCodeS3Bucket7CB97C4F": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"aws-fargate-https-integ/HttpsService/Certificate/CertificateRequestorFunction/Code\""
-    },
-    "HttpsServiceCertificateCertificateRequestorFunctionCodeS3VersionKey6CF8F6B8": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"aws-fargate-https-integ/HttpsService/Certificate/CertificateRequestorFunction/Code\""
-    },
-    "HttpsServiceCertificateCertificateRequestorFunctionCodeArtifactHashC69E3CE8": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"aws-fargate-https-integ/HttpsService/Certificate/CertificateRequestorFunction/Code\""
-    }
+    "AssetParameters0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0S3Bucket0997A4A0": {"Type":"String","Description":"S3 bucket for asset \"0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0\""},
+    "AssetParameters0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0S3VersionKey83D9C166": {"Type":"String","Description":"S3 key for asset version \"0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0\""},
+    "AssetParameters0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0ArtifactHashF8F836D1": {"Type":"String","Description":"Artifact hash for asset \"0b9723d54b7db3fbfc1a143398b02392e5fe080a68535480782a949b4372d0f0\""}
   },
   "Outputs": {
     "HttpsServiceLoadBalancerDNSE2E79469": {

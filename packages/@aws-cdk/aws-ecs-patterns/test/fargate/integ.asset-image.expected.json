@@ -469,77 +469,11 @@
                 "",
                 [
                   {
-                    "Fn::Select": [
-                      4,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "FargateServiceTaskDefwebAssetImageAdoptRepositoryCDAFD419",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
+                    "Ref": "AWS::AccountId"
                   },
                   ".dkr.ecr.",
                   {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "FargateServiceTaskDefwebAssetImageAdoptRepositoryCDAFD419",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
+                    "Ref": "AWS::Region"
                   },
                   ".",
                   {
@@ -547,9 +481,16 @@
                   },
                   "/",
                   {
-                    "Fn::GetAtt": [
-                      "FargateServiceTaskDefwebAssetImageAdoptRepositoryCDAFD419",
-                      "RepositoryName"
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "@sha256:",
+                          {
+                            "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
+                          }
+                        ]
+                      }
                     ]
                   },
                   "@sha256:",
@@ -560,7 +501,7 @@
                         "Fn::Split": [
                           "@sha256:",
                           {
-                            "Ref": "FargateServiceTaskDefwebAssetImageImageNameDC0B98D5"
+                            "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
                           }
                         ]
                       }
@@ -627,7 +568,7 @@
               "Fn::Split": [
                 "@sha256:",
                 {
-                  "Ref": "FargateServiceTaskDefwebAssetImageImageNameDC0B98D5"
+                  "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
                 }
               ]
             }
@@ -745,6 +686,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
@@ -776,8 +718,7 @@
               }
             ]
           }
-        },
-        "EnableECSManagedTags": false
+        }
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",
@@ -890,7 +831,7 @@
                           "Fn::Split": [
                             "@sha256:",
                             {
-                              "Ref": "FargateServiceTaskDefwebAssetImageImageNameDC0B98D5"
+                              "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
                             }
                           ]
                         }
@@ -916,7 +857,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6"
+            "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB"
           },
           "S3Key": {
             "Fn::Join": [
@@ -929,7 +870,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
+                          "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7"
                         }
                       ]
                     }
@@ -942,7 +883,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
+                          "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7"
                         }
                       ]
                     }
@@ -1003,21 +944,21 @@
     }
   },
   "Parameters": {
-    "FargateServiceTaskDefwebAssetImageImageNameDC0B98D5": {
+    "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3": {
       "Type": "String",
-      "Description": "ECR repository name and tag asset \"aws-ecs-integ/FargateService/TaskDef/web/AssetImage\""
+      "Description": "ECR repository name and tag for asset \"1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c\""
     },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6": {
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-ecs-integ/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+      "Description": "S3 bucket for asset \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
     },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-ecs-integ/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+      "Description": "S3 key for asset version \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
     },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeArtifactHash8BCBAA49": {
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1ArtifactHash7E5AE478": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-ecs-integ/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+      "Description": "Artifact hash for asset \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
     }
   }
 }

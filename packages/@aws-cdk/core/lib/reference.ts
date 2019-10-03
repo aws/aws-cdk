@@ -16,12 +16,14 @@ export abstract class Reference extends Intrinsic {
   }
 
   public readonly target: IConstruct;
+  public readonly displayName: string;
 
-  constructor(value: any, target: IConstruct) {
+  constructor(value: any, target: IConstruct, displayName?: string) {
     super(value);
-    this.target = target;
     Object.defineProperty(this, REFERENCE_SYMBOL, { value: true });
+    this.target = target;
+    this.displayName = displayName || 'Reference';
   }
 }
 
-import { IConstruct } from "./construct";
+import { IConstruct } from './construct';

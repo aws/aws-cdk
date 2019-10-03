@@ -1,8 +1,6 @@
 import assets = require('@aws-cdk/assets');
 import ecr = require('@aws-cdk/aws-ecr');
-import cdk = require('@aws-cdk/core');
-import { Token } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import { Construct, Stack, Token } from '@aws-cdk/core';
 import fs = require('fs');
 import path = require('path');
 import { AdoptedRepository } from './adopted-repository';
@@ -48,7 +46,7 @@ export interface DockerImageAssetProps extends assets.CopyOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
+export class DockerImageAsset extends Construct implements assets.IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -62,12 +60,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
 
   public readonly sourceHash: string;
 
-  /**
-   * Directory where the source files are stored
-   */
-  private readonly directory: string;
-
-  constructor(scope: cdk.Construct, id: string, props: DockerImageAssetProps) {
+  constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
 
     // none of the properties use tokens
@@ -96,32 +89,16 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
       sourcePath: dir
     });
 
-    this.directory = staging.stagedPath;
     this.sourceHash = staging.sourceHash;
 
-    const imageNameParameter = new cdk.CfnParameter(this, 'ImageName', {
-      type: 'String',
-      description: `ECR repository name and tag asset "${this.node.path}"`,
-    });
-
-    const asset: cxapi.ContainerImageAssetMetadataEntry = {
-      id: this.node.uniqueId,
-      packaging: 'container-image',
-      path: this.directory,
-      sourceHash: this.sourceHash,
-      imageNameParameter: imageNameParameter.logicalId,
+    const stack = Stack.of(this);
+    const location = stack.addDockerImageAsset({
+      directoryName: staging.stagedPath,
+      dockerBuildArgs: props.buildArgs,
+      dockerBuildTarget: props.target,
       repositoryName: props.repositoryName,
-      buildArgs: props.buildArgs,
-      target: props.target
-    };
-
-    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
-
-    // Parse repository name and tag from the parameter (<REPO_NAME>@sha256:<TAG>)
-    // Example: cdk/cdkexampleimageb2d7f504@sha256:72c4f956379a43b5623d529ddd969f6826dde944d6221f445ff3e7add9875500
-    const components = cdk.Fn.split('@sha256:', imageNameParameter.valueAsString);
-    const repositoryName = cdk.Fn.select(0, components).toString();
-    const imageSha = cdk.Fn.select(1, components).toString();
+      sourceHash: staging.sourceHash
+    });
 
     // Require that repository adoption happens first, so we route the
     // input ARN into the Custom Resource and then get the URI which we use to
@@ -129,8 +106,8 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     //
     // If adoption fails (because the repository might be twice-adopted), we
     // haven't already started using the image.
-    this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName });
-    this.imageUri = `${this.repository.repositoryUri}@sha256:${imageSha}`;
+    this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName: location.repositoryName });
+    this.imageUri = location.imageUri;
   }
 }
 

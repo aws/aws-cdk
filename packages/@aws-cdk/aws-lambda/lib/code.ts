@@ -40,8 +40,8 @@ export abstract class Code {
    * Loads the function code from a local disk asset.
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
-  public static fromAsset(path: string): AssetCode {
-    return new AssetCode(path);
+  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
+    return new AssetCode(path, options);
   }
 
   /**
@@ -170,14 +170,17 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string) {
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
     super();
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Code', { path: this.path });
+      this.asset = new s3_assets.Asset(scope, 'Code', {
+        path: this.path,
+        ...this.options
+      });
     }
 
     if (!this.asset.isZipArchive) {

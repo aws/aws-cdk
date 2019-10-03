@@ -20,10 +20,9 @@ export = {
 
     // THEN
     const template = SynthUtils.synthesize(stack).template;
-
-    test.deepEqual(template.Parameters.ImageImageName5E684353, {
+    test.deepEqual(template.Parameters.AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3, {
       Type: 'String',
-      Description: 'ECR repository name and tag asset "Image"'
+      Description: 'ECR repository name and tag for asset "1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c"'
     });
 
     test.done();
@@ -34,7 +33,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const asset = new DockerImageAsset(stack, 'Image', {
+    new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
         a: 'b'
@@ -42,7 +41,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
     test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
     test.done();
   },
@@ -52,7 +51,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const asset = new DockerImageAsset(stack, 'Image', {
+    new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
         a: 'b'
@@ -61,7 +60,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
     test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
     test.done();
   },
@@ -99,7 +98,7 @@ export = {
                   ":",
                   { "Ref": "AWS::AccountId" },
                   ":repository/",
-                  { "Fn::GetAtt": [ "ImageAdoptRepositoryE1E84E35", "RepositoryName" ] }
+                  { "Fn::GetAtt": ["ImageAdoptRepositoryE1E84E35", "RepositoryName"] }
                 ]
               ]
             }
@@ -139,7 +138,17 @@ export = {
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
       "RepositoryName": {
-        "Fn::Select": [ 0, { "Fn::Split": [ "@sha256:", { "Ref": "ImageImageName5E684353" } ] } ]
+        "Fn::Select": [
+          0,
+          {
+            "Fn::Split": [
+              "@sha256:",
+              {
+                "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
+              }
+            ]
+          }
+        ]
       },
       "PolicyDocument": {
         "Statement": [

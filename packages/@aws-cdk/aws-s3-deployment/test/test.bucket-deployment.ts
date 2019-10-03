@@ -30,7 +30,7 @@ export = {
         ]
       },
       "SourceBucketNames": [{
-        "Ref": "DeployAsset1S3BucketC03B223F"
+        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
       }],
       "SourceObjectKeys": [{
         "Fn::Join": [
@@ -43,7 +43,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                     }
                   ]
                 }
@@ -56,7 +56,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                     }
                   ]
                 }
@@ -96,10 +96,10 @@ export = {
       },
       "SourceBucketNames": [
         {
-          "Ref": "DeployAsset1S3BucketC03B223F"
+          "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
         },
         {
-          "Ref": "DeployAsset2S3Bucket155AFD20"
+          "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3Bucket99793559"
         }
       ],
       "SourceObjectKeys": [
@@ -114,7 +114,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                       }
                     ]
                   }
@@ -127,7 +127,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                       }
                     ]
                   }
@@ -147,7 +147,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
                       }
                     ]
                   }
@@ -160,7 +160,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
                       }
                     ]
                   }

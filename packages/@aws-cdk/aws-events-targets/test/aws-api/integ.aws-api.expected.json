@@ -96,7 +96,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3BucketC1F8355D"
+            "Ref": "AssetParameters7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063S3Bucket05714AA7"
           },
           "S3Key": {
             "Fn::Join": [
@@ -109,7 +109,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3VersionKeyBA3A7136"
+                          "Ref": "AssetParameters7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063S3VersionKey84F37CC1"
                         }
                       ]
                     }
@@ -122,7 +122,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3VersionKeyBA3A7136"
+                          "Ref": "AssetParameters7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063S3VersionKey84F37CC1"
                         }
                       ]
                     }
@@ -219,17 +219,17 @@
     }
   },
   "Parameters": {
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3BucketC1F8355D": {
+    "AssetParameters7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063S3Bucket05714AA7": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "S3 bucket for asset \"7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063\""
     },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeS3VersionKeyBA3A7136": {
+    "AssetParameters7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063S3VersionKey84F37CC1": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "S3 key for asset version \"7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063\""
     },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37CodeArtifactHash9D3A0C2E": {
+    "AssetParameters7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063ArtifactHashF670187B": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code\""
+      "Description": "Artifact hash for asset \"7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063\""
     }
   }
 }
