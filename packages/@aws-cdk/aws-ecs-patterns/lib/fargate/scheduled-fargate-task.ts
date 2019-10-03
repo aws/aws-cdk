@@ -1,18 +1,45 @@
 import { FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
-import { ScheduledTaskBase, ScheduledTaskBaseProps } from '../base/scheduled-task-base';
+import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
 /**
- * The properties for the ScheduledFargateTask service.
+ * The properties for the ScheduledFargateTask task.
  */
 export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
   /**
+   * The properties to define if using an existing TaskDefinition in this construct.
+   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions must be defined, but not both.
+   *
+   * @default none
+   */
+  readonly scheduledFargateTaskDefinitionOptions?: ScheduledFargateTaskDefinitionOptions;
+
+  /**
+   * The properties to define if the construct is to create a TaskDefinition.
+   * ScheduledFargateTaskDefinitionOptions or ScheduledFargateTaskImageOptions must be defined, but not both.
+   *
+   * @default none
+   */
+  readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions;
+}
+
+/**
+ * The properties for the ScheduledFargateTask using an image.
+ */
+export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProps {
+  /**
    * The number of cpu units used by the task.
+   *
    * Valid values, which determines your range of valid values for the memory parameter:
+   *
    * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
+   *
    * 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
+   *
    * 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
+   *
    * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
+   *
    * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
    *
    * This default is set in the underlying FargateTaskDefinition construct.
@@ -33,11 +60,25 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
 }
 
 /**
- * A scheduled Fargate task that will be initiated off of cloudwatch events.
+ * The properties for the ScheduledFargateTask using a task definition.
+ */
+export interface ScheduledFargateTaskDefinitionOptions extends ScheduledTaskBaseProps {
+  /**
+   * The task definition to use for tasks in the service. Image or taskDefinition must be specified, but not both.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - none
+   */
+  readonly taskDefinition: FargateTaskDefinition;
+}
+
+/**
+ * A scheduled Fargate task that will be initiated off of CloudWatch Events.
  */
 export class ScheduledFargateTask extends ScheduledTaskBase {
   /**
-   * The ECS service in this construct
+   * The Fargate task definition in this construct.
    */
   public readonly taskDefinition: FargateTaskDefinition;
 
@@ -47,18 +88,26 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
   constructor(scope: Construct, id: string, props: ScheduledFargateTaskProps) {
     super(scope, id, props);
 
-    // Create a Task Definition for the container to start, also creates a log driver
-    this. taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
-      memoryLimitMiB: props.memoryLimitMiB || 512,
-      cpu: props.cpu || 256,
-    });
-    this.taskDefinition.addContainer('ScheduledContainer', {
-      image: props.image,
-      command: props.command,
-      environment: props.environment,
-      secrets: props.secrets,
-      logging: this.logDriver
-    });
+    if (props.scheduledFargateTaskDefinitionOptions && props.scheduledFargateTaskImageOptions) {
+      throw new Error('You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.');
+    } else if (props.scheduledFargateTaskDefinitionOptions) {
+      this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
+    } else if (props.scheduledFargateTaskImageOptions) {
+      const taskImageOptions = props.scheduledFargateTaskImageOptions;
+      this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
+        memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
+        cpu: taskImageOptions.cpu || 256,
+      });
+      this.taskDefinition.addContainer('ScheduledContainer', {
+        image: taskImageOptions.image,
+        command: taskImageOptions.command,
+        environment: taskImageOptions.environment,
+        secrets: taskImageOptions.secrets,
+        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id)
+      });
+    } else {
+      throw new Error('You must specify one of: taskDefinition or image');
+    }
 
     this.addTaskDefinitionToEventTarget(this.taskDefinition);
   }

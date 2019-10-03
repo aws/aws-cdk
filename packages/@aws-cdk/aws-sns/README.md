@@ -57,6 +57,7 @@ const fn = new lambda.Function(this, 'Function', ...);
 // color: 'red' or 'orange' or begins with 'bl'
 // size: anything but 'small' or 'medium'
 // price: between 100 and 200 or greater than 300
+// store: attribute must be present
 topic.subscribeLambda(new subs.LambdaSubscription(fn, {
     filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
@@ -69,7 +70,8 @@ topic.subscribeLambda(new subs.LambdaSubscription(fn, {
         price: sns.SubscriptionFilter.numericFilter({
             between: { start: 100, stop: 200 },
             greaterThan: 300
-        })
+        }),
+        store: sns.SubscriptionFilter.existsFilter(),
     }
 }));
 ```

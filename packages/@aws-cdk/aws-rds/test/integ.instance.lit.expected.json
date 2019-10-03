@@ -429,7 +429,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -763,7 +762,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -949,7 +947,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3BucketB81211B5"
+            "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4"
           },
           "S3Key": {
             "Fn::Join": [
@@ -962,7 +960,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354"
+                          "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4"
                         }
                       ]
                     }
@@ -975,7 +973,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354"
+                          "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4"
                         }
                       ]
                     }
@@ -992,7 +990,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
@@ -1090,17 +1088,8 @@
     }
   },
   "Parameters": {
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3BucketB81211B5": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
-    },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
-    },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeArtifactHash327647CC": {
-      "Type": "String",
-      "Description":"Artifact hash for asset \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
-    }
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4": {"Type":"String","Description":"S3 bucket for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""},
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4": {"Type":"String","Description":"S3 key for asset version \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""},
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42ArtifactHashD6C3B3DD": {"Type":"String","Description":"Artifact hash for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""}
   }
 }

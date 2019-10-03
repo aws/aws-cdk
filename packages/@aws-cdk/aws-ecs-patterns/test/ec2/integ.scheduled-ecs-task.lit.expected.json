@@ -204,7 +204,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -240,7 +239,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80": {
@@ -381,6 +386,12 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
           }
         ]
       }
@@ -557,7 +568,13 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
       }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88": {
@@ -704,8 +721,7 @@
             "ScheduledEc2TaskScheduledTaskDefTaskRoleC3FA127C",
             "Arn"
           ]
-        },
-        "Volumes": []
+        }
       }
     },
     "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
@@ -822,7 +838,7 @@
   },
   "Parameters": {
     "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
   }

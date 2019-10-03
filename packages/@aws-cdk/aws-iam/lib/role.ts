@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -124,28 +124,77 @@ export interface RoleProps {
 }
 
 /**
+ * Options allowing customizing the behavior of {@link Role.fromRoleArn}.
+ */
+export interface FromRoleArnOptions {
+  /**
+   * Whether the imported role can be modified by attaching policy resources to it.
+   *
+   * @default true
+   *
+   * @experimental
+   */
+  readonly mutable?: boolean;
+}
+
+/**
  * IAM Role
  *
  * Defines an IAM role. The role is created with an assume policy document associated with
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
 export class Role extends Resource implements IRole {
-
   /**
-   * Imports an external role by ARN
+   * Imports an external role by ARN.
+   *
    * @param scope construct scope
    * @param id construct id
    * @param roleArn the ARN of the role to import
+   * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleArn(scope: Construct, id: string, roleArn: string): IRole {
+  public static fromRoleArn(scope: Construct, id: string, roleArn: string, options: FromRoleArnOptions = {}): IRole {
+    const scopeStack = Stack.of(scope);
+    const parsedArn = scopeStack.parseArn(roleArn);
+    const roleName = parsedArn.resourceName!;
 
-    class Import extends Resource implements IRole {
+    abstract class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
       public readonly roleArn = roleArn;
-      public readonly roleName = Stack.of(scope).parseArn(roleArn).resourceName!;
+      public readonly roleName = roleName;
 
+      public abstract addToPolicy(statement: PolicyStatement): boolean;
+
+      public abstract attachInlinePolicy(policy: Policy): void;
+
+      public addManagedPolicy(_policy: IManagedPolicy): void {
+        // FIXME: Add warning that we're ignoring this
+      }
+
+      /**
+       * Grant permissions to the given principal to pass this role.
+       */
+      public grantPassRole(identity: IPrincipal): Grant {
+        return this.grant(identity, 'iam:PassRole');
+      }
+
+      /**
+       * Grant the actions defined in actions to the identity Principal on this resource.
+       */
+      public grant(grantee: IPrincipal, ...actions: string[]): Grant {
+        return Grant.addToPrincipal({
+          grantee,
+          actions,
+          resourceArns: [this.roleArn],
+          scope: this,
+        });
+      }
+    }
+
+    const roleAccount = parsedArn.account;
+
+    class MutableImport extends Import {
       private readonly attachedPolicies = new AttachedPolicies();
       private defaultPolicy?: Policy;
 
@@ -159,36 +208,36 @@ export class Role extends Resource implements IRole {
       }
 
       public attachInlinePolicy(policy: Policy): void {
-        this.attachedPolicies.attach(policy);
-        policy.attachToRole(this);
-      }
+        const policyAccount = Stack.of(policy).account;
 
-      public addManagedPolicy(_policy: IManagedPolicy): void {
-        // FIXME: Add warning that we're ignoring this
-      }
-
-      /**
-       * Grant the actions defined in actions to the identity Principal on this resource.
-       */
-      public grant(grantee: IPrincipal, ...actions: string[]): Grant {
-        return Grant.addToPrincipal({
-          grantee,
-          actions,
-          resourceArns: [this.roleArn],
-          scope: this
-        });
-      }
-
-      /**
-       * Grant permissions to the given principal to pass this role.
-       */
-      public grantPassRole(identity: IPrincipal): Grant {
-        return this.grant(identity, 'iam:PassRole');
+        if (accountsAreEqualOrOneIsUnresolved(policyAccount, roleAccount)) {
+          this.attachedPolicies.attach(policy);
+          policy.attachToRole(this);
+        }
       }
     }
 
-    return new Import(scope, id);
+    class ImmutableImport extends Import {
+      public addToPolicy(_statement: PolicyStatement): boolean {
+        return false;
+      }
 
+      public attachInlinePolicy(_policy: Policy): void {
+        // do nothing
+      }
+    }
+
+    const scopeAccount = scopeStack.account;
+
+    return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
+      ? new MutableImport(scope, id)
+      : new ImmutableImport(scope, id);
+
+    function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
+                                               account2: string | undefined): boolean {
+      return Token.isUnresolved(account1) || Token.isUnresolved(account2) ||
+        account1 === account2;
+    }
   }
 
   public readonly grantPrincipal: IPrincipal = this;

@@ -187,10 +187,10 @@ export = {
     test.done();
   },
 
-  async 'fixes booleans'(test: Test) {
-    const getParameterFake = sinon.fake.resolves({});
+  async 'decodes booleans'(test: Test) {
+    const putItemFake = sinon.fake.resolves({});
 
-    AWS.mock('SSM', 'getParameter', getParameterFake);
+    AWS.mock('DynamoDB', 'putItem', putItemFake);
 
     const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
       ...eventCommon,
@@ -198,13 +198,26 @@ export = {
       ResourceProperties: {
         ServiceToken: 'token',
         Create: {
-          service: 'SSM',
-          action: 'getParameter',
+          service: 'DynamoDB',
+          action: 'putItem',
           parameters: {
-            Name: 'my-parameter',
-            WithDecryption: 'true'
+            TableName: 'table',
+            Item: {
+              True: {
+                BOOL: 'TRUE:BOOLEAN'
+              },
+              TrueString: {
+                S: 'true'
+              },
+              False: {
+                BOOL: 'FALSE:BOOLEAN'
+              },
+              FalseString: {
+                S: 'false'
+              },
+            }
           },
-          physicalResourceId: 'my-parameter'
+          physicalResourceId: 'put-item'
         } as AwsSdkCall
       }
     };
@@ -215,9 +228,22 @@ export = {
 
     await handler(event, {} as AWSLambda.Context);
 
-    sinon.assert.calledWith(getParameterFake, {
-      Name: 'my-parameter',
-      WithDecryption: true // boolean
+    sinon.assert.calledWith(putItemFake, {
+      TableName: 'table',
+      Item: {
+        True: {
+          BOOL: true
+        },
+        TrueString: {
+          S: 'true'
+        },
+        False: {
+          BOOL: false
+        },
+        FalseString: {
+          S: 'false'
+        },
+      }
     });
 
     test.equal(request.isDone(), true);
@@ -263,6 +289,43 @@ export = {
       body.PhysicalResourceId === 'id' &&
       body.Data!['Contents.0.Key'] === 'first-key' &&
       body.Data!['Contents.1.Key'] === undefined
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    test.equal(request.isDone(), true);
+
+    test.done();
+  },
+
+  async 'can specify apiVersion and region'(test: Test) {
+    const publishFake = sinon.fake.resolves({});
+
+    AWS.mock('SNS', 'publish', publishFake);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: {
+          service: 'SNS',
+          action: 'publish',
+          parameters: {
+            Message: 'message',
+            TopicArn: 'topic'
+          },
+          apiVersion: '2010-03-31',
+          region: 'eu-west-1',
+          physicalResourceId: 'id',
+        } as AwsSdkCall
+      }
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS' &&
+      body.Data!.apiVersion === '2010-03-31' &&
+      body.Data!.region === 'eu-west-1'
     );
 
     await handler(event, {} as AWSLambda.Context);

@@ -14,10 +14,12 @@ Array.isArray(cluster);
 Array.isArray(path);
 
 // Instantiate Fargate Service with just cluster and image
-const fargateService = new ecsPatterns.LoadBalancedFargateService(stack, "FargateService", {
+const fargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateService", {
   cluster,
-  containerPort: 8000,
-  image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
+  taskImageOptions: {
+    containerPort: 8000,
+    image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
+  },
 });
 
 // CfnOutput the DNS where you can access your service

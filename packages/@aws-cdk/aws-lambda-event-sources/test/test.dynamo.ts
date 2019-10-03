@@ -111,6 +111,26 @@ export = {
     test.done();
   },
 
+  'fails if streaming not enabled on table'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      }
+    });
+
+    // WHEN
+    test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
+      batchSize: 50,
+      startingPosition: lambda.StartingPosition.LATEST
+    })), /DynamoDB Streams must be enabled on the table T/);
+
+    test.done();
+  },
+
   'fails if batch size < 1'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -152,4 +172,63 @@ export = {
 
     test.done();
   },
+
+  'specific maxBatchingWindow'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      maxBatchingWindow: cdk.Duration.minutes(2),
+      startingPosition: lambda.StartingPosition.LATEST
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      "EventSourceArn": {
+        "Fn::GetAtt": [
+          "TD925BC7E",
+          "StreamArn"
+        ]
+      },
+      "FunctionName":  {
+        "Ref": "Fn9270CBC0"
+      },
+      "MaximumBatchingWindowInSeconds": 120,
+      "StartingPosition": "LATEST"
+    }));
+
+    test.done();
+  },
+
+  'throws if maxBatchingWindow > 300 seconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maxBatchingWindow: cdk.Duration.seconds(301),
+        startingPosition: lambda.StartingPosition.LATEST
+      })), /maxBatchingWindow cannot be over 300 seconds/);
+
+    test.done();
+  },
+
 };

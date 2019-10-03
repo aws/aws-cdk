@@ -45,11 +45,6 @@ cluster.addResource('mypod', {
 });
 ```
 
-**NOTE**: in order to determine the default AMI for for Amazon EKS instances the
-`eks.Cluster` resource must be defined within a stack that is configured with an
-explicit `env.region`. See [Environments](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)
-in the AWS CDK Developer Guide for more details.
-
 Here is a [complete sample](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-eks/test/integ.eks-kubectl.lit.ts).
 
 ### Capacity
@@ -87,7 +82,8 @@ cluster.defaultCapacity!.scaleOnCpuUtilization('up', {
 });
 ```
 
-You can add customized capacity through `cluster.addCapacity()`:
+You can add customized capacity through `cluster.addCapacity()` or
+`cluster.addAutoScalingGroup()`:
 
 ```ts
 cluster.addCapacity('frontend-nodes', {
@@ -97,7 +93,50 @@ cluster.addCapacity('frontend-nodes', {
 });
 ```
 
-### Interacting with Your Cluster
+### Spot Capacity
+
+If `spotPrice` is specified, the capacity will be purchased from spot instances:
+
+```ts
+cluster.addCapacity('spot', {
+  spotPrice: '0.1094',
+  instanceType: new ec2.InstanceType('t3.large'),
+  maxCapacity: 10
+});
+```
+
+Spot instance nodes will be labeled with `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
+
+The [Spot Termination Handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
+DaemonSet will be installed on these nodes. The termination handler leverages
+[EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/)
+to gracefully stop all pods running on spot nodes that are about to be
+terminated.
+
+### Bootstrapping
+
+When adding capacity, you can specify options for
+[/etc/eks/boostrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh)
+which is responsible for associating the node to the EKS cluster. For example,
+you can use `kubeletExtraArgs` to add custom node labels or taints.
+
+
+```ts
+// up to ten spot instances
+cluster.addCapacity('spot', {
+  instanceType: new ec2.InstanceType('t3.large'),
+  desiredCapacity: 2,
+  bootstrapOptions: {
+    kubeletExtraArgs: '--node-labels foo=bar,goo=far',
+    awsApiRetryAttempts: 5
+  }
+});
+```
+
+To disable bootstrapping altogether (i.e. to fully customize user-data), set `bootstrapEnabled` to `false` when you add
+the capacity.
+
+### Masters Role
 
 The Amazon EKS construct library allows you to specify an IAM role that will be
 granted `system:masters` privileges on your cluster.
@@ -180,7 +219,7 @@ included in your template and will be printed when running `cdk deploy`.
 will be created with the role/user that created the AWS CloudFormation
 stack. See [Kubectl Support](#kubectl-support) for details.
 
-### Defining Kubernetes Resources
+### Kubernetes Resources
 
 The `KubernetesResource` construct or `cluster.addResource` method can be used
 to apply Kubernetes resource manifests to this cluster.
@@ -347,4 +386,3 @@ When kubectl is disabled, you should be aware of the following:
 ### Roadmap
 
 - [ ] AutoScaling (combine EC2 and Kubernetes scaling)
-- [ ] Spot fleet support

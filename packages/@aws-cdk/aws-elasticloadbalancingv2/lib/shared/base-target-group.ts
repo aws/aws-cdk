@@ -21,8 +21,12 @@ export interface BaseTargetGroupProps {
 
   /**
    * The virtual private cloud (VPC).
+   *
+   * only if `TargetType` is `Ip` or `InstanceId`
+   *
+   * @default - undefined
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -182,6 +186,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   protected readonly loadBalancerAttachedDependencies = new cdk.ConcreteDependable();
 
   /**
+   * The types of the directly registered members of this target group
+   */
+  protected targetType?: TargetType;
+
+  /**
    * Attributes of this target group
    */
   private readonly attributes: Attributes = {};
@@ -189,12 +198,14 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * The JSON objects returned by the directly registered members of this target group
    */
-  private readonly targetsJson = new Array<any>();
+  private readonly targetsJson = new Array<CfnTargetGroup.TargetDescriptionProperty>();
 
   /**
-   * The types of the directly registered members of this target group
+   * The target group VPC
+   *
+   * @default - Required if adding instances instead of Lambdas to TargetGroup
    */
-  private targetType?: TargetType;
+  private vpc?: ec2.IVpc;
 
   /**
    * The target group resource
@@ -209,14 +220,15 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
+      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true}),
       targetType: cdk.Lazy.stringValue({ produce: () => this.targetType }),
-      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson }),
-      vpcId: baseProps.vpc.vpcId,
+      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson}, { omitEmptyArray: true }),
+      vpcId: cdk.Lazy.stringValue({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined}),
 
       // HEALTH CHECK
       healthCheckIntervalSeconds: cdk.Lazy.numberValue({
@@ -277,9 +289,23 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     }
     this.targetType = props.targetType;
 
+    if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
+      throw new Error(`TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.`);
+    }
+
     if (props.targetJson) {
       this.targetsJson.push(props.targetJson);
     }
+  }
+
+  protected validate(): string[]  {
+    const ret = super.validate();
+
+    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
+      ret.push(`'vpc' is required for a non-Lambda TargetGroup`);
+    }
+
+    return ret;
   }
 }
 

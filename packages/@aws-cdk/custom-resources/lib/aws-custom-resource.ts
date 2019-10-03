@@ -42,7 +42,7 @@ export interface AwsSdkCall {
    * resource id. Either `physicalResourceId` or `physicalResourceIdPath`
    * must be specified for onCreate or onUpdate calls.
    *
-   * @default no path
+   * @default - no path
    */
   readonly physicalResourceIdPath?: string;
 
@@ -51,7 +51,7 @@ export interface AwsSdkCall {
    * `physicalResourceId` or `physicalResourceIdPath` must be specified for
    * onCreate or onUpdate calls.
    *
-   * @default no physical resource id
+   * @default - no physical resource id
    */
   readonly physicalResourceId?: string;
 
@@ -60,7 +60,7 @@ export interface AwsSdkCall {
    * `Error` object will be tested against this pattern. If there is a match an
    * error will not be thrown.
    *
-   * @default do not catch errors
+   * @default - do not catch errors
    */
   readonly catchErrorPattern?: string;
 
@@ -68,9 +68,18 @@ export interface AwsSdkCall {
    * API version to use for the service
    *
    * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html
-   * @default use latest available API version
+   * @default - use latest available API version
    */
   readonly apiVersion?: string;
+
+  /**
+   * The region to send service requests to.
+   * **Note: Cross-region operations are generally considered an anti-pattern.**
+   * **Consider first deploying a stack in that region.**
+   *
+   * @default - the region where this custom resource is deployed
+   */
+  readonly region?: string;
 
   /**
    * Restrict the data returned by the custom resource to a specific path in
@@ -102,7 +111,7 @@ export interface AwsCustomResourceProps {
   readonly onUpdate?: AwsSdkCall;
 
   /**
-   * THe AWS SDK call to make when the resource is deleted
+   * The AWS SDK call to make when the resource is deleted
    *
    * @default no call
    */
@@ -156,13 +165,14 @@ export class AwsCustomResource extends cdk.Construct {
       }
     }
 
+    const create = props.onCreate || props.onUpdate;
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: 'Custom::AWS',
       provider: CustomResourceProvider.lambda(provider),
       properties: {
-        create: props.onCreate || props.onUpdate,
-        update: props.onUpdate,
-        delete: props.onDelete
+        create: create && encodeBooleans(create),
+        update: props.onUpdate && encodeBooleans(props.onUpdate),
+        delete: props.onDelete && encodeBooleans(props.onDelete)
       }
     });
   }
@@ -187,7 +197,23 @@ export class AwsCustomResource extends cdk.Construct {
  */
 function awsSdkToIamAction(service: string, action: string): string {
   const srv = service.toLowerCase();
-  const iamService = awsSdkMetadata[srv].prefix || srv;
+  const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
+}
+
+/**
+ * Encodes booleans as special strings
+ */
+function encodeBooleans(object: object) {
+  return JSON.parse(JSON.stringify(object), (_k, v) => {
+    switch (v) {
+      case true:
+        return 'TRUE:BOOLEAN';
+      case false:
+        return 'FALSE:BOOLEAN';
+      default:
+        return v;
+    }
+  });
 }

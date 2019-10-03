@@ -1,6 +1,8 @@
 import { Test } from 'nodeunit';
 import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack } from '../lib';
+import { validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
 export = {
@@ -284,6 +286,29 @@ export = {
     test.done();
   },
 
+  'CfnSynthesisError is ignored when preparing cross references'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+
+    // WHEN
+    class CfnTest extends CfnResource {
+      public _toCloudFormation() {
+        return new PostResolveToken({
+          xoo: 1234
+        }, props => {
+          validateString(props).assertSuccess();
+        });
+      }
+    }
+
+    new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
+
+    // THEN
+    ConstructNode.prepare(stack.node);
+    test.done();
+  },
+
   'Stacks can be children of other stacks (substack) and they will be synthesized separately'(test: Test) {
     // GIVEN
     const app = new App();
@@ -431,7 +456,26 @@ export = {
 
     test.throws(() => {
       ConstructNode.prepare(app.node);
-    }, /Can only reference cross stacks in the same region and account/);
+    }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
+
+    test.done();
+  },
+
+  'urlSuffix does not imply a stack dependency'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+
+    // WHEN
+    new CfnOutput(second, 'Output', {
+      value: first.urlSuffix
+    });
+
+    // THEN
+    app.synth();
+
+    test.equal(second.dependencies.length, 0);
 
     test.done();
   },
@@ -569,6 +613,20 @@ export = {
       { "Fn::Select": [ 0, { "Fn::GetAZs": "" } ] },
       { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
     ]);
+    test.done();
+  },
+
+  'stack.templateFile contains the name of the cloudformation output'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack1 = new Stack(app, 'MyStack1');
+    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+
+    // THEN
+    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+    test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
     test.done();
   }
 };

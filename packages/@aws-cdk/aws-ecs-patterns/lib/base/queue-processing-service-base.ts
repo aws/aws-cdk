@@ -1,6 +1,6 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
 
@@ -9,27 +9,23 @@ import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
  */
 export interface QueueProcessingServiceBaseProps {
   /**
-   * The cluster where your service will be deployed
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   * The name of the cluster that hosts the service.
    *
-   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well
+   * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
+   * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
   readonly cluster?: ICluster;
 
   /**
-   * VPC that the cluster instances or tasks are running in
-   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
    *
-   * @default - use vpc of cluster or create a new one
+   * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
+   * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
   readonly vpc?: IVpc;
 
   /**
    * The image used to start a container.
-   *
-   * This string is passed directly to the Docker daemon.
-   * Images in the Docker Hub registry are available by default.
-   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
    */
   readonly image: ContainerImage;
 
@@ -50,7 +46,7 @@ export interface QueueProcessingServiceBaseProps {
   readonly desiredTaskCount?: number;
 
   /**
-   * Flag to indicate whether to enable logging
+   * Flag to indicate whether to enable logging.
    *
    * @default true
    */
@@ -67,7 +63,7 @@ export interface QueueProcessingServiceBaseProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * Secret environment variables to pass to the container
+   * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
@@ -76,8 +72,8 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * A queue for which to process items from.
    *
-   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'.
-   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html
+   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'. See
+   * [CreateQueue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html)
    *
    * @default 'SQSQueue with CloudFormation-generated name'
    */
@@ -93,19 +89,35 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
    *
-   * Maps a range of metric values to a particular scaling behavior.
-   * https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html
+   * Maps a range of metric values to a particular scaling behavior. See
+   * [Simple and Step Scaling Policies for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html)
    *
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
   readonly scalingSteps?: ScalingInterval[];
 
   /**
-   * The LogDriver to use for logging.
+   * The log driver to use.
    *
-   * @default AwsLogDriver if enableLogging is true
+   * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default - none
+   */
+  readonly propagateTags?: PropagatedTagSource;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default false
+   */
+  readonly enableECSManagedTags?: boolean;
 }
 
 /**
@@ -131,22 +143,22 @@ export abstract class QueueProcessingServiceBase extends Construct {
   public readonly environment: { [key: string]: string };
 
   /**
-   * Secret environment variables
+   * The secret environment variables.
    */
   public readonly secrets?: { [key: string]: Secret };
 
   /**
-   * The minimum number of tasks to run
+   * The minimum number of tasks to run.
    */
   public readonly desiredCount: number;
 
   /**
-   * The maximum number of instances for autoscaling to scale up to
+   * The maximum number of instances for autoscaling to scale up to.
    */
   public readonly maxCapacity: number;
 
   /**
-   * The scaling interval for autoscaling based off an SQS Queue size
+   * The scaling interval for autoscaling based off an SQS Queue size.
    */
   public readonly scalingSteps: ScalingInterval[];
   /**
@@ -208,6 +220,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
     });
   }
 
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;

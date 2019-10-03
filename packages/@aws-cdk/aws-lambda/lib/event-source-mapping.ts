@@ -37,7 +37,15 @@ export interface EventSourceMappingOptions {
    *
    * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
    */
-  readonly startingPosition?: StartingPosition
+  readonly startingPosition?: StartingPosition;
+
+  /**
+   * The maximum amount of time to gather records before invoking the function.
+   * Maximum of Duration.minutes(5)
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly maxBatchingWindow?: cdk.Duration;
 }
 
 export interface EventSourceMappingProps extends EventSourceMappingOptions {
@@ -63,12 +71,17 @@ export class EventSourceMapping extends Resource {
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
+    if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
+      throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
+    }
+
     new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       enabled: props.enabled,
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      maximumBatchingWindowInSeconds: props.maxBatchingWindow && props.maxBatchingWindow.toSeconds(),
     });
   }
 }

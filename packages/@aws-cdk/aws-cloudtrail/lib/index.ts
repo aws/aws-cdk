@@ -93,6 +93,12 @@ export interface TrailProps {
    * @default - No prefix.
    */
   readonly s3KeyPrefix?: string;
+
+  /** The Amazon S3 bucket
+   *
+   * @default - if not supplied a bucket will be created with all the correct permisions
+   */
+  readonly bucket?: s3.IBucket
 }
 
 export enum ReadWriteType {
@@ -109,6 +115,10 @@ export enum ReadWriteType {
  *
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
+ * NOTE the above example creates an UNENCRYPTED bucket by default,
+ * If you are required to use an Encrypted bucket you can supply a preconfigured bucket
+ * via TrailProps
+ *
  */
 export class Trail extends Resource {
 
@@ -122,6 +132,7 @@ export class Trail extends Resource {
    */
   public readonly trailSnsTopicArn: string;
 
+  private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
@@ -129,26 +140,28 @@ export class Trail extends Resource {
       physicalName: props.trailName,
     });
 
-    const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
     const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
-    s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [s3bucket.bucketArn],
-      actions: ['s3:GetBucketAcl'],
-      principals: [cloudTrailPrincipal],
-    }));
+    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
 
-    s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
-      actions: ["s3:PutObject"],
-      principals: [cloudTrailPrincipal],
-      conditions:  {
-        StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
-      }
-    }));
+    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.s3bucket.bucketArn],
+        actions: ['s3:GetBucketAcl'],
+        principals: [cloudTrailPrincipal],
+      }));
+
+    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
+        actions: ["s3:PutObject"],
+        principals: [cloudTrailPrincipal],
+        conditions:  {
+          StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
+        }
+      }));
 
     let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
+
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, "LogGroup", {
         retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
@@ -161,6 +174,7 @@ export class Trail extends Resource {
         resources: [logGroup.attrArn],
       }));
     }
+
     if (props.managementEvents) {
       const managementEvent =  {
         includeManagementEvents: true,
@@ -177,7 +191,7 @@ export class Trail extends Resource {
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
-      s3BucketName: s3bucket.bucketName,
+      s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
       cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
@@ -192,8 +206,10 @@ export class Trail extends Resource {
     });
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
-    const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
-    trail.node.addDependency(s3BucketPolicy);
+    // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
+    if (this.s3bucket.policy) {
+      trail.node.addDependency(this.s3bucket.policy);
+    }
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
     // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated

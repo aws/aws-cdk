@@ -11,10 +11,15 @@ export interface TestStackArtifact {
   assets?: cxapi.AssetMetadataEntry[];
 }
 
-export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembly {
+export interface TestAssembly {
+  stacks: TestStackArtifact[];
+  missing?: cxapi.MissingContext[];
+}
+
+export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
   const builder = new cxapi.CloudAssemblyBuilder();
 
-  for (const stack of stacks) {
+  for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
 
@@ -24,6 +29,10 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
       metadata[asset.id] = [
         { type: cxapi.ASSET_METADATA, data: asset }
       ];
+    }
+
+    for (const missing of assembly.missing || []) {
+      builder.addMissing(missing);
     }
 
     builder.addArtifact(stack.stackName, {
@@ -38,10 +47,10 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
     });
   }
 
-  return builder.build();
+  return builder.buildAssembly();
 }
 
 export function testStack(stack: TestStackArtifact) {
-  const assembly = testAssembly(stack);
+  const assembly = testAssembly({ stacks: [stack] });
   return assembly.getStack(stack.stackName);
 }

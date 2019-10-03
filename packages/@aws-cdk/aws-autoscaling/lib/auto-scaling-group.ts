@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
+import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag, Token, withResolved } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -294,7 +294,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
     if (this.albTargetGroup === undefined) {
-      throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
+      throw new Error('Attach the AutoScalingGroup to a non-imported Application Load Balancer before calling scaleOnRequestCount()');
     }
 
     const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
@@ -390,6 +390,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public readonly userData: ec2.UserData;
 
+  /**
+   * The maximum spot price configured for thie autoscaling group. `undefined`
+   * indicates that this group uses on-demand capacity.
+   */
+  public readonly spotPrice?: string;
+
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -464,16 +470,23 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
     const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
 
-    if (desiredCapacity < minCapacity || desiredCapacity > maxCapacity) {
-      throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
-    }
+    withResolved(desiredCapacity, minCapacity, (desired, min) => {
+      if (desired < min) {
+        throw new Error(`Should have minCapacity (${min}) <= desiredCapacity (${desired})`);
+      }
+    });
+    withResolved(desiredCapacity, maxCapacity, (desired, max) => {
+      if (max < desired) {
+        throw new Error(`Should have desiredCapacity (${desired}) <= maxCapacity (${max})`);
+      }
+    });
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
-      minSize: minCapacity.toString(),
-      maxSize: maxCapacity.toString(),
-      desiredCapacity: desiredCapacity.toString(),
+      minSize: stringifyNumber(minCapacity),
+      maxSize: stringifyNumber(maxCapacity),
+      desiredCapacity: stringifyNumber(desiredCapacity),
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
@@ -508,6 +521,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
+
+    this.spotPrice = props.spotPrice;
   }
 
   /**
@@ -530,9 +545,18 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+    if (this.albTargetGroup !== undefined) {
+      throw new Error('Cannot add AutoScalingGroup to 2nd Target Group');
+    }
+
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    this.albTargetGroup = targetGroup;
+    if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
+      // Copy onto self if it's a concrete type. We need this for autoscaling
+      // based on request count, which we cannot do with an imported TargetGroup.
+      this.albTargetGroup = targetGroup;
+    }
+
     targetGroup.registerConnectable(this);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
@@ -540,7 +564,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
@@ -1056,4 +1080,15 @@ export enum EbsDeviceVolumeType {
    * Cold HDD
    */
   SC1 = 'sc1',
+}
+
+/**
+ * Stringify a number directly or lazily if it's a Token
+ */
+function stringifyNumber(x: number) {
+  if (Token.isUnresolved(x)) {
+    return Lazy.stringValue({ produce: context => `${context.resolve(x)}` });
+  } else {
+    return `${x}`;
+  }
 }

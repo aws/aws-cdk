@@ -80,6 +80,30 @@ export = {
     test.done();
   },
 
+  'with existsFilter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        size: sns.SubscriptionFilter.existsFilter(),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+      FilterPolicy: {
+        size: [{ exists: true }]
+      },
+    }));
+    test.done();
+  },
+
   'throws with raw delivery for protocol other than http, https or sqs'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

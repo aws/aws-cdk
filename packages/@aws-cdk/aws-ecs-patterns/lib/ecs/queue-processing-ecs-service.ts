@@ -7,9 +7,23 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  */
 export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBaseProps {
   /**
-   * The minimum number of CPU units to reserve for the container.
+   * The number of cpu units used by the task.
    *
-   * @default - No minimum CPU units reserved.
+   * Valid values, which determines your range of valid values for the memory parameter:
+   *
+   * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
+   *
+   * 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
+   *
+   * 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
+   *
+   * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
+   *
+   * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
+   *
+   * This default is set in the underlying FargateTaskDefinition construct.
+   *
+   * @default none
    */
   readonly cpu?: number;
 
@@ -41,14 +55,18 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
 }
 
 /**
- * Class to create a queue processing Ec2 service
+ * Class to create a queue processing EC2 service.
  */
 export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
 
   /**
-   * The ECS service in this construct
+   * The EC2 service in this construct.
    */
   public readonly service: Ec2Service;
+  /**
+   * The EC2 task definition in this construct
+   */
+  public readonly taskDefinition: Ec2TaskDefinition;
 
   /**
    * Constructs a new instance of the QueueProcessingEc2Service class.
@@ -57,8 +75,8 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef');
-    taskDefinition.addContainer('QueueProcessingContainer', {
+    this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef');
+    this.taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
@@ -74,7 +92,9 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     this.service = new Ec2Service(this, 'QueueProcessingService', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition
+      taskDefinition: this.taskDefinition,
+      propagateTags: props.propagateTags,
+      enableECSManagedTags: props.enableECSManagedTags,
     });
     this.configureAutoscalingForService(this.service);
   }

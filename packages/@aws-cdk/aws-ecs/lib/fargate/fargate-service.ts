@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType, TracingOptions } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, TracingOptions, PropagatedTagSource } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
@@ -47,6 +47,15 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @deprecated Use `propagateTags` instead.
+   * @default PropagatedTagSource.NONE
+   */
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
 /**
@@ -81,10 +90,19 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
+                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
       launchType: LaunchType.FARGATE,
+      propagateTags: propagateTagsFromSource,
+      enableECSManagedTags: props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,

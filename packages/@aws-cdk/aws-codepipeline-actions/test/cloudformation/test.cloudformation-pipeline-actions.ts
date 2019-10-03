@@ -110,7 +110,6 @@ export = {
         "BranchName": "master",
         "PollForSourceChanges": true
       },
-      "InputArtifacts": [],
       "Name": "source",
       "OutputArtifacts": [
         {
@@ -176,7 +175,6 @@ export = {
       },
       "InputArtifacts": [{"Name": "OutputYo"}],
       "Name": "BuildChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       },
       {
@@ -190,9 +188,7 @@ export = {
         "ActionMode": "CHANGE_SET_EXECUTE",
         "ChangeSetName": "MyMagicalChangeSet"
       },
-      "InputArtifacts": [],
       "Name": "ExecuteChangeSetProd",
-      "OutputArtifacts": [],
       "RunOrder": 1
       }
     ],
@@ -610,6 +606,44 @@ export = {
             ],
           },
         ],
+      }));
+
+      // the pipeline's BucketPolicy should trust both CFN roles
+      expect(pipelineStack).to(haveResourceLike('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                    ":iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508",
+                  ]],
+                },
+              },
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": ["", ["arn:", { "Ref": "AWS::Partition" },
+                    ":iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50",
+                  ]],
+                },
+              },
+            },
+          ],
+        },
       }));
 
       const otherStack = app.node.findChild('cross-account-support-stack-123456789012') as cdk.Stack;

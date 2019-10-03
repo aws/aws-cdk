@@ -362,7 +362,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
     return {
       imageId: ami,
       osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
@@ -433,7 +433,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
     return {
       imageId: ami,
       osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
@@ -581,11 +581,9 @@ class ImportedCluster extends Resource implements ICluster {
       resourceName: props.clusterName
     });
 
-    let i = 1;
-    for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
-      i++;
-    }
+    this.connections = new ec2.Connections({
+      securityGroups: props.securityGroups
+    });
   }
 
   public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {

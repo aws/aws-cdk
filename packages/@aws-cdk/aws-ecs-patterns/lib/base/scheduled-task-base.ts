@@ -1,8 +1,9 @@
 import { Schedule } from "@aws-cdk/aws-applicationautoscaling";
-import { AwsLogDriver, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
+import { IVpc } from '@aws-cdk/aws-ec2';
+import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from "@aws-cdk/aws-ecs";
 import { Rule } from "@aws-cdk/aws-events";
 import { EcsTask } from "@aws-cdk/aws-events-targets";
-import { Construct } from "@aws-cdk/core";
+import { Construct, Stack } from "@aws-cdk/core";
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -10,26 +11,43 @@ import { Construct } from "@aws-cdk/core";
 export interface ScheduledTaskBaseProps {
   /**
    * The name of the cluster that hosts the service.
+   *
+   * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
+   * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
-  readonly cluster: ICluster;
+  readonly cluster?: ICluster;
 
   /**
-   * The image used to start a container.
+   * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
    *
-   * This string is passed directly to the Docker daemon.
-   * Images in the Docker Hub registry are available by default.
-   * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
+   * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
+   * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
-  readonly image: ContainerImage;
+  readonly vpc?: IVpc;
 
   /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
-   * runs the rule. For more information, see Schedule Expression Syntax for
-   * Rules in the Amazon CloudWatch User Guide.
-   *
-   * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+   * runs the rule. For more information, see
+   * [Schedule Expression Syntax for Rules](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html)
+   * in the Amazon CloudWatch User Guide.
    */
   readonly schedule: Schedule;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * @default 1
+   */
+  readonly desiredTaskCount?: number;
+}
+
+export interface ScheduledTaskImageProps {
+  /**
+   * The image used to start a container. Image or taskDefinition must be specified, but not both.
+   *
+   * @default - none
+   */
+  readonly image: ContainerImage;
 
   /**
    * The command that is passed to the container.
@@ -41,13 +59,6 @@ export interface ScheduledTaskBaseProps {
   readonly command?: string[];
 
   /**
-   * The desired number of instantiations of the task definition to keep running on the service.
-   *
-   * @default 1
-   */
-  readonly desiredTaskCount?: number;
-
-  /**
    * The environment variables to pass to the container.
    *
    * @default none
@@ -55,16 +66,16 @@ export interface ScheduledTaskBaseProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * Secret environment variables to pass to the container
+   * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
   readonly secrets?: { [key: string]: Secret };
 
   /**
-   * The LogDriver to use for logging.
+   * The log driver to use.
    *
-   * @default AwsLogDriver if enableLogging is true
+   * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
 }
@@ -81,11 +92,11 @@ export abstract class ScheduledTaskBase extends Construct {
    * The desired number of instantiations of the task definition to keep running on the service.
    */
   public readonly desiredTaskCount: number;
-  public readonly eventRule: Rule;
+
   /**
-   * The AwsLogDriver to use for logging if logging is enabled.
+   * The CloudWatch Events rule for the service.
    */
-  public readonly logDriver?: LogDriver;
+  public readonly eventRule: Rule;
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
@@ -93,17 +104,13 @@ export abstract class ScheduledTaskBase extends Construct {
   constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
     super(scope, id);
 
-    this.cluster = props.cluster;
+    this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
     this.desiredTaskCount = props.desiredTaskCount || 1;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
     });
-
-    this.logDriver = props.logDriver !== undefined
-                        ? props.logDriver
-                        : this.createAWSLogDriver(this.node.id);
   }
 
   /**
@@ -122,6 +129,16 @@ export abstract class ScheduledTaskBase extends Construct {
     this.eventRule.addTarget(eventRuleTarget);
 
     return eventRuleTarget;
+  }
+
+  /**
+   * Returns the default cluster.
+   */
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+    // magic string to avoid collision with user-defined constructs
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
+    const stack = Stack.of(scope);
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

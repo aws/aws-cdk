@@ -15,8 +15,10 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      memoryLimitMiB: 512,
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -26,6 +28,25 @@ export = {
         {
           Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
           EcsParameters: {
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                  }
+                ]
+              }
+            },
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
@@ -69,11 +90,13 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        memoryLimitMiB: 512,
+        cpu: 2,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
       desiredTaskCount: 2,
-      memoryLimitMiB: 512,
-      cpu: 2,
-      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -83,6 +106,25 @@ export = {
         {
           Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
           EcsParameters: {
+            LaunchType: "FARGATE",
+            NetworkConfiguration: {
+              AwsVpcConfiguration: {
+                AssignPublicIp: "DISABLED",
+                SecurityGroups: [
+                  {
+                    "Fn::GetAtt": [
+                      "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19",
+                      "GroupId"
+                    ]
+                  }
+                ],
+                Subnets: [
+                  {
+                    Ref: "VpcPrivateSubnet1Subnet536B997A"
+                  }
+                ]
+              }
+            },
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledFargateTaskScheduledTaskDef521FA675" }
           },
@@ -132,7 +174,9 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -170,8 +214,10 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('henk'),
-      command: ["-c", "4", "amazon.com"],
+      scheduledFargateTaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('henk'),
+        command: ["-c", "4", "amazon.com"],
+      },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 

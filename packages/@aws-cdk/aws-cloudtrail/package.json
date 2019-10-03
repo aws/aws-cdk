@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudtrail",
-  "version": "1.4.0",
+  "version": "1.11.0",
   "description": "CDK Constructs for AWS CloudTrail",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.CloudTrail",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudtrail",
@@ -62,33 +63,33 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.4.0",
-    "aws-sdk": "^2.504.0",
+    "@aws-cdk/assert": "^1.11.0",
+    "aws-sdk": "^2.542.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
-    "colors": "^1.3.3",
+    "colors": "^1.4.0",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^1.4.0",
-    "@aws-cdk/aws-iam": "^1.4.0",
-    "@aws-cdk/aws-kms": "^1.4.0",
-    "@aws-cdk/aws-logs": "^1.4.0",
-    "@aws-cdk/aws-s3": "^1.4.0",
-    "@aws-cdk/core": "^1.4.0"
+    "@aws-cdk/aws-events": "^1.11.0",
+    "@aws-cdk/aws-iam": "^1.11.0",
+    "@aws-cdk/aws-kms": "^1.11.0",
+    "@aws-cdk/aws-logs": "^1.11.0",
+    "@aws-cdk/aws-s3": "^1.11.0",
+    "@aws-cdk/core": "^1.11.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "^1.4.0",
-    "@aws-cdk/aws-iam": "^1.4.0",
-    "@aws-cdk/aws-kms": "^1.4.0",
-    "@aws-cdk/aws-logs": "^1.4.0",
-    "@aws-cdk/aws-s3": "^1.4.0",
-    "@aws-cdk/core": "^1.4.0"
+    "@aws-cdk/aws-events": "^1.11.0",
+    "@aws-cdk/aws-iam": "^1.11.0",
+    "@aws-cdk/aws-kms": "^1.11.0",
+    "@aws-cdk/aws-logs": "^1.11.0",
+    "@aws-cdk/aws-s3": "^1.11.0",
+    "@aws-cdk/core": "^1.11.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "experimental"
 }

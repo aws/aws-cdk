@@ -11,17 +11,19 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
-new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
+new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  executionRole: new iam.Role(stack, 'ExecutionRole', {
-      assumedBy: new iam.CompositePrincipal(
-        new iam.ServicePrincipal("ecs.amazonaws.com"),
-        new iam.ServicePrincipal("ecs-tasks.amazonaws.com")
-      )
-  })
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    executionRole: new iam.Role(stack, 'ExecutionRole', {
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal("ecs.amazonaws.com"),
+          new iam.ServicePrincipal("ecs-tasks.amazonaws.com")
+        )
+    })
+  },
 });
 
 app.synth();

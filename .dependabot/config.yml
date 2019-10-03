@@ -12,3 +12,4 @@ update_configs:
           dependency_name: '@types/node'
           version_requirement: '>= 9'
     version_requirement_updates: increase_versions
+    default_labels: []

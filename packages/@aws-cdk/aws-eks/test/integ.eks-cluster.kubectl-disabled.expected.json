@@ -574,7 +574,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -653,7 +652,6 @@
             "IpProtocol": "-1"
           }
         ],
-        "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
@@ -802,6 +800,26 @@
               ]
             ]
           }
+        ],
+        "Tags": [
+          {
+            "Key":"Name",
+            "Value":"eks-integ-test/EKSCluster/Nodes"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "EKSClusterBA6ECF8F"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
         ]
       }
     },
@@ -818,7 +836,9 @@
     "EKSClusterNodesLaunchConfig921F1106": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-12345",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.medium",
         "IamInstanceProfile": {
           "Ref": "EKSClusterNodesInstanceProfile0F2DB3B9"
@@ -840,7 +860,7 @@
                 {
                   "Ref": "EKSClusterBA6ECF8F"
                 },
-                " --use-max-pods 17"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-test --resource EKSClusterNodesASGC2597E34 --region test-region"
               ]
             ]
           }
@@ -911,6 +931,12 @@
       }
     }
   },
+  "Parameters": {
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
+    }
+  },
   "Outputs": {
     "EKSClusterConfigCommand3809C9C9": {
       "Value": {
@@ -920,7 +946,22 @@
             "aws eks update-kubeconfig --name ",
             {
               "Ref": "EKSClusterBA6ECF8F"
-            }
+            },
+            " --region test-region"
+          ]
+        ]
+      }
+    },
+    "EKSClusterGetTokenCommand10DBF41A": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "aws eks get-token --cluster-name ",
+            {
+              "Ref": "EKSClusterBA6ECF8F"
+            },
+            " --region test-region"
           ]
         ]
       }

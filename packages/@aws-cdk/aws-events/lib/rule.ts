@@ -78,13 +78,17 @@ export interface RuleProps {
 export class Rule extends Resource implements IRule {
 
   public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
+    const parts = Stack.of(scope).parseArn(eventRuleArn);
+
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
+      public ruleName = parts.resourceName || '';
     }
     return new Import(scope, id);
   }
 
   public readonly ruleArn: string;
+  public readonly ruleName: string;
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
@@ -112,6 +116,7 @@ export class Rule extends Resource implements IRule {
       resource: 'rule',
       resourceName: this.physicalName,
     });
+    this.ruleName = this.getResourceNameAttribute(resource.ref);
 
     this.addEventPattern(props.eventPattern);
     this.scheduleExpression = props.schedule && props.schedule.expressionString;
@@ -242,6 +247,7 @@ export class Rule extends Resource implements IRule {
       ecsParameters: targetProps.ecsParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
+      sqsParameters: targetProps.sqsParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {

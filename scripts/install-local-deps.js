@@ -2,10 +2,8 @@
  * Installs repo-local dependencies manually, as lerna ignores those...
  */
 const { exec, execSync } = require('child_process');
-const { lstatSync, mkdirpSync, readJsonSync, removeSync, symlinkSync, writeJsonSync } = require('fs-extra');
-const { dirname, join, relative, resolve } = require('path');
-
-const LOCAL_PACKAGE_REGEX = /^file:(.+)$/;
+const { removeSync, mkdirpSync, pathExistsSync, readFileSync, symlinkSync, writeJsonSync } = require('fs-extra');
+const { basename, dirname, join, resolve } = require('path');
 
 exec('lerna ls --json --all', { shell: true }, (error, stdout) => {
   if (error) {
@@ -13,67 +11,87 @@ exec('lerna ls --json --all', { shell: true }, (error, stdout) => {
     process.exit(-1);
   }
   const modules = JSON.parse(stdout.toString('utf8'));
+  const moduleNames = new Set(modules.map(mod => mod.name));
   for (const module of modules.reverse()) {
     const packageInfo = require(join(module.location, 'package.json'));
     if (process.env.VERBOSE) {
       console.log(`Installing local dependencies of ${module.name}`);
     }
-    installDeps(module.location,
+    installDeps(packageInfo, module.location, moduleNames,
       { depList: packageInfo.dependencies },
       { depList: packageInfo.devDependencies, dev: true });
   }
   console.log('Done.');
 });
 
-function installDeps(location, ...depLists) {
+function installDeps(pkg, location, localModules, ...depLists) {
   const nodeModules = join(location, 'node_modules');
-  const lockFile = join(location, 'package-lock.json');
+
+  const shrinkWrap = join(location, 'npm-shrinkwrap.json');
+  const lockFile = pathExistsSync(shrinkWrap) ? shrinkWrap : join(location, 'package-lock.json');
 
   const locks = pathExistsSync(lockFile) && require(lockFile);
 
   const linked = new Set();
   const paths = [];
   for (const { depList, dev } of depLists) {
-    for (const [name, version] of Object.entries(depList || {})) {
-      if (linked.has(name)) { continue; }
-      const matched = version.match(LOCAL_PACKAGE_REGEX);
-      if (!matched) { continue; }
-
-      const path = matched[1];
-      const modulePath = resolve(location, path);
-      const { requires, dependencies } = installDependency(nodeModules, modulePath);
-
-      linked.add(name);
-      paths.push(path);
-
-      if (locks) {
-        fixupDependencies(dependencies, dev);
-
-        if (!locks.dependencies) {
-          locks.dependencies = {};
+    Object.entries(depList || {})
+      .forEach(([name, version]) => {
+        if (linked.has(name)) { return; }
+        const matched = version.match(/^file:(.+)$/);
+        if (!matched) {
+          if (locks && localModules.has(name) && (name in locks.dependencies) && locks.dependencies[name].dev) {
+            // Remove references to local packages from dev dependencies
+            delete locks.dependencies[name];
+          }
+          return;
         }
-
-        locks.dependencies[name] = {
-          version,
-          dev,
-          requires: removeLocalPackages(requires),
-          dependencies,
-        };
-      }
-    }
+        const path = matched[1];
+        const modulePath = resolve(location, path);
+        installDependency(nodeModules, modulePath);
+        linked.add(name);
+        paths.push(path);
+        if (locks) {
+          if (!locks.dependencies) {
+            locks.dependencies = {};
+          }
+          locks.dependencies = insert(locks.dependencies, name, { version, dev });
+        }
+      });
   }
   if (process.env.VERBOSE) {
-    console.log(`Fixing up package-lock.json in ${location}`);
+    console.log(`Fixing up ${basename(lockFile)} in ${location}`);
   }
   if (locks) {
     sortKeys(locks.dependencies);
-    writeJsonSync(lockFile, locks, { spaces: '\t' });
+    locks.version = pkg.version;
+    writeJsonSync(lockFile, locks, { spaces: findIndent(lockFile) });
   } else {
     // This is dog slow, hence we're playing funky games elsewhere... but we're not in the business of bootstrapping
     // a lock-file from scratch, so if there was none, let npm do it's thing instead of trying to replicate.
     execSync(`npm install --package-lock-only ${paths.join(' ')}`, { cwd: location, shell: true });
   }
+}
 
+function insert(deps, name, value) {
+  const result = {};
+  for (const key of [name, ...Object.keys(deps)].sort()) {
+    result[key] = key === name ? value : deps[key];
+  }
+  return result;
+}
+
+function findIndent(path) {
+  if (pathExistsSync(path)) {
+    const lines = readFileSync(path, { encoding: 'utf-8' }).split('\n');
+    for (const line of lines) {
+      const match = line.match(/^(\s+)/)
+      if (match) {
+        return match[1];
+      }
+    }
+  }
+  return 2;
 }
 
 /**
@@ -82,7 +100,7 @@ function installDeps(location, ...depLists) {
  * @param {string} localPath   the path of the "installed" module
  */
 function installDependency(nodeModules, localPath) {
-  const packageInfo = readJsonSync(join(localPath, 'package.json'));
+  const packageInfo = require(`${localPath}/package.json`);
 
   const linkLocation = join(nodeModules, packageInfo.name);
 
@@ -95,7 +113,7 @@ function installDependency(nodeModules, localPath) {
     removeSync(linkLocation);
   }
 
-  symlinkSync(relative(dirname(linkLocation), localPath), linkLocation);
+  symlinkSync(localPath, linkLocation);
 
   if (packageInfo.bin) {
     const bin = join(nodeModules, '.bin');
@@ -112,16 +130,6 @@ function installDependency(nodeModules, localPath) {
       symlinkSync(linkTarget, binLink);
     }
   }
-
-  const lockFilePath = join(localPath, 'package-lock.json');
-  const lockFile = pathExistsSync(lockFilePath)
-    ? readJsonSync(lockFilePath)
-    : undefined;
-
-  return {
-    requires: packageInfo.dependencies,
-    dependencies: lockFile && lockFile.dependencies,
-  };
 }
 
 function sortKeys(object) {
@@ -133,46 +141,4 @@ function sortKeys(object) {
     sorted[key] = object[key];
   }
   return sorted;
-}
-
-function removeLocalPackages(dependencies) {
-  if (!dependencies) {
-    return dependencies;
-  }
-  for (const [name, version] of Object.entries(dependencies)) {
-    const matched = version.match(LOCAL_PACKAGE_REGEX);
-    if (!matched) { continue; }
-    delete dependencies[name];
-  }
-  return dependencies;
-}
-
-function pathExistsSync(path) {
-  try {
-    lstatSync(path);
-    // lstat would throw if the file does not exist, and return if it does.
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function fixupDependencies(deps, dev) {
-  if (!deps) {
-    return deps;
-  }
-  for (const [name, dep] of Object.entries(deps)) {
-    if (!dev && dep.dev) {
-      delete deps[name];
-      continue;
-    }
-    if (dev) { dep.dev = true; }
-    const matched = dep.version.match(LOCAL_PACKAGE_REGEX);
-    if (matched) {
-      delete deps[name];
-      continue;
-    }
-    dep.requires = removeLocalPackages(dep.requires);
-    fixupDependencies(dep.dependencies, dev);
-  }
 }

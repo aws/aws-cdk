@@ -1,18 +1,85 @@
 # See https://doc.mergify.io
 
 pull_request_rules:
-- name: auto_merge
-  conditions: 
-    - -title~=(WIP|wip)
-    - -merged
-    - -closed
-    - -locked
-    - -label=blocked
-    - -label=do-not-merge
-    - "#approved-reviews-by>=1"
-    - "#changes-requested-reviews-by=0"
-    - status-success=AWS CodeBuild us-east-1 (aws-cdk-build)
-  actions:
-    merge:
-      method: squash
-      strict: smart
+  - name: automatic merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request is now being automatically merged.
+      merge:
+        strict: smart
+        method: squash
+        strict_method: merge
+      delete_head_branch: {}
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=Semantic Pull Request
+  - name: comment checklist
+    actions:
+      comment:
+        message: |
+          Thanks so much for taking the time to contribute to the AWS CDK ❤️
+
+          We will shortly assign someone to review this pull request and help get it
+          merged. In the meantime, please **take a minute to make sure you follow this
+          checklist**:
+
+          * **PR title `type(scope): text`**
+            * __type__: `fix`, `feat`, `refactor` go into CHANGELOG, `chore` is hidden
+            - __scope__: name of module without `aws-` or `cdk-` prefix or postfix (e.g. `s3` instead of `aws-s3-deployment`)
+            - __text__: use all **lower-case**, **do not** end with a period, do not include issue refs
+          * **PR Description**
+            - __Rationale__: describe rationale of change and approach taken
+            - __Issues__: indicate issues fixed via: `fixes #xxx` or `closes #xxx`
+            - __Breaking?__: last paragraph: `BREAKING CHANGE: <describe what changed + link for details>`
+          * **Testing**
+            - Unit test added. Prefer to add a new test rather than modify existing tests
+            - **CLI or init templates change**? Re-run/add [CLI integration tests](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#running-cli-integration-tests)
+          * **Documentation**
+            - **README**: update module README to describe new features
+            - **API docs**: public APIs must be documented. Copy from official AWS docs when possible
+            - **Design**: for significant features, follow [design process](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md#step-2-design-optional)
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - base=master
+      - -merged
+      - -closed
+  - name: remove stale reviews
+    actions:
+      dismiss_reviews: {}
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+        # List out all the people whose work is okay to provisionally approve
+      - author!=eladb
+      - author!=RomainMuller
+      - author!=garnaat
+      - author!=nija-at
+      - author!=shivlaks
+      - author!=skinny85
+      - author!=rix0rrr
+      - author!=NGL321
+      - author!=Jerry-AWS
+      - author!=SomayaB
+      - base=master
+      - -merged
+      - -closed
+  - name: if fails conventional commits
+    actions:
+      comment:
+        message: Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). Please adjust title before merge.
+    conditions:
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - status-failure=Semantic Pull Request
+      - -merged
+      - -closed
