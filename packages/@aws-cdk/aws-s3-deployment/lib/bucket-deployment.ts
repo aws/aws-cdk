@@ -21,7 +21,7 @@ export type CacheControlDirective =
   | { "max-age": cdk.Duration }
   | { "s-max-age": cdk.Duration }
   | string;
-export type SystemDefinedObjectsMetadata = {
+export interface SystemDefinedObjectsMetadata {
   "cache-control"?: CacheControlDirective[];
   "content-disposition"?: string;
   "content-encoding"?: string;
@@ -30,7 +30,7 @@ export type SystemDefinedObjectsMetadata = {
   expires?: string | Date;
 };
 
-export type UserDefinedObjectsMetadata = {
+export interface UserDefinedObjectsMetadata {
   /**
    * Arbitrary metadata key-values
    * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
@@ -38,7 +38,7 @@ export type UserDefinedObjectsMetadata = {
   [key: string]: string;
 };
 
-export type ObjectsMetadata = {
+export interface ObjectsMetadata {
   /**
    * System-defined objects metadata
    */
