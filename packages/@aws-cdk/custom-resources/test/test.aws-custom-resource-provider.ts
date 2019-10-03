@@ -297,4 +297,41 @@ export = {
 
     test.done();
   },
+
+  async 'can specify apiVersion and region'(test: Test) {
+    const publishFake = sinon.fake.resolves({});
+
+    AWS.mock('SNS', 'publish', publishFake);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: {
+          service: 'SNS',
+          action: 'publish',
+          parameters: {
+            Message: 'message',
+            TopicArn: 'topic'
+          },
+          apiVersion: '2010-03-31',
+          region: 'eu-west-1',
+          physicalResourceId: 'id',
+        } as AwsSdkCall
+      }
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS' &&
+      body.Data!.apiVersion === '2010-03-31' &&
+      body.Data!.region === 'eu-west-1'
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    test.equal(request.isDone(), true);
+
+    test.done();
+  },
 };
