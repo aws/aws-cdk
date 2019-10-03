@@ -873,7 +873,6 @@ export = {
                 actionName: 'CodeBuild',
                 project,
                 input: sourceOutput,
-                outputs: [new codepipeline.Artifact()],
               }),
             ],
           },
@@ -922,9 +921,6 @@ export = {
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*",
               ],
               "Effect": "Allow",
               "Resource": [
@@ -958,9 +954,6 @@ export = {
               "Action": [
                 "kms:Decrypt",
                 "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
               ],
               "Effect": "Allow",
               "Resource": "*",
