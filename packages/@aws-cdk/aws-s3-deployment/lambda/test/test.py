@@ -86,18 +86,14 @@ class TestHandler(unittest.TestCase):
             "DestinationBucketName": "<dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<dest-key-prefix>",
             "ObjectsMetadata": {
-                "<key-1>": { "content-type": "text/html", "content-language": "en" },
-                "<key-2>": { "A": "a", "B": "b", "C": "c" },
-                "<key-3>": { "content-type": "text/html", "content-language": "en", "best": "game" }
+                "user": { "best": "game" },
+                "system": { "content-type": "text/html", "content-language": "en" }
             }
         })
 
         self.assertAwsCommands(
             "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
-            "s3 sync --delete contents.zip s3://<dest-bucket-name>/<dest-key-prefix>",
-            "s3 cp s3://<dest-bucket-name>/<dest-key-prefix>/<key-1> s3://<dest-bucket-name>/<dest-key-prefix>/<key-1> --content-type 'text/html' --content-language 'en' --metadata-directive REPLACE",
-            "s3 cp s3://<dest-bucket-name>/<dest-key-prefix>/<key-2> s3://<dest-bucket-name>/<dest-key-prefix>/<key-2> --metadata '{\"x-amzn-meta-a\": \"a\", \"x-amzn-meta-b\": \"b\", \"x-amzn-meta-c\": \"c\"}' --metadata-directive REPLACE",
-            "s3 cp s3://<dest-bucket-name>/<dest-key-prefix>/<key-3> s3://<dest-bucket-name>/<dest-key-prefix>/<key-3> --content-type 'text/html' --content-language 'en' --metadata '{\"x-amzn-meta-best\": \"game\"}' --metadata-directive REPLACE",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/<dest-key-prefix> --content-type 'text/html' --content-language 'en' --metadata '{\"x-amzn-meta-best\": \"game\"}' --metadata-directive REPLACE"
         )
 
     def test_delete_no_retain(self):

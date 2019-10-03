@@ -1,16 +1,88 @@
-import cloudformation = require('@aws-cdk/aws-cloudformation');
-import cloudfront = require('@aws-cdk/aws-cloudfront');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Token } from '@aws-cdk/core';
-import path = require('path');
-import { ISource, SourceConfig } from './source';
+import cloudformation = require("@aws-cdk/aws-cloudformation");
+import cloudfront = require("@aws-cdk/aws-cloudfront");
+import iam = require("@aws-cdk/aws-iam");
+import lambda = require("@aws-cdk/aws-lambda");
+import s3 = require("@aws-cdk/aws-s3");
+import cdk = require("@aws-cdk/core");
+import { Token } from "@aws-cdk/core";
+import path = require("path");
+import { ISource, SourceConfig } from "./source";
 
-const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
+const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
 
-export type ObjectsMetadata = { [objectKey: string]: { [metadataKey: string]: string } };
+export type CacheControlDirective =
+  | "must-revalidate"
+  | "no-cache"
+  | "no-store"
+  | "no-transform"
+  | "public"
+  | "private"
+  | "proxy-revalidate"
+  | { "max-age": cdk.Duration }
+  | { "s-max-age": cdk.Duration }
+  | string;
+export type SystemDefinedObjectsMetadata = {
+  "cache-control"?: CacheControlDirective[];
+  "content-disposition"?: string;
+  "content-encoding"?: string;
+  "content-language"?: string;
+  "content-type"?: string;
+  expires?: string | cdk.Duration;
+};
+
+export type UserDefinedObjectsMetadata = {
+  /**
+   * Arbitrary metadata key-values
+   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   */
+  [key: string]: string;
+};
+
+export type ObjectsMetadata = {
+  /**
+   * System-defined objects metadata
+   */
+  system?: SystemDefinedObjectsMetadata;
+  /**
+   * User-defined objects metadata
+   */
+  user?: UserDefinedObjectsMetadata;
+};
+
+function mapUserMetadata(metadata: UserDefinedObjectsMetadata) {
+  const mapKey = (key: string) =>
+    key.toLowerCase().startsWith("x-amzn-meta-")
+      ? key.toLowerCase()
+      : `x-amzn-meta-${key.toLowerCase()}`;
+
+  return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
+}
+
+function mapSystemMetadata(metadata: SystemDefinedObjectsMetadata) {
+  function mapCacheControlDirective(value: CacheControlDirective) {
+    if (typeof value === "string") return value;
+    if ("max-age" in value) return `max-age=${value["max-age"].toSeconds()}`;
+    if ("s-max-age" in value) return `s-max-age=${value["s-max-age"].toSeconds()}`;
+    throw new Error(`Unsupported cache-control directive ${value}`);
+  }
+
+  const res: { [key: string]: string } = {};
+  if (metadata["cache-control"]) {
+    res["cache-control"] = metadata["cache-control"].map(mapCacheControlDirective).join(", ");
+  }
+
+  if (metadata["expires"]) {
+    const val = metadata["expires"];
+    res["expires"] = typeof val === "string" ? val : `${new Date(Date.now() + val.toMilliseconds())}`;
+  }
+
+  if (metadata["content-disposition"]) res["content-disposition"] = metadata["content-disposition"];
+  if (metadata["content-encoding"]) res["content-encoding"] = metadata["content-encoding"];
+  if (metadata["content-language"]) res["content-language"] = metadata["content-language"];
+  if (metadata["content-type"]) res["content-type"] = metadata["content-type"];
+
+  return res;
+}
 
 export interface BucketDeploymentProps {
   /**
@@ -44,7 +116,7 @@ export interface BucketDeploymentProps {
   readonly retainOnDelete?: boolean;
 
   /**
-   * A map of object metadata to set on the specified objects
+   * A map of object metadata to set on all objects in the deployment
    *
    * @default - No object metadata is set
    */
@@ -117,7 +189,10 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
-        ObjectsMetadata: props.objectsMetadata,
+        ObjectsMetadata: props.objectsMetadata ? {
+          user: props.objectsMetadata.user ? mapUserMetadata(props.objectsMetadata.user) : undefined,
+          system: props.objectsMetadata.system ? mapSystemMetadata(props.objectsMetadata.system) : undefined
+        } : undefined,
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths
       }

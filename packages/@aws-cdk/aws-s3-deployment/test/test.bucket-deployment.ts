@@ -234,13 +234,12 @@ export = {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
       destinationBucket: bucket,
       objectsMetadata: {
-        "key-1": {
-          "A": "a",
-          "B": 'b'
-        },
-        "key-2": {
-          "C": "c"
-        }
+          user: {
+            "A": "a"
+          },
+          system: {
+            "cache-control": ["public", { "max-age": cdk.Duration.hours(1) }]
+          }
       }
     });
 
