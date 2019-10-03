@@ -1,7 +1,7 @@
+import ec2 = require('@aws-cdk/aws-ec2');
+import ecsPatterns = require('@aws-cdk/aws-ecs-patterns');
 import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
-import ec2 = require('../../../aws-ec2');
-import ecs = require('../../../aws-ecs');
-import ecsPatterns = require('../../../aws-ecs-patterns');
+import ecs = require('../../lib');
 
 class TestStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
