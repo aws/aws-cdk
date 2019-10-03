@@ -21,7 +21,7 @@ export = {
     const stack = new Stack();
     new DefaultChildResource(stack, 'good', new Construct(stack, 'child'));
     new DefaultChildResource(stack, 'bad');
-    test.throws(() => expect(stack).to(haveNoConstructLints()), /proper error msg/);
+    test.throws(() => expect(stack).to(haveNoConstructLints()), /found constructs/);
     test.done();
   },
 
