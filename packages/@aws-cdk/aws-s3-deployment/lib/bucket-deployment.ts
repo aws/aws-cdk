@@ -27,7 +27,7 @@ export type SystemDefinedObjectsMetadata = {
   "content-encoding"?: string;
   "content-language"?: string;
   "content-type"?: string;
-  expires?: string | cdk.Duration;
+  expires?: string | Date;
 };
 
 export type UserDefinedObjectsMetadata = {
@@ -73,7 +73,7 @@ function mapSystemMetadata(metadata: SystemDefinedObjectsMetadata) {
 
   if (metadata["expires"]) {
     const val = metadata["expires"];
-    res["expires"] = typeof val === "string" ? val : `${new Date(Date.now() + val.toMilliseconds())}`;
+    res["expires"] = typeof val === "string" ? val : val.toUTCString();
   }
 
   if (metadata["content-disposition"]) res["content-disposition"] = metadata["content-disposition"];
