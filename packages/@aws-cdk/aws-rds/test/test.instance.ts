@@ -1,6 +1,7 @@
 import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import targets = require('@aws-cdk/aws-events-targets');
+import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/core');
@@ -512,5 +513,38 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'create an instance with imported monitoring role'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const monitoringRole = new Role(stack, "MonitoringRole", {
+      assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
+      ]
+    });
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      monitoringInterval: cdk.Duration.minutes(1),
+      monitoringRole
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        "Fn::GetAtt": ["MonitoringRole90457BF9", "Arn"]
+      }
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
 };
