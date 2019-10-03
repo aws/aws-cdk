@@ -624,7 +624,7 @@ export interface AddAutoScalingGroupCapacityOptions {
   /**
    * Automated Draining for Spot Instances running Amazon ECS Services
    *
-   * [Using Spot Instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html)
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html
    *
    * @default false
    */
