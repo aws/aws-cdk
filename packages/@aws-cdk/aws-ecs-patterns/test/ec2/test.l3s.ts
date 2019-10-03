@@ -5,6 +5,7 @@ import ecs = require('@aws-cdk/aws-ecs');
 import { AwsLogDriver } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecsPatterns = require('../../lib');
@@ -130,6 +131,148 @@ export = {
           MemoryReservation: 1024
         }
       ]
+    }));
+
+    test.done();
+  },
+
+  'creates AWS Cloud Map service for Private DNS namespace with application load balanced ec2 service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: 'foo.com',
+      type: cloudmap.NamespaceType.DNS_PRIVATE
+    });
+
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        containerPort: 8000,
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      },
+      cloudMapOptions: {
+        name: 'myApp',
+      },
+      memoryLimitMiB: 512,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      ServiceRegistries: [
+        {
+          ContainerName: "web",
+          ContainerPort: 8000,
+          RegistryArn: {
+            "Fn::GetAtt": [
+              "ServiceCloudmapServiceDE76B29D",
+              "Arn"
+            ]
+          }
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      DnsConfig: {
+        DnsRecords: [
+          {
+            TTL: 60,
+            Type: "SRV"
+          }
+        ],
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        },
+        RoutingPolicy: 'MULTIVALUE'
+      },
+      HealthCheckCustomConfig: {
+        FailureThreshold: 1
+      },
+      Name: "myApp",
+      NamespaceId: {
+        'Fn::GetAtt': [
+          'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+          'Id'
+        ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'creates AWS Cloud Map service for Private DNS namespace with network load balanced fargate service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: 'foo.com',
+      type: cloudmap.NamespaceType.DNS_PRIVATE
+    });
+
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        containerPort: 8000,
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      },
+      cloudMapOptions: {
+        name: 'myApp',
+      },
+      memoryLimitMiB: 512,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      ServiceRegistries: [
+        {
+          RegistryArn: {
+            "Fn::GetAtt": [
+              "ServiceCloudmapServiceDE76B29D",
+              "Arn"
+            ]
+          }
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      DnsConfig: {
+        DnsRecords: [
+          {
+            TTL: 60,
+            Type: "A"
+          }
+        ],
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        },
+        RoutingPolicy: 'MULTIVALUE'
+      },
+      HealthCheckCustomConfig: {
+        FailureThreshold: 1
+      },
+      Name: "myApp",
+      NamespaceId: {
+        'Fn::GetAtt': [
+          'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+          'Id'
+        ]
+      }
     }));
 
     test.done();

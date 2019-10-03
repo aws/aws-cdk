@@ -125,6 +125,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       healthCheckGracePeriod: props.healthCheckGracePeriod,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      cloudMapOptions: props.cloudMapOptions,
     });
     this.addServiceAsTarget(this.service);
   }
