@@ -75,7 +75,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
 
-    let exclude: string[] = ['.dockerignore'];
+    let exclude: string[] = props.exclude || [];
 
     const ignore = path.join(dir, '.dockerignore');
 
