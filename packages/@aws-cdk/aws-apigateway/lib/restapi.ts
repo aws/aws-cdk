@@ -230,6 +230,7 @@ export class RestApi extends Resource implements IRestApi {
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters
     });
+    this.node.defaultChild = resource;
 
     this.restApiId = resource.ref;
 
@@ -316,7 +317,7 @@ export class RestApi extends Resource implements IRestApi {
   }
 
   /**
-   * Adds a new model.
+   * Adds a new request validator.
    */
   public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
     return new RequestValidator(this, id, {

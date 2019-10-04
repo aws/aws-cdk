@@ -55,12 +55,7 @@ export = {
       const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not
-      const metadata = synthesized.manifest.metadata || {};
-      test.ok(metadata['/MyStack/Func1/Code']);
-      test.deepEqual(metadata['/MyStack/Func1/Code'].length, 1);
-      test.deepEqual(metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
-      test.deepEqual(metadata['/MyStack/Func2/Code'], undefined);
-
+      test.deepEqual(synthesized.assets.length, 1);
       test.done();
     },
 
