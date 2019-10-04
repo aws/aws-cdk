@@ -229,9 +229,9 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   function mapCacheControlDirective(cacheControl: CacheControl) {
     const { value } = cacheControl;
 
-    if (typeof value === "string") return value;
-    if ("max-age" in value) return `max-age=${value["max-age"].toSeconds()}`;
-    if ("s-max-age" in value) return `s-max-age=${value["s-max-age"].toSeconds()}`;
+    if (typeof value === "string") { return value; }
+    if ("max-age" in value) { return `max-age=${value["max-age"].toSeconds()}`; }
+    if ("s-max-age" in value) { return `s-max-age=${value["s-max-age"].toSeconds()}`; }
 
     throw new Error(`Unsupported cache-control directive ${value}`);
   }
@@ -244,24 +244,25 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.expires) {
     const { value } = metadata.expires;
 
-    if(typeof value === "string") return value;
-    if(value instanceof Date) return value.toUTCString();
-    if(value instanceof cdk.Duration) return new Date(Date.now() + value.toMilliseconds()).toUTCString();
+    if(typeof value === "string") { return value; }
+    if(value instanceof Date) { return value.toUTCString(); }
+    if(value instanceof cdk.Duration) { return new Date(Date.now() + value.toMilliseconds()).toUTCString(); }
 
     throw new Error(`Unsupported system-metadata expires ${value}`);
   }
 
-  if (metadata.contentDisposition) res["content-disposition"] = metadata.contentDisposition;
-  if (metadata.contentEncoding) res["content-encoding"] = metadata.contentEncoding;
-  if (metadata.contentLanguage) res["content-language"] = metadata.contentLanguage;
-  if (metadata.contentType) res["content-type"] = metadata.contentType;
-  if (metadata.serverSideEncryption) res["server-side-encryption"] = metadata.serverSideEncryption;
-  if (metadata.storageClass) res["storage-class"] = metadata.storageClass;
-  if (metadata.websiteRedirectLocation) res["website-redirect-location"] = metadata.websiteRedirectLocation;
-  if (metadata.serverSideEncryptionAwsKmsKeyId) res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId;
-  if (metadata.serverSideEncryptionCustomerAlgorithm) res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm;
+  if (metadata.contentDisposition) { res["content-disposition"] = metadata.contentDisposition; }
+  if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
+  if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
+  if (metadata.contentType) { res["content-type"] = metadata.contentType; }
+  if (metadata.serverSideEncryption) { res["server-side-encryption"] = metadata.serverSideEncryption; }
+  if (metadata.storageClass) { res["storage-class"] = metadata.storageClass; }
+  if (metadata.websiteRedirectLocation) { res["website-redirect-location"] = metadata.websiteRedirectLocation; }
+  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
+  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm; }
 
-  if(Object.keys(res).length === 0) return undefined;
+  if(Object.keys(res).length === 0) { return undefined; }
+
   return res;
 }
 
@@ -321,4 +322,4 @@ export interface UserDefinedObjectMetadata {
    * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
    */
   readonly [key: string]: string;
-};
+}
