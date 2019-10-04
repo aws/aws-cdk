@@ -2,7 +2,8 @@ import lambda = require('@aws-cdk/aws-lambda');
 import {Duration} from '@aws-cdk/core';
 
 /**
- * @experimental
+ * The set of properties for event sources that follow the streaming model,
+ * such as, Dynamo and Kinesis.
  */
 export interface StreamEventSourceProps {
   /**
@@ -32,8 +33,6 @@ export interface StreamEventSourceProps {
 
 /**
  * Use an stream as an event source for AWS Lambda.
- *
- * @experimental
  */
 export abstract class StreamEventSource implements lambda.IEventSource {
   protected constructor(protected readonly props: StreamEventSourceProps) {
