@@ -8,5 +8,6 @@ export enum StateType {
   WAIT = 'Wait',
   SUCCEED = 'Succeed',
   FAIL = 'Fail',
-  PARALLEL = 'Parallel'
+  PARALLEL = 'Parallel',
+  MAP = 'Map'
 }
