@@ -237,7 +237,7 @@ export = {
       userMetadata: {
         "A": "a"
       },
-      cacheControl: [CacheControl.public(), CacheControl.maxAge(cdk.Duration.hours(1))],
+      cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
       expires: Expires.offset(cdk.Duration.hours(12))
     });
 

@@ -269,8 +269,8 @@ export class CacheControl {
   public static mustRevalidate() { return new CacheControl("must-revalidate"); }
   public static noCache() { return new CacheControl("no-cache"); }
   public static noTransform() { return new CacheControl("no-transform"); }
-  public static public() { return new CacheControl("public"); }
-  public static private() { return new CacheControl("private"); }
+  public static setPublic() { return new CacheControl("public"); }
+  public static setPrivate() { return new CacheControl("private"); }
   public static proxyRevalidate() { return new CacheControl("proxy-revalidate"); }
   public static maxAge(t: cdk.Duration) { return new CacheControl({ "max-age": t.seconds() }); }
   public static fromString(s: string) {  return new CacheControl(s); }
