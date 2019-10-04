@@ -99,18 +99,18 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     const allowedIntervals = [10, 30];
     if (healthCheck.interval) {
       const seconds = healthCheck.interval.toSeconds();
-      if (!allowedIntervals.includes(seconds)) {
+      if (!Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
         ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
       }
     }
     if (healthCheck.path) {
-      ret.push('Health check paths are not supported for TCP health checks');
+      ret.push('Health check paths are not supported for Network Load Balancer health checks');
     }
     if (healthCheck.protocol && healthCheck.protocol !== Protocol.TCP && healthCheck.protocol !== Protocol.TLS) {
       ret.push(`Health check protocol '${healthCheck.protocol}' is not supported. Must be one of [TCP, TLS]`);
     }
     if (healthCheck.timeout) {
-      ret.push('Custom health check timeouts are not supported for health checks for target groups with the TCP protocol');
+      ret.push('Custom health check timeouts are not supported for Network Load Balancer health checks');
     }
 
     return ret;
