@@ -100,7 +100,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       });
 
-      new ecs.FargateService(stack, "FargateService", {
+      const svc = new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
         desiredCount: 2,
@@ -125,6 +125,8 @@ export = {
       });
 
       // THEN
+      test.ok(svc.cloudMapService !== undefined);
+
       expect(stack).to(haveResource("AWS::ECS::Service", {
         TaskDefinition: {
           Ref: "FargateTaskDefC6FB60B4"

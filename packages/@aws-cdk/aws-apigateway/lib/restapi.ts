@@ -202,7 +202,7 @@ export class RestApi extends Resource implements IRestApi {
    * If `deploy` is disabled, you will need to explicitly assign this value in order to
    * set up integrations.
    */
-  public deploymentStage: Stage;
+  public deploymentStage!: Stage;
 
   /**
    * The domain name mapped to this API, if defined through the `domainName`
@@ -242,6 +242,7 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     this.root = new RootResource(this, props, resource.attrRootResourceId);
+    this.restApiRootResourceId = resource.attrRootResourceId;
 
     if (props.domainName) {
       this.domainName = this.addDomainName('CustomDomain', props.domainName);
