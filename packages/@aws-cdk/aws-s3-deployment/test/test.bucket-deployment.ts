@@ -238,7 +238,7 @@ export = {
         "A": "a"
       },
       cacheControl: [CacheControl.public(), CacheControl.maxAge(cdk.Duration.hours(1))],
-      expires: Expires.in(cdk.Duration.hours(12))
+      expires: Expires.offset(cdk.Duration.hours(12))
     });
 
     test.done();

@@ -121,7 +121,7 @@ export interface BucketDeploymentProps {
   /**
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly serverSideEncryptionCustomerAlgorithm: string;
+  readonly serverSideEncryptionCustomerAlgorithm?: string;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -303,12 +303,12 @@ export class Expires {
    * Expire at the specified timestamp
    * @param t timestamp in unix milliseconds
    */
-  public static atTimestamp(t: number) { return new Expires(d); }
+  public static atTimestamp(t: number) { return new Expires(t); }
   /**
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static in(t: cdk.Duration) { return new Expires(t); }
+  public static offset(t: cdk.Duration) { return new Expires(t); }
   public static fromString(s: string) { return new Expires(s); }
 
   private constructor(public value: any) {}
