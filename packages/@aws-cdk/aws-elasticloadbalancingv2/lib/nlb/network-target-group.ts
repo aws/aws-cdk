@@ -99,7 +99,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     const allowedIntervals = [10, 30];
     if (healthCheck.interval) {
       const seconds = healthCheck.interval.toSeconds();
-      if (!Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
+      if (!cdk.Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
         ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
       }
     }
