@@ -15,7 +15,7 @@ export = {
       const projectStack = new Stack(app, 'ProjectStack', {
         env: {
           region: 'us-west-2',
-          account: '012345678901',
+          account: '012345678912',
         },
       });
       const project = new codebuild.PipelineProject(projectStack, 'Project');
@@ -23,7 +23,7 @@ export = {
       const pipelineStack = new Stack(app, 'PipelineStack', {
         env: {
           region: 'us-west-2',
-          account: '123456789012',
+          account: '012345678913',
         },
       });
       const sourceOutput = new codepipeline.Artifact();
