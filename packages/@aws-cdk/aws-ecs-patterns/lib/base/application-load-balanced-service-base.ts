@@ -1,6 +1,6 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
@@ -122,6 +122,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default false
    */
   readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The options for configuring an Amazon ECS service to use service discovery.
+   *
+   * @default - AWS Cloud Map service discovery is not enabled.
+   */
+  readonly cloudMapOptions?: CloudMapOptions;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -226,7 +233,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Certificate Manager certificate to associate with the load balancer.
    */
-  public readonly certificate: ICertificate;
+  public readonly certificate?: ICertificate;
 
   /**
    * The cluster that hosts the service.
