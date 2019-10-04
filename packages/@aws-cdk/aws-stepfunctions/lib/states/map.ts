@@ -63,11 +63,11 @@ export interface MapProps {
     /**
      * MaxConcurrency
      *
-     * An upper bound on the number of iterations you want running at once. Default value of 0
+     * An upper bound on the number of iterations you want running at once.
      *
-     * @default false
+     * @default - full concurrency
      */
-    readonly sequential?: boolean;
+    readonly maxConcurrency?: number;
 }
 
 /**
@@ -80,13 +80,13 @@ export interface MapProps {
 export class Map extends State implements INextable {
     public readonly endStates: INextable[];
 
-    private readonly maxConcurrency: number;
+    private readonly maxConcurrency?: number;
     private readonly itemsPath?: string;
 
     constructor(scope: cdk.Construct, id: string, props: MapProps = {}) {
         super(scope, id, props);
         this.endStates = [this];
-        this.maxConcurrency = (props.sequential === true) ? 1 : 0;
+        this.maxConcurrency = props.maxConcurrency;
         this.itemsPath = props.itemsPath;
     }
 

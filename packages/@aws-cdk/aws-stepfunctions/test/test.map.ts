@@ -9,7 +9,7 @@ export = {
 
         // WHEN
         const map = new stepfunctions.Map(stack, 'Map State', {
-            sequential: true,
+            maxConcurrency: 1,
             itemsPath: stepfunctions.Data.stringAt('$.inputForMap'),
             parameters: {
                 foo: 'foo',
