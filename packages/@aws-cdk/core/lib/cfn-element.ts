@@ -119,26 +119,6 @@ export abstract class CfnElement extends Construct {
   public abstract _toCloudFormation(): object;
 
   /**
-   * Automatically detect references in this CfnElement
-   */
-  protected prepare() {
-    try {
-      // Note: it might be that the properties of the CFN object aren't valid.
-      // This will usually be preventatively caught in a construct's validate()
-      // and turned into a nicely descriptive error, but we're running prepare()
-      // before validate(). Swallow errors that occur because the CFN layer
-      // doesn't validate completely.
-      //
-      // This does make the assumption that the error will not be rectified,
-      // but the error will be thrown later on anyway. If the error doesn't
-      // get thrown down the line, we may miss references.
-      this.node.addReference(...findTokens(this, () => this._toCloudFormation()));
-    } catch (e) {
-      if (e.type !== 'CfnSynthesisError') { throw e; }
-    }
-  }
-
-  /**
    * Called during synthesize to render the logical ID of this element. If
    * `overrideLogicalId` was it will be used, otherwise, we will allocate the
    * logical ID through the stack.
@@ -180,5 +160,4 @@ function notTooLong(x: string) {
 }
 
 import { CfnReference } from "./private/cfn-reference";
-import { findTokens } from "./private/resolve";
 import { Stack } from './stack';
