@@ -53,7 +53,8 @@ export class LambdaRestApi extends RestApi {
       ...props,
     });
 
-    if (props.proxy) {
+    const proxy = props.proxy === undefined ? true : props.proxy;
+    if (proxy) {
       this.root.addProxy();
 
       // Make sure users cannot call any other resource adding function
