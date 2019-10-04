@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc"
+            "Value": "aws-ecs-integ-spot/Vpc"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -101,7 +101,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -118,7 +118,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -140,7 +140,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -192,7 +192,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-spot/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -209,7 +209,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-spot/Vpc/PrivateSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -231,7 +231,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-spot/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -271,7 +271,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-spot/Vpc/PrivateSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -293,7 +293,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-spot/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -327,7 +327,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Vpc"
+            "Value": "aws-ecs-integ-spot/Vpc"
           }
         ]
       }
@@ -343,13 +343,13 @@
         }
       }
     },
-    "ClusterEB0386A7": {
+    "EcsCluster97242B84": {
       "Type": "AWS::ECS::Cluster"
     },
-    "ClusterasgSpotInstanceSecurityGroupD059418A": {
+    "EcsClusterasgSpotInstanceSecurityGroupEA17787D": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "ecs-spot-test2/Cluster/asgSpot/InstanceSecurityGroup",
+        "GroupDescription": "aws-ecs-integ-spot/EcsCluster/asgSpot/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -360,7 +360,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgSpot"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
           }
         ],
         "VpcId": {
@@ -368,7 +368,7 @@
         }
       }
     },
-    "ClusterasgSpotInstanceRoleEB937075": {
+    "EcsClusterasgSpotInstanceRole84AB6F93": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -396,12 +396,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgSpot"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
           }
         ]
       }
     },
-    "ClusterasgSpotInstanceRoleDefaultPolicy503C9952": {
+    "EcsClusterasgSpotInstanceRoleDefaultPolicyB1E3ABFA": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -425,25 +425,25 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterasgSpotInstanceRoleDefaultPolicy503C9952",
+        "PolicyName": "EcsClusterasgSpotInstanceRoleDefaultPolicyB1E3ABFA",
         "Roles": [
           {
-            "Ref": "ClusterasgSpotInstanceRoleEB937075"
+            "Ref": "EcsClusterasgSpotInstanceRole84AB6F93"
           }
         ]
       }
     },
-    "ClusterasgSpotInstanceProfile364F414B": {
+    "EcsClusterasgSpotInstanceProfile0D6DD08D": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "ClusterasgSpotInstanceRoleEB937075"
+            "Ref": "EcsClusterasgSpotInstanceRole84AB6F93"
           }
         ]
       }
     },
-    "ClusterasgSpotLaunchConfig90657960": {
+    "EcsClusterasgSpotLaunchConfig75BCA823": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
@@ -451,12 +451,12 @@
         },
         "InstanceType": "c5.xlarge",
         "IamInstanceProfile": {
-          "Ref": "ClusterasgSpotInstanceProfile364F414B"
+          "Ref": "EcsClusterasgSpotInstanceProfile0D6DD08D"
         },
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "ClusterasgSpotInstanceSecurityGroupD059418A",
+              "EcsClusterasgSpotInstanceSecurityGroupEA17787D",
               "GroupId"
             ]
           }
@@ -469,7 +469,7 @@
               [
                 "#!/bin/bash\necho ECS_CLUSTER=",
                 {
-                  "Ref": "ClusterEB0386A7"
+                  "Ref": "EcsCluster97242B84"
                 },
                 " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config"
               ]
@@ -478,24 +478,24 @@
         }
       },
       "DependsOn": [
-        "ClusterasgSpotInstanceRoleDefaultPolicy503C9952",
-        "ClusterasgSpotInstanceRoleEB937075"
+        "EcsClusterasgSpotInstanceRoleDefaultPolicyB1E3ABFA",
+        "EcsClusterasgSpotInstanceRole84AB6F93"
       ]
     },
-    "ClusterasgSpotASGED3B9B73": {
+    "EcsClusterasgSpotASG0D77F041": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "MaxSize": "2",
         "MinSize": "2",
         "DesiredCapacity": "2",
         "LaunchConfigurationName": {
-          "Ref": "ClusterasgSpotLaunchConfig90657960"
+          "Ref": "EcsClusterasgSpotLaunchConfig75BCA823"
         },
         "Tags": [
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "ecs-spot-test2/Cluster/asgSpot"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
           }
         ],
         "VPCZoneIdentifier": [
@@ -516,7 +516,7 @@
         }
       }
     },
-    "ClusterasgSpotDrainECSHookFunctionServiceRoleE2084EAD": {
+    "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -548,12 +548,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgSpot"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
           }
         ]
       }
     },
-    "ClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicyF2B44652": {
+    "EcsClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicy96377D7C": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -589,7 +589,7 @@
                     },
                     ":autoScalingGroup:*:autoScalingGroupName/",
                     {
-                      "Ref": "ClusterasgSpotASGED3B9B73"
+                      "Ref": "EcsClusterasgSpotASG0D77F041"
                     }
                   ]
                 ]
@@ -612,7 +612,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "ClusterEB0386A7",
+                  "EcsCluster97242B84",
                   "Arn"
                 ]
               }
@@ -626,7 +626,7 @@
                 "ArnEquals": {
                   "ecs:cluster": {
                     "Fn::GetAtt": [
-                      "ClusterEB0386A7",
+                      "EcsCluster97242B84",
                       "Arn"
                     ]
                   }
@@ -638,15 +638,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicyF2B44652",
+        "PolicyName": "EcsClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicy96377D7C",
         "Roles": [
           {
-            "Ref": "ClusterasgSpotDrainECSHookFunctionServiceRoleE2084EAD"
+            "Ref": "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0"
           }
         ]
       }
     },
-    "ClusterasgSpotDrainECSHookFunction7AA02A6D": {
+    "EcsClusterasgSpotDrainECSHookFunction969F1553": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -655,7 +655,7 @@
         "Handler": "index.lambda_handler",
         "Role": {
           "Fn::GetAtt": [
-            "ClusterasgSpotDrainECSHookFunctionServiceRoleE2084EAD",
+            "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0",
             "Arn"
           ]
         },
@@ -663,55 +663,55 @@
         "Environment": {
           "Variables": {
             "CLUSTER": {
-              "Ref": "ClusterEB0386A7"
+              "Ref": "EcsCluster97242B84"
             }
           }
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgSpot"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
           }
         ],
         "Timeout": 310
       },
       "DependsOn": [
-        "ClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicyF2B44652",
-        "ClusterasgSpotDrainECSHookFunctionServiceRoleE2084EAD"
+        "EcsClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicy96377D7C",
+        "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0"
       ]
     },
-    "ClusterasgSpotDrainECSHookFunctionAllowInvokeecsspottest2ClusterasgSpotLifecycleHookDrainHookTopic7B11F09852773705": {
+    "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E8BD3FE4E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ClusterasgSpotDrainECSHookFunction7AA02A6D",
+            "EcsClusterasgSpotDrainECSHookFunction969F1553",
             "Arn"
           ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
-          "Ref": "ClusterasgSpotLifecycleHookDrainHookTopic2C7162DB"
+          "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
         }
       }
     },
-    "ClusterasgSpotDrainECSHookFunctionTopic306D3AA1": {
+    "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",
         "TopicArn": {
-          "Ref": "ClusterasgSpotLifecycleHookDrainHookTopic2C7162DB"
+          "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
         },
         "Endpoint": {
           "Fn::GetAtt": [
-            "ClusterasgSpotDrainECSHookFunction7AA02A6D",
+            "EcsClusterasgSpotDrainECSHookFunction969F1553",
             "Arn"
           ]
         }
       }
     },
-    "ClusterasgSpotLifecycleHookDrainHookRoleBB0F19EF": {
+    "EcsClusterasgSpotLifecycleHookDrainHookRole1B427C77": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -729,12 +729,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgSpot"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
           }
         ]
       }
     },
-    "ClusterasgSpotLifecycleHookDrainHookRoleDefaultPolicyB8BAFD48": {
+    "EcsClusterasgSpotLifecycleHookDrainHookRoleDefaultPolicyFC0E3482": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -743,51 +743,51 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "ClusterasgSpotLifecycleHookDrainHookTopic2C7162DB"
+                "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
               }
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterasgSpotLifecycleHookDrainHookRoleDefaultPolicyB8BAFD48",
+        "PolicyName": "EcsClusterasgSpotLifecycleHookDrainHookRoleDefaultPolicyFC0E3482",
         "Roles": [
           {
-            "Ref": "ClusterasgSpotLifecycleHookDrainHookRoleBB0F19EF"
+            "Ref": "EcsClusterasgSpotLifecycleHookDrainHookRole1B427C77"
           }
         ]
       }
     },
-    "ClusterasgSpotLifecycleHookDrainHookTopic2C7162DB": {
+    "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83": {
       "Type": "AWS::SNS::Topic"
     },
-    "ClusterasgSpotLifecycleHookDrainHook15DDDB71": {
+    "EcsClusterasgSpotLifecycleHookDrainHook91178D34": {
       "Type": "AWS::AutoScaling::LifecycleHook",
       "Properties": {
         "AutoScalingGroupName": {
-          "Ref": "ClusterasgSpotASGED3B9B73"
+          "Ref": "EcsClusterasgSpotASG0D77F041"
         },
         "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
         "DefaultResult": "CONTINUE",
         "HeartbeatTimeout": 300,
         "NotificationTargetARN": {
-          "Ref": "ClusterasgSpotLifecycleHookDrainHookTopic2C7162DB"
+          "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
         },
         "RoleARN": {
           "Fn::GetAtt": [
-            "ClusterasgSpotLifecycleHookDrainHookRoleBB0F19EF",
+            "EcsClusterasgSpotLifecycleHookDrainHookRole1B427C77",
             "Arn"
           ]
         }
       },
       "DependsOn": [
-        "ClusterasgSpotLifecycleHookDrainHookRoleDefaultPolicyB8BAFD48",
-        "ClusterasgSpotLifecycleHookDrainHookRoleBB0F19EF"
+        "EcsClusterasgSpotLifecycleHookDrainHookRoleDefaultPolicyFC0E3482",
+        "EcsClusterasgSpotLifecycleHookDrainHookRole1B427C77"
       ]
     },
-    "ClusterasgOdInstanceSecurityGroup14297A08": {
+    "EcsClusterasgOdInstanceSecurityGroup301DFBED": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "ecs-spot-test2/Cluster/asgOd/InstanceSecurityGroup",
+        "GroupDescription": "aws-ecs-integ-spot/EcsCluster/asgOd/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -798,7 +798,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgOd"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
           }
         ],
         "VpcId": {
@@ -806,7 +806,7 @@
         }
       }
     },
-    "ClusterasgOdInstanceRole46B2D1F2": {
+    "EcsClusterasgOdInstanceRoleC8290533": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -834,12 +834,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgOd"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
           }
         ]
       }
     },
-    "ClusterasgOdInstanceRoleDefaultPolicy15EC01BC": {
+    "EcsClusterasgOdInstanceRoleDefaultPolicy0AE7FAB2": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -863,25 +863,25 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterasgOdInstanceRoleDefaultPolicy15EC01BC",
+        "PolicyName": "EcsClusterasgOdInstanceRoleDefaultPolicy0AE7FAB2",
         "Roles": [
           {
-            "Ref": "ClusterasgOdInstanceRole46B2D1F2"
+            "Ref": "EcsClusterasgOdInstanceRoleC8290533"
           }
         ]
       }
     },
-    "ClusterasgOdInstanceProfile8CCBFD8A": {
+    "EcsClusterasgOdInstanceProfileE5B88756": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "ClusterasgOdInstanceRole46B2D1F2"
+            "Ref": "EcsClusterasgOdInstanceRoleC8290533"
           }
         ]
       }
     },
-    "ClusterasgOdLaunchConfig230C5EC6": {
+    "EcsClusterasgOdLaunchConfigD3B9E271": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
@@ -889,12 +889,12 @@
         },
         "InstanceType": "t3.large",
         "IamInstanceProfile": {
-          "Ref": "ClusterasgOdInstanceProfile8CCBFD8A"
+          "Ref": "EcsClusterasgOdInstanceProfileE5B88756"
         },
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "ClusterasgOdInstanceSecurityGroup14297A08",
+              "EcsClusterasgOdInstanceSecurityGroup301DFBED",
               "GroupId"
             ]
           }
@@ -906,7 +906,7 @@
               [
                 "#!/bin/bash\necho ECS_CLUSTER=",
                 {
-                  "Ref": "ClusterEB0386A7"
+                  "Ref": "EcsCluster97242B84"
                 },
                 " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
               ]
@@ -915,24 +915,24 @@
         }
       },
       "DependsOn": [
-        "ClusterasgOdInstanceRoleDefaultPolicy15EC01BC",
-        "ClusterasgOdInstanceRole46B2D1F2"
+        "EcsClusterasgOdInstanceRoleDefaultPolicy0AE7FAB2",
+        "EcsClusterasgOdInstanceRoleC8290533"
       ]
     },
-    "ClusterasgOdASG83F38D7D": {
+    "EcsClusterasgOdASG0E5C30EC": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "MaxSize": "2",
         "MinSize": "1",
         "DesiredCapacity": "1",
         "LaunchConfigurationName": {
-          "Ref": "ClusterasgOdLaunchConfig230C5EC6"
+          "Ref": "EcsClusterasgOdLaunchConfigD3B9E271"
         },
         "Tags": [
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "ecs-spot-test2/Cluster/asgOd"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
           }
         ],
         "VPCZoneIdentifier": [
@@ -953,7 +953,7 @@
         }
       }
     },
-    "ClusterasgOdDrainECSHookFunctionServiceRole819F43CE": {
+    "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -985,12 +985,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgOd"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
           }
         ]
       }
     },
-    "ClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicy8500B712": {
+    "EcsClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicyE54F1794": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1026,7 +1026,7 @@
                     },
                     ":autoScalingGroup:*:autoScalingGroupName/",
                     {
-                      "Ref": "ClusterasgOdASG83F38D7D"
+                      "Ref": "EcsClusterasgOdASG0E5C30EC"
                     }
                   ]
                 ]
@@ -1049,7 +1049,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "ClusterEB0386A7",
+                  "EcsCluster97242B84",
                   "Arn"
                 ]
               }
@@ -1063,7 +1063,7 @@
                 "ArnEquals": {
                   "ecs:cluster": {
                     "Fn::GetAtt": [
-                      "ClusterEB0386A7",
+                      "EcsCluster97242B84",
                       "Arn"
                     ]
                   }
@@ -1075,15 +1075,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicy8500B712",
+        "PolicyName": "EcsClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicyE54F1794",
         "Roles": [
           {
-            "Ref": "ClusterasgOdDrainECSHookFunctionServiceRole819F43CE"
+            "Ref": "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55"
           }
         ]
       }
     },
-    "ClusterasgOdDrainECSHookFunctionE33FC308": {
+    "EcsClusterasgOdDrainECSHookFunction962490E0": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -1092,7 +1092,7 @@
         "Handler": "index.lambda_handler",
         "Role": {
           "Fn::GetAtt": [
-            "ClusterasgOdDrainECSHookFunctionServiceRole819F43CE",
+            "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55",
             "Arn"
           ]
         },
@@ -1100,55 +1100,55 @@
         "Environment": {
           "Variables": {
             "CLUSTER": {
-              "Ref": "ClusterEB0386A7"
+              "Ref": "EcsCluster97242B84"
             }
           }
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgOd"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
           }
         ],
         "Timeout": 310
       },
       "DependsOn": [
-        "ClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicy8500B712",
-        "ClusterasgOdDrainECSHookFunctionServiceRole819F43CE"
+        "EcsClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicyE54F1794",
+        "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55"
       ]
     },
-    "ClusterasgOdDrainECSHookFunctionAllowInvokeecsspottest2ClusterasgOdLifecycleHookDrainHookTopicA1B632A8E35EF0EC": {
+    "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8B41B2D12": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ClusterasgOdDrainECSHookFunctionE33FC308",
+            "EcsClusterasgOdDrainECSHookFunction962490E0",
             "Arn"
           ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
-          "Ref": "ClusterasgOdLifecycleHookDrainHookTopicCDC252E1"
+          "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
         }
       }
     },
-    "ClusterasgOdDrainECSHookFunctionTopic603DF471": {
+    "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",
         "TopicArn": {
-          "Ref": "ClusterasgOdLifecycleHookDrainHookTopicCDC252E1"
+          "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
         },
         "Endpoint": {
           "Fn::GetAtt": [
-            "ClusterasgOdDrainECSHookFunctionE33FC308",
+            "EcsClusterasgOdDrainECSHookFunction962490E0",
             "Arn"
           ]
         }
       }
     },
-    "ClusterasgOdLifecycleHookDrainHookRole07F838A4": {
+    "EcsClusterasgOdLifecycleHookDrainHookRole695B2DF1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1166,12 +1166,12 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "ecs-spot-test2/Cluster/asgOd"
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
           }
         ]
       }
     },
-    "ClusterasgOdLifecycleHookDrainHookRoleDefaultPolicy037C17EB": {
+    "EcsClusterasgOdLifecycleHookDrainHookRoleDefaultPolicy85FA949A": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1180,45 +1180,45 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "ClusterasgOdLifecycleHookDrainHookTopicCDC252E1"
+                "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
               }
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ClusterasgOdLifecycleHookDrainHookRoleDefaultPolicy037C17EB",
+        "PolicyName": "EcsClusterasgOdLifecycleHookDrainHookRoleDefaultPolicy85FA949A",
         "Roles": [
           {
-            "Ref": "ClusterasgOdLifecycleHookDrainHookRole07F838A4"
+            "Ref": "EcsClusterasgOdLifecycleHookDrainHookRole695B2DF1"
           }
         ]
       }
     },
-    "ClusterasgOdLifecycleHookDrainHookTopicCDC252E1": {
+    "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202": {
       "Type": "AWS::SNS::Topic"
     },
-    "ClusterasgOdLifecycleHookDrainHookA099BA56": {
+    "EcsClusterasgOdLifecycleHookDrainHook03AC5A9E": {
       "Type": "AWS::AutoScaling::LifecycleHook",
       "Properties": {
         "AutoScalingGroupName": {
-          "Ref": "ClusterasgOdASG83F38D7D"
+          "Ref": "EcsClusterasgOdASG0E5C30EC"
         },
         "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
         "DefaultResult": "CONTINUE",
         "HeartbeatTimeout": 300,
         "NotificationTargetARN": {
-          "Ref": "ClusterasgOdLifecycleHookDrainHookTopicCDC252E1"
+          "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
         },
         "RoleARN": {
           "Fn::GetAtt": [
-            "ClusterasgOdLifecycleHookDrainHookRole07F838A4",
+            "EcsClusterasgOdLifecycleHookDrainHookRole695B2DF1",
             "Arn"
           ]
         }
       },
       "DependsOn": [
-        "ClusterasgOdLifecycleHookDrainHookRoleDefaultPolicy037C17EB",
-        "ClusterasgOdLifecycleHookDrainHookRole07F838A4"
+        "EcsClusterasgOdLifecycleHookDrainHookRoleDefaultPolicy85FA949A",
+        "EcsClusterasgOdLifecycleHookDrainHookRole695B2DF1"
       ]
     },
     "TaskTaskRoleE98524A1": {
@@ -1256,7 +1256,7 @@
             ]
           }
         ],
-        "Family": "ecsspottest2Task5842FD21",
+        "Family": "awsecsintegspotTask1789BE14",
         "NetworkMode": "bridge",
         "RequiresCompatibilities": [
           "EC2"
@@ -1276,7 +1276,7 @@
           "Ref": "Task79114B6B"
         },
         "Cluster": {
-          "Ref": "ClusterEB0386A7"
+          "Ref": "EcsCluster97242B84"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
