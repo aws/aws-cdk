@@ -175,7 +175,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * May be unset, in which case this Project is not configured to use a VPC.
    * @internal
    */
-  protected _connections: ec2.Connections;
+  protected _connections: ec2.Connections | undefined;
 
   /**
    * Access the Connections object.

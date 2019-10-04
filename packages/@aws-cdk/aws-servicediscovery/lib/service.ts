@@ -138,6 +138,7 @@ abstract class ServiceBase extends Resource implements IService {
 }
 
 export interface ServiceAttributes {
+  readonly namespace: INamespace;
   readonly serviceName: string;
   readonly serviceId: string;
   readonly serviceArn: string;
@@ -152,7 +153,7 @@ export class Service extends ServiceBase {
 
   public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
     class Import extends ServiceBase {
-      public namespace: INamespace;
+      public namespace: INamespace = attrs.namespace;
       public serviceId = attrs.serviceId;
       public serviceArn = attrs.serviceArn;
       public dnsRecordType = attrs.dnsRecordType;

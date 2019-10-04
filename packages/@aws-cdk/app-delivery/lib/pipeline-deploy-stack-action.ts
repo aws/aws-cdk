@@ -93,7 +93,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   /**
    * The role used by CloudFormation for the deploy action
    */
-  private _deploymentRole: iam.IRole;
+  private _deploymentRole?: iam.IRole;
 
   private readonly stack: cdk.Stack;
   private readonly prepareChangeSetAction: cpactions.CloudFormationCreateReplaceChangeSetAction;
@@ -147,6 +147,10 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   }
 
   public get deploymentRole(): iam.IRole {
+    if (!this._deploymentRole) {
+      throw new Error(`Use this action in a pipeline first before accessing 'deploymentRole'`);
+    }
+
     return this._deploymentRole;
   }
 

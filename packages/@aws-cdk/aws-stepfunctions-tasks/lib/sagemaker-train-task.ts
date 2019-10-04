@@ -108,10 +108,10 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
      */
     private readonly stoppingCondition: StoppingCondition;
 
-    private readonly vpc: ec2.IVpc;
-    private securityGroup: ec2.ISecurityGroup;
+    private readonly vpc?: ec2.IVpc;
+    private securityGroup?: ec2.ISecurityGroup;
     private readonly securityGroups: ec2.ISecurityGroup[] = [];
-    private readonly subnets: string[];
+    private readonly subnets?: string[];
     private readonly integrationPattern: sfn.ServiceIntegrationPattern;
     private _role?: iam.IRole;
     private _grantPrincipal?: iam.IPrincipal;

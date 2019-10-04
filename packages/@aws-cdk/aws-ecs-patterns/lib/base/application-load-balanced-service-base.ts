@@ -233,7 +233,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Certificate Manager certificate to associate with the load balancer.
    */
-  public readonly certificate: ICertificate;
+  public readonly certificate?: ICertificate;
 
   /**
    * The cluster that hosts the service.
