@@ -85,10 +85,8 @@ class TestHandler(unittest.TestCase):
             "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<dest-key-prefix>",
-            "ObjectsMetadata": {
-                "user": { "best": "game" },
-                "system": { "content-type": "text/html", "content-language": "en" }
-            }
+            "UserMetadata": { "best": "game" },
+            "SystemMetadata": { "content-type": "text/html", "content-language": "en" }
         })
 
         self.assertAwsCommands(

@@ -13,80 +13,6 @@ import { ISource, SourceConfig } from "./source";
 const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
 const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
-export type CacheControlDirective =
-  | "must-revalidate"
-  | "no-cache"
-  | "no-store"
-  | "no-transform"
-  | "public"
-  | "private"
-  | "proxy-revalidate"
-  | { "max-age": cdk.Duration }
-  | { "s-max-age": cdk.Duration }
-  | string;
-export interface SystemDefinedObjectsMetadata {
-  readonly "cache-control"?: CacheControlDirective[];
-  readonly "content-disposition"?: string;
-  readonly "content-encoding"?: string;
-  readonly "content-language"?: string;
-  readonly "content-type"?: string;
-  readonly expires?: string | Date;
-};
-
-export interface UserDefinedObjectsMetadata {
-  /**
-   * Arbitrary metadata key-values
-   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
-   */
-  readonly [key: string]: string;
-};
-
-export interface ObjectsMetadata {
-  /**
-   * System-defined objects metadata
-   */
-  readonly system?: SystemDefinedObjectsMetadata;
-  /**
-   * User-defined objects metadata
-   */
-  readonly user?: UserDefinedObjectsMetadata;
-};
-
-function mapUserMetadata(metadata: UserDefinedObjectsMetadata) {
-  const mapKey = (key: string) =>
-    key.toLowerCase().startsWith("x-amzn-meta-")
-      ? key.toLowerCase()
-      : `x-amzn-meta-${key.toLowerCase()}`;
-
-  return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
-}
-
-function mapSystemMetadata(metadata: SystemDefinedObjectsMetadata) {
-  function mapCacheControlDirective(value: CacheControlDirective) {
-    if (typeof value === "string") return value;
-    if ("max-age" in value) return `max-age=${value["max-age"].toSeconds()}`;
-    if ("s-max-age" in value) return `s-max-age=${value["s-max-age"].toSeconds()}`;
-    throw new Error(`Unsupported cache-control directive ${value}`);
-  }
-
-  const res: { [key: string]: string } = {};
-  if (metadata["cache-control"]) {
-    res["cache-control"] = metadata["cache-control"].map(mapCacheControlDirective).join(", ");
-  }
-
-  if (metadata["expires"]) {
-    const val = metadata["expires"];
-    res["expires"] = typeof val === "string" ? val : val.toUTCString();
-  }
-
-  if (metadata["content-disposition"]) res["content-disposition"] = metadata["content-disposition"];
-  if (metadata["content-encoding"]) res["content-encoding"] = metadata["content-encoding"];
-  if (metadata["content-language"]) res["content-language"] = metadata["content-language"];
-  if (metadata["content-type"]) res["content-type"] = metadata["content-type"];
-
-  return res;
-}
-
 export interface BucketDeploymentProps {
   /**
    * The sources from which to deploy the contents of this bucket.
@@ -119,13 +45,6 @@ export interface BucketDeploymentProps {
   readonly retainOnDelete?: boolean;
 
   /**
-   * A map of object metadata to set on all objects in the deployment
-   *
-   * @default - No object metadata is set
-   */
-  readonly objectsMetadata?: ObjectsMetadata;
-
-  /**
    * The CloudFront distribution using the destination bucket as an origin.
    * Files in the distribution's edge caches will be invalidated after
    * files are uploaded to the destination bucket.
@@ -151,6 +70,58 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   * User-defined object metadata to be set on all objects in the deployment
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
+   */
+  readonly userMetadata?: UserDefinedObjectMetadata;
+
+  /**
+   * System-defined object metadata to set on all objects in the deployment
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly cacheControl?: CacheControl[];
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentDisposition?: string;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentEncoding?: string;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentLanguage?: string;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentType?: string;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly expires?: Expires;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly serverSideEncryption?: ServerSideEncryption;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly storageClass?: StorageClass;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly websiteRedirectLocation?: string;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly serverSideEncryptionAwsKmsKeyId?: string;
+  /**
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly serverSideEncryptionCustomerAlgorithm: string;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -196,10 +167,8 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
-        ObjectsMetadata: props.objectsMetadata ? {
-          user: props.objectsMetadata.user ? mapUserMetadata(props.objectsMetadata.user) : undefined,
-          system: props.objectsMetadata.system ? mapSystemMetadata(props.objectsMetadata.system) : undefined
-        } : undefined,
+        UserMetadata: props.userMetadata ? mapUserMetadata(props.userMetadata) : undefined,
+        SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths
       }
@@ -242,3 +211,113 @@ function calcSourceHash(srcDir: string): string {
 
   return sha.digest('hex');
 }
+
+/**
+ * Metadata
+ */
+
+function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
+  const mapKey = (key: string) =>
+    key.toLowerCase().startsWith("x-amzn-meta-")
+      ? key.toLowerCase()
+      : `x-amzn-meta-${key.toLowerCase()}`;
+
+  return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
+}
+
+function mapSystemMetadata(metadata: BucketDeploymentProps) {
+  function mapCacheControlDirective(cacheControl: CacheControl) {
+    const { value } = cacheControl;
+
+    if (typeof value === "string") return value;
+    if ("max-age" in value) return `max-age=${value["max-age"].toSeconds()}`;
+    if ("s-max-age" in value) return `s-max-age=${value["s-max-age"].toSeconds()}`;
+
+    throw new Error(`Unsupported cache-control directive ${value}`);
+  }
+
+  const res: { [key: string]: string } = {};
+  if (metadata.cacheControl) {
+    res["cache-control"] = metadata.cacheControl.map(mapCacheControlDirective).join(", ");
+  }
+
+  if (metadata.expires) {
+    const { value } = metadata.expires;
+
+    if(typeof value === "string") return value;
+    if(value instanceof Date) return value.toUTCString();
+    if(value instanceof cdk.Duration) return new Date(Date.now() + value.toMilliseconds()).toUTCString();
+
+    throw new Error(`Unsupported system-metadata expires ${value}`);
+  }
+
+  if (metadata.contentDisposition) res["content-disposition"] = metadata.contentDisposition;
+  if (metadata.contentEncoding) res["content-encoding"] = metadata.contentEncoding;
+  if (metadata.contentLanguage) res["content-language"] = metadata.contentLanguage;
+  if (metadata.contentType) res["content-type"] = metadata.contentType;
+  if (metadata.serverSideEncryption) res["server-side-encryption"] = metadata.serverSideEncryption;
+  if (metadata.storageClass) res["storage-class"] = metadata.storageClass;
+  if (metadata.websiteRedirectLocation) res["website-redirect-location"] = metadata.websiteRedirectLocation;
+  if (metadata.serverSideEncryptionAwsKmsKeyId) res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId;
+  if (metadata.serverSideEncryptionCustomerAlgorithm) res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm;
+
+  if(Object.keys(res).length === 0) return undefined;
+  return res;
+}
+
+export class CacheControl {
+  public static mustRevalidate() { return new CacheControl("must-revalidate"); }
+  public static noCache() { return new CacheControl("no-cache"); }
+  public static noTransform() { return new CacheControl("no-transform"); }
+  public static public() { return new CacheControl("public"); }
+  public static private() { return new CacheControl("private"); }
+  public static proxyRevalidate() { return new CacheControl("proxy-revalidate"); }
+  public static maxAge(t: cdk.Duration) { return new CacheControl({ "max-age": t.seconds() }); }
+  public static fromString(s: string) {  return new CacheControl(s); }
+
+  private constructor(public value: any) {}
+}
+
+export enum ServerSideEncryption {
+  AES_256 = 'AES256',
+  AWS_KMS = 'aws:kms'
+}
+
+export enum StorageClass {
+  STANDARD = 'STANDARD',
+  REDUCED_REDUNDANCY = 'REDUCED_REDUNDANCY',
+  STANDARD_IA = 'STANDARD_IA',
+  ONEZONE_IA = 'ONEZONE_IA',
+  INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
+  GLACIER = 'GLACIER',
+  DEEP_ARCHIVE = 'DEEP_ARCHIVE'
+}
+
+export class Expires {
+  /**
+   * Expire at the specified date
+   * @param d date to expire at
+   */
+  public static atDate(d: Date) { return new Expires(d); }
+  /**
+   * Expire at the specified timestamp
+   * @param t timestamp in unix milliseconds
+   */
+  public static atTimestamp(t: number) { return new Expires(d); }
+  /**
+   * Expire once the specified duration has passed since deployment time
+   * @param t the duration to wait before expiring
+   */
+  public static in(t: cdk.Duration) { return new Expires(t); }
+  public static fromString(s: string) { return new Expires(s); }
+
+  private constructor(public value: any) {}
+}
+
+export interface UserDefinedObjectMetadata {
+  /**
+   * Arbitrary metadata key-values
+   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   */
+  readonly [key: string]: string;
+};

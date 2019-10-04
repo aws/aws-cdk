@@ -5,6 +5,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import path = require('path');
 import s3deploy = require('../lib');
+import { CacheControl, Expires } from '../lib';
 
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
@@ -233,14 +234,11 @@ export = {
     new s3deploy.BucketDeployment(stack, 'Deploy', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
       destinationBucket: bucket,
-      objectsMetadata: {
-          user: {
-            "A": "a"
-          },
-          system: {
-            "cache-control": ["public", { "max-age": cdk.Duration.hours(1) }]
-          }
-      }
+      userMetadata: {
+        "A": "a"
+      },
+      cacheControl: [CacheControl.public(), CacheControl.maxAge(cdk.Duration.hours(1))],
+      expires: Expires.in(cdk.Duration.hours(12))
     });
 
     test.done();
