@@ -42,9 +42,49 @@ export = {
         });
 
         test.done();
-    }
+    },
+    'synth is successful'(test: Test) {
+
+        const app = createAppWithMap((stack) => {
+            const map = new stepfunctions.Map(stack, 'Map State', {
+                maxConcurrency: 1,
+                itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+            });
+            map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+            return map;
+        });
+
+        app.synth();
+        test.done();
+    },
+    'fails in synthesis if iterator is missing'(test: Test) {
+
+        const app = createAppWithMap((stack) => {
+            const map = new stepfunctions.Map(stack, 'Map State', {
+                maxConcurrency: 1,
+                itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+            });
+            map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+            return map;
+        });
+
+        test.throws(() => {
+            app.synth();
+        }, /Map state must have a non-empty iterator/, 'A validation was expected');
+
+        test.done();
+    }
 };
 
 function render(sm: stepfunctions.IChainable) {
     return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+}
+
+function createAppWithMap(mapFactory: (stack: cdk.Stack) => stepfunctions.Map) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const map = mapFactory(stack);
+    new stepfunctions.StateGraph(map, 'Test Graph');
+    return app;
 }

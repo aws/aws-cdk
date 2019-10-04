@@ -150,7 +150,7 @@ export class Map extends State implements INextable {
      * Validate this state
      */
     protected validate(): string[] {
-        if (!!this.iterator) {
+        if (!this.iteration) {
             return ['Map state must have a non-empty iterator'];
         }
         return [];
