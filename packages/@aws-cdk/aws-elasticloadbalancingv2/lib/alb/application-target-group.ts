@@ -229,7 +229,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * @default Average over 5 minutes
    */
   public metricUnhealthyHostCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('UnhealthyHostCount', {
+    return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
       ...props
     });
@@ -338,6 +338,13 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    * Don't call this directly. It will be called by listeners.
    */
   registerListener(listener: IApplicationListener, associatingConstruct?: IConstruct): void;
+
+  /**
+   * Register a connectable as a member of this target group.
+   *
+   * Don't call this directly. It will be called by load balancing targets.
+   */
+  registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port): void;
 }
 
 /**
@@ -346,6 +353,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
+    this.node.addWarning(`Cannot register listener on imported target group -- security groups might need to be updated manually`);
+  }
+
+  public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
+    this.node.addWarning(`Cannot register connectable on imported target group -- security groups might need to be updated manually`);
   }
 }
 
@@ -359,5 +371,5 @@ export interface IApplicationLoadBalancerTarget {
    * May return JSON to directly add to the [Targets] list, or return undefined
    * if the target will register itself with the load balancer.
    */
-  attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps;
+  attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps;
 }

@@ -2,22 +2,20 @@
 #------------------------------------------------------------------
 # setup
 #------------------------------------------------------------------
-set -e
+set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/../common/util.bash
+source ${scriptdir}/common.bash
 header Python
-prepare_toolkit
 #------------------------------------------------------------------
 
 for template in app sample-app; do
     echo "Trying template $template"
-    # Provide a template otherwise mktemp might generate a name like
-    # 'tmp.AFCVIQ' which the Python init template REALLY doesn't like.
-    cd $(mktemp -d /tmp/pythonXXXXXXX)
+    setup
 
     cdk init -l python $template
 
     source .env/bin/activate
-    pip_install_r requirements.txt
+    type -p pip
+    pip install -r requirements.txt
     cdk synth
 done

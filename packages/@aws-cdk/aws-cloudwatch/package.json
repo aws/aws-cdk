@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudwatch",
-  "version": "1.8.0",
+  "version": "1.11.0",
   "description": "CDK Constructs for AWS CloudWatch",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-64-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudwatch",
@@ -63,20 +63,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
+    "@aws-cdk/assert": "^1.11.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-iam": "^1.11.0",
+    "@aws-cdk/core": "^1.11.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-iam": "^1.11.0",
+    "@aws-cdk/core": "^1.11.0"
   },
   "awslint": {
     "exclude": [
