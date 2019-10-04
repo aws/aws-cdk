@@ -666,8 +666,8 @@ export = {
       }
     },
 
-    'allows add load balancers to a service': {
-      'when application load balancers': {
+    'allows load balancing to any container and port of service': {
+      'with application load balancers': {
         'with default target group port and protocol'(test: Test) {
           // GIVEN
           const stack = new cdk.Stack();
@@ -876,7 +876,7 @@ export = {
         },
       },
 
-      'when network load balancers': {
+      'with network load balancers': {
         'with default target group port'(test: Test) {
           // GIVEN
           const stack = new cdk.Stack();
