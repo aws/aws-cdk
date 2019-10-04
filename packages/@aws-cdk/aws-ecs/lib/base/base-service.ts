@@ -8,6 +8,7 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -21,6 +22,37 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+}
+
+export interface EcsTarget {
+  /**
+   * The name of the container.
+   */
+  readonly containerName: string;
+
+  /**
+   * The port number of the container. Only applicable when using application/network load balancers.
+   *
+   * @default - Container port of the first added port mapping.
+   */
+  readonly containerPort?: number;
+
+  /**
+   * The protocol used for the port mapping. Only applicable when using application load balancers.
+   *
+   * @default Protocol.TCP
+   */
+  readonly protocol?: Protocol;
+
+  /**
+   * ID for a target group to be created.
+   */
+  readonly newTargetGroupId: string;
+
+  /**
+   * Listener and properties for adding target group to the listener.
+   */
+  readonly listener: ListenerConfig;
 }
 
 /**
@@ -114,6 +146,83 @@ export interface BaseServiceProps extends BaseServiceOptions {
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE
    */
   readonly launchType: LaunchType;
+}
+
+/**
+ * Base class for configuring listener when registering targets.
+ */
+export abstract class ListenerConfig {
+  /**
+   * Create a config for adding target group to ALB listener.
+   */
+  public static applicationListener(listener: elbv2.ApplicationListener, props?: elbv2.AddApplicationTargetsProps): ListenerConfig {
+    return new ApplicationListenerConfig(listener, props);
+  }
+
+  /**
+   * Create a config for adding target group to NLB listener.
+   */
+  public static networkListener(listener: elbv2.NetworkListener, props?: elbv2.AddNetworkTargetsProps): ListenerConfig {
+    return new NetworkListenerConfig(listener, props);
+  }
+
+  /**
+   * Create and attach a target group to listener.
+   */
+  public abstract addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService): void;
+}
+
+/**
+ * Class for configuring application load balancer listener when registering targets.
+ */
+class ApplicationListenerConfig extends ListenerConfig {
+  constructor(private readonly listener: elbv2.ApplicationListener, private readonly props?: elbv2.AddApplicationTargetsProps) {
+    super();
+  }
+
+  /**
+   * Create and attach a target group to listener.
+   */
+  public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
+    const props = this.props || {};
+    const protocol = props.protocol;
+    const port = props.port !== undefined ? props.port : (protocol === undefined ? 80 :
+      (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80));
+    this.listener.addTargets(id, {
+      ... props,
+      targets: [
+        service.loadBalancerTarget({
+          ...target
+        })
+      ],
+      port
+    });
+  }
+}
+
+/**
+ * Class for configuring network load balancer listener when registering targets.
+ */
+class NetworkListenerConfig extends ListenerConfig {
+  constructor(private readonly listener: elbv2.NetworkListener, private readonly props?: elbv2.AddNetworkTargetsProps) {
+    super();
+  }
+
+  /**
+   * Create and attach a target group to listener.
+   */
+  public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
+    const port = this.props !== undefined ? this.props.port : 80;
+    this.listener.addTargets(id, {
+      ... this.props,
+      targets: [
+        service.loadBalancerTarget({
+          ...target
+        })
+      ],
+      port
+    });
+  }
 }
 
 /**
@@ -281,6 +390,35 @@ export abstract class BaseService extends Resource
         return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort);
       }
     };
+  }
+
+  /**
+   * Use this function to create all load balancer targets to be registered in this service, add them to
+   * target groups, and attach target groups to listeners accordingly.
+   *
+   * @example
+   *
+   * service.registerLoadBalancerTargets(
+   *   {
+   *     containerTarget: {
+   *       containerName: 'web',
+   *       containerPort: 80,
+   *     },
+   *     targetGroupId: 'ECS',
+   *     listener: ecs.ListenerConfig.applicationListener(listener, {
+   *       protocol: elbv2.ApplicationProtocol.HTTPS
+   *     }),
+   *   },
+   * )
+   */
+  public registerLoadBalancerTargets(...targets: EcsTarget[]) {
+    for (const target of targets) {
+      target.listener.addTargets(target.newTargetGroupId, {
+        containerName: target.containerName,
+        containerPort: target.containerPort,
+        protocol: target.protocol
+      }, this);
+    }
   }
 
   /**
