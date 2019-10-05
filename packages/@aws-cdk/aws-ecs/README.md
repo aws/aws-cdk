@@ -139,7 +139,7 @@ cluster.addCapacity('AsgSpot', {
   spotInstanceDraining: true,
 });
 
-// And optionally add another AutoScalingGroup with on-deamand instances to the same cluster
+// And optionally add another AutoScalingGroup with on-demand instances to the same cluster
 cluster.addCapacity('AsgOd', {
   maxCapacity: 2,
   minCapacity: 1,
