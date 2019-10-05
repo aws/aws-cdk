@@ -267,11 +267,10 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
     throw new Error(`Unsupported expires ${expires}`);
   }
 
-
   const res: { [key: string]: string } = {};
 
   if (metadata.cacheControl) { res["cache-control"] = metadata.cacheControl.map(mapCacheControlDirective).join(", "); }
-  if (metadata.expires) { res["expires"] = mapExpires(metadata.expires); }
+  if (metadata.expires) { res.expires = mapExpires(metadata.expires); }
   if (metadata.contentDisposition) { res["content-disposition"] = metadata.contentDisposition; }
   if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
