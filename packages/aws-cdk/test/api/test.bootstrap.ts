@@ -22,6 +22,8 @@ export = {
         const template = fromYAML(info.TemplateBody as string);
         const bucketProperties = template.Resources.StagingBucket.Properties;
         test.equals(bucketProperties.BucketName, undefined, 'Expected BucketName to be undefined');
+        test.equals(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+            undefined, 'Expected KMSMasterKeyID to be undefined');
         return {};
       },
 
