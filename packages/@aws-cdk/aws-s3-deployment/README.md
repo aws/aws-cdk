@@ -80,6 +80,11 @@ System defined metadata keys include the following:
 - content-language
 - content-type
 - expires
+- server-side-encryption
+- storage-class
+- website-redirect-location
+- ssekms-key-id
+- sse-customer-algorithm
 
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
