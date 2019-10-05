@@ -79,10 +79,6 @@ export interface BucketDeploymentProps {
   readonly userMetadata?: UserDefinedObjectMetadata;
 
   /**
-   * System-defined object metadata to set on all objects in the deployment
-   */ 
-
-  /**
    * System-defined cache-control metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
