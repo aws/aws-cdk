@@ -375,6 +375,13 @@ export interface DatabaseInstanceNewProps {
   readonly monitoringInterval?: Duration;
 
   /**
+   * Role that will be used to manage DB instance monitoring.
+   *
+   * @default - A role is automatically created for you
+   */
+  readonly monitoringRole?: iam.IRole;
+
+  /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default false
@@ -493,8 +500,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.securityGroupId = this.securityGroup.securityGroupId;
 
     let monitoringRole;
-    if (props.monitoringInterval) {
-      monitoringRole = new iam.Role(this, 'MonitoringRole', {
+    if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      monitoringRole = props.monitoringRole || new iam.Role(this, 'MonitoringRole', {
         assumedBy: new iam.ServicePrincipal('monitoring.rds.amazonaws.com'),
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')],
       });

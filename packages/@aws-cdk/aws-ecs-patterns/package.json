@@ -79,6 +79,7 @@
     "@aws-cdk/aws-iam": "^1.11.0",
     "@aws-cdk/aws-route53": "^1.11.0",
     "@aws-cdk/aws-route53-targets": "^1.11.0",
+    "@aws-cdk/aws-servicediscovery": "^1.11.0",
     "@aws-cdk/aws-sqs": "^1.11.0",
     "@aws-cdk/core": "^1.11.0"
   },
@@ -94,11 +95,12 @@
     "@aws-cdk/aws-iam": "^1.11.0",
     "@aws-cdk/aws-route53": "^1.11.0",
     "@aws-cdk/aws-route53-targets": "^1.11.0",
+    "@aws-cdk/aws-servicediscovery": "^1.11.0",
     "@aws-cdk/aws-sqs": "^1.11.0",
     "@aws-cdk/core": "^1.11.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }
