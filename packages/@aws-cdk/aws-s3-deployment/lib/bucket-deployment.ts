@@ -244,11 +244,11 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.expires) {
     const { value } = metadata.expires;
 
-    if(typeof value === "string") {
+    if (typeof value === "string") {
       return value;
-    } else if(value instanceof Date) {
+    } else if (value instanceof Date) {
       return value.toUTCString();
-    } else if(value instanceof cdk.Duration) {
+    } else if (value instanceof cdk.Duration) {
       return new Date(Date.now() + value.toMilliseconds()).toUTCString();
     }
 
