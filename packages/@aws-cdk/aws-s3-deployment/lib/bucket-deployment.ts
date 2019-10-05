@@ -73,52 +73,78 @@ export interface BucketDeploymentProps {
 
   /**
    * User-defined object metadata to be set on all objects in the deployment
+   * @default - No user metadata is set
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
   readonly userMetadata?: UserDefinedObjectMetadata;
 
   /**
    * System-defined object metadata to set on all objects in the deployment
+   */ 
+
+  /**
+   * System-defined cache-control metadata to be set on all objects in the deployment.
+   * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly cacheControl?: CacheControl[];
   /**
+   * System-defined cache-disposition metadata to be set on all objects in the deployment.
+   * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentDisposition?: string;
   /**
+   * System-defined content-encoding metadata to be set on all objects in the deployment.
+   * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentEncoding?: string;
   /**
+   * System-defined content-language metadata to be set on all objects in the deployment.
+   * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentLanguage?: string;
   /**
+   * System-defined content-type metadata to be set on all objects in the deployment.
+   * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentType?: string;
   /**
+   * System-defined expires metadata to be set on all objects in the deployment.
+   * @default - The objects in the distribution will not expire.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly expires?: Expires;
   /**
+   * System-defined x-amz-server-side-encryption metadata to be set on all objects in the deployment.
+   * @default - Server side encryption is not used.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly serverSideEncryption?: ServerSideEncryption;
   /**
+   * System-defined x-amz-storage-class metadata to be set on all objects in the deployment.
+   * @default - Default storage-class for the bucket is used.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly storageClass?: StorageClass;
   /**
+   * System-defined x-amz-website-redirect-location metadata to be set on all objects in the deployment.
+   * @default - No website redirection.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly websiteRedirectLocation?: string;
   /**
+   * System-defined x-amz-server-side-encryption-aws-kms-key-id metadata to be set on all objects in the deployment.
+   * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly serverSideEncryptionAwsKmsKeyId?: string;
   /**
+   * System-defined x-amz-server-side-encryption-customer-algorithm metadata to be set on all objects in the deployment.
+   * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
