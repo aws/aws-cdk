@@ -6,8 +6,8 @@ import s3 = require("@aws-cdk/aws-s3");
 import cdk = require("@aws-cdk/core");
 import { Token } from "@aws-cdk/core";
 import crypto = require('crypto');
-import path = require("path");
 import fs = require('fs');
+import path = require("path");
 import { ISource, SourceConfig } from "./source";
 
 const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
@@ -244,9 +244,15 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.expires) {
     const { value } = metadata.expires;
 
-    if(typeof value === "string") { return value; }
-    if(value instanceof Date) { return value.toUTCString(); }
-    if(value instanceof cdk.Duration) { return new Date(Date.now() + value.toMilliseconds()).toUTCString(); }
+    if(typeof value === "string") {
+      return value;
+    }
+    if(value instanceof Date) {
+      return value.toUTCString();
+    }
+    if(value instanceof cdk.Duration) {
+      return new Date(Date.now() + value.toMilliseconds()).toUTCString();
+    }
 
     throw new Error(`Unsupported system-metadata expires ${value}`);
   }
@@ -261,7 +267,9 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.serverSideEncryptionAwsKmsKeyId) { res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
   if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm; }
 
-  if(Object.keys(res).length === 0) { return undefined; }
+  if(Object.keys(res).length === 0) {
+    return undefined;
+  }
 
   return res;
 }
