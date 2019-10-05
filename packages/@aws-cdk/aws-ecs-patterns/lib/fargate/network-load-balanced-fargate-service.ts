@@ -131,6 +131,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       healthCheckGracePeriod: props.healthCheckGracePeriod,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      cloudMapOptions: props.cloudMapOptions,
     });
     this.addServiceAsTarget(this.service);
   }
