@@ -246,11 +246,9 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
 
     if(typeof value === "string") {
       return value;
-    }
-    if(value instanceof Date) {
+    } else if(value instanceof Date) {
       return value.toUTCString();
-    }
-    if(value instanceof cdk.Duration) {
+    } else if(value instanceof cdk.Duration) {
       return new Date(Date.now() + value.toMilliseconds()).toUTCString();
     }
 
@@ -267,11 +265,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.serverSideEncryptionAwsKmsKeyId) { res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
   if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm; }
 
-  if(Object.keys(res).length === 0) {
-    return undefined;
-  }
-
-  return res;
+  return Object.keys(res).length === 0 ? undefined : res;
 }
 
 export class CacheControl {
