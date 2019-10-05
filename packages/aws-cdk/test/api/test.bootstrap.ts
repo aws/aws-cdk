@@ -22,8 +22,6 @@ export = {
         const template = fromYAML(info.TemplateBody as string);
         const bucketProperties = template.Resources.StagingBucket.Properties;
         test.equals(bucketProperties.BucketName, undefined, 'Expected BucketName to be undefined');
-        test.equals(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
-          undefined, 'Expected KMSMasterKeyID to be undefined');
         return {};
       },
 
@@ -45,7 +43,7 @@ export = {
       account: '123456789012',
       region: 'us-east-1',
       name: 'mock',
-    }, sdk, 'mockStack', undefined);
+    }, sdk, 'mockStack', undefined, {tags: undefined});
 
     // THEN
     test.equals(ret.noOp, false);
@@ -94,7 +92,7 @@ export = {
       region: 'us-east-1',
       name: 'mock',
     }, sdk, 'mockStack', undefined, {
-      bucketName: 'foobar',
+      bucketName: 'foobar', tags: undefined
     });
 
     // THEN
@@ -144,7 +142,57 @@ export = {
       region: 'us-east-1',
       name: 'mock',
     }, sdk, 'mockStack', undefined, {
-      kmsKeyId: 'myKmsKey',
+      kmsKeyId: 'myKmsKey', tags: undefined
+    });
+
+    // THEN
+    test.equals(ret.noOp, false);
+    test.equals(executed, true);
+
+    test.done();
+  },
+  async 'do bootstrap using tags'(test: Test) {
+    // GIVEN
+    const sdk = new MockSDK();
+
+    let executed = false;
+
+    sdk.stubCloudFormation({
+      describeStacks() {
+        return {
+          Stacks: []
+        };
+      },
+
+      createChangeSet(info: CreateChangeSetInput) {
+        const template = fromYAML(info.TemplateBody as string);
+        const bucketProperties = template.Resources.StagingBucket.Properties;
+        test.equals(bucketProperties.BucketName, undefined, 'Expected BucketName to be undefined');
+        test.equals(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+            'myKmsKey', 'Expected KMSMasterKeyID to be myKmsKey');
+        return {};
+      },
+
+      describeChangeSet() {
+        return {
+          Status: 'CREATE_COMPLETE',
+          Changes: [],
+        };
+      },
+
+      executeChangeSet() {
+        executed = true;
+        return {};
+      }
+    });
+
+    // WHEN
+    const ret = await bootstrapEnvironment({
+      account: '123456789012',
+      region: 'us-east-1',
+      name: 'mock',
+    }, sdk, 'mockStack', undefined, {
+      kmsKeyId: 'myKmsKey', tags: [{ Key: 'Foo', Value: 'Bar' }]
     });
 
     // THEN
