@@ -243,15 +243,17 @@ export = {
       expires: Expires.offset(cdk.Duration.hours(12))
     });
 
+    // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
       SystemMetadata: {
-        'content-type': 'text/html',
-        'content-language': 'en',
-        'storage-class': 'INTELLIGENT_TIERING',
-        'server-side-encryption': 'AES256',
         'cache-control': 'public, max-age=3600',
         'expires': new Date(Date.now() + 12 * 60 * 60 * 1000).toUTCString(),
+        'content-disposition': 'inline',
+        'content-language': 'en',
+        'content-type': 'text/html',
+        'server-side-encryption': 'AES256',
+        'storage-class': 'INTELLIGENT_TIERING'
       }
     }));
 

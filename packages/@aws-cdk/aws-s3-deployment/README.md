@@ -91,15 +91,14 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
   destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
-  objectsMetadata: {
-    system: {
-      "content-type": "text/html", // serve the file as a html file even if it doesn't have a .html extension
-      "cache-control": [{ "max-age": cdk.Duration.days(1) }] // cache for 1 day
-    },
-    user: {
-      "custom-field": "this is page 1 of 100" // you can also give custom metadata
-    }
-  }
+  userMetadata: { "A": "1", "b": "2" }, // user-defined metadata
+
+  // system-defined metadata
+  contentType: "text/html",
+  contentLanguage: "en",
+  storageClass: StorageClass.INTELLIGENT_TIERING,
+  serverSideEncryption: ServerSideEncryption.AES_256,
+  cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
 });
 ```
 
