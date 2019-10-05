@@ -2,10 +2,10 @@ import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import cloudfront = require('@aws-cdk/aws-cloudfront');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
-import s3deploy = require('../lib');
-import { CacheControl, Expires, StorageClass, ServerSideEncryption } from '../lib';
 import { Test } from 'nodeunit';
 import path = require('path');
+import s3deploy = require('../lib');
+import { CacheControl, Expires, ServerSideEncryption, StorageClass } from '../lib';
 
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
