@@ -123,6 +123,31 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+## Spot Instances
+
+To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
+
+```ts
+// Add an AutoScalingGroup with spot instances to the existing cluster
+cluster.addCapacity('AsgSpot', {
+  maxCapacity: 2,
+  minCapacity: 2,
+  desiredCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.xlarge'),
+  spotPrice: '0.0735',
+  // Enable the Automated Spot Draining support for Amazon ECS
+  spotInstanceDraining: true,
+});
+
+// And optionally add another AutoScalingGroup with on-deamand instances to the same cluster
+cluster.addCapacity('AsgOd', {
+  maxCapacity: 2,
+  minCapacity: 1,
+  desiredCapacity: 1,
+  instanceType: new ec2.InstanceType('t3.large'),
+});
+```
+
 ## Task definitions
 
 A task Definition describes what a single copy of a **task** should look like.
