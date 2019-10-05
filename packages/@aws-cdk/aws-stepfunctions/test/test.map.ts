@@ -57,14 +57,13 @@ export = {
         app.synth();
         test.done();
     },
-    'fails in synthesis if iterator is missing'(test: Test) {
+    'fails in synthesis if iterator is missing'(test: Test) {
 
         const app = createAppWithMap((stack) => {
             const map = new stepfunctions.Map(stack, 'Map State', {
                 maxConcurrency: 1,
                 itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
             });
-            map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
             return map;
         });
@@ -72,6 +71,62 @@ export = {
         test.throws(() => {
             app.synth();
         }, /Map state must have a non-empty iterator/, 'A validation was expected');
+
+        test.done();
+    },
+    'fails in synthesis when maxConcurrency is a float'(test: Test) {
+        test.throws(() => {
+            const app = new cdk.App();
+            const stack = new cdk.Stack(app, 'my-stack');
+
+            const map = new stepfunctions.Map(stack, 'Map State', {
+                maxConcurrency: 1.2,
+                itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+            });
+            map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+            new stepfunctions.StateGraph(map, 'Test Graph');
+
+            app.synth();
+        }, /maxConcurrency has to be a positive integer/, 'A validation was expected');
+
+        test.done();
+    },
+    'fails in synthesis when maxConcurrency is a negative integer'(test: Test) {
+
+        test.throws(() => {
+            const app = new cdk.App();
+            const stack = new cdk.Stack(app, 'my-stack');
+
+            const map = new stepfunctions.Map(stack, 'Map State', {
+                maxConcurrency: -1,
+                itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+            });
+            map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+            new stepfunctions.StateGraph(map, 'Test Graph');
+
+            app.synth();
+        }, /maxConcurrency has to be a positive integer/, 'A validation was expected');
+
+        test.done();
+    },
+    'fails in synthesis when maxConcurrency is too big to be an integer'(test: Test) {
+
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'my-stack');
+
+        const map = new stepfunctions.Map(stack, 'Map State', {
+            maxConcurrency: Number.MAX_VALUE,
+            itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+        });
+        map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+        new stepfunctions.StateGraph(map, 'Test Graph');
+
+        test.throws(() => {
+            app.synth();
+        }, /maxConcurrency has to be a positive integer/, 'A validation was expected');
 
         test.done();
     }

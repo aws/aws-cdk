@@ -80,7 +80,7 @@ export interface MapProps {
 export class Map extends State implements INextable {
     public readonly endStates: INextable[];
 
-    private readonly maxConcurrency?: number;
+    private readonly maxConcurrency: number | undefined;
     private readonly itemsPath?: string;
 
     constructor(scope: cdk.Construct, id: string, props: MapProps = {}) {
@@ -150,10 +150,30 @@ export class Map extends State implements INextable {
      * Validate this state
      */
     protected validate(): string[] {
-        if (!this.iteration) {
-            return ['Map state must have a non-empty iterator'];
+        const validateMaxConcurrency = () => {
+            const maxConcurrency = this.maxConcurrency;
+            if (maxConcurrency === undefined) {
+                return;
+            }
+
+            const isFloat = Math.floor(maxConcurrency) !== maxConcurrency;
+
+            const isNotPositiveInteger = maxConcurrency < 0 || maxConcurrency > Number.MAX_SAFE_INTEGER;
+
+            if (isFloat || isNotPositiveInteger) {
+                errors.push('maxConcurrency has to be a positive integer');
+            }
+        };
+
+        const errors: string[] = [];
+
+        if (this.iteration === undefined) {
+            errors.push('Map state must have a non-empty iterator');
         }
-        return [];
+
+        validateMaxConcurrency();
+
+        return errors;
     }
 
     private renderItemsPath(): any {
