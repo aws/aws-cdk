@@ -257,26 +257,21 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
 
     throw new Error(`Unsupported cache-control directive ${value}`);
   }
+  function mapExpires(expires: Expires) {
+    const { value } = expires;
+
+    if (typeof value === "string") { return value; }
+    if (value instanceof Date) { return value.toUTCString(); }
+    if (value instanceof cdk.Duration) { return new Date(Date.now() + value.toMilliseconds()).toUTCString(); }
+
+    throw new Error(`Unsupported expires ${expires}`);
+  }
+
 
   const res: { [key: string]: string } = {};
-  if (metadata.cacheControl) {
-    res["cache-control"] = metadata.cacheControl.map(mapCacheControlDirective).join(", ");
-  }
 
-  if (metadata.expires) {
-    const { value } = metadata.expires;
-
-    if (typeof value === "string") {
-      return value;
-    } else if (value instanceof Date) {
-      return value.toUTCString();
-    } else if (value instanceof cdk.Duration) {
-      return new Date(Date.now() + value.toMilliseconds()).toUTCString();
-    }
-
-    throw new Error(`Unsupported system-metadata expires ${value}`);
-  }
-
+  if (metadata.cacheControl) { res["cache-control"] = metadata.cacheControl.map(mapCacheControlDirective).join(", "); }
+  if (metadata.expires) { res["expires"] = mapExpires(metadata.expires); }
   if (metadata.contentDisposition) { res["content-disposition"] = metadata.contentDisposition; }
   if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
