@@ -238,6 +238,7 @@ export = {
       contentType: "text/html",
       contentLanguage: "en",
       storageClass: StorageClass.INTELLIGENT_TIERING,
+      contentDisposition: "inline",
       serverSideEncryption: ServerSideEncryption.AES_256,
       cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
       expires: Expires.offset(cdk.Duration.hours(12))
@@ -247,13 +248,13 @@ export = {
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
       SystemMetadata: {
-        'cache-control': 'public, max-age=3600',
-        'expires': new Date(Date.now() + 12 * 60 * 60 * 1000).toUTCString(),
-        'content-disposition': 'inline',
-        'content-language': 'en',
         'content-type': 'text/html',
+        'content-language': 'en',
+        'content-disposition': 'inline',
+        'storage-class': 'INTELLIGENT_TIERING',
         'server-side-encryption': 'AES256',
-        'storage-class': 'INTELLIGENT_TIERING'
+        'cache-control': 'public, max-age=3600',
+        'expires': new Date(Date.now() + 12 * 60 * 60 * 1000).toUTCString()
       }
     }));
 
