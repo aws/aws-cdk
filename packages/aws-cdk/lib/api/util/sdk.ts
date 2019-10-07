@@ -67,7 +67,7 @@ export interface SDKOptions {
    * cdk deploy --endpoints 'cloudformation=http://localhost:4581,s3=http://localhost:4572'
    * cdk deploy --endpoints '{"cloudformation":"http://localhost:4581","s3":"http://localhost:4572"}'
    *
-   * @default Online AWS cloud endpoints
+   * @default Standard AWS cloud endpoints
    */
 
    endpoints?: string;
@@ -126,16 +126,21 @@ export class SDK implements ISDK {
 
     if (options.endpoints) {
       try {
-        this.endpoints = JSON.parse(options.endpoints) || {};
-      } catch (_e) {
-        this.endpoints = options.endpoints.split(/,/g).reduce<ServiceEndpoints>((acc, entry) => {
-          const [service, url] = entry.split('=');
-          if (service && url) {
-            acc[service] = url;
-          }
-          return acc;
-        }, {});
-      }
+        this.endpoints = JSON.parse(options.endpoints);
+      } catch (_e) {}
+
+      try {
+          this.endpoints = this.endpoints ||
+          options.endpoints.split(/,/g).reduce<ServiceEndpoints>((acc, entry) => {
+              const [service, url] = entry.split('=');
+              if (service && url) {
+                  acc[service] = url;
+              }
+              return acc;
+          }, {});
+      } catch (_e) {}
+
+      this.endpoints = this.endpoints || {};
     }
 
     this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
