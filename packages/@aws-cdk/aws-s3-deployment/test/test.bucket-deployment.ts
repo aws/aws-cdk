@@ -241,7 +241,7 @@ export = {
       contentDisposition: "inline",
       serverSideEncryption: ServerSideEncryption.AES_256,
       cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
-      expires: Expires.offset(cdk.Duration.hours(12))
+      expires: Expires.after(cdk.Duration.hours(12))
     });
 
     // THEN

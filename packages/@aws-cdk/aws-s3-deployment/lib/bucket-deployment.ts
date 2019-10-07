@@ -76,7 +76,7 @@ export interface BucketDeploymentProps {
    * @default - No user metadata is set
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
-  readonly userMetadata?: UserDefinedObjectMetadata;
+  readonly metadata?: UserDefinedObjectMetadata;
 
   /**
    * System-defined cache-control metadata to be set on all objects in the deployment.
@@ -189,7 +189,7 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
-        UserMetadata: props.userMetadata ? mapUserMetadata(props.userMetadata) : undefined,
+        UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths
@@ -284,6 +284,10 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   return Object.keys(res).length === 0 ? undefined : res;
 }
 
+/**
+ * Used for HTTP cache-control header, which influences downstream caches.
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
 export class CacheControl {
   public static mustRevalidate() { return new CacheControl("must-revalidate"); }
   public static noCache() { return new CacheControl("no-cache"); }
@@ -298,11 +302,19 @@ export class CacheControl {
   private constructor(public value: any) {}
 }
 
+/**
+ * Indicates whether server-side encryption is enabled for the object, and whether that encryption is from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3).
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
 export enum ServerSideEncryption {
   AES_256 = 'AES256',
   AWS_KMS = 'aws:kms'
 }
 
+/**
+ * Storage class used for storing the object.
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
 export enum StorageClass {
   STANDARD = 'STANDARD',
   REDUCED_REDUNDANCY = 'REDUCED_REDUNDANCY',
@@ -313,6 +325,10 @@ export enum StorageClass {
   DEEP_ARCHIVE = 'DEEP_ARCHIVE'
 }
 
+/**
+ * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
 export class Expires {
   /**
    * Expire at the specified date
@@ -328,7 +344,7 @@ export class Expires {
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static offset(t: cdk.Duration) { return new Expires(t); }
+  public static after(t: cdk.Duration) { return new Expires(t); }
   public static fromString(s: string) { return new Expires(s); }
 
   private constructor(public value: any) {}
@@ -338,6 +354,7 @@ export interface UserDefinedObjectMetadata {
   /**
    * Arbitrary metadata key-values
    * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
   readonly [key: string]: string;
 }
