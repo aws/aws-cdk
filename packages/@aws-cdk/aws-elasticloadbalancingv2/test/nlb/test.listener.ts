@@ -158,7 +158,7 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.TLS,
+      protocol: elbv2.NetworkProtocol.TLS,
       certificates: [ { certificateArn: cert.certificateArn } ],
       sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
@@ -177,20 +177,6 @@ export = {
     test.done();
   },
 
-  'Invalid Protocol listener'(test: Test) {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Stack');
-    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
-
-    test.throws(() => lb.addListener('Listener', {
-        port: 443,
-        protocol: elbv2.Protocol.HTTP,
-        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-      }), Error, '/The protocol must be either TCP or TLS. Found HTTP/');
-
-    test.done();
-  },
-
   'Protocol & certs TLS listener'(test: Test) {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -198,7 +184,7 @@ export = {
 
     test.throws(() => lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.TLS,
+      protocol: elbv2.NetworkProtocol.TLS,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     }), Error, '/When the protocol is set to TLS, you must specify certificates/');
 
@@ -215,7 +201,7 @@ export = {
 
     test.throws(() => lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.TCP,
+      protocol: elbv2.NetworkProtocol.TCP,
       certificates: [ { certificateArn: cert.certificateArn } ],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     }), Error, '/Protocol must be TLS when certificates have been specified/');

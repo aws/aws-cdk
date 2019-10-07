@@ -1,7 +1,7 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { Protocol, SslPolicy } from '../shared/enums';
+import { NetworkProtocol, SslPolicy } from '../shared/enums';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -26,7 +26,7 @@ export interface BaseNetworkListenerProps {
    *
    * @default - TLS if certificates are provided. TCP otherwise.
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: NetworkProtocol;
 
   /**
    * Certificate list of ACM cert ARNs
@@ -87,17 +87,13 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
   constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
-    const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
+    const proto = props.protocol || (certs.length > 0 ? NetworkProtocol.TLS : NetworkProtocol.TCP);
 
-    if ([Protocol.TCP, Protocol.TLS].indexOf(proto) === -1) {
-      throw new Error(`The protocol must be either ${Protocol.TCP} or ${Protocol.TLS}. Found ${props.protocol}`);
-    }
-
-    if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
+    if (proto === NetworkProtocol.TLS && certs.filter(v => v != null).length === 0) {
       throw new Error(`When the protocol is set to TLS, you must specify certificates`);
     }
 
-    if (proto !== Protocol.TLS && certs.length > 0) {
+    if (proto !== NetworkProtocol.TLS && certs.length > 0) {
       throw new Error(`Protocol must be TLS when certificates have been specified`);
     }
 

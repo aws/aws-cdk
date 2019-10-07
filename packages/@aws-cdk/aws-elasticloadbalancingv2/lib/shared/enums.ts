@@ -35,7 +35,17 @@ export enum Protocol {
   /**
    * TLS
    */
-  TLS = 'TLS'
+  TLS = 'TLS',
+
+  /**
+   * UDP
+   */
+  UDP = 'UDP',
+
+  /**
+   * Listen to both TCP and UDP on the same port
+   */
+  TCP_UDP = 'TCP_UDP',
 }
 
 /**
@@ -51,6 +61,31 @@ export enum ApplicationProtocol {
    * HTTPS
    */
   HTTPS = 'HTTPS'
+}
+
+/**
+ * Load balancing protocol for network load balancers
+ */
+export enum NetworkProtocol {
+  /**
+   * TCP
+   */
+  TCP = 'TCP',
+
+  /**
+   * TLS
+   */
+  TLS = 'TLS',
+
+  /**
+   * UDP
+   */
+  UDP = 'UDP',
+
+  /**
+   * Listen to both TCP and UDP on the same port
+   */
+  TCP_UDP = 'TCP_UDP',
 }
 
 /**
