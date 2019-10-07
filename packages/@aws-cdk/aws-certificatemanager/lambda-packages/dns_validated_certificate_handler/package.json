@@ -1,7 +1,7 @@
 {
   "name": "dns_validated_certificate_handler",
   "private": true,
-  "version": "1.8.0",
+  "version": "1.11.0",
   "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.",
   "main": "lib/index.js",
   "directories": {
@@ -27,17 +27,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-sdk": "^2.522.0",
+    "aws-sdk": "^2.540.0",
     "aws-sdk-mock": "^4.5.0",
-    "eslint": "^6.3.0",
+    "eslint": "^6.5.1",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^9.2.0",
+    "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^24.9.0",
     "lambda-tester": "^3.6.0",
-    "nock": "^10.0.6",
-    "ts-jest": "^24.0.2"
+    "nock": "^11.3.5",
+    "ts-jest": "^24.1.0"
   }
 }

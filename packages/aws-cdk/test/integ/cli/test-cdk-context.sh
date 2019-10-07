@@ -4,10 +4,6 @@ scriptdir=$(cd $(dirname $0) && pwd)
 source ${scriptdir}/common.bash
 # ----------------------------------------------------------
 
-rm -rf /tmp/cdk-integ-test
-mkdir -p /tmp/cdk-integ-test
-cd /tmp/cdk-integ-test
-
 cat > cdk.context.json <<HERE
 {
   "contextkey": "this is the context value"
@@ -24,5 +20,7 @@ cdk context 2>&1 | grep "this is the context value" > /dev/null && { echo "Shoul
 
 # Test that forced delete of the context key does not error
 cdk context -f --reset contextkey
+
+rm -f cdk.context.json
 
 echo "✅  success"

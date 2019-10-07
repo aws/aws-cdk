@@ -26,18 +26,28 @@ export interface ScheduledTaskBaseProps {
   readonly vpc?: IVpc;
 
   /**
-   * The image used to start a container.
-   */
-  readonly image: ContainerImage;
-
-  /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
-   * runs the rule. For more information, see Schedule Expression Syntax for
-   * Rules in the Amazon CloudWatch User Guide.
-   *
-   * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+   * runs the rule. For more information, see
+   * [Schedule Expression Syntax for Rules](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html)
+   * in the Amazon CloudWatch User Guide.
    */
   readonly schedule: Schedule;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * @default 1
+   */
+  readonly desiredTaskCount?: number;
+}
+
+export interface ScheduledTaskImageProps {
+  /**
+   * The image used to start a container. Image or taskDefinition must be specified, but not both.
+   *
+   * @default - none
+   */
+  readonly image: ContainerImage;
 
   /**
    * The command that is passed to the container.
@@ -47,13 +57,6 @@ export interface ScheduledTaskBaseProps {
    * @default - CMD value built into container image.
    */
   readonly command?: string[];
-
-  /**
-   * The desired number of instantiations of the task definition to keep running on the service.
-   *
-   * @default 1
-   */
-  readonly desiredTaskCount?: number;
 
   /**
    * The environment variables to pass to the container.
@@ -89,11 +92,11 @@ export abstract class ScheduledTaskBase extends Construct {
    * The desired number of instantiations of the task definition to keep running on the service.
    */
   public readonly desiredTaskCount: number;
-  public readonly eventRule: Rule;
+
   /**
-   * The AwsLogDriver to use for logging if logging is enabled.
+   * The CloudWatch Events rule for the service.
    */
-  public readonly logDriver?: LogDriver;
+  public readonly eventRule: Rule;
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.
@@ -108,10 +111,6 @@ export abstract class ScheduledTaskBase extends Construct {
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
     });
-
-    this.logDriver = props.logDriver !== undefined
-                        ? props.logDriver
-                        : this.createAWSLogDriver(this.node.id);
   }
 
   /**
@@ -132,6 +131,9 @@ export abstract class ScheduledTaskBase extends Construct {
     return eventRuleTarget;
   }
 
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import cloudfront = require('@aws-cdk/aws-cloudfront');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -30,7 +30,7 @@ export = {
         ]
       },
       "SourceBucketNames": [{
-        "Ref": "DeployAsset1S3BucketC03B223F"
+        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
       }],
       "SourceObjectKeys": [{
         "Fn::Join": [
@@ -43,7 +43,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                     }
                   ]
                 }
@@ -56,7 +56,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                     }
                   ]
                 }
@@ -96,10 +96,10 @@ export = {
       },
       "SourceBucketNames": [
         {
-          "Ref": "DeployAsset1S3BucketC03B223F"
+          "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
         },
         {
-          "Ref": "DeployAsset2S3Bucket155AFD20"
+          "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3Bucket99793559"
         }
       ],
       "SourceObjectKeys": [
@@ -114,7 +114,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                       }
                     ]
                   }
@@ -127,7 +127,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                       }
                     ]
                   }
@@ -147,7 +147,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
                       }
                     ]
                   }
@@ -160,7 +160,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
                       }
                     ]
                   }
@@ -394,4 +394,41 @@ export = {
     }));
     test.done();
   },
+
+  'memoryLimit can be used to specify the memory limit for the deployment resource handler'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+
+    // we define 3 deployments with 2 different memory configurations
+
+    new s3deploy.BucketDeployment(stack, 'Deploy256-1', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      memoryLimit: 256
+    });
+
+    new s3deploy.BucketDeployment(stack, 'Deploy256-2', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      memoryLimit: 256
+    });
+
+    new s3deploy.BucketDeployment(stack, 'Deploy1024', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      memoryLimit: 1024
+    });
+
+    // THEN
+
+    // we expect to find only two handlers, one for each configuration
+
+    expect(stack).to(countResources('AWS::Lambda::Function', 2));
+    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256  }));
+    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 1024 }));
+    test.done();
+  }
 };
