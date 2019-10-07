@@ -194,7 +194,7 @@ export = {
       region: 'us-east-1',
       name: 'mock',
     }, sdk, 'mockStack', undefined, {
-      kmsKeyId: 'myKmsKey', tags: [{ Key: 'Foo', Value: 'Bar' }]
+      tags: [{ Key: 'Foo', Value: 'Bar' }]
     });
 
     // THEN
