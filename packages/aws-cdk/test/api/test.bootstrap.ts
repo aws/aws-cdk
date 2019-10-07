@@ -23,7 +23,7 @@ export = {
         const bucketProperties = template.Resources.StagingBucket.Properties;
         test.equals(bucketProperties.BucketName, undefined, 'Expected BucketName to be undefined');
         test.equals(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
-            undefined, 'Expected KMSMasterKeyID to be undefined');
+          undefined, 'Expected KMSMasterKeyID to be undefined');
         return {};
       },
 
@@ -45,7 +45,7 @@ export = {
       account: '123456789012',
       region: 'us-east-1',
       name: 'mock',
-    }, sdk, 'mockStack', undefined, {tags: undefined});
+    }, sdk, 'mockStack', undefined);
 
     // THEN
     test.equals(ret.noOp, false);
@@ -94,7 +94,7 @@ export = {
       region: 'us-east-1',
       name: 'mock',
     }, sdk, 'mockStack', undefined, {
-      bucketName: 'foobar', tags: undefined
+      bucketName: 'foobar',
     });
 
     // THEN
@@ -144,7 +144,7 @@ export = {
       region: 'us-east-1',
       name: 'mock',
     }, sdk, 'mockStack', undefined, {
-      kmsKeyId: 'myKmsKey', tags: undefined
+      kmsKeyId: 'myKmsKey',
     });
 
     // THEN
@@ -153,7 +153,7 @@ export = {
 
     test.done();
   },
-  async 'do bootstrap using tags'(test: Test) {
+  async 'do bootstrap with custom tags for toolkit stack'(test: Test) {
     // GIVEN
     const sdk = new MockSDK();
 
@@ -171,7 +171,7 @@ export = {
         const bucketProperties = template.Resources.StagingBucket.Properties;
         test.equals(bucketProperties.BucketName, undefined, 'Expected BucketName to be undefined');
         test.equals(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
-            'myKmsKey', 'Expected KMSMasterKeyID to be myKmsKey');
+            undefined, 'Expected KMSMasterKeyID to be undefined');
         return {};
       },
 
