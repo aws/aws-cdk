@@ -234,7 +234,7 @@ export = {
     new s3deploy.BucketDeployment(stack, 'Deploy', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
       destinationBucket: bucket,
-      userMetadata: { "A": "1", "b": "2" },
+      metadata: { "A": "1", "b": "2" },
       contentType: "text/html",
       contentLanguage: "en",
       storageClass: StorageClass.INTELLIGENT_TIERING,
