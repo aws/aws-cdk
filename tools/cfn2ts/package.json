@@ -38,7 +38,7 @@
     "codemaker": "^0.18.0",
     "fast-json-patch": "^2.2.1",
     "fs-extra": "^8.1.0",
-    "yargs": "^14.0.0"
+    "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
