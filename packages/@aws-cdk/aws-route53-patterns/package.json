@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53-patterns",
-  "version": "1.10.0",
+  "version": "1.12.0",
   "description": "CDK Constructs for AWS Route53 patterns",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -71,8 +71,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.10.0",
-    "@aws-cdk/aws-s3": "^1.10.0",
+    "@aws-cdk/assert": "^1.12.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
@@ -80,25 +79,25 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "^1.10.0",
-    "@aws-cdk/aws-cloudfront": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-route53": "^1.10.0",
-    "@aws-cdk/aws-route53-targets": "^1.10.0",
-    "@aws-cdk/aws-s3": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0",
-    "@aws-cdk/region-info": "^1.10.0"
+    "@aws-cdk/aws-certificatemanager": "^1.12.0",
+    "@aws-cdk/aws-cloudfront": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-route53": "^1.12.0",
+    "@aws-cdk/aws-route53-targets": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0",
+    "@aws-cdk/region-info": "^1.12.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "^1.10.0",
-    "@aws-cdk/aws-cloudfront": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-route53": "^1.10.0",
-    "@aws-cdk/aws-route53-targets": "^1.10.0",
-    "@aws-cdk/aws-s3": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0",
-    "@aws-cdk/region-info": "^1.10.0"
+    "@aws-cdk/aws-certificatemanager": "^1.12.0",
+    "@aws-cdk/aws-cloudfront": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-route53": "^1.12.0",
+    "@aws-cdk/aws-route53-targets": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0",
+    "@aws-cdk/region-info": "^1.12.0"
   },
   "engines": {
     "node": ">= 10.3.0"

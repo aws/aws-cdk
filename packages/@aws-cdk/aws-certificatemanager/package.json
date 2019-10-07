@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-certificatemanager",
-  "version": "1.10.0",
+  "version": "1.12.0",
   "description": "The CDK Construct Library for AWS::CertificateManager",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,25 +63,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.10.0",
+    "@aws-cdk/assert": "^1.12.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-lambda": "^1.10.0",
-    "@aws-cdk/aws-route53": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0"
+    "@aws-cdk/aws-cloudformation": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-route53": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.10.0",
-    "@aws-cdk/aws-iam": "^1.10.0",
-    "@aws-cdk/aws-lambda": "^1.10.0",
-    "@aws-cdk/aws-route53": "^1.10.0",
-    "@aws-cdk/core": "^1.10.0"
+    "@aws-cdk/aws-cloudformation": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-route53": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
   "engines": {
     "node": ">= 10.3.0"

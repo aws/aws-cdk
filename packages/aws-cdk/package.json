@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "1.10.0",
+  "version": "1.12.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -43,10 +43,10 @@
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
     "@types/node": "^8.10.54",
-    "@types/request": "^2.48.2",
+    "@types/request": "^2.48.3",
     "@types/semver": "^6.0.2",
-    "@types/sinon": "^7.0.13",
-    "@types/table": "^4.0.6",
+    "@types/sinon": "^7.5.0",
+    "@types/table": "^4.0.7",
     "@types/uuid": "^3.4.5",
     "@types/yaml": "^1.0.2",
     "@types/yargs": "^13.0.3",
@@ -58,11 +58,11 @@
     "sinon": "^7.5.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^1.10.0",
-    "@aws-cdk/cx-api": "^1.10.0",
-    "@aws-cdk/region-info": "^1.10.0",
+    "@aws-cdk/cloudformation-diff": "^1.12.0",
+    "@aws-cdk/cx-api": "^1.12.0",
+    "@aws-cdk/region-info": "^1.12.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.538.0",
+    "aws-sdk": "^2.543.0",
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "decamelize": "^3.2.0",
@@ -77,7 +77,7 @@
     "source-map-support": "^0.5.13",
     "table": "^5.4.6",
     "yaml": "^1.7.0",
-    "yargs": "^14.0.0"
+    "yargs": "^14.2.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

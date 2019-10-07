@@ -4,6 +4,7 @@ import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
+import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 
 /**
  * The interface for all task definitions.
@@ -63,6 +64,13 @@ export interface CommonTaskDefinitionProps {
    * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * The configuration details for the App Mesh proxy.
+   *
+   * @default - No proxy configuration.
+   */
+  readonly proxyConfiguration?: ProxyConfiguration;
 
   /**
    * The list of volume definitions for the task. For more information, see
@@ -275,10 +283,11 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
-      networkMode: this.networkMode,
+      networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.anyValue({ produce: () =>
         !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
       }, { omitEmptyArray: true }),
+      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
@@ -326,7 +335,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
     }
-    if (this.networkMode === NetworkMode.BRIDGE) {
+    if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
     return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
@@ -428,6 +437,10 @@ export class TaskDefinition extends TaskDefinitionBase {
   private findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
   }
+
+  private renderNetworkMode(networkMode: NetworkMode): string | undefined {
+    return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
+  }
 }
 
 /**
@@ -461,6 +474,14 @@ export enum NetworkMode {
    * single container instance when port mappings are used.
    */
   HOST = 'host',
+
+  /**
+   * The task utilizes NAT network mode required by Windows containers.
+   *
+   * This is the only supported network mode for Windows containers. For more information, see
+   * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
+   */
+  NAT = 'nat'
 }
 
 /**
