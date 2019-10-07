@@ -303,7 +303,8 @@ export class CacheControl {
 }
 
 /**
- * Indicates whether server-side encryption is enabled for the object, and whether that encryption is from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3).
+ * Indicates whether server-side encryption is enabled for the object, and whether that encryption is
+ * from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3).
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export enum ServerSideEncryption {
