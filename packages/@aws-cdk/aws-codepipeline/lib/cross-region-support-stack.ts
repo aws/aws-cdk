@@ -2,6 +2,32 @@ import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 
+const REQUIRED_ALIAS_PREFIX = 'alias/';
+
+/**
+ * A class needed to work around CodePipeline's extremely small (100 characters)
+ * limit for the name/ARN of the key in the ArtifactStore.
+ * Limits the length of the alias' auto-generated name to 50 characters.
+ */
+class AliasWithShorterGeneratedName extends kms.Alias {
+  protected generatePhysicalName(): string {
+    let baseName = super.generatePhysicalName();
+    if (baseName.startsWith(REQUIRED_ALIAS_PREFIX)) {
+      // remove the prefix, because we're taking the last characters of the name below
+      baseName = baseName.substring(REQUIRED_ALIAS_PREFIX.length);
+    }
+    const maxLength = 50 - REQUIRED_ALIAS_PREFIX.length;
+    // take the last characters, as they include the hash,
+    // and so have a higher chance of not colliding
+    return REQUIRED_ALIAS_PREFIX + lastNCharacters(baseName, maxLength);
+  }
+}
+
+function lastNCharacters(str: string, n: number) {
+  const startIndex = Math.max(str.length - n, 0);
+  return str.substring(startIndex);
+}
+
 export class CrossRegionSupportConstruct extends cdk.Construct {
   public readonly replicationBucket: s3.IBucket;
 
@@ -9,7 +35,7 @@ export class CrossRegionSupportConstruct extends cdk.Construct {
     super(scope, id);
 
     const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey');
-    const encryptionAlias = new kms.Alias(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
+    const encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
       targetKey: encryptionKey,
       aliasName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       removalPolicy: cdk.RemovalPolicy.RETAIN,

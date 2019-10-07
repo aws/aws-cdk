@@ -2097,7 +2097,10 @@ Object {
         "ArtifactStore": Object {
           "EncryptionKey": Object {
             "Id": Object {
-              "Ref": "PipelineArtifactsBucketEncryptionKey01D58D69",
+              "Fn::GetAtt": Array [
+                "PipelineArtifactsBucketEncryptionKey01D58D69",
+                "Arn",
+              ],
             },
             "Type": "KMS",
           },
