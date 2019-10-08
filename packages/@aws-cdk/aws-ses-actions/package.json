@@ -1,0 +1,105 @@
+{
+  "name": "@aws-cdk/aws-ses-actions",
+  "version": "1.12.0",
+  "description": "Receipt rule actions for AWS SES",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.ses.actions",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "ses-actions",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.SES.Actions",
+        "packageId": "Amazon.CDK.AWS.SES.Actions",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-ses-actions",
+        "module": "aws_cdk.aws_ses_actions"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-ses-actions"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "ses",
+    "actions"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    }
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^1.12.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "jest": "^24.9.0",
+    "pkglint": "file:../../../tools/pkglint"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-kms": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "@aws-cdk/aws-ses": "^1.12.0",
+    "@aws-cdk/aws-sns": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-kms": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "@aws-cdk/aws-ses": "^1.12.0",
+    "@aws-cdk/aws-sns": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
+  },
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental"
+}
