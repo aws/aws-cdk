@@ -641,6 +641,42 @@ export = {
       test.done();
     },
 
+    'Failover record'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone'
+      });
+
+      // WHEN
+
+      new route53.RecordSet(stack, 'GeoLocation', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.CNAME,
+        target: route53.RecordTarget.fromValues('zzz'),
+        setIdentifier: 'test',
+        failover: route53.FailoverType.PRIMARY
+      });
+
+      // THEN
+
+      expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+        Name: "www.myzone.",
+        Type: "CNAME",
+        Failover: 'PRIMARY',
+        HostedZoneId: {
+          Ref: "HostedZoneDB99F866"
+        },
+        ResourceRecords: [
+          "zzz"
+        ],
+        TTL: "1800"
+      }));
+      test.done();
+    },
+
     'Throws if weight is over 255'(test: Test) {
       // GIVEN
       const stack = new Stack();

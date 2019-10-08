@@ -152,6 +152,15 @@ export interface RecordSetOptions {
   readonly multiValueAnswer?: boolean;
 
   /**
+   * Failover routing lets you route traffic to a resource when the resource is healthy,
+   * or to a different resource when the first resource is unhealthy
+   *
+   * @default - no failover routing
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html#routing-policy-failover
+   */
+  readonly failover?: FailoverType;
+
+  /**
    * An identifier that differentiates among multiple resource record sets that have the same combination of name and type
    *
    * @default - no set identifier
@@ -159,7 +168,7 @@ export interface RecordSetOptions {
   readonly setIdentifier?: string;
 }
 
-const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region', 'weight', 'multiValueAnswer'];
+const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region', 'weight', 'multiValueAnswer', 'failover'];
 
 /**
  * Type union for a record that accepts multiple types of target.
@@ -250,6 +259,7 @@ export class RecordSet extends Resource implements IRecordSet {
       geoLocation: props.geoLocation && props.geoLocation.options,
       weight: props.weight != null ? props.weight : undefined,
       multiValueAnswer: props.multiValueAnswer || undefined,
+      failover: props.failover,
     });
 
     this.domainName = recordSet.ref;
@@ -607,6 +617,21 @@ export enum ContinentCode {
    * South America
    */
   SOUTH_AMERICA = 'SA',
+}
+
+/**
+ * Failover routing type
+ */
+export enum FailoverType {
+  /**
+   * Primary record
+   */
+  PRIMARY = 'PRIMARY',
+
+  /**
+   * Secondary record
+   */
+  SECONDARY = 'SECONDARY',
 }
 
 const isHostedZoneConstruct = (zone: IHostedZone): zone is HostedZone => !!(zone as HostedZone).isPrivateHostedZone;
