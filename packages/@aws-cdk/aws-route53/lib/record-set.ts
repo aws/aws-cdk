@@ -115,12 +115,23 @@ export interface RecordSetOptions {
   readonly comment?: string;
 
   /**
+   * Specify the EC2 Region where you created the resource that this resource record set refers to
+   *
+   * @default - no specific latency-based routing
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html#routing-policy-latency
+   */
+  readonly region?: string;
+
+  /**
    * Control how Amazon Route 53 responds to DNS queries based on the geographic origin of the query
    *
    * @default - no specific geographic routing
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html#routing-policy-geo
    */
   readonly geoLocation?: GeoLocation;
 }
+
+const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region'];
 
 /**
  * Type union for a record that accepts multiple types of target.
@@ -178,8 +189,14 @@ export class RecordSet extends Resource implements IRecordSet {
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
 
-    if (props.geoLocation && isHostedZoneConstruct(props.zone) && props.zone.isPrivateHostedZone()) {
-      throw new Error('Creating geolocation record sets in private hosted zones is not supported');
+    const routingPolicyProps = routingPolicyKeys.filter((key) => !!props[key]);
+
+    if (routingPolicyProps.length > 1) {
+      throw new Error(`Cannot set more than 1 routing policy property (got ${routingPolicyProps.join(', ')})`);
+    }
+
+    if (routingPolicyProps.length && isHostedZoneConstruct(props.zone) && props.zone.isPrivateHostedZone()) {
+      throw new Error(`Cannot create routing record sets in private hosted zones (got ${routingPolicyProps[0]})`);
     }
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
@@ -190,6 +207,7 @@ export class RecordSet extends Resource implements IRecordSet {
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
       ttl,
       comment: props.comment,
+      region: props.region,
       geoLocation: props.geoLocation && props.geoLocation.options,
     });
 

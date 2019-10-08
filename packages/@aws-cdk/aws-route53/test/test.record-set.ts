@@ -457,64 +457,125 @@ export = {
     test.done();
   },
 
-  'Geo location record'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
+  'Routing policy': {
+    'Geo location record'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
 
-    const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
-    });
+      const zone = new route53.HostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone'
+      });
 
-    // WHEN
+      // WHEN
 
-    new route53.RecordSet(stack, 'GeoLocation', {
-      zone,
-      recordName: 'www',
-      recordType: route53.RecordType.CNAME,
-      target: route53.RecordTarget.fromValues('zzz'),
-      geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI')
-    });
-
-    // THEN
-
-    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "CNAME",
-      GeoLocation: {
-        CountryCode: "US",
-        SubdivisionCode: "HI"
-      },
-      HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
-      },
-      ResourceRecords: [
-        "zzz"
-      ],
-      TTL: "1800"
-    }));
-    test.done();
-  },
-
-  'Throws if geo location record in private zone'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const zone = new route53.PrivateHostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone',
-      vpc
-    });
-
-    // THEN
-    test.throws(() => {
       new route53.RecordSet(stack, 'GeoLocation', {
         zone,
         recordName: 'www',
         recordType: route53.RecordType.CNAME,
         target: route53.RecordTarget.fromValues('zzz'),
-        geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI')
+        geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI'),
       });
-    }, /Creating geolocation record sets in private hosted zones is not supported/);
-    test.done();
+
+      // THEN
+
+      expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+        Name: "www.myzone.",
+        Type: "CNAME",
+        GeoLocation: {
+          CountryCode: "US",
+          SubdivisionCode: "HI"
+        },
+        HostedZoneId: {
+          Ref: "HostedZoneDB99F866"
+        },
+        ResourceRecords: [
+          "zzz"
+        ],
+        TTL: "1800"
+      }));
+      test.done();
+    },
+
+    'Region record'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone'
+      });
+
+      // WHEN
+
+      new route53.RecordSet(stack, 'GeoLocation', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.CNAME,
+        target: route53.RecordTarget.fromValues('zzz'),
+        region: 'us-east-1',
+      });
+
+      // THEN
+
+      expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+        Name: "www.myzone.",
+        Type: "CNAME",
+        Region: 'us-east-1',
+        HostedZoneId: {
+          Ref: "HostedZoneDB99F866"
+        },
+        ResourceRecords: [
+          "zzz"
+        ],
+        TTL: "1800"
+      }));
+      test.done();
+    },
+
+    'Throws if routing policy record in private zone'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const zone = new route53.PrivateHostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone',
+        vpc
+      });
+
+      // THEN
+      test.throws(() => {
+        new route53.RecordSet(stack, 'GeoLocation', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI')
+        });
+      }, /Cannot create routing record sets in private hosted zones/);
+      test.done();
+    },
+
+    'Throws if more than routing record in private zone'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const zone = new route53.PrivateHostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone',
+        vpc
+      });
+
+      // THEN
+      test.throws(() => {
+        new route53.RecordSet(stack, 'GeoLocation', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI'),
+          region: 'us-east-1',
+        });
+      }, /Cannot set more than 1 routing policy property/);
+      test.done();
+    },
   },
 };
