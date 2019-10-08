@@ -40,6 +40,7 @@ async function parseCommandLineArguments() {
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
+    .option('notify', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
@@ -196,6 +197,7 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
+          notify: args.notify,
           requireApproval: configuration.settings.get(['requireApproval']),
           ci: args.ci,
           reuseAssets: args['build-exclude'],

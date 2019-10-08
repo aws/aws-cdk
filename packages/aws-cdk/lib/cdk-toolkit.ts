@@ -147,6 +147,7 @@ export class CdkToolkit {
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
+          notify: options.notify,
           tags
         });
 
@@ -272,6 +273,11 @@ export interface DeployOptions {
    * Role to pass to CloudFormation for deployment
    */
   roleArn?: string;
+
+  /**
+   * ARNs of SNS topics that CloudFormation will notify with stack related events
+   */
+  notify?: string[];
 
   /**
    * What kind of security changes require approval
