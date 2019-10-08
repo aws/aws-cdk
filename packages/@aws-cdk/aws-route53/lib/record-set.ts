@@ -131,6 +131,19 @@ export interface RecordSetOptions {
   readonly geoLocation?: GeoLocation;
 
   /**
+   * Controls the proportion of DNS queries that Route 53 responds to using the current record
+   *
+   * Route 53 calculates the sum of the weights for the records that have the same combination of DNS name and type.
+   *
+   * To disable routing to a resource, set weight to 0
+   * If you set weight to 0 for all of the records in the group, traffic is routed to all resources with equal probability
+   *
+   * @default - no specific weighted routing
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html#routing-policy-weighted
+   */
+  readonly weight?: number;
+
+  /**
    * An identifier that differentiates among multiple resource record sets that have the same combination of name and type
    *
    * @default - no set identifier
@@ -212,6 +225,10 @@ export class RecordSet extends Resource implements IRecordSet {
       }
     }
 
+    if (props.weight && (props.weight > 255 || props.weight < 0)) {
+      throw new Error(`weight property cannot negative or over 255 (got ${props.weight})`);
+    }
+
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
@@ -223,6 +240,7 @@ export class RecordSet extends Resource implements IRecordSet {
       setIdentifier: props.setIdentifier,
       region: props.region,
       geoLocation: props.geoLocation && props.geoLocation.options,
+      weight: props.weight != null ? props.weight : undefined,
     });
 
     this.domainName = recordSet.ref;

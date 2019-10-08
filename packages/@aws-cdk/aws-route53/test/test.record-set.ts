@@ -533,6 +533,102 @@ export = {
       test.done();
     },
 
+    'Weighted record'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone'
+      });
+
+      // WHEN
+
+      new route53.RecordSet(stack, 'GeoLocation', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.CNAME,
+        target: route53.RecordTarget.fromValues('zzz'),
+        setIdentifier: 'test',
+        weight: 255,
+      });
+
+      // THEN
+
+      expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+        Name: "www.myzone.",
+        Type: "CNAME",
+        Weight: 255,
+        HostedZoneId: {
+          Ref: "HostedZoneDB99F866"
+        },
+        ResourceRecords: [
+          "zzz"
+        ],
+        TTL: "1800"
+      }));
+      test.done();
+    },
+
+    'Zero weighted record'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone'
+      });
+
+      // WHEN
+
+      new route53.RecordSet(stack, 'GeoLocation', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.CNAME,
+        target: route53.RecordTarget.fromValues('zzz'),
+        setIdentifier: 'test',
+        weight: 0,
+      });
+
+      // THEN
+
+      expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+        Name: "www.myzone.",
+        Type: "CNAME",
+        Weight: 0,
+        HostedZoneId: {
+          Ref: "HostedZoneDB99F866"
+        },
+        ResourceRecords: [
+          "zzz"
+        ],
+        TTL: "1800"
+      }));
+      test.done();
+    },
+
+    'Throws if weight is over 255'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const zone = new route53.PrivateHostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone',
+        vpc
+      });
+
+      // THEN
+      test.throws(() => {
+        new route53.RecordSet(stack, 'GeoLocation', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          setIdentifier: 'test',
+          weight: 256
+        });
+      }, /weight property cannot negative or over 255/);
+      test.done();
+    },
+
     'Throws if routing policy record in private zone'(test: Test) {
       // GIVEN
       const stack = new Stack();
