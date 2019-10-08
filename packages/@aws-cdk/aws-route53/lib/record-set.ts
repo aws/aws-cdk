@@ -151,7 +151,7 @@ export interface RecordSetOptions {
   readonly setIdentifier?: string;
 }
 
-const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region'];
+const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region', 'weight'];
 
 /**
  * Type union for a record that accepts multiple types of target.
