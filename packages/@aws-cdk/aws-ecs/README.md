@@ -302,6 +302,29 @@ const target = listener.addTargets('ECS', {
 });
 ```
 
+Alternatively, you can also create all load balancer targets to be registered in this service, add them to target groups, and attach target groups to listeners accordingly.
+
+```ts
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
+const service = new ecs.FargateService(this, 'Service', { /* ... */ });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
+const listener = lb.addListener('Listener', { port: 80 });
+service.registerLoadBalancerTargets(
+  {
+    containerTarget: {
+      containerName: 'web',
+      containerPort: 80,
+    },
+    targetGroupId: 'ECS',
+    listener: ecs.ListenerConfig.applicationListener(listener, {
+      protocol: elbv2.ApplicationProtocol.HTTPS
+    }),
+  },
+);
+```
+
 ### Include a classic load balancer
 `Services` can also be directly attached to a classic load balancer as targets:
 
