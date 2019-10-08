@@ -41,7 +41,6 @@ export class GeoLocation {
    * Matches a continent geographic location
    *
    * @param continentCode Contienent
-   * @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
    */
   public static continent(continentCode: ContinentCode): GeoLocation {
     return new GeoLocation({continentCode});
@@ -57,6 +56,7 @@ export class GeoLocation {
    * * Heard Island and McDonald Islands (HM)
    *
    * @param countryCode Two-letter ISO 3166-1 alpha 2 country code
+   * @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
    */
   public static country(countryCode: string): GeoLocation {
     return new GeoLocation({countryCode});
