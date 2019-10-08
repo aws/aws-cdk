@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import route53 = require('../lib');
@@ -454,5 +455,66 @@ export = {
       TTL: "172800"
     }));
     test.done();
-  }
+  },
+
+  'Geo location record'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone'
+    });
+
+    // WHEN
+
+    new route53.RecordSet(stack, 'GeoLocation', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI')
+    });
+
+    // THEN
+
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: "www.myzone.",
+      Type: "CNAME",
+      GeoLocation: {
+        CountryCode: "US",
+        SubdivisionCode: "HI"
+      },
+      HostedZoneId: {
+        Ref: "HostedZoneDB99F866"
+      },
+      ResourceRecords: [
+        "zzz"
+      ],
+      TTL: "1800"
+    }));
+    test.done();
+  },
+
+  'Throws if geo location record in private zone'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const zone = new route53.PrivateHostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+      vpc
+    });
+
+    // THEN
+    test.throws(() => {
+      new route53.RecordSet(stack, 'GeoLocation', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.CNAME,
+        target: route53.RecordTarget.fromValues('zzz'),
+        geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI')
+      });
+    }, /Creating geolocation record sets in private hosted zones is not supported/);
+    test.done();
+  },
 };

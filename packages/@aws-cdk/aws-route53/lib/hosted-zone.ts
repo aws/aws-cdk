@@ -138,6 +138,13 @@ export class HostedZone extends Resource implements IHostedZone {
   public addVpc(vpc: ec2.IVpc) {
     this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: Stack.of(vpc).region });
   }
+
+  /**
+   * Whether the current zone is a {@link PrivateHostedZone} or not
+   */
+  public isPrivateHostedZone(): boolean {
+    return this.vpcs.length > 0;
+  }
 }
 
 /**

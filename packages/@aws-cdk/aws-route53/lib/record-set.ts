@@ -3,6 +3,7 @@ import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
+import { HostedZone } from './hosted-zone';
 
 /**
  * A record set
@@ -30,6 +31,57 @@ export enum RecordType {
   SPF = 'SPF',
   SRV = 'SRV',
   TXT = 'TXT'
+}
+
+/**
+ * Geographic location
+ */
+export class GeoLocation {
+  /**
+   * Matches a continent geographic location
+   *
+   * @param continentCode Contienent
+   * @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
+   */
+  public static continent(continentCode: ContinentCode): GeoLocation {
+    return new GeoLocation({continentCode});
+  }
+
+  /**
+   * Matches a country geographic location
+   *
+   * Route 53 doesn't support creating geolocation records for the following countries:
+   * * Bouvet Island (BV)
+   * * Christmas Island (CX)
+   * * Western Sahara (EH)
+   * * Heard Island and McDonald Islands (HM)
+   *
+   * @param countryCode Two-letter ISO 3166-1 alpha 2 country code
+   */
+  public static country(countryCode: string): GeoLocation {
+    return new GeoLocation({countryCode});
+  }
+
+  /**
+   * Matches a United States state geographic location
+   *
+   * @param subdivisionCode Two-letter code for a state of the United States.
+   * @see https://pe.usps.com/text/pub28/28apb.htm
+   */
+  public static unitedStatesSubidivision(subdivisionCode: string): GeoLocation {
+    return new GeoLocation({subdivisionCode, countryCode: 'US'});
+  }
+
+  /**
+   * Matches all geographic locations that aren't specified in other
+   * geolocation resource record sets that have the same recordName and type.
+   */
+  public static wildcard(): GeoLocation {
+    return new GeoLocation({countryCode: '*'});
+  }
+
+  private constructor(public readonly options: CfnRecordSet.GeoLocationProperty) {
+  }
 }
 
 /**
@@ -61,6 +113,13 @@ export interface RecordSetOptions {
    * @default no comment
    */
   readonly comment?: string;
+
+  /**
+   * Control how Amazon Route 53 responds to DNS queries based on the geographic origin of the query
+   *
+   * @default - no specific geographic routing
+   */
+  readonly geoLocation?: GeoLocation;
 }
 
 /**
@@ -119,6 +178,10 @@ export class RecordSet extends Resource implements IRecordSet {
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
 
+    if (props.geoLocation && isHostedZoneConstruct(props.zone) && props.zone.isPrivateHostedZone()) {
+      throw new Error('Creating geolocation record sets in private hosted zones is not supported');
+    }
+
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
@@ -126,7 +189,8 @@ export class RecordSet extends Resource implements IRecordSet {
       resourceRecords: props.target.values,
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
       ttl,
-      comment: props.comment
+      comment: props.comment,
+      geoLocation: props.geoLocation && props.geoLocation.options,
     });
 
     this.domainName = recordSet.ref;
@@ -451,3 +515,39 @@ export class ZoneDelegationRecord extends RecordSet {
     });
   }
 }
+
+/**
+ * Contient code
+ */
+export enum ContinentCode {
+  /**
+   * Africa
+   */
+  AFRICA = 'AF',
+  /**
+   * Antarctica
+   */
+  ANTARCTICA = 'AN',
+  /**
+   * Asia
+   */
+  ASIA = 'AS',
+  /**
+   * Europe
+   */
+  EUROPE = 'EU',
+  /**
+   * Oceania
+   */
+  OCEANIA = 'OC',
+  /**
+   * North America
+   */
+  NORTH_AMERICA = 'NA',
+  /**
+   * South America
+   */
+  SOUTH_AMERICA = 'SA',
+}
+
+const isHostedZoneConstruct = (zone: IHostedZone): zone is HostedZone => !!(zone as HostedZone).isPrivateHostedZone;
