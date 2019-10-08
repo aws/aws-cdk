@@ -129,6 +129,13 @@ export interface RecordSetOptions {
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html#routing-policy-geo
    */
   readonly geoLocation?: GeoLocation;
+
+  /**
+   * An identifier that differentiates among multiple resource record sets that have the same combination of name and type
+   *
+   * @default - no set identifier
+   */
+  readonly setIdentifier?: string;
 }
 
 const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region'];
@@ -195,8 +202,14 @@ export class RecordSet extends Resource implements IRecordSet {
       throw new Error(`Cannot set more than 1 routing policy property (got ${routingPolicyProps.join(', ')})`);
     }
 
-    if (routingPolicyProps.length && isHostedZoneConstruct(props.zone) && props.zone.isPrivateHostedZone()) {
-      throw new Error(`Cannot create routing record sets in private hosted zones (got ${routingPolicyProps[0]})`);
+    if (routingPolicyProps.length) {
+      if (!props.setIdentifier) {
+        throw new Error(`Cannot create routing record sets without setIdentifier property (got ${routingPolicyProps[0]})`);
+      }
+
+      if (isHostedZoneConstruct(props.zone) && props.zone.isPrivateHostedZone()) {
+        throw new Error(`Cannot create routing record sets in private hosted zones (got ${routingPolicyProps[0]})`);
+      }
     }
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
@@ -207,6 +220,7 @@ export class RecordSet extends Resource implements IRecordSet {
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
       ttl,
       comment: props.comment,
+      setIdentifier: props.setIdentifier,
       region: props.region,
       geoLocation: props.geoLocation && props.geoLocation.options,
     });

@@ -473,6 +473,7 @@ export = {
         recordName: 'www',
         recordType: route53.RecordType.CNAME,
         target: route53.RecordTarget.fromValues('zzz'),
+        setIdentifier: 'test',
         geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI'),
       });
 
@@ -511,6 +512,7 @@ export = {
         recordName: 'www',
         recordType: route53.RecordType.CNAME,
         target: route53.RecordTarget.fromValues('zzz'),
+        setIdentifier: 'test',
         region: 'us-east-1',
       });
 
@@ -548,6 +550,7 @@ export = {
           recordName: 'www',
           recordType: route53.RecordType.CNAME,
           target: route53.RecordTarget.fromValues('zzz'),
+          setIdentifier: 'test',
           geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI')
         });
       }, /Cannot create routing record sets in private hosted zones/);
@@ -572,9 +575,33 @@ export = {
           recordType: route53.RecordType.CNAME,
           target: route53.RecordTarget.fromValues('zzz'),
           geoLocation: route53.GeoLocation.unitedStatesSubidivision('HI'),
+          setIdentifier: 'test',
           region: 'us-east-1',
         });
       }, /Cannot set more than 1 routing policy property/);
+      test.done();
+    },
+
+    'Throws if missing setIdentifier'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const zone = new route53.PrivateHostedZone(stack, 'HostedZone', {
+        zoneName: 'myzone',
+        vpc
+      });
+
+      // THEN
+      test.throws(() => {
+        new route53.RecordSet(stack, 'GeoLocation', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          region: 'us-east-1',
+        });
+      }, /Cannot create routing record sets without setIdentifier property/);
       test.done();
     },
   },
