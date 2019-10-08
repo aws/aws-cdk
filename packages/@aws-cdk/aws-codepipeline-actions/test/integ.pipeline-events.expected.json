@@ -330,7 +330,10 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Ref": "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3"
+              "Fn::GetAtt": [
+                "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                "Arn"
+              ]
             },
             "Type": "KMS"
           },
