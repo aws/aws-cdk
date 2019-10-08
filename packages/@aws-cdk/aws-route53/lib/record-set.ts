@@ -144,6 +144,14 @@ export interface RecordSetOptions {
   readonly weight?: number;
 
   /**
+   * If true, will route traffic approximately randomly to multiple resources
+   *
+   * @default false - no multi value answer routing
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html#routing-policy-multivalue
+   */
+  readonly multiValueAnswer?: boolean;
+
+  /**
    * An identifier that differentiates among multiple resource record sets that have the same combination of name and type
    *
    * @default - no set identifier
@@ -151,7 +159,7 @@ export interface RecordSetOptions {
   readonly setIdentifier?: string;
 }
 
-const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region', 'weight'];
+const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region', 'weight', 'multiValueAnswer'];
 
 /**
  * Type union for a record that accepts multiple types of target.
@@ -241,6 +249,7 @@ export class RecordSet extends Resource implements IRecordSet {
       region: props.region,
       geoLocation: props.geoLocation && props.geoLocation.options,
       weight: props.weight != null ? props.weight : undefined,
+      multiValueAnswer: props.multiValueAnswer || undefined,
     });
 
     this.domainName = recordSet.ref;
