@@ -1,9 +1,9 @@
 import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
 import { IAliasRecordTarget } from './alias-record-target';
+import { HostedZone } from './hosted-zone';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
-import { HostedZone } from './hosted-zone';
 
 /**
  * A record set
