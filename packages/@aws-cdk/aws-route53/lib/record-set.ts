@@ -4,6 +4,7 @@ import { HostedZone } from './hosted-zone';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
+import { HealthCheck } from './heath-check/health-check';
 
 /**
  * A record set
@@ -166,6 +167,14 @@ export interface RecordSetOptions {
    * @default - no set identifier
    */
   readonly setIdentifier?: string;
+
+  /**
+   * If set, this record will only be sent in response when the status of a health check is healthy
+   * 
+   * @default - no health check
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-recordset.html#cfn-route53-recordset-healthcheckid
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region', 'weight', 'multiValueAnswer', 'failover'];
@@ -260,6 +269,7 @@ export class RecordSet extends Resource implements IRecordSet {
       weight: props.weight != null ? props.weight : undefined,
       multiValueAnswer: props.multiValueAnswer || undefined,
       failover: props.failover,
+      healthCheckId: props.healthCheck && props.healthCheck.healthCheckId,
     });
 
     this.domainName = recordSet.ref;
