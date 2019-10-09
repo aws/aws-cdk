@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EndpointHealthCheckRequestInterval } from "../lib";
 import route53 = require('../lib');
@@ -452,5 +452,30 @@ export = {
       }));
       test.done();
     },
+  },
+  'Tagging'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const healthCheck = route53.EndpointHealthCheck.ipAddress(stack, 'HealthCheck', {
+      ipAddress: '1.1.1.1',
+      protocol: route53.EndpointHealthCheckProtocol.http(),
+    });
+
+    // WHEN
+    Tag.add(healthCheck, 'Foo', 'Bar');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::HealthCheck', {
+      HealthCheckConfig: {
+        IPAddress: "1.1.1.1",
+        Port: 80,
+        ResourcePath: "/",
+        Type: "HTTP"
+      },
+      HealthCheckTags: [
+        {Key: 'Foo', Value: 'Bar'},
+      ]
+    }));
+    test.done();
   },
 };
