@@ -432,9 +432,9 @@ export class Cluster extends Resource implements ICluster {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       const operatingSystem = props.defaultCapacityOperatingSystem || OperatingSystem.AMAZON_LINUX_2;
 
-        this.defaultCapacity = isWindowsVariant(operatingSystem) ?
-          this.addWindowsCapacity('DefaultCapacity', {instanceType, desiredCapacity, variant: operatingSystem}) :
-          this.addAmazonLinuxCapacity('DefaultCapacity', {instanceType, desiredCapacity});
+      this.defaultCapacity = isWindowsVariant(operatingSystem) ?
+        this.addWindowsCapacity('DefaultCapacity', {instanceType, desiredCapacity, variant: operatingSystem}) :
+        this.addAmazonLinuxCapacity('DefaultCapacity', {instanceType, desiredCapacity});
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
