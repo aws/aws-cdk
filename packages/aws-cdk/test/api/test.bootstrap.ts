@@ -153,4 +153,54 @@ export = {
 
     test.done();
   },
+  async 'do bootstrap with custom tags for toolkit stack'(test: Test) {
+    // GIVEN
+    const sdk = new MockSDK();
+
+    let executed = false;
+
+    sdk.stubCloudFormation({
+      describeStacks() {
+        return {
+          Stacks: []
+        };
+      },
+
+      createChangeSet(info: CreateChangeSetInput) {
+        const template = fromYAML(info.TemplateBody as string);
+        const bucketProperties = template.Resources.StagingBucket.Properties;
+        test.equals(bucketProperties.BucketName, undefined, 'Expected BucketName to be undefined');
+        test.equals(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+            undefined, 'Expected KMSMasterKeyID to be undefined');
+        return {};
+      },
+
+      describeChangeSet() {
+        return {
+          Status: 'CREATE_COMPLETE',
+          Changes: [],
+        };
+      },
+
+      executeChangeSet() {
+        executed = true;
+        return {};
+      }
+    });
+
+    // WHEN
+    const ret = await bootstrapEnvironment({
+      account: '123456789012',
+      region: 'us-east-1',
+      name: 'mock',
+    }, sdk, 'mockStack', undefined, {
+      tags: [{ Key: 'Foo', Value: 'Bar' }]
+    });
+
+    // THEN
+    test.equals(ret.noOp, false);
+    test.equals(executed, true);
+
+    test.done();
+  },
 };
