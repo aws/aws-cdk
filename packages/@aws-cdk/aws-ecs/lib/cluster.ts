@@ -196,8 +196,6 @@ export class Cluster extends Resource implements ICluster {
     }
 
     if (options.spotInstanceDraining) {
-      // Automated Spot Instance Draining
-      // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html
       autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
     }
 
@@ -622,9 +620,8 @@ export interface AddAutoScalingGroupCapacityOptions {
   readonly taskDrainTime?: Duration;
 
   /**
-   * Automated Draining for Spot Instances running Amazon ECS Services
-   *
-   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html
+   * Specify whether to enable Automated Draining for Spot Instances running Amazon ECS Services. 
+   * For more information, see [Using Spot Instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html).
    *
    * @default false
    */

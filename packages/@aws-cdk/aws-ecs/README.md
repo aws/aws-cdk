@@ -123,7 +123,7 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
-## Spot Instances
+### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
 
@@ -137,14 +137,6 @@ cluster.addCapacity('AsgSpot', {
   spotPrice: '0.0735',
   // Enable the Automated Spot Draining support for Amazon ECS
   spotInstanceDraining: true,
-});
-
-// And optionally add another AutoScalingGroup with on-demand instances to the same cluster
-cluster.addCapacity('AsgOd', {
-  maxCapacity: 2,
-  minCapacity: 1,
-  desiredCapacity: 1,
-  instanceType: new ec2.InstanceType('t3.large'),
 });
 ```
 
