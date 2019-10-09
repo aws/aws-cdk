@@ -22,8 +22,8 @@ tag_stack_1=$(aws cloudformation describe-stacks --stack-name ${toolkit_stack_na
 tag_stack_2=$(aws cloudformation describe-stacks --stack-name ${toolkit_stack_name_2} --query "Stacks[0].Tags[?Key=='Foo'].Value" --output text)
 
 # check if tag is not equal to bar
-if [ "${tag_stack_1}" != "Bar" ] && [ "${tag_stack_2}" != "Bar" ]; then
-    fail "Bootstrap tag not created"
+if [ "${tag_stack_1}" != "Bar" ] || [ "${tag_stack_2}" != "Bar" ]; then
+    fail "toolkit tags test expect Bar but got ${tag_stack_1} and ${tag_stack_2}"
 fi
 
 # clean up
