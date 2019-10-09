@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/core';
-import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
+import { AdvancedHealthCheckOptions, HealthCheck, IHealthCheck } from "./health-check";
 
 /**
  * Calculated healtch check properties
@@ -9,7 +9,7 @@ export interface CalculatedHealthCheckProps extends AdvancedHealthCheckOptions {
     /**
      * List of health checks to be monitored
      */
-    readonly childHealthChecks: HealthCheck[];
+    readonly childHealthChecks: IHealthCheck[];
     /**
      * Minimum count of healthy  {@link CalculatedHealthCheckProps.childHealthChecks}
      * required for the parent health check to be considered healthy

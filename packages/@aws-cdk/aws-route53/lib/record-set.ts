@@ -1,6 +1,6 @@
 import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
 import { IAliasRecordTarget } from './alias-record-target';
-import { HealthCheck } from './heath-check/health-check';
+import { IHealthCheck } from './heath-check/health-check';
 import { HostedZone } from './hosted-zone';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
@@ -174,7 +174,7 @@ export interface RecordSetOptions {
    * @default - no health check
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-recordset.html#cfn-route53-recordset-healthcheckid
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: IHealthCheck;
 }
 
 const routingPolicyKeys: Array<keyof RecordSetOptions> = ['geoLocation', 'region', 'weight', 'multiValueAnswer', 'failover'];
