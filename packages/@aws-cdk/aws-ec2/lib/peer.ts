@@ -79,7 +79,7 @@ class CidrIPv4 implements IPeer {
 
   constructor(private readonly cidrIp: string) {
     if (!Token.isUnresolved(cidrIp)) {
-      const cidrMatch = cidrIp.match(/^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/);
+      const cidrMatch = cidrIp.match(CIDR_VALIDATION_REGEXES.ipv4);
 
       if (!cidrMatch) {
         throw new Error(`Invalid IPv4 CIDR: "${cidrIp}"`);
@@ -126,7 +126,7 @@ class CidrIPv6 implements IPeer {
 
   constructor(private readonly cidrIpv6: string) {
     if (!Token.isUnresolved(cidrIpv6)) {
-      const cidrMatch = cidrIpv6.match(/^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/);
+      const cidrMatch = cidrIpv6.match(CIDR_VALIDATION_REGEXES.ipv6);
 
       if (!cidrMatch) {
         throw new Error(`Invalid IPv6 CIDR: "${cidrIpv6}"`);
@@ -189,3 +189,8 @@ class PrefixList implements IPeer {
     return { destinationPrefixListId: this.prefixListId };
   }
 }
+
+export const CIDR_VALIDATION_REGEXES = {
+  ipv4: /^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/,
+  ipv6: /^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/,
+};

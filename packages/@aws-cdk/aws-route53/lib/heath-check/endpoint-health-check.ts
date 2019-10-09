@@ -1,6 +1,49 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct } from '@aws-cdk/core';
 import { CfnHealthCheck } from "../route53.generated";
 import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
+
+interface BaseHttpEndpointHealthCheckProtocolOptions {
+    /**
+     * The path you want to request when performing health checks
+     *
+     * @default /
+     */
+    readonly resourcePath?: string;
+    /**
+     * The string that you want Route 53 to search for in the body of the response from your endpoint.
+     * Route 53 considers case when searching for SearchString in the response body.
+     *
+     * @default - no string matching
+     */
+    readonly searchString?: string;
+}
+
+export interface HttpEndpointHealthCheckProtocolOptions extends BaseHttpEndpointHealthCheckProtocolOptions {
+    /**
+     * The port on the endpoint that you want Amazon Route 53 to perform health checks on
+     *
+     * @default 80
+     */
+    readonly port?: number;
+}
+
+export interface HttpsEndpointHealthCheckProtocolOptions extends BaseHttpEndpointHealthCheckProtocolOptions {
+    /**
+     * The port on the endpoint that you want Amazon Route 53 to perform health checks on
+     *
+     * @default 443
+     */
+    readonly port?: number;
+
+    /**
+     * If true, Route 53 will send the host name to the endpoint in the "client_hello" message during TLS negotiation.
+     * This allows the endpoint to respond to the HTTPS request with the applicable SSL/TLS certificate.
+     *
+     * @default true
+     */
+    readonly enableSni?: boolean;
+}
 
 /**
  * Endpoint health check protocol construct
@@ -10,37 +53,29 @@ export class EndpointHealthCheckProtocol {
     /**
      * Generate an HTTP monitoring protocol
      *
-     * @param resourcePath The path you want to request when performing health checks
-     * @param searchString The string that you want Route 53 to search for in the body of the response from your endpoint.
-     *                     Route 53 considers case when searching for SearchString in the response body.
-     * @param port The port on the endpoint that you want Amazon Route 53 to perform health checks on
+     * @param options protocol options
      */
-    public static http(resourcePath = '/', searchString?: string, port = 80): EndpointHealthCheckProtocol {
+    public static http(options: HttpEndpointHealthCheckProtocolOptions = {}): EndpointHealthCheckProtocol {
         return new EndpointHealthCheckProtocol({
-            type: searchString ? EndpointHealthCheckType.HTTP_STR_MATCH : EndpointHealthCheckType.HTTP,
-            resourcePath,
-            searchString,
-            port,
+            type: options.searchString ? EndpointHealthCheckType.HTTP_STR_MATCH : EndpointHealthCheckType.HTTP,
+            resourcePath: options.resourcePath || '/',
+            searchString: options.searchString,
+            port: options.port || 80,
         });
     }
 
     /**
      * Generate an HTTPS monitoring protocol
      *
-     * @param resourcePath The path you want to request when performing health checks
-     * @param searchString The string that you want Route 53 to search for in the body of the response from your endpoint.
-     *                     Route 53 considers case when searching for SearchString in the response body.
-     * @param enableSni If true, Route 53 will send the host name to the endpoint in the "client_hello" message during TLS negotiation.
-     *                  This allows the endpoint to respond to the HTTPS request with the applicable SSL/TLS certificate.
-     * @param port The port on the endpoint that you want Amazon Route 53 to perform health checks on
+     * @param options protocol options
      */
-    public static https(resourcePath = '/', searchString?: string, port = 443, enableSni = true): EndpointHealthCheckProtocol {
+    public static https(options: HttpsEndpointHealthCheckProtocolOptions = {}): EndpointHealthCheckProtocol {
         return new EndpointHealthCheckProtocol({
-            type: searchString ? EndpointHealthCheckType.HTTPS_STR_MATCH : EndpointHealthCheckType.HTTPS,
-            resourcePath,
-            searchString,
-            port,
-            enableSni,
+            type: options.searchString ? EndpointHealthCheckType.HTTPS_STR_MATCH : EndpointHealthCheckType.HTTPS,
+            resourcePath: options.resourcePath || '/',
+            searchString: options.searchString,
+            port: options.port || 443,
+            enableSni: options.enableSni != null ? options.enableSni : true,
         });
     }
 
@@ -55,7 +90,7 @@ export class EndpointHealthCheckProtocol {
 
     private constructor(public readonly options: CfnHealthCheck.HealthCheckConfigProperty) {
         if (options.searchString && options.searchString.length > 255) {
-            throw new Error('too long');
+            throw new Error(`searchString cannot be over 255 characters long, got ${options.searchString.length}`);
         }
     }
 }
@@ -164,9 +199,13 @@ export class EndpointHealthCheck extends HealthCheck {
     ) {
         const { protocol, ...basicProps } = props;
 
-        // TODO check IPv4/v6 address
-        if (protocol.options.type === EndpointHealthCheckType.TCP && props.ipAddress && props.fullyQualifiedDomainName) {
-            throw new Error('Cannot use domainName');
+        if (!ec2.CIDR_VALIDATION_REGEXES.ipv4.test(basicProps.ipAddress) &&
+          !ec2.CIDR_VALIDATION_REGEXES.ipv6.test(basicProps.ipAddress)) {
+            throw new Error(`Invalid ipAddress: expected valid IPv4 or IPv6 address, got ${basicProps.ipAddress}`)
+        }
+
+        if (protocol.options.type === EndpointHealthCheckType.TCP && props.fullyQualifiedDomainName) {
+            throw new Error('fullyQualifiedDomainName will be ignored with a TCP protocol');
         }
 
         return new EndpointHealthCheck(scope, id, { ...basicProps, ...protocol.options });
@@ -190,7 +229,15 @@ export class EndpointHealthCheck extends HealthCheck {
 
     protected constructor(scope: Construct, id: string, props: CfnHealthCheck.HealthCheckConfigProperty) {
         if (props.regions && props.regions.length < 3) {
-            throw new Error('not enough');
+            throw new Error(`If set, regions must contain at least 3, got ${props.regions.length} ([${props.regions.join(', ')}])`);
+        }
+
+        if (props.enableSni && !props.fullyQualifiedDomainName) {
+            // TODO confirm this is actually the case
+            throw new Error([
+              'Domain name verification with SNI support will always fail without a domain name.',
+              'Either set a "fullyQualifiedDomainName" value, or set "enableSni" to false in your HTTPS protocol'
+            ].join(' '));
         }
 
         super(scope, id, props);
