@@ -232,14 +232,6 @@ export class EndpointHealthCheck extends HealthCheck {
       throw new Error(`If set, regions must contain at least 3, got ${props.regions.length} ([${props.regions.join(', ')}])`);
     }
 
-    if (props.enableSni && !props.fullyQualifiedDomainName) {
-      // TODO confirm this is actually the case
-      throw new Error([
-        'Domain name verification with SNI support will always fail without a domain name.',
-        'Either set a "fullyQualifiedDomainName" value, or set "enableSni" to false in your HTTPS protocol'
-      ].join(' '));
-    }
-
     super(scope, id, props);
   }
 }

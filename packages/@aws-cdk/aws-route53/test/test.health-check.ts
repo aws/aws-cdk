@@ -184,20 +184,6 @@ export = {
         }, 'searchString cannot be over 255 characters long, got 256');
         test.done();
       },
-      'throws if SNI without domain name'(test: Test) {
-        // GIVEN
-        const stack = new Stack();
-
-        // THEN
-        test.throws(() => {
-          route53.EndpointHealthCheck.ipAddress(stack, 'HealthCheck', {
-            ipAddress: '1.1.1.1',
-            protocol: route53.EndpointHealthCheckProtocol.https(),
-            regions: [],
-          });
-        }, 'SNI will always fail without a domain name');
-        test.done();
-      },
     },
     'Protocols': {
       basic: {
