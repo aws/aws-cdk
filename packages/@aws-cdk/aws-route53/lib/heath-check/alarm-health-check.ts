@@ -1,5 +1,5 @@
-import { Construct } from '@aws-cdk/core';
-import { CfnHealthCheck } from "../route53.generated";
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import { Aws, Construct } from '@aws-cdk/core';
 import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
 
 /**
@@ -7,7 +7,6 @@ import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
  * @experimental
  */
 export interface AlarmHealthCheckProps extends AdvancedHealthCheckOptions {
-    // TODO use cloudwatch.Alarm
     /**
      * The CloudWatch alarm to be monitored
      *
@@ -17,7 +16,7 @@ export interface AlarmHealthCheckProps extends AdvancedHealthCheckOptions {
      *
      * Route 53 does not support alarms that use metric math to query multiple CloudWatch metrics.
      */
-    readonly alarm: CfnHealthCheck.AlarmIdentifierProperty;
+    readonly alarm: cloudwatch.Alarm;
     /**
      * Status of the health check when CloudWatch has insufficient data to determine
      * the state of the alarm that you chose for CloudWatch alarm
@@ -36,7 +35,16 @@ export interface AlarmHealthCheckProps extends AdvancedHealthCheckOptions {
  */
 export class AlarmHealthCheck extends HealthCheck {
     public constructor(scope: Construct, id: string, props: AlarmHealthCheckProps) {
-        super(scope, id, { type: AlarmHealthCheckType.CALCULATED, ...props });
+        const { alarm, ...baseProps } = props;
+        super(scope, id, {
+            type: AlarmHealthCheckType.CALCULATED,
+            ...baseProps,
+            alarmIdentifier: {
+                name: props.alarm.alarmName,
+                // FIXME not always true?
+                region: Aws.REGION,
+            },
+        });
     }
 }
 
