@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import {expect, haveResource} from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import {Duration, Stack} from '@aws-cdk/core';
+import {Test} from 'nodeunit';
 import route53 = require('../lib');
 
 export = {
@@ -457,6 +457,45 @@ export = {
     test.done();
   },
 
+  'Heath check'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone'
+    });
+    const healthCheck = route53.EndpointHealthCheck.domainName(stack, 'HealthCheck', {
+      fullyQualifiedDomainName: 'www.myzone.',
+      protocol: route53.EndpointHealthCheckProtocol.http(),
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'GeoLocation', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      healthCheck,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      "Name": "www.myzone.",
+      "Type": "CNAME",
+      "HealthCheckId": {
+        "Ref": "HealthCheckA1C381C7"
+      },
+      "HostedZoneId": {
+        "Ref": "HostedZoneDB99F866"
+      },
+      "ResourceRecords": [
+        "zzz"
+      ],
+      "TTL": "1800"
+    }));
+    test.done();
+  },
+
   'Routing policy': {
     'Geo location record'(test: Test) {
       // GIVEN
@@ -467,7 +506,6 @@ export = {
       });
 
       // WHEN
-
       new route53.RecordSet(stack, 'GeoLocation', {
         zone,
         recordName: 'www',
@@ -478,7 +516,6 @@ export = {
       });
 
       // THEN
-
       expect(stack).to(haveResource('AWS::Route53::RecordSet', {
         Name: "www.myzone.",
         Type: "CNAME",
@@ -506,7 +543,6 @@ export = {
       });
 
       // WHEN
-
       new route53.RecordSet(stack, 'GeoLocation', {
         zone,
         recordName: 'www',
@@ -517,7 +553,6 @@ export = {
       });
 
       // THEN
-
       expect(stack).to(haveResource('AWS::Route53::RecordSet', {
         Name: "www.myzone.",
         Type: "CNAME",
@@ -542,7 +577,6 @@ export = {
       });
 
       // WHEN
-
       new route53.RecordSet(stack, 'GeoLocation', {
         zone,
         recordName: 'www',
@@ -553,7 +587,6 @@ export = {
       });
 
       // THEN
-
       expect(stack).to(haveResource('AWS::Route53::RecordSet', {
         Name: "www.myzone.",
         Type: "CNAME",
@@ -578,7 +611,6 @@ export = {
       });
 
       // WHEN
-
       new route53.RecordSet(stack, 'GeoLocation', {
         zone,
         recordName: 'www',
@@ -589,7 +621,6 @@ export = {
       });
 
       // THEN
-
       expect(stack).to(haveResource('AWS::Route53::RecordSet', {
         Name: "www.myzone.",
         Type: "CNAME",
@@ -614,7 +645,6 @@ export = {
       });
 
       // WHEN
-
       new route53.RecordSet(stack, 'GeoLocation', {
         zone,
         recordName: 'www',
@@ -625,7 +655,6 @@ export = {
       });
 
       // THEN
-
       expect(stack).to(haveResource('AWS::Route53::RecordSet', {
         Name: "www.myzone.",
         Type: "CNAME",
@@ -650,7 +679,6 @@ export = {
       });
 
       // WHEN
-
       new route53.RecordSet(stack, 'GeoLocation', {
         zone,
         recordName: 'www',
@@ -661,7 +689,6 @@ export = {
       });
 
       // THEN
-
       expect(stack).to(haveResource('AWS::Route53::RecordSet', {
         Name: "www.myzone.",
         Type: "CNAME",
