@@ -1,5 +1,5 @@
-import { CfnHealthCheck } from '../route53.generated';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { CfnHealthCheck } from '../route53.generated';
 
 /**
  * A health check

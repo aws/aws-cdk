@@ -1,6 +1,6 @@
-import { HealthCheck, AdvancedHealthCheckOptions } from "./health-check";
 import { Construct } from '@aws-cdk/core';
 import { CfnHealthCheck } from "../route53.generated";
+import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
 
 export interface AlarmHealthCheckProps {
     readonly alarm: CfnHealthCheck.AlarmIdentifierProperty;
@@ -37,16 +37,16 @@ export enum AlarmHealthCheckType {
  */
 export enum InsufficientDataHealthStatusType {
     /**
-     *  Route 53 considers the health check to be healthy. 
+     *  Route 53 considers the health check to be healthy.
      */
     HEALTHY = 'Healthy',
     /**
-     *  Route 53 considers the health check to be unhealthy. 
+     *  Route 53 considers the health check to be unhealthy.
      */
     UNHEALTHY = 'Unhealthy',
     /**
      * Route 53 uses the status of the health check from the last time that CloudWatch had sufficient data to determine the alarm state.
-     * For new health checks that have no last known status, the default status for the health check is healthy. 
+     * For new health checks that have no last known status, the default status for the health check is healthy.
      */
     LAST_KNOWN_STATUS = 'LastKnownStatus',
 }

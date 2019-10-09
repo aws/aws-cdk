@@ -1,6 +1,6 @@
-import { HealthCheck, AdvancedHealthCheckOptions } from "./health-check";
 import { Construct } from '@aws-cdk/core';
 import { CfnHealthCheck } from "../route53.generated";
+import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
 
 export interface CalculatedHealthCheckProps {
     readonly childHealthChecks: HealthCheck[];
@@ -8,8 +8,18 @@ export interface CalculatedHealthCheckProps {
 }
 
 export class CalculatedHealthCheck extends HealthCheck {
-    public static ipAddress(scope: Construct, id: string, { healthThreshold, childHealthChecks }: CalculatedHealthCheckProps, options: AdvancedHealthCheckOptions = {}) {
-        return new CalculatedHealthCheck(scope, id, { type: CalculatedHealthCheckType.CALCULATED, healthThreshold, childHealthChecks: childHealthChecks.map(({ healthCheckId }) => healthCheckId), ...options });
+    public static ipAddress(
+        scope: Construct,
+        id: string,
+        { healthThreshold, childHealthChecks }: CalculatedHealthCheckProps,
+        options: AdvancedHealthCheckOptions = {},
+    ) {
+        return new CalculatedHealthCheck(scope, id, {
+            type: CalculatedHealthCheckType.CALCULATED,
+            healthThreshold,
+            childHealthChecks: childHealthChecks.map(({ healthCheckId }) => healthCheckId),
+            ...options,
+        });
     }
 
     protected constructor(scope: Construct, id: string, props: CfnHealthCheck.HealthCheckConfigProperty) {
