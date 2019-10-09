@@ -17,6 +17,15 @@ cdk bootstrap --toolkit-stack-name ${toolkit_stack_name_2} --tags Foo=Bar
 aws cloudformation describe-stack-resources --stack-name ${toolkit_stack_name_1}
 aws cloudformation describe-stack-resources --stack-name ${toolkit_stack_name_2}
 
+# get tags from the new stack
+tag_stack_1=$(aws cloudformation describe-stacks --stack-name ${toolkit_stack_name_1} --query "Stacks[0].Tags[?Key=='Foo'].Value" --output text)
+tag_stack_2=$(aws cloudformation describe-stacks --stack-name ${toolkit_stack_name_2} --query "Stacks[0].Tags[?Key=='Foo'].Value" --output text)
+
+# check if tag is not equal to bar
+if [ "${tag_stack_1}" != "Bar" ] && [ "${tag_stack_2}" != "Bar" ]; then
+    fail "Bootstrap tag not created"
+fi
+
 # clean up
 aws cloudformation delete-stack --stack-name ${toolkit_stack_name_1}
 aws cloudformation delete-stack --stack-name ${toolkit_stack_name_2}
