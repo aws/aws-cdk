@@ -13,7 +13,6 @@ dist
 # Include .jsii
 !.jsii
 
-lambda/src
 lambda/test
 lambda/*.sh
 *.snk
