@@ -41,7 +41,7 @@ export class GeoLocation {
   /**
    * Matches a continent geographic location
    *
-   * @param continentCode Contienent
+   * @param continentCode The targeted continent
    */
   public static continent(continentCode: ContinentCode): GeoLocation {
     return new GeoLocation({continentCode});
@@ -436,7 +436,7 @@ export class SrvRecord extends RecordSet {
  */
 export enum CaaTag {
   /**
-   * Explicity authorizes a single certificate authority to issue a
+   * Explicitly authorizes a single certificate authority to issue a
    * certificate (any type) for the hostname.
    */
   ISSUE = 'issue',

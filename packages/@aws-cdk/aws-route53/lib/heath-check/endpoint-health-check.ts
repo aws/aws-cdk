@@ -80,7 +80,7 @@ export class EndpointHealthCheckProtocol {
   }
 
   /**
-   * Generatea TCP monitoring protocol
+   * Generates TCP monitoring protocol
    *
    * @param port The port on the endpoint that you want Amazon Route 53 to perform health checks on
    */

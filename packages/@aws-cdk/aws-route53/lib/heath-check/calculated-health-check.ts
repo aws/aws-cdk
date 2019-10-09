@@ -2,7 +2,7 @@ import {Construct} from '@aws-cdk/core';
 import {AdvancedHealthCheckOptions, HealthCheck, IHealthCheck} from "./health-check";
 
 /**
- * Calculated healtch check properties
+ * Calculated health check properties
  * @experimental
  */
 export interface CalculatedHealthCheckProps extends AdvancedHealthCheckOptions {
