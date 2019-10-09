@@ -11,6 +11,9 @@ export interface IHealthCheck extends IResource {
     readonly healthCheckId: string;
 }
 
+export interface HealthCheckProps extends CfnHealthCheck.HealthCheckConfigProperty {
+}
+
 /**
  * A health check
  *
@@ -20,11 +23,11 @@ export interface IHealthCheck extends IResource {
 export class HealthCheck extends Resource implements IHealthCheck {
     public readonly healthCheckId: string;
 
-    protected constructor(scope: Construct, id: string, healthCheckConfig: CfnHealthCheck.HealthCheckConfigProperty) {
+    protected constructor(scope: Construct, id: string, props: HealthCheckProps) {
         super(scope, id);
 
         // TODO tags?
-        const healthCheck = new CfnHealthCheck(this, 'Resource', { healthCheckConfig });
+        const healthCheck = new CfnHealthCheck(this, 'Resource', { healthCheckConfig: props });
         this.healthCheckId = healthCheck.ref;
     }
 }

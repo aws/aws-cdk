@@ -101,7 +101,7 @@ export interface AdvancedEndpointHealthCheckOptions extends AdvancedHealthCheckO
  * Base endpoint health check properties
  * @experimental
  */
-export interface EndpointHealthCheckProps extends AdvancedEndpointHealthCheckOptions {
+export interface BaseEndpointHealthCheckProps extends AdvancedEndpointHealthCheckOptions {
     /**
      * Protocol to be used to check the health of the endpoint
      */
@@ -112,7 +112,7 @@ export interface EndpointHealthCheckProps extends AdvancedEndpointHealthCheckOpt
  * IP address health check properties
  * @experimental
  */
-export interface IpAddressHealthCheckProps extends EndpointHealthCheckProps {
+export interface IpAddressHealthCheckProps extends BaseEndpointHealthCheckProps {
     /**
      * The IPv4 or IPv6 address of the endpoint that you want Amazon Route 53 to perform health checks on
      */
@@ -131,7 +131,7 @@ export interface IpAddressHealthCheckProps extends EndpointHealthCheckProps {
  * Domain name health check properties
  * @experimental
  */
-export interface DomainNameHealthCheckProps extends EndpointHealthCheckProps {
+export interface DomainNameHealthCheckProps extends BaseEndpointHealthCheckProps {
     /**
      * The domain name that Route 53 will send a DNS request to.
      * Route 53 will retrieve the IPv4 address, and check the health of that endpoint.
@@ -200,7 +200,7 @@ export class EndpointHealthCheck extends HealthCheck {
 /**
  * The type of Route 53 health check
  */
-export enum EndpointHealthCheckType {
+enum EndpointHealthCheckType {
     /**
      * Route 53 tries to establish a TCP connection.
      * If successful, Route 53 submits an HTTP request and waits for an HTTP status code of 200 or greater and less than 400.

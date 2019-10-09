@@ -51,7 +51,7 @@ export class AlarmHealthCheck extends HealthCheck {
 /**
  * The type of Route 53 health check
  */
-export enum AlarmHealthCheckType {
+enum AlarmHealthCheckType {
     /**
      * For health checks that monitor the status of other health checks,
      * Route 53 adds up the number of health checks that Route 53 health checkers consider to be healthy and
