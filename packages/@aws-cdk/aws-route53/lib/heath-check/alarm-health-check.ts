@@ -2,21 +2,41 @@ import { Construct } from '@aws-cdk/core';
 import { CfnHealthCheck } from "../route53.generated";
 import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
 
-export interface AlarmHealthCheckProps {
+/**
+ * Alarm health check properties
+ * @experimental
+ */
+export interface AlarmHealthCheckProps extends AdvancedHealthCheckOptions {
+    // TODO use cloudwatch.Alarm
+    /**
+     * The CloudWatch alarm to be monitored
+     *
+     * Supported alarms:
+     * * Standard-resolution metrics (High-resolution metrics aren't supported)
+     * * Statistics: Average, Minimum, Maximum, Sum, and SampleCount
+     *
+     * Route 53 does not support alarms that use metric math to query multiple CloudWatch metrics.
+     */
     readonly alarm: CfnHealthCheck.AlarmIdentifierProperty;
     /**
+     * Status of the health check when CloudWatch has insufficient data to determine
+     * the state of the alarm that you chose for CloudWatch alarm
+     *
      * @default InsufficientDataHealthStatus.LAST_KNOWN_STATUS
      */
     readonly insufficientDataHealthStatus?: InsufficientDataHealthStatusType;
 }
 
+/**
+ * Alarm health check construct
+ *
+ * @resource AWS::Route53::HealthCheck
+ * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-creating-values.html#health-checks-creating-values-cloudwatch
+ * @experimental
+ */
 export class AlarmHealthCheck extends HealthCheck {
-    public static ipAddress(scope: Construct, id: string, props: AlarmHealthCheckProps, options: AdvancedHealthCheckOptions = {}) {
-        return new AlarmHealthCheck(scope, id, { type: AlarmHealthCheckType.CALCULATED, ...props, ...options });
-    }
-
-    protected constructor(scope: Construct, id: string, props: CfnHealthCheck.HealthCheckConfigProperty) {
-        super(scope, id, props);
+    public constructor(scope: Construct, id: string, props: AlarmHealthCheckProps) {
+        super(scope, id, { type: AlarmHealthCheckType.CALCULATED, ...props });
     }
 }
 

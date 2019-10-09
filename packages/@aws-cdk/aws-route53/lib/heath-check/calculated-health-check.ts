@@ -1,29 +1,45 @@
 import { Construct } from '@aws-cdk/core';
-import { CfnHealthCheck } from "../route53.generated";
 import { AdvancedHealthCheckOptions, HealthCheck } from "./health-check";
 
-export interface CalculatedHealthCheckProps {
+/**
+ * Calculated healtch check properties
+ * @experimental
+ */
+export interface CalculatedHealthCheckProps extends AdvancedHealthCheckOptions {
+    /**
+     * List of health checks to be monitored
+     */
     readonly childHealthChecks: HealthCheck[];
+    /**
+     * Minimum count of healthy  {@link CalculatedHealthCheckProps.childHealthChecks}
+     * required for the parent health check to be considered healthy
+     *
+     * * If you specify a number greater than the number of child health checks,
+     *   Route 53 always considers this health check to be unhealthy.
+     * * If you specify 0, Route 53 always considers this health check to be healthy.
+     */
     readonly healthThreshold: number;
 }
 
+/**
+ * Calculated health check construct
+ *
+ * @resource AWS::Route53::HealthCheck
+ * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-creating-values.html#health-checks-creating-values-calculated
+ * @experimental
+ */
 export class CalculatedHealthCheck extends HealthCheck {
-    public static ipAddress(
+    public constructor(
         scope: Construct,
         id: string,
-        { healthThreshold, childHealthChecks }: CalculatedHealthCheckProps,
-        options: AdvancedHealthCheckOptions = {},
+        { healthThreshold, childHealthChecks, inverted }: CalculatedHealthCheckProps,
     ) {
-        return new CalculatedHealthCheck(scope, id, {
+        super(scope, id, {
             type: CalculatedHealthCheckType.CALCULATED,
             healthThreshold,
             childHealthChecks: childHealthChecks.map(({ healthCheckId }) => healthCheckId),
-            ...options,
+            inverted,
         });
-    }
-
-    protected constructor(scope: Construct, id: string, props: CfnHealthCheck.HealthCheckConfigProperty) {
-        super(scope, id, props);
     }
 }
 

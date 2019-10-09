@@ -13,6 +13,9 @@ export interface IHealthCheck extends IResource {
 
 /**
  * A health check
+ *
+ * @resource AWS::Route53::HealthCheck
+ * @experimental
  */
 export class HealthCheck extends Resource implements IHealthCheck {
     public readonly healthCheckId: string;
@@ -26,6 +29,10 @@ export class HealthCheck extends Resource implements IHealthCheck {
     }
 }
 
+/**
+ * Advanced health check options
+ * @experimental
+ */
 export interface AdvancedHealthCheckOptions {
     /**
      * @default false
