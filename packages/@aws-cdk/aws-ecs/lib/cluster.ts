@@ -620,7 +620,7 @@ export interface AddAutoScalingGroupCapacityOptions {
   readonly taskDrainTime?: Duration;
 
   /**
-   * Specify whether to enable Automated Draining for Spot Instances running Amazon ECS Services. 
+   * Specify whether to enable Automated Draining for Spot Instances running Amazon ECS Services.
    * For more information, see [Using Spot Instances](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-spot.html).
    *
    * @default false
