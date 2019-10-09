@@ -199,6 +199,14 @@ export interface ClusterProps {
   readonly defaultCapacityInstance?: ec2.InstanceType;
 
   /**
+   * The operating system to use for the default capacity. This will only be taken
+   * into account if `defaultCapacity` is > 0.
+   *
+   * @default OperatingSystem.AmazonLinux2
+   */
+  readonly defaultCapacityOperatingSystem?: OperatingSystem;
+
+  /**
    * Determines whether a CloudFormation output with the name of the cluster
    * will be synthesized.
    *
@@ -422,7 +430,11 @@ export class Cluster extends Resource implements ICluster {
     const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
     if (desiredCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
+      const operatingSystem = props.defaultCapacityOperatingSystem || OperatingSystem.AMAZON_LINUX_2;
+
+        this.defaultCapacity = isWindowsVariant(operatingSystem) ?
+          this.addWindowsCapacity('DefaultCapacity', {instanceType, desiredCapacity, variant: operatingSystem}) :
+          this.addAmazonLinuxCapacity('DefaultCapacity', {instanceType, desiredCapacity});
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -431,6 +443,44 @@ export class Cluster extends Resource implements ICluster {
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
+  }
+
+  /**
+   * Add Amazon Linux 2 nodes to this EKS cluster
+   *
+   * The nodes will automatically be configured with the right VPC and AMI
+   * for the instance type and Kubernetes version.
+   *
+   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
+   * If kubectl is enabled, the
+   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
+   * daemon will be installed on all spot instances to handle
+   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
+   */
+  public addAmazonLinuxCapacity(id: string, options: AmazonLinuxCapacityOptions): autoscaling.AutoScalingGroup {
+    return this.addBaseCapacity(id, options, new AmazonLinuxEksOptimizedImage({
+      nodeType: nodeTypeForInstanceType(options.instanceType),
+      kubernetesVersion: this.version,
+    }));
+  }
+
+  /**
+   * Add Windows nodes to this EKS cluster
+   *
+   * The nodes will automatically be configured with the right VPC and AMI
+   * for the instance type and Kubernetes version.
+   *
+   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
+   * If kubectl is enabled, the
+   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
+   * daemon will be installed on all spot instances to handle
+   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
+   */
+  public addWindowsCapacity(id: string, options: WindowsCapacityOptions): autoscaling.AutoScalingGroup {
+    return this.addBaseCapacity(id, options, new WindowsEksOptimizedImage({
+      variant: options.variant,
+      kubernetesVersion: this.version,
+    }));
   }
 
   /**
@@ -444,26 +494,11 @@ export class Cluster extends Resource implements ICluster {
    * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
+   *
+   * @deprecated use {@link addAmazonLinuxCapacity} or {@link addWindowsCapacity}
    */
   public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
-    const asg = new autoscaling.AutoScalingGroup(this, id, {
-      ...options,
-      vpc: this.vpc,
-      machineImage: new EksOptimizedImage({
-        nodeType: nodeTypeForInstanceType(options.instanceType),
-        kubernetesVersion: this.version,
-      }),
-      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
-      instanceType: options.instanceType,
-    });
-
-    this.addAutoScalingGroup(asg, {
-      mapRole: options.mapRole,
-      bootstrapOptions: options.bootstrapOptions,
-      bootstrapEnabled: options.bootstrapEnabled
-    });
-
-    return asg;
+    return this.addAmazonLinuxCapacity(id, options);
   }
 
   /**
@@ -621,12 +656,33 @@ export class Cluster extends Resource implements ICluster {
       subnet.node.applyAspect(new Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
+
+  /**
+   * Base method for {@link addAmazonLinuxCapacity} and {@link addWindowsCapacity}
+   */
+  private addBaseCapacity(id: string, options: BaseCapacityOptions, machineImage: ec2.IMachineImage): autoscaling.AutoScalingGroup {
+    const asg = new autoscaling.AutoScalingGroup(this, id, {
+      ...options,
+      vpc: this.vpc,
+      machineImage,
+      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
+      instanceType: options.instanceType,
+    });
+
+    this.addAutoScalingGroup(asg, {
+      mapRole: options.mapRole,
+      bootstrapOptions: options.bootstrapOptions,
+      bootstrapEnabled: options.bootstrapEnabled
+    });
+
+    return asg;
+  }
 }
 
 /**
- * Options for adding worker nodes
+ * Base options for adding worker nodes
  */
-export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
+interface BaseCapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
    */
@@ -660,6 +716,30 @@ export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps
    * @default - none
    */
   readonly bootstrapOptions?: BootstrapOptions;
+}
+
+/**
+ * Options for adding Amazon Linux worker nodes
+ */
+export interface AmazonLinuxCapacityOptions extends BaseCapacityOptions {
+}
+
+/**
+ * Options for adding Windows worker nodes
+ */
+export interface WindowsCapacityOptions extends BaseCapacityOptions {
+  /**
+   * Windows variant to use
+   */
+  readonly variant: WindowsVariant;
+}
+
+/**
+ * Options for adding worker nodes
+ *
+ * @deprecated use {@link AmazonLinuxCapacityOptions} or {@link WindowsCapacityOptions}
+ */
+export interface CapacityOptions extends AmazonLinuxCapacityOptions {
 }
 
 export interface BootstrapOptions {
@@ -772,15 +852,12 @@ class ImportedCluster extends Resource implements ICluster {
 
 /**
  * Properties for EksOptimizedImage
+ * @deprecated use {@link AmazonLinuxEksOptimizedImageProps} or {@link WindowsEksOptimizedImageProps}
  */
-export interface EksOptimizedImageProps {
-  /**
-   * What instance type to retrieve the image for (standard or GPU-optimized)
-   *
-   * @default NodeType.STANDARD
-   */
-  readonly nodeType?: NodeType;
+export interface EksOptimizedImageProps extends AmazonLinuxEksOptimizedImageProps {
+}
 
+interface BaseEksOptimizedImageProps {
   /**
    * The Kubernetes version to use
    *
@@ -790,9 +867,31 @@ export interface EksOptimizedImageProps {
 }
 
 /**
+ * Properties for AmazonLinuxEksOptimizedImage
+ */
+export interface AmazonLinuxEksOptimizedImageProps extends BaseEksOptimizedImageProps {
+  /**
+   * What instance type to retrieve the image for (standard or GPU-optimized)
+   *
+   * @default NodeType.STANDARD
+   */
+  readonly nodeType?: NodeType;
+}
+
+/**
+ * Properties for WindowsEksOptimizedImage
+ */
+export interface WindowsEksOptimizedImageProps extends BaseEksOptimizedImageProps {
+  /**
+   * Windows variant to use
+   */
+  readonly variant: WindowsVariant;
+}
+
+/**
  * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
  */
-export class EksOptimizedImage implements ec2.IMachineImage {
+export class AmazonLinuxEksOptimizedImage implements ec2.IMachineImage {
   private readonly nodeType?: NodeType;
   private readonly kubernetesVersion?: string;
 
@@ -801,7 +900,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
-  public constructor(props: EksOptimizedImageProps) {
+  public constructor(props: AmazonLinuxEksOptimizedImageProps) {
     this.nodeType = props && props.nodeType;
     this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
 
@@ -824,8 +923,69 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   }
 }
 
+/**
+ * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
+ */
+export class WindowsEksOptimizedImage implements ec2.IMachineImage {
+  private readonly kubernetesVersion?: string;
+
+  private readonly amiParameterName: string;
+
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
+  public constructor(props: WindowsEksOptimizedImageProps) {
+    this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
+
+    // set the SSM parameter name
+    this.amiParameterName = [
+      '/aws/service/ami-windows-latest/Windows_Server-2019-English-',
+      `${props.variant}-EKS_Optimized-${this.kubernetesVersion}/image_id`,
+    ].join('');
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.WINDOWS
+    };
+  }
+}
+
+/**
+ * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
+ *
+ * @deprecated use {@link AmazonLinuxEksOptimizedImage} or {@link WindowsEksOptimizedImage}
+ */
+export class EksOptimizedImage extends AmazonLinuxEksOptimizedImage {
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
+  public constructor(props: EksOptimizedImageProps) {
+    super(props);
+  }
+}
+
 // MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
 const LATEST_KUBERNETES_VERSION = '1.14';
+
+/**
+ * EKS-supports operating systems
+ */
+export enum OperatingSystem {
+  AMAZON_LINUX_2 = 'AMAZON_LINUX_2',
+  WINDOWS_SERVER_2019_CORE = 'WINDOWS_SERVER_2019_CORE',
+  WINDOWS_SERVER_2019_FULL = 'WINDOWS_SERVER_2019_FULL',
+}
+
+export type WindowsVariant = OperatingSystem.WINDOWS_SERVER_2019_CORE | OperatingSystem.WINDOWS_SERVER_2019_FULL;
+
+const isWindowsVariant = (operatingSystem: OperatingSystem): operatingSystem is WindowsVariant =>
+  [OperatingSystem.WINDOWS_SERVER_2019_CORE, OperatingSystem.WINDOWS_SERVER_2019_FULL].includes(operatingSystem);
 
 /**
  * Whether the worker nodes should support GPU or just standard instances
