@@ -32,12 +32,14 @@ export class CalculatedHealthCheck extends HealthCheck {
     public constructor(
         scope: Construct,
         id: string,
-        { healthThreshold, childHealthChecks, inverted }: CalculatedHealthCheckProps,
+        props: CalculatedHealthCheckProps,
     ) {
+        const { childHealthChecks, healthThreshold, inverted } = props;
+
         super(scope, id, {
             type: CalculatedHealthCheckType.CALCULATED,
-            healthThreshold,
             childHealthChecks: childHealthChecks.map(({ healthCheckId }) => healthCheckId),
+            healthThreshold,
             inverted,
         });
     }
