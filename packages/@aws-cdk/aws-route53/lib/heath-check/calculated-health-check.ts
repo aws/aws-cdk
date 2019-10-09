@@ -1,24 +1,24 @@
-import { Construct } from '@aws-cdk/core';
-import { AdvancedHealthCheckOptions, HealthCheck, IHealthCheck } from "./health-check";
+import {Construct} from '@aws-cdk/core';
+import {AdvancedHealthCheckOptions, HealthCheck, IHealthCheck} from "./health-check";
 
 /**
  * Calculated healtch check properties
  * @experimental
  */
 export interface CalculatedHealthCheckProps extends AdvancedHealthCheckOptions {
-    /**
-     * List of health checks to be monitored
-     */
-    readonly childHealthChecks: IHealthCheck[];
-    /**
-     * Minimum count of healthy  {@link CalculatedHealthCheckProps.childHealthChecks}
-     * required for the parent health check to be considered healthy
-     *
-     * * If you specify a number greater than the number of child health checks,
-     *   Route 53 always considers this health check to be unhealthy.
-     * * If you specify 0, Route 53 always considers this health check to be healthy.
-     */
-    readonly healthThreshold: number;
+  /**
+   * List of health checks to be monitored
+   */
+  readonly childHealthChecks: IHealthCheck[];
+  /**
+   * Minimum count of healthy  {@link CalculatedHealthCheckProps.childHealthChecks}
+   * required for the parent health check to be considered healthy
+   *
+   * * If you specify a number greater than the number of child health checks,
+   *   Route 53 always considers this health check to be unhealthy.
+   * * If you specify 0, Route 53 always considers this health check to be healthy.
+   */
+  readonly healthThreshold: number;
 }
 
 /**
@@ -29,30 +29,30 @@ export interface CalculatedHealthCheckProps extends AdvancedHealthCheckOptions {
  * @experimental
  */
 export class CalculatedHealthCheck extends HealthCheck {
-    public constructor(
-        scope: Construct,
-        id: string,
-        props: CalculatedHealthCheckProps,
-    ) {
-        const { childHealthChecks, healthThreshold, inverted } = props;
+  public constructor(
+    scope: Construct,
+    id: string,
+    props: CalculatedHealthCheckProps,
+  ) {
+    const {childHealthChecks, healthThreshold, inverted} = props;
 
-        super(scope, id, {
-            type: CalculatedHealthCheckType.CALCULATED,
-            childHealthChecks: childHealthChecks.map(({ healthCheckId }) => healthCheckId),
-            healthThreshold,
-            inverted,
-        });
-    }
+    super(scope, id, {
+      type: CalculatedHealthCheckType.CALCULATED,
+      childHealthChecks: childHealthChecks.map(({healthCheckId}) => healthCheckId),
+      healthThreshold,
+      inverted,
+    });
+  }
 }
 
 /**
  * The type of Route 53 health check
  */
 enum CalculatedHealthCheckType {
-    /**
-     * For health checks that monitor the status of other health checks,
-     * Route 53 adds up the number of health checks that Route 53 health checkers consider to be healthy and
-     *  compares that number with the value of HealthThreshold.
-     */
-    CALCULATED = 'CALCULATED',
+  /**
+   * For health checks that monitor the status of other health checks,
+   * Route 53 adds up the number of health checks that Route 53 health checkers consider to be healthy and
+   *  compares that number with the value of HealthThreshold.
+   */
+  CALCULATED = 'CALCULATED',
 }

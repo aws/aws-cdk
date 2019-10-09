@@ -1,14 +1,14 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { CfnHealthCheck } from '../route53.generated';
+import {Construct, IResource, Resource} from '@aws-cdk/core';
+import {CfnHealthCheck} from '../route53.generated';
 
 /**
  * A health check
  */
 export interface IHealthCheck extends IResource {
-    /**
-     * The ID of the health check
-     */
-    readonly healthCheckId: string;
+  /**
+   * The ID of the health check
+   */
+  readonly healthCheckId: string;
 }
 
 export interface HealthCheckProps extends CfnHealthCheck.HealthCheckConfigProperty {
@@ -21,15 +21,15 @@ export interface HealthCheckProps extends CfnHealthCheck.HealthCheckConfigProper
  * @experimental
  */
 export class HealthCheck extends Resource implements IHealthCheck {
-    public readonly healthCheckId: string;
+  public readonly healthCheckId: string;
 
-    protected constructor(scope: Construct, id: string, props: HealthCheckProps) {
-        super(scope, id);
+  protected constructor(scope: Construct, id: string, props: HealthCheckProps) {
+    super(scope, id);
 
-        // TODO tags?
-        const healthCheck = new CfnHealthCheck(this, 'Resource', { healthCheckConfig: props });
-        this.healthCheckId = healthCheck.ref;
-    }
+    // TODO tags?
+    const healthCheck = new CfnHealthCheck(this, 'Resource', {healthCheckConfig: props});
+    this.healthCheckId = healthCheck.ref;
+  }
 }
 
 /**
@@ -37,11 +37,11 @@ export class HealthCheck extends Resource implements IHealthCheck {
  * @experimental
  */
 export interface AdvancedHealthCheckOptions {
-    /**
-     * @default false
-     */
-    readonly inverted?: boolean;
+  /**
+   * @default false
+   */
+  readonly inverted?: boolean;
 
-    // TODO https://github.com/aws-cloudformation/aws-cloudformation-coverage-roadmap/issues/209
-    // readonly disabled?: boolean;
+  // TODO https://github.com/aws-cloudformation/aws-cloudformation-coverage-roadmap/issues/209
+  // readonly disabled?: boolean;
 }
