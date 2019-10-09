@@ -147,7 +147,7 @@ export class CdkToolkit {
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
-          notify: options.notify,
+          notificationArns: options.notificationArns,
           tags
         });
 
@@ -277,7 +277,7 @@ export interface DeployOptions {
   /**
    * ARNs of SNS topics that CloudFormation will notify with stack related events
    */
-  notify?: string[];
+  notificationArns?: string[];
 
   /**
    * What kind of security changes require approval
@@ -287,7 +287,7 @@ export interface DeployOptions {
   requireApproval?: RequireApproval;
 
   /**
-   * Wheter we're in CI mode
+   * Whether we're in CI mode
    *
    * @default false
    */

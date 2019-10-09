@@ -24,7 +24,7 @@ export interface IDeploymentTarget {
 export interface DeployStackOptions {
   stack: CloudFormationStackArtifact;
   roleArn?: string;
-  notify?: string[];
+  notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
   ci?: boolean;
@@ -69,7 +69,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       stack: options.stack,
       deployName: options.deployName,
       roleArn: options.roleArn,
-      notify: options.notify,
+      notificationArns: options.notificationArns,
       quiet: options.quiet,
       sdk: this.aws,
       ci: options.ci,

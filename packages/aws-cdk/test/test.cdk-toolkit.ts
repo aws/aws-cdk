@@ -39,7 +39,7 @@ export = nodeunit.testCase({
         // WHEN
         toolkit.deploy({
           stackNames: ['Test-Stack-A', 'Test-Stack-B'],
-          notify: notificationArns,
+          notificationArns,
           sdk: new SDK()
         });
 
@@ -134,7 +134,7 @@ class TestProvisioner implements IDeploymentTarget {
       `Not an expected mock stack: ${options.stack.name}`
     );
     this.test.deepEqual(options.tags, this.expectedTags[options.stack.name]);
-    this.test.deepEqual(options.notify, this.expectedNotificationArns);
+    this.test.deepEqual(options.notificationArns, this.expectedNotificationArns);
     return Promise.resolve({
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.name}/MockedOut`,
       noOp: false,
