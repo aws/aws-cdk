@@ -195,7 +195,7 @@ export class Cluster extends Resource implements ICluster {
       autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
     }
 
-    if (options.spotInstanceDraining) {
+    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
       autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
     }
 
