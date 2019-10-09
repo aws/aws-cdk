@@ -77,7 +77,7 @@
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
-    "nock": "^11.3.5",
+    "nock": "^11.4.0",
     "pkglint": "file:../../../tools/pkglint",
     "sinon": "^7.5.0"
   },
