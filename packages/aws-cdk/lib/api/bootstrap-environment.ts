@@ -63,7 +63,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
         Description: "The domain name of the S3 bucket owned by the CDK toolkit stack",
-        Value: { "Fn::GetAtt": ["StagingBucket", "DomainName"] }
+        Value: { "Fn::GetAtt": ["StagingBucket", "RegionalDomainName"] }
       }
     }
   };
