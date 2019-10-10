@@ -173,6 +173,20 @@ export = {
     test.done();
   },
 
+  'Invalid Protocol listener'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    test.throws(() => lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.HTTP,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    }), /The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
+
+    test.done();
+  },
+
   'Invalid Listener Target Healthcheck Interval'(test: Test) {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -188,20 +202,6 @@ export = {
     const validationErrors: string[] = (targetGroup as any).validate();
     const intervalError = validationErrors.find((err) => /Health check interval '60' not supported. Must be one of the following values/.test(err));
     test.notEqual(intervalError, undefined, 'Failed to return health check interval validation error');
-
-    test.done();
-  },
-
-  'Invalid Protocol listener'(test: Test) {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Stack');
-    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
-
-    test.throws(() => lb.addListener('Listener', {
-      port: 443,
-      protocol: elbv2.Protocol.HTTP,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-    }), /The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
 
     test.done();
   },
