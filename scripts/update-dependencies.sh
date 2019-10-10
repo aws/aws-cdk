@@ -60,8 +60,8 @@ case $mode in
     full)
         # Sometimes package-lock.json and node_modules contains detritus that causes problems.
         # Get rid of it them completely.
-        npx ncu -x @types/node -u && rm -Rf package-lock.json node_modules && npm install && npm install --save-dev @types/node@8 && npm audit fix
-        npx lerna exec -- npx ncu -u
+        npx -p npm-check-updates ncu -x @types/node -u && rm -Rf package-lock.json node_modules && npm install && npm install --save-dev @types/node@8 && npm audit fix
+        npx lerna exec -- npx -p npm-check-updates ncu -x @types/node -u
         npx lerna exec -- rm -Rf package-lock.json node_modules
         npx lerna exec -- npm install
         npx lerna exec -- npm audit fix

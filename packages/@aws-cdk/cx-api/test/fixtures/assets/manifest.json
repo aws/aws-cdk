@@ -1,0 +1,36 @@
+{
+  "version": "1.10.0",
+  "artifacts": {
+    "MyStackName": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.json"
+      },
+      "metadata": {
+        "foo": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "packaging": "zip",
+              "id": "logical-id-of-the-asset",
+              "sourceHash": "xoxoxox",
+              "path": "asset-dir"
+            },
+            "trace": "bam"
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "packaging": "docker",
+              "id": "logical-id-of-the-asset-x1234",
+              "sourceHash": "docker-asset-source",
+              "path": "docker-asset"
+            },
+            "trace": "bam:ssss"
+          }
+        ]
+      }
+    }
+  }
+}

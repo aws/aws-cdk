@@ -1,8 +1,22 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct } from '@aws-cdk/cdk';
-import { FunctionBase, IFunction } from './function-base';
+import { Construct } from '@aws-cdk/core';
+import { IFunction, QualifiedFunctionBase } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
+
+export interface IAlias extends IFunction {
+  /**
+   * Name of this alias.
+   *
+   * @attribute
+   */
+  readonly aliasName: string;
+
+  /**
+   * The underlying Lambda function version.
+   */
+  readonly version: IVersion;
+}
 
 /**
  * Properties for a new Lambda alias
@@ -47,10 +61,30 @@ export interface AliasProps {
   readonly additionalVersions?: VersionWeight[];
 }
 
+export interface AliasAttributes {
+  readonly aliasName: string;
+  readonly aliasVersion: IVersion;
+}
+
 /**
  * A new alias to a particular version of a Lambda function.
  */
-export class Alias extends FunctionBase {
+export class Alias extends QualifiedFunctionBase implements IAlias {
+  public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
+    class Imported extends QualifiedFunctionBase implements IAlias {
+      public readonly aliasName = attrs.aliasName;
+      public readonly version = attrs.aliasVersion;
+      public readonly lambda = attrs.aliasVersion.lambda;
+      public readonly functionArn = `${attrs.aliasVersion.lambda.functionArn}:${attrs.aliasName}`;
+      public readonly functionName = `${attrs.aliasVersion.lambda.functionName}:${attrs.aliasName}`;
+      public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
+      public readonly role = attrs.aliasVersion.role;
+
+      protected readonly canCreatePermissions = false;
+    }
+    return new Imported(scope, id);
+  }
+
   /**
    * Name of this alias.
    *
@@ -65,6 +99,10 @@ export class Alias extends FunctionBase {
    */
   public readonly functionName: string;
 
+  public readonly lambda: IFunction;
+
+  public readonly version: IVersion;
+
   /**
    * ARN of this alias
    *
@@ -75,52 +113,53 @@ export class Alias extends FunctionBase {
 
   protected readonly canCreatePermissions: boolean = true;
 
-  /**
-   * The actual Lambda function object that this Alias is pointing to
-   */
-  private readonly underlyingLambda: IFunction;
-
   constructor(scope: Construct, id: string, props: AliasProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.aliasName,
+    });
 
-    this.aliasName = props.aliasName;
-    this.underlyingLambda = props.version.lambda;
+    this.lambda = props.version.lambda;
+    this.aliasName = this.physicalName;
+    this.version = props.version;
 
     const alias = new CfnAlias(this, 'Resource', {
-      name: props.aliasName,
+      name: this.aliasName,
       description: props.description,
-      functionName: this.underlyingLambda.functionName,
+      functionName: this.version.lambda.functionName,
       functionVersion: props.version.version,
       routingConfig: this.determineRoutingConfig(props)
+    });
+
+    this.functionArn = this.getResourceArnAttribute(alias.ref, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: `${this.lambda.functionName}:${this.physicalName}`,
+      sep: ':',
     });
 
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
-    this.functionName = `${this.node.stack.parseArn(alias.aliasArn, ":").resourceName!}:${props.aliasName}`;
-    this.functionArn = alias.aliasArn;
-  }
-
-  /**
-   * Role associated with this alias
-   */
-  public get role() {
-    return this.underlyingLambda.role;
+    this.functionName = `${this.stack.parseArn(this.functionArn, ":").resourceName!}:${this.aliasName}`;
   }
 
   public get grantPrincipal() {
-    return this.underlyingLambda.grantPrincipal;
+    return this.version.grantPrincipal;
+  }
+
+  public get role() {
+    return this.version.role;
   }
 
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
     return super.metric(metricName, {
       dimensions: {
-        FunctionName: this.underlyingLambda.functionName,
-        // construct the ARN from the underlying lambda so that alarms on an alias
+        FunctionName: this.lambda.functionName,
+        // construct the name from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
-        // see: https://github.com/awslabs/aws-cdk/issues/2231
-        Resource: `${this.underlyingLambda.functionArn}:${this.aliasName}`
+        // see: https://github.com/aws/aws-cdk/issues/2231
+        Resource: `${this.lambda.functionName}:${this.aliasName}`
       },
       ...props
     });

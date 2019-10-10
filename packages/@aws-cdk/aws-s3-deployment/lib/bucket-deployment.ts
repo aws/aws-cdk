@@ -1,17 +1,23 @@
 import cloudformation = require('@aws-cdk/aws-cloudformation');
+import cloudfront = require('@aws-cdk/aws-cloudfront');
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { Token } from '@aws-cdk/core';
+import crypto = require('crypto');
+import fs = require('fs');
 import path = require('path');
-import { ISource } from './source';
+import { ISource, SourceConfig } from './source';
 
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
+const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
   /**
-   * The source from which to deploy the contents of this bucket.
+   * The sources from which to deploy the contents of this bucket.
    */
-  readonly source: ISource;
+  readonly sources: ISource[];
 
   /**
    * The S3 bucket to sync the contents of the zip file to.
@@ -37,36 +43,117 @@ export interface BucketDeploymentProps {
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
+
+  /**
+   * The CloudFront distribution using the destination bucket as an origin.
+   * Files in the distribution's edge caches will be invalidated after
+   * files are uploaded to the destination bucket.
+   *
+   * @default - No invalidation occurs
+   */
+  readonly distribution?: cloudfront.IDistribution;
+
+  /**
+   * The file paths to invalidate in the CloudFront distribution.
+   *
+   * @default - All files under the destination bucket key prefix will be invalidated.
+   */
+  readonly distributionPaths?: string[];
+
+  /**
+   * The amount of memory (in MiB) to allocate to the AWS Lambda function which
+   * replicates the files from the CDK bucket to the destination bucket.
+   *
+   * If you are deploying large files, you will need to increase this number
+   * accordingly.
+   *
+   * @default 128
+   */
+  readonly memoryLimit?: number;
 }
 
 export class BucketDeployment extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
+    if (props.distributionPaths && !props.distribution) {
+      throw new Error("Distribution must be specified if distribution paths are specified");
+    }
+
+    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    // tslint:disable-next-line: no-console
+    console.error({sourceHash});
+
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8756C',
-      code: lambda.Code.file(handlerCodeBundle),
-      runtime: lambda.Runtime.Python36,
+      uuid: this.renderSingletonUuid(props.memoryLimit),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
+      runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
-      timeout: 15 * 60
+      timeout: cdk.Duration.minutes(15),
+      memorySize: props.memoryLimit
     });
 
-    const source = props.source.bind(this);
+    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
+    sources.forEach(source => source.bucket.grantRead(handler));
 
-    source.bucket.grantRead(handler);
     props.destinationBucket.grantReadWrite(handler);
+    if (props.distribution) {
+      handler.addToRolePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['cloudfront:GetInvalidation', 'cloudfront:CreateInvalidation'],
+        resources: ['*'],
+      }));
+    }
 
     new cloudformation.CustomResource(this, 'CustomResource', {
       provider: cloudformation.CustomResourceProvider.lambda(handler),
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketName: source.bucket.bucketName,
-        SourceObjectKey: source.zipObjectKey,
+        SourceBucketNames: sources.map(source => source.bucket.bucketName),
+        SourceObjectKeys: sources.map(source => source.zipObjectKey),
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
-        RetainOnDelete: props.retainOnDelete
+        RetainOnDelete: props.retainOnDelete,
+        DistributionId: props.distribution ? props.distribution.distributionId : undefined,
+        DistributionPaths: props.distributionPaths
       }
     });
   }
+
+  private renderSingletonUuid(memoryLimit?: number) {
+    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+
+    // if user specify a custom memory limit, define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    if (memoryLimit) {
+      if (Token.isUnresolved(memoryLimit)) {
+        throw new Error(`Can't use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler`);
+      }
+
+      uuid += `-${memoryLimit.toString()}MiB`;
+    }
+
+    return uuid;
+  }
+}
+
+/**
+ * We need a custom source hash calculation since the bundle.zip file
+ * contains python dependencies installed during build and results in a
+ * non-deterministic behavior.
+ *
+ * So we just take the `src/` directory of our custom resoruce code.
+ */
+function calcSourceHash(srcDir: string): string {
+  const sha = crypto.createHash('sha256');
+  for (const file of fs.readdirSync(srcDir)) {
+    const data = fs.readFileSync(path.join(srcDir, file));
+    sha.update(`<file name=${file}>`);
+    sha.update(data);
+    sha.update('</file>');
+  }
+
+  return sha.digest('hex');
 }

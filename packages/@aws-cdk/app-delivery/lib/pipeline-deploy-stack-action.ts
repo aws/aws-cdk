@@ -1,8 +1,9 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cxapi = require('@aws-cdk/cx-api');
 
 export interface PipelineDeployStackActionProps {
@@ -10,11 +11,6 @@ export interface PipelineDeployStackActionProps {
    * The CDK stack to be deployed.
    */
   readonly stack: cdk.Stack;
-
-  /**
-   * The CodePipeline stage in which to perform the deployment.
-   */
-  readonly stage: codepipeline.IStage;
 
   /**
    * The CodePipeline artifact that holds the synthesized app, which is the
@@ -63,9 +59,9 @@ export interface PipelineDeployStackActionProps {
    * information
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
-   * @default AnonymousIAM, unless `adminPermissions` is true
+   * @default [AnonymousIAM, AutoExpand], unless `adminPermissions` is true
    */
-  readonly capabilities?: cfn.CloudFormationCapabilities;
+  readonly capabilities?: cfn.CloudFormationCapabilities[];
 
   /**
    * Whether to grant admin permissions to CloudFormation while deploying this template.
@@ -86,60 +82,76 @@ export interface PipelineDeployStackActionProps {
 }
 
 /**
- * A Construct to deploy a stack that is part of a CDK App, using CodePipeline.
+ * A class to deploy a stack that is part of a CDK App, using CodePipeline.
  * This composite Action takes care of preparing and executing a CloudFormation ChangeSet.
  *
  * It currently does *not* support stacks that make use of ``Asset``s, and
  * requires the deployed stack is in the same account and region where the
  * CodePipeline is hosted.
  */
-export class PipelineDeployStackAction extends cdk.Construct {
-
+export class PipelineDeployStackAction implements codepipeline.IAction {
   /**
    * The role used by CloudFormation for the deploy action
    */
-  public readonly deploymentRole: iam.IRole;
+  private _deploymentRole?: iam.IRole;
 
   private readonly stack: cdk.Stack;
+  private readonly prepareChangeSetAction: cpactions.CloudFormationCreateReplaceChangeSetAction;
+  private readonly executeChangeSetAction: cpactions.CloudFormationExecuteChangeSetAction;
 
-  constructor(scope: cdk.Construct, id: string, props: PipelineDeployStackActionProps) {
-    super(scope, id);
-
-    if (!cdk.environmentEquals(props.stack.env, this.node.stack.env)) {
-      // FIXME: Add the necessary to extend to stacks in a different account
-      throw new Error(`Cross-environment deployment is not supported`);
+  constructor(props: PipelineDeployStackActionProps) {
+    this.stack = props.stack;
+    const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
+    if (assets.length > 0) {
+      // FIXME: Implement the necessary actions to publish assets
+      throw new Error(`Cannot deploy the stack ${this.stack.stackName} because it references ${assets.length} asset(s)`);
     }
 
     const createChangeSetRunOrder = props.createChangeSetRunOrder || 1;
     const executeChangeSetRunOrder = props.executeChangeSetRunOrder || (createChangeSetRunOrder + 1);
-
     if (createChangeSetRunOrder >= executeChangeSetRunOrder) {
       throw new Error(`createChangeSetRunOrder (${createChangeSetRunOrder}) must be < executeChangeSetRunOrder (${executeChangeSetRunOrder})`);
     }
 
-    this.stack = props.stack;
     const changeSetName = props.changeSetName || 'CDK-CodePipeline-ChangeSet';
-
     const capabilities = cfnCapabilities(props.adminPermissions, props.capabilities);
-    const changeSetAction = new cpactions.CloudFormationCreateReplaceChangeSetAction({
+    this.prepareChangeSetAction = new cpactions.CloudFormationCreateReplaceChangeSetAction({
       actionName: 'ChangeSet',
       changeSetName,
       runOrder: createChangeSetRunOrder,
-      stackName: props.stack.name,
-      templatePath: props.input.atPath(`${props.stack.name}.template.yaml`),
+      stackName: props.stack.stackName,
+      templatePath: props.input.atPath(props.stack.templateFile),
       adminPermissions: props.adminPermissions,
       deploymentRole: props.role,
       capabilities,
     });
-    props.stage.addAction(changeSetAction);
-    props.stage.addAction(new cpactions.CloudFormationExecuteChangeSetAction({
+    this.executeChangeSetAction = new cpactions.CloudFormationExecuteChangeSetAction({
       actionName: 'Execute',
       changeSetName,
       runOrder: executeChangeSetRunOrder,
-      stackName: props.stack.name,
-    }));
+      stackName: this.stack.stackName,
+    });
+  }
 
-    this.deploymentRole = changeSetAction.deploymentRole;
+  public bind(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    if (this.stack.environment !== cdk.Stack.of(scope).environment) {
+      // FIXME: Add the necessary to extend to stacks in a different account
+      throw new Error(`Cross-environment deployment is not supported`);
+    }
+
+    stage.addAction(this.prepareChangeSetAction);
+    this._deploymentRole = this.prepareChangeSetAction.deploymentRole;
+
+    return this.executeChangeSetAction.bind(scope, stage, options);
+  }
+
+  public get deploymentRole(): iam.IRole {
+    if (!this._deploymentRole) {
+      throw new Error(`Use this action in a pipeline first before accessing 'deploymentRole'`);
+    }
+
+    return this._deploymentRole;
   }
 
   /**
@@ -155,24 +167,22 @@ export class PipelineDeployStackAction extends cdk.Construct {
     this.deploymentRole.addToPolicy(statement);
   }
 
-  protected validate(): string[] {
-    const result = super.validate();
-    const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
-    if (assets.length > 0) {
-      // FIXME: Implement the necessary actions to publish assets
-      result.push(`Cannot deploy the stack ${this.stack.name} because it references ${assets.length} asset(s)`);
-    }
-    return result;
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
+    return this.executeChangeSetAction.onStateChange(name, target, options);
+  }
+
+  public get actionProperties(): codepipeline.ActionProperties {
+    return this.executeChangeSetAction.actionProperties;
   }
 }
 
-function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities): cfn.CloudFormationCapabilities {
+function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities[]): cfn.CloudFormationCapabilities[] {
   if (adminPermissions && capabilities === undefined) {
-    // admin true default capability to NamedIAM
-    return cfn.CloudFormationCapabilities.NamedIAM;
+    // admin true default capability to NamedIAM and AutoExpand
+    return [cfn.CloudFormationCapabilities.NAMED_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND];
   } else if (capabilities === undefined) {
-    // else capabilities are undefined set AnonymousIAM
-    return cfn.CloudFormationCapabilities.AnonymousIAM;
+    // else capabilities are undefined set AnonymousIAM and AutoExpand
+    return [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND];
   } else {
     // else capabilities are defined use them
     return capabilities;

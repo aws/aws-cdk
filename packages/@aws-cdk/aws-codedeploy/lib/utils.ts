@@ -1,18 +1,18 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Aws } from '@aws-cdk/cdk';
+import { Aws } from '@aws-cdk/core';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
 export function arnForApplication(applicationName: string): string {
-  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:application:${applicationName}`;
+  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:application:${applicationName}`;
 }
 
 export function arnForDeploymentGroup(applicationName: string, deploymentGroupName: string): string {
-  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:deploymentgroup:${applicationName}/${deploymentGroupName}`;
+  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:deploymentgroup:${applicationName}/${deploymentGroupName}`;
 }
 
 export function arnForDeploymentConfig(name: string): string {
-  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:deploymentconfig:${name}`;
+  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:deploymentconfig:${name}`;
 }
 
 export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
@@ -27,9 +27,9 @@ export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePoll
 }
 
 enum AutoRollbackEvent {
-  DeploymentFailure = 'DEPLOYMENT_FAILURE',
-  DeploymentStopOnAlarm = 'DEPLOYMENT_STOP_ON_ALARM',
-  DeploymentStopOnRequest = 'DEPLOYMENT_STOP_ON_REQUEST'
+  DEPLOYMENT_FAILURE = 'DEPLOYMENT_FAILURE',
+  DEPLOYMENT_STOP_ON_ALARM = 'DEPLOYMENT_STOP_ON_ALARM',
+  DEPLOYMENT_STOP_ON_REQUEST = 'DEPLOYMENT_STOP_ON_REQUEST'
 }
 
 export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
@@ -38,19 +38,19 @@ export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], aut
 
   // we roll back failed deployments by default
   if (autoRollbackConfig.failedDeployment !== false) {
-    events.push(AutoRollbackEvent.DeploymentFailure);
+    events.push(AutoRollbackEvent.DEPLOYMENT_FAILURE);
   }
 
   // we _do not_ roll back stopped deployments by default
   if (autoRollbackConfig.stoppedDeployment === true) {
-    events.push(AutoRollbackEvent.DeploymentStopOnRequest);
+    events.push(AutoRollbackEvent.DEPLOYMENT_STOP_ON_REQUEST);
   }
 
   // we _do not_ roll back alarm-triggering deployments by default
   // unless the Deployment Group has at least one alarm
   if (autoRollbackConfig.deploymentInAlarm !== false) {
     if (alarms.length > 0) {
-      events.push(AutoRollbackEvent.DeploymentStopOnAlarm);
+      events.push(AutoRollbackEvent.DEPLOYMENT_STOP_ON_ALARM);
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
       throw new Error(
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +

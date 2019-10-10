@@ -90,7 +90,7 @@ If deCDK encounters a reference to another __construct__ (a type that extends `c
 ```yaml
 Resources:
   VPC:
-    Type: "@aws-cdk/aws-ec2.VpcNetwork"
+    Type: "@aws-cdk/aws-ec2.Vpc"
     Properties:
       maxAZs: 1
   Cluster:

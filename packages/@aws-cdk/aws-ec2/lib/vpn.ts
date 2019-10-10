@@ -1,10 +1,10 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import net = require('net');
 import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
 import { IVpc } from './vpc';
 
-export interface IVpnConnection extends cdk.IConstruct {
+export interface IVpnConnection extends cdk.IResource {
   /**
    * The id of the VPN connection.
    */
@@ -89,16 +89,21 @@ export enum VpnConnectionType {
   /**
    * The IPsec 1 VPN connection type.
    */
-  IPsec1 = 'ipsec.1',
+  IPSEC_1 = 'ipsec.1',
 
   /**
    * Dummy member
-   * TODO: remove once https://github.com/awslabs/jsii/issues/231 is fixed
+   * TODO: remove once https://github.com/aws/jsii/issues/231 is fixed
    */
-  Dummy = 'dummy'
+  DUMMY = 'dummy'
 }
 
-export class VpnConnection extends cdk.Construct implements IVpnConnection {
+/**
+ * Define a VPN Connection
+ *
+ * @resource AWS::EC2::VPNConnection
+ */
+export class VpnConnection extends cdk.Resource implements IVpnConnection {
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */
@@ -116,7 +121,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
    * @default average over 5 minutes
    */
   public static metricAllTunnelState(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metricAll('TunnelSate', { statistic: 'avg', ...props });
+    return this.metricAll('TunnelState', { statistic: 'avg', ...props });
   }
 
   /**
@@ -153,7 +158,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
       throw new Error(`The \`ip\` ${props.ip} is not a valid IPv4 address.`);
     }
 
-    const type = VpnConnectionType.IPsec1;
+    const type = VpnConnectionType.IPSEC_1;
     const bgpAsn = props.asn || 65000;
 
     const customerGateway = new CfnCustomerGateway(this, 'CustomerGateway', {
@@ -162,7 +167,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
       type
     });
 
-    this.customerGatewayId = customerGateway.customerGatewayName;
+    this.customerGatewayId = customerGateway.ref;
     this.customerGatewayAsn = bgpAsn;
     this.customerGatewayIp = props.ip;
 
@@ -199,13 +204,13 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
 
     const vpnConnection = new CfnVPNConnection(this, 'Resource', {
       type,
-      customerGatewayId: customerGateway.customerGatewayName,
+      customerGatewayId: customerGateway.ref,
       staticRoutesOnly: props.staticRoutes ? true : false,
       vpnGatewayId: props.vpc.vpnGatewayId,
       vpnTunnelOptionsSpecifications: props.tunnelOptions
     });
 
-    this.vpnId = vpnConnection.vpnConnectionName;
+    this.vpnId = vpnConnection.ref;
 
     if (props.staticRoutes) {
       props.staticRoutes.forEach(route => {

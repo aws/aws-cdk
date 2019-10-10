@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
@@ -19,12 +19,16 @@ export interface BaseApplicationListenerRuleProps {
   /**
    * Target groups to forward requests to. Only one of `targetGroups` or
    * `fixedResponse` can be specified.
+   *
+   * @default - No target groups.
    */
   readonly targetGroups?: IApplicationTargetGroup[];
 
   /**
    * Fixed response to return. Only one of `fixedResponse` or
    * `targetGroups` can be specified.
+   *
+   * @default - No fixed response.
    */
   readonly fixedResponse?: FixedResponse;
 
@@ -35,7 +39,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#host-conditions
    *
-   * @default No host condition
+   * @default - No host condition.
    */
   readonly hostHeader?: string;
 
@@ -46,7 +50,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    *
-   * @default No path condition
+   * @default - No path condition.
    */
   readonly pathPattern?: string;
 }
@@ -126,8 +130,8 @@ export class ApplicationListenerRule extends cdk.Construct {
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
-      conditions: new cdk.Token(() => this.renderConditions()),
-      actions: new cdk.Token(() => this.actions),
+      conditions: cdk.Lazy.anyValue({ produce: () => this.renderConditions() }),
+      actions: cdk.Lazy.anyValue({ produce: () => this.actions }),
     });
 
     if (props.hostHeader) {

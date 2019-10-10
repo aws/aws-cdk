@@ -1,9 +1,62 @@
-## The CDK Construct Library for AWS Simple Email Service
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+## Amazon Simple Email Service Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+>
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
+
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ### Email receiving
-Create a receipt rule set with rules and actions:
-[example of setting up a receipt rule set](test/example.receiving.lit.ts)
+Create a receipt rule set with rules and actions (actions can be found in the
+`@aws-cdk/aws-ses-actions` package):
+
+```ts
+import s3 = require('@aws-cdk/aws-s3');
+import ses = require('@aws-cdk/aws-ses');
+import actions = require('@aws-cdk/aws-ses-actions');
+import sns = require('@aws-cdk/aws-sns');
+
+const bucket = new s3.Bucket(stack, 'Bucket');
+const topic = new sns.Topic(stack, 'Topic');
+
+new ses.ReceiptRuleSet(stack, 'RuleSet', {
+  rules: [
+    {
+      recipients: ['hello@aws.com'],
+      actions: [
+        new actions.AddHeader({
+          name: 'X-Special-Header',
+          value: 'aws'
+        }),
+        new actions.S3({
+          bucket,
+          objectKeyPrefix: 'emails/',
+          topic
+        })
+      ],
+    },
+    {
+      recipients: ['aws.com'],
+      actions: [
+        new actions.Sns({
+          topic
+        })
+      ]
+    }
+  ]
+});
+```
 
 Alternatively, rules can be added to a rule set:
 ```ts
@@ -16,15 +69,11 @@ const awsRule = ruleSet.addRule('Aws', {
 
 And actions to rules:
 ```ts
-awsRule.addAction(
-  new ses.ReceiptRuleSnsAction({
-    topic
-  });
-);
+awsRule.addAction(new actions.Sns({
+  topic
+}));
 ```
 When using `addRule`, the new rule is added after the last added rule unless `after` is specified.
-
-[More actions](test/integ.receipt.ts)
 
 #### Drop spams
 A rule to drop spam can be added by setting `dropSpam` to `true`:

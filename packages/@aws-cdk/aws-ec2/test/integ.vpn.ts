@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ec2 = require('../lib');
 
 const app = new cdk.App();
@@ -26,4 +26,4 @@ vpc.addVpnConnection('Static', { // Static routing
   ]
 });
 
-app.run();
+app.synth();

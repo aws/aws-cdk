@@ -1,5 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
+import notifs = require('@aws-cdk/aws-s3-notifications');
 
 export interface S3EventSourceProps {
   /**
@@ -27,7 +28,7 @@ export class S3EventSource implements lambda.IEventSource {
   public bind(target: lambda.IFunction) {
     const filters = this.props.filters || [];
     for (const event of this.props.events) {
-      this.bucket.onEvent(event, target, ...filters);
+      this.bucket.addEventNotification(event, new notifs.LambdaDestination(target), ...filters);
     }
   }
 }

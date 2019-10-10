@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import reflect = require('jsii-reflect');
 import jsonschema = require('jsonschema');
 import { renderFullSchema } from './cdk-schema';
@@ -7,6 +7,7 @@ import { isConstruct, isDataType, isEnumLikeClass, isSerializableInterface, Sche
 export interface DeclarativeStackProps extends cdk.StackProps {
   typeSystem: reflect.TypeSystem;
   template: any;
+  workingDirectory?: string;
 }
 
 export class DeclarativeStack extends cdk.Stack {
@@ -37,14 +38,19 @@ export class DeclarativeStack extends cdk.Stack {
       const typeInfo = typeSystem.findFqn(rprops.Type + 'Props');
       const typeRef = new reflect.TypeReference(typeSystem, typeInfo);
       const Ctor = resolveType(rprops.Type);
-      new Ctor(this, logicalId, deserializeValue(this, typeRef, true, 'Properties', rprops.Properties));
+
+      // Changing working directory if needed, such that relative paths in the template are resolved relative to the
+      // template's location, and not to the current process' CWD.
+      _cwd(props.workingDirectory, () =>
+        new Ctor(this, logicalId, deserializeValue(this, typeRef, true, 'Properties', rprops.Properties)));
+
       delete template.Resources[logicalId];
     }
 
     delete template.$schema;
 
     // Add an Include construct with what's left of the template
-    new cdk.Include(this, 'Include', { template });
+    new cdk.CfnInclude(this, 'Include', { template });
 
     // replace all "Fn::GetAtt" with tokens that resolve correctly both for
     // constructs and raw resources.
@@ -376,10 +382,10 @@ function invokeMethod(stack: cdk.Stack, method: reflect.Callable, parameters: an
  * an `Fn::GetAtt`.
  */
 function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
-  new cdk.Token(() => {
+  return cdk.Lazy.stringValue({ produce: () => {
     const res = stack.node.tryFindChild(id);
     if (!res) {
-      const include = stack.node.tryFindChild('Include') as cdk.Include;
+      const include = stack.node.tryFindChild('Include') as cdk.CfnInclude;
       if (!include) {
         throw new Error(`Unexpected - "Include" should be in the stack at this point`);
       }
@@ -393,7 +399,7 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
       return { "Fn::GetAtt": [ id, attribute ] };
     }
     return (res as any)[attribute];
-  }).toString();
+  }});
 }
 
 function findConstruct(stack: cdk.Stack, id: string) {
@@ -405,7 +411,7 @@ function findConstruct(stack: cdk.Stack, id: string) {
 }
 
 function processReferences(stack: cdk.Stack) {
-  const include = stack.node.findChild('Include') as cdk.Include;
+  const include = stack.node.findChild('Include') as cdk.CfnInclude;
   if (!include) {
     throw new Error('Unexpected');
   }
@@ -438,3 +444,14 @@ function isCfnResourceType(resourceType: string) {
 }
 
 class ValidationError extends Error { }
+
+function _cwd<T>(workDir: string | undefined, cb: () => T): T {
+  if (!workDir) { return cb(); }
+  const prevWd = process.cwd();
+  try {
+    process.chdir(workDir);
+    return cb();
+  } finally {
+    process.chdir(prevWd);
+  }
+}

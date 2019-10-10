@@ -1,5 +1,5 @@
-import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/assert';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptRule, ReceiptRuleSet, TlsPolicy } from '../lib';
 
@@ -14,14 +14,14 @@ export = {
     new ReceiptRuleSet(stack, 'RuleSet', {
       rules: [
         {
-          name: 'FirstRule',
+          receiptRuleName: 'FirstRule',
         },
         {
           enabled: false,
-          name: 'SecondRule',
+          receiptRuleName: 'SecondRule',
           recipients: ['hello@aws.com'],
           scanEnabled: true,
-          tlsPolicy: TlsPolicy.Require
+          tlsPolicy: TlsPolicy.REQUIRE
         }
       ]
     });
@@ -102,6 +102,79 @@ export = {
         }
       },
     });
+
+    test.done();
+  },
+
+  'can add actions in rule props'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const ruleSet = new ReceiptRuleSet(stack, 'RuleSet');
+    ruleSet.addRule('Rule', {
+      actions: [
+        {
+          bind: () => ({
+            stopAction: {
+              scope: 'RuleSet'
+            }
+          })
+        }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+      "Rule": {
+        "Actions": [
+          {
+            "StopAction": {
+              "Scope": "RuleSet"
+            }
+          }
+        ],
+        "Enabled": true
+      },
+      "RuleSetName": {
+        "Ref": "RuleSetE30C6C48"
+      }
+    }));
+
+    test.done();
+  },
+
+  'can add action with addAction'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const ruleSet = new ReceiptRuleSet(stack, 'RuleSet');
+    const rule = ruleSet.addRule('Rule');
+    rule.addAction({
+      bind: () => ({
+        stopAction: {
+          scope: 'RuleSet'
+        }
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
+      "Rule": {
+        "Actions": [
+          {
+            "StopAction": {
+              "Scope": "RuleSet"
+            }
+          }
+        ],
+        "Enabled": true
+      },
+      "RuleSetName": {
+        "Ref": "RuleSetE30C6C48"
+      }
+    }));
 
     test.done();
   }

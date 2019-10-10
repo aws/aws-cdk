@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, IAlarmAction, Metric } from '../lib';
+import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -28,6 +28,84 @@ export = {
       Namespace: "CDK/Test",
       Period: 300,
       Statistic: 'Average',
+      Threshold: 1000,
+    }));
+
+    test.done();
+  },
+
+  'override metric period in Alarm'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      period: Duration.minutes(10),
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
+      EvaluationPeriods: 3,
+      MetricName: "Metric",
+      Namespace: "CDK/Test",
+      Period: 600,
+      Statistic: 'Average',
+      Threshold: 1000,
+    }));
+
+    test.done();
+  },
+
+  'override statistic Alarm'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      statistic: 'max',
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
+      EvaluationPeriods: 3,
+      MetricName: "Metric",
+      Namespace: "CDK/Test",
+      Period: 300,
+      Statistic: 'Maximum',
+      Threshold: 1000,
+    }));
+
+    test.done();
+  },
+
+  'can use percentile in Alarm'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      statistic: 'P99',
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
+      EvaluationPeriods: 3,
+      MetricName: "Metric",
+      Namespace: "CDK/Test",
+      Period: 300,
+      ExtendedStatistic: 'p99',
       Threshold: 1000,
     }));
 
@@ -72,9 +150,9 @@ export = {
       evaluationPeriods: 2
     });
 
-    alarm.onAlarm(new TestAlarmAction('A'));
-    alarm.onInsufficientData(new TestAlarmAction('B'));
-    alarm.onOk(new TestAlarmAction('C'));
+    alarm.addAlarmAction(new TestAlarmAction('A'));
+    alarm.addInsufficientDataAction(new TestAlarmAction('B'));
+    alarm.addOkAction(new TestAlarmAction('C'));
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
@@ -91,11 +169,11 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.newAlarm(stack, 'Alarm', {
+    testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'min',
-      periodSec: 10,
+      period: Duration.seconds(10),
     });
 
     // THEN
@@ -117,7 +195,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.newAlarm(stack, 'Alarm', {
+    testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'p99.9'
@@ -136,7 +214,7 @@ class TestAlarmAction implements IAlarmAction {
   constructor(private readonly arn: string) {
   }
 
-  public get alarmActionArn(): string {
-    return this.arn;
+  public bind(_scope: Construct, _alarm: IAlarm) {
+    return { alarmActionArn: this.arn };
   }
 }

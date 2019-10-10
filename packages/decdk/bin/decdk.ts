@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import colors = require('colors/safe');
 import { DeclarativeStack, loadTypeSystem, readTemplate, stackNameFromFileName } from '../lib';
 
@@ -16,7 +16,7 @@ async function main() {
 
   const app = new cdk.App();
   new DeclarativeStack(app, stackName, { template, typeSystem });
-  app.run();
+  app.synth();
 }
 
 main().catch(e => {

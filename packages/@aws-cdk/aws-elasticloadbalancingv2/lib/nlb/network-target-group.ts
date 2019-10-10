@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
@@ -27,6 +27,8 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
+   *
+   * @default - No targets.
    */
   readonly targets?: INetworkLoadBalancerTarget[];
 }
@@ -46,7 +48,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
   constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
     super(scope, id, props, {
-      protocol: Protocol.Tcp,
+      protocol: Protocol.TCP,
       port: props.port,
     });
 
@@ -122,5 +124,5 @@ export interface INetworkLoadBalancerTarget {
    * May return JSON to directly add to the [Targets] list, or return undefined
    * if the target will register itself with the load balancer.
    */
-  attachToNetworkTargetGroup(targetGroup: NetworkTargetGroup): LoadBalancerTargetProps;
+  attachToNetworkTargetGroup(targetGroup: INetworkTargetGroup): LoadBalancerTargetProps;
 }

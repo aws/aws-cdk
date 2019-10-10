@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -60,22 +50,7 @@
         "FServiceRole3AC82EE1"
       ]
     },
-    "FTSubscription775EAF05": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "TD925BC7E"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "FC4345940",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "FT1706F790": {
+    "FAllowInvokelambdaeventsourcesnsT85539BB11B51A88E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -88,6 +63,21 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "TD925BC7E"
+        }
+      }
+    },
+    "FTA788EE87": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "TD925BC7E"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "FC4345940",
+            "Arn"
+          ]
         }
       }
     },

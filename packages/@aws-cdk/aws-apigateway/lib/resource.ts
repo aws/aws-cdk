@@ -1,4 +1,4 @@
-import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/cdk';
+import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/core';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
@@ -74,7 +74,7 @@ export interface IResource extends IResourceBase {
    * Adds a greedy proxy resource ("{proxy+}") and an ANY method to this route.
    * @param options Default integration and method options.
    */
-  addProxy(options?: ResourceOptions): ProxyResource;
+  addProxy(options?: ProxyResourceOptions): ProxyResource;
 
   /**
    * Defines a new method for this resource.
@@ -91,12 +91,16 @@ export interface ResourceOptions {
   /**
    * An integration to use as a default for all methods created within this
    * API unless an integration is specified.
+   *
+   * @default - Inherited from parent.
    */
   readonly defaultIntegration?: Integration;
 
   /**
    * Method options to use as a default for all methods created within this
    * API unless custom options are specified.
+   *
+   * @default - Inherited from parent.
    */
   readonly defaultMethodOptions?: MethodOptions;
 }
@@ -136,7 +140,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
   }
 
-  public addProxy(options?: ResourceOptions): ProxyResource {
+  public addProxy(options?: ProxyResourceOptions): ProxyResource {
     return new ProxyResource(this, '{proxy+}', { parent: this, ...options });
   }
 
@@ -207,7 +211,7 @@ export class Resource extends ResourceBase {
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
-    this.resourceId = resource.resourceId;
+    this.resourceId = resource.ref;
     this.restApi = props.parent.restApi;
 
     // render resource path (special case for root)
@@ -231,13 +235,7 @@ export class Resource extends ResourceBase {
   }
 }
 
-export interface ProxyResourceProps extends ResourceOptions {
-  /**
-   * The parent resource of this resource. You can either pass another
-   * `Resource` object or a `RestApi` object here.
-   */
-  readonly parent: IResource;
-
+export interface ProxyResourceOptions extends ResourceOptions {
   /**
    * Adds an "ANY" method to this resource. If set to `false`, you will have to explicitly
    * add methods to this resource after it's created.
@@ -245,6 +243,14 @@ export interface ProxyResourceProps extends ResourceOptions {
    * @default true
    */
   readonly anyMethod?: boolean;
+}
+
+export interface ProxyResourceProps extends ProxyResourceOptions {
+  /**
+   * The parent resource of this resource. You can either pass another
+   * `Resource` object or a `RestApi` object here.
+   */
+  readonly parent: IResource;
 }
 
 /**
@@ -276,7 +282,7 @@ export class ProxyResource extends Resource {
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.
     if (this.parentResource && this.parentResource.path === '/') {
-      this.parentResource.addMethod(httpMethod);
+      this.parentResource.addMethod(httpMethod, integration, options);
     }
     return super.addMethod(httpMethod, integration, options);
   }

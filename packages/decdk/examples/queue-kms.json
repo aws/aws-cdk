@@ -4,7 +4,7 @@
     "MyQueue": {
       "Type": "@aws-cdk/aws-sqs.Queue",
       "Properties": {
-        "encryption": "Kms"
+        "encryption": "KMS"
       }
     }
   }

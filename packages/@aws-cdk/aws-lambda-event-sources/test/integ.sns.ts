@@ -1,5 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { SnsEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
@@ -16,4 +16,4 @@ class SqsEventSourceTest extends cdk.Stack {
 
 const app = new cdk.App();
 new SqsEventSourceTest(app, 'lambda-event-source-sns');
-app.run();
+app.synth();

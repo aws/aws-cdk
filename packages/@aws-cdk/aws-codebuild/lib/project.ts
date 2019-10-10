@@ -1,22 +1,26 @@
-import assets = require('@aws-cdk/assets');
-import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
+import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
-import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { IArtifacts } from './artifacts';
+import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
-import { BuildSource, NoSource, SourceType } from './source';
+import { CodePipelineArtifacts } from './codepipeline-artifacts';
+import { NoArtifacts } from './no-artifacts';
+import { NoSource } from './no-source';
+import { ISource } from './source';
+import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 
-const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends IResource, iam.IGrantable {
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of this Project.
    * @attribute
@@ -32,12 +36,21 @@ export interface IProject extends IResource, iam.IGrantable {
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
 
+  addToRolePolicy(policyStatement: iam.PolicyStatement): void;
+
+  /**
+   * Defines a CloudWatch event rule triggered when something happens with this project.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
+   */
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
+
   /**
    * Defines a CloudWatch event rule triggered when the build project state
    * changes. You can filter specific build status events using an event
    * pattern filter on the `build-status` detail field:
    *
-   *    const rule = project.onStateChange('OnBuildStarted', target);
+   *    const rule = project.onStateChange('OnBuildStarted', { target });
    *    rule.addEventPattern({
    *      detail: {
    *        'build-status': [
@@ -52,9 +65,12 @@ export interface IProject extends IResource, iam.IGrantable {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onStateChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule that triggers upon phase change of this
@@ -62,22 +78,22 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onPhaseChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onPhaseChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build starts.
    */
-  onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildStarted(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build fails.
    */
-  onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildFailed(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
    */
-  onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildSucceeded(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * @returns a CloudWatch metric associated with this build project.
@@ -155,11 +171,56 @@ abstract class ProjectBase extends Resource implements IProject {
   public abstract readonly role?: iam.IRole;
 
   /**
+   * Actual connections object for this Project.
+   * May be unset, in which case this Project is not configured to use a VPC.
+   * @internal
+   */
+  protected _connections: ec2.Connections | undefined;
+
+  /**
+   * Access the Connections object.
+   * Will fail if this Project does not have a VPC set.
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
+    }
+    return this._connections;
+  }
+
+  /**
+   * Add a permission only if there's a policy attached.
+   * @param statement The permissions statement to add
+   */
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    if (this.role) {
+      this.role.addToPolicy(statement);
+    }
+  }
+
+  /**
+   * Defines a CloudWatch event rule triggered when something happens with this project.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
+   */
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.codebuild'],
+      detail: {
+        'project-name': [this.projectName]
+      }
+    });
+    return rule;
+  }
+
+  /**
    * Defines a CloudWatch event rule triggered when the build project state
    * changes. You can filter specific build status events using an event
    * pattern filter on the `build-status` detail field:
    *
-   *    const rule = project.onStateChange('OnBuildStarted', target);
+   *    const rule = project.onStateChange('OnBuildStarted', { target });
    *    rule.addEventPattern({
    *      detail: {
    *        'build-status': [
@@ -174,19 +235,15 @@ abstract class ProjectBase extends Resource implements IProject {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
-    rule.addTarget(target);
+  public onStateChange(id: string, options: events.OnEventOptions = {}) {
+    const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      source: ['aws.codebuild'],
       detailType: ['CodeBuild Build State Change'],
-      detail: {
-        'project-name': [
-          this.projectName
-        ]
-      }
     });
     return rule;
   }
@@ -197,26 +254,22 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onPhaseChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
-    rule.addTarget(target);
+  public onPhaseChange(id: string, options: events.OnEventOptions = {}) {
+    const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      source: ['aws.codebuild'],
       detailType: ['CodeBuild Build Phase Change'],
-      detail: {
-        'project-name': [
-          this.projectName
-        ]
-      }
     });
     return rule;
   }
 
   /**
    * Defines an event rule which triggers when a build starts.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = this.onStateChange(name, target, options);
+  public onBuildStarted(id: string, options: events.OnEventOptions = {}) {
+    const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['IN_PROGRESS']
@@ -227,9 +280,12 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build fails.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = this.onStateChange(name, target, options);
+  public onBuildFailed(id: string, options: events.OnEventOptions = {}) {
+    const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['FAILED']
@@ -240,9 +296,12 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = this.onStateChange(name, target, options);
+  public onBuildSucceeded(id: string, options: events.OnEventOptions = {}) {
+    const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['SUCCEEDED']
@@ -335,55 +394,44 @@ export interface CommonProjectProps {
   /**
    * A description of the project. Use the description to identify the purpose
    * of the project.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * Filename or contents of buildspec in JSON format.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
+   *
+   * @default - Empty buildspec.
    */
-  readonly buildSpec?: any;
-
-  /**
-   * Run a script from an asset as build script
-   *
-   * If supplied together with buildSpec, the asset script will be run
-   * _after_ the existing commands in buildspec.
-   *
-   * This feature can also be used without a source, to simply run an
-   * arbitrary script in a serverless way.
-   *
-   * @default No asset build script
-   */
-  readonly buildScriptAsset?: assets.Asset;
-
-  /**
-   * The script in the asset to run.
-   *
-   * @default build.sh
-   */
-  readonly buildScriptAssetEntrypoint?: string;
+  readonly buildSpec?: BuildSpec;
 
   /**
    * Service Role to assume while running the build.
-   * If not specified, a role will be created.
+   *
+   * @default - A role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
    * Encryption key to use to read and write artifacts.
-   * If not specified, a role will be created.
+   *
+   * @default - The AWS-managed CMK for Amazon Simple Storage Service (Amazon S3) is used.
    */
   readonly encryptionKey?: kms.IKey;
 
   /**
    * Caching strategy to use.
+   *
    * @default Cache.none
    */
   readonly cache?: Cache;
 
   /**
    * Build environment to use for the build.
+   *
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -391,6 +439,8 @@ export interface CommonProjectProps {
    * Indicates whether AWS CodeBuild generates a publicly accessible URL for
    * your project's build badge. For more information, see Build Badges Sample
    * in the AWS CodeBuild User Guide.
+   *
+   * @default false
    */
   readonly badge?: boolean;
 
@@ -398,16 +448,22 @@ export interface CommonProjectProps {
    * The number of minutes after which AWS CodeBuild stops the build if it's
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
+   *
+   * @default Duration.hours(1)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 
   /**
    * Additional environment variables to add to the build environment.
+   *
+   * @default - No additional environment variables are specified.
    */
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
    * The physical, human-readable name of the CodeBuild Project.
+   *
+   * @default - Name is automatically generated.
    */
   readonly projectName?: string;
 
@@ -415,6 +471,8 @@ export interface CommonProjectProps {
    * VPC network to place codebuild network interfaces
    *
    * Specify this if the codebuild project needs to access resources in a VPC.
+   *
+   * @default - No VPC is specified.
    */
   readonly vpc?: ec2.IVpc;
 
@@ -423,7 +481,7 @@ export interface CommonProjectProps {
    *
    * Only used if 'vpc' is supplied.
    *
-   * @default All private subnets
+   * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
@@ -432,6 +490,8 @@ export interface CommonProjectProps {
    * If no security group is identified, one will be created automatically.
    *
    * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
    *
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
@@ -448,41 +508,42 @@ export interface CommonProjectProps {
    */
   readonly allowAllOutbound?: boolean;
 }
+
 export interface ProjectProps extends CommonProjectProps {
   /**
    * The source of the build.
    * *Note*: if {@link NoSource} is given as the source,
    * then you need to provide an explicit `buildSpec`.
    *
-   * @default NoSource
+   * @default - NoSource
    */
-  readonly source?: BuildSource;
+  readonly source?: ISource;
 
   /**
    * Defines where build artifacts will be stored.
-   * Could be: PipelineBuildArtifacts, NoBuildArtifacts and S3BucketBuildArtifacts.
+   * Could be: PipelineBuildArtifacts, NoArtifacts and S3Artifacts.
    *
-   * @default NoBuildArtifacts
+   * @default NoArtifacts
    */
-  readonly artifacts?: BuildArtifacts;
+  readonly artifacts?: IArtifacts;
 
   /**
    * The secondary sources for the Project.
    * Can be also added after the Project has been created by using the {@link Project#addSecondarySource} method.
    *
-   * @default []
+   * @default - No secondary sources.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  readonly secondarySources?: BuildSource[];
+  readonly secondarySources?: ISource[];
 
   /**
    * The secondary artifacts for the Project.
    * Can also be added after the Project has been created by using the {@link Project#addSecondaryArtifact} method.
    *
-   * @default []
+   * @default - No secondary artifacts.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  readonly secondaryArtifacts?: BuildArtifacts[];
+  readonly secondaryArtifacts?: IArtifacts[];
 }
 
 /**
@@ -494,12 +555,12 @@ export class Project extends ProjectBase {
     class Import extends ProjectBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly projectArn = projectArn;
-      public readonly projectName = scope.node.stack.parseArn(projectArn).resourceName!;
+      public readonly projectName = Stack.of(scope).parseArn(projectArn).resourceName!;
       public readonly role?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
         super(s, i);
-        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
     }
 
@@ -531,13 +592,13 @@ export class Project extends ProjectBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.projectArn = this.node.stack.formatArn({
+        this.projectArn = Stack.of(this).formatArn({
           service: 'codebuild',
           resource: 'project',
           resourceName: projectName,
         });
 
-        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
         this.projectName = projectName;
       }
     }
@@ -562,20 +623,18 @@ export class Project extends ProjectBase {
    */
   public readonly projectName: string;
 
-  private readonly source: BuildSource;
+  private readonly source: ISource;
   private readonly buildImage: IBuildImage;
-  private readonly _secondarySources: BuildSource[];
-  private readonly _secondaryArtifacts: BuildArtifacts[];
-  private _securityGroups: ec2.ISecurityGroup[] = [];
+  private readonly _secondarySources: CfnProject.SourceProperty[];
+  private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
-    super(scope, id);
-
-    if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
-      throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');
-    }
+    super(scope, id, {
+      physicalName: props.projectName,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
     this.grantPrincipal = this.role;
@@ -585,10 +644,17 @@ export class Project extends ProjectBase {
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
     this.source = props.source || new NoSource();
-    this.source._bind(this);
+    const sourceConfig = this.source.bind(this, this);
+    if (props.badge && !this.source.badgeSupported) {
+      throw new Error(`Badge is not supported for source type ${this.source.type}`);
+    }
 
-    const artifacts = this.parseArtifacts(props);
-    artifacts._bind(this);
+    const artifacts = props.artifacts
+      ? props.artifacts
+      : (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE
+        ? new CodePipelineArtifacts()
+        : new NoArtifacts());
+    const artifactsConfig = artifacts.bind(this, this);
 
     const cache = props.cache || Cache.none();
 
@@ -597,40 +663,10 @@ export class Project extends ProjectBase {
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
-    const buildSpec = props.buildSpec || {};
-
-    if (props.buildScriptAsset) {
-      environmentVariables[S3_BUCKET_ENV] = { value: props.buildScriptAsset.s3BucketName };
-      environmentVariables[S3_KEY_ENV] = { value: props.buildScriptAsset.s3ObjectKey };
-      extendBuildSpec(buildSpec, this.buildImage.runScriptBuildspec(props.buildScriptAssetEntrypoint || 'build.sh'));
-      props.buildScriptAsset.grantRead(this.role);
+    const buildSpec = props.buildSpec;
+    if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
+      throw new Error("If the Project's source is NoSource, you need to provide a concrete buildSpec");
     }
-
-    // Render the source and add in the buildspec
-    const renderSource = () => {
-      if (props.badge && !this.source.badgeSupported) {
-        throw new Error(`Badge is not supported for source type ${this.source.type}`);
-      }
-
-      const sourceJson = this.source._toSourceJSON();
-      if (typeof buildSpec === 'string') {
-        return {
-          ...sourceJson,
-          buildSpec // Filename to buildspec file
-        };
-      } else if (Object.keys(buildSpec).length > 0) {
-        // We have to pretty-print the buildspec, otherwise
-        // CodeBuild will not recognize it as an inline buildspec.
-        return {
-          ...sourceJson,
-          buildSpec: JSON.stringify(buildSpec, undefined, 2)
-        };
-      } else if (this.source.type === SourceType.None) {
-        throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
-      } else {
-        return sourceJson;
-      }
-    };
 
     this._secondarySources = [];
     for (const secondarySource of props.secondarySources || []) {
@@ -646,52 +682,37 @@ export class Project extends ProjectBase {
 
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
-      source: renderSource(),
-      artifacts: artifacts.toArtifactsJSON(),
+      source: {
+        ...sourceConfig.sourceProperty,
+        buildSpec: buildSpec && buildSpec.toBuildSpec()
+      },
+      artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
-      name: props.projectName,
-      timeoutInMinutes: props.timeout,
-      secondarySources: new Token(() => this.renderSecondarySources()),
-      secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
-      triggers: this.source._buildTriggers(),
+      name: this.physicalName,
+      timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
+      secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
+      secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
+      triggers: sourceConfig.buildTriggers,
       vpcConfig: this.configureVpc(props),
     });
 
-    this.projectArn = resource.projectArn;
-    this.projectName = resource.projectName;
+    this.addVpcRequiredPermissions(props, resource);
+
+    this.projectArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'codebuild',
+      resource: 'project',
+      resourceName: this.physicalName,
+    });
+    this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
-  }
 
-  public get securityGroups(): ec2.ISecurityGroup[] {
-    return this._securityGroups.slice();
-  }
-
-  /**
-   * Add a permission only if there's a policy attached.
-   * @param statement The permissions statement to add
-   */
-  public addToRolePolicy(statement: iam.PolicyStatement) {
-    if (this.role) {
-      this.role.addToPolicy(statement);
-    }
-  }
-
-  /**
-   * Add a permission only if there's a policy attached.
-   * @param statement The permissions statement to add
-   */
-  public addToRoleInlinePolicy(statement: iam.PolicyStatement) {
-    if (this.role) {
-      const policy = new iam.Policy(this, 'PolicyDocument', {
-        policyName: 'CodeBuildEC2Policy',
-        statements: [statement]
-      });
-      this.role.attachInlinePolicy(policy);
+    if (props.encryptionKey) {
+      props.encryptionKey.grantEncryptDecrypt(this);
     }
   }
 
@@ -701,12 +722,11 @@ export class Project extends ProjectBase {
    * @param secondarySource the source to add as a secondary source
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  public addSecondarySource(secondarySource: BuildSource): void {
+  public addSecondarySource(secondarySource: ISource): void {
     if (!secondarySource.identifier) {
       throw new Error('The identifier attribute is mandatory for secondary sources');
     }
-    secondarySource._bind(this);
-    this._secondarySources.push(secondarySource);
+    this._secondarySources.push(secondarySource.bind(this, this).sourceProperty);
   }
 
   /**
@@ -715,12 +735,11 @@ export class Project extends ProjectBase {
    * @param secondaryArtifact the artifact to add as a secondary artifact
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  public addSecondaryArtifact(secondaryArtifact: BuildArtifacts): any {
+  public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
       throw new Error("The identifier attribute is mandatory for secondary artifacts");
     }
-    secondaryArtifact._bind(this);
-    this._secondaryArtifacts.push(secondaryArtifact);
+    this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
 
   /**
@@ -728,7 +747,7 @@ export class Project extends ProjectBase {
    */
   protected validate(): string[] {
     const ret = new Array<string>();
-    if (this.source.type === SourceType.CodePipeline) {
+    if (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
       if (this._secondarySources.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
           "Use the CodeBuild Pipeline Actions' `extraInputs` property instead");
@@ -742,7 +761,7 @@ export class Project extends ProjectBase {
   }
 
   private createLoggingPermission() {
-    const logGroupArn = this.node.stack.formatArn({
+    const logGroupArn = Stack.of(this).formatArn({
       service: 'logs',
       resource: 'log-group',
       sep: ':',
@@ -751,15 +770,10 @@ export class Project extends ProjectBase {
 
     const logGroupStarArn = `${logGroupArn}:*`;
 
-    const p = new iam.PolicyStatement();
-    p.allow();
-    p.addResource(logGroupArn);
-    p.addResource(logGroupStarArn);
-    p.addAction('logs:CreateLogGroup');
-    p.addAction('logs:CreateLogStream');
-    p.addAction('logs:PutLogEvents');
-
-    return p;
+    return new iam.PolicyStatement({
+      resources: [logGroupArn, logGroupStarArn],
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+    });
   }
 
   private renderEnvironment(env: BuildEnvironment = {},
@@ -784,14 +798,37 @@ export class Project extends ProjectBase {
       throw new Error("Invalid CodeBuild environment: " + errors.join('\n'));
     }
 
+    const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+      ? undefined
+      : ImagePullPrincipalType.SERVICE_ROLE;
+    if (this.buildImage.repository) {
+      if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
+        this.buildImage.repository.grantPull(this);
+      } else {
+        const statement = new iam.PolicyStatement({
+          principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
+          actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
+        });
+        statement.sid = 'CodeBuild';
+        this.buildImage.repository.addToResourcePolicy(statement);
+      }
+    }
+
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
+      imagePullCredentialsType: imagePullPrincipalType,
+      registryCredential: this.buildImage.secretsManagerCredentials
+        ? {
+          credentialProvider: 'SECRETS_MANAGER',
+          credential: this.buildImage.secretsManagerCredentials.secretArn,
+        }
+        : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
         name,
-        type: vars[name].type || BuildEnvironmentVariableType.PlainText,
+        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
         value: vars[name].value
       }))
     };
@@ -800,13 +837,13 @@ export class Project extends ProjectBase {
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
     return this._secondarySources.length === 0
       ? undefined
-      : this._secondarySources.map((secondarySource) => secondarySource._toSourceJSON());
+      : this._secondarySources;
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
     return this._secondaryArtifacts.length === 0
       ? undefined
-      : this._secondaryArtifacts.map((secondaryArtifact) => secondaryArtifact.toArtifactsJSON());
+      : this._secondaryArtifacts;
   }
 
   /**
@@ -826,60 +863,77 @@ export class Project extends ProjectBase {
       throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
     }
 
+    let securityGroups: ec2.ISecurityGroup[];
     if (props.securityGroups && props.securityGroups.length > 0) {
-      this._securityGroups = props.securityGroups.slice();
+      securityGroups = props.securityGroups;
     } else {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
         allowAllOutbound: props.allowAllOutbound
       });
-      this._securityGroups = [securityGroup];
+      securityGroups = [securityGroup];
     }
-    this.addToRoleInlinePolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addActions(
-        'ec2:CreateNetworkInterface',
-        'ec2:DescribeNetworkInterfaces',
-        'ec2:DeleteNetworkInterface',
-        'ec2:DescribeSubnets',
-        'ec2:DescribeSecurityGroups',
-        'ec2:DescribeDhcpOptions',
-        'ec2:DescribeVpcs'
-      ));
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addResource(`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`)
-      .addCondition('StringEquals', {
-        "ec2:Subnet": props.vpc
-          .selectSubnets(props.subnetSelection).subnetIds
-          .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
-        "ec2:AuthorizedService": "codebuild.amazonaws.com"
-      })
-      .addAction('ec2:CreateNetworkInterfacePermission'));
+    this._connections = new ec2.Connections({ securityGroups });
+
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
-      securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
+      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId)
     };
   }
 
-  private parseArtifacts(props: ProjectProps) {
-    if (props.artifacts) {
-      return props.artifacts;
+  private addVpcRequiredPermissions(props: ProjectProps, project: CfnProject): void {
+    if (!props.vpc || !this.role) {
+      return;
     }
-    if (this.source._toSourceJSON().type === CODEPIPELINE_TYPE) {
-      return new CodePipelineBuildArtifacts();
-    } else {
-      return new NoBuildArtifacts();
-    }
+
+    this.role.addToPolicy(new iam.PolicyStatement({
+      resources: [`arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+      actions: ['ec2:CreateNetworkInterfacePermission'],
+      conditions: {
+        StringEquals: {
+          'ec2:Subnet': props.vpc
+            .selectSubnets(props.subnetSelection).subnetIds
+            .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+          'ec2:AuthorizedService': 'codebuild.amazonaws.com'
+        },
+      },
+    }));
+
+    const policy = new iam.Policy(this, 'PolicyDocument', {
+      policyName: 'CodeBuildEC2Policy',
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: [
+            'ec2:CreateNetworkInterface',
+            'ec2:DescribeNetworkInterfaces',
+            'ec2:DeleteNetworkInterface',
+            'ec2:DescribeSubnets',
+            'ec2:DescribeSecurityGroups',
+            'ec2:DescribeDhcpOptions',
+            'ec2:DescribeVpcs',
+          ],
+        }),
+      ],
+    });
+    this.role.attachInlinePolicy(policy);
+
+    // add an explicit dependency between the EC2 Policy and this Project -
+    // otherwise, creating the Project fails,
+    // as it requires these permissions to be already attached to the Project's Role
+    const cfnPolicy = policy.node.findChild('Resource') as CfnResource;
+    project.addDependsOn(cfnPolicy);
   }
 
-  private validateCodePipelineSettings(artifacts: BuildArtifacts) {
-    const sourceType = this.source._toSourceJSON().type;
-    const artifactsType = artifacts.toArtifactsJSON().type;
+  private validateCodePipelineSettings(artifacts: IArtifacts) {
+    const sourceType = this.source.type;
+    const artifactsType = artifacts.type;
 
-    if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
-      (sourceType !== artifactsType)) {
+    if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
+        artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
+        (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
@@ -889,9 +943,28 @@ export class Project extends ProjectBase {
  * Build machine compute type.
  */
 export enum ComputeType {
-  Small = 'BUILD_GENERAL1_SMALL',
-  Medium = 'BUILD_GENERAL1_MEDIUM',
-  Large = 'BUILD_GENERAL1_LARGE'
+  SMALL = 'BUILD_GENERAL1_SMALL',
+  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
+  LARGE = 'BUILD_GENERAL1_LARGE'
+}
+
+/**
+ * The type of principal CodeBuild will use to pull your build Docker image.
+ */
+export enum ImagePullPrincipalType {
+  /**
+   * CODEBUILD specifies that CodeBuild uses its own identity when pulling the image.
+   * This means the resource policy of the ECR repository that hosts the image will be modified to trust
+   * CodeBuild's service principal.
+   * This is the required principal type when using CodeBuild's pre-defined images.
+   */
+  CODEBUILD = 'CODEBUILD',
+
+  /**
+   * SERVICE_ROLE specifies that AWS CodeBuild uses the project's role when pulling the image.
+   * The role will be granted pull permissions on the ECR repository hosting the image.
+   */
+  SERVICE_ROLE = 'SERVICE_ROLE'
 }
 
 export interface BuildEnvironment {
@@ -953,6 +1026,27 @@ export interface IBuildImage {
   readonly defaultComputeType: ComputeType;
 
   /**
+   * The type of principal that CodeBuild will use to pull this build Docker image.
+   *
+   * @default ImagePullPrincipalType.SERVICE_ROLE
+   */
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+
+  /**
+   * The secretsManagerCredentials for access to a private registry.
+   *
+   * @default no credentials will be used
+   */
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+
+  /**
+   * An optional ECR repository that the image is hosted in.
+   *
+   * @default no repository
+   */
+  readonly repository?: ecr.IRepository;
+
+  /**
    * Allows the image a chance to validate whether the passed configuration is correct.
    *
    * @param buildEnvironment the current build environment
@@ -962,7 +1056,34 @@ export interface IBuildImage {
   /**
    * Make a buildspec to run the indicated script
    */
-  runScriptBuildspec(entrypoint: string): any;
+  runScriptBuildspec(entrypoint: string): BuildSpec;
+}
+
+/**
+ * The options when creating a CodeBuild Docker build image
+ * using {@link LinuxBuildImage.fromDockerRegistry}
+ * or {@link WindowsBuildImage.fromDockerRegistry}.
+ */
+export interface DockerImageOptions {
+  /**
+   * The credentials, stored in Secrets Manager,
+   * used for accessing the repository holding the image,
+   * if the repository is private.
+   *
+   * @default no credentials will be used (we assume the repository is public)
+   */
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+}
+
+/**
+ * Construction properties of {@link LinuxBuildImage}.
+ * Module-private, as the constructor of {@link LinuxBuildImage} is private.
+ */
+interface LinuxBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
 }
 
 /**
@@ -972,7 +1093,7 @@ export interface IBuildImage {
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - LinuxBuildImage.fromDockerHub(image)
+ * - LinuxBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
  * - LinuxBuildImage.fromEcrRepository(repo[, tag])
  * - LinuxBuildImage.fromAsset(parent, id, props)
  *
@@ -980,44 +1101,49 @@ export interface IBuildImage {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
-  public static readonly STANDARD_1_0 = new LinuxBuildImage('aws/codebuild/standard:1.0');
-  public static readonly STANDARD_2_0 = new LinuxBuildImage('aws/codebuild/standard:2.0');
-  public static readonly UBUNTU_14_04_BASE = new LinuxBuildImage('aws/codebuild/ubuntu-base:14.04');
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = new LinuxBuildImage('aws/codebuild/android-java-8:24.4.1');
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = new LinuxBuildImage('aws/codebuild/android-java-8:26.1.1');
-  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = new LinuxBuildImage('aws/codebuild/docker:17.09.0');
-  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = new LinuxBuildImage('aws/codebuild/docker:18.09.0');
-  public static readonly UBUNTU_14_04_GOLANG_1_10 = new LinuxBuildImage('aws/codebuild/golang:1.10');
-  public static readonly UBUNTU_14_04_GOLANG_1_11 = new LinuxBuildImage('aws/codebuild/golang:1.11');
-  public static readonly UBUNTU_14_04_OPEN_JDK_8 = new LinuxBuildImage('aws/codebuild/java:openjdk-8');
-  public static readonly UBUNTU_14_04_OPEN_JDK_9 = new LinuxBuildImage('aws/codebuild/java:openjdk-9');
-  public static readonly UBUNTU_14_04_OPEN_JDK_11 = new LinuxBuildImage('aws/codebuild/java:openjdk-11');
-  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = new LinuxBuildImage('aws/codebuild/nodejs:10.14.1');
-  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = new LinuxBuildImage('aws/codebuild/nodejs:10.1.0');
-  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = new LinuxBuildImage('aws/codebuild/nodejs:8.11.0');
-  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = new LinuxBuildImage('aws/codebuild/nodejs:6.3.1');
-  public static readonly UBUNTU_14_04_PHP_5_6 = new LinuxBuildImage('aws/codebuild/php:5.6');
-  public static readonly UBUNTU_14_04_PHP_7_0 = new LinuxBuildImage('aws/codebuild/php:7.0');
-  public static readonly UBUNTU_14_04_PHP_7_1 = new LinuxBuildImage('aws/codebuild/php:7.1');
-  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = new LinuxBuildImage('aws/codebuild/python:3.7.1');
-  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = new LinuxBuildImage('aws/codebuild/python:3.6.5');
-  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = new LinuxBuildImage('aws/codebuild/python:3.5.2');
-  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = new LinuxBuildImage('aws/codebuild/python:3.4.5');
-  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = new LinuxBuildImage('aws/codebuild/python:3.3.6');
-  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = new LinuxBuildImage('aws/codebuild/python:2.7.12');
-  public static readonly UBUNTU_14_04_RUBY_2_5_3 = new LinuxBuildImage('aws/codebuild/ruby:2.5.3');
-  public static readonly UBUNTU_14_04_RUBY_2_5_1 = new LinuxBuildImage('aws/codebuild/ruby:2.5.1');
-  public static readonly UBUNTU_14_04_RUBY_2_3_1 = new LinuxBuildImage('aws/codebuild/ruby:2.3.1');
-  public static readonly UBUNTU_14_04_RUBY_2_2_5 = new LinuxBuildImage('aws/codebuild/ruby:2.2.5');
-  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-1');
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.0');
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.1');
+  public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
+  public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
+  public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
+  public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
+  public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:24.4.1');
+  public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:26.1.1');
+  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:17.09.0');
+  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:18.09.0');
+  public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.10');
+  public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.11');
+  public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-8');
+  public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-9');
+  public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-11');
+  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.14.1');
+  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.1.0');
+  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:8.11.0');
+  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:6.3.1');
+  public static readonly UBUNTU_14_04_PHP_5_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
+  public static readonly UBUNTU_14_04_PHP_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
+  public static readonly UBUNTU_14_04_PHP_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
+  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.7.1');
+  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.6.5');
+  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.5.2');
+  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.4.5');
+  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.3.6');
+  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:2.7.12');
+  public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.3');
+  public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.1');
+  public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.3.1');
+  public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.2.5');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-1');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.0');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
 
   /**
    * @returns a Linux build image from a Docker Hub image.
    */
-  public static fromDockerHub(name: string): LinuxBuildImage {
-    return new LinuxBuildImage(name);
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new LinuxBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
   }
 
   /**
@@ -1031,38 +1157,53 @@ export class LinuxBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tag Image tag (default "latest")
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): LinuxBuildImage {
-    const image = new LinuxBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-    return image;
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new LinuxBuildImage({
+      imageId: repository.repositoryUriForTag(tag),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
   }
 
   /**
    * Uses an Docker image asset as a Linux build image.
    */
-  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
-    const image = new LinuxBuildImage(asset.imageUri);
+    return new LinuxBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
+  }
 
-    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
-    // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-
-    return image;
+  private static codeBuildImage(name: string): IBuildImage {
+    return new LinuxBuildImage({
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    });
   }
 
   public readonly type = 'LINUX_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Small;
+  public readonly defaultComputeType = ComputeType.SMALL;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
 
-  private constructor(public readonly imageId: string) {
+  private constructor(props: LinuxBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
   }
 
   public validate(_: BuildEnvironment): string[] {
     return [];
   }
 
-  public runScriptBuildspec(entrypoint: string): any {
-    return {
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return BuildSpec.fromObject({
       version: '0.2',
       phases: {
         pre_build: {
@@ -1086,8 +1227,19 @@ export class LinuxBuildImage implements IBuildImage {
           ]
         }
       }
-    };
+    });
   }
+}
+
+/**
+ * Construction properties of {@link WindowsBuildImage}.
+ * Module-private, as the constructor of {@link WindowsBuildImage} is private.
+ */
+interface WindowsBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
 }
 
 /**
@@ -1097,20 +1249,27 @@ export class LinuxBuildImage implements IBuildImage {
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - WindowsBuildImage.fromDockerHub(image)
+ * - WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
  * - WindowsBuildImage.fromEcrRepository(repo[, tag])
  * - WindowsBuildImage.fromAsset(parent, id, props)
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class WindowsBuildImage implements IBuildImage {
-  public static readonly WIN_SERVER_CORE_2016_BASE = new WindowsBuildImage('aws/codebuild/windows-base:1.0');
+  public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
 
   /**
    * @returns a Windows build image from a Docker Hub image.
    */
-  public static fromDockerHub(name: string): WindowsBuildImage {
-    return new WindowsBuildImage(name);
+  public static fromDockerRegistry(name: string, options: DockerImageOptions): IBuildImage {
+    return new WindowsBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
   }
 
   /**
@@ -1124,41 +1283,50 @@ export class WindowsBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tag Image tag (default "latest")
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): WindowsBuildImage {
-    const image = new WindowsBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-    return image;
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new WindowsBuildImage({
+      imageId: repository.repositoryUriForTag(tag),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
   }
 
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
-    const image = new WindowsBuildImage(asset.imageUri);
-
-    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
-    // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-
-    return image;
+    return new WindowsBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
   }
-  public readonly type = 'WINDOWS_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Medium;
 
-  private constructor(public readonly imageId: string) {
+  public readonly type = 'WINDOWS_CONTAINER';
+  public readonly defaultComputeType = ComputeType.MEDIUM;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
+
+  private constructor(props: WindowsBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.Small) {
+    if (buildEnvironment.computeType === ComputeType.SMALL) {
       ret.push("Windows images do not support the Small ComputeType");
     }
     return ret;
   }
 
-  public runScriptBuildspec(entrypoint: string): any {
-    return {
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return BuildSpec.fromObject({
       version: '0.2',
       phases: {
         pre_build: {
@@ -1179,7 +1347,7 @@ export class WindowsBuildImage implements IBuildImage {
           ]
         }
       }
-    };
+    });
   }
 }
 
@@ -1201,48 +1369,10 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable in plaintext format.
    */
-  PlainText = 'PLAINTEXT',
+  PLAINTEXT = 'PLAINTEXT',
 
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  ParameterStore = 'PARAMETER_STORE'
-}
-
-/**
- * Extend buildSpec phases with the contents of another one
- */
-function extendBuildSpec(buildSpec: any, extend: any) {
-  if (typeof buildSpec === 'string') {
-    throw new Error('Cannot extend buildspec that is given as a string. Pass the buildspec as a structure instead.');
-  }
-  if (buildSpec.version === '0.1') {
-    throw new Error('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
-  }
-  if (buildSpec.version === undefined) {
-    buildSpec.version = extend.version;
-  }
-
-  if (!buildSpec.phases) {
-    buildSpec.phases = {};
-  }
-
-  for (const phaseName of Object.keys(extend.phases)) {
-    if (!(phaseName in buildSpec.phases)) { buildSpec.phases[phaseName] = {}; }
-    const phase = buildSpec.phases[phaseName];
-
-    if (!(phase.commands)) { phase.commands = []; }
-    phase.commands.push(...extend.phases[phaseName].commands);
-  }
-}
-
-function ecrAccessForCodeBuildService(): iam.PolicyStatement {
-  return new iam.PolicyStatement()
-    .describe('CodeBuild')
-    .addServicePrincipal('codebuild.amazonaws.com')
-    .addActions(
-      'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage',
-      'ecr:BatchCheckLayerAvailability'
-    );
+  PARAMETER_STORE = 'PARAMETER_STORE'
 }

@@ -1,0 +1,11 @@
+version: 0.2
+
+# This buildspec is intended to be used by GitHub PR builds.
+
+phases:
+  install:
+    commands:
+      - /bin/bash ./install.sh
+  build:
+    commands:
+      - /bin/bash ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD

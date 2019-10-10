@@ -2,17 +2,17 @@ export enum FollowMode {
   /**
    * Never follow symlinks.
    */
-  Never = 'never',
+  NEVER = 'never',
 
   /**
    * Materialize all symlinks, whether they are internal or external to the source directory.
    */
-  Always = 'always',
+  ALWAYS = 'always',
 
   /**
    * Only follows symlinks that are external to the source directory.
    */
-  External = 'external',
+  EXTERNAL = 'external',
 
   // ----------------- TODO::::::::::::::::::::::::::::::::::::::::::::
   /**
@@ -25,5 +25,5 @@ export enum FollowMode {
    *
    * If the copy operation runs into an external symlink, it will fail.
    */
-  BlockExternal = 'internal-only',
+  BLOCK_EXTERNAL = 'internal-only',
 }

@@ -13,4 +13,4 @@ find . -name package.json | grep -v node_modules | xargs node scripts/sync-peer-
 /bin/bash ./build.sh --skip-tests
 
 # now, run jsii-fix-peers to add all missing peers based on the jsii spec
-lerna exec "$PWD/tools/cdk-build-tools/node_modules/.bin/jsii-fix-peers 2>/dev/null || true"
+npx lerna exec "$PWD/tools/cdk-build-tools/node_modules/.bin/jsii-fix-peers 2>/dev/null || true"

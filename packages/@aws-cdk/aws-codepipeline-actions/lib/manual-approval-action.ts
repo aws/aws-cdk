@@ -1,11 +1,13 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import subs = require('@aws-cdk/aws-sns-subscriptions');
+import cdk = require('@aws-cdk/core');
+import { Action } from './action';
 
 /**
  * Construction properties of the {@link ManualApprovalAction}.
  */
-export interface ManualApprovalActionProps extends codepipeline.CommonActionProps {
+export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * Optional SNS topic to send notifications to when an approval is pending.
    */
@@ -27,7 +29,7 @@ export interface ManualApprovalActionProps extends codepipeline.CommonActionProp
 /**
  * Manual approval action.
  */
-export class ManualApprovalAction extends codepipeline.Action {
+export class ManualApprovalAction extends Action {
   /**
    * The SNS Topic passed when constructing the Action.
    * If no Topic was passed, but `notifyEmails` were provided,
@@ -39,10 +41,9 @@ export class ManualApprovalAction extends codepipeline.Action {
   constructor(props: ManualApprovalActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Approval,
+      category: codepipeline.ActionCategory.APPROVAL,
       provider: 'Manual',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },
-      configuration: new cdk.Token(() => this.actionConfiguration()),
     });
 
     this.props = props;
@@ -52,27 +53,28 @@ export class ManualApprovalAction extends codepipeline.Action {
     return this._notificationTopic;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
+  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
     if (this.props.notificationTopic) {
       this._notificationTopic = this.props.notificationTopic;
     } else if ((this.props.notifyEmails || []).length > 0) {
-      this._notificationTopic = new sns.Topic(info.scope, 'TopicResource');
+      this._notificationTopic = new sns.Topic(scope, 'TopicResource');
     }
 
     if (this._notificationTopic) {
-      this._notificationTopic.grantPublish(info.role);
+      this._notificationTopic.grantPublish(options.role);
       for (const notifyEmail of this.props.notifyEmails || []) {
-        this._notificationTopic.subscribeEmail(`Subscription-${notifyEmail}`, notifyEmail);
+        this._notificationTopic.addSubscription(new subs.EmailSubscription(notifyEmail));
       }
     }
-  }
 
-  private actionConfiguration(): any {
-    return this._notificationTopic
-      ? {
-        NotificationArn: this._notificationTopic.topicArn,
-        CustomData: this.props.additionalInformation,
-      }
-      : undefined;
+    return {
+      configuration: this._notificationTopic
+        ? {
+          NotificationArn: this._notificationTopic.topicArn,
+          CustomData: this.props.additionalInformation,
+        }
+        : undefined,
+    };
   }
 }

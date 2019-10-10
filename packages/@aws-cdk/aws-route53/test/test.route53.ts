@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { HostedZone, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
@@ -9,7 +9,7 @@ export = {
     'public hosted zone'(test: Test) {
       const app = new TestApp();
       new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
-      expect(app.synthesizeTemplate()).to(exactlyMatchTemplate({
+      expect(app.stack).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -25,7 +25,7 @@ export = {
       const app = new TestApp();
       const vpcNetwork = new ec2.Vpc(app.stack, 'VPC');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetwork });
-      expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
+      expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -47,7 +47,7 @@ export = {
       const vpcNetworkB = new ec2.Vpc(app.stack, 'VPC2');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetworkA })
         .addVpc(vpcNetworkB);
-      expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
+      expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -80,7 +80,7 @@ export = {
     new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',
-      recordValue: 'SeeThere'
+      values: ['SeeThere']
     });
 
     expect(stack2).to(haveResource("AWS::Route53::RecordSet", {
@@ -182,33 +182,52 @@ export = {
     const delegate = new PublicHostedZone(stack, 'SubZone', { zoneName: 'sub.top.test' });
 
     // WHEN
-    zone.addDelegation(delegate, { ttl: 1337 });
+    zone.addDelegation(delegate, { ttl: cdk.Duration.seconds(1337) });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Type: 'NS',
       Name: 'sub.top.test.',
-      HostedZoneId: zone.node.resolve(zone.hostedZoneId),
-      ResourceRecords: zone.node.resolve(delegate.hostedZoneNameServers),
+      HostedZoneId: stack.resolve(zone.hostedZoneId),
+      ResourceRecords: stack.resolve(delegate.hostedZoneNameServers),
       TTL: '1337',
     }));
     test.done();
   },
+
+  'public hosted zone wiht caaAmazon set to true'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new PublicHostedZone(stack, 'MyHostedZone', {
+      zoneName: 'protected.com',
+      caaAmazon: true
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Type: 'CAA',
+      Name: 'protected.com.',
+      ResourceRecords: [
+        '0 issue "amazon.com"'
+      ]
+    }));
+    test.done();
+  }
 };
 
 class TestApp {
   public readonly stack: cdk.Stack;
-  private readonly app = new cdk.App();
+  private readonly app: cdk.App;
 
   constructor() {
     const account = '123456789012';
     const region = 'bermuda-triangle';
-    this.app.node.setContext(`availability-zones:${account}:${region}`,
-      [`${region}-1a`]);
+    const context = {
+      [`availability-zones:${account}:${region}`]: `${region}-1a`
+    };
+    this.app = new cdk.App({ context });
     this.stack = new cdk.Stack(this.app, 'MyStack', { env: { account, region } });
-  }
-
-  public synthesizeTemplate() {
-    return this.app.synthesizeStack(this.stack.name);
   }
 }

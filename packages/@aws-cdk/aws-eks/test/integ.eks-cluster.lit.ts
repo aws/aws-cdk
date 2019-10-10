@@ -1,16 +1,18 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import eks = require('../lib');
+import { TestStack } from './util';
 
-class EksClusterStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+class EksClusterStack extends TestStack {
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     /// !show
     const vpc = new ec2.Vpc(this, 'VPC');
 
     const cluster = new eks.Cluster(this, 'EKSCluster', {
-      vpc
+      vpc,
+      defaultCapacity: 0,
     });
 
     cluster.addCapacity('Nodes', {
@@ -23,6 +25,8 @@ class EksClusterStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new EksClusterStack(app, 'eks-integ-test');
+// since the EKS optimized AMI is hard-coded here based on the region,
+// we need to actually pass in a specific region.
+new EksClusterStack(app, 'eks-integ-test-basic');
 
-app.run();
+app.synth();

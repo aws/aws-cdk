@@ -6,7 +6,9 @@
         "VersioningConfiguration": {
           "Status": "Enabled"
         }
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
@@ -17,17 +19,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -74,70 +66,22 @@
               ]
             },
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "iam:PassRole",
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "MyPipelineCFNCFNDeployRole9CC99B3F",
+                  "MyPipelineSourceS3CodePipelineActionRole9F003087",
                   "Arn"
                 ]
               }
             },
             {
-              "Action": [
-                "cloudformation:CreateStack",
-                "cloudformation:DescribeStack*",
-                "cloudformation:GetStackPolicy",
-                "cloudformation:GetTemplate*",
-                "cloudformation:SetStackPolicy",
-                "cloudformation:UpdateStack",
-                "cloudformation:ValidateTemplate"
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":cloudformation:us-west-2:",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":stack/aws-cdk-codepipeline-cross-region-deploy-stack/*"
-                  ]
+                "Fn::GetAtt": [
+                  "MyPipelineCFNCFNDeployCodePipelineActionRole31B1904C",
+                  "Arn"
                 ]
               }
             }
@@ -177,13 +121,18 @@
                   },
                   "S3ObjectKey": "some/path"
                 },
-                "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
                     "Name": "Artifact_Source_S3"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceS3CodePipelineActionRole9F003087",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -200,14 +149,14 @@
                 },
                 "Configuration": {
                   "StackName": "aws-cdk-codepipeline-cross-region-deploy-stack",
-                  "ActionMode": "CREATE_UPDATE",
-                  "TemplatePath": "Artifact_Source_S3::template.yml",
                   "RoleArn": {
                     "Fn::GetAtt": [
                       "MyPipelineCFNCFNDeployRole9CC99B3F",
                       "Arn"
                     ]
-                  }
+                  },
+                  "ActionMode": "CREATE_UPDATE",
+                  "TemplatePath": "Artifact_Source_S3::template.yml"
                 },
                 "InputArtifacts": [
                   {
@@ -215,9 +164,14 @@
                   }
                 ],
                 "Name": "CFN_Deploy",
-                "OutputArtifacts": [],
-                "RunOrder": 1,
-                "Region": "us-west-2"
+                "Region": "us-west-2",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineCFNCFNDeployCodePipelineActionRole31B1904C",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
               }
             ],
             "Name": "CFN"
@@ -225,13 +179,13 @@
         ],
         "ArtifactStores": [
           {
-            "Region": "us-west-2",
             "ArtifactStore": {
               "Location": {
                 "Ref": "MyBucketF68F3FF0"
               },
               "Type": "S3"
-            }
+            },
+            "Region": "us-west-2"
           }
         ]
       },
@@ -239,6 +193,230 @@
         "MyPipelineRoleDefaultPolicy34F09EFA",
         "MyPipelineRoleC0D47CA4"
       ]
+    },
+    "MyPipelineSourceS3CodePipelineActionRole9F003087": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineSourceS3CodePipelineActionRoleDefaultPolicyF838EE0B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineSourceS3CodePipelineActionRoleDefaultPolicyF838EE0B",
+        "Roles": [
+          {
+            "Ref": "MyPipelineSourceS3CodePipelineActionRole9F003087"
+          }
+        ]
+      }
+    },
+    "MyPipelineCFNCFNDeployCodePipelineActionRole31B1904C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineCFNCFNDeployCodePipelineActionRoleDefaultPolicyD67537CB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineCFNCFNDeployRole9CC99B3F",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:DescribeStack*",
+                "cloudformation:GetStackPolicy",
+                "cloudformation:GetTemplate*",
+                "cloudformation:SetStackPolicy",
+                "cloudformation:UpdateStack",
+                "cloudformation:ValidateTemplate"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:us-west-2:",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/aws-cdk-codepipeline-cross-region-deploy-stack/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineCFNCFNDeployCodePipelineActionRoleDefaultPolicyD67537CB",
+        "Roles": [
+          {
+            "Ref": "MyPipelineCFNCFNDeployCodePipelineActionRole31B1904C"
+          }
+        ]
+      }
     },
     "MyPipelineCFNCFNDeployRole9CC99B3F": {
       "Type": "AWS::IAM::Role",
@@ -249,17 +427,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "cloudformation.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "cloudformation.amazonaws.com"
               }
             }
           ],

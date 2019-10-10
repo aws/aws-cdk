@@ -1,80 +1,154 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
-export = {
-  'create an aws log driver'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
+let stack: cdk.Stack;
+let td: ecs.TaskDefinition;
+const image = ecs.ContainerImage.fromRegistry('test-image');
 
+export = {
+  'setUp'(cb: () => void) {
+    stack = new cdk.Stack();
+    td = new ecs.FargateTaskDefinition(stack, 'TaskDefinition');
+
+    cb();
+  },
+
+  'create an aws log driver'(test: Test) {
     // WHEN
-    const driver = new ecs.AwsLogDriver(stack, 'Log', {
-      datetimeFormat: 'format',
-      logRetentionDays: logs.RetentionDays.OneMonth,
-      multilinePattern: 'pattern',
-      streamPrefix: 'hello'
+    td.addContainer('Container', {
+      image,
+      logging: new ecs.AwsLogDriver({
+        datetimeFormat: 'format',
+        logRetention: logs.RetentionDays.ONE_MONTH,
+        multilinePattern: 'pattern',
+        streamPrefix: 'hello'
+      })
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: logs.RetentionDays.OneMonth
+      RetentionInDays: logs.RetentionDays.ONE_MONTH
     }));
 
-    test.deepEqual(
-      stack.node.resolve(driver.renderLogDriver()),
-      {
-        logDriver: 'awslogs',
-        options: {
-          'awslogs-group': { Ref: 'LogLogGroup427F779C' },
-          'awslogs-stream-prefix': 'hello',
-          'awslogs-region': { Ref: 'AWS::Region' },
-          'awslogs-datetime-format': 'format',
-          'awslogs-multiline-pattern': 'pattern'
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': { Ref: 'TaskDefinitionContainerLogGroup4D0A87C1' },
+              'awslogs-stream-prefix': 'hello',
+              'awslogs-region': { Ref: 'AWS::Region' },
+              'awslogs-datetime-format': 'format',
+              'awslogs-multiline-pattern': 'pattern'
+            }
+          }
         }
-      }
-    );
+      ]
+    }));
+
+    test.done();
+  },
+
+  "create an aws log driver using awsLogs"(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.AwsLogDriver.awsLogs({
+        datetimeFormat: 'format',
+        logRetention: logs.RetentionDays.ONE_MONTH,
+        multilinePattern: 'pattern',
+        streamPrefix: 'hello'
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: logs.RetentionDays.ONE_MONTH
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': { Ref: 'TaskDefinitionContainerLogGroup4D0A87C1' },
+              'awslogs-stream-prefix': 'hello',
+              'awslogs-region': { Ref: 'AWS::Region' },
+              'awslogs-datetime-format': 'format',
+              'awslogs-multiline-pattern': 'pattern'
+            }
+          }
+        }
+      ]
+    }));
 
     test.done();
   },
 
   'with a defined log group'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
     // WHEN
-    const driver = new ecs.AwsLogDriver(stack, 'Log', {
-      logGroup,
-      streamPrefix: 'hello'
+    td.addContainer('Container', {
+      image,
+      logging: new ecs.AwsLogDriver({
+        logGroup,
+        streamPrefix: 'hello'
+      })
     });
 
     // THEN
-    test.deepEqual(
-      stack.node.resolve(driver.renderLogDriver()),
-      {
-        logDriver: 'awslogs',
-        options: {
-          'awslogs-group': { Ref: 'LogGroupF5B46931' },
-          'awslogs-stream-prefix': 'hello',
-          'awslogs-region': { Ref: 'AWS::Region' }
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: logs.RetentionDays.TWO_YEARS
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': { Ref: 'LogGroupF5B46931' },
+              'awslogs-stream-prefix': 'hello',
+              'awslogs-region': { Ref: 'AWS::Region' }
+            }
+          }
         }
-      }
-    );
+      ]
+    }));
+
+    test.done();
+  },
+
+  'without a defined log group'(test: Test) {
+    // GIVEN
+    td.addContainer('Container', {
+      image,
+      logging: new ecs.AwsLogDriver({
+        streamPrefix: 'hello',
+      })
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::Logs::LogGroup', {}));
 
     test.done();
   },
 
   'throws when specifying log retention and log group'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
     // THEN
-    test.throws(() => new ecs.AwsLogDriver(stack, 'Log', {
+    test.throws(() => new ecs.AwsLogDriver({
       logGroup,
-      logRetentionDays: logs.RetentionDays.FiveDays,
+      logRetention: logs.RetentionDays.FIVE_DAYS,
       streamPrefix: 'hello'
     }), /`logGroup`.*`logRetentionDays`/);
 

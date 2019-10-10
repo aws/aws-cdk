@@ -1,16 +1,17 @@
 import cxapi = require('@aws-cdk/cx-api');
-import regionInfo = require('@aws-cdk/region-info');
+import { RegionInfo } from '@aws-cdk/region-info';
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
 import { debug, error, print, warning } from '../../logging';
-import { Renames } from '../../renames';
 import { Configuration } from '../../settings';
-import cdkUtil = require('../../util');
-import { SDK } from '../util/sdk';
-import { topologicalSort } from '../util/toposort';
+import { flatMap } from '../../util/arrays';
+import { ISDK } from '../util/sdk';
 
-type Synthesizer = (aws: SDK, config: Configuration) => Promise<cxapi.SynthesizeResponse>;
+/**
+ * @returns output directory
+ */
+type Synthesizer = (aws: ISDK, config: Configuration) => Promise<cxapi.CloudAssembly>;
 
 export interface AppStacksProps {
   /**
@@ -42,17 +43,43 @@ export interface AppStacksProps {
   /**
    * AWS object (used by synthesizer and contextprovider)
    */
-  aws: SDK;
-
-  /**
-   * Renames to apply
-   */
-  renames?: Renames;
+  aws: ISDK;
 
   /**
    * Callback invoked to synthesize the actual stacks
    */
   synthesizer: Synthesizer;
+}
+
+export interface SelectStacksOptions {
+  /**
+   * Extend the selection to upstread/downstream stacks
+   * @default ExtendedStackSelection.None only select the specified stacks.
+   */
+  extend?: ExtendedStackSelection;
+
+  /**
+   * The behavior if if no selectors are privided.
+   */
+  defaultBehavior: DefaultSelection;
+}
+
+export enum DefaultSelection {
+  /**
+   * Returns an empty selection in case there are no selectors.
+   */
+  None = 'none',
+
+  /**
+   * If the app includes a single stack, returns it. Otherwise throws an exception.
+   * This behavior is used by "deploy".
+   */
+  OnlySingle = 'single',
+
+  /**
+   * If no selectors are provided, returns all stacks in the app.
+   */
+  AllStacks = 'all',
 }
 
 /**
@@ -61,16 +88,14 @@ export interface AppStacksProps {
  * In a class because it shares some global state
  */
 export class AppStacks {
+
   /**
    * Since app execution basically always synthesizes all the stacks,
    * we can invoke it once and cache the response for subsequent calls.
    */
-  private cachedResponse?: cxapi.SynthesizeResponse;
-  private readonly renames: Renames;
+  public assembly?: cxapi.CloudAssembly;
 
-  constructor(private readonly props: AppStacksProps) {
-    this.renames = props.renames || new Renames({});
-  }
+  constructor(private readonly props: AppStacksProps) {}
 
   /**
    * List all stacks in the CX and return the selected ones
@@ -78,28 +103,39 @@ export class AppStacks {
    * It's an error if there are no stacks to select, or if one of the requested parameters
    * refers to a nonexistant stack.
    */
-  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<SelectedStack[]> {
+  public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<cxapi.CloudFormationStackArtifact[]> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
 
-    const stacks: cxapi.SynthesizedStack[] = await this.listStacks();
+    const stacks = await this.listStacks();
     if (stacks.length === 0) {
       throw new Error('This app contains no stacks');
     }
 
     if (selectors.length === 0) {
-      // remove non-auto deployed Stacks
-      const autoDeployedStacks = stacks.filter(s => s.autoDeploy !== false);
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(autoDeployedStacks));
-      return this.applyRenames(autoDeployedStacks);
+      switch (options.defaultBehavior) {
+        case DefaultSelection.AllStacks:
+          return stacks;
+        case DefaultSelection.None:
+          return [];
+        case DefaultSelection.OnlySingle:
+          if (stacks.length === 1) {
+            return stacks;
+          } else {
+            throw new Error(`Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n` +
+              `Stacks: ${stacks.map(x => x.name).join(' ')}`);
+          }
+        default:
+          throw new Error(`invalid default behavior: ${options.defaultBehavior}`);
+      }
     }
 
-    const allStacks = new Map<string, cxapi.SynthesizedStack>();
+    const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
     for (const stack of stacks) {
       allStacks.set(stack.name, stack);
     }
 
     // For every selector argument, pick stacks from the list.
-    const selectedStacks = new Map<string, cxapi.SynthesizedStack>();
+    const selectedStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
     for (const pattern of selectors) {
       let found = false;
 
@@ -115,7 +151,8 @@ export class AppStacks {
       }
     }
 
-    switch (extendedSelection) {
+    const extend = options.extend || ExtendedStackSelection.None;
+    switch (extend) {
       case ExtendedStackSelection.Downstream:
         includeDownstreamStacks(selectedStacks, allStacks);
         break;
@@ -127,9 +164,7 @@ export class AppStacks {
     // Filter original array because it is in the right order
     const selectedList = stacks.filter(s => selectedStacks.has(s.name));
 
-    // Only check selected stacks for errors
-    this.processMessages(selectedList);
-    return this.applyRenames(selectedList);
+    return selectedList;
   }
 
   /**
@@ -139,60 +174,68 @@ export class AppStacks {
    * topologically sorted order. If there are dependencies that are not in the
    * set, they will be ignored; it is the user's responsibility that the
    * non-selected stacks have already been deployed previously.
-   *
-   * Renames are *NOT* applied in list mode.
    */
-  public async listStacks(): Promise<cxapi.SynthesizedStack[]> {
+  public async listStacks(): Promise<cxapi.CloudFormationStackArtifact[]> {
     const response = await this.synthesizeStacks();
-    return topologicalSort(response.stacks, s => s.name, s => s.dependsOn || []);
+    return response.stacks;
   }
 
   /**
    * Synthesize a single stack
    */
-  public async synthesizeStack(stackName: string): Promise<SelectedStack> {
+  public async synthesizeStack(stackName: string): Promise<cxapi.CloudFormationStackArtifact> {
     const resp = await this.synthesizeStacks();
-    const stack = resp.stacks.find(s => s.name === stackName);
-    if (!stack) {
-      throw new Error(`Stack ${stackName} not found`);
-    }
-    return this.applyRenames([stack])[0];
+    const stack = resp.getStack(stackName);
+    return stack;
   }
 
   /**
    * Synthesize a set of stacks
    */
-  public async synthesizeStacks(): Promise<cxapi.SynthesizeResponse> {
-    if (this.cachedResponse) {
-      return this.cachedResponse;
+  public async synthesizeStacks(): Promise<cxapi.CloudAssembly> {
+    if (this.assembly) {
+      return this.assembly;
     }
 
     const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
+    let previouslyMissingKeys: Set<string> | undefined;
     while (true) {
-      const response: cxapi.SynthesizeResponse = await this.props.synthesizer(this.props.aws, this.props.configuration);
-      const allMissing = cdkUtil.deepMerge(...response.stacks.map(s => s.missing));
+      const assembly = await this.props.synthesizer(this.props.aws, this.props.configuration);
 
-      if (!cdkUtil.isEmpty(allMissing)) {
-        debug(`Some context information is missing. Fetching...`);
+      if (assembly.manifest.missing) {
+        const missingKeys = missingContextKeys(assembly.manifest.missing);
 
-        await contextproviders.provideContextValues(allMissing, this.props.configuration.context, this.props.aws);
+        let tryLookup = true;
+        if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
+          debug(`Not making progress trying to resolve environmental context. Giving up.`);
+          tryLookup = false;
+        }
 
-        // Cache the new context to disk
-        await this.props.configuration.saveContext();
+        previouslyMissingKeys = missingKeys;
 
-        continue;
+        if (tryLookup) {
+          debug(`Some context information is missing. Fetching...`);
+
+          await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
+
+          // Cache the new context to disk
+          await this.props.configuration.saveContext();
+
+          // Execute again
+          continue;
+        }
       }
 
-      if (trackVersions && response.runtime) {
-        const modules = formatModules(response.runtime);
-        for (const stack of response.stacks) {
+      if (trackVersions && assembly.runtime) {
+        const modules = formatModules(assembly.runtime);
+        for (const stack of assembly.stacks) {
           if (!stack.template.Resources) {
             stack.template.Resources = {};
           }
-          const resourcePresent = stack.environment.region === 'default-region'
-            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.cdkMetadataResourceAvailable) === 'YES';
+          const resourcePresent = stack.environment.region === cxapi.UNKNOWN_REGION
+            || RegionInfo.get(stack.environment.region).cdkMetadataResourceAvailable;
           if (resourcePresent) {
             if (!stack.template.Resources.CDKMetadata) {
               stack.template.Resources.CDKMetadata = {
@@ -201,6 +244,16 @@ export class AppStacks {
                   Modules: modules
                 }
               };
+              if (stack.environment.region === cxapi.UNKNOWN_REGION) {
+                stack.template.Conditions = stack.template.Conditions || {};
+                const condName = 'CDKMetadataAvailable';
+                if (!stack.template.Conditions[condName]) {
+                  stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
+                  stack.template.Resources.CDKMetadata.Condition = condName;
+                } else {
+                  warning(`The stack ${stack.name} already includes a ${condName} condition`);
+                }
+              }
             } else {
               warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
             }
@@ -209,10 +262,10 @@ export class AppStacks {
       }
 
       // All good, return
-      this.cachedResponse = response;
-      return response;
+      this.assembly = assembly;
+      return assembly;
 
-      function formatModules(runtime: cxapi.AppRuntime): string {
+      function formatModules(runtime: cxapi.RuntimeInfo): string {
         const modules = new Array<string>();
 
         // inject toolkit version to list of modules
@@ -228,28 +281,33 @@ export class AppStacks {
   }
 
   /**
+   * @returns an array with the tags available in the stack metadata.
+   */
+  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
+    return flatMap(stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY), x => x.data);
+  }
+
+  /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  private processMessages(stacks: cxapi.SynthesizedStack[]) {
+  public processMetadata(stacks: cxapi.CloudFormationStackArtifact[]) {
     let warnings = false;
     let errors = false;
+
     for (const stack of stacks) {
-      for (const id of Object.keys(stack.metadata)) {
-        const metadata = stack.metadata[id];
-        for (const entry of metadata) {
-          switch (entry.type) {
-            case cxapi.WARNING_METADATA_KEY:
-              warnings = true;
-              this.printMessage(warning, 'Warning', id, entry);
-              break;
-            case cxapi.ERROR_METADATA_KEY:
-              errors = true;
-              this.printMessage(error, 'Error', id, entry);
-              break;
-            case cxapi.INFO_METADATA_KEY:
-              this.printMessage(print, 'Info', id, entry);
-              break;
-          }
+      for (const message of stack.messages) {
+        switch (message.level) {
+          case cxapi.SynthesisMessageLevel.WARNING:
+            warnings = true;
+            this.printMessage(warning, 'Warning', message.id, message.entry);
+            break;
+          case cxapi.SynthesisMessageLevel.ERROR:
+            errors = true;
+            this.printMessage(error, 'Error', message.id, message.entry);
+            break;
+          case cxapi.SynthesisMessageLevel.INFO:
+            this.printMessage(print, 'Info', message.id, message.entry);
+            break;
         }
       }
     }
@@ -266,31 +324,16 @@ export class AppStacks {
   private printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
     logFn(`[${prefix} at ${id}] ${entry.data}`);
 
-    if (this.props.verbose) {
+    if (this.props.verbose && entry.trace) {
       logFn(`  ${entry.trace.join('\n  ')}`);
     }
-  }
-
-  private applyRenames(stacks: cxapi.SynthesizedStack[]): SelectedStack[] {
-    this.renames.validateSelectedStacks(stacks);
-
-    const ret = [];
-    for (const stack of stacks) {
-      ret.push({
-        ...stack,
-        originalName: stack.name,
-        name: this.renames.finalName(stack.name),
-      });
-    }
-
-    return ret;
   }
 }
 
 /**
  * Combine the names of a set of stacks using a comma
  */
-export function listStackNames(stacks: cxapi.SynthesizedStack[]): string {
+export function listStackNames(stacks: cxapi.CloudFormationStackArtifact[]): string {
   return stacks.map(s => s.name).join(', ');
 }
 
@@ -319,7 +362,9 @@ export enum ExtendedStackSelection {
  *
  * Modifies `selectedStacks` in-place.
  */
-function includeDownstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStack>, allStacks: Map<string, cxapi.SynthesizedStack>) {
+function includeDownstreamStacks(
+    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
 
   let madeProgress = true;
@@ -328,7 +373,7 @@ function includeDownstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedSt
 
     for (const [name, stack] of allStacks) {
       // Select this stack if it's not selected yet AND it depends on a stack that's in the selected set
-      if (!selectedStacks.has(name) && (stack.dependsOn || []).some(dependencyName => selectedStacks.has(dependencyName))) {
+      if (!selectedStacks.has(name) && (stack.dependencies || []).some(dep => selectedStacks.has(dep.id))) {
         selectedStacks.set(name, stack);
         added.push(name);
         madeProgress = true;
@@ -346,7 +391,9 @@ function includeDownstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedSt
  *
  * Modifies `selectedStacks` in-place.
  */
-function includeUpstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStack>, allStacks: Map<string, cxapi.SynthesizedStack>) {
+function includeUpstreamStacks(
+    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
   let madeProgress = true;
   while (madeProgress) {
@@ -354,7 +401,7 @@ function includeUpstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStac
 
     for (const stack of selectedStacks.values()) {
       // Select an additional stack if it's not selected yet and a dependency of a selected stack (and exists, obviously)
-      for (const dependencyName of (stack.dependsOn || [])) {
+      for (const dependencyName of stack.dependencies.map(x => x.id)) {
         if (!selectedStacks.has(dependencyName) && allStacks.has(dependencyName)) {
           added.push(dependencyName);
           selectedStacks.set(dependencyName, allStacks.get(dependencyName)!);
@@ -369,9 +416,60 @@ function includeUpstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStac
   }
 }
 
-export interface SelectedStack extends cxapi.SynthesizedStack {
+export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
   /**
    * The original name of the stack before renaming
    */
   originalName: string;
+}
+
+export interface Tag {
+  readonly Key: string;
+  readonly Value: string;
+}
+
+/**
+ * Return all keys of misisng context items
+ */
+function missingContextKeys(missing?: cxapi.MissingContext[]): Set<string> {
+  return new Set((missing || []).map(m => m.key));
+}
+
+function setsEqual<A>(a: Set<A>, b: Set<A>) {
+  if (a.size !== b.size) { return false; }
+  for (const x of a) {
+    if (!b.has(x)) { return false; }
+  }
+  return true;
+}
+
+function _makeCdkMetadataAvailableCondition() {
+  return _fnOr(RegionInfo.regions
+    .filter(ri => ri.cdkMetadataResourceAvailable)
+    .map(ri => ({ 'Fn::Equals': [{ Ref: 'AWS::Region' }, ri.name] })));
+}
+
+/**
+ * This takes a bunch of operands and crafts an `Fn::Or` for those. Funny thing is `Fn::Or` requires
+ * at least 2 operands and at most 10 operands, so we have to... do this.
+ */
+function _fnOr(operands: any[]): any {
+  if (operands.length === 0) {
+    throw new Error('Cannot build `Fn::Or` with zero operands!');
+  }
+  if (operands.length === 1) {
+    return operands[0];
+  }
+  if (operands.length <= 10) {
+    return { 'Fn::Or': operands };
+  }
+  return _fnOr(_inGroupsOf(operands, 10).map(group => _fnOr(group)));
+}
+
+function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
+  const result = new Array<T[]>();
+  for (let i = 0; i < array.length; i += maxGroup) {
+    result.push(array.slice(i, i + maxGroup));
+  }
+  return result;
 }

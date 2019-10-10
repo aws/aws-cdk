@@ -1,4 +1,14 @@
 ## AWS CDK Toolkit
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
+
 The AWS CDK Toolkit provides the `cdk` command-line interface that can be used to work with AWS CDK applications.
 
 Command                           | Description
@@ -13,7 +23,7 @@ Command                           | Description
 [`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
 [`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ### Commands
 #### `cdk docs`
@@ -22,11 +32,11 @@ Outputs the URL to the documentation for the current toolkit version, and attemp
 ```console
 $ # Open the documentation in the default browser (using 'open')
 $ cdk docs
-https://awslabs.github.io/aws-cdk/versions/0.7.4-beta/
+https://docs.aws.amazon.com/cdk/api/latest/
 
 $ # Open the documentation in Chrome.
 $ cdk docs --browser='chrome %u'
-https://awslabs.github.io/aws-cdk/versions/0.7.4-beta/
+https://docs.aws.amazon.com/cdk/api/latest/
 ```
 
 #### `cdk init`
@@ -147,7 +157,7 @@ a bug report.
 
 ```console
 $ cdk doctor
-ℹ️ CDK Version: 0.7.4-beta (build 0191444)
+ℹ️ CDK Version: 1.0.0 (build e64993a)
 ℹ️ AWS environment variables:
   - AWS_EC2_METADATA_DISABLED = 1
   - AWS_SDK_LOAD_CONFIG = 1

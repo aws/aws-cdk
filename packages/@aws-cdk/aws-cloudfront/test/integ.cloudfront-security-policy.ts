@@ -1,5 +1,5 @@
 
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cloudfront = require('../lib');
 
 const app = new cdk.App();
@@ -26,8 +26,8 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
     acmCertRef: 'testACM',
     names: ['test.test.com'],
     sslMethod: cloudfront.SSLMethod.SNI,
-    securityPolicy: cloudfront.SecurityPolicyProtocol.TLSv1
+    securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1
   }
 });
 
-app.run();
+app.synth();

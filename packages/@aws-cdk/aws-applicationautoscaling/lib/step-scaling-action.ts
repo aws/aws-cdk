@@ -1,5 +1,4 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
@@ -38,7 +37,7 @@ export interface StepScalingActionProps {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default No cooldown period
    */
-  readonly cooldownSec?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -67,36 +66,34 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
-export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlarmAction {
+export class StepScalingAction extends cdk.Construct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
-
-  /**
-   * ARN when this scaling policy is used as an Alarm action
-   */
-  public readonly alarmActionArn: string;
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
   constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
+    // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace
+    // properties, or the ScalingTargetId property, but not both.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || this.node.uniqueId,
       policyType: 'StepScaling',
+      scalingTargetId: props.scalingTarget.scalableTargetId,
       stepScalingPolicyConfiguration: {
         adjustmentType: props.adjustmentType,
-        cooldown: props.cooldownSec,
+        cooldown: props.cooldown && props.cooldown.toSeconds(),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
-        stepAdjustments: new cdk.Token(() => this.adjustments),
+        stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
       } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty
     });
 
-    this.scalingPolicyArn = resource.scalingPolicyArn;
-    this.alarmActionArn = this.scalingPolicyArn;
+    this.scalingPolicyArn = resource.ref;
   }
 
   /**
@@ -123,7 +120,7 @@ export enum AdjustmentType {
    *
    * A positive number increases capacity, a negative number decreases capacity.
    */
-  ChangeInCapacity = 'ChangeInCapacity',
+  CHANGE_IN_CAPACITY = 'ChangeInCapacity',
 
   /**
    * Add this percentage of the current capacity to itself.
@@ -131,12 +128,12 @@ export enum AdjustmentType {
    * The number must be between -100 and 100; a positive number increases
    * capacity and a negative number decreases it.
    */
-  PercentChangeInCapacity = 'PercentChangeInCapacity',
+  PERCENT_CHANGE_IN_CAPACITY = 'PercentChangeInCapacity',
 
   /**
    * Make the capacity equal to the exact number given.
    */
-  ExactCapacity = 'ExactCapacity',
+  EXACT_CAPACITY = 'ExactCapacity',
 }
 
 /**
@@ -146,17 +143,17 @@ export enum MetricAggregationType {
   /**
    * Average
    */
-  Average = 'Average',
+  AVERAGE = 'Average',
 
   /**
    * Minimum
    */
-  Minimum = 'Minimum',
+  MINIMUM = 'Minimum',
 
   /**
    * Maximum
    */
-  Maximum = 'Maximum'
+  MAXIMUM = 'Maximum'
 }
 
 /**

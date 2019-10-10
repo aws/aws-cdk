@@ -1,39 +1,54 @@
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import { Construct, Token } from '@aws-cdk/core';
 import { ContainerDefinition } from "../container-definition";
-import { ContainerImage } from "../container-image";
-import { CfnTaskDefinition } from '../ecs.generated';
+import { ContainerImage, ContainerImageConfig } from "../container-image";
 
+/**
+ * Regex pattern to check if it is an ECR image URL.
+ *
+ * @experimental
+ */
+const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*).dkr.ecr.([a-zA-Z0-9][a-zA-Z0-9-_]*).amazonaws.com(.cn)?\/.*/;
+
+/**
+ * The properties for an image hosted in a public or private repository.
+ */
 export interface RepositoryImageProps {
-    /**
-     * Optional secret that houses credentials for the image registry
-     */
-    readonly credentials?: secretsmanager.ISecret;
+  /**
+   * The secret to expose to the container that contains the credentials for the image repository.
+   * The supported value is the full ARN of an AWS Secrets Manager secret.
+   */
+  readonly credentials?: secretsmanager.ISecret;
 }
 
 /**
- * A container image hosted on DockerHub or another online registry
+ * An image hosted in a public or private repository. For images hosted in Amazon ECR, see
+ * [EcrImage](https://docs.aws.amazon.com/AmazonECR/latest/userguide/images.html).
  */
 export class RepositoryImage extends ContainerImage {
-  public readonly imageName: string;
 
-  private credentialsSecret?: secretsmanager.ISecret;
-
-  constructor(imageName: string, props: RepositoryImageProps = {}) {
+  /**
+   * Constructs a new instance of the RepositoryImage class.
+   */
+  constructor(private readonly imageName: string, private readonly props: RepositoryImageProps = {}) {
     super();
-    this.imageName = imageName;
-    this.credentialsSecret = props.credentials;
   }
 
-  public bind(containerDefinition: ContainerDefinition): void {
-    if (this.credentialsSecret) {
-      this.credentialsSecret.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
+  public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+    // name could be a Token - in that case, skip validation altogether
+    if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
+      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
-  }
 
-  public toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
-    if (!this.credentialsSecret) { return undefined; }
+    if (this.props.credentials) {
+      this.props.credentials.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
+    }
+
     return {
-      credentialsParameter: this.credentialsSecret.secretArn
+      imageName: this.imageName,
+      repositoryCredentials: this.props.credentials && {
+        credentialsParameter: this.props.credentials.secretArn
+      }
     };
   }
 }

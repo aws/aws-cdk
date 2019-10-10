@@ -24,7 +24,9 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
       }
     }
   },
@@ -53,7 +55,9 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
       }
     }
   },
@@ -82,7 +86,9 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
       }
     }
   },
@@ -97,17 +103,7 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "lambda.",
-                        {
-                          "Ref": "AWS::URLSuffix"
-                        }
-                      ]
-                    ]
-                  }
+                  "Service": "lambda.amazonaws.com"
                 }
               }
             ],
@@ -164,7 +160,7 @@
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3BucketF66FB543"
+              "Ref": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3Bucket66843878"
             },
             "S3Key": {
               "Fn::Join": [
@@ -177,7 +173,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3VersionKey59DB89A0"
+                            "Ref": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3VersionKey14680708"
                           }
                         ]
                       }
@@ -190,7 +186,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3VersionKey59DB89A0"
+                            "Ref": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3VersionKey14680708"
                           }
                         ]
                       }
@@ -232,17 +228,23 @@
           ],
           "ResourceType": "Custom::DynamoGlobalTableCoordinator",
           "TableName": "integrationtest"
-        }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
       }
     },
     "Parameters": {
-      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3BucketF66FB543": {
+      "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3Bucket66843878": {
         "Type": "String",
-        "Description": "S3 bucket for asset \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
+        "Description": "S3 bucket for asset \"94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a\""
       },
-      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3VersionKey59DB89A0": {
+      "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3VersionKey14680708": {
         "Type": "String",
-        "Description": "S3 key for asset version \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
+        "Description": "S3 key for asset version \"94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a\""
+      },
+      "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aArtifactHash5687D31D": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a\""
       }
     }
   }

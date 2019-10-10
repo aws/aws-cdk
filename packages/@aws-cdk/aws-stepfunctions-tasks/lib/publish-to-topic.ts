@@ -1,26 +1,16 @@
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
-import { renderString } from './json-path';
+import { resourceArnSuffix } from './resource-arn-suffix';
 
 /**
  * Properties for PublishTask
  */
 export interface PublishToTopicProps {
   /**
-   * The text message to send to the queue.
-   *
-   * Exactly one of `message` and `messageObject` is required.
+   * The text message to send to the topic.
    */
-  readonly message?: string;
-
-  /**
-   * Object to be JSON-encoded and used as message
-   *
-   * Exactly one of `message`, `messageObject` and `messagePath` is required.
-   */
-  readonly messageObject?: string;
+  readonly message: sfn.TaskInput;
 
   /**
    * If true, send a different message to every subscription type
@@ -38,35 +28,58 @@ export interface PublishToTopicProps {
    * Message subject
    */
   readonly subject?: string;
+
+  /**
+   * The service integration pattern indicates different ways to call Publish to SNS.
+   *
+   * The valid value is either FIRE_AND_FORGET or WAIT_FOR_TASK_TOKEN.
+   *
+   * @default FIRE_AND_FORGET
+   */
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
- * A StepFunctions Task to invoke a Lambda function.
+ * A Step Functions Task to publish messages to SNS topic.
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
+
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
-    if ((props.message === undefined) === (props.messageObject === undefined)) {
-      throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+    const supportedPatterns = [
+      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+    ];
+
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`);
+    }
+
+    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+      if (!sfn.FieldUtils.containsTaskToken(props.message)) {
+        throw new Error('Task Token is missing in message (pass Context.taskToken somewhere in message)');
+      }
     }
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sns:publish',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sns:Publish')
-        .addResource(this.topic.topicArn)
-      ],
+      resourceArn: 'arn:aws:states:::sns:publish' + resourceArnSuffix.get(this.integrationPattern),
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [this.topic.topicArn]
+      })],
       parameters: {
         TopicArn: this.topic.topicArn,
-        ...(this.props.messageObject
-            ? { Message: new cdk.Token(() => task.node.stringifyJson(this.props.messageObject)) }
-            : renderString('Message', this.props.message)),
+        Message: this.props.message.value,
         MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
-        ...renderString('Subject', this.props.subject),
+        Subject: this.props.subject,
       }
     };
   }

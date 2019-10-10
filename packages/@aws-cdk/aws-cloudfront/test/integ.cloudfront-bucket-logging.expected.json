@@ -1,13 +1,14 @@
 {
   "Resources": {
     "Bucket83908E77": {
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
-          "CacheBehaviors": [],
           "DefaultCacheBehavior": {
             "AllowedMethods": [
               "GET",
@@ -24,7 +25,8 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https"
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "Compress": true
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,
@@ -34,7 +36,7 @@
             "Bucket": {
               "Fn::GetAtt": [
                 "Bucket83908E77",
-                "DomainName"
+                "RegionalDomainName"
               ]
             },
             "IncludeCookies": true,
@@ -71,13 +73,13 @@
     },
     "AnAmazingWebsiteProbably2LoggingBucket222F7CE9": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "AnAmazingWebsiteProbably2CFDistribution7C1CCD12": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
-          "CacheBehaviors": [],
           "DefaultCacheBehavior": {
             "AllowedMethods": [
               "GET",
@@ -94,7 +96,8 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https"
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "Compress": true
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,
@@ -104,7 +107,7 @@
             "Bucket": {
               "Fn::GetAtt": [
                 "AnAmazingWebsiteProbably2LoggingBucket222F7CE9",
-                "DomainName"
+                "RegionalDomainName"
               ]
             },
             "IncludeCookies": false

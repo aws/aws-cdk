@@ -1,8 +1,9 @@
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
@@ -13,12 +14,14 @@ export interface TrailProps {
    * For most services, events are recorded in the region where the action occurred.
    * For global services such as AWS Identity and Access Management (IAM), AWS STS, Amazon CloudFront, and Route 53,
    * events are delivered to any trail that includes global services, and are logged as occurring in US East (N. Virginia) Region.
+   *
    * @default true
    */
   readonly includeGlobalServiceEvents?: boolean;
 
   /**
    * Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.
+   *
    * @default true
    */
   readonly isMultiRegionTrail?: boolean;
@@ -34,8 +37,9 @@ export interface TrailProps {
    * Management events can also include non-API events that occur in your account.
    * For example, when a user logs in to your account, CloudTrail logs the ConsoleLogin event.
    *
-   * If managementEvents is undefined, we'll not log management events by default.
    * @param managementEvents the management configuration type to log
+   *
+   * @default - Management events will not be logged.
    */
   readonly managementEvents?: ReadWriteType;
 
@@ -45,6 +49,7 @@ export interface TrailProps {
    * This feature is built using industry standard algorithms: SHA-256 for hashing and SHA-256 with RSA for digital signing.
    * This makes it computationally infeasible to modify, delete or forge CloudTrail log files without detection.
    * You can use the AWS CLI to validate the files in the location where CloudTrail delivered them.
+   *
    * @default true
    */
   readonly enableFileValidation?: boolean;
@@ -52,42 +57,54 @@ export interface TrailProps {
   /**
    * If CloudTrail pushes logs to CloudWatch Logs in addition to S3.
    * Disabled for cost out of the box.
+   *
    * @default false
    */
   readonly sendToCloudWatchLogs?: boolean;
 
   /**
    * How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false
+   *
    *  @default logs.RetentionDays.OneYear
    */
-  readonly cloudWatchLogsRetentionTimeDays?: logs.RetentionDays;
+  readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
-   * @default none
+   *
+   * @default - No encryption.
    */
   readonly kmsKey?: kms.IKey;
 
   /** The name of an Amazon SNS topic that is notified when new log files are published.
-   * @default none
+   *
+   * @default - No notifications.
    */
   readonly snsTopic?: string; // TODO: fix to use L2 SNS
 
   /**
    * The name of the trail. We recoomend customers do not set an explicit name.
-   * @default the CloudFormation generated neme
+   *
+   * @default - AWS CloudFormation generated name.
    */
   readonly trailName?: string;
 
   /** An Amazon S3 object key prefix that precedes the name of all log files.
-   * @default none
+   *
+   * @default - No prefix.
    */
   readonly s3KeyPrefix?: string;
+
+  /** The Amazon S3 bucket
+   *
+   * @default - if not supplied a bucket will be created with all the correct permisions
+   */
+  readonly bucket?: s3.IBucket
 }
 
 export enum ReadWriteType {
-  ReadOnly = "ReadOnly",
-  WriteOnly = "WriteOnly",
-  All = "All"
+  READ_ONLY = "ReadOnly",
+  WRITE_ONLY = "WriteOnly",
+  ALL = "All"
 }
 
 /**
@@ -97,6 +114,10 @@ export enum ReadWriteType {
  * import { CloudTrail } from '@aws-cdk/aws-cloudtrail'
  *
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
+ *
+ * NOTE the above example creates an UNENCRYPTED bucket by default,
+ * If you are required to use an Encrypted bucket you can supply a preconfigured bucket
+ * via TrailProps
  *
  */
 export class Trail extends Resource {
@@ -111,38 +132,49 @@ export class Trail extends Resource {
    */
   public readonly trailSnsTopicArn: string;
 
+  private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.trailName,
+    });
 
-    const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
-    const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
+    const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
-    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.bucketArn)
-      .addActions('s3:GetBucketAcl')
-      .addServicePrincipal(cloudTrailPrincipal));
+    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
 
-    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(`AWSLogs/${this.node.stack.accountId}/*`))
-      .addActions("s3:PutObject")
-      .addServicePrincipal(cloudTrailPrincipal)
-      .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
+    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.s3bucket.bucketArn],
+        actions: ['s3:GetBucketAcl'],
+        principals: [cloudTrailPrincipal],
+      }));
+
+    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
+        actions: ["s3:PutObject"],
+        principals: [cloudTrailPrincipal],
+        conditions:  {
+          StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
+        }
+      }));
 
     let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
+
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, "LogGroup", {
-        retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.OneYear
+        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
       });
 
-      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
+      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPolicy(new iam.PolicyStatement()
-        .addActions("logs:PutLogEvents", "logs:CreateLogStream")
-        .addResource(logGroup.logGroupArn));
+      logsRole.addToPolicy(new iam.PolicyStatement({
+        actions: ["logs:PutLogEvents", "logs:CreateLogStream"],
+        resources: [logGroup.attrArn],
+      }));
     }
+
     if (props.managementEvents) {
       const managementEvent =  {
         includeManagementEvents: true,
@@ -157,21 +189,27 @@ export class Trail extends Resource {
       enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
-      trailName: props.trailName,
+      trailName: this.physicalName,
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
-      s3BucketName: s3bucket.bucketName,
+      s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: logGroup && logGroup.logGroupArn,
+      cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
       cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
       snsTopicName: props.snsTopic,
       eventSelectors: this.eventSelectors
     });
 
-    this.trailArn = trail.trailArn;
-    this.trailSnsTopicArn = trail.trailSnsTopicArn;
+    this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
+      service: 'cloudtrail',
+      resource: 'trail',
+      resourceName: this.physicalName,
+    });
+    this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
-    const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
-    trail.node.addDependency(s3BucketPolicy);
+    // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
+    if (this.s3bucket.policy) {
+      trail.node.addDependency(this.s3bucket.policy);
+    }
 
     // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
     // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated
@@ -208,6 +246,23 @@ export class Trail extends Resource {
         values: prefixes
       }]
     });
+  }
+
+  /**
+   * Create an event rule for when an event is recorded by any Trail in the account.
+   *
+   * Note that the event doesn't necessarily have to come from this Trail, it can
+   * be captured from any one.
+   *
+   * Be sure to filter the event further down using an event pattern.
+   */
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail']
+    });
+    return rule;
   }
 }
 

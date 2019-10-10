@@ -57,17 +57,32 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
     case MatchStyle.EXACT:
       return diff.differenceCount === 0;
     case MatchStyle.NO_REPLACES:
-      for (const key of Object.keys(diff.resources.changes)) {
-        const change = diff.resources.changes[key]!;
+      for (const change of Object.values(diff.resources.changes)) {
         if (change.changeImpact === cfnDiff.ResourceImpact.MAY_REPLACE) { return false; }
         if (change.changeImpact === cfnDiff.ResourceImpact.WILL_REPLACE) { return false; }
       }
+
+      for (const change of Object.values(diff.parameters.changes)) {
+        if (change.isUpdate) { return false; }
+      }
+
+      for (const change of Object.values(diff.outputs.changes)) {
+        if (change.isUpdate) { return false; }
+      }
       return true;
     case MatchStyle.SUPERSET:
-      for (const key of Object.keys(diff.resources.changes)) {
-        const change = diff.resources.changes[key]!;
+      for (const change of Object.values(diff.resources.changes)) {
         if (change.changeImpact !== cfnDiff.ResourceImpact.WILL_CREATE) { return false; }
       }
+
+      for (const change of Object.values(diff.parameters.changes)) {
+        if (change.isAddition) { return false; }
+      }
+
+      for (const change of Object.values(diff.outputs.changes)) {
+        if (change.isAddition || change.isUpdate) { return false; }
+      }
+
       return true;
     }
     throw new Error(`Unsupported match style: ${this.matchStyle}`);

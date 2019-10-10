@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
-import { BaseLoadBalancer, BaseLoadBalancerProps } from '../shared/base-load-balancer';
+import { Construct, Resource } from '@aws-cdk/core';
+import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 
 /**
@@ -17,20 +17,56 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
 }
 
 /**
+ * Properties to reference an existing load balancer
+ */
+export interface NetworkLoadBalancerAttributes {
+  /**
+   * ARN of the load balancer
+   */
+  readonly loadBalancerArn: string;
+
+  /**
+   * The canonical hosted zone ID of this load balancer
+   *
+   * @default - When not provided, LB cannot be used as Route53 Alias target.
+   */
+  readonly loadBalancerCanonicalHostedZoneId?: string;
+
+  /**
+   * The DNS name of this load balancer
+   *
+   * @default - When not provided, LB cannot be used as Route53 Alias target.
+   */
+  readonly loadBalancerDnsName?: string;
+}
+
+/**
  * Define a new network load balancer
  *
  * @resource AWS::ElasticLoadBalancingV2::LoadBalancer
  */
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
-  public static fromNetworkLoadBalancerArn(scope: Construct, id: string, networkLoadBalancerArn: string): INetworkLoadBalancer {
+  public static fromNetworkLoadBalancerAttributes(scope: Construct, id: string, attrs: NetworkLoadBalancerAttributes): INetworkLoadBalancer {
     class Import extends Resource implements INetworkLoadBalancer {
-      public readonly loadBalancerArn = networkLoadBalancerArn;
+      public readonly loadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = undefined;
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
           ...props
         });
+      }
+
+      public get loadBalancerCanonicalHostedZoneId(): string {
+        if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
+        // tslint:disable-next-line:max-line-length
+        throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
+      }
+
+      public get loadBalancerDnsName(): string {
+        if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
+        // tslint:disable-next-line:max-line-length
+        throw new Error(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
     }
 
@@ -191,7 +227,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer extends IResource {
+export interface INetworkLoadBalancer extends ILoadBalancerV2 {
   /**
    * The ARN of this load balancer
    */

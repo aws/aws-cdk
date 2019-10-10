@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3-notifications",
-  "version": "0.31.0",
+  "version": "1.12.0",
   "description": "Bucket Notifications API for AWS S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,17 @@
         "package": "software.amazon.awscdk.services.s3.notifications",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-notifications"
+          "artifactId": "s3-notifications",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3.Notifications",
         "packageId": "Amazon.CDK.AWS.S3.Notifications",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-s3-notifications",
@@ -28,7 +31,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-s3-notifications"
   },
   "scripts": {
@@ -39,7 +42,9 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "keywords": [
     "aws",
@@ -52,19 +57,44 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.31.0",
-    "pkglint": "^0.31.0"
+    "@aws-cdk/assert": "^1.12.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "jest": "^24.9.0",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "@aws-cdk/aws-sns": "^1.12.0",
+    "@aws-cdk/aws-sqs": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "@aws-cdk/aws-sns": "^1.12.0",
+    "@aws-cdk/aws-sqs": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
-  }
+    "node": ">= 10.3.0"
+  },
+  "stability": "stable"
 }

@@ -1,7 +1,6 @@
-import cdk = require('@aws-cdk/cdk');
-import { Alarm } from "./alarm";
-import { Metric } from "./metric";
-import { parseStatistic } from './util.statistic';
+import cdk = require('@aws-cdk/core');
+import { IAlarm } from "./alarm";
+import { IMetric } from "./metric-types";
 import { ConcreteWidget } from "./widget";
 
 /**
@@ -36,20 +35,51 @@ export interface MetricWidgetProps {
 }
 
 /**
+ * Properties for a Y-Axis
+ */
+export interface YAxisProps {
+  /**
+   * The min value
+   *
+   * @default 0
+   */
+  readonly min?: number;
+
+  /**
+   * The max value
+   *
+   * @default No maximum value
+   */
+  readonly max?: number;
+
+  /**
+   * The label
+   *
+   * @default No label
+   */
+  readonly label?: string;
+
+  /**
+   * Whether to show units
+   *
+   * @default true
+   */
+  readonly showUnits?: boolean;
+}
+
+/**
  * Properties for an AlarmWidget
  */
 export interface AlarmWidgetProps extends MetricWidgetProps {
   /**
    * The alarm to show
    */
-  readonly alarm: Alarm;
+  readonly alarm: IAlarm;
 
   /**
-   * Range of left Y axis
-   *
-   * @default 0..automatic
+   * Left Y axis
    */
-  readonly leftAxisRange?: YAxisRange;
+  readonly leftYAxis?: YAxisProps;
 }
 
 /**
@@ -73,12 +103,12 @@ export class AlarmWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         annotations: {
           alarms: [this.props.alarm.alarmArn]
         },
         yAxis: {
-          left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 }
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined
         }
       }
     }];
@@ -92,12 +122,12 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display on left Y axis
    */
-  readonly left?: Metric[];
+  readonly left?: IMetric[];
 
   /**
    * Metrics to display on right Y axis
    */
-  readonly right?: Metric[];
+  readonly right?: IMetric[];
 
   /**
    * Annotations for the left Y axis
@@ -115,18 +145,14 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly stacked?: boolean;
 
   /**
-   * Range of left Y axis
-   *
-   * @default 0..automatic
+   * Left Y axis
    */
-  readonly leftAxisRange?: YAxisRange;
+  readonly leftYAxis?: YAxisProps;
 
   /**
-   * Range of right Y axis
-   *
-   * @default 0..automatic
+   * Right Y axis
    */
-  readonly rightAxisRange?: YAxisRange;
+  readonly rightYAxis?: YAxisProps;
 }
 
 /**
@@ -141,6 +167,10 @@ export class GraphWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
+    const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
+      (this.props.rightAnnotations || []).map(mapAnnotation('right')));
+    const metrics = (this.props.left || []).map(m => metricJson(m, 'left')).concat(
+      (this.props.right || []).map(m => metricJson(m, 'right')));
     return [{
       type: 'metric',
       width: this.width,
@@ -150,16 +180,13 @@ export class GraphWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
-        metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
-             (this.props.right || []).map(m => metricJson(m, 'right'))),
-        annotations: {
-          horizontal: (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
-                (this.props.rightAnnotations || []).map(mapAnnotation('right')))
-        },
+        region: this.props.region || cdk.Aws.REGION,
+        stacked: this.props.stacked,
+        metrics: metrics.length > 0 ? metrics : undefined,
+        annotations: horizontalAnnoations.length > 0 ? { horizontal: horizontalAnnoations } : undefined,
         yAxis: {
-          left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 },
-          right: this.props.rightAxisRange !== undefined ? this.props.rightAxisRange : { min: 0 },
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
         }
       }
     }];
@@ -173,7 +200,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display
    */
-  readonly metrics: Metric[];
+  readonly metrics: IMetric[];
 }
 
 /**
@@ -197,30 +224,11 @@ export class SingleValueWidget extends ConcreteWidget {
       properties: {
         view: 'singleValue',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         metrics: this.props.metrics.map(m => metricJson(m, 'left'))
       }
     }];
   }
-}
-
-/**
- * A minimum and maximum value for either the left or right Y axis
- */
-export interface YAxisRange {
-  /**
-   * The minimum value
-   *
-   * @default Automatic
-   */
-  readonly min?: number;
-
-  /**
-   * The maximum value
-   *
-   * @default Automatic
-   */
-  readonly max?: number;
 }
 
 /**
@@ -265,17 +273,17 @@ export enum Shading {
   /**
    * Don't add shading
    */
-  None = 'none',
+  NONE = 'none',
 
   /**
    * Add shading above the annotation
    */
-  Above = 'above',
+  ABOVE = 'above',
 
   /**
    * Add shading below the annotation
    */
-  Below = 'below'
+  BELOW = 'below'
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
@@ -289,26 +297,27 @@ function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
  *
  * This will be called by GraphWidget, no need for clients to call this.
  */
-function metricJson(metric: Metric, yAxis: string): any[] {
+function metricJson(metric: IMetric, yAxis: string): any[] {
+  const config = metric.toGraphConfig();
+
   // Namespace and metric Name
   const ret: any[] = [
-    metric.namespace,
-    metric.metricName,
+    config.namespace,
+    config.metricName,
   ];
 
   // Dimensions
-  for (const dim of metric.dimensionsAsList()) {
+  for (const dim of (config.dimensions || [])) {
     ret.push(dim.name, dim.value);
   }
 
   // Options
-  const stat = parseStatistic(metric.statistic);
   ret.push({
     yAxis,
-    label: metric.label,
-    color: metric.color,
-    period: metric.periodSec,
-    stat: stat.type === 'simple' ? stat.statistic : 'p' + stat.percentile.toString(),
+    label: config.label,
+    color: config.color,
+    period: config.period,
+    stat: config.statistic,
   });
 
   return ret;

@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { CfnResource, Construct, Resource } from '@aws-cdk/cdk';
+import { CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { CfnCustomResource } from './cloudformation.generated';
 
 /**
@@ -21,9 +21,7 @@ export class CustomResourceProvider {
    */
   public static topic(topic: sns.ITopic) { return new CustomResourceProvider(topic.topicArn); }
 
-  private constructor(public readonly serviceToken: string) {
-
-  }
+  private constructor(public readonly serviceToken: string) {}
 }
 
 /**
@@ -40,6 +38,8 @@ export interface CustomResourceProps {
 
   /**
    * Properties to pass to the Lambda
+   *
+   * @default - No properties.
    */
   readonly properties?: Properties;
 
@@ -61,8 +61,17 @@ export interface CustomResourceProps {
    *
    * @see
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html#aws-cfn-resource-type-name
+   *
+   * @default - AWS::CloudFormation::CustomResource
    */
   readonly resourceType?: string;
+
+  /**
+   * The policy to apply when this resource is removed from the application.
+   *
+   * @default cdk.RemovalPolicy.Destroy
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -87,8 +96,21 @@ export class CustomResource extends Resource {
         ...uppercaseProperties(props.properties || {})
       }
     });
+
+    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
   }
 
+  /**
+   * The physical name of this custom resource.
+   */
+  public get ref() {
+    return this.resource.ref;
+  }
+
+  /**
+   * An attribute of this custom resource
+   * @param attributeName the attribute name
+   */
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
   }
@@ -112,7 +134,7 @@ function uppercaseProperties(props: Properties): Properties {
 
 function renderResourceType(resourceType?: string) {
   if (!resourceType) {
-    return CfnCustomResource.resourceTypeName;
+    return CfnCustomResource.CFN_RESOURCE_TYPE_NAME;
   }
 
   if (!resourceType.startsWith('Custom::')) {

@@ -5,7 +5,8 @@ import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
 import path = require('path');
 import yargs = require('yargs');
-import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, importsLinter, moduleLinter, resourceLinter, exportsLinter } from '../lib';
+import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, durationsLinter, eventsLinter, exportsLinter,
+  importsLinter, integrationLinter, moduleLinter, noUnusedTypeLinter, publicStaticPropertiesLinter, resourceLinter } from '../lib';
 
 const linter = new AggregateLinter(
   moduleLinter,
@@ -15,7 +16,12 @@ const linter = new AggregateLinter(
   apiLinter,
   importsLinter,
   attributesLinter,
-  exportsLinter
+  exportsLinter,
+  eventsLinter,
+  integrationLinter,
+  noUnusedTypeLinter,
+  durationsLinter,
+  publicStaticPropertiesLinter
 );
 
 let stackTrace = false;
@@ -259,9 +265,9 @@ function mergeOptions(dest: any, pkg?: any) {
 }
 
 async function shell(command: string) {
-  const child = child_process.spawn(command, { stdio: [ 'inherit', 'inherit', 'inherit' ]});
+  const child = child_process.spawn(command, [], { stdio: [ 'inherit', 'inherit', 'inherit' ]});
   return new Promise((ok, ko) => {
-    child.once('exit', status => {
+    child.once('exit', (status: any) => {
       if (status === 0) {
         return ok();
       } else {

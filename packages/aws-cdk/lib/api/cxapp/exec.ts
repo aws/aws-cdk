@@ -1,19 +1,18 @@
 import cxapi = require('@aws-cdk/cx-api');
 import childProcess = require('child_process');
 import fs = require('fs-extra');
-import os = require('os');
 import path = require('path');
-import semver = require('semver');
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
-import { SDK } from '../util/sdk';
+import { versionNumber } from '../../version';
+import { ISDK } from '../util/sdk';
 
 /** Invokes the cloud executable and returns JSON output */
-export async function execProgram(aws: SDK, config: Configuration): Promise<cxapi.SynthesizeResponse> {
+export async function execProgram(aws: ISDK, config: Configuration): Promise<cxapi.CloudAssembly> {
   const env: { [key: string]: string } = { };
 
   const context = config.context.all;
-  await populateDefaultEnvironmentIfNeeded(aws, context);
+  await populateDefaultEnvironmentIfNeeded(aws, env);
 
   let pathMetadata: boolean = config.settings.get(['pathMetadata']);
   if (pathMetadata === undefined) {
@@ -42,11 +41,15 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
     context[cxapi.DISABLE_VERSION_REPORTING] = true;
   }
 
-  const stagingDir = config.settings.get(['staging']);
-  context[cxapi.ASSET_STAGING_DIR_CONTEXT] = stagingDir;
+  let stagingEnabled = config.settings.get(['staging']);
+  if (stagingEnabled === undefined) {
+    stagingEnabled = true;
+  }
+  if (!stagingEnabled) {
+    context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
+  }
 
   debug('context:', context);
-
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 
   const app = config.settings.get(['app']);
@@ -54,26 +57,32 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
   }
 
+  // by pass "synth" if app points to a cloud assembly
+  if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
+    debug('--app points to a cloud assembly, so we by pass synth');
+    return new cxapi.CloudAssembly(app);
+  }
+
   const commandLine = await guessExecutable(appToArray(app));
 
-  const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk'));
+  const outdir = config.settings.get([ 'output' ]);
+  if (!outdir) {
+    throw new Error('unexpected: --output is required');
+  }
+  await fs.mkdirp(outdir);
+
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
 
-  try {
-    const outfile = await exec();
-    debug('outfile:', outfile);
-    if (!(await fs.pathExists(outfile))) {
-      throw new Error(`Unable to find output file ${outfile}; are you calling app.run()?`);
-    }
+  // Send version information
+  env[cxapi.CLI_ASM_VERSION_ENV] = cxapi.CLOUD_ASSEMBLY_VERSION;
+  env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
-    const response = await fs.readJson(outfile);
-    debug(response);
-    return versionCheckResponse(response);
-  } finally {
-    debug('Removing outdir', outdir);
-    await fs.remove(outdir);
-  }
+  debug('env:', env);
+
+  await exec();
+
+  return new cxapi.CloudAssembly(outdir);
 
   async function exec() {
     return new Promise<string>((ok, fail) => {
@@ -101,44 +110,13 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
 
       proc.on('exit', code => {
         if (code === 0) {
-          return ok(path.join(outdir, cxapi.OUTFILE_NAME));
+          return ok();
         } else {
           return fail(new Error(`Subprocess exited with error ${code}`));
         }
       });
     });
   }
-}
-
-/**
- * Look at the type of response we get and upgrade it to the latest expected version
- */
-function versionCheckResponse(response: cxapi.SynthesizeResponse): cxapi.SynthesizeResponse {
-  if (!response.version) {
-    // tslint:disable-next-line:max-line-length
-    throw new Error(`CDK Framework >= ${cxapi.PROTO_RESPONSE_VERSION} is required in order to interact with this version of the Toolkit.`);
-  }
-
-  const frameworkVersion = semver.coerce(response.version);
-  const toolkitVersion = semver.coerce(cxapi.PROTO_RESPONSE_VERSION);
-
-  // Should not happen, but I don't trust this library 100% either, so let's check for it to be safe
-  if (!frameworkVersion || !toolkitVersion) { throw new Error('SemVer library could not parse versions'); }
-
-  if (semver.gt(frameworkVersion, toolkitVersion)) {
-    throw new Error(`CDK Toolkit >= ${response.version} is required in order to interact with this program.`);
-  }
-
-  if (semver.lt(frameworkVersion, toolkitVersion)) {
-    // Toolkit protocol is newer than the framework version, and we KNOW the
-    // version. This is a scenario in which we could potentially do some
-    // upgrading of the response in the future.
-    //
-    // For now though, we simply reject old responses.
-    throw new Error(`CDK Framework >= ${cxapi.PROTO_RESPONSE_VERSION} is required in order to interact with this version of the Toolkit.`);
-  }
-
-  return response;
 }
 
 /**
@@ -153,16 +131,12 @@ function versionCheckResponse(response: cxapi.SynthesizeResponse): cxapi.Synthes
  *
  * @param context The context key/value bash.
  */
-async function populateDefaultEnvironmentIfNeeded(aws: SDK, context: any) {
-  if (!(cxapi.DEFAULT_REGION_CONTEXT_KEY in context)) {
-    context[cxapi.DEFAULT_REGION_CONTEXT_KEY] = await aws.defaultRegion();
-    debug(`Setting "${cxapi.DEFAULT_REGION_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_REGION_CONTEXT_KEY]);
-  }
+async function populateDefaultEnvironmentIfNeeded(aws: ISDK, env: { [key: string]: string | undefined}) {
+  env[cxapi.DEFAULT_REGION_ENV] = await aws.defaultRegion();
+  debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 
-  if (!(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY in context)) {
-    context[cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY] = await aws.defaultAccount();
-    debug(`Setting "${cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY]);
-  }
+  env[cxapi.DEFAULT_ACCOUNT_ENV] = await aws.defaultAccount();
+  debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
 }
 
 /**
@@ -177,14 +151,6 @@ function appToArray(app: any) {
 type CommandGenerator = (file: string) => string[];
 
 /**
- * Direct execution of a YAML file, assume that we're deploying an Applet
- */
-function executeApplet(appletFile: string): string[] {
-    const appletBinary = path.resolve(require.resolve('@aws-cdk/applet-js'));
-    return [process.execPath, appletBinary, appletFile];
-}
-
-/**
  * Execute the given file with the same 'node' process as is running the current process
  */
 function executeNode(scriptFile: string): string[] {
@@ -195,8 +161,6 @@ function executeNode(scriptFile: string): string[] {
  * Mapping of extensions to command-line generators
  */
 const EXTENSION_MAP = new Map<string, CommandGenerator>([
-  ['.yml', executeApplet],
-  ['.yaml', executeApplet],
   ['.js', executeNode],
 ]);
 

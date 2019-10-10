@@ -1,10 +1,11 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
   'check that instantiation works'(test: Test) {
@@ -14,13 +15,13 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -52,14 +53,14 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -86,14 +87,14 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
         securityGroup: sg
       }
@@ -125,13 +126,13 @@ export = {
       }
     });
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
+      engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
       parameterGroup: group
@@ -145,18 +146,6 @@ export = {
     test.done();
   },
 
-  'import/export cluster parameter group'(test: Test) {
-    // GIVEN
-    const stack = testStack();
-
-    // WHEN
-    const imported = ClusterParameterGroup.fromParameterGroupName(stack, 'ImportParams', 'name-of-param-group');
-
-    // THEN
-    test.deepEqual(stack.node.resolve(imported.parameterGroupName), 'name-of-param-group');
-    test.done();
-  },
-
   'creates a secret when master credentials are not specified'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -164,12 +153,12 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -221,12 +210,12 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AuroraMysql,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
       kmsKey: new kms.Key(stack, 'Key')
@@ -241,6 +230,244 @@ export = {
         ]
       }
     }));
+
+    test.done();
+  },
+
+  'cluster with instance parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      family: 'hello',
+      parameters: {
+        key: 'value'
+      }
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        parameterGroup,
+        vpc
+      }
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB'
+      }
+    }));
+
+    test.done();
+
+  },
+
+  'create a cluster using a specific version of MySQL'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      engineVersion: "5.7.mysql_aurora.2.04.4",
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Engine: "aurora-mysql",
+      EngineVersion: "5.7.mysql_aurora.2.04.4",
+    }));
+
+    test.done();
+  },
+
+  'create a cluster using a specific version of Postgresql'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      engineVersion: "10.7",
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Engine: "aurora-postgresql",
+      EngineVersion: "10.7",
+    }));
+
+    test.done();
+  },
+
+  'cluster exposes different read and write endpoints'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // THEN
+    test.notDeepEqual(
+      stack.resolve(cluster.clusterEndpoint),
+      stack.resolve(cluster.clusterReadEndpoint)
+    );
+
+    test.done();
+  },
+
+  'imported cluster with imported security group honors allowAllOutbound'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+
+    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
+      clusterEndpointAddress: 'addr',
+      clusterIdentifier: 'identifier',
+      instanceEndpointAddresses: ['addr'],
+      instanceIdentifiers: ['identifier'],
+      port: 3306,
+      readerEndpointAddress: 'reader-address',
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false
+      }),
+    });
+
+    // WHEN
+    cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'sg-123456789',
+    }));
+
+    test.done();
+  },
+
+  "cluster with enabled monitoring"(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      monitoringInterval: cdk.Duration.minutes(1),
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        "Fn::GetAtt": ["DatabaseMonitoringRole576991DA", "Arn"]
+      }
+    }, ResourcePart.Properties));
+
+    expect(stack).to(haveResource("AWS::IAM::Role", {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Principal: {
+              Service: "monitoring.rds.amazonaws.com"
+            }
+          }
+        ],
+        Version: "2012-10-17"
+      },
+      ManagedPolicyArns: [
+        {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                Ref: "AWS::Partition"
+              },
+              ":iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+            ]
+          ]
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'create a cluster with imported monitoring role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const monitoringRole = new Role(stack, "MonitoringRole", {
+      assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
+      ]
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      monitoringInterval: cdk.Duration.minutes(1),
+      monitoringRole
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        "Fn::GetAtt": ["MonitoringRole90457BF9", "Arn"]
+      }
+    }, ResourcePart.Properties));
 
     test.done();
   }

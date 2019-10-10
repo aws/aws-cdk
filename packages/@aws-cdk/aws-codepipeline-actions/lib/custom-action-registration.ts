@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 /**
  * The creation attributes used for defining a configuration property
@@ -129,7 +129,7 @@ export class CustomActionRegistration extends cdk.Construct {
         maximumCount: props.artifactBounds.maxOutputs,
       },
       provider: props.provider,
-      version: props.version,
+      version: props.version || '1',
       settings: {
         entityUrlTemplate: props.entityUrl,
         executionUrlTemplate: props.executionUrl,

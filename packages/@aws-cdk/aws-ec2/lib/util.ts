@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { ISubnet, Subnet, SubnetType } from './vpc';
+import cdk = require('@aws-cdk/core');
+import { ISubnet, SelectedSubnets, Subnet, SubnetType } from './vpc';
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
@@ -15,9 +15,9 @@ export function slugify(x: string): string {
  */
 export function defaultSubnetName(type: SubnetType) {
   switch (type) {
-    case SubnetType.Public: return 'Public';
-    case SubnetType.Private: return 'Private';
-    case SubnetType.Isolated: return  'Isolated';
+    case SubnetType.PUBLIC: return 'Public';
+    case SubnetType.PRIVATE: return 'Private';
+    case SubnetType.ISOLATED: return  'Isolated';
   }
 }
 
@@ -26,7 +26,7 @@ export function defaultSubnetName(type: SubnetType) {
  *
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
-export function subnetName(subnet: ISubnet) {
+export function subnetGroupNameFromConstructId(subnet: ISubnet) {
   return subnet.node.id.replace(/Subnet\d+$/, '');
 }
 
@@ -40,22 +40,31 @@ export function subnetId(name: string, i: number) {
 export class ImportSubnetGroup {
   private readonly subnetIds: string[];
   private readonly names: string[];
+  private readonly routeTableIds: string[];
   private readonly groups: number;
 
   constructor(
       subnetIds: string[] | undefined,
       names: string[] | undefined,
+      routeTableIds: string[] | undefined,
       type: SubnetType,
       private readonly availabilityZones: string[],
       idField: string,
-      nameField: string) {
+      nameField: string,
+      routeTableIdField: string) {
 
     this.subnetIds = subnetIds || [];
+    this.routeTableIds = routeTableIds || [];
     this.groups = this.subnetIds.length / this.availabilityZones.length;
 
     if (Math.floor(this.groups) !== this.groups) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Amount of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
+      throw new Error(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
+    }
+    if (this.routeTableIds.length !== this.subnetIds.length && routeTableIds != null) {
+      // We don't err if no routeTableIds were provided to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
+      // tslint:disable-next-line: max-line-length
+      throw new Error(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
 
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
@@ -66,7 +75,8 @@ export class ImportSubnetGroup {
       const k = Math.floor(i / this.availabilityZones.length);
       return Subnet.fromSubnetAttributes(scope, subnetId(this.names[k], i), {
         availabilityZone: this.pickAZ(i),
-        subnetId: this.subnetIds[i]
+        subnetId: this.subnetIds[i],
+        routeTableId: this.routeTableIds[i],
       });
     });
   }
@@ -105,4 +115,19 @@ export function range(n: number): number[] {
     ret.push(i);
   }
   return ret;
+}
+
+/**
+ * Return the union of table IDs from all selected subnets
+ */
+export function allRouteTableIds(...ssns: SelectedSubnets[]): string[] {
+  const ret = new Set<string>();
+  for (const ssn of ssns) {
+    for (const subnet of ssn.subnets) {
+      if (subnet.routeTable && subnet.routeTable.routeTableId) {
+        ret.add(subnet.routeTable.routeTableId);
+      }
+    }
+  }
+  return Array.from(ret);
 }

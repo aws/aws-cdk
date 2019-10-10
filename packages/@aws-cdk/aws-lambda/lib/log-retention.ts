@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { Code } from './code';
 import { Runtime } from './runtime';
@@ -18,7 +18,14 @@ export interface LogRetentionProps {
   /**
    * The number of days log events are kept in CloudWatch Logs.
    */
-  readonly retentionDays: logs.RetentionDays;
+  readonly retention: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource.
+   *
+   * @default - A new role is created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -32,21 +39,22 @@ export class LogRetention extends cdk.Construct {
 
     // Custom resource provider
     const provider = new SingletonFunction(this, 'Provider', {
-      code: Code.asset(path.join(__dirname, 'log-retention-provider')),
-      runtime: Runtime.NodeJS810,
+      code: Code.fromAsset(path.join(__dirname, 'log-retention-provider')),
+      runtime: Runtime.NODEJS_10_X,
       handler: 'index.handler',
       uuid: 'aae0aa3c-5b4d-4f87-b02d-85b201efdd8a',
       lambdaPurpose: 'LogRetention',
+      role: props.role,
     });
 
-    provider.addToRolePolicy( // Duplicate statements will be deduplicated by `PolicyDocument`
-      new iam.PolicyStatement()
-        .addActions('logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy')
-        // We need '*' here because we will also put a retention policy on
-        // the log group of the provider function. Referencing it's name
-        // creates a CF circular dependency.
-        .addAllResources()
-    );
+    // Duplicate statements will be deduplicated by `PolicyDocument`
+    provider.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+      // We need '*' here because we will also put a retention policy on
+      // the log group of the provider function. Referencing it's name
+      // creates a CF circular dependency.
+      resources: ['*'],
+    }));
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
@@ -55,7 +63,7 @@ export class LogRetention extends cdk.Construct {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        RetentionInDays: props.retentionDays === Infinity ? undefined : props.retentionDays
+        RetentionInDays: props.retention === Infinity ? undefined : props.retention
       }
     });
   }

@@ -1,8 +1,7 @@
-import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import fs = require('fs');
-import { CfnFunction } from './lambda.generated';
+import s3_assets = require('@aws-cdk/aws-s3-assets');
+import cdk = require('@aws-cdk/core');
+import { CfnResource } from '@aws-cdk/core';
 
 export abstract class Code {
   /**
@@ -11,43 +10,45 @@ export abstract class Code {
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
-  public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
     return new S3Code(bucket, key, objectVersion);
+  }
+
+  /**
+   * @deprecated use `fromBucket`
+   */
+  public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+    return this.fromBucket(bucket, key, objectVersion);
   }
 
   /**
    * @returns `LambdaInlineCode` with inline code.
    * @param code The actual handler code (limited to 4KiB)
    */
-  public static inline(code: string): InlineCode {
+  public static fromInline(code: string): InlineCode {
     return new InlineCode(code);
+  }
+
+  /**
+   * @deprecated use `fromInline`
+   */
+  public static inline(code: string): InlineCode {
+    return this.fromInline(code);
   }
 
   /**
    * Loads the function code from a local disk asset.
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
+  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
+    return new AssetCode(path, options);
+  }
+
+  /**
+   * @deprecated use `fromAsset`
+   */
   public static asset(path: string): AssetCode {
-    return new AssetCode(path);
-  }
-
-  /**
-   * @returns Zip archives the contents of a directory on disk and uses this
-   * as the lambda handler's code.
-   * @param directoryToZip The directory to zip
-   * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
-   */
-  public static directory(directoryToZip: string): AssetCode {
-    return new AssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
-  }
-
-  /**
-   * @returns Uses a file on disk as a lambda handler's code.
-   * @param filePath The file path
-   * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
-   */
-  public static file(filePath: string): AssetCode {
-    return new AssetCode(filePath, assets.AssetPackaging.File);
+    return this.fromAsset(path);
   }
 
   /**
@@ -56,32 +57,54 @@ export abstract class Code {
    * @returns a new instance of `CfnParametersCode`
    * @param props optional construction properties of {@link CfnParametersCode}
    */
-  public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
+  public static fromCfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
     return new CfnParametersCode(props);
   }
 
   /**
+   * @deprecated use `fromCfnParameters`
+   */
+  public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
+    return this.fromCfnParameters(props);
+  }
+
+  /**
    * Determines whether this Code is inline code or not.
+   *
+   * @deprecated this value is ignored since inline is now determined based on the
+   * the `inlineCode` field of `CodeConfig` returned from `bind()`.
    */
   public abstract readonly isInline: boolean;
 
   /**
-   * Called during stack synthesis to render the CodePropery for the
-   * Lambda function.
+   * Called when the lambda or layer is initialized to allow this object to bind
+   * to the stack, add resources and have fun.
    *
-   * @param resource the resource to which the code will be attached (a CfnFunction, or a CfnLayerVersion).
-   *
-   * @internal
+   * @param scope The binding scope. Don't be smart about trying to down-cast or
+   * assume it's initialized. You may just use it as a construct scope.
    */
-  public abstract _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty;
+  public abstract bind(scope: cdk.Construct): CodeConfig;
 
   /**
-   * Called when the lambda or layer is initialized to allow this object to
-   * bind to the stack, add resources and have fun.
+   * Called after the CFN function resource has been created to allow the code
+   * class to bind to it. Specifically it's required to allow assets to add
+   * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bind(_construct: cdk.Construct) {
+  public bindToResource(_resource: CfnResource, _options?: ResourceBindOptions) {
     return;
   }
+}
+
+export interface CodeConfig {
+  /**
+   * The location of the code in S3 (mutually exclusive with `inlineCode`).
+   */
+  readonly s3Location?: s3.Location;
+
+  /**
+   * Inline code (mutually exclusive with `s3Location`).
+   */
+  readonly inlineCode?: string;
 }
 
 /**
@@ -101,14 +124,13 @@ export class S3Code extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  /**
-   * @internal
-   */
-  public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
+  public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      s3Bucket: this.bucketName,
-      s3Key: this.key,
-      s3ObjectVersion: this.objectVersion
+      s3Location: {
+        bucketName: this.bucketName,
+        objectKey: this.key,
+        objectVersion: this.objectVersion
+      }
     };
   }
 }
@@ -122,24 +144,18 @@ export class InlineCode extends Code {
   constructor(private code: string) {
     super();
 
+    if (code.length === 0) {
+      throw new Error(`Lambda inline code cannot be empty`);
+    }
+
     if (code.length > 4096) {
       throw new Error("Lambda source is too large, must be <= 4096 but is " + code.length);
     }
   }
 
-  public bind(construct: cdk.Construct) {
-    const runtime = (construct as any).runtime;
-    if (!runtime.supportsInlineCode) {
-      throw new Error(`Inline source not allowed for ${runtime && runtime.name}`);
-    }
-  }
-
-  /**
-   * @internal
-   */
-  public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
+  public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      zipFile: this.code
+      inlineCode: this.code
     };
   }
 }
@@ -149,58 +165,55 @@ export class InlineCode extends Code {
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
-
-  /**
-   * The asset packaging.
-   */
-  public readonly packaging: assets.AssetPackaging;
-
-  private asset?: assets.Asset;
+  private asset?: s3_assets.Asset;
 
   /**
    * @param path The path to the asset file or directory.
-   * @param packaging The asset packaging format (optional, determined automatically)
    */
-  constructor(public readonly path: string, packaging?: assets.AssetPackaging) {
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
     super();
-
-    if (packaging !== undefined) {
-      this.packaging = packaging;
-    } else {
-      this.packaging = fs.lstatSync(path).isDirectory()
-        ? assets.AssetPackaging.ZipDirectory
-        : assets.AssetPackaging.File;
-    }
   }
 
-  public bind(construct: cdk.Construct) {
+  public bind(scope: cdk.Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new assets.Asset(construct, 'Code', {
+      this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.path,
-        packaging: this.packaging
+        ...this.options
       });
     }
 
     if (!this.asset.isZipArchive) {
       throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
     }
-  }
-
-  /**
-   * @internal
-   */
-  public _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty {
-    if (resource) {
-      // https://github.com/awslabs/aws-cdk/issues/1432
-      this.asset!.addResourceMetadata(resource, 'Code');
-    }
 
     return {
-      s3Bucket: this.asset!.s3BucketName,
-      s3Key: this.asset!.s3ObjectKey
+      s3Location: {
+        bucketName: this.asset.s3BucketName,
+        objectKey: this.asset.s3ObjectKey
+      }
     };
   }
+
+  public bindToResource(resource: CfnResource, options: ResourceBindOptions = { }) {
+    if (!this.asset) {
+      throw new Error(`bindToResource() must be called after bind()`);
+    }
+
+    const resourceProperty = options.resourceProperty || 'Code';
+
+    // https://github.com/aws/aws-cdk/issues/1432
+    this.asset.addResourceMetadata(resource, resourceProperty);
+  }
+}
+
+export interface ResourceBindOptions {
+  /**
+   * The name of the CloudFormation property to annotate with asset metadata.
+   * @see https://github.com/aws/aws-cdk/issues/1432
+   * @default Code
+   */
+  readonly resourceProperty?: string;
 }
 
 /**
@@ -244,45 +257,44 @@ export class CfnParametersCode extends Code {
     this._objectKeyParam = props.objectKeyParam;
   }
 
-  public bind(construct: cdk.Construct) {
+  public bind(scope: cdk.Construct): CodeConfig {
     if (!this._bucketNameParam) {
-      this._bucketNameParam = new cdk.CfnParameter(construct, 'LambdaSourceBucketNameParameter', {
+      this._bucketNameParam = new cdk.CfnParameter(scope, 'LambdaSourceBucketNameParameter', {
         type: 'String',
       });
     }
 
     if (!this._objectKeyParam) {
-      this._objectKeyParam = new cdk.CfnParameter(construct, 'LambdaSourceObjectKeyParameter', {
+      this._objectKeyParam = new cdk.CfnParameter(scope, 'LambdaSourceObjectKeyParameter', {
         type: 'String',
       });
     }
+
+    return {
+      s3Location: {
+        bucketName: this._bucketNameParam.valueAsString,
+        objectKey: this._objectKeyParam.valueAsString,
+      }
+    };
   }
 
   /**
    * Create a parameters map from this instance's CloudFormation parameters.
    *
    * It returns a map with 2 keys that correspond to the names of the parameters defined in this Lambda code,
-   * and as values it contains the appropriate expressions pointing at the provided S3 coordinates
-   * (most likely, obtained from a CodePipeline Artifact by calling the `artifact.s3Coordinates` method).
+   * and as values it contains the appropriate expressions pointing at the provided S3 location
+   * (most likely, obtained from a CodePipeline Artifact by calling the `artifact.s3Location` method).
    * The result should be provided to the CloudFormation Action
    * that is deploying the Stack that the Lambda with this code is part of,
    * in the `parameterOverrides` property.
    *
-   * @param coordinates the coordinates of the object in S3 that represents the Lambda code
+   * @param location the location of the object in S3 that represents the Lambda code
    */
-  public assign(coordinates: s3.Coordinates): { [name: string]: any } {
+  public assign(location: s3.Location): { [name: string]: any } {
     const ret: { [name: string]: any } = {};
-    ret[this.bucketNameParam] = coordinates.bucketName;
-    ret[this.objectKeyParam] = coordinates.objectKey;
+    ret[this.bucketNameParam] = location.bucketName;
+    ret[this.objectKeyParam] = location.objectKey;
     return ret;
-  }
-
-  /** @internal */
-  public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
-    return {
-      s3Bucket: this._bucketNameParam!.stringValue,
-      s3Key: this._objectKeyParam!.stringValue,
-    };
   }
 
   public get bucketNameParam(): string {

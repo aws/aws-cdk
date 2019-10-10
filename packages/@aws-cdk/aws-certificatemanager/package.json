@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-certificatemanager",
-  "version": "0.31.0",
+  "version": "1.12.0",
   "description": "The CDK Construct Library for AWS::CertificateManager",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,17 @@
         "package": "software.amazon.awscdk.services.certificatemanager",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "certificatemanager"
+          "artifactId": "certificatemanager",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CertificateManager",
         "packageId": "Amazon.CDK.AWS.CertificateManager",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-certificatemanager",
@@ -28,7 +31,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-certificatemanager"
   },
   "scripts": {
@@ -40,7 +43,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::CertificateManager"
@@ -58,27 +63,34 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.31.0",
-    "cdk-build-tools": "^0.31.0",
-    "cfn2ts": "^0.31.0",
-    "pkglint": "^0.31.0"
+    "@aws-cdk/assert": "^1.12.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.31.0",
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/aws-lambda": "^0.31.0",
-    "@aws-cdk/aws-route53": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-cloudformation": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-route53": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.31.0",
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/aws-lambda": "^0.31.0",
-    "@aws-cdk/aws-route53": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-cloudformation": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/aws-lambda": "^1.12.0",
+    "@aws-cdk/aws-route53": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
-  }
+    "node": ">= 10.3.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-certificatemanager.CertificateProps",
+      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps"
+    ]
+  },
+  "stability": "stable"
 }

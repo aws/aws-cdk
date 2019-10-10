@@ -34,12 +34,12 @@ export class AugmentationGenerator {
   /**
    * Saves the generated file.
    */
-  public async save(dir: string) {
+  public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
     return await this.code.save(dir);
   }
 
-  private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations, options?: schema.AugmentationOptions) {
+  private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations, options?: schema.AugmentationOptions): void {
     const cfnName = SpecName.parse(resourceTypeName);
     const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
     const l2ClassName = resourceName.className.replace(/^Cfn/, '');
@@ -78,14 +78,14 @@ export class AugmentationGenerator {
     }
   }
 
-  private emitMetricFunctionDeclaration(resource: SpecName) {
+  private emitMetricFunctionDeclaration(resource: SpecName): void {
     this.code.line(`/**`);
     this.code.line(` * Return the given named metric for this ${resource.resourceName}`);
     this.code.line(` */`);
     this.code.line(`metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;`);
   }
 
-  private emitMetricFunction(className: string, metrics: schema.ResourceMetricAugmentations) {
+  private emitMetricFunction(className: string, metrics: schema.ResourceMetricAugmentations): void {
     this.code.line(`${className}.prototype.metric = function(metricName: string, props?: cloudwatch.MetricOptions) {`);
     this.code.line(`  return new cloudwatch.Metric({`);
     this.code.line(`    namespace: '${metrics.namespace}',`);
@@ -102,7 +102,7 @@ export class AugmentationGenerator {
     this.code.line('};');
   }
 
-  private emitSpecificMetricFunctionDeclaration(metric: schema.ResourceMetric) {
+  private emitSpecificMetricFunctionDeclaration(metric: schema.ResourceMetric): void {
     this.code.line(`/**`);
     this.code.line(` * ${metric.documentation}`);
     this.code.line(` *`);
@@ -111,18 +111,18 @@ export class AugmentationGenerator {
     this.code.line(`metric${metricFunctionName(metric)}(props?: cloudwatch.MetricOptions): cloudwatch.Metric;`);
   }
 
-  private emitSpecificMetricFunction(className: string, metric: schema.ResourceMetric) {
+  private emitSpecificMetricFunction(className: string, metric: schema.ResourceMetric): void {
     this.code.line(`${className}.prototype.metric${metricFunctionName(metric)} = function(props?: cloudwatch.MetricOptions) {`);
     this.code.line(`  return this.metric('${metric.name}', { statistic: '${metricStatistic(metric)}', ...props });`);
     this.code.line('};');
   }
 }
 
-function metricFunctionName(metric: schema.ResourceMetric) {
+function metricFunctionName(metric: schema.ResourceMetric): string {
   return metric.name.replace(/[^a-zA-Z0-9]/g, '');
 }
 
-function metricStatistic(metric: schema.ResourceMetric) {
+function metricStatistic(metric: schema.ResourceMetric): string {
   switch (metric.type) {
     case schema.MetricType.Attrib:
     case undefined:

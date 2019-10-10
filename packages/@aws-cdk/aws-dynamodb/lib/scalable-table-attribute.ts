@@ -21,14 +21,14 @@ export class ScalableTableAttribute extends appscaling.BaseScalableAttribute {
       throw new RangeError(`targetUtilizationPercent for DynamoDB scaling must be between 10 and 90 percent, got: ${props.targetUtilizationPercent}`);
     }
     const predefinedMetric = this.props.dimension.indexOf('ReadCapacity') === -1
-        ? appscaling.PredefinedMetric.DynamoDBWriteCapacityUtilization
-        : appscaling.PredefinedMetric.DynamoDBReadCapacityUtilization;
+        ? appscaling.PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION
+        : appscaling.PredefinedMetric.DYNAMODB_READ_CAPACITY_UTILIZATION;
 
     super.doScaleToTrackMetric('Tracking', {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec,
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown,
       targetValue: props.targetUtilizationPercent,
       predefinedMetric,
     });

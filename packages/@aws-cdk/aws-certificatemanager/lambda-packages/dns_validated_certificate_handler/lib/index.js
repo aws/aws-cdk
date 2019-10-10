@@ -2,13 +2,16 @@
 
 const aws = require('aws-sdk');
 
-const sleep = function (ms) {
+const defaultSleep = function(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 // These are used for test purposes only
 let defaultResponseURL;
 let waiter;
+let sleep = defaultSleep;
+let random = Math.random;
+let maxAttempts = 10;
 
 /**
  * Upload a CloudFormation response object to S3.
@@ -21,7 +24,7 @@ let waiter;
  * @param {string} [reason] reason for failure, if any, to convey to the user
  * @returns {Promise} Promise that is resolved on success, or rejected on connection error or HTTP error response
  */
-let report = function (event, context, responseStatus, physicalResourceId, responseData, reason) {
+let report = function(event, context, responseStatus, physicalResourceId, responseData, reason) {
   return new Promise((resolve, reject) => {
     const https = require('https');
     const { URL } = require('url');
@@ -74,9 +77,9 @@ let report = function (event, context, responseStatus, physicalResourceId, respo
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId) {
+const requestCertificate = async function(requestId, domainName, subjectAlternativeNames, hostedZoneId, region) {
   const crypto = require('crypto');
-  const acm = new aws.ACM();
+  const acm = new aws.ACM({ region });
   const route53 = new aws.Route53();
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
@@ -96,18 +99,26 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for ACM to provide DNS records for validation...');
 
-  var describeCertResponse;
-  let attempt = 0;
-  do {
-    // Exponential backoff with jitter based on 100ms base
-    await sleep(Math.random() * (Math.pow(attempt, 2) * 100));
-    describeCertResponse = await acm.describeCertificate({
+  let record;
+  for (let attempt = 0; attempt < maxAttempts && !record; attempt++) {
+    const { Certificate } = await acm.describeCertificate({
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
-  } while (describeCertResponse.Certificate.DomainValidationOptions < 1 ||
-    'ResourceRecord' in describeCertResponse.Certificate.DomainValidationOptions[0] === false);
+    const options = Certificate.DomainValidationOptions || [];
 
-  const record = describeCertResponse.Certificate.DomainValidationOptions[0].ResourceRecord;
+    if (options.length > 0 && options[0].ResourceRecord) {
+      record = options[0].ResourceRecord;
+    } else {
+      // Exponential backoff with jitter based on 200ms base
+      // component of backoff fixed to ensure minimum total wait time on
+      // slow targets.
+      const base = Math.pow(2, attempt);
+      await sleep(random() * base * 50 + base * 150);
+    }
+  }
+  if (!record) {
+    throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`)
+  }
 
   console.log(`Upserting DNS record into zone ${hostedZoneId}: ${record.Name} ${record.Type} ${record.Value}`);
 
@@ -140,10 +151,10 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for validation...');
   await acm.waitFor('certificateValidated', {
-    // Wait up to 5 minutes
+    // Wait up to 9 minutes and 30 seconds
     $waiter: {
       delay: 30,
-      maxAttempts: 10
+      maxAttempts: 19
     },
     CertificateArn: reqCertResponse.CertificateArn
   }).promise();
@@ -157,12 +168,37 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
  *
  * @param {string} arn The certificate ARN
  */
-const deleteCertificate = async function (arn) {
-  const acm = new aws.ACM();
-
-  console.log(`Deleting certificate ${arn}`);
+const deleteCertificate = async function(arn, region) {
+  const acm = new aws.ACM({ region });
 
   try {
+    console.log(`Waiting for certificate ${arn} to become unused`);
+
+    let inUseByResources;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const { Certificate } = await acm.describeCertificate({
+        CertificateArn: arn
+      }).promise();
+
+      inUseByResources = Certificate.InUseBy || [];
+
+      if (inUseByResources.length) {
+        // Exponential backoff with jitter based on 200ms base
+        // component of backoff fixed to ensure minimum total wait time on
+        // slow targets.
+        const base = Math.pow(2, attempt);
+        await sleep(random() * base * 50 + base * 150);
+      } else {
+        break
+      }
+    }
+
+    if (inUseByResources.length) {
+      throw new Error(`Response from describeCertificate did not contain an empty InUseBy list after ${maxAttempts} attempts.`)
+    }
+
+    console.log(`Deleting certificate ${arn}`);
+
     await acm.deleteCertificate({
       CertificateArn: arn
     }).promise();
@@ -176,7 +212,7 @@ const deleteCertificate = async function (arn) {
 /**
  * Main handler, invoked by Lambda
  */
-exports.certificateRequestHandler = async function (event, context) {
+exports.certificateRequestHandler = async function(event, context) {
   var responseData = {};
   var physicalResourceId;
   var certificateArn;
@@ -189,7 +225,8 @@ exports.certificateRequestHandler = async function (event, context) {
           event.RequestId,
           event.ResourceProperties.DomainName,
           event.ResourceProperties.SubjectAlternativeNames,
-          event.ResourceProperties.HostedZoneId
+          event.ResourceProperties.HostedZoneId,
+          event.ResourceProperties.Region,
         );
         responseData.Arn = physicalResourceId = certificateArn;
         break;
@@ -198,7 +235,7 @@ exports.certificateRequestHandler = async function (event, context) {
         // If the resource didn't create correctly, the physical resource ID won't be the
         // certificate ARN, so don't try to delete it in that case.
         if (physicalResourceId.startsWith('arn:')) {
-          await deleteCertificate(physicalResourceId);
+          await deleteCertificate(physicalResourceId, event.ResourceProperties.Region);
         }
         break;
       default:
@@ -217,27 +254,69 @@ exports.certificateRequestHandler = async function (event, context) {
 /**
  * @private
  */
-exports.withReporter = function (reporter) {
+exports.withReporter = function(reporter) {
   report = reporter;
 };
 
 /**
  * @private
  */
-exports.withDefaultResponseURL = function (url) {
+exports.withDefaultResponseURL = function(url) {
   defaultResponseURL = url;
 };
 
 /**
  * @private
  */
-exports.withWaiter = function (w) {
+exports.withWaiter = function(w) {
   waiter = w;
 };
 
 /**
  * @private
  */
-exports.resetWaiter = function () {
+exports.resetWaiter = function() {
   waiter = undefined;
 };
+
+/**
+ * @private
+ */
+exports.withSleep = function(s) {
+  sleep = s;
+}
+
+/**
+ * @private
+ */
+exports.resetSleep = function() {
+  sleep = defaultSleep;
+}
+
+/**
+ * @private
+ */
+exports.withRandom = function(r) {
+  random = r;
+}
+
+/**
+ * @private
+ */
+exports.resetRandom = function() {
+  random = Math.random;
+}
+
+/**
+ * @private
+ */
+exports.withMaxAttempts = function(ma) {
+  maxAttempts = ma;
+}
+
+/**
+ * @private
+ */
+exports.resetMaxAttempts = function() {
+  maxAttempts = 10;
+}

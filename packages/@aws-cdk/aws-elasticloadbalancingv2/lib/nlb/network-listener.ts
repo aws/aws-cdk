@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
@@ -17,22 +17,28 @@ export interface BaseNetworkListenerProps {
   /**
    * Default target groups to load balance to
    *
-   * @default None
+   * @default - None.
    */
   readonly defaultTargetGroups?: INetworkTargetGroup[];
 
   /**
    * Protocol for listener, expects TCP or TLS
+   *
+   * @default - TLS if certificates are provided. TCP otherwise.
    */
   readonly protocol?: Protocol;
 
   /**
    * Certificate list of ACM cert ARNs
+   *
+   * @default - No certificates.
    */
   readonly certificates?: INetworkListenerCertificateProps[];
 
   /**
    * SSL Policy
+   *
+   * @default - Current predefined security policy.
    */
   readonly sslPolicy?: SslPolicy;
 }
@@ -81,17 +87,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
   constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
-    const proto = props.protocol || (certs.length > 0 ? Protocol.Tls : Protocol.Tcp);
+    const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
 
-    if ([Protocol.Tcp, Protocol.Tls].indexOf(proto) === -1) {
-      throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
+    if ([Protocol.TCP, Protocol.TLS].indexOf(proto) === -1) {
+      throw new Error(`The protocol must be either ${Protocol.TCP} or ${Protocol.TLS}. Found ${props.protocol}`);
     }
 
-    if (proto === Protocol.Tls && certs.filter(v => v != null).length === 0) {
+    if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
       throw new Error(`When the protocol is set to TLS, you must specify certificates`);
     }
 
-    if (proto !== Protocol.Tls && certs.length > 0) {
+    if (proto !== Protocol.TLS && certs.length > 0) {
       throw new Error(`Protocol must be TLS when certificates have been specified`);
     }
 
@@ -134,7 +140,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {
-      deregistrationDelaySec: props.deregistrationDelaySec,
+      deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
       proxyProtocolV2: props.proxyProtocolV2,
@@ -196,9 +202,9 @@ export interface AddNetworkTargetsProps {
    *
    * The range is 0-3600 seconds.
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly deregistrationDelaySec?: number;
+  readonly deregistrationDelay?: Duration;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.

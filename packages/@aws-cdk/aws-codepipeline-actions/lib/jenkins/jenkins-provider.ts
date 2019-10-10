@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CustomActionRegistration } from "../custom-action-registration";
 
 /**
@@ -88,12 +88,16 @@ export interface JenkinsProviderProps {
   /**
    * Whether to immediately register a Jenkins Provider for the build category.
    * The Provider will always be registered if you create a {@link JenkinsAction}.
+   *
+   * @default false
    */
   readonly forBuild?: boolean;
 
   /**
    * Whether to immediately register a Jenkins Provider for the test category.
    * The Provider will always be registered if you create a {@link JenkinsTestAction}.
+   *
+   * @default false
    */
   readonly forTest?: boolean;
 }
@@ -166,7 +170,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
       return;
     }
     this.buildIncluded = true;
-    this.registerJenkinsCustomAction('JenkinsBuildProviderResource', codepipeline.ActionCategory.Build);
+    this.registerJenkinsCustomAction('JenkinsBuildProviderResource', codepipeline.ActionCategory.BUILD);
   }
 
   /**
@@ -177,7 +181,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
       return;
     }
     this.testIncluded = true;
-    this.registerJenkinsCustomAction('JenkinsTestProviderResource', codepipeline.ActionCategory.Test);
+    this.registerJenkinsCustomAction('JenkinsTestProviderResource', codepipeline.ActionCategory.TEST);
   }
 
   private registerJenkinsCustomAction(id: string, category: codepipeline.ActionCategory) {

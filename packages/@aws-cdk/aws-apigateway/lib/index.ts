@@ -6,9 +6,16 @@ export * from './deployment';
 export * from './stage';
 export * from './integrations';
 export * from './lambda-api';
+export * from './api-key';
+export * from './usage-plan';
 export * from './vpc-link';
 export * from './methodresponse';
 export * from './model';
+export * from './requestvalidator';
+export * from './authorizer';
+export * from './json-schema';
+export * from './domain-name';
+export * from './base-path-mapping';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';

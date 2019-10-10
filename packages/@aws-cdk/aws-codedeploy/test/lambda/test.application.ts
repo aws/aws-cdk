@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
 
@@ -16,7 +16,7 @@ export = {
     "can be created with explicit name"(test: Test) {
       const stack = new cdk.Stack();
       new codedeploy.LambdaApplication(stack, 'MyApp', {
-        applicationName: 'my-name'
+        applicationName: 'my-name',
       });
       expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
         ApplicationName: 'my-name',

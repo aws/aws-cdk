@@ -24,7 +24,7 @@ etc, `IFoo` would be `IBucket`, `ITopic` and so forth.
 The guidelines in this document use TypeScript (and npm package names) since
 this is the source programming language used to author the library, which is
 later packaged and published to all programming languages through
-[jsii](https://github.com/awslabs/jsii).
+[jsii](https://github.com/aws/jsii).
 
 ## Modules
 

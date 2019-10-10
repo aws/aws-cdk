@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
 import ecs = require('@aws-cdk/aws-ecs');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
@@ -14,7 +14,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecs-deploy');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
-  maxAZs: 1,
+  maxAzs: 1,
 });
 const cluster = new ecs.Cluster(stack, "EcsCluster", {
   vpc,
@@ -32,7 +32,7 @@ const service = new ecs.FargateService(stack, 'FargateService', {
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({
@@ -47,7 +47,7 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_DOCKER_17_09_0,
     privileged: true,
   },
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       pre_build: {
@@ -66,7 +66,7 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
     artifacts: {
       files: 'imagedefinitions.json',
     },
-  },
+  }),
   environmentVariables: {
     'REPOSITORY_URI': {
       value: repository.repositoryUri,
@@ -80,22 +80,22 @@ const buildAction = new cpactions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: buildOutput,
+  outputs: [buildOutput],
 });
 
 new codepipeline.Pipeline(stack, 'MyPipeline', {
   artifactBucket: bucket,
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     },
     {
-      name: 'Build',
+      stageName: 'Build',
       actions: [buildAction],
     },
     {
-      name: 'Deploy',
+      stageName: 'Deploy',
       actions: [
         new cpactions.EcsDeployAction({
           actionName: 'DeployAction',
@@ -107,4 +107,4 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
   ],
 });
 
-app.run();
+app.synth();

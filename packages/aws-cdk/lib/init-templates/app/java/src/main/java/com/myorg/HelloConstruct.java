@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.Construct;
+import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.services.iam.IGrantable;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.BucketProps;

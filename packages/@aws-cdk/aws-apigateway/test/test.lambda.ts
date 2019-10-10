@@ -1,6 +1,6 @@
 import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 
@@ -10,9 +10,9 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api');
     const handler = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.Python27,
+      runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'boom',
-      code: lambda.Code.inline('foo')
+      code: lambda.Code.fromInline('foo')
     });
 
     // WHEN
@@ -56,8 +56,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NodeJS610,
-      code: lambda.Code.inline('foo'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+      code: lambda.Code.fromInline('foo'),
       handler: 'index.handler'
     });
 
@@ -106,8 +106,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NodeJS610,
-      code: lambda.Code.inline('foo'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+      code: lambda.Code.fromInline('foo'),
       handler: 'index.handler'
     });
 
@@ -132,9 +132,9 @@ export = {
     const api = new apigateway.RestApi(stack, 'test-api');
 
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.handler',
-      code: lambda.Code.inline(``)
+      code: lambda.Code.fromInline(`loo`)
     });
 
     const target = new apigateway.LambdaIntegration(handler);

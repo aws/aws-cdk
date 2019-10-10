@@ -1,8 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
-import { CfnPrivateDnsNamespace} from './servicediscovery.generated';
+import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
@@ -40,7 +40,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
-      public type = NamespaceType.DnsPrivate;
+      public type = NamespaceType.DNS_PRIVATE;
     }
     return new Import(scope, id);
   }
@@ -78,9 +78,9 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     });
 
     this.namespaceName = props.name;
-    this.namespaceId = ns.privateDnsNamespaceId;
-    this.namespaceArn = ns.privateDnsNamespaceArn;
-    this.type = NamespaceType.DnsPrivate;
+    this.namespaceId = ns.attrId;
+    this.namespaceArn = ns.attrArn;
+    this.type = NamespaceType.DNS_PRIVATE;
   }
 
   /** @attribute */

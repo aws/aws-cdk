@@ -1,11 +1,9 @@
-import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import s3n = require('@aws-cdk/aws-s3-notifications');
-import { IResource, Resource } from '@aws-cdk/cdk';
+import { IResource, Resource } from '@aws-cdk/core';
 import { QueuePolicy } from './policy';
 
-export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
+export interface IQueue extends IResource {
   /**
    * The ARN of this queue
    * @attribute
@@ -30,6 +28,11 @@ export interface IQueue extends IResource, s3n.IBucketNotificationDestination, a
   readonly encryptionMasterKey?: kms.IKey;
 
   /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   */
+  readonly fifo: boolean;
+
+  /**
    * Adds a statement to the IAM resource policy associated with this queue.
    *
    * If this queue was created in this stack (`new Queue`), a queue policy
@@ -44,10 +47,8 @@ export interface IQueue extends IResource, s3n.IBucketNotificationDestination, a
    * This will grant the following permissions:
    *
    *   - sqs:ChangeMessageVisibility
-   *   - sqs:ChangeMessageVisibilityBatch
    *   - sqs:DeleteMessage
    *   - sqs:ReceiveMessage
-   *   - sqs:DeleteMessageBatch
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
@@ -61,7 +62,6 @@ export interface IQueue extends IResource, s3n.IBucketNotificationDestination, a
    * This will grant the following permissions:
    *
    *  - sqs:SendMessage
-   *  - sqs:SendMessageBatch
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
@@ -118,6 +118,11 @@ export abstract class QueueBase extends Resource implements IQueue {
   public abstract readonly encryptionMasterKey?: kms.IKey;
 
   /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   */
+  public abstract readonly fifo: boolean;
+
+  /**
    * Controls automatic creation of policy objects.
    *
    * Set by subclasses.
@@ -125,11 +130,6 @@ export abstract class QueueBase extends Resource implements IQueue {
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: QueuePolicy;
-
-  /**
-   * The set of S3 bucket IDs that are allowed to send notifications to this queue.
-   */
-  private readonly notifyingBuckets = new Set<string>();
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -144,53 +144,8 @@ export abstract class QueueBase extends Resource implements IQueue {
     }
 
     if (this.policy) {
-      this.policy.document.addStatement(statement);
+      this.policy.document.addStatements(statement);
     }
-  }
-
-  /**
-   * Allows using SQS queues as destinations for bucket notifications.
-   * Use `bucket.onEvent(event, queue)` to subscribe.
-   * @param bucketArn The ARN of the notifying bucket.
-   * @param bucketId A unique ID for the notifying bucket.
-   */
-  public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
-    if (!this.notifyingBuckets.has(bucketId)) {
-      this.addToResourcePolicy(new iam.PolicyStatement()
-        .addServicePrincipal('s3.amazonaws.com')
-        .addAction('sqs:SendMessage')
-        .addResource(this.queueArn)
-        .addCondition('ArnLike', { 'aws:SourceArn': bucketArn }));
-
-      // if this queue is encrypted, we need to allow S3 to read messages since that's how
-      // it verifies that the notification destination configuration is valid.
-      // by setting allowNoOp to false, we ensure that only custom keys that we can actually
-      // control access to can be used here as described in:
-      // https://docs.aws.amazon.com/AmazonS3/latest/dev/ways-to-add-notification-config-to-bucket.html
-      if (this.encryptionMasterKey) {
-        this.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement()
-          .addServicePrincipal('s3.amazonaws.com')
-          .addAction('kms:GenerateDataKey')
-          .addAction('kms:Decrypt')
-          .addAllResources(), /* allowNoOp */ false);
-      }
-
-      this.notifyingBuckets.add(bucketId);
-    }
-
-    return {
-      arn: this.queueArn,
-      type: s3n.BucketNotificationDestinationType.Queue,
-      dependencies: [ this.policy! ]
-    };
-  }
-
-  /**
-   * Allow using SQS queues as lifecycle hook targets
-   */
-  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
-    this.grantSendMessages(lifecycleHook.role);
-    return { notificationTargetArn: this.queueArn };
   }
 
   /**
@@ -199,24 +154,26 @@ export abstract class QueueBase extends Resource implements IQueue {
    * This will grant the following permissions:
    *
    *   - sqs:ChangeMessageVisibility
-   *   - sqs:ChangeMessageVisibilityBatch
    *   - sqs:DeleteMessage
    *   - sqs:ReceiveMessage
-   *   - sqs:DeleteMessageBatch
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
-    return this.grant(grantee,
+    const ret = this.grant(grantee,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
-      'sqs:ChangeMessageVisibilityBatch',
       'sqs:GetQueueUrl',
       'sqs:DeleteMessage',
-      'sqs:DeleteMessageBatch',
       'sqs:GetQueueAttributes');
+
+    if (this.encryptionMasterKey) {
+      this.encryptionMasterKey.grantDecrypt(grantee);
+    }
+
+    return ret;
   }
 
   /**
@@ -225,18 +182,22 @@ export abstract class QueueBase extends Resource implements IQueue {
    * This will grant the following permissions:
    *
    *  - sqs:SendMessage
-   *  - sqs:SendMessageBatch
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
    */
   public grantSendMessages(grantee: iam.IGrantable) {
-    return this.grant(grantee,
+    const ret = this.grant(grantee,
       'sqs:SendMessage',
-      'sqs:SendMessageBatch',
       'sqs:GetQueueAttributes',
       'sqs:GetQueueUrl');
+
+    if (this.encryptionMasterKey) {
+      this.encryptionMasterKey.grantEncrypt(grantee);
+    }
+
+    return ret;
   }
 
   /**

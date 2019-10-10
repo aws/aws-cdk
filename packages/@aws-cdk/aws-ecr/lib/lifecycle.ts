@@ -1,3 +1,5 @@
+import { Duration } from '@aws-cdk/core';
+
 /**
  * An ECR life cycle rule
  */
@@ -50,11 +52,11 @@ export interface LifecycleRule {
   readonly maxImageCount?: number;
 
   /**
-   * The maximum age of images to retain
+   * The maximum age of images to retain. The value must represent a number of days.
    *
-   * Specify exactly one of maxImageCount and maxImageAgeDays.
+   * Specify exactly one of maxImageCount and maxImageAge.
    */
-  readonly maxImageAgeDays?: number;
+  readonly maxImageAge?: Duration;
 }
 
 /**
@@ -64,30 +66,15 @@ export enum TagStatus {
   /**
    * Rule applies to all images
    */
-  Any = 'any',
+  ANY = 'any',
 
   /**
    * Rule applies to tagged images
    */
-  Tagged = 'tagged',
+  TAGGED = 'tagged',
 
   /**
    * Rule applies to untagged images
    */
-  Untagged = 'untagged',
-}
-
-/**
- * Select images based on counts
- */
-export enum CountType {
-  /**
-   * Set a limit on the number of images in your repository
-   */
-  ImageCountMoreThan = 'imageCountMoreThan',
-
-  /**
-   * Set an age limit on the images in your repository
-   */
-  SinceImagePushed = 'sinceImagePushed',
+  UNTAGGED = 'untagged',
 }

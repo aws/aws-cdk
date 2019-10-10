@@ -1,16 +1,16 @@
 {
   "name": "cdk",
-  "version": "0.31.0",
+  "version": "1.12.0",
   "description": "AWS CDK Toolkit",
   "bin": {
     "cdk": "bin/cdk"
   },
   "dependencies": {
-    "aws-cdk": "^0.31.0"
+    "aws-cdk": "^1.12.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git"
   },
   "keywords": [
     "aws",
@@ -24,12 +24,14 @@
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/awslabs/aws-cdk/issues"
+    "url": "https://github.com/aws/aws-cdk/issues"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "echo Nothing to build",
-    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../"
+    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
+    "build+test": "npm run build",
+    "build+test+package": "npm run build+test && npm run package"
   },
   "engines": {
     "node": ">= 8.10.0"

@@ -1,0 +1,94 @@
+{
+  "name": "@aws-cdk/core",
+  "version": "1.12.0",
+  "description": "AWS Cloud Development Kit Core Library",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.core",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "core",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK",
+        "packageId": "Amazon.CDK",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.core",
+        "module": "aws_cdk.core"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/core"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/core.App.<initializer>",
+      "props-no-cfn-types:@aws-cdk/core.CfnOutputProps.condition",
+      "duration-prop-type:@aws-cdk/core.ResourceSignal.timeout",
+      "props-no-any:@aws-cdk/core.CfnParameterProps.default",
+      "props-no-cfn-types:@aws-cdk/core.CfnRuleProps.assertions",
+      "construct-ctor:@aws-cdk/core.Stack.<initializer>.params[1]"
+    ]
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
+  },
+  "nyc": {
+    "statements": 55,
+    "lines": 55,
+    "branches": 35
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "jsii",
+    "cdk-core"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/lodash": "^4.14.142",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "fast-check": "^1.17.0",
+    "lodash": "^4.17.15",
+    "pkglint": "file:../../../tools/pkglint"
+  },
+  "dependencies": {
+    "@aws-cdk/cx-api": "^1.12.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/cx-api": "^1.12.0"
+  },
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "stable"
+}

@@ -1,5 +1,3 @@
-import { NumberValue } from "./number-value";
-
 export interface ContainerOverride {
   /**
    * Name of the container inside the task definition
@@ -23,21 +21,21 @@ export interface ContainerOverride {
    *
    * @Default The default value from the task definition.
    */
-  readonly cpu?: NumberValue;
+  readonly cpu?: number;
 
   /**
    * Hard memory limit on the container
    *
    * @Default The default value from the task definition.
    */
-  readonly memoryLimit?: NumberValue;
+  readonly memoryLimit?: number;
 
   /**
    * Soft memory limit on the container
    *
    * @Default The default value from the task definition.
    */
-  readonly memoryReservation?: NumberValue;
+  readonly memoryReservation?: number;
 }
 
 /**

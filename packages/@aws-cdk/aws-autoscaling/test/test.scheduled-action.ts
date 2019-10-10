@@ -1,6 +1,6 @@
 import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -12,7 +12,7 @@ export = {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Cron.dailyUtc(8),
+      schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
       minCapacity: 10,
     });
 
@@ -32,7 +32,7 @@ export = {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Cron.dailyUtc(8),
+      schedule: autoscaling.Schedule.cron({ hour: '8' }),
       startTime: new Date(Date.UTC(2033, 8, 10, 12, 0, 0)),      // JavaScript's Date is a little silly.
       minCapacity: 11,
     });
@@ -52,7 +52,7 @@ export = {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Cron.dailyUtc(8),
+      schedule: autoscaling.Schedule.cron({ hour: '8' }),
       minCapacity: 10,
     });
 
@@ -76,7 +76,6 @@ export = {
             VPCZoneIdentifier: [
               { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
               { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-              { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
             ]
           },
           UpdatePolicy: {
@@ -97,6 +96,12 @@ export = {
           },
         }
       },
+      Parameters: {
+        SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
+          Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+          Default: "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+        }
+      }
     }, MatchStyle.SUPERSET);
 
     test.done();
@@ -109,6 +114,6 @@ function makeAutoScalingGroup(scope: cdk.Construct) {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),
     machineImage: new ec2.AmazonLinuxImage(),
-    updateType: autoscaling.UpdateType.RollingUpdate,
+    updateType: autoscaling.UpdateType.ROLLING_UPDATE,
   });
 }

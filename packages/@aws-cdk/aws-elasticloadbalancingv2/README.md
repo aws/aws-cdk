@@ -1,4 +1,13 @@
-## AWS Application and Network Load Balancing Construct Library
+## Amazon Elastic Load Balancing V2 Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
@@ -20,7 +29,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 
 // ...
 
-const vpc = new ec2.VpcNetwork(...);
+const vpc = new ec2.Vpc(...);
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
@@ -143,6 +152,27 @@ const group = listener.addTargets('AppFleet', {
 group.addTarget(asg2);
 ```
 
+### Using Lambda Targets
+
+To use a Lambda Function as a target, use the integration class in the
+`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import targets = require('@aws-cdk/aws-elasticloadbalancingv2-targets');
+
+const lambdaFunction = new lambda.Function(...);
+const loadBalancer = new elbv2.ApplicationLoadBalancer(...);
+
+const listener = lb.addListener('Listener', { port: 80 });
+listener.addTargets('Targets', {
+    targets: [new targets.LambdaTarget(lambdaFunction)]
+});
+```
+
+Only a single Lambda function can be added to a single listener rule.
+
 ### Configuring Health Checks
 
 Health checks are configured upon creation of a target group:
@@ -153,7 +183,7 @@ listener.addTargets('AppFleet', {
     targets: [asg],
     healthCheck: {
         path: '/ping',
-        intervalSecs: 60,
+        interval: cdk.Duration.minutes(1),
     }
 });
 ```
@@ -175,7 +205,7 @@ listener.addTargets('AppFleet', {
     }
 });
 
-listener.connections.allowFrom(lb, new TcpPort(8088));
+listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
 
 ### Protocol for Load Balancer Targets

@@ -1,4 +1,4 @@
-import { App, SecretValue, Stack } from "@aws-cdk/cdk";
+import { App, SecretValue, Stack } from "@aws-cdk/core";
 import { User } from "../lib";
 
 const app = new App();
@@ -11,4 +11,4 @@ new User(stack, 'MyUser', {
   passwordResetRequired: true
 });
 
-app.run();
+app.synth();

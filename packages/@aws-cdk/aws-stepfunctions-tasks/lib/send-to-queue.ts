@@ -1,17 +1,17 @@
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { renderNumber, renderString } from './json-path';
-import { NumberValue } from './number-value';
+import { Duration } from '@aws-cdk/core';
+import { resourceArnSuffix } from './resource-arn-suffix';
 
 /**
  * Properties for SendMessageTask
  */
 export interface SendToQueueProps {
   /**
-   * The message body to send to the queue.
+   * The text message to send to the queue.
    */
-  readonly messageBody: string;
+  readonly messageBody: sfn.TaskInput;
 
   /**
    * The length of time, in seconds, for which to delay a specific message.
@@ -20,7 +20,7 @@ export interface SendToQueueProps {
    *
    * @default Default value of the queue is used
    */
-  readonly delaySeconds?: NumberValue;
+  readonly delay?: Duration;
 
   /**
    * The token used for deduplication of sent messages.
@@ -38,31 +38,59 @@ export interface SendToQueueProps {
    * @default No group ID
    */
   readonly messageGroupId?: string;
+
+  /**
+   * The service integration pattern indicates different ways to call SendMessage to SQS.
+   *
+   * The valid value is either FIRE_AND_FORGET or WAIT_FOR_TASK_TOKEN.
+   *
+   * @default FIRE_AND_FORGET
+   */
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
- * A StepFunctions Task to invoke a Lambda function.
+ * A StepFunctions Task to send messages to SQS queue.
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
+
+  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+
+    const supportedPatterns = [
+      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+    ];
+
+    if (!supportedPatterns.includes(this.integrationPattern)) {
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SQS.`);
+    }
+
+    if (props.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+      if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
+        throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+      }
+    }
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sqs:sendMessage',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sqs:SendMessage')
-        .addResource(this.queue.queueArn)
-      ],
+      resourceArn: 'arn:aws:states:::sqs:sendMessage' + resourceArnSuffix.get(this.integrationPattern),
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [this.queue.queueArn]
+      })],
       parameters: {
         QueueUrl: this.queue.queueUrl,
-        ...renderString('MessageBody', this.props.messageBody),
-        ...renderNumber('DelaySeconds', this.props.delaySeconds),
-        ...renderString('MessageDeduplicationId', this.props.messageDeduplicationId),
-        ...renderString('MessageGroupId', this.props.messageGroupId),
+        MessageBody: this.props.messageBody.value,
+        DelaySeconds: this.props.delay && this.props.delay.toSeconds(),
+        MessageDeduplicationId: this.props.messageDeduplicationId,
+        MessageGroupId: this.props.messageGroupId,
       }
     };
   }

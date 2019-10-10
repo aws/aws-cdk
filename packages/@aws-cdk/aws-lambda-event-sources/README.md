@@ -1,4 +1,13 @@
 ## AWS Lambda Event Sources
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 This module includes classes that allow using various AWS services as event
 sources for AWS Lambda via the high-level `lambda.addEventSource(source)` API.
@@ -20,17 +29,19 @@ first create or update an Amazon SQS queue and select custom values for the
 queue parameters. The following parameters will impact Amazon SQS's polling
 behavior:
 
-* __visibilityTimeoutSec__: May impact the period between retries.
-* __receiveMessageWaitTimeSec__: Will determine [long
+* __visibilityTimeout__: May impact the period between retries.
+* __receiveMessageWaitTime__: Will determine [long
   poll](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)
   duration. The default value is 20 seconds.
 
 ```ts
+import sqs = require('@aws-cdk/aws-sqs');
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+import { Duration } from '@aws-cdk/core';
 
 const queue = new sqs.Queue(this, 'MyQueue', {
-  visibilityTimeoutSec: 30      // default,
-  receiveMessageWaitTimeSec: 20 // default
+  visibilityTimeout: Duration.seconds(30)      // default,
+  receiveMessageWaitTime: Duration.seconds(20) // default
 });
 
 lambda.addEventSource(new SqsEventSource(queue, {
@@ -50,6 +61,7 @@ configure the event source mapping, identifying the bucket events that you want
 Amazon S3 to publish and which Lambda function to invoke.
 
 ```ts
+import s3 = require('@aws-cdk/aws-s3');
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const bucket = new s3.Bucket(...);
@@ -79,6 +91,7 @@ For an example use case, see [Using AWS Lambda with Amazon SNS from Different
 Accounts](https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html).
 
 ```ts
+import sns = require('@aws-cdk/aws-sns');
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const topic = new sns.Topic(...);
@@ -96,13 +109,13 @@ CloudWatch.
 
 ### DynamoDB Streams
 
-You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update) 
+You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update)
 operation is performed against the table. See [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) for more information.
 
-To process events with a Lambda function, first create or update a DynamoDB table and enable a `streamSpecification` configuration. Then, create a `DynamoEventSource` 
+To process events with a Lambda function, first create or update a DynamoDB table and enable a `stream` specification. Then, create a `DynamoEventSource`
 and add it to your Lambda function. The following parameters will impact Amazon DynamoDB's polling behavior:
 
-* __batchSize__: Determines how many records are buffered before invoking your lambnda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
 
 ```ts
@@ -112,7 +125,7 @@ import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const table = new dynamodb.Table(..., {
   partitionKey: ...,
-  streamSpecification: dynamodb.StreamViewType.NewImage // make sure stream is configured
+  stream: dynamodb.StreamViewType.NewImage // make sure stream is configured
 });
 
 const function = new lambda.Function(...);

@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import apigateway = require('../lib');
 
 class Test extends cdk.Stack {
@@ -12,7 +12,7 @@ class Test extends cdk.Stack {
         cacheClusterEnabled: true,
         stageName: 'beta',
         description: 'beta stage',
-        loggingLevel: apigateway.MethodLoggingLevel.Info,
+        loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true,
         methodOptions: {
           '/api/appliances/GET': {
@@ -23,8 +23,8 @@ class Test extends cdk.Stack {
     });
 
     const handler = new lambda.Function(this, 'MyHandler', {
-      runtime: lambda.Runtime.NodeJS610,
-      code: lambda.Code.inline(`exports.handler = ${handlerCode}`),
+      runtime: lambda.Runtime.NODEJS_8_10,
+      code: lambda.Code.fromInline(`exports.handler = ${handlerCode}`),
       handler: 'index.handler',
     });
 
@@ -33,7 +33,7 @@ class Test extends cdk.Stack {
     const integration = new apigateway.LambdaIntegration(handler);
 
     const toys = v1.addResource('toys');
-    toys.addMethod('GET', integration);
+    const getToysMethod: apigateway.Method = toys.addMethod('GET', integration, { apiKeyRequired: true });
     toys.addMethod('POST');
     toys.addMethod('PUT');
 
@@ -52,6 +52,30 @@ class Test extends cdk.Stack {
         body: JSON.stringify(event)
       });
     }
+
+    const key = api.addApiKey('ApiKey');
+    const plan = api.addUsagePlan('UsagePlan', {
+      name: 'Basic',
+      apiKey: key,
+      description: 'Free tier monthly usage plan',
+      throttle: { rateLimit: 5 },
+      quota: {
+        limit: 10000,
+        period: apigateway.Period.MONTH
+      }
+    });
+    plan.addApiStage({
+      stage: api.deploymentStage,
+      throttle: [
+        {
+          method: getToysMethod,
+          throttle: {
+            rateLimit: 10,
+            burstLimit: 2
+          }
+        }
+      ]
+    });
   }
 }
 
@@ -59,4 +83,4 @@ const app = new cdk.App();
 
 new Test(app, 'test-apigateway-restapi');
 
-app.run();
+app.synth();

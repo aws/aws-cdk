@@ -1,0 +1,28 @@
+{
+  "version": "1.10.0",
+  "missing": {
+    "key": "missing:context:key",
+    "provider": "context-provider",
+    "props": { "foo": 123 }
+  },
+  "artifacts": {
+    "MyStackName": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.json"
+      }
+    },
+    "MyStackName1234": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "missing": {
+        "missing:context:key2": { "foo": 6688 }
+      },
+      "properties": {
+        "templateFile": "template.json"
+      }
+    }
+
+  }
+}

@@ -41,7 +41,7 @@ export class HttpIntegration extends Integration {
     const proxy = props.proxy !== undefined ? props.proxy : true;
     const method = props.httpMethod || 'GET';
     super({
-      type: proxy ? IntegrationType.HttpProxy : IntegrationType.Http,
+      type: proxy ? IntegrationType.HTTP_PROXY : IntegrationType.HTTP,
       integrationHttpMethod: method,
       uri: url,
       options: props.options,

@@ -16,19 +16,19 @@ For example:
 
 ```console
 $ cd @aws-cdk/aws-sns
-$ awslint
-@aws-cdk/aws-sns.ISubscription -- warning: every resource must have a resource interface [resource-interface]
-@aws-cdk/aws-sns.ITopicPolicy -- warning: every resource must have a resource interface [resource-interface]
+$ npm run awslint
+warning: [awslint:resource-interface:@aws-cdk/aws-sns.Subscription] every resource must have a resource interface 
+warning: [awslint:resource-interface:@aws-cdk/aws-sns.TopicPolicy] every resource must have a resource interface 
 ```
 
 Each diagnostics includes the following elements:
 
 ```
-@aws-cdk/aws-sns.ISubscription -- warning: every resource must have a resource interface [resource-interface]
-[----------------------------]    [------] [-------------------------------------------] [------------------]
-               ^                     ^                          ^                                 ^
-               |                     |                          |                                 |
-             scope                 level                     message                             rule
+warning: [awslint:resource-interface:@aws-cdk/aws-sns.Subscription] every resource must have a resource interface 
+[------] [-------------------------] [----------------------------] [-------------------------------------------] 
+   ^              ^                                 ^                                       ^                        
+   |              |                                 |                                       |                        
+ level           rule                             scope                                  message                     
 ```
 
 ## Options and Configuration
@@ -46,17 +46,17 @@ via an `awslint` key in the module's `package.json`.
 
 ## Include/Exclude
 
-The `--include` and `--exclude` options can be used to specify which rules will
+The `i`/`--include` and `-x`/`--exclude` options can be used to specify which rules will
 be evaluated.
 
 For example:
 
 ```console
 # evaluate only the "resource-props" and "import" rules in all scopes
-$ awslint -i resource-props -i import
+$ npm run awslint -- -i resource-props -i import
 
 # evaluate only the "import" rule in all scopes besides ones that begin with "@aws-cdk/aws-s3"
-$ awslint -i import -x "*:@aws-cdk/aws-s3*"
+$ npm run awslint -- -i import -x "*:@aws-cdk/aws-s3*"
 ```
 
 
@@ -88,7 +88,7 @@ in the module's `package.json` file. This is useful to bootstrap the linting pro
 progressively fix errors.
 
 ```console
-$ awslint --save
+$ npm run awslint -- --save
 [shows errors]
 
 $ cat package.json
@@ -102,7 +102,7 @@ $ cat package.json
   }
 }
 
-$ awslint
+$ npm run awslint
 [no errors]
 ```
 
@@ -118,7 +118,7 @@ If `--save` is specified, `awslint` will always exit with status code 0.
 To list all linter rules:
 
 ```console
-$ awslint list
+$ npm run awslint list
 module-name: module name must be @aws-cdk/aws-<namespace>
 construct-ctor: signature of all construct constructors should be "scope, id, props"
 resource-class: every resource must have a resource class (L2)

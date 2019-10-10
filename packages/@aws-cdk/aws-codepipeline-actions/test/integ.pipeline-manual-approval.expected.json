@@ -2,7 +2,8 @@
   "Resources": {
     "Bucket83908E77": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -13,17 +14,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -70,40 +61,23 @@
               ]
             },
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "Bucket83908E77",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "Bucket83908E77",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "sns:Publish",
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
+                "Fn::GetAtt": [
+                  "PipelineSourceS3CodePipelineActionRole3CAFD08F",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineApproveManualApprovalCodePipelineActionRole51D669A5",
+                  "Arn"
+                ]
               }
             }
           ],
@@ -142,13 +116,18 @@
                   },
                   "S3ObjectKey": "file.zip"
                 },
-                "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
                     "Name": "Artifact_Source_S3"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceS3CodePipelineActionRole3CAFD08F",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -168,9 +147,13 @@
                     "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
                   }
                 },
-                "InputArtifacts": [],
                 "Name": "ManualApproval",
-                "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineApproveManualApprovalCodePipelineActionRole51D669A5",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -189,10 +172,173 @@
         "PipelineRoleD68726F7"
       ]
     },
+    "PipelineSourceS3CodePipelineActionRole3CAFD08F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineSourceS3CodePipelineActionRoleDefaultPolicy8B9DCBCF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Bucket83908E77",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Bucket83908E77",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineSourceS3CodePipelineActionRoleDefaultPolicy8B9DCBCF",
+        "Roles": [
+          {
+            "Ref": "PipelineSourceS3CodePipelineActionRole3CAFD08F"
+          }
+        ]
+      }
+    },
+    "PipelineApproveManualApprovalCodePipelineActionRole51D669A5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineApproveManualApprovalCodePipelineActionRoleDefaultPolicyB6418282": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineApproveManualApprovalCodePipelineActionRoleDefaultPolicyB6418282",
+        "Roles": [
+          {
+            "Ref": "PipelineApproveManualApprovalCodePipelineActionRole51D669A5"
+          }
+        ]
+      }
+    },
     "PipelineApproveManualApprovalTopicResourceF5A35B20": {
       "Type": "AWS::SNS::Topic"
     },
-    "PipelineApproveManualApprovalTopicResourceSubscriptionadamruka85gmailcom76398FFA": {
+    "PipelineApproveManualApprovalTopicResourceadamruka85gmailcom202874CD": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "email",

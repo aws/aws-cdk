@@ -1,4 +1,13 @@
-# AWS CodeCommit
+## AWS CodeCommit Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 AWS CodeCommit is a version control service that enables you to privately store and manage Git repositories in the AWS cloud.
 
@@ -31,9 +40,13 @@ and invoke targets as a result:
 
 ```ts
 // starts a CodeBuild project when a commit is pushed to the "master" branch of the repo
-repo.onCommit('CommitToMaster', project, 'master');
+repo.onCommit('CommitToMaster', {
+    target: new targets.CodeBuildProject(project),
+    branches: ['master'],
+});
 
 // publishes a message to an Amazon SNS topic when a comment is made on a pull request
-const rule = repo.onCommentOnPullRequest('CommentOnPullRequest');
-rule.addTarget(myTopic);
+const rule = repo.onCommentOnPullRequest('CommentOnPullRequest', {
+    target: new targets.SnsTopic(myTopic),
+});
 ```

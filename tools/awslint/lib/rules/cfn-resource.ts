@@ -1,10 +1,8 @@
 import camelcase = require('camelcase');
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
-import { CORE_MODULE } from './common';
-import { ConstructReflection } from './construct';
+import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
-const CFN_RESOURCE_BASE_CLASS_FQN = `${CORE_MODULE}.CfnResource`;
 
 // this linter verifies that we have L2 coverage. it finds all "Cfn" classes and verifies
 // that we have a corresponding L1 class for it that's identified as a resource.
@@ -40,34 +38,8 @@ export class CfnResourceReflection {
    */
   public static findAll(assembly: reflect.Assembly) {
     return assembly.classes
-      .filter(c => this.isCfnResource(c))
+      .filter(c => CoreTypes.isCfnResource(c))
       .map(c => new CfnResourceReflection(c));
-  }
-
-  public static isCfnResource(c: reflect.ClassType) {
-    if (!c.system.includesAssembly(CORE_MODULE)) {
-      return false;
-    }
-
-    // skip CfnResource itself
-    if (c.fqn === CFN_RESOURCE_BASE_CLASS_FQN) {
-      return false;
-    }
-
-    if (!ConstructReflection.isConstructClass(c)) {
-      return false;
-    }
-
-    const cfnResourceClass = c.system.findFqn(CFN_RESOURCE_BASE_CLASS_FQN);
-    if (!c.extends(cfnResourceClass)) {
-      return false;
-    }
-
-    if (!c.name.startsWith('Cfn')) {
-      return false;
-    }
-
-    return true;
   }
 
   public readonly classType: reflect.ClassType;
@@ -75,7 +47,6 @@ export class CfnResourceReflection {
   public readonly namespace: string; // AWS::S3
   public readonly basename: string; // Bucket
   public readonly attributeNames: string[]; // (normalized) bucketArn, bucketName, queueUrl
-  public readonly attributePrefix: string;
   public readonly doc: string; // link to CloudFormation docs
 
   constructor(cls: reflect.ClassType) {
@@ -95,13 +66,6 @@ export class CfnResourceReflection {
 
     this.namespace = fullname.split('::').slice(0, 2).join('::');
 
-    // special-case
-    const basename = this.basename
-      .replace(/VPC/g, 'Vpc')
-      .replace(/DB/g, 'Db');
-
-    this.attributePrefix = basename[0].toLowerCase() + basename.slice(1);
-
     this.attributeNames = cls.ownProperties
       .filter(p => (p.docs.docs.custom || {}).cloudformationAttribute)
       .map(p => p.docs.customTag('cloudformationAttribute') || '<error>')
@@ -114,12 +78,9 @@ export class CfnResourceReflection {
 
     // special case (someone was smart), special case copied from cfn2ts
     if (this.basename === 'SecurityGroup' && name === 'GroupId') {
-      return 'securityGroupId';
+      return 'Id';
     }
 
-    const cfnName = name.startsWith(this.basename) ? name.slice(this.basename.length) : name;
-
-    // if the CFN attribute name already have the type name as a prefix (i.e. RoleId), we only take the "Id" as the "name".
-    return this.attributePrefix + camelcase(cfnName, { pascalCase: true });
+    return camelcase(name, { pascalCase: true });
   }
 }

@@ -3,8 +3,7 @@
     "MyRepoF4F48043": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "aws-cdk-codebuild-events",
-        "Triggers": []
+        "RepositoryName": "aws-cdk-codebuild-events"
       }
     },
     "MyRepoOnCommit0E80B304": {
@@ -44,10 +43,10 @@
                 "Arn"
               ]
             },
-            "Id": "MyProject",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
-                "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0E11E20F6B",
+                "MyProjectEventsRole5B7D93F5",
                 "Arn"
               ]
             }
@@ -56,13 +55,13 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic",
+            "Id": "Target1",
             "InputTransformer": {
               "InputPathsMap": {
-                "branch": "$.detail.referenceName",
-                "repo": "$.detail.repositoryName"
+                "detail-repositoryName": "$.detail.repositoryName",
+                "detail-referenceName": "$.detail.referenceName"
               },
-              "InputTemplate": "\"A commit was pushed to the repository <repo> on branch <branch>\""
+              "InputTemplate": "\"A commit was pushed to the repository <detail-repositoryName> on branch <detail-referenceName>\""
             }
           }
         ]
@@ -77,17 +76,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codebuild.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codebuild.amazonaws.com"
               }
             }
           ],
@@ -214,16 +203,16 @@
           "source": [
             "aws.codebuild"
           ],
-          "detail-type": [
-            "CodeBuild Build State Change"
-          ],
           "detail": {
             "project-name": [
               {
                 "Ref": "MyProject39F7B0AE"
               }
             ]
-          }
+          },
+          "detail-type": [
+            "CodeBuild Build State Change"
+          ]
         },
         "State": "ENABLED",
         "Targets": [
@@ -231,7 +220,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "Target0"
           }
         ]
       }
@@ -243,16 +232,16 @@
           "source": [
             "aws.codebuild"
           ],
-          "detail-type": [
-            "CodeBuild Build Phase Change"
-          ],
           "detail": {
             "project-name": [
               {
                 "Ref": "MyProject39F7B0AE"
               }
             ]
-          }
+          },
+          "detail-type": [
+            "CodeBuild Build Phase Change"
+          ]
         },
         "State": "ENABLED",
         "Targets": [
@@ -260,34 +249,62 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic",
+            "Id": "Target0",
             "InputTransformer": {
               "InputPathsMap": {
-                "phase": "$.detail.completed-phase"
+                "detail-completed-phase": "$.detail.completed-phase"
               },
-              "InputTemplate": "\"Build phase changed to <phase>\""
+              "InputTemplate": "\"Build phase changed to <detail-completed-phase>\""
             }
+          }
+        ]
+      }
+    },
+    "MyProjectEventsRole5B7D93F5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyProjectEventsRoleDefaultPolicy397DCBF8": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "codebuild:StartBuild",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyProject39F7B0AE",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyProjectEventsRoleDefaultPolicy397DCBF8",
+        "Roles": [
+          {
+            "Ref": "MyProjectEventsRole5B7D93F5"
           }
         ]
       }
     },
     "MyQueueE6CA6235": {
       "Type": "AWS::SQS::Queue"
-    },
-    "MyQueueMyTopicSubscriptionEB66AD1B": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "sqs",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "MyQueueE6CA6235",
-            "Arn"
-          ]
-        }
-      }
     },
     "MyQueuePolicy6BBEDDAC": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -324,6 +341,21 @@
         ]
       }
     },
+    "MyQueueawscdkcodebuildeventsMyTopic550011DCF72DE3ED": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "sqs",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "MyQueueE6CA6235",
+            "Arn"
+          ]
+        }
+      }
+    },
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
     },
@@ -336,17 +368,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               },
               "Resource": {
                 "Ref": "MyTopic86869434"
@@ -359,59 +381,6 @@
         "Topics": [
           {
             "Ref": "MyTopic86869434"
-          }
-        ]
-      }
-    },
-    "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0E11E20F6B": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0EDefaultPolicy03C827BE": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "codebuild:StartBuild",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyProject39F7B0AE",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0EDefaultPolicy03C827BE",
-        "Roles": [
-          {
-            "Ref": "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0E11E20F6B"
           }
         ]
       }

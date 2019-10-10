@@ -1,1 +1,3 @@
-export * from './destination';
+export * from './sqs';
+export * from './sns';
+export * from './lambda';

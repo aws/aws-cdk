@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import codebuild = require('../lib');
 
@@ -7,14 +7,14 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     new codebuild.Project(this, 'MyProject', {
-      buildSpec: {
+      buildSpec: codebuild.BuildSpec.fromObject({
         version: "0.2",
         phases: {
           build: {
             commands: [ 'ls' ]
           }
         }
-      },
+      }),
       /// !show
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromAsset(this, 'MyImage', {
@@ -30,4 +30,4 @@ const app = new cdk.App();
 
 new TestStack(app, 'test-codebuild-docker-asset');
 
-app.run();
+app.synth();

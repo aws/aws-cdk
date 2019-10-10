@@ -1,6 +1,6 @@
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -25,7 +25,7 @@ export interface DatabaseSecretProps {
  * @resource AWS::SecretsManager::Secret
  */
 export class DatabaseSecret extends secretsmanager.Secret {
-  constructor(scope: cdk.Construct, id: string, props: DatabaseSecretProps) {
+  constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
     super(scope, id, {
       encryptionKey: props.encryptionKey,
       generateSecretString: {

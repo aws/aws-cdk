@@ -7,13 +7,13 @@ export interface LambdaRuntimeProps {
 }
 
 export enum RuntimeFamily {
-  NodeJS,
-  Java,
-  Python,
-  DotNetCore,
-  Go,
-  Ruby,
-  Other
+  NODEJS,
+  JAVA,
+  PYTHON,
+  DOTNET_CORE,
+  GO,
+  RUBY,
+  OTHER
 }
 
 /**
@@ -23,23 +23,28 @@ export enum RuntimeFamily {
  * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
  */
 export class Runtime {
-  /** A list of all the know ``Runtime``s. */
-  public static readonly All = new Array<Runtime>();
+  /** A list of all known `Runtime`'s. */
+  public static readonly ALL = new Array<Runtime>();
 
-  public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.Python, { supportsInlineCode: true });
-  public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.Python, { supportsInlineCode: true });
-  public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.Python, { supportsInlineCode: true });
-  public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.Java);
-  public static readonly DotNetCore1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DotNetCore);
-  public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DotNetCore);
-  public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DotNetCore);
-  public static readonly Go1x =         new Runtime('go1.x',          RuntimeFamily.Go);
-  public static readonly Ruby25 =       new Runtime('ruby2.5',        RuntimeFamily.Ruby, { supportsInlineCode: true });
-  public static readonly Provided =     new Runtime('provided',       RuntimeFamily.Other);
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly NODEJS =       new Runtime('nodejs',         RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly NODEJS_4_3 =     new Runtime('nodejs4.3',      RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly NODEJS_6_10 =    new Runtime('nodejs6.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_8_10 =    new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_10_X =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: false });
+  public static readonly PYTHON_2_7 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_3_6 =     new Runtime('python3.6',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_3_7 =     new Runtime('python3.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly JAVA_8 =        new Runtime('java8',          RuntimeFamily.JAVA);
+  public static readonly DOTNET_CORE_1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DOTNET_CORE);
+  /** @deprecated Use `DotNetCore21` */
+  public static readonly DOTNET_CORE_2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
+  public static readonly GO_1_X =         new Runtime('go1.x',          RuntimeFamily.GO);
+  public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
+  public static readonly PROVIDED =     new Runtime('provided',       RuntimeFamily.OTHER);
 
   /**
    * The name of this runtime, as expected by the Lambda resource.
@@ -62,10 +67,16 @@ export class Runtime {
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
 
-    Runtime.All.push(this);
+    Runtime.ALL.push(this);
   }
 
   public toString(): string {
     return this.name;
+  }
+
+  public runtimeEquals(other: Runtime): boolean {
+    return other.name === this.name &&
+           other.family === this.family &&
+           other.supportsInlineCode === this.supportsInlineCode;
   }
 }

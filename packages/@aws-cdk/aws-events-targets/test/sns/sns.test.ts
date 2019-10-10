@@ -1,15 +1,15 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import sns = require('@aws-cdk/aws-sns');
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import targets = require('../../lib');
 
 test('sns topic as an event rule target', () => {
   // GIVEN
   const stack = new Stack();
   const topic = new sns.Topic(stack, 'MyTopic');
-  const rule = new events.EventRule(stack, 'MyRule', {
-    scheduleExpression: 'rate(1 hour)',
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
   });
 
   // WHEN
@@ -23,7 +23,7 @@ test('sns topic as an event rule target', () => {
           Sid: "0",
           Action: "sns:Publish",
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
+          Principal: { Service: "events.amazonaws.com" },
           Resource: { Ref: "MyTopic86869434" }
         }
       ],
@@ -38,7 +38,7 @@ test('sns topic as an event rule target', () => {
     Targets: [
       {
         Arn: { Ref: "MyTopic86869434" },
-        Id: "MyTopic"
+        Id: "Target0"
       }
     ]
   }));
@@ -51,7 +51,9 @@ test('multiple uses of a topic as a target results in a single policy statement'
 
   // WHEN
   for (let i = 0; i < 5; ++i) {
-    const rule = new events.EventRule(stack, `Rule${i}`, { scheduleExpression: 'rate(1 hour)' });
+    const rule = new events.Rule(stack, `Rule${i}`, {
+      schedule: events.Schedule.rate(Duration.hours(1)),
+    });
     rule.addTarget(new targets.SnsTopic(topic));
   }
 
@@ -62,7 +64,7 @@ test('multiple uses of a topic as a target results in a single policy statement'
         {
           Action: "sns:Publish",
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": [ "", [ "events.", { Ref: "AWS::URLSuffix" } ] ] } },
+          Principal: { Service: "events.amazonaws.com" },
           Resource: { Ref: "MyTopic86869434" },
           Sid: "0"
         }

@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -99,10 +99,47 @@ export = {
     test.done();
   },
 
+  'ingress is added to child stack SG instead of parent stack'(test: Test) {
+    // GIVEN
+    const fixture = new TestFixture(true);
+
+    const parentGroup = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
+      vpc: fixture.vpc,
+      port: 8008,
+      targets: [new FakeSelfRegisteringTarget(fixture.stack, 'Target', fixture.vpc)],
+    });
+
+    // listener requires at least one rule for ParentStack to create
+    fixture.listener.addTargetGroups('Default', { targetGroups: [parentGroup] });
+
+    const childStack = new cdk.Stack(fixture.app, 'childStack');
+
+    // WHEN
+    const childGroup = new elbv2.ApplicationTargetGroup(childStack, 'TargetGroup', {
+      // We're assuming the 2nd VPC is peered to the 1st, or something.
+      vpc: fixture.vpc,
+      port: 8008,
+      targets: [new FakeSelfRegisteringTarget(childStack, 'Target', fixture.vpc)],
+    });
+
+    new elbv2.ApplicationListenerRule(childStack, 'ListenerRule', {
+      listener: fixture.listener,
+      targetGroups: [childGroup],
+      priority: 100,
+      hostHeader: 'www.foo.com'
+    });
+
+    // THEN
+    expectSameStackSGRules(fixture.stack);
+    expectedImportedSGRules(childStack);
+
+    test.done();
+  },
+
   'SG peering works on exported/imported load balancer'(test: Test) {
     // GIVEN
-    const fixture = new TestFixture();
-    const stack2 = new cdk.Stack();
+    const fixture = new TestFixture(false);
+    const stack2 = new cdk.Stack(fixture.app, 'stack2');
     const vpc2 = new ec2.Vpc(stack2, 'VPC');
     const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
       // We're assuming the 2nd VPC is peered to the 1st, or something.
@@ -114,7 +151,8 @@ export = {
     // WHEN
     const lb2 = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack2, 'LB', {
       loadBalancerArn: fixture.lb.loadBalancerArn,
-      securityGroupId: fixture.lb.connections.securityGroups[0].securityGroupId
+      securityGroupId: fixture.lb.connections.securityGroups[0].securityGroupId,
+      securityGroupAllowsAllOutbound: false,
     });
     const listener2 = lb2.addListener('YetAnotherListener', { port: 80 });
     listener2.addTargetGroups('Default', { targetGroups: [group] });
@@ -128,7 +166,7 @@ export = {
   'SG peering works on exported/imported listener'(test: Test) {
     // GIVEN
     const fixture = new TestFixture();
-    const stack2 = new cdk.Stack();
+    const stack2 = new cdk.Stack(fixture.app, 'stack2');
     const vpc2 = new ec2.Vpc(stack2, 'VPC');
     const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
       // We're assuming the 2nd VPC is peered to the 1st, or something.
@@ -136,12 +174,14 @@ export = {
       port: 8008,
       targets: [new FakeSelfRegisteringTarget(stack2, 'Target', vpc2)],
     });
+    fixture.listener.addTargets('default', { port: 80 });
 
     // WHEN
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
       defaultPort: 8008,
       securityGroupId: fixture.listener.connections.securityGroups[0].securityGroupId,
-      listenerArn: fixture.listener.listenerArn
+      listenerArn: fixture.listener.listenerArn,
+      securityGroupAllowsAllOutbound: false,
     });
     listener2.addTargetGroups('Default', {
       // Must be a non-default target
@@ -237,17 +277,28 @@ function expectSGRules(stack: cdk.Stack, lbGroup: any) {
 }
 
 class TestFixture {
+  public readonly app: cdk.App;
   public readonly stack: cdk.Stack;
   public readonly vpc: ec2.Vpc;
   public readonly lb: elbv2.ApplicationLoadBalancer;
-  public readonly listener: elbv2.ApplicationListener;
+  public readonly _listener: elbv2.ApplicationListener | undefined;
 
-  constructor() {
-    this.stack = new cdk.Stack();
+  constructor(createListener?: boolean) {
+    this.app = new cdk.App();
+    this.stack = new cdk.Stack(this.app, 'Stack');
     this.vpc = new ec2.Vpc(this.stack, 'VPC', {
-      maxAZs: 2
+      maxAzs: 2
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
-    this.listener = this.lb.addListener('Listener', { port: 80, open: false });
+
+    createListener = createListener === undefined ? true : createListener;
+    if (createListener) {
+      this._listener = this.lb.addListener('Listener', { port: 80, open: false });
+    }
+  }
+
+  public get listener(): elbv2.ApplicationListener {
+    if (this._listener === undefined) { throw new Error('Did not create a listener'); }
+    return this._listener;
   }
 }

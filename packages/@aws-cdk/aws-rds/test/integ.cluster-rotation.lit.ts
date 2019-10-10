@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import rds = require('../lib');
 
 const app = new cdk.App();
@@ -9,12 +9,12 @@ const vpc = new ec2.Vpc(stack, 'VPC');
 
 /// !show
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.Aurora,
+  engine: rds.DatabaseClusterEngine.AURORA,
   masterUser: {
     username: 'admin'
   },
   instanceProps: {
-    instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpc
   }
 });
@@ -22,4 +22,4 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
 cluster.addRotationSingleUser('Rotation');
 /// !hide
 
-app.run();
+app.synth();

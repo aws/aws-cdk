@@ -6,6 +6,8 @@ import json
 import traceback
 import logging
 import shutil
+import boto3
+from datetime import datetime
 from uuid import uuid4
 
 from botocore.vendored import requests
@@ -13,6 +15,8 @@ from zipfile import ZipFile
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+cloudfront = boto3.client('cloudfront')
 
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
@@ -35,11 +39,21 @@ def handler(event, context):
         physical_id = event.get('PhysicalResourceId', None)
 
         try:
-            source_bucket_name = props['SourceBucketName']
-            source_object_key  = props['SourceObjectKey']
+            source_bucket_names = props['SourceBucketNames']
+            source_object_keys  = props['SourceObjectKeys']
             dest_bucket_name   = props['DestinationBucketName']
             dest_bucket_prefix = props.get('DestinationBucketKeyPrefix', '')
             retain_on_delete   = props.get('RetainOnDelete', "true") == "true"
+            distribution_id    = props.get('DistributionId', '')
+
+            default_distribution_path = dest_bucket_prefix
+            if not default_distribution_path.endswith("/"):
+                default_distribution_path += "/"
+            if not default_distribution_path.startswith("/"):
+                default_distribution_path = "/" + default_distribution_path
+            default_distribution_path += "*"
+
+            distribution_paths = props.get('DistributionPaths', [default_distribution_path])
         except KeyError as e:
             cfn_error("missing request resource property %s. props: %s" % (str(e), props))
             return
@@ -48,7 +62,7 @@ def handler(event, context):
         if dest_bucket_prefix == "/":
             dest_bucket_prefix = ""
 
-        s3_source_zip = "s3://%s/%s" % (source_bucket_name, source_object_key)
+        s3_source_zips = map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys)
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
 
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
@@ -82,7 +96,10 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zip, s3_dest)
+            s3_deploy(s3_source_zips, s3_dest)
+
+        if distribution_id:
+            cloudfront_invalidate(distribution_id, distribution_paths)
 
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id)
     except KeyError as e:
@@ -92,8 +109,8 @@ def handler(event, context):
         cfn_error(str(e))
 
 #---------------------------------------------------------------------------------------------------
-# populate all files from s3_source_zip to a destination bucket
-def s3_deploy(s3_source_zip, s3_dest):
+# populate all files from s3_source_zips to a destination bucket
+def s3_deploy(s3_source_zips, s3_dest):
     # create a temporary working directory
     workdir=tempfile.mkdtemp()
     logger.info("| workdir: %s" % workdir)
@@ -103,16 +120,34 @@ def s3_deploy(s3_source_zip, s3_dest):
     os.mkdir(contents_dir)
 
     # download the archive from the source and extract to "contents"
-    archive=os.path.join(workdir, 'archive.zip')
-    logger.info("| archive: %s" % archive)
-    aws_command("s3", "cp", s3_source_zip, archive)
-    logger.info("| extracting archive to: %s" % contents_dir)
-    with ZipFile(archive, "r") as zip:
-      zip.extractall(contents_dir)
+    for s3_source_zip in s3_source_zips:
+        archive=os.path.join(workdir, str(uuid4()))
+        logger.info("archive: %s" % archive)
+        aws_command("s3", "cp", s3_source_zip, archive)
+        logger.info("| extracting archive to: %s\n" % contents_dir)
+        with ZipFile(archive, "r") as zip:
+          zip.extractall(contents_dir)
 
     # sync from "contents" to destination
     aws_command("s3", "sync", "--delete", contents_dir, s3_dest)
     shutil.rmtree(workdir)
+
+#---------------------------------------------------------------------------------------------------
+# invalidate files in the CloudFront distribution edge caches
+def cloudfront_invalidate(distribution_id, distribution_paths):
+    invalidation_resp = cloudfront.create_invalidation(
+        DistributionId=distribution_id,
+        InvalidationBatch={
+            'Paths': {
+                'Quantity': len(distribution_paths),
+                'Items': distribution_paths
+            },
+            'CallerReference': str(uuid4()),
+        })
+    # by default, will wait up to 10 minutes
+    cloudfront.get_waiter('invalidation_completed').wait(
+        DistributionId=distribution_id,
+        Id=invalidation_resp['Invalidation']['Id'])
 
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command

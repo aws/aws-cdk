@@ -8,7 +8,7 @@
     "outdir": "dist"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk",
+    "url": "https://github.com/aws/aws-cdk",
     "type": "git"
   },
   "author": {

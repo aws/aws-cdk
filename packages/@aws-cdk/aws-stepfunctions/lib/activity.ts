@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -19,10 +19,10 @@ export class Activity extends Resource implements IActivity {
      * Construct an Activity from an existing Activity ARN
      */
     public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
-        class Imported extends Construct implements IActivity {
+        class Imported extends Resource implements IActivity {
             public get activityArn() { return activityArn; }
             public get activityName() {
-                return this.node.stack.parseArn(activityArn, ':').resourceName || '';
+                return Stack.of(this).parseArn(activityArn, ':').resourceName || '';
             }
         }
 
@@ -33,7 +33,7 @@ export class Activity extends Resource implements IActivity {
      * Construct an Activity from an existing Activity Name
      */
     public static fromActivityName(scope: Construct, id: string, activityName: string): IActivity {
-        return Activity.fromActivityArn(scope, id, scope.node.stack.formatArn({
+        return Activity.fromActivityArn(scope, id, Stack.of(scope).formatArn({
             service: 'states',
             resource: 'activity',
             resourceName: activityName,
@@ -52,14 +52,22 @@ export class Activity extends Resource implements IActivity {
     public readonly activityName: string;
 
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {
-        super(scope, id);
-
-        const resource = new CfnActivity(this, 'Resource', {
-            name: props.activityName || this.generateName()
+        super(scope, id, {
+            physicalName: props.activityName ||
+                Lazy.stringValue({ produce: () => this.generateName() }),
         });
 
-        this.activityArn = resource.activityArn;
-        this.activityName = resource.activityName;
+        const resource = new CfnActivity(this, 'Resource', {
+            name: this.physicalName! // not null because of above call to `super`
+        });
+
+        this.activityArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'activity',
+          resourceName: this.physicalName,
+          sep: ':',
+        });
+        this.activityName = this.getResourceNameAttribute(resource.attrName);
     }
 
     /**

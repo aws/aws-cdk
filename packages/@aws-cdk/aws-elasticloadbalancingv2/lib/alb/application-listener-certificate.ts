@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import { IApplicationListener } from './application-listener';
 

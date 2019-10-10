@@ -1,14 +1,16 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import events = require('@aws-cdk/aws-events');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import targets = require('../../lib');
 
 test('use codebuild project as an eventrule target', () => {
   // GIVEN
   const stack = new Stack();
-  const project = new codebuild.Project(stack, 'MyProject', { source: new codebuild.CodePipelineSource() });
-  const rule = new events.EventRule(stack, 'rule', { scheduleExpression: 'rate(1 min)' });
+  const project = new codebuild.PipelineProject(stack, 'MyProject');
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)')
+  });
 
   // WHEN
   rule.addTarget(new targets.CodeBuildProject(project));
@@ -23,10 +25,10 @@ test('use codebuild project as an eventrule target', () => {
             "Arn"
           ]
         },
-        Id: "MyProject",
+        Id: "Target0",
         RoleArn: {
           "Fn::GetAtt": [
-            "awscdkawseventstargetsCodeBuildProjectRoleMyProject02D63D81",
+            "MyProjectEventsRole5B7D93F5",
             "Arn"
           ]
         }
@@ -40,7 +42,7 @@ test('use codebuild project as an eventrule target', () => {
         {
           Action: "sts:AssumeRole",
           Effect: "Allow",
-          Principal: { Service: { "Fn::Join": [ "", [ "events.", { Ref: "AWS::URLSuffix" } ] ] } }
+          Principal: { Service: "events.amazonaws.com" }
         }
       ],
       Version: "2012-10-17"
@@ -63,5 +65,41 @@ test('use codebuild project as an eventrule target', () => {
       ],
       Version: "2012-10-17"
     }
+  }));
+});
+
+test('specifying event for codebuild project target', () => {
+  // GIVEN
+  const stack = new Stack();
+  const project = new codebuild.PipelineProject(stack, 'MyProject');
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 hour)')
+  });
+
+  // WHEN
+  const eventInput = {
+    buildspecOverride: 'buildspecs/hourly.yml'
+  };
+
+  rule.addTarget(
+    new targets.CodeBuildProject(project, {
+      event: events.RuleTargetInput.fromObject(eventInput)
+    })
+  );
+
+  // THEN
+  expect(stack).to(haveResource('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': ['MyProject39F7B0AE', 'Arn']
+        },
+        Id: 'Target0',
+        Input: JSON.stringify(eventInput),
+        RoleArn: {
+          'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn']
+        }
+      }
+    ]
   }));
 });

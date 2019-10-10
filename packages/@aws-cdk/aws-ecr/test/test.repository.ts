@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
 
@@ -18,7 +19,9 @@ export = {
     expect(stack).toMatch({
       Resources: {
         Repo02AC86CF: {
-          Type: "AWS::ECR::Repository"
+          Type: "AWS::ECR::Repository",
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
     });
@@ -52,7 +55,7 @@ export = {
     // WHEN
     const repo = new ecr.Repository(stack, 'Repo');
     repo.addLifecycleRule({
-      maxImageAgeDays: 5,
+      maxImageAge: cdk.Duration.days(5),
     });
 
     // THEN
@@ -93,8 +96,8 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['a'], maxImageCount: 5 });
-    repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['b'], maxImageCount: 5 });
+    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['a'], maxImageCount: 5 });
+    repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['b'], maxImageCount: 5 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -114,7 +117,7 @@ export = {
 
     // WHEN
     repo.addLifecycleRule({ maxImageCount: 5 });
-    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['important'], maxImageCount: 999 });
+    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['important'], maxImageCount: 999 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -158,11 +161,13 @@ export = {
 
     // THEN
     const arnSplit = { 'Fn::Split': [ ':', { 'Fn::GetAtt': [ 'Repo02AC86CF', 'Arn' ] } ] };
-    test.deepEqual(repo.node.resolve(uri), { 'Fn::Join': [ '', [
+    test.deepEqual(stack.resolve(uri), { 'Fn::Join': [ '', [
       { 'Fn::Select': [ 4, arnSplit ] },
       '.dkr.ecr.',
       { 'Fn::Select': [ 3, arnSplit ] },
-      '.amazonaws.com/',
+      '.',
+      { Ref: 'AWS::URLSuffix' },
+      '/',
       { Ref: 'Repo02AC86CF' }
     ]]});
 
@@ -177,8 +182,8 @@ export = {
     const repo2 = ecr.Repository.fromRepositoryArn(stack, 'repo', 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
 
     // THEN
-    test.deepEqual(repo2.node.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
-    test.deepEqual(repo2.node.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+    test.deepEqual(stack.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+    test.deepEqual(stack.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
 
     test.done();
   },
@@ -205,8 +210,8 @@ export = {
     });
 
     // THEN
-    test.deepEqual(repo.node.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
-    test.deepEqual(repo.node.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(stack.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
+    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
     test.done();
   },
 
@@ -218,7 +223,7 @@ export = {
     const repo = ecr.Repository.fromRepositoryName(stack, 'just-name', 'my-repo');
 
     // THEN
-    test.deepEqual(repo.node.resolve(repo.repositoryArn), {
+    test.deepEqual(stack.resolve(repo.repositoryArn), {
       'Fn::Join': [ '', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -229,7 +234,7 @@ export = {
         ':repository/my-repo' ]
       ]
     });
-    test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+    test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
     test.done();
   },
 
@@ -245,8 +250,8 @@ export = {
     });
 
     // THEN
-    test.deepEqual(repo.node.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
-    test.deepEqual(repo.node.resolve(repo.repositoryArn), {
+    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(stack.resolve(repo.repositoryArn), {
     'Fn::Join': [ '', [
       'arn:',
       { Ref: 'AWS::Partition' },
@@ -266,7 +271,7 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addToResourcePolicy(new iam.PolicyStatement().addAction('*'));
+    repo.addToResourcePolicy(new iam.PolicyStatement({ actions: ['*'] }));
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -285,11 +290,15 @@ export = {
   },
 
   'events': {
-    'onImagePushed without target or imageTag creates the correct event'(test: Test) {
+    'onImagePushed without imageTag creates the correct event'(test: Test) {
       const stack = new cdk.Stack();
       const repo = new ecr.Repository(stack, 'Repo');
 
-      repo.onImagePushed('EventRule');
+      repo.onCloudTrailImagePushed('EventRule', {
+        target: {
+          bind: () => ({ arn: 'ARN', id: '' })
+        }
+      });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         "EventPattern": {
@@ -303,7 +312,8 @@ export = {
             "requestParameters": {
               "repositoryName": [
                 {
-                },
+                  "Ref": "Repo02AC86CF"
+                }
               ],
             },
           },
@@ -315,12 +325,12 @@ export = {
     }
   },
 
-  '"retain" can be used to retain the repo when the resource is deleted'(test: Test) {
+  'removal policy is "Retain" by default'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    new ecr.Repository(stack, 'Repo', { retain: true });
+    new ecr.Repository(stack, 'Repo');
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -328,5 +338,51 @@ export = {
       "DeletionPolicy": "Retain"
     }, ResourcePart.CompleteDefinition));
     test.done();
-  }
+  },
+
+  '"Delete" removal policy can be set explicitly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', {
+      removalPolicy: RemovalPolicy.DESTROY
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Delete"
+    }, ResourcePart.CompleteDefinition));
+    test.done();
+  },
+
+  'grant adds appropriate resource-*'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+    // WHEN
+    repo.grantPull(new iam.AnyPrincipal());
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      "RepositoryPolicyText": {
+        "Statement": [
+          {
+            "Action": [
+              "ecr:BatchCheckLayerAvailability",
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:BatchGetImage"
+            ],
+            "Effect": "Allow",
+            "Principal": "*",
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
 };

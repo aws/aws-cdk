@@ -1,27 +1,31 @@
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { App, Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EventPattern } from './event-pattern';
-import { CfnRule } from './events.generated';
-import { TargetInputTemplate } from './input-options';
-import { IEventRule } from './rule-ref';
-import { IEventRuleTarget } from './target';
+import { CfnEventBusPolicy, CfnRule } from './events.generated';
+import { IRule } from './rule-ref';
+import { Schedule } from './schedule';
+import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
-export interface EventRuleProps {
+export interface RuleProps {
   /**
    * A description of the rule's purpose.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
-   * A name for the rule. If you don't specify a name, AWS CloudFormation
-   * generates a unique physical ID and uses that ID for the rule name. For
-   * more information, see Name Type.
+   * A name for the rule.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the rule name. For more information, see Name Type.
    */
   readonly ruleName?: string;
 
   /**
    * Indicates whether the rule is enabled.
-   * @default Rule is enabled
+   *
+   * @default true
    */
   readonly enabled?: boolean;
 
@@ -33,8 +37,10 @@ export interface EventRuleProps {
    * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
    *
    * You must specify this property, the `eventPattern` property, or both.
+   *
+   * @default - None.
    */
-  readonly scheduleExpression?: string;
+  readonly schedule?: Schedule;
 
   /**
    * Describes which events CloudWatch Events routes to the specified target.
@@ -48,6 +54,8 @@ export interface EventRuleProps {
    * `addEventPattern`), the `scheduleExpression` property, or both. The
    * method `addEventPattern` can be used to add filter values to the event
    * pattern.
+   *
+   * @default - None.
    */
   readonly eventPattern?: EventPattern;
 
@@ -56,8 +64,10 @@ export interface EventRuleProps {
    *
    * Input will be the full matched event. If you wish to specify custom
    * target input, use `addTarget(target[, inputOptions])`.
+   *
+   * @default - No targets.
    */
-  readonly targets?: IEventRuleTarget[];
+  readonly targets?: IRuleTarget[];
 }
 
 /**
@@ -65,37 +75,51 @@ export interface EventRuleProps {
  *
  * @resource AWS::Events::Rule
  */
-export class EventRule extends Resource implements IEventRule {
+export class Rule extends Resource implements IRule {
 
-  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IEventRule {
-    class Import extends Resource implements IEventRule {
+  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
+    const parts = Stack.of(scope).parseArn(eventRuleArn);
+
+    class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
+      public ruleName = parts.resourceName || '';
     }
     return new Import(scope, id);
   }
 
   public readonly ruleArn: string;
+  public readonly ruleName: string;
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
-  private scheduleExpression?: string;
+  private readonly scheduleExpression?: string;
+  private readonly description?: string;
+  private readonly accountEventBusTargets: { [account: string]: boolean } = {};
 
-  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: RuleProps = { }) {
+    super(scope, id, {
+      physicalName: props.ruleName,
+    });
+    this.description = props.description;
 
     const resource = new CfnRule(this, 'Resource', {
-      name: props.ruleName,
-      description: props.description,
+      name: this.physicalName,
+      description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: new Token(() => this.scheduleExpression).toString(),
-      eventPattern: new Token(() => this.renderEventPattern()),
-      targets: new Token(() => this.renderTargets())
+      scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
+      eventPattern: Lazy.anyValue({ produce: () => this._renderEventPattern() }),
+      targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
-    this.ruleArn = resource.ruleArn;
+    this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'events',
+      resource: 'rule',
+      resourceName: this.physicalName,
+    });
+    this.ruleName = this.getResourceNameAttribute(resource.ref);
 
     this.addEventPattern(props.eventPattern);
-    this.scheduleExpression = props.scheduleExpression;
+    this.scheduleExpression = props.schedule && props.schedule.expressionString;
 
     for (const target of props.targets || []) {
       this.addTarget(target);
@@ -108,54 +132,151 @@ export class EventRule extends Resource implements IEventRule {
    *
    * No-op if target is undefined.
    */
-  public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
+  public addTarget(target?: IRuleTarget): void {
     if (!target) { return; }
-    const self = this;
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
+    // Simply increment id for each `addTarget` call. This is guaranteed to be unique.
+    const autoGeneratedId = `Target${this.targets.length}`;
 
-    // check if a target with this ID already exists
-    if (this.targets.find(t => t.id === targetProps.id)) {
-      throw new Error('Duplicate event rule target with ID: ' + targetProps.id);
+    const targetProps = target.bind(this, autoGeneratedId);
+    const inputProps = targetProps.input && targetProps.input.bind(this);
+
+    const roleArn = targetProps.role ? targetProps.role.roleArn : undefined;
+    const id = targetProps.id || autoGeneratedId;
+
+    if (targetProps.targetResource) {
+      const targetStack = Stack.of(targetProps.targetResource);
+      const targetAccount = targetStack.account;
+      const targetRegion = targetStack.region;
+
+      const sourceStack = Stack.of(this);
+      const sourceAccount = sourceStack.account;
+      const sourceRegion = sourceStack.region;
+
+      if (targetRegion !== sourceRegion) {
+        throw new Error('Rule and target must be in the same region');
+      }
+
+      if (targetAccount !== sourceAccount) {
+        // cross-account event - strap in, this works differently than regular events!
+        // based on:
+        // https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEvents-CrossAccountEventDelivery.html
+
+        // for cross-account events, we require concrete accounts
+        if (Token.isUnresolved(targetAccount)) {
+          throw new Error('You need to provide a concrete account for the target stack when using cross-account events');
+        }
+        if (Token.isUnresolved(sourceAccount)) {
+          throw new Error('You need to provide a concrete account for the source stack when using cross-account events');
+        }
+        // and the target region has to be concrete as well
+        if (Token.isUnresolved(targetRegion)) {
+          throw new Error('You need to provide a concrete region for the target stack when using cross-account events');
+        }
+
+        // the _actual_ target is just the event bus of the target's account
+        // make sure we only add it once per account
+        const exists = this.accountEventBusTargets[targetAccount];
+        if (!exists) {
+          this.accountEventBusTargets[targetAccount] = true;
+          this.targets.push({
+            id,
+            arn: targetStack.formatArn({
+              service: 'events',
+              resource: 'event-bus',
+              resourceName: 'default',
+              region: targetRegion,
+              account: targetAccount,
+            }),
+          });
+        }
+
+        // Grant the source account permissions to publish events to the event bus of the target account.
+        // Do it in a separate stack instead of the target stack (which seems like the obvious place to put it),
+        // because it needs to be deployed before the rule containing the above event-bus target in the source stack
+        // (CloudWatch verifies whether you have permissions to the targets on rule creation),
+        // but it's common for the target stack to depend on the source stack
+        // (that's the case with CodePipeline, for example)
+        const sourceApp = this.node.root;
+        if (!sourceApp || !App.isApp(sourceApp)) {
+          throw new Error('Event stack which uses cross-account targets must be part of a CDK app');
+        }
+        const targetApp = targetProps.targetResource.node.root;
+        if (!targetApp || !App.isApp(targetApp)) {
+          throw new Error('Target stack which uses cross-account event targets must be part of a CDK app');
+        }
+        if (sourceApp !== targetApp) {
+          throw new Error('Event stack and target stack must belong to the same CDK app');
+        }
+        const stackId = `EventBusPolicy-${sourceAccount}-${targetRegion}-${targetAccount}`;
+        let eventBusPolicyStack: Stack = sourceApp.node.tryFindChild(stackId) as Stack;
+        if (!eventBusPolicyStack) {
+          eventBusPolicyStack = new Stack(sourceApp, stackId, {
+            env: {
+              account: targetAccount,
+              region: targetRegion,
+            },
+            stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
+          });
+          new CfnEventBusPolicy(eventBusPolicyStack, `GivePermToOtherAccount`, {
+            action: 'events:PutEvents',
+            statementId: 'MySid',
+            principal: sourceAccount,
+          });
+        }
+        // deploy the event bus permissions before the source stack
+        sourceStack.addDependency(eventBusPolicyStack);
+
+        // The actual rule lives in the target stack.
+        // Other than the account, it's identical to this one
+
+        // eventPattern is mutable through addEventPattern(), so we need to lazy evaluate it
+        // but only Tokens can be lazy in the framework, so make a subclass instead
+        const self = this;
+        class CopyRule extends Rule {
+          public _renderEventPattern(): any {
+            return self._renderEventPattern();
+          }
+
+          // we need to override validate(), as it uses the
+          // value of the eventPattern field,
+          // which might be empty in the case of the copied rule
+          // (as the patterns in the original might be added through addEventPattern(),
+          // not passed through the constructor).
+          // Anyway, even if the original rule is invalid,
+          // we would get duplicate errors if we didn't override this,
+          // which is probably a bad idea in and of itself
+          protected validate(): string[] {
+            return [];
+          }
+        }
+
+        new CopyRule(targetStack, `${this.node.uniqueId}-${id}`, {
+          targets: [target],
+          eventPattern: this.eventPattern,
+          schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
+          description: this.description,
+        });
+
+        return;
+      }
     }
 
     this.targets.push({
-      ...targetProps,
-      inputTransformer: renderTransformer(),
+      id,
+      arn: targetProps.arn,
+      roleArn,
+      ecsParameters: targetProps.ecsParameters,
+      kinesisParameters: targetProps.kinesisParameters,
+      runCommandParameters: targetProps.runCommandParameters,
+      sqsParameters: targetProps.sqsParameters,
+      input: inputProps && inputProps.input,
+      inputPath: inputProps && inputProps.inputPath,
+      inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {
+        inputTemplate: inputProps.inputTemplate,
+        inputPathsMap: inputProps.inputPathsMap,
+      } : undefined,
     });
-
-    function renderTransformer(): CfnRule.InputTransformerProperty | undefined {
-      if (!inputOptions) {
-        return undefined;
-      }
-
-      if (inputOptions.jsonTemplate && inputOptions.textTemplate) {
-        throw new Error('"jsonTemplate" and "textTemplate" are mutually exclusive');
-      }
-
-      if (!inputOptions.jsonTemplate && !inputOptions.textTemplate) {
-        throw new Error('One of "jsonTemplate" or "textTemplate" are required');
-      }
-
-      let inputTemplate: any;
-
-      if (inputOptions.jsonTemplate) {
-        inputTemplate = typeof inputOptions.jsonTemplate === 'string'
-            ? inputOptions.jsonTemplate
-            : self.node.stringifyJson(inputOptions.jsonTemplate);
-      } else {
-        inputTemplate = typeof(inputOptions.textTemplate) === 'string'
-            // Newline separated list of JSON-encoded strings
-            ? inputOptions.textTemplate.split('\n').map(x => self.node.stringifyJson(x)).join('\n')
-            // Some object, stringify it, then stringify the string for proper escaping
-            : self.node.stringifyJson(self.node.stringifyJson(inputOptions.textTemplate));
-      }
-
-      return {
-        inputPathsMap: inputOptions.pathsMap,
-        inputTemplate
-      };
-    }
   }
 
   /**
@@ -198,23 +319,12 @@ export class EventRule extends Resource implements IEventRule {
     mergeEventPattern(this.eventPattern, eventPattern);
   }
 
-  protected validate() {
-    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [ `Either 'eventPattern' or 'scheduleExpression' must be defined` ];
-    }
-
-    return [ ];
-  }
-
-  private renderTargets() {
-    if (this.targets.length === 0) {
-      return undefined;
-    }
-
-    return this.targets;
-  }
-
-  private renderEventPattern() {
+  /**
+   * Not private only to be overrideen in CopyRule.
+   *
+   * @internal
+   */
+  public _renderEventPattern(): any {
     const eventPattern = this.eventPattern;
 
     if (Object.keys(eventPattern).length === 0) {
@@ -232,5 +342,21 @@ export class EventRule extends Resource implements IEventRule {
     }
 
     return out;
+  }
+
+  protected validate() {
+    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
+      return [ `Either 'eventPattern' or 'schedule' must be defined` ];
+    }
+
+    return [ ];
+  }
+
+  private renderTargets() {
+    if (this.targets.length === 0) {
+      return undefined;
+    }
+
+    return this.targets;
   }
 }

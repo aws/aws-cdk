@@ -1,9 +1,9 @@
 import dynamodb = require("@aws-cdk/aws-dynamodb");
-import cdk = require("@aws-cdk/cdk");
+import cdk = require("@aws-cdk/core");
 import { GlobalTableCoordinator } from "./global-table-coordinator";
 
 /**
- * Properties for the mutliple DynamoDB tables to mash together into a
+ * Properties for the multiple DynamoDB tables to mash together into a
  * global table
  */
 export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions {
@@ -39,22 +39,23 @@ export class GlobalTable extends cdk.Construct {
     super(scope, id);
     this._regionalTables = [];
 
-    if (props.streamSpecification != null && props.streamSpecification !== dynamodb.StreamViewType.NewAndOldImages) {
-      throw new Error("dynamoProps.streamSpecification MUST be set to dynamodb.StreamViewType.NewAndOldImages");
+    if (props.stream != null && props.stream !== dynamodb.StreamViewType.NEW_AND_OLD_IMAGES) {
+      throw new Error("dynamoProps.stream MUST be set to dynamodb.StreamViewType.NEW_AND_OLD_IMAGES");
     }
 
-    // need to set this streamSpecification, otherwise global tables don't work
+    // need to set this stream specification, otherwise global tables don't work
     // And no way to set a default value in an interface
-    const stackProps = {
+    const regionalTableProps: dynamodb.TableProps = {
       ...props,
-      streamSpecification: dynamodb.StreamViewType.NewAndOldImages
+      removalPolicy: props.removalPolicy,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     };
 
     // here we loop through the configured regions.
     // in each region we'll deploy a separate stack with a DynamoDB Table with identical properties in the individual stacks
     for (const reg of props.regions) {
       const regionalStack = new cdk.Stack(this, id + "-" + reg, { env: { region: reg } });
-      const regionalTable = new dynamodb.Table(regionalStack, id + '-GlobalTable-' + reg, stackProps);
+      const regionalTable = new dynamodb.Table(regionalStack, `${id}-GlobalTable-${reg}`, regionalTableProps);
       this._regionalTables.push(regionalTable);
     }
 

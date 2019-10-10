@@ -1,0 +1,25 @@
+{
+  "name": "%name%",
+  "version": "0.1.0",
+  "bin": {
+    "%name%": "bin/%name%.js"
+  },
+  "scripts": {
+    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
+    "cdk": "cdk",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "^%cdk-version%",
+    "@types/node": "8.10.54",
+    "@types/jest": "^24.0.18",
+    "aws-cdk": "^%cdk-version%",
+    "jest": "^24.9.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-sns": "^%cdk-version%",
+    "@aws-cdk/aws-sns-subscriptions": "^%cdk-version%",
+    "@aws-cdk/aws-sqs": "^%cdk-version%",
+    "@aws-cdk/core": "^%cdk-version%"
+  }
+}

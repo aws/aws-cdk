@@ -16,13 +16,13 @@ import { print, warning } from './logging';
  */
 export function printStackDiff(
       oldTemplate: any,
-      newTemplate: cxapi.SynthesizedStack,
+      newTemplate: cxapi.CloudFormationStackArtifact,
       strict: boolean,
       context: number,
       stream?: FormatStream): number {
 
-  if (_hasAssets(newTemplate)) {
-    const issue = 'https://github.com/awslabs/aws-cdk/issues/395';
+  if (newTemplate.assets.length > 0) {
+    const issue = 'https://github.com/aws/aws-cdk/issues/395';
     warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
   }
 
@@ -60,7 +60,7 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, requireApproval: RequireApproval): boolean {
+export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
   if (difRequiresApproval(diff, requireApproval)) {
@@ -89,20 +89,10 @@ function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: Requir
   }
 }
 
-function buildLogicalToPathMap(template: cxapi.SynthesizedStack) {
+function buildLogicalToPathMap(stack: cxapi.CloudFormationStackArtifact) {
   const map: { [id: string]: string } = {};
-  for (const path of Object.keys(template.metadata)) {
-    const md = template.metadata[path];
-    for (const e of md) {
-      if (e.type === 'aws:cdk:logicalId') {
-        const logical = e.data;
-        map[logical] = path;
-      }
-    }
+  for (const md of stack.findMetadataByType(cxapi.LOGICAL_ID_METADATA_KEY)) {
+    map[md.data] = md.path;
   }
   return map;
-}
-
-function _hasAssets(stack: cxapi.SynthesizedStack) {
-  return Object.values(stack.metadata).find(entries => entries.find(entry => entry.type === cxapi.ASSET_METADATA) != null) != null;
 }

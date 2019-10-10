@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sources = require('../lib');
 import { TestFunction } from './test-function';
@@ -25,10 +25,8 @@ export = {
             "Action": [
               "sqs:ReceiveMessage",
               "sqs:ChangeMessageVisibility",
-              "sqs:ChangeMessageVisibilityBatch",
               "sqs:GetQueueUrl",
               "sqs:DeleteMessage",
-              "sqs:DeleteMessageBatch",
               "sqs:GetQueueAttributes"
             ],
             "Effect": "Allow",

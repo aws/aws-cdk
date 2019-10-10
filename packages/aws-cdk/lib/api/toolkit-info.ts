@@ -1,27 +1,31 @@
 import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
-import { md5hash } from '../archive';
+import { contentHash } from '../archive';
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
-import { SDK } from './util/sdk';
+import { ISDK } from './util/sdk';
 
+/** @experimental */
 export interface UploadProps {
   s3KeyPrefix?: string,
   s3KeySuffix?: string,
   contentType?: string,
 }
 
+/** @experimental */
 export interface Uploaded {
   filename: string;
   key: string;
+  hash: string;
   changed: boolean;
 }
 
+/** @experimental */
 export class ToolkitInfo {
-  public readonly sdk: SDK;
+  public readonly sdk: ISDK;
 
   /**
    * A cache of previous uploads done in this session
@@ -29,7 +33,7 @@ export class ToolkitInfo {
   private readonly previousUploads: {[key: string]: Uploaded} = {};
 
   constructor(private readonly props: {
-    sdk: SDK,
+    sdk: ISDK,
     bucketName: string,
     bucketEndpoint: string,
     environment: cxapi.Environment
@@ -47,18 +51,18 @@ export class ToolkitInfo {
 
   /**
    * Uploads a data blob to S3 under the specified key prefix.
-   * Uses md5 hash to render the full key and skips upload if an object
+   * Uses a hash to render the full key and skips upload if an object
    * already exists by this key.
    */
-  public async uploadIfChanged(data: any, props: UploadProps): Promise<Uploaded> {
-    const s3 = await this.props.sdk.s3(this.props.environment, Mode.ForWriting);
+  public async uploadIfChanged(data: string | Buffer | DataView, props: UploadProps): Promise<Uploaded> {
+    const s3 = await this.props.sdk.s3(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
 
     const s3KeyPrefix = props.s3KeyPrefix || '';
     const s3KeySuffix = props.s3KeySuffix || '';
 
     const bucket = this.props.bucketName;
 
-    const hash = md5hash(data);
+    const hash = contentHash(data);
     const filename = `${hash}${s3KeySuffix}`;
     const key = `${s3KeyPrefix}${filename}`;
     const url = `s3://${bucket}/${key}`;
@@ -66,10 +70,10 @@ export class ToolkitInfo {
     debug(`${url}: checking if already exists`);
     if (await objectExists(s3, bucket, key)) {
       debug(`${url}: found (skipping upload)`);
-      return { filename, key, changed: false };
+      return { filename, key, hash, changed: false };
     }
 
-    const uploaded = { filename, key, changed: true };
+    const uploaded = { filename, key, hash, changed: true };
 
     // Upload if it's new or server-side copy if it was already uploaded previously
     const previous = this.previousUploads[hash];
@@ -98,9 +102,11 @@ export class ToolkitInfo {
 
   /**
    * Prepare an ECR repository for uploading to using Docker
+   *
+   * @experimental
    */
   public async prepareEcrRepository(asset: cxapi.ContainerImageAssetMetadataEntry): Promise<EcrRepositoryInfo> {
-    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForWriting);
+    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
     let repositoryName;
     if ( asset.repositoryName ) {
       // Repository name provided by user
@@ -147,7 +153,7 @@ export class ToolkitInfo {
    * Get ECR credentials
    */
   public async getEcrCredentials(): Promise<EcrCredentials> {
-    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForReading);
 
     debug(`Fetching ECR authorization token`);
     const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
@@ -168,7 +174,7 @@ export class ToolkitInfo {
    * Check if image already exists in ECR repository
    */
   public async checkEcrImage(repositoryName: string, imageTag: string): Promise<boolean> {
-    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForReading);
 
     try {
       debug(`${repositoryName}: checking for image ${imageTag}`);
@@ -184,11 +190,13 @@ export class ToolkitInfo {
   }
 }
 
+/** @experimental */
 export interface EcrRepositoryInfo {
   repositoryUri: string;
   repositoryName: string;
 }
 
+/** @experimental */
 export interface EcrCredentials {
   username: string;
   password: string;
@@ -208,8 +216,9 @@ async function objectExists(s3: aws.S3, bucket: string, key: string) {
   }
 }
 
-export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SDK, stackName: string): Promise<ToolkitInfo | undefined> {
-  const cfn = await sdk.cloudFormation(environment, Mode.ForReading);
+/** @experimental */
+export async function loadToolkitInfo(environment: cxapi.Environment, sdk: ISDK, stackName: string): Promise<ToolkitInfo | undefined> {
+  const cfn = await sdk.cloudFormation(environment.account, environment.region, Mode.ForReading);
   const stack = await waitForStack(cfn, stackName);
   if (!stack) {
     debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',

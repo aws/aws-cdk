@@ -1,7 +1,8 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
-import { PolicyDocument, PolicyStatement } from './policy-document';
+import { PolicyDocument } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { IRole } from './role';
 import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
@@ -19,32 +20,40 @@ export interface PolicyProps {
    * specify unique names. For example, if you specify a list of policies for
    * an IAM role, each policy must have a unique name.
    *
-   * @default Uses the logical ID of the policy resource, which is ensured to
-   *      be unique within the stack.
+   * @default - Uses the logical ID of the policy resource, which is ensured
+   * to be unique within the stack.
    */
   readonly policyName?: string;
 
   /**
    * Users to attach this policy to.
    * You can also use `attachToUser(user)` to attach this policy to a user.
+   *
+   * @default - No users.
    */
   readonly users?: IUser[];
 
   /**
    * Roles to attach this policy to.
    * You can also use `attachToRole(role)` to attach this policy to a role.
+   *
+   * @default - No roles.
    */
   readonly roles?: IRole[];
 
   /**
    * Groups to attach this policy to.
    * You can also use `attachToGroup(group)` to attach this policy to a group.
+   *
+   * @default - No groups.
    */
   readonly groups?: IGroup[];
 
   /**
    * Initial set of permissions to add to this policy document.
    * You can also use `addPermission(statement)` to add permissions later.
+   *
+   * @default - No statements.
    */
   readonly statements?: PolicyStatement[];
 }
@@ -82,20 +91,23 @@ export class Policy extends Resource implements IPolicy {
   private readonly groups = new Array<IGroup>();
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.policyName ||
+        // generatePolicyName will take the last 128 characters of the logical id since
+        // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
+        // that shouod be sufficient to ensure uniqueness within a principal.
+        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) })
+    });
 
     const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
-      policyName: new Token(() => this.policyName).toString(),
+      policyName: this.physicalName,
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
     });
 
-    // generatePolicyName will take the last 128 characters of the logical id since
-    // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
-    // that shouod be sufficient to ensure uniqueness within a principal.
-    this.policyName = props.policyName || generatePolicyName(resource.logicalId);
+    this.policyName = this.physicalName!;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
@@ -110,15 +122,15 @@ export class Policy extends Resource implements IPolicy {
     }
 
     if (props.statements) {
-      props.statements.forEach(p => this.addStatement(p));
+      props.statements.forEach(p => this.addStatements(p));
     }
   }
 
   /**
    * Adds a statement to the policy document.
    */
-  public addStatement(statement: PolicyStatement) {
-    this.document.addStatement(statement);
+  public addStatements(...statement: PolicyStatement[]) {
+    this.document.addStatements(...statement);
   }
 
   /**

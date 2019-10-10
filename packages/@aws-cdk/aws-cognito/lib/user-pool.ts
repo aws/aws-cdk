@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -12,39 +12,39 @@ export enum UserPoolAttribute {
   /**
    * End-User's preferred postal address.
    */
-  Address = 'address',
+  ADDRESS = 'address',
 
   /**
    * End-User's birthday, represented as an ISO 8601:2004 [ISO8601‑2004] YYYY-MM-DD format.
    * The year MAY be 0000, indicating that it is omitted.
    * To represent only the year, YYYY format is allowed.
    */
-  Birthdate = 'birthdate',
+  BIRTHDATE = 'birthdate',
 
   /**
    * End-User's preferred e-mail address.
    * Its value MUST conform to the RFC 5322 [RFC5322] addr-spec syntax.
    */
-  Email = 'email',
+  EMAIL = 'email',
 
   /**
    * Surname(s) or last name(s) of the End-User.
    * Note that in some cultures, people can have multiple family names or no family name;
    * all can be present, with the names being separated by space characters.
    */
-  FamilyName = 'family_name',
+  FAMILY_NAME = 'family_name',
 
   /**
    * End-User's gender.
    */
-  Gender = 'gender',
+  GENDER = 'gender',
 
   /**
    * Given name(s) or first name(s) of the End-User.
    * Note that in some cultures, people can have multiple given names;
    * all can be present, with the names being separated by space characters.
    */
-  GivenName = 'given_name',
+  GIVEN_NAME = 'given_name',
 
   /**
    * End-User's locale, represented as a BCP47 [RFC5646] language tag.
@@ -52,7 +52,7 @@ export enum UserPoolAttribute {
    * and an ISO 3166-1 Alpha-2 [ISO3166‑1] country code in uppercase, separated by a dash.
    * For example, en-US or fr-CA.
    */
-  Locale = 'locale',
+  LOCALE = 'locale',
 
   /**
    * Middle name(s) of the End-User.
@@ -60,19 +60,19 @@ export enum UserPoolAttribute {
    * all can be present, with the names being separated by space characters.
    * Also note that in some cultures, middle names are not used.
    */
-  MiddleName = 'middle_name',
+  MIDDLE_NAME = 'middle_name',
 
   /**
    * End-User's full name in displayable form including all name parts,
    * possibly including titles and suffixes, ordered according to the End-User's locale and preferences.
    */
-  Name = 'name',
+  NAME = 'name',
 
   /**
    * Casual name of the End-User that may or may not be the same as the given_name.
    * For instance, a nickname value of Mike might be returned alongside a given_name value of Michael.
    */
-  Nickname = 'nickname',
+  NICKNAME = 'nickname',
 
   /**
    * End-User's preferred telephone number.
@@ -80,7 +80,7 @@ export enum UserPoolAttribute {
    * If the phone number contains an extension, it is RECOMMENDED that the extension be represented using the
    * RFC 3966 [RFC3966] extension syntax, for example, +1 (604) 555-1234;ext=5678.
    */
-  PhoneNumber = 'phone_number',
+  PHONE_NUMBER = 'phone_number',
 
   /**
    * URL of the End-User's profile picture.
@@ -89,35 +89,35 @@ export enum UserPoolAttribute {
    * Note that this URL SHOULD specifically reference a profile photo of the End-User
    * suitable for displaying when describing the End-User, rather than an arbitrary photo taken by the End-User
    */
-  Picture = 'picture',
+  PICTURE = 'picture',
 
   /**
    * Shorthand name by which the End-User wishes to be referred to.
    */
-  PreferredUsername = 'preferred_username',
+  PREFERRED_USERNAME = 'preferred_username',
 
   /**
    * URL of the End-User's profile page. The contents of this Web page SHOULD be about the End-User.
    */
-  Profile = 'profile',
+  PROFILE = 'profile',
 
   /**
    * The End-User's time zone
    */
-  Timezone = 'timezone',
+  TIMEZONE = 'timezone',
 
   /**
    * Time the End-User's information was last updated.
    * Its value is a JSON number representing the number of seconds from 1970-01-01T0:0:0Z
    * as measured in UTC until the date/time.
    */
-  UpdatedAt = 'updated_at',
+  UPDATED_AT = 'updated_at',
 
   /**
    * URL of the End-User's Web page or blog.
    * This Web page SHOULD contain information published by the End-User or an organization that the End-User is affiliated with.
    */
-  Website = 'website'
+  WEBSITE = 'website'
 }
 
 /**
@@ -127,22 +127,22 @@ export enum SignInType {
   /**
    * End-user will sign in with a username, with optional aliases
    */
-  Username,
+  USERNAME,
 
   /**
    * End-user will sign in using an email address
    */
-  Email,
+  EMAIL,
 
   /**
    * End-user will sign in using a phone number
    */
-  Phone,
+  PHONE,
 
   /**
    * End-user will sign in using either an email address or phone number
    */
-  EmailOrPhone
+  EMAIL_OR_PHONE
 }
 
 export interface UserPoolTriggers {
@@ -189,6 +189,18 @@ export interface UserPoolTriggers {
   readonly preSignUp?: lambda.IFunction;
 
   /**
+   * A pre-token-generation AWS Lambda trigger.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   */
+  readonly preTokenGeneration?: lambda.IFunction;
+
+  /**
+   * A user-migration AWS Lambda trigger.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   */
+  readonly userMigration?: lambda.IFunction;
+
+  /**
    * Verifies the authentication challenge response.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
@@ -203,33 +215,39 @@ export interface UserPoolTriggers {
 export interface UserPoolProps {
   /**
    * Name of the user pool
-   * @default unique ID
+   *
+   * @default - automatically generated name by CloudFormation at deploy time
    */
-  readonly poolName?: string;
+  readonly userPoolName?: string;
 
   /**
    * Method used for user registration & sign in.
    * Allows either username with aliases OR sign in with email, phone, or both.
-   * @default SignInType.USERNAME
+   *
+   * @default SignInType.Username
    */
   readonly signInType?: SignInType;
 
   /**
    * Attributes to allow as username alias.
    * Only valid if signInType is USERNAME
-   * @default no alias
+   *
+   * @default - No alias.
    */
   readonly usernameAliasAttributes?: UserPoolAttribute[];
 
   /**
    * Attributes which Cognito will automatically send a verification message to.
    * Must be either EMAIL, PHONE, or both.
-   * @default no auto verification
+   *
+   * @default - No auto verification.
    */
   readonly autoVerifiedAttributes?: UserPoolAttribute[];
 
   /**
    * Lambda functions to use for supported Cognito triggers.
+   *
+   * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
 }
@@ -296,7 +314,7 @@ export class UserPool extends Resource implements IUserPool {
     /**
      * Define a user pool which has been declared in another stack
      */
-    class Import extends Construct implements IUserPool {
+    class Import extends Resource implements IUserPool {
       public readonly userPoolId = attrs.userPoolId;
       public readonly userPoolArn = attrs.userPoolArn;
       public readonly userPoolProviderName = attrs.userPoolProviderName;
@@ -329,42 +347,44 @@ export class UserPool extends Resource implements IUserPool {
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.userPoolName,
+    });
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
     let usernameAttributes: UserPoolAttribute[] | undefined;
 
-    if (props.usernameAliasAttributes != null && props.signInType !== SignInType.Username) {
+    if (props.usernameAliasAttributes != null && props.signInType !== SignInType.USERNAME) {
       throw new Error(`'usernameAliasAttributes' can only be set with a signInType of 'USERNAME'`);
     }
 
     if (props.usernameAliasAttributes
       && !props.usernameAliasAttributes.every(a => {
-        return a === UserPoolAttribute.Email || a === UserPoolAttribute.PhoneNumber || a === UserPoolAttribute.PreferredUsername;
+        return a === UserPoolAttribute.EMAIL || a === UserPoolAttribute.PHONE_NUMBER || a === UserPoolAttribute.PREFERRED_USERNAME;
       })) {
       throw new Error(`'usernameAliasAttributes' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME`);
     }
 
     if (props.autoVerifiedAttributes
-      && !props.autoVerifiedAttributes.every(a => a === UserPoolAttribute.Email || a === UserPoolAttribute.PhoneNumber)) {
+      && !props.autoVerifiedAttributes.every(a => a === UserPoolAttribute.EMAIL || a === UserPoolAttribute.PHONE_NUMBER)) {
       throw new Error(`'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER`);
     }
 
     switch (props.signInType) {
-      case SignInType.Username:
+      case SignInType.USERNAME:
         aliasAttributes = props.usernameAliasAttributes;
         break;
 
-      case SignInType.Email:
-        usernameAttributes = [UserPoolAttribute.Email];
+      case SignInType.EMAIL:
+        usernameAttributes = [UserPoolAttribute.EMAIL];
         break;
 
-      case SignInType.Phone:
-        usernameAttributes = [UserPoolAttribute.PhoneNumber];
+      case SignInType.PHONE:
+        usernameAttributes = [UserPoolAttribute.PHONE_NUMBER];
         break;
 
-      case SignInType.EmailOrPhone:
-        usernameAttributes = [UserPoolAttribute.Email, UserPoolAttribute.PhoneNumber];
+      case SignInType.EMAIL_OR_PHONE:
+        usernameAttributes = [UserPoolAttribute.EMAIL, UserPoolAttribute.PHONE_NUMBER];
         break;
 
       default:
@@ -383,16 +403,22 @@ export class UserPool extends Resource implements IUserPool {
     }
 
     const userPool = new CfnUserPool(this, 'Resource', {
-      userPoolName: props.poolName || this.node.uniqueId,
+      userPoolName: this.physicalName,
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
-      lambdaConfig: new Token(() => this.triggers)
+      lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
-    this.userPoolId = userPool.userPoolId;
-    this.userPoolArn = userPool.userPoolArn;
-    this.userPoolProviderName = userPool.userPoolProviderName;
-    this.userPoolProviderUrl = userPool.userPoolProviderUrl;
+
+    this.userPoolId = this.getResourceNameAttribute(userPool.ref);
+    this.userPoolArn = this.getResourceArnAttribute(userPool.attrArn, {
+      service: 'cognito',
+      resource: 'userpool',
+      resourceName: this.physicalName,
+    });
+
+    this.userPoolProviderName = userPool.attrProviderName;
+    this.userPoolProviderUrl = userPool.attrProviderUrl;
   }
 
   /**
@@ -401,7 +427,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
    * @param fn the lambda function to attach
    */
-  public onCreateAuthChallenge(fn: lambda.IFunction): void {
+  public addCreateAuthChallengeTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CreateAuthChallenge');
     this.triggers = { ...this.triggers, createAuthChallenge: fn.functionArn };
   }
@@ -412,7 +438,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
    * @param fn the lambda function to attach
    */
-  public onCustomMessage(fn: lambda.IFunction): void {
+  public addCustomMessageTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CustomMessage');
     this.triggers = { ...this.triggers, customMessage: fn.functionArn };
   }
@@ -423,7 +449,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
    * @param fn the lambda function to attach
    */
-  public onDefineAuthChallenge(fn: lambda.IFunction): void {
+  public addDefineAuthChallengeTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'DefineAuthChallenge');
     this.triggers = { ...this.triggers, defineAuthChallenge: fn.functionArn };
   }
@@ -434,7 +460,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
    * @param fn the lambda function to attach
    */
-  public onPostAuthentication(fn: lambda.IFunction): void {
+  public addPostAuthenticationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostAuthentication');
     this.triggers = { ...this.triggers, postAuthentication: fn.functionArn };
   }
@@ -445,7 +471,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
    * @param fn the lambda function to attach
    */
-  public onPostConfirmation(fn: lambda.IFunction): void {
+  public addPostConfirmationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostConfirmation');
     this.triggers = { ...this.triggers, postConfirmation: fn.functionArn };
   }
@@ -456,7 +482,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
    * @param fn the lambda function to attach
    */
-  public onPreAuthentication(fn: lambda.IFunction): void {
+  public addPreAuthenticationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreAuthentication');
     this.triggers = { ...this.triggers, preAuthentication: fn.functionArn };
   }
@@ -467,9 +493,31 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
    * @param fn the lambda function to attach
    */
-  public onPreSignUp(fn: lambda.IFunction): void {
+  public addPreSignUpTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreSignUp');
     this.triggers = { ...this.triggers, preSignUp: fn.functionArn };
+  }
+
+  /**
+   * Attach 'Pre Token Generation' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   * @param fn the lambda function to attach
+   */
+  public addPreTokenGenerationTrigger(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn, 'PreTokenGeneration');
+    this.triggers = { ...this.triggers, preTokenGeneration: fn.functionArn };
+  }
+
+  /**
+   * Attach 'User Migration' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
+   * @param fn the lambda function to attach
+   */
+  public addUserMigrationTrigger(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn, 'UserMigration');
+    this.triggers = { ...this.triggers, userMigration: fn.functionArn };
   }
 
   /**
@@ -478,7 +526,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    * @param fn the lambda function to attach
    */
-  public onVerifyAuthChallengeResponse(fn: lambda.IFunction): void {
+  public addVerifyAuthChallengeResponseTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
     this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
   }

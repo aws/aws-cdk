@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
 
@@ -10,8 +10,8 @@ export = {
     const stack = new cdk.Stack();
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NodeJS810,
-      code: lambda.Code.inline('export.handler = event => event;'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+      code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler'
     });
 

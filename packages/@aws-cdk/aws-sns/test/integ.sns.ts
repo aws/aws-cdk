@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from '@aws-cdk/cdk';
+import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Topic } from '../lib';
 
 class SNSInteg extends Stack {
@@ -16,4 +16,4 @@ const app = new App();
 
 new SNSInteg(app, 'SNSInteg');
 
-app.run();
+app.synth();

@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/cdk';
+import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, SubnetType, Vpc } from '../lib';
@@ -44,9 +44,6 @@ export = {
           {
             Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3RouteTableE0C661A2'
-          }
         ],
         VpcEndpointType: 'Gateway'
       }));
@@ -65,10 +62,10 @@ export = {
             service: GatewayVpcEndpointAwsService.S3,
             subnets: [
               {
-                subnetType: SubnetType.Public
+                subnetType: SubnetType.PUBLIC
               },
               {
-                subnetType: SubnetType.Private
+                subnetType: SubnetType.PRIVATE
               }
             ]
           }
@@ -100,17 +97,11 @@ export = {
             Ref: 'VpcNetworkPublicSubnet2RouteTableE5F348DF'
           },
           {
-            Ref: 'VpcNetworkPublicSubnet3RouteTable36E30B07'
-          },
-          {
             Ref: 'VpcNetworkPrivateSubnet1RouteTableCD085FF1'
           },
           {
             Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3RouteTableE0C661A2'
-          }
         ],
         VpcEndpointType: 'Gateway'
       }));
@@ -127,12 +118,11 @@ export = {
       });
 
       // WHEN
-      endpoint.addToPolicy(
-        new PolicyStatement()
-          .addAnyPrincipal()
-          .addActions('s3:GetObject', 's3:ListBucket')
-          .addAllResources()
-      );
+      endpoint.addToPolicy(new PolicyStatement({
+        principals: [new AnyPrincipal()],
+        actions: ['s3:GetObject', 's3:ListBucket'],
+        resources: ['*']
+      }));
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
@@ -164,11 +154,10 @@ export = {
       });
 
       // THEN
-      test.throws(() => endpoint.addToPolicy(
-        new PolicyStatement()
-          .addActions('s3:GetObject', 's3:ListBucket')
-          .addAllResources()
-      ), /`Principal`/);
+      test.throws(() => endpoint.addToPolicy(new PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket'],
+        resources: ['*']
+      })), /`Principal`/);
 
       test.done();
     },
@@ -185,50 +174,30 @@ export = {
       test.done();
     },
 
-    'conveniance methods for S3 and DynamoDB'(test: Test) {
+    'works with an imported vpc'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const vpc = new Vpc(stack, 'VpcNetwork');
-
-      // WHEN
-      vpc.addS3Endpoint('S3');
-      vpc.addDynamoDbEndpoint('DynamoDb');
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'id',
+        privateSubnetIds: ['1', '2', '3'],
+        privateSubnetRouteTableIds: ['rt1', 'rt2', 'rt3'],
+        availabilityZones: ['a', 'b', 'c']
+      });
 
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.s3'
-            ]
-          ]
-        },
-      }));
+      vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 });
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region'
-              },
-              '.dynamodb'
-            ]
-          ]
-        },
+        ServiceName: { 'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3']] },
+        VpcId: 'id',
+        RouteTableIds: ['rt1', 'rt2', 'rt3'],
+        VpcEndpointType: 'Gateway',
       }));
 
       test.done();
     },
 
-    'throws with an imported vpc'(test: Test) {
+    'throws with an imported vpc without route tables ids'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
@@ -237,11 +206,7 @@ export = {
         availabilityZones: ['a', 'b', 'c']
       });
 
-      // THEN
-      test.throws(() => new GatewayVpcEndpoint(stack, 'Gateway', {
-        service: GatewayVpcEndpointAwsService.S3,
-        vpc
-      }), /route table/);
+      test.throws(() => vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 }), /route table/);
 
       test.done();
     }
@@ -255,7 +220,7 @@ export = {
 
       // WHEN
       vpc.addInterfaceEndpoint('EcrDocker', {
-        service: InterfaceVpcEndpointAwsService.EcrDocker
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER
       });
 
       // THEN
@@ -291,9 +256,6 @@ export = {
           {
             Ref: 'VpcNetworkPrivateSubnet2Subnet5E4189D6'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3Subnet5D16E0FB'
-          }
         ],
         VpcEndpointType: 'Interface'
       }));

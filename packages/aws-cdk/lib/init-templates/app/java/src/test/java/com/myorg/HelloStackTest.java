@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.App;
+import software.amazon.awscdk.core.App;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -21,7 +21,7 @@ public class HelloStackTest {
 
         // synthesize the stack to a CloudFormation template and compare against
         // a checked-in JSON file.
-        JsonNode actual = JSON.valueToTree(app.synthesizeStack(stack.getName()).getTemplate());
+        JsonNode actual = JSON.valueToTree(app.synth().getStack(stack.getStackName()).getTemplate());
         JsonNode expected = JSON.readTree(getClass().getResource("expected.cfn.json"));
         assertEquals(expected, actual);
     }

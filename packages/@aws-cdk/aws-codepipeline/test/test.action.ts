@@ -1,5 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import iam = require('@aws-cdk/aws-iam');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 import validations = require('../lib/validation');
@@ -35,28 +36,46 @@ export = {
   'action type validation': {
 
     'must be source and is source'(test: Test) {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },
 
     'must be source and is not source'(test: Test) {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only contain Source actions/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is source'(test: Test) {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only occur in first stage/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is not source'(test: Test) {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
+      test.done();
+    },
+  },
+
+  'action name validation': {
+    'throws an exception when adding an Action with an empty name to the Pipeline'(test: Test) {
+      const stack = new cdk.Stack();
+      const action = new FakeSourceAction({
+        actionName: '',
+        output: new codepipeline.Artifact(),
+      });
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+      const stage = pipeline.addStage({ stageName: 'Source' });
+      test.throws(() => {
+        stage.addAction(action);
+      }, /Action name must match regular expression:/);
+
       test.done();
     },
   },
@@ -72,7 +91,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -86,7 +105,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -121,7 +140,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -136,7 +155,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -166,12 +185,12 @@ export = {
       output: sourceOutput,
     });
     pipeline.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     });
 
     pipeline.addStage({
-      name: 'Build',
+      stageName: 'Build',
       actions: [
         new FakeBuildAction({
           actionName: 'CodeBuild',
@@ -188,7 +207,6 @@ export = {
           "Actions": [
             {
               "Name": "CodeCommit",
-              "InputArtifacts": [],
               "OutputArtifacts": [
                 {
                   "Name": "Artifact_Source_CodeCommit",
@@ -221,14 +239,14 @@ export = {
     test.done();
   },
 
-  'the same Action cannot be added to 2 different Stages'(test: Test) {
+  'the same Action can be safely added to 2 different Stages'(test: Test) {
     const stack = new cdk.Stack();
 
     const sourceOutput = new codepipeline.Artifact();
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
         {
-          name: 'Source',
+          stageName: 'Source',
           actions: [
             new FakeSourceAction({
               actionName: 'Source',
@@ -240,17 +258,17 @@ export = {
     });
 
     const action = new FakeBuildAction({ actionName: 'FakeAction', input: sourceOutput });
-    const stage2 = {
-      name: 'Stage2',
+    const stage2: codepipeline.StageProps = {
+      stageName: 'Stage2',
       actions: [action],
     };
-    const stage3 = {
-      name: 'Stage3',
+    const stage3: codepipeline.StageProps = {
+      stageName: 'Stage3',
       actions: [action],
     };
 
-    pipeline.addStage(stage2); // fine
-    test.throws(() => {
+    pipeline.addStage(stage2);
+    test.doesNotThrow(() => {
       pipeline.addStage(stage3);
     }, /FakeAction/);
 
@@ -260,13 +278,14 @@ export = {
   'input Artifacts': {
     'can be added multiple times to an Action safely'(test: Test) {
       const artifact = new codepipeline.Artifact('SomeArtifact');
-      const action = new FakeBuildAction({
-        actionName: 'CodeBuild',
-        input: artifact,
-        extraInputs: [artifact],
-      });
 
-      test.equal(action.inputs.length, 1);
+      test.doesNotThrow(() => {
+        new FakeBuildAction({
+          actionName: 'CodeBuild',
+          input: artifact,
+          extraInputs: [artifact],
+        });
+      });
 
       test.done();
     },
@@ -289,19 +308,56 @@ export = {
 
   'output Artifacts': {
     'accept multiple Artifacts with the same name safely'(test: Test) {
-      const action = new FakeSourceAction({
-        actionName: 'CodeBuild',
-        output: new codepipeline.Artifact('Artifact1'),
-        extraOutputs: [
-          new codepipeline.Artifact('Artifact1'),
-          new codepipeline.Artifact('Artifact1'),
-        ],
+      test.doesNotThrow(() => {
+        new FakeSourceAction({
+          actionName: 'CodeBuild',
+          output: new codepipeline.Artifact('Artifact1'),
+          extraOutputs: [
+            new codepipeline.Artifact('Artifact1'),
+            new codepipeline.Artifact('Artifact1'),
+          ],
+        });
       });
-
-      test.equal(action.outputs.length, 1);
 
       test.done();
     },
+  },
+
+  'an Action with a non-AWS owner cannot have a Role passed for it'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const sourceOutput = new codepipeline.Artifact();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [
+            new FakeSourceAction({
+              actionName: 'source',
+              output: sourceOutput,
+            }),
+          ],
+        },
+      ],
+    });
+    const buildStage = pipeline.addStage({ stageName: 'Build' });
+
+    // constructing it is fine
+    const buildAction = new FakeBuildAction({
+      actionName: 'build',
+      input: sourceOutput,
+      owner: 'ThirdParty',
+      role: new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      }),
+    });
+
+    // an attempt to add it to the Pipeline is where things blow up
+    test.throws(() => {
+      buildStage.addAction(buildAction);
+    }, /Role is not supported for actions with an owner different than 'AWS' - got 'ThirdParty' \(Action: 'build' in Stage: 'Build'\)/);
+
+    test.done();
   },
 };
 

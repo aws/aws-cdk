@@ -1,19 +1,24 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { ArnPrincipal, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
-import { IPrincipal } from './principals';
+import { PolicyStatement } from './policy-statement';
+import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IUser } from './user';
-import { AttachedPolicies, undefinedIfEmpty } from './util';
+import { AttachedPolicies } from './util';
 
 export interface IGroup extends IIdentity {
   /**
+   * Returns the IAM Group Name
+   *
    * @attribute
    */
   readonly groupName: string;
 
   /**
+   * Returns the IAM Group ARN
+   *
    * @attribute
    */
   readonly groupArn: string;
@@ -35,15 +40,21 @@ export interface GroupProps {
   readonly groupName?: string;
 
   /**
-   * A list of ARNs for managed policies associated with group.
-   * @default No managed policies.
+   * A list of managed policies associated with this role.
+   *
+   * You can add managed policies later using
+   * `addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`.
+   *
+   * @default - No managed policies.
    */
-  readonly managedPolicyArns?: any[];
+  readonly managedPolicies?: IManagedPolicy[];
 
   /**
    * The path to the group. For more information about paths, see [IAM
    * Identifiers](http://docs.aws.amazon.com/IAM/latest/UserGuide/index.html?Using_Identifiers.html)
    * in the IAM User Guide.
+   *
+   * @default /
    */
   readonly path?: string;
 }
@@ -71,7 +82,7 @@ abstract class GroupBase extends Resource implements IGroup {
     policy.attachToGroup(this);
   }
 
-  public attachManagedPolicy(_arn: string) {
+  public addManagedPolicy(_policy: IManagedPolicy) {
     // drop
   }
 
@@ -91,7 +102,7 @@ abstract class GroupBase extends Resource implements IGroup {
       this.defaultPolicy.attachToGroup(this);
     }
 
-    this.defaultPolicy.addStatement(statement);
+    this.defaultPolicy.addStatements(statement);
     return true;
   }
 }
@@ -103,7 +114,7 @@ export class Group extends GroupBase {
    * @param groupArn (e.g. `arn:aws:iam::account-id:group/group-name`)
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
-    const groupName = scope.node.stack.parseArn(groupArn).resourceName!;
+    const groupName = Stack.of(scope).parseArn(groupArn).resourceName!;
     class Import extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
@@ -115,28 +126,36 @@ export class Group extends GroupBase {
   public readonly groupName: string;
   public readonly groupArn: string;
 
-  private readonly managedPolicies: string[];
+  private readonly managedPolicies: IManagedPolicy[] = [];
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.groupName,
+    });
 
-    this.managedPolicies = props.managedPolicyArns || [];
+    this.managedPolicies.push(...props.managedPolicies || []);
 
     const group = new CfnGroup(this, 'Resource', {
-      groupName: props.groupName,
-      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
+      groupName: this.physicalName,
+      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
     });
 
-    this.groupName = group.groupName;
-    this.groupArn = group.groupArn;
+    this.groupName = this.getResourceNameAttribute(group.ref);
+    this.groupArn = this.getResourceArnAttribute(group.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'group',
+      resourceName: this.physicalName,
+    });
   }
 
   /**
    * Attaches a managed policy to this group.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The managed policy to attach.
    */
-  public attachManagedPolicy(arn: string) {
-    this.managedPolicies.push(arn);
+  public addManagedPolicy(policy: IManagedPolicy) {
+    if (this.managedPolicies.find(mp => mp === policy)) { return; }
+    this.managedPolicies.push(policy);
   }
 }

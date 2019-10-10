@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -233,7 +233,7 @@ class ASGFixture extends cdk.Construct {
     this.vpc = new ec2.Vpc(this, 'VPC');
     this.asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
       vpc: this.vpc,
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
     });
   }

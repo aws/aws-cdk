@@ -1,8 +1,33 @@
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
+  'add stacked property to graphs'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'Test widget',
+      stacked: true
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'Test widget',
+        region: { Ref: 'AWS::Region' },
+        stacked: true,
+        yAxis: {}
+      }
+    }]);
+
+    test.done();
+  },
+
   'add metrics to graphs on either axis'(test: Test) {
     // WHEN
     const stack = new Stack();
@@ -17,7 +42,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -29,8 +54,7 @@ export = {
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
           ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
         ],
-        annotations: { horizontal: [] },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -45,7 +69,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -55,8 +79,7 @@ export = {
         metrics: [
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average', label: 'MyMetric', color: '000000' }],
         ],
-        annotations: { horizontal: [] },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -74,7 +97,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 3,
@@ -83,7 +106,7 @@ export = {
         region: { Ref: 'AWS::Region' },
         metrics: [
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
-        ],
+        ]
       }
     }]);
 
@@ -94,7 +117,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).newAlarm(stack, 'Alarm', {
+    const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).createAlarm(stack, 'Alarm', {
       evaluationPeriods: 2,
       threshold: 1000
     });
@@ -105,7 +128,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -115,7 +138,7 @@ export = {
         annotations: {
           alarms: [{ 'Fn::GetAtt': [ 'Alarm7103F465', 'Arn' ] }]
         },
-        yAxis: { left: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -133,13 +156,13 @@ export = {
       leftAnnotations: [{
         value: 1000,
         color: '667788',
-        fill: Shading.Below,
+        fill: Shading.BELOW,
         label: 'this is the annotation',
       }]
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -157,7 +180,7 @@ export = {
           fill: 'below',
           label: 'this is the annotation',
         }] },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -170,7 +193,7 @@ export = {
 
     const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
 
-    const alarm = metric.newAlarm(stack, 'Alarm', {
+    const alarm = metric.createAlarm(stack, 'Alarm', {
       evaluationPeriods: 2,
       threshold: 1000
     });
@@ -182,7 +205,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -199,9 +222,69 @@ export = {
             label: 'Test >= 1000 for 2 datapoints within 10 minutes',
           }]
         },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
       }
     }]);
+
+    test.done();
+  },
+
+  'add yAxis to graph'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' })
+      ],
+      right: [
+        new Metric({ namespace: 'CDK', metricName: 'Tast' })
+      ],
+      leftYAxis: ({
+        label: "Left yAxis",
+        max: 100
+      }),
+      rightYAxis: ({
+        label: "Right yAxis",
+        min: 10,
+        showUnits: false
+      })
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+          ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
+        ],
+        yAxis: {
+          left: { label: "Left yAxis", max: 100 },
+          right: { label: "Right yAxis", min: 10, showUnits: false } }
+      }
+    }]);
+
+    test.done();
+  },
+
+  'can use imported alarm with graph'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const alarm = Alarm.fromAlarmArn(stack, 'Alarm', 'arn:aws:cloudwatch:region:account-id:alarm:alarm-name');
+
+    // WHEN
+    new AlarmWidget({
+      title: 'My fancy graph',
+      alarm
+    });
+
+    // THEN: Compiles
 
     test.done();
   },

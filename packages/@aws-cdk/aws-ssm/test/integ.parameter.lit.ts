@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ssm = require('../lib');
 
 const app = new cdk.App();
@@ -34,4 +34,4 @@ new cdk.CfnOutput(stack, 'StringListOutput', {
   value: cdk.Fn.join('+', listParameter.stringListValue),
 });
 
-app.run();
+app.synth();

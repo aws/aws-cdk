@@ -1,13 +1,15 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
-import { IClusterParameterGroup } from './cluster-parameter-group';
-import { DatabaseClusterAttributes, Endpoint, IDatabaseCluster } from './cluster-ref';
+import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
+import { Endpoint } from './endpoint';
+import { IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
-import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
+import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 /**
  * Properties for a new database cluster
@@ -17,6 +19,13 @@ export interface DatabaseClusterProps {
    * What kind of database to start
    */
   readonly engine: DatabaseClusterEngine;
+
+  /**
+   * What version of the database to start
+   *
+   * @default - The default for the engine is used.
+   */
+  readonly engineVersion?: string;
 
   /**
    * How many replicas/instances to create
@@ -39,20 +48,25 @@ export interface DatabaseClusterProps {
 
   /**
    * Backup settings
+   *
+   * @default - Backup retention period for automated backups is 1 day.
+   * Backup preferred window is set to a 30-minute window selected at random from an
+   * 8-hour block of time for each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
    */
   readonly backup?: BackupProps;
 
   /**
    * What port to listen on
    *
-   * If not supplied, the default for the engine is used.
+   * @default - The default for the engine is used.
    */
   readonly port?: number;
 
   /**
    * An optional identifier for the cluster
    *
-   * If not supplied, a name is automatically generated.
+   * @default - A name is automatically generated.
    */
   readonly clusterIdentifier?: string;
 
@@ -61,14 +75,15 @@ export interface DatabaseClusterProps {
    *
    * Every replica is named by appending the replica number to this string, 1-based.
    *
-   * If not given, the clusterIdentifier is used with the word "Instance" appended.
-   *
-   * If clusterIdentifier is also not given, the identifier is automatically generated.
+   * @default - clusterIdentifier is used with the word "Instance" appended.
+   * If clusterIdentifier is not provided, the identifier is automatically generated.
    */
   readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
+   *
+   * @default - Database is not created in cluster.
    */
   readonly defaultDatabaseName?: string;
 
@@ -83,7 +98,7 @@ export interface DatabaseClusterProps {
    * The KMS key for storage encryption. If specified `storageEncrypted`
    * will be set to `true`.
    *
-   * @default default master key
+   * @default - default master key.
    */
   readonly kmsKey?: kms.IKey;
 
@@ -93,23 +108,42 @@ export interface DatabaseClusterProps {
    * Must be at least 30 minutes long.
    *
    * Example: '01:00-02:00'
+   *
+   * @default - 30-minute window selected at random from an 8-hour block of time for
+   * each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
    */
   readonly preferredMaintenanceWindow?: string;
 
   /**
    * Additional parameters to pass to the database engine
    *
-   * @default No parameter group
+   * @default - No parameter group.
    */
-  readonly parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IParameterGroup;
 
   /**
-   * The CloudFormation policy to apply when the cluster and its instances
-   * are removed from the stack or replaced during an update.
+   * The removal policy to apply when the cluster and its instances are removed
+   * from the stack or replaced during an update.
    *
-   * @default Retain
+   * @default - Retain cluster.
    */
-  readonly deleteReplacePolicy?: DeletionPolicy
+  readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * The interval, in seconds, between points when Amazon RDS collects enhanced
+   * monitoring metrics for the DB instances.
+   *
+   * @default no enhanced monitoring
+   */
+  readonly monitoringInterval?: Duration;
+
+  /**
+   * Role that will be used to manage DB instances monitoring.
+   *
+   * @default - A role is automatically created for you
+   */
+  readonly monitoringRole?: IRole;
 }
 
 /**
@@ -156,7 +190,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.Cluster
+      targetType: secretsmanager.AttachmentTargetType.CLUSTER
     };
   }
 }
@@ -172,17 +206,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
-        defaultPortRange: this.defaultPortRange
+        securityGroups: [attrs.securityGroup],
+        defaultPort: this.defaultPort
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly instanceIdentifiers: string[] = [];
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
       public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = attrs.securityGroupId;
+      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);
@@ -231,7 +265,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The database engine of this cluster
    */
-  public readonly engine: DatabaseClusterEngine;
+  private readonly secretRotationApplication: SecretRotationApplication;
 
   /**
    * The VPC where the DB subnet group is created.
@@ -276,24 +310,25 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
-    this.engine = props.engine;
+    this.secretRotationApplication = props.engine.secretRotationApplication;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: this.engine,
+      engine: props.engine.name,
+      engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       // Admin
-      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
-        ? secret.secretJsonValue('password').toString()
+        ? secret.secretValueFromJson('password').toString()
         : (props.masterUser.password
             ? props.masterUser.password.toString()
             : undefined),
-      backupRetentionPeriod: props.backup && props.backup.retentionDays,
+      backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
@@ -302,16 +337,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    cluster.options.deletionPolicy = deleteReplacePolicy;
-    cluster.options.updateReplacePolicy = deleteReplacePolicy;
+    cluster.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     this.clusterIdentifier = cluster.ref;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = new Token(() => cluster.dbClusterEndpointPort).toNumber();
-    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
-    this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -325,7 +360,18 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectedDependency;
+    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
+
+    let monitoringRole;
+    if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      monitoringRole = props.monitoringRole || new Role(this, "MonitoringRole", {
+        assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
+        ]
+      });
+    }
+
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -333,11 +379,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        engine: props.engine,
+        engine: props.engine.name,
+        engineVersion: props.engineVersion,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
@@ -345,33 +392,37 @@ export class DatabaseCluster extends DatabaseClusterBase {
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
+        dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
+        monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
+        monitoringRoleArn: monitoringRole && monitoringRole.roleArn
       });
 
-      instance.options.deletionPolicy = deleteReplacePolicy;
-      instance.options.updateReplacePolicy = deleteReplacePolicy;
+      instance.applyRemovalPolicy(props.removalPolicy, {
+        applyToUpdateReplacePolicy: true
+      });
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
       instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
-      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, portAttribute));
+      this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
-    const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
+    const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPort });
   }
 
   /**
    * Adds the single user rotation of the master password to this cluster.
    */
-  public addRotationSingleUser(id: string, options: RotationSingleUserOptions = {}): RotationSingleUser {
+  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
-    return new RotationSingleUser(this, id, {
+    return new SecretRotation(this, id, {
       secret: this.secret,
-      engine: toDatabaseEngine(this.engine),
+      application: this.secretRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
@@ -385,21 +436,4 @@ export class DatabaseCluster extends DatabaseClusterBase {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
-}
-
-/**
- * Transforms a DatbaseClusterEngine to a DatabaseEngine.
- *
- * @param engine the engine to transform
- */
-function toDatabaseEngine(engine: DatabaseClusterEngine): DatabaseEngine {
-  switch (engine) {
-    case DatabaseClusterEngine.Aurora:
-    case DatabaseClusterEngine.AuroraMysql:
-      return DatabaseEngine.Mysql;
-    case DatabaseClusterEngine.AuroraPostgresql:
-      return DatabaseEngine.Postgres;
-    default:
-      throw new Error('Unknown engine');
-  }
 }

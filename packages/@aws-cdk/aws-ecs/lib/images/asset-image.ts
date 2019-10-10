@@ -1,36 +1,50 @@
-import { DockerImageAsset } from '@aws-cdk/assets-docker';
-import cdk = require('@aws-cdk/cdk');
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+import cdk = require('@aws-cdk/core');
 import { ContainerDefinition } from '../container-definition';
-import { ContainerImage } from '../container-image';
-import { CfnTaskDefinition } from '../ecs.generated';
+import { ContainerImage, ContainerImageConfig } from '../container-image';
 
+/**
+ * The properties for building an AssetImage.
+ */
 export interface AssetImageProps {
   /**
-   * The directory where the Dockerfile is stored
+   * The arguments to pass to the `docker build` command
+   *
+   * @default none
    */
-  readonly directory: string;
+  readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   *
+   * @default none
+   */
+  readonly target?: string;
 }
 
 /**
- * An image that will be built at synthesis time
+ * An image that will be built from a local directory with a Dockerfile
  */
 export class AssetImage extends ContainerImage {
-  private readonly asset: DockerImageAsset;
-
-  constructor(scope: cdk.Construct, id: string, props: AssetImageProps) {
+  /**
+   * Constructs a new instance of the AssetImage class.
+   *
+   * @param directory The directory containing the Dockerfile
+   */
+  constructor(private readonly directory: string, private readonly props: AssetImageProps = {}) {
     super();
-    this.asset = new DockerImageAsset(scope, id, { directory: props.directory });
   }
 
-  public bind(containerDefinition: ContainerDefinition): void {
-    this.asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
-  }
+  public bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+    const asset = new DockerImageAsset(scope, 'AssetImage', {
+      directory: this.directory,
+      buildArgs: this.props.buildArgs,
+      target: this.props.target,
+    });
+    asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 
-  public toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
-      return undefined;
-  }
-
-  public get imageName() {
-    return this.asset.imageUri;
+    return {
+      imageName: asset.imageUri,
+    };
   }
 }

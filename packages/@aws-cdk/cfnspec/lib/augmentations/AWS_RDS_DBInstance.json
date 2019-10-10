@@ -1,0 +1,37 @@
+{
+  "options": {
+    "classFile": "instance",
+    "class": "DatabaseInstanceBase",
+    "interface": "IDatabaseInstance"
+  },
+  "metrics": {
+    "namespace": "AWS/RDS",
+    "dimensions": { "DBInstanceIdentifier": "this.instanceIdentifier" },
+    "metrics": [
+      {
+        "name": "CPUUtilization",
+        "documentation": "The percentage of CPU utilization."
+      },
+      {
+        "name": "DatabaseConnections",
+        "documentation": "The number of database connections in use."
+      },
+      {
+        "name": "FreeStorageSpace",
+        "documentation": "The amount of available storage space."
+      },
+      {
+        "name": "FreeableMemory",
+        "documentation": "The amount of available random access memory."
+      },
+      {
+        "name": "WriteIOPS",
+        "documentation": "The average number of disk read I/O operations per second."
+      },
+      {
+        "name": "ReadIOPS",
+        "documentation": "The average number of disk write I/O operations per second."
+      }
+    ]
+  }
+}

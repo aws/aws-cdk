@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
@@ -12,7 +12,7 @@ export = {
     new ecs.TaskDefinition(stack, 'TD', {
       cpu: '512',
       memoryMiB: '512',
-      compatibility: ecs.Compatibility.Ec2AndFargate,
+      compatibility: ecs.Compatibility.EC2_AND_FARGATE,
     });
 
     // THEN

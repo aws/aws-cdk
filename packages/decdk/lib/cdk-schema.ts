@@ -22,7 +22,7 @@ export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: Re
   // Find all constructs for which the props interface
   // (transitively) only consists of JSON primitives or interfaces
   // that consist of JSON primitives
-  const constructType = typeSystem.findClass('@aws-cdk/cdk.Construct');
+  const constructType = typeSystem.findClass('@aws-cdk/core.Construct');
   const constructs = typeSystem.classes.filter(c => c.extends(constructType));
 
   const deconstructs = constructs
@@ -100,7 +100,7 @@ export function schemaForResource(construct: ConstructAndProps, ctx: SchemaConte
 }
 
 function isCfnResource(klass: jsiiReflect.ClassType) {
-  const resource = klass.system.findClass('@aws-cdk/cdk.CfnResource');
+  const resource = klass.system.findClass('@aws-cdk/core.CfnResource');
   return klass.extends(resource);
 }
 

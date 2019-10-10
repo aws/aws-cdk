@@ -1,11 +1,13 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import { Construct, Stack } from "@aws-cdk/core";
+import { Action } from '../action';
 
 /**
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
  */
-export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps {
+export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionProps {
   // because of @see links
   // tslint:disable:max-line-length
 
@@ -20,8 +22,6 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
    */
   readonly inputs?: codepipeline.Artifact[];
 
-  // tslint:enable:max-line-length
-
   /**
    * The optional names of the output Artifacts of the Action.
    * A Lambda Action can have up to 5 outputs.
@@ -34,30 +34,14 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
   readonly outputs?: codepipeline.Artifact[];
 
   /**
-   * String to be used in the event data parameter passed to the Lambda
-   * function
+   * A set of key-value pairs that will be accessible to the invoked Lambda
+   * inside the event that the Pipeline will call it with.
    *
-   * See an example JSON event in the CodePipeline documentation.
-   *
-   * https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    */
-  readonly userParameters?: any;
+  readonly userParameters?: { [key: string]: any };
 
-  /**
-   * Adds the "codepipeline:PutJobSuccessResult" and
-   * "codepipeline:PutJobFailureResult" for '*' resource to the Lambda
-   * execution role policy.
-   *
-   * NOTE: the reason we can't add the specific pipeline ARN as a resource is
-   * to avoid a cyclic dependency between the pipeline and the Lambda function
-   * (the pipeline references) the Lambda and the Lambda needs permissions on
-   * the pipeline.
-   *
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-create-function
-   *
-   * @default true
-   */
-  readonly addPutJobResultPolicy?: boolean;
+  // tslint:enable:max-line-length
 
   /**
    * The lambda function to invoke.
@@ -70,13 +54,14 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
  *
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
  */
-export class LambdaInvokeAction extends codepipeline.Action {
+export class LambdaInvokeAction extends Action {
   private readonly props: LambdaInvokeActionProps;
 
   constructor(props: LambdaInvokeActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Invoke,
+      resource: props.lambda,
+      category: codepipeline.ActionCategory.INVOKE,
       provider: 'Lambda',
       artifactBounds: {
         minInputs: 0,
@@ -84,33 +69,46 @@ export class LambdaInvokeAction extends codepipeline.Action {
         minOutputs: 0,
         maxOutputs: 5,
       },
-      configuration: {
-        FunctionName: props.lambda.functionName,
-        UserParameters: props.userParameters
-      }
     });
 
     this.props = props;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
+  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
     // allow pipeline to list functions
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('lambda:ListFunctions')
-      .addAllResources());
+    options.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['lambda:ListFunctions'],
+      resources: ['*']
+    }));
 
     // allow pipeline to invoke this lambda functionn
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('lambda:InvokeFunction')
-      .addResource(this.props.lambda.functionArn));
+    options.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['lambda:InvokeFunction'],
+      resources: [this.props.lambda.functionArn]
+    }));
 
-    // allow lambda to put job results for this pipeline.
-    const addToPolicy = this.props.addPutJobResultPolicy !== undefined ? this.props.addPutJobResultPolicy : true;
-    if (addToPolicy) {
-      this.props.lambda.addToRolePolicy(new iam.PolicyStatement()
-        .addAllResources() // to avoid cycles (see docs)
-        .addAction('codepipeline:PutJobSuccessResult')
-        .addAction('codepipeline:PutJobFailureResult'));
+    // allow the Role access to the Bucket, if there are any inputs/outputs
+    if ((this.actionProperties.inputs || []).length > 0) {
+      options.bucket.grantRead(options.role);
     }
+    if ((this.actionProperties.outputs || []).length > 0) {
+      options.bucket.grantWrite(options.role);
+    }
+
+    // allow lambda to put job results for this pipeline
+    // CodePipeline requires this to be granted to '*'
+    // (the Pipeline ARN will not be enough)
+    this.props.lambda.addToRolePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult']
+    }));
+
+    return {
+      configuration: {
+        FunctionName: this.props.lambda.functionName,
+        UserParameters: Stack.of(scope).toJsonString(this.props.userParameters),
+      },
+    };
   }
 }

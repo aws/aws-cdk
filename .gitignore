@@ -1,24 +1,31 @@
-*.tsbuildinfo
-.cdk.staging
-
-.vscode
 # VSCode extension
+.vscode/
 /.favorites.json
+
+# TypeScript incremental build states
+*.tsbuildinfo
+
+# Local state files & OS specifics
 .DS_Store
-node_modules
+node_modules/
 lerna-debug.log
-dist
-pack
+dist/
+pack/
 .BUILD_COMPLETED
-.local-npm
-.tools
-coverage
+.local-npm/
+.tools/
+coverage/
 .nyc_output
 .LAST_BUILD
 *.sw[a-z]
 *~
+.idea
 
-# we don't want tsconfig at the root
+# We don't want tsconfig at the root
 /tsconfig.json
+
+# CDK Context & Staging files
 cdk.context.json
-tsconfig.tsbuildinfo
+.cdk.staging/
+cdk.out/
+

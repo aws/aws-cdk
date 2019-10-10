@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -54,7 +44,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs6.10"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "MyFuncServiceRole54065130"
@@ -111,7 +101,7 @@
                 "Arn"
               ]
             },
-            "Id": "MyFunc"
+            "Id": "Target0"
           }
         ]
       }
@@ -129,7 +119,7 @@
                 "Arn"
               ]
             },
-            "Id": "MyFunc"
+            "Id": "Target0"
           }
         ]
       }

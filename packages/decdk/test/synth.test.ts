@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fs = require('fs');
 import reflect = require('jsii-reflect');
 import path = require('path');
@@ -27,6 +27,7 @@ async function obtainTypeSystem() {
 
 for (const templateFile of fs.readdirSync(dir)) {
   test(templateFile, async () => {
+    const workingDirectory = dir;
     const template = await readTemplate(path.resolve(dir, templateFile));
     const typeSystem = await obtainTypeSystem();
 
@@ -34,10 +35,12 @@ for (const templateFile of fs.readdirSync(dir)) {
     const stackName = stackNameFromFileName(templateFile);
 
     new DeclarativeStack(app, stackName, {
+      workingDirectory,
       template,
       typeSystem
     });
 
-    expect(app.synthesizeStack(stackName).template).toMatchSnapshot(stackName);
+    const output = app.synth().getStack(stackName);
+    expect(output.template).toMatchSnapshot(stackName);
   });
 }

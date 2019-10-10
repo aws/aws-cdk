@@ -1,5 +1,6 @@
 # CDK asset staging directory
 .cdk.staging
+cdk.out
 
 # Created by https://www.gitignore.io/api/csharp
 

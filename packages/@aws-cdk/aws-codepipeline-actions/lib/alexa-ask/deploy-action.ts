@@ -1,5 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { SecretValue } from '@aws-cdk/cdk';
+import { Construct, SecretValue } from '@aws-cdk/core';
+import { Action } from '../action';
 
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
@@ -39,11 +40,13 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
 /**
  * Deploys the skill to Alexa
  */
-export class AlexaSkillDeployAction extends codepipeline.Action {
+export class AlexaSkillDeployAction extends Action {
+  private readonly props: AlexaSkillDeployActionProps;
+
   constructor(props: AlexaSkillDeployActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       owner: 'ThirdParty',
       provider: 'AlexaSkillsKit',
       artifactBounds: {
@@ -53,17 +56,21 @@ export class AlexaSkillDeployAction extends codepipeline.Action {
         maxOutputs: 0,
       },
       inputs: getInputs(props),
-      configuration: {
-        ClientId: props.clientId,
-        ClientSecret: props.clientSecret,
-        RefreshToken: props.refreshToken,
-        SkillId: props.skillId,
-      },
     });
+
+    this.props = props;
   }
 
-  protected bind(_info: codepipeline.ActionBind): void {
-    // nothing to do
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    return {
+      configuration: {
+        ClientId: this.props.clientId,
+        ClientSecret: this.props.clientSecret,
+        RefreshToken: this.props.refreshToken,
+        SkillId: this.props.skillId,
+      },
+    };
   }
 }
 

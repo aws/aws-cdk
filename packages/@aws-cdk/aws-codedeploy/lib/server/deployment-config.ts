@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnDeploymentConfig } from '../codedeploy.generated';
 import { arnForDeploymentConfig } from '../utils';
 
@@ -79,13 +79,13 @@ export interface ServerDeploymentConfigProps {
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class ServerDeploymentConfig extends cdk.Resource implements IServerDeploymentConfig {
-  public static readonly OneAtATime  = deploymentConfig('CodeDeployDefault.OneAtATime');
-  public static readonly HalfAtATime = deploymentConfig('CodeDeployDefault.HalfAtATime');
-  public static readonly AllAtOnce   = deploymentConfig('CodeDeployDefault.AllAtOnce');
+  public static readonly ONE_AT_A_TIME  = deploymentConfig('CodeDeployDefault.OneAtATime');
+  public static readonly HALF_AT_A_TIME = deploymentConfig('CodeDeployDefault.HalfAtATime');
+  public static readonly ALL_AT_ONCE   = deploymentConfig('CodeDeployDefault.AllAtOnce');
 
   /**
-   * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK app,
+   * or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -106,14 +106,16 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
   public readonly deploymentConfigArn: string;
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.deploymentConfigName,
+    });
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
-      deploymentConfigName: props.deploymentConfigName,
+      deploymentConfigName: this.physicalName,
       minimumHealthyHosts: props.minimumHealthyHosts._json,
     });
 
-    this.deploymentConfigName = resource.ref.toString();
+    this.deploymentConfigName = resource.ref;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
   }
 }

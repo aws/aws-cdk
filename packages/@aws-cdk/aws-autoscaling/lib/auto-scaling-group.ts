@@ -5,7 +5,10 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { AutoScalingRollingUpdate, Construct, Fn, IResource, Resource, Tag, Token } from '@aws-cdk/cdk';
+import {
+  CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
+  Tag, Token, withResolved
+} from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -40,24 +43,29 @@ export interface CommonAutoScalingGroupProps {
 
   /**
    * Initial amount of instances in the fleet
+   *
    * @default 1
    */
   readonly desiredCapacity?: number;
 
   /**
    * Name of SSH keypair to grant access to instances
-   * @default No SSH access will be possible
+   *
+   * @default - No SSH access will be possible.
    */
   readonly keyName?: string;
 
   /**
    * Where to place instances within the VPC
+   *
+   * @default - All Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * SNS topic to send notifications about fleet changes
-   * @default No fleet change notifications will be sent.
+   *
+   * @default - No fleet change notifications will be sent.
    */
   readonly notificationsTopic?: sns.ITopic;
 
@@ -85,6 +93,8 @@ export interface CommonAutoScalingGroupProps {
    * Configuration for rolling updates
    *
    * Only used if updateType == UpdateType.RollingUpdate.
+   *
+   * @default - RollingUpdateConfiguration with defaults.
    */
   readonly rollingUpdateConfiguration?: RollingUpdateConfiguration;
 
@@ -93,6 +103,8 @@ export interface CommonAutoScalingGroupProps {
    *
    * Only used if updateType == UpdateType.ReplacingUpdate. Specifies how
    * many instances must signal success for the update to succeed.
+   *
+   * @default minSuccessfulInstancesPercent
    */
   readonly replacingUpdateMinSuccessfulInstancesPercent?: number;
 
@@ -121,24 +133,39 @@ export interface CommonAutoScalingGroupProps {
    *
    * The maximum value is 43200 (12 hours).
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly resourceSignalTimeoutSec?: number;
+  readonly resourceSignalTimeout?: Duration;
 
   /**
    * Default scaling cooldown for this AutoScalingGroup
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: Duration;
 
   /**
    * Whether instances in the Auto Scaling Group should have public
    * IP addresses associated with them.
    *
-   * @default Use subnet setting
+   * @default - Use subnet setting.
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * The maximum hourly price (in USD) to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
+   * launched when the price you specify exceeds the current Spot market price.
+   *
+   * @default none
+   */
+  readonly spotPrice?: string;
+
+  /**
+   * Configuration for health checks
+   *
+   * @default - HealthCheck.ec2 with no grace period
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -158,7 +185,17 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * AMI to launch
    */
-  readonly machineImage: ec2.IMachineImageSource;
+  readonly machineImage: ec2.IMachineImage;
+
+  /**
+   * Specific UserData to use
+   *
+   * The UserData may still be mutated after creation.
+   *
+   * @default - A UserData object appropriate for the MachineImage's
+   * Operating System is created.
+   */
+  readonly userData?: ec2.UserData;
 
   /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
@@ -174,17 +211,32 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
 
   public abstract autoScalingGroupName: string;
+  public abstract autoScalingGroupArn: string;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  public onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook {
+  public addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook {
     return new LifecycleHook(this, `LifecycleHook${id}`, {
       autoScalingGroup: this,
       ...props
@@ -207,7 +259,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageCPUUtilization,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_CPU_UTILIZATION,
       targetValue: props.targetUtilizationPercent,
       ...props
     });
@@ -219,7 +271,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkIn,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_IN,
       targetValue: props.targetBytesPerSecond,
       ...props
     });
@@ -231,7 +283,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkOut,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_OUT,
       targetValue: props.targetBytesPerSecond,
       ...props
     });
@@ -245,14 +297,14 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
     if (this.albTargetGroup === undefined) {
-      throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
+      throw new Error('Attach the AutoScalingGroup to a non-imported Application Load Balancer before calling scaleOnRequestCount()');
     }
 
     const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
 
     const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ALBRequestCountPerTarget,
+      predefinedMetric: PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
       targetValue: props.targetRequestsPerSecond,
       resourceLabel,
       ...props
@@ -301,6 +353,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
+      public autoScalingGroupArn = Stack.of(this).formatArn({
+        service: 'autoscaling',
+        resource: 'autoScalingGroup:*:autoScalingGroupName',
+        resourceName: this.autoScalingGroupName
+      });
     }
 
     return new Import(scope, id);
@@ -326,7 +383,22 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public readonly autoScalingGroupName: string;
 
-  private readonly userDataLines = new Array<string>();
+  /**
+   * Arn of the AutoScalingGroup
+   */
+  public readonly autoScalingGroupArn: string;
+
+  /**
+   * UserData for the instances
+   */
+  public readonly userData: ec2.UserData;
+
+  /**
+   * The maximum spot price configured for thie autoscaling group. `undefined`
+   * indicates that this group uses on-demand capacity.
+   */
+  public readonly spotPrice?: string;
+
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -336,19 +408,16 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
 
-    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
-      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
-    }
-
     this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
       allowAllOutbound: props.allowAllOutbound !== false
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.apply(new Tag(NAME_TAG, this.node.path));
+    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
 
@@ -357,18 +426,43 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     // use delayed evaluation
-    const machineImage = props.machineImage.getImage(this);
-    const userDataToken = new Token(() => Fn.base64((machineImage.os.createUserData(this.userDataLines)))).toString();
-    const securityGroupsToken = new Token(() => this.securityGroups.map(sg => sg.securityGroupId));
+    const imageConfig = props.machineImage.getImage(this);
+    this.userData = props.userData || imageConfig.userData || ec2.UserData.forOperatingSystem(imageConfig.osType);
+    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
+    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-      imageId: machineImage.imageId,
+      imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
-      securityGroups: securityGroupsToken.toList(),
+      securityGroups: securityGroupsToken,
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
+      spotPrice: props.spotPrice,
+      blockDeviceMappings: (props.blockDevices !== undefined ? props.blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+          ({deviceName, volume, mappingEnabled}) => {
+            const {virtualName, ebsDevice: ebs} = volume;
+
+            if (ebs) {
+              const {iops, volumeType} = ebs;
+
+              if (!iops) {
+                if (volumeType === EbsDeviceVolumeType.IO1) {
+                  throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+                }
+              } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+                this.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+              }
+            }
+
+            return {
+              deviceName,
+              ebs,
+              virtualName,
+              noDevice: mappingEnabled !== undefined ? !mappingEnabled : undefined,
+            };
+          }) : undefined),
     });
 
     launchConfig.node.addDependency(this.role);
@@ -380,19 +474,26 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
     const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
 
-    if (desiredCapacity < minCapacity || desiredCapacity > maxCapacity) {
-      throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
-    }
+    withResolved(desiredCapacity, minCapacity, (desired, min) => {
+      if (desired < min) {
+        throw new Error(`Should have minCapacity (${min}) <= desiredCapacity (${desired})`);
+      }
+    });
+    withResolved(desiredCapacity, maxCapacity, (desired, max) => {
+      if (max < desired) {
+        throw new Error(`Should have desiredCapacity (${desired}) <= maxCapacity (${max})`);
+      }
+    });
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
-      minSize: minCapacity.toString(),
-      maxSize: maxCapacity.toString(),
-      desiredCapacity: desiredCapacity.toString(),
+      cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
+      minSize: stringifyNumber(minCapacity),
+      maxSize: stringifyNumber(maxCapacity),
+      desiredCapacity: stringifyNumber(desiredCapacity),
       launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: new Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
-      targetGroupArns: new Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
+      loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
+      targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: !props.notificationsTopic ? undefined : [
         {
           topicArn: props.notificationsTopic.topicArn,
@@ -404,18 +505,28 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           ],
         }
       ],
-      vpcZoneIdentifier: subnetIds
+      vpcZoneIdentifier: subnetIds,
+      healthCheckType: props.healthCheck && props.healthCheck.type,
+      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
     };
 
-    if (!props.vpc.isPublicSubnets(subnetIds) && props.associatePublicIpAddress) {
-      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+    if (!hasPublic && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
-    this.osType = machineImage.os.type;
-    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
+    this.osType = imageConfig.osType;
+    this.autoScalingGroupName = this.autoScalingGroup.ref;
+    this.autoScalingGroupArn = Stack.of(this).formatArn({
+      service: 'autoscaling',
+      resource: 'autoScalingGroup:*:autoScalingGroupName',
+      resourceName: this.autoScalingGroupName
+    });
+    this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
+
+    this.spotPrice = props.spotPrice;
   }
 
   /**
@@ -438,27 +549,36 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+    if (this.albTargetGroup !== undefined) {
+      throw new Error('Cannot add AutoScalingGroup to 2nd Target Group');
+    }
+
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    this.albTargetGroup = targetGroup;
+    if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
+      // Copy onto self if it's a concrete type. We need this for autoscaling
+      // based on request count, which we cannot do with an imported TargetGroup.
+      this.albTargetGroup = targetGroup;
+    }
+
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**
    * Attach to ELBv2 Application Target Group
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**
    * Add command to the startup script of fleet instances.
    * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
    */
-  public addUserData(...scriptLines: string[]) {
-    scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
+  public addUserData(...commands: string[]) {
+    this.userData.addCommands(...commands);
   }
 
   /**
@@ -472,9 +592,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Apply CloudFormation update policies for the AutoScalingGroup
    */
   private applyUpdatePolicies(props: AutoScalingGroupProps) {
-    if (props.updateType === UpdateType.ReplacingUpdate) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+    if (props.updateType === UpdateType.REPLACING_UPDATE) {
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingReplacingUpdate: {
           willReplace: true
         }
@@ -486,34 +606,34 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         // during the update?
         //
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
-        this.autoScalingGroup.options.creationPolicy = {
-          ...this.autoScalingGroup.options.creationPolicy,
+        this.autoScalingGroup.cfnOptions.creationPolicy = {
+          ...this.autoScalingGroup.cfnOptions.creationPolicy,
           autoScalingCreationPolicy: {
             minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
           }
         };
       }
-    } else if (props.updateType === UpdateType.RollingUpdate) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+    } else if (props.updateType === UpdateType.ROLLING_UPDATE) {
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
       };
     }
 
     // undefined is treated as 'true'
     if (props.ignoreUnmodifiedSizeProperties !== false) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true }
       };
     }
 
-    if (props.resourceSignalCount !== undefined || props.resourceSignalTimeoutSec !== undefined) {
-      this.autoScalingGroup.options.creationPolicy = {
-        ...this.autoScalingGroup.options.creationPolicy,
+    if (props.resourceSignalCount !== undefined || props.resourceSignalTimeout !== undefined) {
+      this.autoScalingGroup.cfnOptions.creationPolicy = {
+        ...this.autoScalingGroup.cfnOptions.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
         }
       };
     }
@@ -527,19 +647,19 @@ export enum UpdateType {
   /**
    * Don't do anything
    */
-  None = 'None',
+  NONE = 'None',
 
   /**
    * Replace the entire AutoScalingGroup
    *
    * Builds a new AutoScalingGroup first, then delete the old one.
    */
-  ReplacingUpdate = 'Replace',
+  REPLACING_UPDATE = 'Replace',
 
   /**
    * Replace the instances in the AutoScalingGroup.
    */
-  RollingUpdate = 'RollingUpdate',
+  ROLLING_UPDATE = 'RollingUpdate',
 }
 
 /**
@@ -587,9 +707,9 @@ export interface RollingUpdateConfiguration {
    * PT#H#M#S, where each # is the number of hours, minutes, and seconds,
    * respectively). The maximum PauseTime is one hour (PT1H).
    *
-   * @default 300 if the waitOnResourceSignals property is true, otherwise 0
+   * @default Duration.minutes(5) if the waitOnResourceSignals property is true, otherwise 0
    */
-  readonly pauseTimeSec?: number;
+  readonly pauseTime?: Duration;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
@@ -618,60 +738,90 @@ export interface RollingUpdateConfiguration {
 }
 
 export enum ScalingProcess {
-  Launch = 'Launch',
-  Terminate = 'Terminate',
-  HealthCheck = 'HealthCheck',
-  ReplaceUnhealthy = 'ReplaceUnhealthy',
-  AZRebalance = 'AZRebalance',
-  AlarmNotification = 'AlarmNotification',
-  ScheduledActions = 'ScheduledActions',
-  AddToLoadBalancer = 'AddToLoadBalancer'
+  LAUNCH = 'Launch',
+  TERMINATE = 'Terminate',
+  HEALTH_CHECK = 'HealthCheck',
+  REPLACE_UNHEALTHY = 'ReplaceUnhealthy',
+  AZ_REBALANCE = 'AZRebalance',
+  ALARM_NOTIFICATION = 'AlarmNotification',
+  SCHEDULED_ACTIONS = 'ScheduledActions',
+  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
+}
+
+/**
+ * EC2 Heath check options
+ */
+export interface Ec2HealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly grace?: Duration;
+}
+
+/**
+ * ELB Heath check options
+ */
+export interface ElbHealthCheckOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   *
+   * This option is required for ELB health checks.
+   */
+  readonly grace: Duration;
+}
+
+/**
+ * Health check settings
+ */
+export class HealthCheck {
+  /**
+   * Use EC2 for health checks
+   *
+   * @param options EC2 health check options
+   */
+  public static ec2(options: Ec2HealthCheckOptions = {}): HealthCheck {
+    return new HealthCheck(HealthCheckType.EC2, options.grace);
+  }
+
+  /**
+   * Use ELB for health checks.
+   * It considers the instance unhealthy if it fails either the EC2 status checks or the load balancer health checks.
+   *
+   * @param options ELB health check options
+   */
+  public static elb(options: ElbHealthCheckOptions): HealthCheck {
+    return new HealthCheck(HealthCheckType.ELB, options.grace);
+  }
+
+  private constructor(public readonly type: string, public readonly gracePeriod?: Duration) { }
+}
+
+enum HealthCheckType {
+  EC2 = 'EC2',
+  ELB = 'ELB',
 }
 
 /**
  * Render the rolling update configuration into the appropriate object
  */
-function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): AutoScalingRollingUpdate {
+function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): CfnAutoScalingRollingUpdate {
   const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
-  const pauseTimeSec = config.pauseTimeSec !== undefined ? config.pauseTimeSec : (waitOnResourceSignals ? 300 : 0);
+  const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 
   return {
     maxBatchSize: config.maxBatchSize,
     minInstancesInService: config.minInstancesInService,
     minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
     waitOnResourceSignals,
-    pauseTime: renderIsoDuration(pauseTimeSec),
+    pauseTime: pauseTime && pauseTime.toISOString(),
     suspendProcesses: config.suspendProcesses !== undefined ? config.suspendProcesses :
       // Recommended list of processes to suspend from here:
       // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
-      [ScalingProcess.HealthCheck, ScalingProcess.ReplaceUnhealthy, ScalingProcess.AZRebalance,
-        ScalingProcess.AlarmNotification, ScalingProcess.ScheduledActions],
+      [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
+        ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS],
   };
-}
-
-/**
- * Render a number of seconds to a PTnX string.
- */
-function renderIsoDuration(seconds: number): string {
-  const ret: string[] = [];
-
-  if (seconds === 0) {
-    return 'PT0S';
-  }
-
-  if (seconds >= 3600) {
-    ret.push(`${Math.floor(seconds / 3600)}H`);
-    seconds %= 3600;
-  }
-  if (seconds >= 60) {
-    ret.push(`${Math.floor(seconds / 60)}M`);
-    seconds %= 60;
-  }
-  if (seconds > 0) {
-    ret.push(`${seconds}S`);
-  }
-
-  return 'PT' + ret.join('');
 }
 
 function validatePercentage(x?: number): number | undefined {
@@ -690,9 +840,15 @@ export interface IAutoScalingGroup extends IResource {
   readonly autoScalingGroupName: string;
 
   /**
+   * The arn of the AutoScalingGroup
+   * @attribute
+   */
+  readonly autoScalingGroupArn: string;
+
+  /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+  addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook;
 
   /**
    * Scale out or in based on time
@@ -766,10 +922,177 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * target value, your ASG should scale out, and if it's lower it should
    * scale in.
    */
-  readonly metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.IMetric;
 
   /**
    * Value to keep the metric around
    */
   readonly targetValue: number;
+}
+
+export interface BlockDevice {
+  /**
+   * The device name exposed to the EC2 instance
+   *
+   * @example '/dev/sdh', 'xvdh'
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
+   */
+  readonly deviceName: string;
+
+  /**
+   * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
+   *
+   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
+   *
+   */
+  readonly volume: BlockDeviceVolume;
+
+  /**
+   * If false, the device mapping will be suppressed.
+   * If set to false for the root device, the instance might fail the Amazon EC2 health check.
+   * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
+   *
+   * @default true - device mapping is left untouched
+   */
+  readonly mappingEnabled?: boolean;
+}
+
+export interface EbsDeviceOptionsBase {
+  /**
+   * Indicates whether to delete the volume when the instance is terminated.
+   *
+   * @default - true for Amazon EC2 Auto Scaling, false otherwise (e.g. EBS)
+   */
+  readonly deleteOnTermination?: boolean;
+
+  /**
+   * The number of I/O operations per second (IOPS) to provision for the volume.
+   *
+   * Must only be set for {@link volumeType}: {@link EbsDeviceVolumeType.IO1}
+   *
+   * The maximum ratio of IOPS to volume size (in GiB) is 50:1, so for 5,000 provisioned IOPS,
+   * you need at least 100 GiB storage on the volume.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   */
+  readonly iops?: number;
+
+  /**
+   * The EBS volume type
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   *
+   * @default {@link EbsDeviceVolumeType.GP2}
+   */
+  readonly volumeType?: EbsDeviceVolumeType;
+}
+
+export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
+  /**
+   * Specifies whether the EBS volume is encrypted.
+   * Encrypted EBS volumes can only be attached to instances that support Amazon EBS encryption
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption_supported_instances
+   *
+   * @default false
+   */
+  readonly encrypted?: boolean;
+}
+
+export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
+  /**
+   * The volume size, in Gibibytes (GiB)
+   *
+   * If you specify volumeSize, it must be equal or greater than the size of the snapshot.
+   *
+   * @default - The snapshot size
+   */
+  readonly volumeSize?: number;
+}
+
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+  readonly snapshotId?: string;
+}
+
+/**
+ * Describes a block device mapping for an Auto Scaling group.
+ */
+export class BlockDeviceVolume  {
+  /**
+   * Creates a new Elastic Block Storage device
+   *
+   * @param volumeSize The volume size, in Gibibytes (GiB)
+   * @param options additional device options
+   */
+  public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
+    return new this({...options, volumeSize});
+  }
+
+  /**
+   * Creates a new Elastic Block Storage device from an existing snapshot
+   *
+   * @param snapshotId The snapshot ID of the volume to use
+   * @param options additional device options
+   */
+  public static ebsFromSnapshot(snapshotId: string, options: EbsDeviceSnapshotOptions = {}): BlockDeviceVolume {
+    return new this({...options, snapshotId});
+  }
+
+  /**
+   * Creates a virtual, ephemeral device.
+   * The name will be in the form ephemeral{volumeIndex}.
+   *
+   * @param volumeIndex the volume index. Must be equal or greater than 0
+   */
+  public static ephemeral(volumeIndex: number) {
+    if (volumeIndex < 0) {
+      throw new Error(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+    }
+
+    return new this(undefined, `ephemeral${volumeIndex}`);
+  }
+
+  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
+  }
+}
+
+/**
+ * Supported EBS volume types for {@link AutoScalingGroupProps.blockDevices}
+ */
+export enum EbsDeviceVolumeType {
+  /**
+   * Magnetic
+   */
+  STANDARD = 'standard',
+
+  /**
+   *  Provisioned IOPS SSD
+   */
+  IO1 = 'io1',
+
+  /**
+   * General Purpose SSD
+   */
+  GP2 = 'gp2',
+
+  /**
+   * Throughput Optimized HDD
+   */
+  ST1 = 'st1',
+
+  /**
+   * Cold HDD
+   */
+  SC1 = 'sc1',
+}
+
+/**
+ * Stringify a number directly or lazily if it's a Token
+ */
+function stringifyNumber(x: number) {
+  if (Token.isUnresolved(x)) {
+    return Lazy.stringValue({ produce: context => `${context.resolve(x)}` });
+  } else {
+    return `${x}`;
+  }
 }

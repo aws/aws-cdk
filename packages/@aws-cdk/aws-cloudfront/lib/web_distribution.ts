@@ -1,7 +1,8 @@
-import route53 = require('@aws-cdk/aws-route53');
+import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnDistribution } from './cloudfront.generated';
+import { IDistribution } from './distribution';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
@@ -12,18 +13,18 @@ export enum HttpVersion {
  * The price class determines how many edge locations CloudFront will use for your distribution.
  */
 export enum PriceClass {
-  PriceClass100 = "PriceClass_100",
-  PriceClass200 = "PriceClass_200",
-  PriceClassAll = "PriceClass_All"
+  PRICE_CLASS_100 = "PriceClass_100",
+  PRICE_CLASS_200 = "PriceClass_200",
+  PRICE_CLASS_ALL = "PriceClass_All"
 }
 
 /**
  * How HTTPs should be handled with your distribution.
  */
 export enum ViewerProtocolPolicy {
-  HTTPSOnly = "https-only",
-  RedirectToHTTPS = "redirect-to-https",
-  AllowAll = "allow-all"
+  HTTPS_ONLY = "https-only",
+  REDIRECT_TO_HTTPS = "redirect-to-https",
+  ALLOW_ALL = "allow-all"
 }
 
 /**
@@ -52,7 +53,7 @@ export interface AliasConfiguration {
    *
    * See the notes on SSLMethod if you wish to use other SSL termination types.
    *
-   * @default SNI
+   * @default SSLMethod.SNI
    * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
    */
   readonly sslMethod?: SSLMethod;
@@ -63,7 +64,7 @@ export interface AliasConfiguration {
    * CloudFront serves your objects only to browsers or devices that support at
    * least the SSL version that you specify.
    *
-   * @default securityPolicy: SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
+   * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
    */
   readonly securityPolicy?: SecurityPolicyProtocol;
 }
@@ -94,11 +95,11 @@ export enum SSLMethod {
  * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
  */
 export enum SecurityPolicyProtocol {
-  SSLv3 = "SSLv3",
-  TLSv1 = "TLSv1",
-  TLSv1_2016 = "TLSv1_2016",
-  TLSv1_1_2016 = "TLSv1.1_2016",
-  TLSv1_2_2018 = "TLSv1.2_2018"
+  SSL_V3 = "SSLv3",
+  TLS_V1 = "TLSv1",
+  TLS_V1_2016 = "TLSv1_2016",
+  TLS_V1_1_2016 = "TLSv1.1_2016",
+  TLS_V1_2_2018 = "TLSv1.2_2018"
 }
 
 /**
@@ -108,7 +109,7 @@ export interface LoggingConfiguration {
   /**
    * Bucket to log requests to
    *
-   * @default A logging bucket is automatically created
+   * @default - A logging bucket is automatically created.
    */
   readonly bucket?: s3.IBucket,
 
@@ -122,7 +123,7 @@ export interface LoggingConfiguration {
   /**
    * Where in the bucket to store logs
    *
-   * @default No prefix
+   * @default - No prefix.
    */
   readonly prefix?: string
 }
@@ -162,7 +163,7 @@ export interface SourceConfiguration {
   /**
    * Any additional headers to pass to the origin
    *
-   * @default no additional headers are passed
+   * @default - No additional headers are passed.
    */
   readonly originHeaders?: { [key: string]: string };
 }
@@ -193,44 +194,44 @@ export interface CustomOriginConfig {
   /**
    * The keep alive timeout when making calls in seconds.
    *
-   * @default: 5 seconds
+   * @default Duration.seconds(5)
    */
-  readonly originKeepaliveTimeoutSeconds?: number,
+  readonly originKeepaliveTimeout?: cdk.Duration,
 
   /**
    * The protocol (http or https) policy to use when interacting with the origin.
    *
-   * @default: HttpsOnly
+   * @default OriginProtocolPolicy.HttpsOnly
    */
   readonly originProtocolPolicy?: OriginProtocolPolicy,
 
   /**
    * The read timeout when calling the origin in seconds
    *
-   * @default 30 seconds
+   * @default Duration.seconds(30)
    */
-  readonly originReadTimeoutSeconds?: number
+  readonly originReadTimeout?: cdk.Duration
 
   /**
    * The SSL versions to use when interacting with the origin.
    *
-   * @default [TLSv1_2]
+   * @default OriginSslPolicy.TLSv1_2
    */
   readonly allowedOriginSSLVersions?: OriginSslPolicy[];
 
 }
 
 export enum OriginSslPolicy {
-  SSLv3 = "SSLv3",
-  TLSv1 = "TLSv1",
-  TLSv1_1 = "TLSv1.1",
-  TLSv1_2 = "TLSv1.2",
+  SSL_V3 = "SSLv3",
+  TLS_V1 = "TLSv1",
+  TLS_V1_1 = "TLSv1.1",
+  TLS_V1_2 = "TLSv1.2",
 }
 
 export enum OriginProtocolPolicy {
-  HttpOnly = "http-only",
-  MatchViewer = "match-viewer",
-  HttpsOnly = "https-only",
+  HTTP_ONLY = "http-only",
+  MATCH_VIEWER = "match-viewer",
+  HTTPS_ONLY = "https-only",
 }
 
 export interface S3OriginConfig {
@@ -299,7 +300,7 @@ export interface Behavior {
    * @default 86400 (1 day)
    *
    */
-  readonly defaultTtlSeconds?: number;
+  readonly defaultTtl?: cdk.Duration;
 
   /**
    * The method this CloudFront distribution responds do.
@@ -334,35 +335,58 @@ export interface Behavior {
    * The minimum amount of time that you want objects to stay in the cache
    * before CloudFront queries your origin.
    */
-  readonly minTtlSeconds?: number;
+  readonly minTtl?: cdk.Duration;
 
   /**
    * The max amount of time you want objects to stay in the cache
    * before CloudFront queries your origin.
    *
-   * @default 31536000 (one year)
+   * @default Duration.seconds(31536000) (one year)
    */
-  readonly maxTtlSeconds?: number;
+  readonly maxTtl?: cdk.Duration;
+
+  /**
+   * Declares associated lambda@edge functions for this distribution behaviour.
+   *
+   * @default No lambda function associated
+   */
+  readonly lambdaFunctionAssociations?: LambdaFunctionAssociation[];
 
 }
 
-export interface ErrorConfiguration {
+export interface LambdaFunctionAssociation {
+
   /**
-   * The error code matched from the origin
+   * The lambda event type defines at which event the lambda
+   * is called during the request lifecycle
    */
-  readonly originErrorCode: number;
+  readonly eventType: LambdaEdgeEventType;
+
   /**
-   * The error code that is sent to the caller.
+   * A version of the lambda to associate
    */
-  readonly respondWithErrorCode: number;
+  readonly lambdaFunction: lambda.IVersion;
+}
+
+export enum LambdaEdgeEventType {
   /**
-   * The path to service instead
+   * The origin-request specifies the request to the
+   * origin location (e.g. S3)
    */
-  readonly respondWithPage: string;
+  ORIGIN_REQUEST = "origin-request",
   /**
-   * How long before this error is retried.
+   * The origin-response specifies the response from the
+   * origin location (e.g. S3)
    */
-  readonly cacheTtl?: number;
+  ORIGIN_RESPONSE = "origin-response",
+  /**
+   * The viewer-request specifies the incoming request
+   */
+  VIEWER_REQUEST = "viewer-request",
+  /**
+   * The viewer-response specifies the outgoing reponse
+   */
+  VIEWER_RESPONSE = "viewer-response",
 }
 
 export interface CloudFrontWebDistributionProps {
@@ -370,19 +394,21 @@ export interface CloudFrontWebDistributionProps {
   /**
    * AliasConfiguration is used to configured CloudFront to respond to requests on custom domain names.
    *
-   * @default none
+   * @default - None.
    */
   readonly aliasConfiguration?: AliasConfiguration;
 
   /**
-   * A comment for this distribution in the cloud front console.
+   * A comment for this distribution in the CloudFront console.
+   *
+   * @default - No comment is added to distribution.
    */
   readonly comment?: string;
 
   /**
    * The default object to serve.
    *
-   * @default "index.html"
+   * @default - "index.html" is served.
    */
   readonly defaultRootObject?: string;
 
@@ -403,7 +429,7 @@ export interface CloudFrontWebDistributionProps {
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
-   * @default PriceClass_100: the cheapest option for CloudFront is picked by default.
+   * @default PriceClass.PriceClass100 the cheapest option for CloudFront is picked by default.
    */
   readonly priceClass?: PriceClass;
 
@@ -424,17 +450,25 @@ export interface CloudFrontWebDistributionProps {
    * You can pass an empty object ({}) to have us auto create a bucket for logging.
    * Omission of this property indicates no logging is to be enabled.
    *
-   * @default: no logging is enabled by default.
+   * @default - no logging is enabled by default.
    */
   readonly loggingConfig?: LoggingConfiguration;
 
   /**
-   * How CloudFront should handle requests that are no successful (eg PageNotFound)
+   * How CloudFront should handle requests that are not successful (eg PageNotFound)
+   *
+   * By default, CloudFront does not replace HTTP status codes in the 4xx and 5xx range
+   * with custom error messages. CloudFront does not cache HTTP status codes.
+   *
+   * @default - No custom error configuration.
    */
   readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
 
   /**
-   * Optional AWS WAF WebACL to associate with this CloudFront distribution
+   * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
+   * @see https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html
+   *
+   * @default - No AWS Web Application Firewall web access control list (web ACL).
    */
   readonly webACLId?: string;
 
@@ -455,17 +489,17 @@ interface BehaviorWithOrigin extends Behavior {
  * Here's how you can use this construct:
  *
  * ```ts
- * import { CloudFront } from '@aws-cdk/aws-cloudfront'
+ * import { CloudFrontWebDistribution } from '@aws-cdk/aws-cloudfront'
  *
  * const sourceBucket = new Bucket(this, 'Bucket');
  *
- * const distribution = new CloudFrontDistribution(this, 'MyDistribution', {
+ * const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
  *  originConfigs: [
  *    {
  *      s3OriginSource: {
  *      s3BucketSource: sourceBucket
  *      },
- *      behaviors : [ {isDefaultBehavior}]
+ *      behaviors : [ {isDefaultBehavior: true}]
  *    }
  *  ]
  * });
@@ -477,14 +511,7 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends cdk.Construct implements route53.IAliasRecordTarget {
-
-  /**
-   * The hosted zone Id if using an alias record in Route53.
-   * This value never changes.
-   */
-  public readonly aliasHostedZoneId: string = "Z2FDTNDATAQYW2";
-
+export class CloudFrontWebDistribution extends cdk.Construct implements IDistribution {
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
@@ -517,10 +544,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
    */
   private readonly VALID_SSL_PROTOCOLS: { [key: string]: string[] } = {
     "sni-only": [
-      SecurityPolicyProtocol.TLSv1, SecurityPolicyProtocol.TLSv1_1_2016,
-      SecurityPolicyProtocol.TLSv1_2016, SecurityPolicyProtocol.TLSv1_2_2018
+      SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
+      SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018
     ],
-    "vip": [SecurityPolicyProtocol.SSLv3, SecurityPolicyProtocol.TLSv1],
+    "vip": [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
 
   constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
@@ -531,7 +558,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       enabled: true,
       defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
-      priceClass: props.priceClass || PriceClass.PriceClass100,
+      priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
       // tslint:disable-next-line:max-line-length
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
@@ -566,7 +593,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
         domainName: originConfig.s3OriginSource
-          ? originConfig.s3OriginSource.s3BucketSource.bucketDomainName
+          ? originConfig.s3OriginSource.s3BucketSource.bucketRegionalDomainName
           : originConfig.customOriginSource!.domainName,
         originPath: originConfig.originPath,
         originCustomHeaders: originHeaders.length > 0 ? originHeaders : undefined,
@@ -579,10 +606,12 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
           ? {
             httpPort: originConfig.customOriginSource.httpPort || 80,
             httpsPort: originConfig.customOriginSource.httpsPort || 443,
-            originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeoutSeconds || 5,
-            originReadTimeout: originConfig.customOriginSource.originReadTimeoutSeconds || 30,
-            originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HttpsOnly,
-            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLSv1_2]
+            originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeout
+              && originConfig.customOriginSource.originKeepaliveTimeout.toSeconds() || 5,
+            originReadTimeout: originConfig.customOriginSource.originReadTimeout
+              && originConfig.customOriginSource.originReadTimeout.toSeconds() || 30,
+            originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HTTPS_ONLY,
+            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2]
           }
           : undefined
       };
@@ -620,7 +649,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
 
-    distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors };
+    distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors.length > 0 ? otherBehaviors : undefined };
 
     if (props.aliasConfiguration) {
       const minimumProtocolVersion = props.aliasConfiguration.securityPolicy;
@@ -660,7 +689,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       distributionConfig = {
         ...distributionConfig,
         logging: {
-          bucket: this.loggingBucket.bucketDomainName,
+          bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix
         }
@@ -668,32 +697,34 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
-    this.domainName = distribution.distributionDomainName;
-    this.distributionId = distribution.distributionId;
-  }
-
-  public asAliasRecordTarget(): route53.AliasRecordTargetProps {
-    return {
-      hostedZoneId: this.aliasHostedZoneId,
-      dnsName: this.domainName
-    };
+    this.domainName = distribution.attrDomainName;
+    this.distributionId = distribution.ref;
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
     let toReturn = {
       allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
-      compress: input.compress,
-      defaultTtl: input.defaultTtlSeconds,
+      compress: input.compress !== false,
+      defaultTtl: input.defaultTtl && input.defaultTtl.toSeconds(),
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
-      maxTtl: input.maxTtlSeconds,
-      minTtl: input.minTtlSeconds,
+      maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
+      minTtl: input.minTtl && input.minTtl.toSeconds(),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
-      viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.RedirectToHTTPS,
+      viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     };
     if (!input.isDefaultBehavior) {
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
+    }
+    if (input.lambdaFunctionAssociations) {
+      toReturn = Object.assign(toReturn, {
+        lambdaFunctionAssociations: input.lambdaFunctionAssociations
+          .map(fna => ({
+            eventType: fna.eventType,
+            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
+          }))
+      });
     }
     return toReturn;
   }

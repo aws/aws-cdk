@@ -1,26 +1,34 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------------
+#
+# This script is intended to be used to bump the version of the CDK modules, update package.json,
+# package-lock.json, and create a commit.
+#
+# to start a version bump, run:
+#     bump.sh <version | version Type>
+#
+# If a version is not provided, the 'minor' version will be bumped.
+# The version can be an explicit version _or_ one of:
+# 'major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', or 'prerelease'.
+#
+# --------------------------------------------------------------------------------------------------
 set -euo pipefail
-ver=${1:-}
-if [ -z "${ver}" ]; then
-  echo "usage: ./bump.sh <version>"
-  exit 1
-fi
+version=${1:-minor}
+
+echo "Starting ${version} version bump"
 
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 /bin/bash ./install.sh
 
-lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
+npx lerna version ${version} --force-publish=* --no-git-tag-version --no-push
+
+# Another round of install to fix package-lock.jsons
+/bin/bash ./install.sh
 
 # align "peerDependencies" to actual dependencies after bump
 # this is technically only required for major version bumps, but in the meantime we shall do it in every bump
 /bin/bash scripts/fix-peer-deps.sh
 
-# Update CHANGELOG.md only at the root
-cat > /tmp/context.json <<HERE
-{
-  "version": "${ver}"
-}
-HERE
-
-./node_modules/.bin/conventional-changelog -p angular -i CHANGELOG.md -s --context /tmp/context.json
+# Generate CHANGELOG and create a commit
+npx standard-version --release --skip.tag=true --commit-all

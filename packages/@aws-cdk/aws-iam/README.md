@@ -1,4 +1,13 @@
-## AWS IAM Construct Library
+## AWS Identity and Access Management Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+
+
+---
+<!--END STABILITY BANNER-->
 
 Define a role and add permissions to it. This will automatically create and
 attach an IAM policy to the role:
@@ -10,9 +19,33 @@ the policy either by calling `xxx.attachInlinePolicy(policy)` or `policy.attachT
 
 [attaching policies to user and group](test/example.attaching.lit.ts)
 
-Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
+Managed policies can be attached using `xxx.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(policyName))`:
 
 [attaching managed policies](test/example.managedpolicy.lit.ts)
+
+### Granting permissions to resources
+
+Many of the AWS CDK resources have `grant*` methods that allow you to grant other resources access to that resource. As an example, the following code gives a Lambda function write permissions (Put, Update, Delete) to a DynamoDB table.
+
+```typescript
+const fn = new lambda.Function(...);
+const table = new dynamodb.Table(...);
+
+table.grantWriteData(fn);
+```
+
+The more generic `grant` method allows you to give specific permissions to a resource:
+
+```typescript
+const fn = new lambda.Function(...);
+const table = new dynamodb.Table(...);
+
+table.grant(fn, 'dynamodb:PutItem');
+```
+
+The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principlal resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
+
+You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
 ### Configuring an ExternalId
 
@@ -59,7 +92,7 @@ If multiple principals are added to the policy statement, they will be merged to
 const statement = new PolicyStatement();
 statement.addServicePrincipal('cloudwatch.amazonaws.com');
 statement.addServicePrincipal('ec2.amazonaws.com');
-statement.addAwsPrincipal('arn:aws:boom:boom');
+statement.addArnPrincipal('arn:aws:boom:boom');
 ```
 
 Will result in:

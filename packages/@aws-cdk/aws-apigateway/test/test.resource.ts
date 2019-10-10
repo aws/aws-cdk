@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
 
@@ -133,6 +133,48 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'if proxy is added to root, proxy methods are automatically duplicated (with integration and options)'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    const proxy = api.root.addProxy({
+      anyMethod: false
+    });
+    const deleteInteg = new apigw.MockIntegration({
+      requestParameters: {
+        foo: 'bar'
+      }
+    });
+
+    // WHEN
+    proxy.addMethod('DELETE', deleteInteg, {
+      operationName: 'DeleteMe'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'DELETE',
+      ResourceId: { Ref: 'apiproxy4EA44110' },
+      Integration: {
+        RequestParameters: { foo: "bar" },
+        Type: 'MOCK'
+      },
+      OperationName: 'DeleteMe'
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'DELETE',
+      ResourceId: { "Fn::GetAtt": [ "apiC8550315", "RootResourceId" ] },
+      Integration: {
+        RequestParameters: { foo: "bar" },
+        Type: 'MOCK'
+      },
+      OperationName: 'DeleteMe'
+    }));
 
     test.done();
   },

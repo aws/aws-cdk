@@ -1,39 +1,27 @@
 import reflect = require('jsii-reflect');
 import { Linter, MethodSignatureParameterExpectation } from '../linter';
-import { CORE_MODULE } from './common';
+import { CoreTypes } from './core-types';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
-  .filter(t => ConstructReflection.isConstructClass(t))
+  .filter(t => CoreTypes.isConstructClass(t))
   .map(construct => new ConstructReflection(construct)));
 
 export class ConstructReflection {
 
-  public static readonly CONSTRUCT_FQN = `${CORE_MODULE}.Construct`;
-  public static readonly CONSTRUCT_INTERFACE_FQN = `${CORE_MODULE}.IConstruct`;
-
-  /**
-   * Determines if a class is a construct.
-   */
-  public static isConstructClass(c: reflect.ClassType) {
-    if (!c.system.includesAssembly(CORE_MODULE)) {
-      return false;
-    }
-
-    if (!c.isClassType()) {
-      return false;
-    }
-
-    if (c.abstract) {
-      return false;
-    }
-
-    return c.extends(c.system.findFqn(this.CONSTRUCT_FQN));
-  }
-
   public static findAllConstructs(assembly: reflect.Assembly) {
     return assembly.classes
-      .filter(c => ConstructReflection.isConstructClass(c))
+      .filter(c => CoreTypes.isConstructClass(c))
       .map(c => new ConstructReflection(c));
+  }
+
+  public static getFqnFromTypeRef(typeRef: reflect.TypeReference) {
+    if (typeRef.arrayOfType) {
+      return typeRef.arrayOfType.fqn;
+    } else if (typeRef.mapOfType) {
+      return typeRef.mapOfType.fqn;
+    }
+
+    return typeRef.fqn;
   }
 
   public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
@@ -46,11 +34,13 @@ export class ConstructReflection {
   public readonly initializer?: reflect.Initializer;
   public readonly hasPropsArgument: boolean;
   public readonly sys: reflect.TypeSystem;
+  public readonly core: CoreTypes;
 
   constructor(public readonly classType: reflect.ClassType) {
     this.fqn = classType.fqn;
     this.sys = classType.system;
-    this.ROOT_CLASS = this.sys.findClass(ConstructReflection.CONSTRUCT_FQN);
+    this.core = new CoreTypes(this.sys);
+    this.ROOT_CLASS = this.sys.findClass(this.core.constructClass.fqn);
     this.interfaceFqn = `${classType.assembly.name}.I${classType.name}`;
     this.propsFqn = `${classType.assembly.name}.${classType.name}Props`;
     this.interfaceType = this.tryFindInterface();
@@ -105,7 +95,7 @@ constructLinter.add({
 
     expectedParams.push({
       name: 'scope',
-      type: ConstructReflection.CONSTRUCT_FQN
+      type: e.ctx.core.constructClass.fqn
     });
 
     expectedParams.push({
@@ -181,7 +171,7 @@ constructLinter.add({
   message: 'construct interface must extend core.IConstruct',
   eval: e => {
     if (!e.ctx.interfaceType) { return; }
-    const interfaceBase = e.ctx.sys.findInterface(ConstructReflection.CONSTRUCT_INTERFACE_FQN);
+    const interfaceBase = e.ctx.sys.findInterface(e.ctx.core.constructInterface.fqn);
     e.assert(e.ctx.interfaceType.extends(interfaceBase), e.ctx.interfaceType.fqn);
   }
 });
@@ -199,13 +189,13 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-unions',
-  message: 'props should not use TypeScript unions',
+  message: 'props must not use TypeScript unions',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
-    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
       e.assert(!property.type.unionOfTypes, `${e.ctx.propsFqn}.${property.name}`);
@@ -215,16 +205,91 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-arn-refs',
-  message: 'props should use strong types instead of attributes. props should not have "arn" suffix',
+  message: 'props must use strong types instead of attributes. props should not have "arn" suffix',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
-    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
       e.assert(!property.name.toLowerCase().endsWith('arn'), `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+});
+
+constructLinter.add({
+  code: 'props-no-tokens',
+  message: 'props must not use the "Token" type',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.allProperties) {
+      const fqn = ConstructReflection.getFqnFromTypeRef(property.type);
+
+      const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
+      if (found) {
+        e.assert(!(fqn === e.ctx.core.tokenInterface.fqn), `${e.ctx.propsFqn}.${property.name}`);
+      }
+    }
+  }
+});
+
+constructLinter.add({
+  code: 'props-no-cfn-types',
+  message: 'props must not expose L1 types (types which start with "Cfn")',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+      const fqn = ConstructReflection.getFqnFromTypeRef(property.type);
+
+      const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
+      if (found) {
+        e.assert(!found.name.toLowerCase().startsWith('cfn'), `${e.ctx.propsFqn}.${property.name}`);
+      }
+    }
+  }
+});
+
+constructLinter.add({
+  code: 'props-default-doc',
+  message: 'All optional props must have @default documentation',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.allProperties) {
+      if (!property.optional) { continue; }
+      e.assert(property.docs.docs.default !== undefined, `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+  });
+
+constructLinter.add({
+  code: 'props-no-any',
+  message: 'props must not use Typescript "any" type',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+    e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
     }
   }
 });

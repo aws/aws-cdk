@@ -7,8 +7,8 @@ const fixturedir = path.join(__dirname, 'fixture');
 
 // tslint:disable:no-console
 
-// JSII often does not complete in the default 5 second Jest timeout
-jest.setTimeout(10_000);
+// building the decdk schema often does not complete in the default 5 second Jest timeout
+jest.setTimeout(60_000);
 
 let typesys: reflect.TypeSystem;
 
@@ -20,7 +20,7 @@ beforeAll(async () => {
 
   // load the resulting file system
   await typesys.loadFile(path.join(fixturedir, '.jsii'));
-  await typesys.load(path.dirname(require.resolve('@aws-cdk/cdk/.jsii')));
+  await typesys.load(path.dirname(require.resolve('@aws-cdk/core/.jsii')));
 });
 
 test('schemaForInterface: interface with primitives', async () => {
@@ -80,12 +80,12 @@ test('schemaForInterface: interface with primitives', async () => {
  */
 function spawn(command: string, options: SpawnOptions | undefined) {
   return new Promise((resolve, reject) => {
-    const cp = spawnAsync(command, { stdio: 'inherit', ...options });
+    const cp = spawnAsync(command, [], { stdio: 'inherit', ...options });
 
     cp.on('error', reject);
-    cp.on('exit', (code) => {
+    cp.on('exit', (code, signal) => {
       if (code === 0) { resolve(); }
-      reject(new Error(`Subprocess exited with ${code}`));
+      reject(new Error(`Subprocess exited with ${code || signal}`));
     });
   });
 }

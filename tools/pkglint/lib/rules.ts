@@ -9,8 +9,11 @@ import {
   expectDevDependency, expectJSON,
   fileShouldBe, fileShouldContain,
   findInnerPackages,
-  monoRepoRoot, monoRepoVersion
+  monoRepoRoot,
 } from './util';
+
+// tslint:disable-next-line: no-var-requires
+const AWS_SERVICE_NAMES = require('./aws-service-official-names.json');
 
 /**
  * Verify that the package name matches the directory name
@@ -50,7 +53,7 @@ export class RepositoryCorrect extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     expectJSON(this.name, pkg, 'repository.type', 'git');
-    expectJSON(this.name, pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
+    expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
     const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
     expectJSON(this.name, pkg, 'repository.directory', pkgDir);
   }
@@ -63,7 +66,7 @@ export class HomepageCorrect extends ValidationRule {
   public readonly name = 'package-info/homepage';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'homepage', 'https://github.com/awslabs/aws-cdk');
+    expectJSON(this.name, pkg, 'homepage', 'https://github.com/aws/aws-cdk');
   }
 }
 
@@ -121,15 +124,143 @@ export class ReadmeFile extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const readmeFile = path.join(pkg.packageRoot, 'README.md');
+
+    const scopes = pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
+    if (!scopes) {
+      return;
+    }
+    const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
+    const serviceName = AWS_SERVICE_NAMES[scope];
+
+    const headline = serviceName && `${serviceName} Construct Library`;
+
     if (!fs.existsSync(readmeFile)) {
       pkg.report({
         ruleName: this.name,
         message: 'There must be a README.md file at the root of the package',
         fix: () => fs.writeFileSync(
           readmeFile,
-          `## ${pkg.json.description}\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.`
+          [
+            `## ${headline || pkg.json.description}`,
+            'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.'
+          ].join('\n')
         )
       });
+    } else if (headline) {
+      const requiredFirstLine = `## ${headline}`;
+      const [firstLine, ...rest] = fs.readFileSync(readmeFile, { encoding: 'utf8' }).split('\n');
+      if (firstLine !== requiredFirstLine) {
+        pkg.report({
+          ruleName: this.name,
+          message: `The title of the README.md file must be "${headline}"`,
+          fix: () => fs.writeFileSync(readmeFile, [requiredFirstLine, ...rest].join('\n')),
+        });
+      }
+    }
+  }
+}
+
+/**
+ * There must be a stability setting, and that the appropriate banner is present in the README.md file.
+ */
+export class StabilitySetting extends ValidationRule {
+  public readonly name = 'package-info/stability';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) {
+      // Does not apply to private packages!
+      return;
+    }
+
+    let stability = pkg.json.stability;
+    switch (stability) {
+      case 'experimental':
+      case 'stable':
+      case 'deprecated':
+        if (pkg.json.deprecated && stability !== 'deprecated') {
+          pkg.report({
+            ruleName: this.name,
+            message: `Package is deprecated, but is marked with stability "${stability}"`,
+            fix: () => pkg.json.stability = 'deprecated',
+          });
+          stability = 'deprecated';
+        }
+        break;
+      default:
+        const defaultStability = pkg.json.deprecated ? 'deprecated' : 'experimental';
+        pkg.report({
+          ruleName: this.name,
+          message: `Invalid stability configuration in package.json: ${JSON.stringify(stability)}`,
+          fix: () => pkg.json.stability = defaultStability,
+        });
+        stability = defaultStability;
+    }
+    this.validateReadmeHasBanner(pkg, stability);
+  }
+
+  private validateReadmeHasBanner(pkg: PackageJson, stability: string) {
+    const badge = this.readmeBadge(stability);
+    if (!badge) {
+      // Somehow, we don't have a badge for this stability level
+      return;
+    }
+    const readmeFile = path.join(pkg.packageRoot, 'README.md');
+    if (!fs.existsSync(readmeFile)) {
+      // Presence of the file is asserted by another rule
+      return;
+    }
+    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
+    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+    if (!badgeRegex.test(readmeContent)) {
+      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
+      const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+      pkg.report({
+        ruleName: this.name,
+        message: `Missing stability banner for ${stability} in README.md file`,
+        fix: () => fs.writeFileSync(readmeFile, [title, badge, ...body].join('\n')),
+      });
+    }
+  }
+
+  private readmeBadge(stability: string) {
+    switch (stability) {
+      case 'deprecated':
+        return _div(
+          { label: 'Deprecated', color: 'critical' },
+          'This API may emit warnings. Backward compatibility is not guaranteed.',
+        );
+      case 'experimental':
+        return _div(
+          { label: 'Experimental', color: 'important' },
+          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
+          'future breaking changes.**',
+          '',
+          'This API is still under active development and subject to non-backward',
+          'compatible changes or removal in any future version. Use of the API is not recommended in production',
+          'environments. Experimental APIs are not subject to the Semantic Versioning model.',
+        );
+      case 'stable':
+        return _div(
+          { label: 'Stable', color: 'success' },
+        );
+      default:
+        return undefined;
+    }
+
+    function _div(badge: { label: string, color: string }, ...messages: string[]) {
+      return [
+        '<!--BEGIN STABILITY BANNER-->',
+        '',
+        '---',
+        '',
+        `![Stability: ${badge.label}](https://img.shields.io/badge/stability-${badge.label}-${badge.color}.svg?style=for-the-badge)`,
+        '',
+        ...messages.map(message => `> ${message}`.trimRight()),
+        '',
+        '---',
+        '<!--END STABILITY BANNER-->',
+        '',
+      ].join('\n');
     }
   }
 }
@@ -166,6 +297,17 @@ export class CDKKeywords extends ValidationRule {
         fix: () => { pkg.json.keywords.splice(0, 0, 'aws'); }
       });
     }
+  }
+}
+
+export class DeveloperPreviewVersionLabels extends ValidationRule {
+  public readonly name = 'jsii/developer-preview-version-label';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    expectJSON(this.name, pkg, 'jsii.targets.java.maven.versionSuffix', '.DEVPREVIEW');
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.versionSuffix', '-devpreview');
   }
 }
 
@@ -315,7 +457,8 @@ export class NoAtTypesInDependencies extends ValidationRule {
  * Computes the module name for various other purposes (java package, ...)
  */
 function cdkModuleName(name: string) {
-  const isCdkPkg = name === '@aws-cdk/cdk';
+  const isCdkPkg = name === '@aws-cdk/core';
+  const isLegacyCdkPkg = name === '@aws-cdk/cdk';
 
   name = name.replace(/^aws-cdk-/, '');
   name = name.replace(/^@aws-cdk\//, '');
@@ -327,11 +470,12 @@ function cdkModuleName(name: string) {
   const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".");
 
   return {
-    javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
-      isCdkPkg ? 'cdk'
-               : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-                                                                      : `cdk-${name}`,
+      isLegacyCdkPkg ? 'cdk'
+        : isCdkPkg ? 'core'
+          : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
+            : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -348,6 +492,10 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
+
+    // skip the legacy @aws-cdk/cdk because we actually did not rename
+    // the .NET module, so we are not publishing the deprecated one
+    if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
@@ -368,6 +516,20 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
+ * JSII .NET namespace is required and must look sane
+ */
+export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
+  public readonly name = 'jsii/dotnet/icon-url';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const CDK_LOGO_URL = 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png';
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.iconUrl', CDK_LOGO_URL);
+  }
+}
+
+/**
  * Strong-naming all .NET assemblies is required.
  */
 export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
@@ -375,6 +537,10 @@ export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
+
+    // skip the legacy @aws-cdk/cdk because we actually did not rename
+    // the .NET module, so we are not publishing the deprecated one
+    if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const signAssembly = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly']) as boolean | undefined;
     const signAssemblyExpected = true;
@@ -407,7 +573,10 @@ export class MustDependOnBuildTools extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-    expectDevDependency(this.name, pkg, 'cdk-build-tools', '^' + monoRepoVersion());
+    expectDevDependency(this.name,
+      pkg,
+      'cdk-build-tools',
+      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-build-tools'))}`);
   }
 }
 
@@ -505,7 +674,7 @@ export class GlobalDevDependencies extends ValidationRule {
       'tslint',
       'nodeunit',
       '@types/nodeunit',
-      '@types/node',
+      // '@types/node', // we tend to get @types/node 12.x from transitive closures now, it breaks builds.
       'nyc'
     ];
 
@@ -561,7 +730,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 8.10.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.3.0');
   }
 }
 
@@ -577,7 +746,10 @@ export class MustHaveIntegCommand extends ValidationRule {
     if (!hasIntegTests(pkg)) { return; }
 
     expectJSON(this.name, pkg, 'scripts.integ', 'cdk-integ');
-    expectDevDependency(this.name, pkg, 'cdk-integ-tools', '^' + monoRepoVersion());
+    expectDevDependency(this.name,
+      pkg,
+      'cdk-integ-tools',
+      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-integ-tools'))}`);
   }
 }
 
@@ -587,7 +759,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', '^' + monoRepoVersion());
+    expectDevDependency(this.name, pkg, 'pkglint', `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../'))}`);
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({
@@ -706,7 +878,7 @@ export class AllVersionsTheSame extends ValidationRule {
 }
 
 export class AwsLint extends ValidationRule {
-  public name = 'awslint';
+  public readonly name = 'awslint';
 
   public validate(pkg: PackageJson) {
     if (!isJSII(pkg)) {
@@ -722,7 +894,7 @@ export class AwsLint extends ValidationRule {
 }
 
 export class Cfn2Ts extends ValidationRule {
-  public name = 'cfn2ts';
+  public readonly name = 'cfn2ts';
 
   public validate(pkg: PackageJson) {
     if (!isJSII(pkg)) {
@@ -738,7 +910,7 @@ export class Cfn2Ts extends ValidationRule {
 }
 
 export class JestCoverageTarget extends ValidationRule {
-  public name = 'jest-coverage-target';
+  public readonly name = 'jest-coverage-target';
 
   public validate(pkg: PackageJson) {
     if (pkg.json.jest) {
@@ -773,7 +945,7 @@ export class JestCoverageTarget extends ValidationRule {
  * and we don't have good transitive license checks.
  */
 export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
-  public name = 'lambda-packages-no-runtime-deps';
+  public readonly name = 'lambda-packages-no-runtime-deps';
 
   public validate(pkg: PackageJson) {
     if (!isJSII(pkg)) { return; }
@@ -791,6 +963,27 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
       const nodeModulesRelPath = path.relative(pkg.packageRoot, innerPkg.packageRoot) + '/node_modules';
       fileShouldContain(`${this.name}:2`, pkg, '.npmignore', nodeModulesRelPath);
     }
+  }
+}
+
+/**
+ * Requires packages to have fast-fail build scripts, allowing to combine build, test and package in a single command.
+ * This involves two targets: `build+test:pack` and `build+test` (to skip the pack).
+ */
+export class FastFailingBuildScripts extends ValidationRule {
+  public readonly name = 'fast-failing-build-scripts';
+
+  public validate(pkg: PackageJson) {
+    const scripts = pkg.json.scripts || {};
+
+    const hasTest = 'test' in scripts;
+    const hasPack = 'package' in scripts;
+
+    const cmdBuild = 'npm run build';
+    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'npm test'].join(' && ') : cmdBuild);
+
+    const cmdBuildTest = 'npm run build+test';
+    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
   }
 }
 

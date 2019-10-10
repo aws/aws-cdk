@@ -1,5 +1,5 @@
 import { expect, matchTemplate } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -13,9 +13,9 @@ export = {
     new lambda.SingletonFunction(stack, `Singleton${i}`, {
     uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
     code: new lambda.InlineCode('def hello(): pass'),
-    runtime: lambda.Runtime.Python27,
+    runtime: lambda.Runtime.PYTHON_2_7,
     handler: 'index.hello',
-    timeout: 300,
+    timeout: cdk.Duration.minutes(5),
     });
   }
 
@@ -30,7 +30,7 @@ export = {
         {
           Action: "sts:AssumeRole",
           Effect: "Allow",
-            Principal: { Service: { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] } }
+            Principal: { Service: "lambda.amazonaws.com" }
         }
         ],
         Version: "2012-10-17"

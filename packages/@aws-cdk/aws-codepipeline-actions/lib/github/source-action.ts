@@ -1,14 +1,15 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { SecretValue } from '@aws-cdk/cdk';
+import { Construct, SecretValue } from '@aws-cdk/core';
+import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
 /**
  * If and how the GitHub source action should be triggered
  */
 export enum GitHubTrigger {
-  None = 'None',
-  Poll = 'Poll',
-  WebHook = 'WebHook',
+  NONE = 'None',
+  POLL = 'Poll',
+  WEBHOOK = 'WebHook',
 }
 
 /**
@@ -40,21 +41,21 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
   /**
    * A GitHub OAuth token to use for authentication.
    *
-   * It is recommended to use a Secrets Manager `SecretString` to obtain the token:
+   * It is recommended to use a Secrets Manager `Secret` to obtain the token:
    *
-   *   const oauth = new secretsmanager.SecretString(this, 'GitHubOAuthToken', { secretId: 'my-github-token' });
-   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
+   *   const oauth = cdk.SecretValue.secretsManager('my-github-token');
+   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth, ... });
    */
   readonly oauthToken: SecretValue;
 
   /**
    * How AWS CodePipeline should be triggered
    *
-   * With the default value "WebHook", a webhook is created in GitHub that triggers the action
-   * With "Poll", CodePipeline periodically checks the source for changes
+   * With the default value "WEBHOOK", a webhook is created in GitHub that triggers the action
+   * With "POLL", CodePipeline periodically checks the source for changes
    * With "None", the action is not triggered through changes in the source
    *
-   * @default GitHubTrigger.WebHook
+   * @default GitHubTrigger.WEBHOOK
    */
   readonly trigger?: GitHubTrigger;
 }
@@ -62,32 +63,26 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
 /**
  * Source that is provided by a GitHub repository.
  */
-export class GitHubSourceAction extends codepipeline.Action {
+export class GitHubSourceAction extends Action {
   private readonly props: GitHubSourceActionProps;
 
   constructor(props: GitHubSourceActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       owner: 'ThirdParty',
       provider: 'GitHub',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
-      configuration: {
-        Owner: props.owner,
-        Repo: props.repo,
-        Branch: props.branch || "master",
-        OAuthToken: props.oauthToken.toString(),
-        PollForSourceChanges: props.trigger === GitHubTrigger.Poll,
-      },
     });
 
     this.props = props;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
-    if (!this.props.trigger || this.props.trigger === GitHubTrigger.WebHook) {
-      new codepipeline.CfnWebhook(info.scope, 'WebhookResource', {
+  protected bound(scope: Construct, stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    if (!this.props.trigger || this.props.trigger === GitHubTrigger.WEBHOOK) {
+      new codepipeline.CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
           secretToken: this.props.oauthToken.toString(),
@@ -98,11 +93,21 @@ export class GitHubSourceAction extends codepipeline.Action {
             matchEquals: 'refs/heads/{Branch}',
           },
         ],
-        targetAction: this.actionName,
-        targetPipeline: info.pipeline.pipelineName,
+        targetAction: this.actionProperties.actionName,
+        targetPipeline: stage.pipeline.pipelineName,
         targetPipelineVersion: 1,
         registerWithThirdParty: true,
       });
     }
+
+    return {
+      configuration: {
+        Owner: this.props.owner,
+        Repo: this.props.repo,
+        Branch: this.props.branch || "master",
+        OAuthToken: this.props.oauthToken.toString(),
+        PollForSourceChanges: this.props.trigger === GitHubTrigger.POLL,
+      },
+    };
   }
 }

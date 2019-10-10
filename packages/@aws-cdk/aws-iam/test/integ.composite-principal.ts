@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import iam = require('../lib');
 
 class TestStack extends cdk.Stack {
@@ -18,4 +18,4 @@ const app = new cdk.App();
 
 new TestStack(app, 'iam-integ-composite-principal');
 
-app.run();
+app.synth();

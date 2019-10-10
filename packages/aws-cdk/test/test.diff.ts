@@ -8,25 +8,19 @@ import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
 import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
+import { testAssembly } from './util';
 
-const FIXED_RESULT: cxapi.SynthesizeResponse = {
-  version: '1',
-  stacks: [
-    {
-      name: 'A',
-      template: { resource: 'A' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {},
-    },
-    {
-      name: 'B',
-      template: { resource: 'B' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {},
-      dependsOn: ['A'],
-    }
-  ]
-};
+const FIXED_RESULT = testAssembly({
+  stacks: [{
+    stackName: 'A',
+    template: { resource: 'A' },
+  },
+  {
+    stackName: 'B',
+    depends: ['A'],
+    template: { resource: 'B' },
+  }]
+});
 
 const appStacks = new AppStacks({
   configuration: new Configuration(),
@@ -38,7 +32,7 @@ export = {
   async 'diff can diff multiple stacks'(test: Test) {
     // GIVEN
     const provisioner: IDeploymentTarget = {
-      async readCurrentTemplate(_stack: cxapi.SynthesizedStack): Promise<Template> {
+      async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
         return {};
       },
       async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {

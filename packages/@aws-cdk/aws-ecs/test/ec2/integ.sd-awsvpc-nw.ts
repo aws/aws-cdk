@@ -1,12 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ecs = require('../../lib');
 import { NetworkMode } from '../../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -22,7 +22,7 @@ cluster.addDefaultCloudMapNamespace({
 
 // Create frontend service
 const frontendTD = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-  networkMode: NetworkMode.AwsVpc
+  networkMode: NetworkMode.AWS_VPC
 });
 
 const frontend = frontendTD.addContainer('frontend', {
@@ -33,15 +33,15 @@ const frontend = frontendTD.addContainer('frontend', {
 frontend.addPortMappings({
   containerPort: 80,
   hostPort: 80,
-  protocol: ecs.Protocol.Tcp
+  protocol: ecs.Protocol.TCP
 });
 
 new ecs.Ec2Service(stack, "FrontendService", {
   cluster,
   taskDefinition: frontendTD,
-  serviceDiscoveryOptions: {
+  cloudMapOptions: {
     name: "frontend"
   }
 });
 
-app.run();
+app.synth();

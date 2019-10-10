@@ -1,12 +1,13 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import dynamodb = require('../lib');
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb');
 
 const table = new dynamodb.Table(stack, 'Table', {
-  partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.String }
+  partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.STRING },
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 /// !show
@@ -17,14 +18,14 @@ readScaling.scaleOnUtilization({
 });
 
 readScaling.scaleOnSchedule('ScaleUpInTheMorning', {
-  schedule: appscaling.Cron.dailyUtc(8),
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
 });
 
 readScaling.scaleOnSchedule('ScaleDownAtNight', {
-  schedule: appscaling.Cron.dailyUtc(20),
+  schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
   maxCapacity: 20
 });
 /// !hide
 
-app.run();
+app.synth();

@@ -2,28 +2,22 @@
 import 'source-map-support/register';
 
 import colors = require('colors/safe');
-import fs = require('fs-extra');
+import path = require('path');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
+import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
-import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
+import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
 import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../lib/api/deployment-target';
-import { leftPad } from '../lib/api/util/string-manipulation';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { interactive } from '../lib/interactive';
-import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
+import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
-import { parseRenames } from '../lib/renames';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import version = require('../lib/version');
-
-// tslint:disable-next-line:no-var-requires
-const promptly = require('promptly');
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -31,14 +25,13 @@ async function parseCommandLineArguments() {
   return yargs
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
-    .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line for executing your CDK app (e.g. "node bin/my-app.js")', requiresArg: true })
+    .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js")', requiresArg: true })
     .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
-    .option('rename', { type: 'string', desc: 'Rename stack name if different from the one defined in the cloud executable ([ORIGINAL:]RENAMED)', requiresArg: true })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
-    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML', default: false })
+    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false })
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
@@ -48,33 +41,35 @@ async function parseCommandLineArguments() {
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
-    .option('staging', { type: 'string', desc: 'directory name for staging assets (use --no-asset-staging to disable)', default: '.cdk.staging' })
-    .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
-      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
+    .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
+    .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
+    .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
+    .command([ 'list [STACKS..]', 'ls [STACKS..]' ], 'Lists all stacks in the app', yargs => yargs
+      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }))
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
-      .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
-      .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory', requiresArg: true })
-      .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
-      .option('toolkit-bucket-name', { type: 'string', alias: 'b', desc: 'The name of the CDK toolkit bucket', default: undefined }))
+      .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket', default: undefined })
+      .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
+      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: undefined }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
-      .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
-      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
+      .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
+      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
+      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only diff requested stacks, don\'t include dependencies' })
-      .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
-      .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
+      .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
+      .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
-      .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
-      .option('list', { type: 'boolean', desc: 'list the available templates' }))
+      .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
+      .option('list', { type: 'boolean', desc: 'List the available templates' }))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
@@ -104,7 +99,6 @@ async function initCommandLine() {
     proxyAddress: argv.proxy,
     ec2creds: argv.ec2creds,
   });
-
   const configuration = new Configuration(argv);
   await configuration.load();
 
@@ -117,7 +111,6 @@ async function initCommandLine() {
     configuration,
     aws,
     synthesizer: execProgram,
-    renames: parseRenames(argv.rename)
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -181,7 +174,7 @@ async function initCommandLine() {
     switch (command) {
       case 'ls':
       case 'list':
-        return await cliList({ long: args.long });
+        return await cliList(args.STACKS, { long: args.long });
 
       case 'diff':
         return await cli.diff({
@@ -193,7 +186,11 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, args.toolkitBucketName);
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, {
+          bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
+          kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+          tags: configuration.settings.get(['tags'])
+        });
 
       case 'deploy':
         return await cli.deploy({
@@ -203,15 +200,23 @@ async function initCommandLine() {
           roleArn: args.roleArn,
           requireApproval: configuration.settings.get(['requireApproval']),
           ci: args.ci,
-          reuseAssets: args['build-exclude']
+          reuseAssets: args['build-exclude'],
+          tags: configuration.settings.get(['tags']),
+          sdk: aws,
         });
 
       case 'destroy':
-        return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
+        return await cli.destroy({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          force: args.force,
+          roleArn: args.roleArn,
+          sdk: aws,
+        });
 
       case 'synthesize':
       case 'synth':
-        return await cliSynthesize(args.STACKS, args.exclusively, args.interactive, args.output, args.json, args.numbered);
+        return await cliSynthesize(args.STACKS, args.exclusively);
 
       case 'metadata':
         return await cliMetadata(await findStack(args.STACK));
@@ -231,7 +236,7 @@ async function initCommandLine() {
 
   async function cliMetadata(stackName: string) {
     const s = await appStacks.synthesizeStack(stackName);
-    return s.metadata;
+    return s.manifest.metadata || {};
   }
 
   /**
@@ -242,7 +247,7 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<void> {
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, props: BootstrapEnvironmentProps): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
@@ -250,15 +255,12 @@ async function initCommandLine() {
 
     const app = configuration.settings.get(['app']);
 
-    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
-
-    // Bucket name can be passed using --toolkit-bucket-name or set in cdk.json
-    const bucketName = configuration.settings.get(['toolkitBucketName']) || toolkitBucketName;
+    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs, aws) : environmentsFromDescriptors(environmentGlobs);
 
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, bucketName);
+        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, props);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));
@@ -279,21 +281,20 @@ async function initCommandLine() {
    * should be supplied, where the templates will be written.
    */
   async function cliSynthesize(stackNames: string[],
-                               exclusively: boolean,
-                               doInteractive: boolean,
-                               outputDir: string|undefined,
-                               json: boolean,
-                               numbered: boolean): Promise<any> {
+                               exclusively: boolean): Promise<any> {
     // Only autoselect dependencies if it doesn't interfere with user request or output options
-    const autoSelectDependencies = !exclusively && outputDir !== undefined;
+    const autoSelectDependencies = !exclusively;
 
-    const stacks = await appStacks.selectStacks(stackNames, autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None);
+    const stacks = await appStacks.selectStacks(stackNames, {
+      extend: autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None,
+      defaultBehavior: DefaultSelection.AllStacks
+    });
 
-    if (doInteractive) {
-      if (stacks.length !== 1) {
-        throw new Error(`When using interactive synthesis, must select exactly one stack. Got: ${listStackNames(stacks)}`);
-      }
-      return await interactive(stacks[0], argv.verbose, (stack) => appStacks.synthesizeStack(stack));
+    appStacks.processMetadata(stacks);
+
+    // if we have a single stack, print it to STDOUT
+    if (stacks.length === 1) {
+      return stacks[0].template;
     }
 
     // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
@@ -304,37 +305,19 @@ async function initCommandLine() {
     // the stack names), it's not exposed as a CLI flag. Instead, it's hidden
     // behind an environment variable.
     const isIntegMode = process.env.CDK_INTEG_MODE === '1';
-
-    if (stacks.length > 1 && outputDir == null && !isIntegMode) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(`Multiple stacks selected (${listStackNames(stacks)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
+    if (isIntegMode) {
+      return stacks.map(s => s.template);
     }
 
-    if (outputDir == null) {
-      // What we return here will be printed in 'main'
-      if (stacks.length > 1) {
-        // Only possible in integ mode
-        return stacks.map(s => s.template);
-      }
-      return stacks[0].template;
-    }
+    // not outputting template to stdout, let's explain things to the user a little bit...
+    success(`Successfully synthesized to ${colors.blue(path.resolve(appStacks.assembly!.directory))}`);
+    print(`Supply a stack name (${stacks.map(s => colors.green(s.name)).join(', ')}) to display its template.`);
 
-    fs.mkdirpSync(outputDir);
-
-    let i = 0;
-    for (const stack of stacks) {
-      const prefix = numbered ? leftPad(`${i}`, 3, '0') + '.' : '';
-      const fileName = `${outputDir}/${prefix}${stack.name}.template.${json ? 'json' : 'yaml'}`;
-      highlight(fileName);
-      await fs.writeFile(fileName, toJsonOrYaml(stack.template));
-      i++;
-    }
-
-    return undefined; // Nothing to print
+    return undefined;
   }
 
-  async function cliList(options: { long?: boolean } = { }) {
-    const stacks = await appStacks.listStacks();
+  async function cliList(selectors: string[], options: { long?: boolean } = { }) {
+    const stacks = await appStacks.selectStacks(selectors, { defaultBehavior: DefaultSelection.AllStacks });
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
     if (options.long) {
@@ -356,37 +339,14 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function cliDestroy(stackNames: string[], exclusively: boolean, force: boolean, roleArn: string | undefined) {
-    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream);
-
-    // The stacks will have been ordered for deployment, so reverse them for deletion.
-    stacks.reverse();
-
-    if (!force) {
-      // tslint:disable-next-line:max-line-length
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
-      if (!confirmed) {
-        return;
-      }
-    }
-
-    for (const stack of stacks) {
-      success('%s: destroying...', colors.blue(stack.name));
-      try {
-        await destroyStack({ stack, sdk: aws, deployName: stack.name, roleArn });
-        success('\n ✅  %s: destroyed', colors.blue(stack.name));
-      } catch (e) {
-        error('\n ❌  %s: destroy failed', colors.blue(stack.name), e);
-        throw e;
-      }
-    }
-  }
-
   /**
    * Match a single stack from the list of available stacks
    */
   async function findStack(name: string): Promise<string> {
-    const stacks = await appStacks.selectStacks([name], ExtendedStackSelection.None);
+    const stacks = await appStacks.selectStacks([name], {
+      extend: ExtendedStackSelection.None,
+      defaultBehavior: DefaultSelection.None
+    });
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.length > 1) {

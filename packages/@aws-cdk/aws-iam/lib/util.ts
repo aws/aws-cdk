@@ -1,13 +1,13 @@
-import { Token } from '@aws-cdk/cdk';
+import { DefaultTokenResolver, IConstruct, Lazy, StringConcat, Tokenization } from '@aws-cdk/core';
 import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
 export function undefinedIfEmpty(f: () => string[]): string[] {
-  return new Token(() => {
+  return Lazy.listValue({ produce: () => {
     const array = f();
     return (array && array.length > 0) ? array : undefined;
-  }).toList();
+  }});
 }
 
 /**
@@ -16,8 +16,25 @@ export function undefinedIfEmpty(f: () => string[]): string[] {
  * 128 characters, so we take the last 128 characters (in order to make sure the hash
  * is there).
  */
-export function generatePolicyName(logicalId: string) {
-  return logicalId.substring(Math.max(logicalId.length - MAX_POLICY_NAME_LEN, 0), logicalId.length);
+export function generatePolicyName(scope: IConstruct, logicalId: string): string {
+  // as logicalId is itself a Token, resolve it first
+  const resolvedLogicalId = Tokenization.resolve(logicalId, {
+    scope,
+    resolver: new DefaultTokenResolver(new StringConcat()),
+  });
+  return lastNCharacters(resolvedLogicalId, MAX_POLICY_NAME_LEN);
+}
+
+/**
+ * Returns a string composed of the last n characters of str.
+ * If str is shorter than n, returns str.
+ *
+ * @param str the string to return the last n characters of
+ * @param n how many characters to return
+ */
+function lastNCharacters(str: string, n: number) {
+  const startIndex = Math.max(str.length - n, 0);
+  return str.substring(startIndex, str.length);
 }
 
 /**

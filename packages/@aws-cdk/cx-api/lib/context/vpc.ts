@@ -54,6 +54,13 @@ export interface VpcContextResponse {
   readonly publicSubnetNames?: string[];
 
   /**
+   * Route Table IDs of public subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(publicGroups)
+   */
+  readonly publicSubnetRouteTableIds?: string[];
+
+  /**
    * IDs of all private subnets
    *
    * Element count: #(availabilityZones) · #(privateGroups)
@@ -68,6 +75,13 @@ export interface VpcContextResponse {
   readonly privateSubnetNames?: string[];
 
   /**
+   * Route Table IDs of private subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(privateGroups)
+   */
+  readonly privateSubnetRouteTableIds?: string[];
+
+  /**
    * IDs of all isolated subnets
    *
    * Element count: #(availabilityZones) · #(isolatedGroups)
@@ -80,6 +94,13 @@ export interface VpcContextResponse {
    * Element count: #(isolatedGroups)
    */
   readonly isolatedSubnetNames?: string[];
+
+  /**
+   * Route Table IDs of isolated subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(isolatedGroups)
+   */
+  readonly isolatedSubnetRouteTableIds?: string[];
 
   /**
    * The VPN gateway ID

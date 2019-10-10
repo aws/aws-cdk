@@ -1,10 +1,13 @@
 {
   "Resources": {
     "Bucket83908E77": {
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TrailS30071F172": {
       "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
     "TrailS3PolicyE42170FE": {
@@ -19,17 +22,7 @@
               "Action": "s3:GetBucketAcl",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "cloudtrail.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "cloudtrail.amazonaws.com"
               },
               "Resource": {
                 "Fn::GetAtt": [
@@ -47,17 +40,7 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "cloudtrail.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "cloudtrail.amazonaws.com"
               },
               "Resource": {
                 "Fn::Join": [

@@ -46,7 +46,18 @@
           "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSCodeDeployRole"
+              ]
+            ]
+          }
         ]
       }
     },
@@ -80,7 +91,9 @@
         "VersioningConfiguration": {
           "Status": "Enabled"
         }
-      }
+      },
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -91,17 +104,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -148,6 +151,163 @@
               ]
             },
             {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineSourceS3SourceCodePipelineActionRole8DE11A40",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineDeployCodeDeployCodePipelineActionRoleFA7F8EEF",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
+        "Roles": [
+          {
+            "Ref": "PipelineRoleD68726F7"
+          }
+        ]
+      }
+    },
+    "PipelineC660917D": {
+      "Type": "AWS::CodePipeline::Pipeline",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "PipelineRoleD68726F7",
+            "Arn"
+          ]
+        },
+        "Stages": [
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "AWS",
+                  "Provider": "S3",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "S3Bucket": {
+                    "Ref": "CodeDeployPipelineIntegTest9F618D61"
+                  },
+                  "S3ObjectKey": "application.zip"
+                },
+                "Name": "S3Source",
+                "OutputArtifacts": [
+                  {
+                    "Name": "SourceOutput"
+                  }
+                ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceS3SourceCodePipelineActionRole8DE11A40",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Source"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CodeDeploy",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ApplicationName": {
+                    "Ref": "CodeDeployApplicationE587C27C"
+                  },
+                  "DeploymentGroupName": {
+                    "Ref": "CodeDeployGroup58220FC8"
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "SourceOutput"
+                  }
+                ],
+                "Name": "CodeDeploy",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelineDeployCodeDeployCodePipelineActionRoleFA7F8EEF",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Deploy"
+          }
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "CodeDeployPipelineIntegTest9F618D61"
+          },
+          "Type": "S3"
+        }
+      },
+      "DependsOn": [
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
+      ]
+    },
+    "PipelineSourceS3SourceCodePipelineActionRole8DE11A40": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineSourceS3SourceCodePipelineActionRoleDefaultPolicy352A3912": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": [
                 "s3:GetObject*",
                 "s3:GetBucket*",
@@ -177,6 +337,84 @@
                 }
               ]
             },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "CodeDeployPipelineIntegTest9F618D61",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "CodeDeployPipelineIntegTest9F618D61",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineSourceS3SourceCodePipelineActionRoleDefaultPolicy352A3912",
+        "Roles": [
+          {
+            "Ref": "PipelineSourceS3SourceCodePipelineActionRole8DE11A40"
+          }
+        ]
+      }
+    },
+    "PipelineDeployCodeDeployCodePipelineActionRoleFA7F8EEF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelineDeployCodeDeployCodePipelineActionRoleDefaultPolicy7B34E673": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
               "Action": [
                 "codedeploy:GetApplicationRevision",
@@ -267,96 +505,47 @@
                   ]
                 ]
               }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "CodeDeployPipelineIntegTest9F618D61",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "CodeDeployPipelineIntegTest9F618D61",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
+        "PolicyName": "PipelineDeployCodeDeployCodePipelineActionRoleDefaultPolicy7B34E673",
         "Roles": [
           {
-            "Ref": "PipelineRoleD68726F7"
+            "Ref": "PipelineDeployCodeDeployCodePipelineActionRoleFA7F8EEF"
           }
         ]
       }
-    },
-    "PipelineC660917D": {
-      "Type": "AWS::CodePipeline::Pipeline",
-      "Properties": {
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "PipelineRoleD68726F7",
-            "Arn"
-          ]
-        },
-        "Stages": [
-          {
-            "Actions": [
-              {
-                "ActionTypeId": {
-                  "Category": "Source",
-                  "Owner": "AWS",
-                  "Provider": "S3",
-                  "Version": "1"
-                },
-                "Configuration": {
-                  "S3Bucket": {
-                    "Ref": "CodeDeployPipelineIntegTest9F618D61"
-                  },
-                  "S3ObjectKey": "application.zip"
-                },
-                "InputArtifacts": [],
-                "Name": "S3Source",
-                "OutputArtifacts": [
-                  {
-                    "Name": "SourceOutput"
-                  }
-                ],
-                "RunOrder": 1
-              }
-            ],
-            "Name": "Source"
-          },
-          {
-            "Actions": [
-              {
-                "ActionTypeId": {
-                  "Category": "Deploy",
-                  "Owner": "AWS",
-                  "Provider": "CodeDeploy",
-                  "Version": "1"
-                },
-                "Configuration": {
-                  "ApplicationName": {
-                    "Ref": "CodeDeployApplicationE587C27C"
-                  },
-                  "DeploymentGroupName": {
-                    "Ref": "CodeDeployGroup58220FC8"
-                  }
-                },
-                "InputArtifacts": [
-                  {
-                    "Name": "SourceOutput"
-                  }
-                ],
-                "Name": "CodeDeploy",
-                "OutputArtifacts": [],
-                "RunOrder": 1
-              }
-            ],
-            "Name": "Deploy"
-          }
-        ],
-        "ArtifactStore": {
-          "Location": {
-            "Ref": "CodeDeployPipelineIntegTest9F618D61"
-          },
-          "Type": "S3"
-        }
-      },
-      "DependsOn": [
-        "PipelineRoleDefaultPolicyC7A05455",
-        "PipelineRoleD68726F7"
-      ]
     }
   }
 }

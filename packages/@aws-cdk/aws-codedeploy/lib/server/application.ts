@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication } from '../utils';
 
@@ -10,7 +10,7 @@ import { arnForApplication } from '../utils';
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link #import} method.
+ * use the {@link #fromServerApplicationName} method.
  */
 export interface IServerApplication extends IResource {
   /** @attribute */
@@ -39,8 +39,7 @@ export interface ServerApplicationProps {
  */
 export class ServerApplication extends Resource implements IServerApplication {
   /**
-   * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an Application defined either outside the CDK app, or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -61,14 +60,21 @@ export class ServerApplication extends Resource implements IServerApplication {
   public readonly applicationName: string;
 
   constructor(scope: Construct, id: string, props: ServerApplicationProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.applicationName,
+    });
 
     const resource = new CfnApplication(this, 'Resource', {
-      applicationName: props.applicationName,
+      applicationName: this.physicalName,
       computePlatform: 'Server',
     });
 
-    this.applicationName = resource.ref;
-    this.applicationArn = arnForApplication(this.applicationName);
+    this.applicationName = this.getResourceNameAttribute(resource.ref);
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
   }
 }

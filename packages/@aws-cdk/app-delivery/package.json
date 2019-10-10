@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "0.31.0",
+  "version": "1.12.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -9,7 +9,8 @@
       "java": {
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-app-delivery"
+          "artifactId": "cdk-app-delivery",
+          "versionSuffix": ".DEVPREVIEW"
         },
         "package": "software.amazon.awscdk.appdelivery"
       },
@@ -17,7 +18,9 @@
         "namespace": "Amazon.CDK.AppDelivery",
         "packageId": "Amazon.CDK.AppDelivery",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.app-delivery",
@@ -33,31 +36,34 @@
     "test": "cdk-test",
     "watch": "cdk-watch",
     "integ": "cdk-integ",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.31.0",
-    "@aws-cdk/aws-codebuild": "^0.31.0",
-    "@aws-cdk/aws-codepipeline": "^0.31.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.31.0",
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0",
-    "@aws-cdk/cx-api": "^0.31.0"
+    "@aws-cdk/aws-cloudformation": "^1.12.0",
+    "@aws-cdk/aws-codebuild": "^1.12.0",
+    "@aws-cdk/aws-codepipeline": "^1.12.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.12.0",
+    "@aws-cdk/aws-events": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0",
+    "@aws-cdk/cx-api": "^1.12.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^0.31.0",
-    "@aws-cdk/aws-s3": "^0.31.0",
-    "cdk-build-tools": "^0.31.0",
-    "cdk-integ-tools": "^0.31.0",
-    "fast-check": "^1.14.0",
-    "pkglint": "^0.31.0"
+    "@aws-cdk/assert": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "fast-check": "^1.17.0",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/app-delivery"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",
@@ -69,15 +75,17 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.31.0",
-    "@aws-cdk/aws-codebuild": "^0.31.0",
-    "@aws-cdk/aws-codepipeline": "^0.31.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.31.0",
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0",
-    "@aws-cdk/cx-api": "^0.31.0"
+    "@aws-cdk/aws-cloudformation": "^1.12.0",
+    "@aws-cdk/aws-codebuild": "^1.12.0",
+    "@aws-cdk/aws-codepipeline": "^1.12.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.12.0",
+    "@aws-cdk/aws-events": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0",
+    "@aws-cdk/cx-api": "^1.12.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
-  }
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental"
 }

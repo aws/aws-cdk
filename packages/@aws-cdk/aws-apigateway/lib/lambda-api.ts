@@ -1,11 +1,11 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { LambdaIntegration } from './integrations';
 import { Method } from './method';
 import { ProxyResource, Resource } from './resource';
 import { RestApi, RestApiProps } from './restapi';
 
-export interface LambdaRestApiProps {
+export interface LambdaRestApiProps extends RestApiProps {
   /**
    * The default Lambda function that handles all requests from this API.
    *
@@ -25,9 +25,11 @@ export interface LambdaRestApiProps {
   readonly proxy?: boolean;
 
   /**
-   * Further customization of the REST API.
+   * @deprecated the `LambdaRestApiProps` now extends `RestApiProps`, so all
+   * options are just available here. Note that the options specified in
+   * `options` will be overridden by any props specified at the root level.
    *
-   * @default defaults
+   * @default - no options.
    */
   readonly options?: RestApiProps;
 }
@@ -41,13 +43,14 @@ export interface LambdaRestApiProps {
  */
 export class LambdaRestApi extends RestApi {
   constructor(scope: cdk.Construct, id: string, props: LambdaRestApiProps) {
-    if (props.options && props.options.defaultIntegration) {
-      throw new Error(`Cannot specify "options.defaultIntegration" since Lambda integration is automatically defined`);
+    if ((props.options && props.options.defaultIntegration) || props.defaultIntegration) {
+      throw new Error(`Cannot specify "defaultIntegration" since Lambda integration is automatically defined`);
     }
 
     super(scope, id, {
       defaultIntegration: new LambdaIntegration(props.handler),
-      ...props.options
+      ...props.options, // deprecated, but we still support
+      ...props,
     });
 
     if (props.proxy !== false) {

@@ -1,5 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require( '@aws-cdk/cdk');
+import cdk = require( '@aws-cdk/core');
 import tasks = require('../lib');
 
 class JobPollerStack extends cdk.Stack {
@@ -13,7 +13,7 @@ class JobPollerStack extends cdk.Stack {
             task: new tasks.InvokeActivity(submitJobActivity),
             resultPath: '$.guid',
         });
-        const waitX = new sfn.Wait(this, 'Wait X Seconds', { duration: sfn.WaitDuration.secondsPath('$.wait_time') });
+        const waitX = new sfn.Wait(this, 'Wait X Seconds', { time: sfn.WaitTime.secondsPath('$.wait_time') });
         const getStatus = new sfn.Task(this, 'Get Job Status', {
             task: new tasks.InvokeActivity(checkJobActivity),
             inputPath: '$.guid',
@@ -40,11 +40,11 @@ class JobPollerStack extends cdk.Stack {
 
         new sfn.StateMachine(this, 'StateMachine', {
             definition: chain,
-            timeoutSec: 30
+            timeout: cdk.Duration.seconds(30)
         });
     }
 }
 
 const app = new cdk.App();
 new JobPollerStack(app, 'aws-stepfunctions-integ');
-app.run();
+app.synth();

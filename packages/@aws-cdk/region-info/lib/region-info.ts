@@ -5,6 +5,14 @@ import { Fact, FactName } from './fact';
  */
 export class RegionInfo {
   /**
+   * @returns the list of names of AWS regions for which there is at least one registered fact. This
+   *          may not be an exaustive list of all available AWS regions.
+   */
+  public static get regions(): RegionInfo[] {
+    return Fact.regions.map(RegionInfo.get);
+  }
+
+  /**
    * Obtain region info for a given region name.
    *
    * @param name the name of the region (e.g: us-east-1)
@@ -19,28 +27,35 @@ export class RegionInfo {
    * Whether the `AWS::CDK::Metadata` CloudFormation Resource is available in this region or not.
    */
   public get cdkMetadataResourceAvailable(): boolean {
-    return Fact.find(this.name, FactName.cdkMetadataResourceAvailable) === 'YES';
+    return Fact.find(this.name, FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES';
   }
 
   /**
    * The domain name suffix (e.g: amazonaws.com) for this region.
    */
   public get domainSuffix(): string | undefined {
-    return Fact.find(this.name, FactName.domainSuffix);
+    return Fact.find(this.name, FactName.DOMAIN_SUFFIX);
   }
 
   /**
    * The name of the ARN partition for this region (e.g: aws).
    */
   public get partition(): string | undefined {
-    return Fact.find(this.name, FactName.partition);
+    return Fact.find(this.name, FactName.PARTITION);
   }
 
   /**
    * The endpoint used by S3 static website hosting in this region (e.g: s3-static-website-us-east-1.amazonaws.com)
    */
   public get s3StaticWebsiteEndpoint(): string | undefined {
-    return Fact.find(this.name, FactName.s3StaticWebsiteEndpoint);
+    return Fact.find(this.name, FactName.S3_STATIC_WEBSITE_ENDPOINT);
+  }
+
+  /**
+   * The hosted zone ID used by Route 53 to alias a S3 static website in this region (e.g: Z2O1EMRO9K5GLX)
+   */
+  public get s3StaticWebsiteHostedZoneId(): string | undefined {
+    return Fact.find(this.name, FactName.S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID);
   }
 
   /**

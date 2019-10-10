@@ -2,6 +2,8 @@
   "Resources": {
     "Repo02AC86CF": {
       "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
       "Properties": {
         "LifecyclePolicy": {
           "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
@@ -48,7 +50,11 @@
                 }
               ]
             },
-            ".amazonaws.com/",
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
             {
               "Ref": "Repo02AC86CF"
             }

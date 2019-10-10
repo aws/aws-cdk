@@ -1,15 +1,14 @@
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
-import { CfnResourceReflection } from './cfn-resource';
 import { ConstructReflection } from './construct';
-import { ResourceReflection } from './resource';
+import { CoreTypes } from './core-types';
 
 const EXCLUDE_ANNOTATION_REF_VIA_INTERFACE = '[disable-awslint:ref-via-interface]';
 
 // lint all constructs that are not L1 resources
 export const apiLinter = new Linter(a => ConstructReflection
   .findAllConstructs(a)
-  .filter(c => !CfnResourceReflection.isCfnResource(c.classType)));
+  .filter(c => !CoreTypes.isCfnResource(c.classType)));
 
 apiLinter.add({
   code: 'ref-via-interface',
@@ -123,11 +122,11 @@ apiLinter.add({
 
       // classes are okay as long as they are not resource constructs
       if (type.type && type.type.isClassType()) {
-        if (!ResourceReflection.isResourceClass(type.type)) {
+        if (!CoreTypes.isResourceClass(type.type)) {
           return;
         }
 
-        if (type.type.fqn === ConstructReflection.CONSTRUCT_FQN) {
+        if (type.type.fqn === e.ctx.core.constructClass.fqn) {
           return;
         }
 

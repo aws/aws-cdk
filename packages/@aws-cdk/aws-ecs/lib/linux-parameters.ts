@@ -1,23 +1,27 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnTaskDefinition } from './ecs.generated';
 
 /**
- * Properties for defining Linux Parameters
+ * The properties for defining Linux-specific options that are applied to the container.
  */
 export interface LinuxParametersProps {
   /**
-   * Whether the init process is enabled
+   * Specifies whether to run an init process inside the container that forwards signals and reaps processes.
+   *
+   * @default false
    */
   readonly initProcessEnabled?: boolean;
 
   /**
-   * The shared memory size
+   * The value for the size (in MiB) of the /dev/shm volume.
+   *
+   * @default No shared memory.
    */
   readonly sharedMemorySize?: number;
 }
 
 /**
- * Linux Parameters for an ECS container
+ * Linux-specific options that are applied to the container.
  */
 export class LinuxParameters extends cdk.Construct {
   /**
@@ -50,6 +54,9 @@ export class LinuxParameters extends cdk.Construct {
    */
   private readonly tmpfs = new Array<Tmpfs>();
 
+  /**
+   * Constructs a new instance of the LinuxParameters class.
+   */
   constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 
@@ -58,7 +65,7 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Add one or more capabilities
+   * Adds one or more Linux capabilities to the Docker configuration of a container.
    *
    * Only works with EC2 launch type.
    */
@@ -67,7 +74,7 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Drop one or more capabilities
+   * Removes one or more Linux capabilities to the Docker configuration of a container.
    *
    * Only works with EC2 launch type.
    */
@@ -76,14 +83,14 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Add one or more devices
+   * Adds one or more host devices to a container.
    */
   public addDevices(...device: Device[]) {
     this.devices.push(...device);
   }
 
   /**
-   * Add one or more tmpfs mounts
+   * Specifies the container path, mount options, and size (in MiB) of the tmpfs mount for a container.
    *
    * Only works with EC2 launch type.
    */
@@ -92,40 +99,41 @@ export class LinuxParameters extends cdk.Construct {
   }
 
   /**
-   * Render the Linux parameters to a CloudFormation object
+   * Renders the Linux parameters to a CloudFormation object.
    */
   public renderLinuxParameters(): CfnTaskDefinition.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
       capabilities: {
-        add: this.capAdd,
-        drop: this.capDrop,
+        add: cdk.Lazy.listValue({ produce: () => this.capAdd }, { omitEmpty: true}),
+        drop: cdk.Lazy.listValue({  produce: () => this.capDrop }, { omitEmpty: true}),
       },
-      devices: this.devices.map(renderDevice),
-      tmpfs: this.tmpfs.map(renderTmpfs)
+      devices: cdk.Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
+      tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true })
     };
   }
 }
 
 /**
- * A host device
+ * A container instance host device.
  */
 export interface Device {
   /**
-   * Path in the container
+   * The path inside the container at which to expose the host device.
    *
    * @default Same path as the host
    */
   readonly containerPath?: string,
 
   /**
-   * Path on the host
+   * The path for the device on the host container instance.
    */
   readonly hostPath: string,
 
   /**
-   * Permissions
+   * The explicit permissions to provide to the container for the device.
+   * By default, the container has permissions for read, write, and mknod for the device.
    *
    * @default Readonly
    */
@@ -141,21 +149,22 @@ function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
 }
 
 /**
- * A tmpfs mount
+ * The details of a tmpfs mount for a container.
  */
 export interface Tmpfs {
   /**
-   * Path in the container to mount
+   * The absolute file path where the tmpfs volume is to be mounted.
    */
   readonly containerPath: string,
 
   /**
-   * Size of the volume
+   * The size (in MiB) of the tmpfs volume.
    */
   readonly size: number,
 
   /**
-   * Mount options
+   * The list of tmpfs volume mount options. For more information, see
+   * [TmpfsMountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
    */
   readonly mountOptions?: TmpfsMountOption[],
 }
@@ -172,44 +181,44 @@ function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {
  * A Linux capability
  */
 export enum Capability {
-  All = "ALL",
-  AuditControl = "AUDIT_CONTROL",
-  AuditWrite = "AUDIT_WRITE",
-  BlockSuspend = "BLOCK_SUSPEND",
-  Chown = "CHOWN",
-  DacOverride = "DAC_OVERRIDE",
-  DacReadSearch = "DAC_READ_SEARCH",
-  Fowner = "FOWNER",
-  Fsetid = "FSETID",
-  IpcLock = "IPC_LOCK",
-  IpcOwner = "IPC_OWNER",
-  Kill = "KILL",
-  Lease = "LEASE",
-  LinuxImmutable = "LINUX_IMMUTABLE",
-  MacAdmin = "MAC_ADMIN",
-  MacOverride = "MAC_OVERRIDE",
-  Mknod = "MKNOD",
-  NetAdmin = "NET_ADMIN",
-  NetBindService = "NET_BIND_SERVICE",
-  NetBroadcast = "NET_BROADCAST",
-  NetRaw = "NET_RAW",
-  Setfcap = "SETFCAP",
-  Setgid = "SETGID",
-  Setpcap = "SETPCAP",
-  Setuid = "SETUID",
-  SysAdmin = "SYS_ADMIN",
-  SysBoot = "SYS_BOOT",
-  SysChroot = "SYS_CHROOT",
-  SysModule = "SYS_MODULE",
-  SysNice = "SYS_NICE",
-  SysPacct = "SYS_PACCT",
-  SysPtrace = "SYS_PTRACE",
-  SysRawio = "SYS_RAWIO",
-  SysResource = "SYS_RESOURCE",
-  SysTime = "SYS_TIME",
-  SysTtyConfig = "SYS_TTY_CONFIG",
-  Syslog = "SYSLOG",
-  WakeAlarm = "WAKE_ALARM"
+  ALL = "ALL",
+  AUDIT_CONTROL = "AUDIT_CONTROL",
+  AUDIT_WRITE = "AUDIT_WRITE",
+  BLOCK_SUSPEND = "BLOCK_SUSPEND",
+  CHOWN = "CHOWN",
+  DAC_OVERRIDE = "DAC_OVERRIDE",
+  DAC_READ_SEARCH = "DAC_READ_SEARCH",
+  FOWNER = "FOWNER",
+  FSETID = "FSETID",
+  IPC_LOCK = "IPC_LOCK",
+  IPC_OWNER = "IPC_OWNER",
+  KILL = "KILL",
+  LEASE = "LEASE",
+  LINUX_IMMUTABLE = "LINUX_IMMUTABLE",
+  MAC_ADMIN = "MAC_ADMIN",
+  MAC_OVERRIDE = "MAC_OVERRIDE",
+  MKNOD = "MKNOD",
+  NET_ADMIN = "NET_ADMIN",
+  NET_BIND_SERVICE = "NET_BIND_SERVICE",
+  NET_BROADCAST = "NET_BROADCAST",
+  NET_RAW = "NET_RAW",
+  SETFCAP = "SETFCAP",
+  SETGID = "SETGID",
+  SETPCAP = "SETPCAP",
+  SETUID = "SETUID",
+  SYS_ADMIN = "SYS_ADMIN",
+  SYS_BOOT = "SYS_BOOT",
+  SYS_CHROOT = "SYS_CHROOT",
+  SYS_MODULE = "SYS_MODULE",
+  SYS_NICE = "SYS_NICE",
+  SYS_PACCT = "SYS_PACCT",
+  SYS_PTRACE = "SYS_PTRACE",
+  SYS_RAWIO = "SYS_RAWIO",
+  SYS_RESOURCE = "SYS_RESOURCE",
+  SYS_TIME = "SYS_TIME",
+  SYS_TTY_CONFIG = "SYS_TTY_CONFIG",
+  SYSLOG = "SYSLOG",
+  WAKE_ALARM = "WAKE_ALARM"
 }
 
 /**
@@ -219,60 +228,60 @@ export enum DevicePermission {
   /**
    * Read
    */
-  Read = "read",
+  READ = "read",
 
   /**
    * Write
    */
-  Write = "write",
+  WRITE = "write",
 
   /**
    * Make a node
    */
-  Mknod = "mknod",
+  MKNOD = "mknod",
 }
 
 /**
- * Options for a tmpfs mount
+ * The supported options for a tmpfs mount for a container.
  */
 export enum TmpfsMountOption {
-  Defaults = "defaults",
-  Ro = "ro",
-  Rw = "rw",
-  Suid = "suid",
-  Nosuid = "nosuid",
-  Dev = "dev",
-  Nodev = "nodev",
-  Exec = "exec",
-  Noexec = "noexec",
-  Sync = "sync",
-  Async = "async",
-  Dirsync = "dirsync",
-  Remount = "remount",
-  Mand = "mand",
-  Nomand = "nomand",
-  Atime = "atime",
-  Noatime = "noatime",
-  Diratime = "diratime",
-  Nodiratime = "nodiratime",
-  Bind = "bind",
-  Rbind = "rbind",
-  Unbindable = "unbindable",
-  Runbindable = "runbindable",
-  Private = "private",
-  Rprivate = "rprivate",
-  Shared = "shared",
-  Rshared = "rshared",
-  Slave = "slave",
-  Rslave = "rslave",
-  Relatime = "relatime",
-  Norelatime = "norelatime",
-  Strictatime = "strictatime",
-  Nostrictatime = "nostrictatime",
-  Mode = "mode",
-  Uid = "uid",
-  Gid = "gid",
-  NrInodes = "nr_inodes",
-  NrBlocks = "nr_blocks",
-  Mpol = "mpol"
+  DEFAULTS = "defaults",
+  RO = "ro",
+  RW = "rw",
+  SUID = "suid",
+  NOSUID = "nosuid",
+  DEV = "dev",
+  NODEV = "nodev",
+  EXEC = "exec",
+  NOEXEC = "noexec",
+  SYNC = "sync",
+  ASYNC = "async",
+  DIRSYNC = "dirsync",
+  REMOUNT = "remount",
+  MAND = "mand",
+  NOMAND = "nomand",
+  ATIME = "atime",
+  NOATIME = "noatime",
+  DIRATIME = "diratime",
+  NODIRATIME = "nodiratime",
+  BIND = "bind",
+  RBIND = "rbind",
+  UNBINDABLE = "unbindable",
+  RUNBINDABLE = "runbindable",
+  PRIVATE = "private",
+  RPRIVATE = "rprivate",
+  SHARED = "shared",
+  RSHARED = "rshared",
+  SLAVE = "slave",
+  RSLAVE = "rslave",
+  RELATIME = "relatime",
+  NORELATIME = "norelatime",
+  STRICTATIME = "strictatime",
+  NOSTRICTATIME = "nostrictatime",
+  MODE = "mode",
+  UID = "uid",
+  GID = "gid",
+  NR_INODES = "nr_inodes",
+  NR_BLOCKS = "nr_blocks",
+  MPOL = "mpol"
 }

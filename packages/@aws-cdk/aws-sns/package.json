@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-sns",
-  "version": "0.31.0",
+  "version": "1.12.0",
   "description": "CDK Constructs for AWS SNS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,17 @@
         "package": "software.amazon.awscdk.services.sns",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sns"
+          "artifactId": "sns",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SNS",
         "packageId": "Amazon.CDK.AWS.SNS",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-sns",
@@ -31,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-sns"
   },
   "scripts": {
@@ -43,7 +46,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::SNS"
@@ -61,40 +66,35 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.31.0",
-    "@aws-cdk/aws-s3": "^0.31.0",
-    "cdk-build-tools": "^0.31.0",
-    "cdk-integ-tools": "^0.31.0",
-    "cfn2ts": "^0.31.0",
-    "pkglint": "^0.31.0"
+    "@aws-cdk/assert": "^1.12.0",
+    "@aws-cdk/aws-s3": "^1.12.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-api": "^0.31.0",
-    "@aws-cdk/aws-cloudwatch": "^0.31.0",
-    "@aws-cdk/aws-events": "^0.31.0",
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/aws-lambda": "^0.31.0",
-    "@aws-cdk/aws-s3-notifications": "^0.31.0",
-    "@aws-cdk/aws-sqs": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-cloudwatch": "^1.12.0",
+    "@aws-cdk/aws-events": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling-api": "^0.31.0",
-    "@aws-cdk/aws-cloudwatch": "^0.31.0",
-    "@aws-cdk/aws-events": "^0.31.0",
-    "@aws-cdk/aws-iam": "^0.31.0",
-    "@aws-cdk/aws-lambda": "^0.31.0",
-    "@aws-cdk/aws-s3-notifications": "^0.31.0",
-    "@aws-cdk/aws-sqs": "^0.31.0",
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/aws-cloudwatch": "^1.12.0",
+    "@aws-cdk/aws-events": "^1.12.0",
+    "@aws-cdk/aws-iam": "^1.12.0",
+    "@aws-cdk/core": "^1.12.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
-      "construct-base-is-private:@aws-cdk/aws-sns.TopicBase"
+      "construct-base-is-private:@aws-cdk/aws-sns.TopicBase",
+      "props-physical-name:@aws-cdk/aws-sns.SubscriptionProps",
+      "props-physical-name:@aws-cdk/aws-sns.TopicPolicyProps"
     ]
-  }
+  },
+  "stability": "stable"
 }

@@ -5,7 +5,83 @@ Thanks for your interest in contributing to the AWS CDK! ❤️
 This document describes how to set up a development environment and submit your contributions. Please read it carefully
 and let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
+- [Getting Started](#getting-started)
+- [Pull Requests](#pull-requests)
+  - [Step 1: Open Issue](#step-1-open-issue)
+  - [Step 2: Design (optional)](#step-2-design-optional)
+  - [Step 3: Work your Magic](#step-3-work-your-magic)
+  - [Step 4: Commit](#step-4-commit)
+  - [Step 5: Pull Request](#step-5-pull-request)
+  - [Step 6: Merge](#step-6-merge)
+- [Tools](#tools)
+  - [Main build scripts](#main-build-scripts)
+  - [Partial build tools](#partial-build-tools)
+  - [Useful aliases](#useful-aliases)
+  - [pkglint](#pkglint)
+  - [awslint](#awslint)
+  - [cfn2ts](#cfn2ts)
+  - [scripts/foreach.sh](#scriptsforeachsh)
+  - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
+- [Workflows](#workflows)
+  - [Full clean build](#full-clean-build)
+  - [Full Docker build](#full-docker-build)
+  - [Partial build](#partial-build)
+  - [Quick Iteration](#quick-iteration)
+  - [Linking against this repository](#linking-against-this-repository)
+  - [Running integration tests in parallel](#running-integration-tests-in-parallel)
+  - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
+  - [Adding Dependencies](#adding-dependencies)
+  - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
+  - [Updating all Dependencies](#updating-all-dependencies)
+  - [Running CLI integration tests](#running-cli-integration-tests)
+- [Troubleshooting](#troubleshooting)
+- [Debugging](#debugging)
+  - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+- [Related Repositories](#related-repositories)
+
+## Getting Started
+
+For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+should be sufficient.
+
+```console
+$ git clone git@github.com:aws/aws-cdk.git
+$ cd aws-cdk
+$ ./build.sh
+```
+
+If you wish to produce language bindings through `pack.sh`, you will need the following toolchains
+installed, or use the Docker workflow.
+
+ - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Java OpenJDK 8](http://openjdk.java.net/install/)
+ - [.NET Core 2.0](https://www.microsoft.com/net/download)
+ - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
+ - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+
 ## Pull Requests
+
+### Pull Request Checklist
+
+* [ ] Testing
+  - Unit test added (prefer not to modify an existing test, otherwise, it's probably a breaking change)
+  - __CLI change?:__ coordinate update of integration tests with team
+  - __cdk-init template change?:__ coordinated update of integration tests with team
+* [ ] Docs
+  - __jsdocs__: All public APIs documented
+  - __README__: README and/or documentation topic updated
+  - __Design__: For significant features, design document added to `design` folder
+* [ ] Title and Description
+  - __Change type__: title prefixed with **fix**, **feat** and module name in parens, which will appear in changelog
+  - __Title__: use lower-case and doesn't end with a period
+  - __Breaking?__: last paragraph: "BREAKING CHANGE: <describe what changed + link for details>"
+  - __Issues__: Indicate issues fixed via: "**Fixes #xxx**" or "**Closes #xxx**"
+* [ ] Sensitive Modules (requires 2 PR approvers)
+  - IAM Policy Document (in @aws-cdk/aws-iam)
+  - EC2 Security Groups and ACLs (in @aws-cdk/aws-ec2)
+  - Grant APIs (only if not based on official documentation with a reference)
+
+---
 
 ### Step 1: Open Issue
 
@@ -13,26 +89,50 @@ If there isn't one already, open an issue describing what you intend to contribu
 advance, because sometimes, someone is already working in this space, so maybe it's worth collaborating with them
 instead of duplicating the efforts.
 
-### Step 2: Work your Magic
+### Step 2: Design (optional)
+
+In some cases, it is useful to seek for feedback by iterating on a design document. This is useful
+when you plan a big change or feature, or you want advice on what would be the best path forward.
+
+Sometimes, the GitHub issue is sufficient for such discussions, and can be sufficient to get
+clarity on what you plan to do. Sometimes, a design document would work better, so people can provide
+iterative feedback.
+
+In such cases, use the GitHub issue description to collect **requirements** and
+**use cases** for your feature.
+
+Then, create a design document in markdown format under the `design/` directory
+and request feedback through a pull request. Prefix the PR title with "**RFC:**"
+(request for comments).
+
+Once the design is finalized, you can re-purpose this PR for the implementation,
+or open a new PR to that end.
+
+### Step 3: Work your Magic
 
 Work your magic. Here are some guidelines:
 
+* Coding style (abbreviated):
+  * In general, follow the style of the code around you
+  * 2 space indentation
+  * 120 characters wide
+  * ATX style headings in markdown (e.g. `## H2 heading`)
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
    changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
    single commit, so you can use that to frame your scope.
 
-### Step 3: Commit
-   
+### Step 4: Commit
+
 Create a commit with the proposed change changes:
 
-* Commit title and message (and PR title and description) must adhere to [conventionalcommits].
+* Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
   * Title should be lowercase.
   * No period at the end of the title.
-  
+
 * Commit message should describe _motivation_. Think about your code reviewers and what information they need in
   order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
   it will be easier to follow.
@@ -47,49 +147,28 @@ Create a commit with the proposed change changes:
 
 ```
 BREAKING CHANGE: Description of what broke and how to achieve this behavior now
-* Another breaking change
-* Yet another breaking change
+* **module-name:** Another breaking change
+* **module-name:** Yet another breaking change
 ```
 
-### Pull Request
+### Step 5: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
 * Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
-### Merge
+
+
+### Step 6: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs)
 * Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
   commit message.
-
-## Design Process
-
-In order to enable efficient collaboration over design documents, the following process should be followed:
-
-1. Open an issue describing the requirements and constraints the design must satisfy
-   + Provide a clear list of use-cases that the design intends to address
-2. Open a pull request with a Markdown document describing the proposed design. The document should be placed in the
-   `design` directory at the root of the repository.
-   + Design discussions are tracked using the comment stream of the pull request
-   + The design document will be merged in and retained as if it were code
-
-## Style Guide
-
-### Markdown
-
-* Adhere to the [GitHub Flavored Markdown](https://github.github.com/gfm/) syntax
-* `120` character lines
-* ATX style headings (e.g: `## H2 heading`)
-
-### Typescript and Javascript
-
-* `2` space indentation
-* `120` character lines
 
 ## Tools
 
@@ -98,7 +177,7 @@ The CDK is a big project, and, at the moment, all of the CDK modules are mastere
 to maintain integrity in the early stage of the project where things constantly change across the stack. In the future
 we believe many of these modules will be extracted to their own repositories.
 
-Another complexity is that the CDK is packaged using [jsii](https://github.com/awslabs/jsii) to multiple programming
+Another complexity is that the CDK is packaged using [jsii](https://github.com/aws/jsii) to multiple programming
 languages. This means that when a full build is complete, there will be a version of each module for each supported
 language.
 
@@ -223,14 +302,23 @@ $ rm -f ~/.foreach.*
 
 This will effectively delete the state files.
 
-## Development Workflows
+### Jetbrains support (WebStorm/IntelliJ)
+
+This project uses lerna and utilizes symlinks inside nested node_modules directories. You may encounter an issue during
+indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
+available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
+these directories.
+
+## Workflows
+
+This section includes step-by-step descriptions of common workflows.
 
 ### Full clean build
 
 Clone the repo:
 
 ```console
-$ git clone git@github.com/awslabs/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -254,7 +342,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com/awslabs/aws-cdk
+$ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -305,6 +393,24 @@ $ nodeunit test/test.*.js
 <BOOM>
 ```
 
+### Linking against this repository
+
+The script `./link-all.sh` can be used to generate symlinks to all modules in this repository under some `node_module`
+directory. This can be used to develop against this repo as a local dependency.
+
+One can use the `postinstall` script to symlink this repo:
+
+```json
+{
+  "scripts": {
+    "postinstall": "../aws-cdk/link-all.sh"
+  }
+}
+```
+
+This assumes this repo is a sibling of the target repo and will install the CDK as a linked dependency during
+__npm install__.
+
 ### Running integration tests in parallel
 
 Integration tests may take a long time to complete. We can speed this up by running them in parallel
@@ -325,28 +431,6 @@ Use GraphViz with `template-deps-to-dot`:
 ```shell
 $ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > deps.png
 ```
-
-### Build Documentation Only
-
-The CDK documentation source is hosted under [`./docs/src`](./docs/src). Module reference documentation is gathered
-after build from the `dist/sphinx` directory (generated by jsii from source via the `./pack.sh` script).
-
-To build the docs even if reference docs are not present:
-
-
-```shell
-$ cd docs
-$ BUILD_DOCS_DEV=1 ./build-docs.sh
-```
-
-### Tooling Assists
-#### Jetbrains (WebStorm/IntelliJ)
-This project uses lerna and utilizes symlinks inside nested node_modules directories. You may encounter an issue during
-indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
-available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
-these directories.
-
-## Dependencies
 
 ### Adding Dependencies
 
@@ -386,10 +470,17 @@ To update all dependencies (without bumping major versions):
 
 1. Obtain a fresh clone from "master".
 2. Run `./install.sh`
-2. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
-3. Submit a Pull Request.
+3. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
+4. Submit a Pull Request.
 
-### Troubleshooting common issues
+### Running CLI integration tests
+
+The CLI package (`packages/aws-cdk`) has some integration tests that aren't
+run as part of the regular build, since they have some particular requirements.
+See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
+more information on running those tests.
+
+## Troubleshooting
 
 Most build issues can be solved by doing a full clean rebuild:
 
@@ -457,50 +548,64 @@ have to disable the built-in rebuild functionality of `lerna run test`:
 $ CDK_TEST_BUILD=false lr test
 ```
 
-## Toolchains
+## Debugging
 
-If you wish to use `pack.sh` to package the project to all supported languages, you will need the following toolchains
-installed:
+### Connecting the VS Code Debugger
 
- - [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
- - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core 2.0](https://www.microsoft.com/net/download)
- - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
- - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+*Note:* This applies to typescript CDK application only.
 
-## Linking against this repository
+To debug your CDK application along with the CDK repository,
 
-The script `./link-all.sh` can be used to generate symlinks to all modules in this repository under some `node_module`
-directory. This can be used to develop against this repo as a local dependency.
+1. Clone the CDK repository locally and build the repository. See [Workflows](#workflows) section for the different build options.
+2. Build the CDK application using the appropriate npm script (typically, `npm run build`) and then run the `link-all.sh` script as so -
 
-One can use the `postinstall` script to symlink this repo:
+   ```
+   cd /path/to/cdk/app
+   /path/to/aws-cdk/link-all.sh
+   ```
 
-```json
-{
-  "scripts": {
-    "postinstall": "../aws-cdk/link-all.sh"
+3. Open the CDK application (assume it's `hello-cdk` in these steps) and the CDK repository as a [VS code multi-root workspace](https://code.visualstudio.com/docs/editor/multi-root-workspaces).
+4. Open the [workspace settings file](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings) and verify that the following two folders must already exist
+
+  ```json
+  {
+    "folders": [
+      { "path": "<path-to-cdk-repo>/aws-cdk" },
+      { "path": "<path-to-cdk-app>/hello-cdk" }
+    ],
   }
-}
-```
+  ```
 
-This assumes this repo is a sibling of the target repo and will install the CDK as a linked dependency during
-__npm install__.
+5. Add the following launch configuration to the settings file -
 
-## Adding Language Support
+  ```json
+  "launch": {
+    "configurations": [{
+      "type": "node",
+      "request": "launch",
+      "name": "Debug hello-cdk",
+      "program": "${workspaceFolder:hello-cdk}/bin/hello-cdk.js",
+      "cwd": "${workspaceFolder:hello-cdk}",
+      "console": "internalConsole",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
+      "outFiles": [
+        "${workspaceFolder:aws-cdk}/**/*.js",
+        "${workspaceFolder:hello-cdk}/**/*.js",
+      ],
+    }]
+  }
+  ```
 
-The CDK uses [jsii](https://github.com/awslabs/jsii) to generate language bindings for CDK classes, which proxy
-interaction to a node.js child process in runtime.
+  *Go [here](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) for more about launch configurations.*
 
-To vend another language for the CDK (given there's jsii support for it):
+6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
+7. Any time you modify the CDK app or any of the CDK modules, they need to be re-built and depending on the change the `link-all.sh` script from step#2, may need to be re-run. Only then, would VS code recognize the change and potentially the breakpoint.
 
-1. Create a directory `packages/aws-cdk-xxx` (where "xxx" is the language).
-2. Look at [`aws-cdk-java/package.json`](packages/aws-cdk-java/package.json) as a reference on how to setup npm build
-   that uses pacmak to generate the code for all CDK modules and then compile and wrap the package up.
-3. Edit [bundle-beta.sh](./bundle-beta.sh) and add CDK and jsii artifacts for your language under `repo/xxx`
-4. Add a **cdk init** template for your language (see
-   [packages/aws-cdk/lib/init-templates](packages/aws-cdk/lib/init-templates)).
-5. Edit [getting-started.rst](packages/aws-cdk-docs/src/getting-started.rst) and make there there's a getting started
-   sections and examples for the new language.
+## Related Repositories
 
+* [Samples](https://github.com/aws-samples/aws-cdk-examples): includes sample code in multiple languages
+* [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
+* [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
+* [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
 
-[conventionalcommits]: https://www.conventionalcommits.org

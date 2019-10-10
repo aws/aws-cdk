@@ -1,7 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -34,24 +33,43 @@ export interface StateMachineProps {
      *
      * @default No timeout
      */
-    readonly timeoutSec?: number;
+    readonly timeout?: Duration;
 }
 
 /**
- * Define a StepFunctions State Machine
+ * A new or imported state machine.
  */
-export class StateMachine extends Resource implements IStateMachine, events.IEventRuleTarget {
+abstract class StateMachineBase extends Resource implements IStateMachine {
     /**
      * Import a state machine
      */
     public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
-        class Import extends Resource implements IStateMachine {
+        class Import extends StateMachineBase {
             public readonly stateMachineArn = stateMachineArn;
         }
 
         return new Import(scope, id);
     }
 
+    public abstract readonly stateMachineArn: string;
+
+    /**
+     * Grant the given identity permissions to start an execution of this state
+     * machine.
+     */
+    public grantStartExecution(identity: iam.IGrantable): iam.Grant {
+        return iam.Grant.addToPrincipal({
+            grantee: identity,
+            actions: ['states:StartExecution'],
+            resourceArns: [this.stateMachineArn]
+        });
+    }
+}
+
+/**
+ * Define a StepFunctions State Machine
+ */
+export class StateMachine extends StateMachineBase {
     /**
      * Execution role of this state machine
      */
@@ -68,33 +86,35 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      */
     public readonly stateMachineArn: string;
 
-    /**
-     * A role used by CloudWatch events to start the State Machine
-     */
-    private eventsRole?: iam.Role;
-
     constructor(scope: Construct, id: string, props: StateMachineProps) {
-        super(scope, id);
+        super(scope, id, {
+            physicalName: props.stateMachineName,
+        });
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${this.node.stack.region}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
-        graph.timeoutSeconds = props.timeoutSec;
+        graph.timeout = props.timeout;
 
         const resource = new CfnStateMachine(this, 'Resource', {
-            stateMachineName: props.stateMachineName,
+            stateMachineName: this.physicalName,
             roleArn: this.role.roleArn,
-            definitionString: this.node.stringifyJson(graph.toGraphJson()),
+            definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
         });
 
         for (const statement of graph.policyStatements) {
             this.addToRolePolicy(statement);
         }
 
-        this.stateMachineName = resource.stateMachineName;
-        this.stateMachineArn = resource.stateMachineArn;
+        this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
+        this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'stateMachine',
+          resourceName: this.physicalName,
+          sep: ':',
+        });
     }
 
     /**
@@ -102,27 +122,6 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      */
     public addToRolePolicy(statement: iam.PolicyStatement) {
         this.role.addToPolicy(statement);
-    }
-
-    /**
-     * Allows using state machines as event rule targets.
-     */
-    public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-        if (!this.eventsRole) {
-            this.eventsRole = new iam.Role(this, 'EventsRole', {
-                assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-            });
-
-            this.eventsRole.addToPolicy(new iam.PolicyStatement()
-                .addAction('states:StartExecution')
-                .addResource(this.stateMachineArn));
-        }
-
-        return {
-            id: this.node.id,
-            arn: this.stateMachineArn,
-            roleArn: this.eventsRole.roleArn,
-        };
     }
 
     /**

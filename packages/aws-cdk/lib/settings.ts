@@ -1,7 +1,7 @@
 import fs = require('fs-extra');
 import os = require('os');
 import fs_path = require('path');
-import yargs = require('yargs');
+import { Tag } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
 import util = require('./util');
 
@@ -11,7 +11,14 @@ export const PROJECT_CONFIG = 'cdk.json';
 export const PROJECT_CONTEXT = 'cdk.context.json';
 export const USER_DEFAULTS = '~/.cdk.json';
 
+/**
+ * If a context value is an object with this key set to a truthy value, it won't be saved to cdk.context.json
+ */
+export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
+
 const CONTEXT_KEY = 'context';
+
+export type Arguments = { readonly [name: string]: unknown };
 
 /**
  * All sources of settings combined
@@ -20,14 +27,19 @@ export class Configuration {
   public settings = new Settings();
   public context = new Context();
 
-  private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
+  public readonly defaultConfig = new Settings({
+    versionReporting: true,
+    pathMetadata: true,
+    output: 'cdk.out'
+  });
+
   private readonly commandLineArguments: Settings;
   private readonly commandLineContext: Settings;
   private projectConfig: Settings;
   private projectContext: Settings;
   private loaded = false;
 
-  constructor(commandLineArguments?: yargs.Arguments) {
+  constructor(commandLineArguments?: Arguments) {
     this.commandLineArguments = commandLineArguments
                               ? Settings.fromCommandLineArguments(commandLineArguments)
                               : new Settings();
@@ -55,6 +67,8 @@ export class Configuration {
       .merge(this.projectConfig)
       .merge(this.commandLineArguments)
       .makeReadOnly();
+
+    debug('merged settings:', this.settings.all);
 
     this.loaded = true;
 
@@ -177,15 +191,48 @@ export class Context {
  * A single bag of settings
  */
 export class Settings {
+
   /**
    * Parse Settings out of CLI arguments.
    * @param argv the received CLI arguments.
    * @returns a new Settings object.
    */
-  public static fromCommandLineArguments(argv: yargs.Arguments): Settings {
+  public static fromCommandLineArguments(argv: Arguments): Settings {
+    const context = this.parseStringContextListToObject(argv);
+    const tags = this.parseStringTagsListToObject(argv);
+
+    return new Settings({
+      app: argv.app,
+      browser: argv.browser,
+      context,
+      tags,
+      language: argv.language,
+      pathMetadata: argv.pathMetadata,
+      assetMetadata: argv.assetMetadata,
+      plugin: argv.plugin,
+      requireApproval: argv.requireApproval,
+      toolkitStackName: argv.toolkitStackName,
+      toolkitBucket: {
+        bucketName: argv.bootstrapBucketName,
+        kmsKeyId: argv.bootstrapKmsKeyId,
+      },
+      versionReporting: argv.versionReporting,
+      staging: argv.staging,
+      output: argv.output,
+    });
+  }
+
+  public static mergeAll(...settings: Settings[]): Settings {
+    let ret = new Settings();
+    for (const setting of settings) {
+      ret = ret.merge(setting);
+    }
+    return ret;
+  }
+
+  private static parseStringContextListToObject(argv: Arguments): any {
     const context: any = {};
 
-    // Turn list of KEY=VALUE strings into an object
     for (const assignment of ((argv as any).context || [])) {
       const parts = assignment.split('=', 2);
       if (parts.length === 2) {
@@ -198,28 +245,25 @@ export class Settings {
         warning('Context argument is not an assignment (key=value): %s', assignment);
       }
     }
-
-    return new Settings({
-      app: argv.app,
-      browser: argv.browser,
-      context,
-      language: argv.language,
-      pathMetadata: argv.pathMetadata,
-      assetMetadata: argv.assetMetadata,
-      plugin: argv.plugin,
-      requireApproval: argv.requireApproval,
-      toolkitStackName: argv.toolkitStackName,
-      versionReporting: argv.versionReporting,
-      staging: argv.staging
-    });
+    return context;
   }
 
-  public static mergeAll(...settings: Settings[]): Settings {
-    let ret = new Settings();
-    for (const setting of settings) {
-      ret = ret.merge(setting);
+  private static parseStringTagsListToObject(argv: Arguments): Tag[] {
+    const tags: Tag[] = [];
+
+    for (const assignment of ((argv as any).tags || [])) {
+      const parts = assignment.split('=', 2);
+      if (parts.length === 2) {
+        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+        tags.push({
+         Key: parts[0],
+         Value: parts[1]
+        });
+      } else {
+        warning('Tags argument is not an assignment (key=value): %s', assignment);
+      }
     }
-    return ret;
+    return tags;
   }
 
   constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
@@ -235,7 +279,7 @@ export class Settings {
       this.settings = await fs.readJson(expanded);
     }
 
-    // See https://github.com/awslabs/aws-cdk/issues/59
+    // See https://github.com/aws/aws-cdk/issues/59
     this.prohibitContextKey('default-account', fileName);
     this.prohibitContextKey('default-region', fileName);
     this.warnAboutContextKey('aws:', fileName);
@@ -245,8 +289,7 @@ export class Settings {
 
   public async save(fileName: string): Promise<this> {
     const expanded = expandHomeDir(fileName);
-    await fs.writeJson(expanded, this.settings, { spaces: 2 });
-
+    await fs.writeJson(expanded, stripTransientValues(this.settings), { spaces: 2 });
     return this;
   }
 
@@ -322,4 +365,26 @@ function expandHomeDir(x: string) {
     return fs_path.join(os.homedir(), x.substr(1));
   }
   return x;
+}
+
+/**
+ * Return all context value that are not transient context values
+ */
+function stripTransientValues(obj: {[key: string]: any}) {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (!isTransientValue(value)) {
+      ret[key] = value;
+    }
+  }
+  return ret;
+}
+
+/**
+ * Return whether the given value is a transient context value
+ *
+ * Values that are objects with a magic key set to a truthy value are considered transient.
+ */
+function isTransientValue(value: any) {
+  return typeof value === 'object' && value !== null && (value as any)[TRANSIENT_CONTEXT_KEY];
 }

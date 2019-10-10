@@ -1,12 +1,12 @@
 {
   "name": "cdk-integ-tools",
   "private": true,
-  "version": "0.31.0",
+  "version": "1.12.0",
   "description": "Package with integration test scripts for CDK packages",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "tools/cdk-integ-tools"
   },
   "bin": {
@@ -18,7 +18,9 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -27,22 +29,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/yargs": "^13.0.0",
-    "cdk-build-tools": "^0.31.0",
-    "pkglint": "^0.31.0"
+    "@types/fs-extra": "^8.0.0",
+    "@types/yargs": "^13.0.3",
+    "cdk-build-tools": "file:../cdk-build-tools",
+    "pkglint": "file:../pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^0.31.0",
-    "@aws-cdk/cx-api": "^0.31.0",
-    "aws-cdk": "^0.31.0",
-    "yargs": "^13.2.2"
+    "@aws-cdk/cloudformation-diff": "^1.12.0",
+    "@aws-cdk/cx-api": "^1.12.0",
+    "aws-cdk": "^1.12.0",
+    "fs-extra": "^8.1.0",
+    "yargs": "^14.2.0"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   }
 }

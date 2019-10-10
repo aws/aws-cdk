@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { parseBucketArn, parseBucketName } from '../lib/util';
 
@@ -14,11 +14,13 @@ export = {
     'produce arn from bucket name'(test: Test) {
       const stack = new cdk.Stack();
       const bucketName = 'hello';
-      test.deepEqual(stack.node.resolve(parseBucketArn(stack, { bucketName })), { 'Fn::Join':
-      [ '',
-        [ 'arn:',
-        { Ref: 'AWS::Partition' },
-        ':s3:::hello' ] ] });
+      test.deepEqual(stack.resolve(parseBucketArn(stack, { bucketName })), {
+        'Fn::Join':
+          ['',
+            ['arn:',
+              { Ref: 'AWS::Partition' },
+              ':s3:::hello']]
+      });
       test.done();
     },
 
@@ -34,28 +36,52 @@ export = {
     'explicit name'(test: Test) {
       const stack = new cdk.Stack();
       const bucketName = 'foo';
-      test.deepEqual(stack.node.resolve(parseBucketName(stack, { bucketName })), 'foo');
+      test.deepEqual(stack.resolve(parseBucketName(stack, { bucketName })), 'foo');
       test.done();
     },
 
     'extract bucket name from string arn'(test: Test) {
       const stack = new cdk.Stack();
       const bucketArn = 'arn:aws:s3:::my-bucket';
-      test.deepEqual(stack.node.resolve(parseBucketName(stack, { bucketArn })), 'my-bucket');
+      test.deepEqual(stack.resolve(parseBucketName(stack, { bucketArn })), 'my-bucket');
       test.done();
     },
 
-    'undefined if cannot extract name from a non-string arn'(test: Test) {
+    'can parse bucket name even if it contains a token'(test: Test) {
       const stack = new cdk.Stack();
-      const bucketArn = `arn:aws:s3:::${new cdk.Token({ Ref: 'my-bucket' })}`;
-      test.deepEqual(stack.node.resolve(parseBucketName(stack, { bucketArn })), undefined);
-      test.done();
-    },
+      const bucketArn = `arn:aws:s3:::${cdk.Token.asString({ Ref: 'my-bucket' })}`;
 
-    'fails if arn uses a non "s3" service'(test: Test) {
-      const stack = new cdk.Stack();
-      const bucketArn = 'arn:aws:xx:::my-bucket';
-      test.throws(() => parseBucketName(stack, { bucketArn }), /Invalid ARN/);
+      test.deepEqual(stack.resolve(parseBucketName(stack, { bucketArn })), {
+        "Fn::Select": [
+          0,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:s3:::",
+                            {
+                              Ref: "my-bucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      });
       test.done();
     },
 
@@ -65,12 +91,5 @@ export = {
       test.throws(() => parseBucketName(stack, { bucketArn }), /ARNs must have at least 6 components/);
       test.done();
     },
-
-    'fails if ARN has path'(test: Test) {
-      const stack = new cdk.Stack();
-      const bucketArn = 'arn:aws:s3:::my-bucket/path';
-      test.throws(() => parseBucketName(stack, { bucketArn }), /Bucket ARN must not contain a path/);
-      test.done();
-    }
   },
 };

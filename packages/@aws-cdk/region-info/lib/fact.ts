@@ -3,6 +3,14 @@
  */
 export class Fact {
   /**
+   * @returns the list of names of AWS regions for which there is at least one registered fact. This
+   *          may not be an exhaustive list of all available AWS regions.
+   */
+  public static get regions(): string[] {
+    return Object.keys(this.database);
+  }
+
+  /**
    * Retrieves a fact from this Fact database.
    *
    * @param region the name of the region (e.g: `us-east-1`)
@@ -78,23 +86,28 @@ export class FactName {
   /**
    * The name of the partition for a region (e.g: 'aws', 'aws-cn', ...)
    */
-  public static readonly partition = 'partition';
+  public static readonly PARTITION = 'partition';
 
   /**
    * The domain suffix for a region (e.g: 'amazonaws.com`)
    */
-  public static readonly domainSuffix = 'domainSuffix';
+  public static readonly DOMAIN_SUFFIX = 'domainSuffix';
 
   /**
    * Whether the AWS::CDK::Metadata CloudFormation Resource is available in-region or not. The value is a boolean
    * modelled as `YES` or `NO`.
    */
-  public static readonly cdkMetadataResourceAvailable = 'cdk:metadata-resource:available';
+  public static readonly CDK_METADATA_RESOURCE_AVAILABLE = 'cdk:metadata-resource:available';
 
   /**
    * The endpoint used for hosting S3 static websites
    */
-  public static readonly s3StaticWebsiteEndpoint = 's3-static-website:endpoint';
+  public static readonly S3_STATIC_WEBSITE_ENDPOINT = 's3-static-website:endpoint';
+
+  /**
+   * The endpoint used for aliasing S3 static websites in Route 53
+   */
+  public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID = 's3-static-website:route-53-hosted-zone-id';
 
   /**
    * The name of the regional service principal for a given service.

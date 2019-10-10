@@ -2,8 +2,8 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
 
@@ -105,7 +105,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -204,7 +205,8 @@ export = {
             "kms:Get*",
             "kms:Delete*",
             "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion"
+            "kms:CancelKeyDeletion",
+            "kms:GenerateDataKey"
           ],
           Effect: "Allow",
           Principal: {
@@ -303,8 +305,8 @@ export = {
     // THEN
     test.equals(secret.secretArn, secretArn);
     test.same(secret.encryptionKey, encryptionKey);
-    test.deepEqual(stack.node.resolve(secret.secretValue), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:::}}');
-    test.deepEqual(stack.node.resolve(secret.secretJsonValue('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
+    test.deepEqual(stack.resolve(secret.secretValue), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:::}}');
+    test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
     test.done();
   },
 
@@ -315,7 +317,7 @@ export = {
     const target: secretsmanager.ISecretAttachmentTarget = {
       asSecretAttachmentTarget: () => ({
         targetId: 'instance',
-        targetType: secretsmanager.AttachmentTargetType.Instance
+        targetType: secretsmanager.AttachmentTargetType.INSTANCE
       })
     };
 
@@ -341,13 +343,13 @@ export = {
     const target: secretsmanager.ISecretAttachmentTarget = {
       asSecretAttachmentTarget: () => ({
         targetId: 'cluster',
-        targetType: secretsmanager.AttachmentTargetType.Cluster
+        targetType: secretsmanager.AttachmentTargetType.CLUSTER
       })
     };
     const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NodeJS810,
-      code: lambda.Code.inline('export.handler = event => event;'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+      code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler'
     });
 
@@ -394,16 +396,16 @@ export = {
     test.done();
   },
 
-  'equivalence of SecretValue and Secret.import'(test: Test) {
+  'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
+    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretValueFromJson('password');
     const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
 
     // THEN
-    test.deepEqual(stack.node.resolve(imported), stack.node.resolve(value));
+    test.deepEqual(stack.resolve(imported), stack.resolve(value));
     test.done();
   }
 };

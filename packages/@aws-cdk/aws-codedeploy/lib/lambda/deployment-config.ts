@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { arnForDeploymentConfig } from '../utils';
 
 /**
@@ -19,7 +19,6 @@ export interface ILambdaDeploymentConfig {
  * Properties of a reference to a CodeDeploy Lambda Deployment Configuration.
  *
  * @see LambdaDeploymentConfig#import
- * @see LambdaDeploymentConfig#export
  */
 export interface LambdaDeploymentConfigImportProps {
   /**
@@ -39,15 +38,15 @@ export interface LambdaDeploymentConfigImportProps {
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class LambdaDeploymentConfig {
-  public static readonly AllAtOnce                     = deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
-  public static readonly Canary10Percent30Minutes      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent30Minutes');
-  public static readonly Canary10Percent5Minutes       = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent5Minutes');
-  public static readonly Canary10Percent10Minutes      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent10Minutes');
-  public static readonly Canary10Percent15Minutes      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent15Minutes');
-  public static readonly Linear10PercentEvery10Minutes = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery10Minutes');
-  public static readonly Linear10PercentEvery1Minute   = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery1Minute');
-  public static readonly Linear10PercentEvery2Minutes  = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery2Minutes');
-  public static readonly Linear10PercentEvery3Minutes  = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery3Minutes');
+  public static readonly ALL_AT_ONCE                     = deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
+  public static readonly CANARY_10PERCENT_30MINUTES      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent30Minutes');
+  public static readonly CANARY_10PERCENT_5MINUTES       = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent5Minutes');
+  public static readonly CANARY_10PERCENT_10MINUTES      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent10Minutes');
+  public static readonly CANARY_10PERCENT_15MINUTES      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent15Minutes');
+  public static readonly LINEAR_10PERCENT_EVERY_10MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery10Minutes');
+  public static readonly LINEAR_10PERCENT_EVERY_1MINUTE   = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery1Minute');
+  public static readonly LINEAR_10PERCENT_EVERY_2MINUTES  = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery2Minutes');
+  public static readonly LINEAR_10PERCENT_EVERY_3MINUTES  = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery3Minutes');
 
   /**
    * Import a custom Deployment Configuration for a Lambda Deployment Group defined outside the CDK.

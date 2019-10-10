@@ -1,4 +1,19 @@
 ## AWS Step Functions Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+>
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
 serverless workflows using objects. Use this in conjunction with the
@@ -58,7 +73,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
     definition,
-    timeoutSec: 300
+    timeout: Duration.minutes(5)
 });
 ```
 
@@ -107,36 +122,45 @@ done is determine by a class that implements `IStepFunctionsTask`, a collection
 of which can be found in the `@aws-cdk/aws-stepfunctions-tasks` package. A
 couple of the tasks available are:
 
-* `tasks.InvokeFunction` -- call a Lambda Function
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
+* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
+* `tasks.SagemakerTrainTask` -- run a SageMaker training job
+* `tasks.SagemakerTransformTask` -- run a SageMaker transform job
+* `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
+
+Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
+pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
+(`integrationPattern`) are supposed to be given as parameter when customers want
+to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
 
 #### Task parameters from the state json
 
 Many tasks take parameters. The values for those can either be supplied
 directly in the workflow definition (by specifying their values), or at
-runtime by passing a value obtained from the static functions on `JsonPath`,
-such as `JsonPath.stringFromPath()`.
+runtime by passing a value obtained from the static functions on `Data`,
+such as `Data.stringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
-#### Lambda example
+#### Lambda example - InvokeFunction
 
 ```ts
-const task = new sfn.Task(this, 'Invoke The Lambda', {
+const task = new sfn.Task(this, 'Invoke1', {
     task: new tasks.InvokeFunction(myLambda),
     inputPath: '$.input',
-    timeoutSeconds: 300,
+    timeout: Duration.minutes(5),
 });
 
 // Add a retry policy
 task.addRetry({
-    intervalSeconds: 5,
+    interval: Duration.seconds(5),
     maxAttempts: 10
 });
 
@@ -147,6 +171,19 @@ task.addCatch(errorHandlerState);
 task.next(nextState);
 ```
 
+#### Lambda example - RunLambdaTask
+
+```ts
+  const task = new sfn.Task(stack, 'Invoke2', {
+    task: new tasks.RunLambdaTask(myLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      payload: {
+        token: sfn.Context.taskToken
+      }
+    })
+  });
+```
+
 #### SNS example
 
 ```ts
@@ -155,9 +192,23 @@ import sns = require('@aws-cdk/aws-sns');
 // ...
 
 const topic = new sns.Topic(this, 'Topic');
-const task = new sfn.Task(this, 'Publish', {
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Publish1', {
     task: new tasks.PublishToTopic(topic, {
-        message: JsonPath.stringFromPath('$.state.message'),
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+        message: TaskInput.fromDataAt('$.state.message'),
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Publish2', {
+    task: new tasks.PublishToTopic(topic, {
+        message: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        })
     })
 });
 ```
@@ -170,11 +221,26 @@ import sqs = require('@aws-cdk/aws-sqs');
 // ...
 
 const queue = new sns.Queue(this, 'Queue');
-const task = new sfn.Task(this, 'Send', {
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Send1', {
     task: new tasks.SendToQueue(queue, {
-        messageBody: JsonPath.stringFromPath('$.message'),
+        messageBody: TaskInput.fromDataAt('$.message'),
         // Only for FIFO queues
-        messageGroupId: JsonPath.stringFromPath('$.messageGroupId'),
+        messageGroupId: '1234'
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Send2', {
+    task: new tasks.SendToQueue(queue, {
+        messageBody: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        }),
+        // Only for FIFO queues
+        messageGroupId: '1234'
     })
 });
 ```
@@ -195,7 +261,7 @@ const fargateTask = new ecs.RunEcsFargateTask({
       environment: [
         {
           name: 'CONTAINER_INPUT',
-          value: JsonPath.stringFromPath('$.valueFromStateData')
+          value: Data.stringAt('$.valueFromStateData')
         }
       ]
     }
@@ -206,6 +272,60 @@ fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
 
 const task = new sfn.Task(this, 'CallFargate', {
     task: fargateTask
+});
+```
+
+#### SageMaker Transform example
+
+```ts
+const transformJob = new tasks.SagemakerTransformTask(
+    transformJobName: "MyTransformJob",
+    modelName: "MyModelName",
+    role,
+    transformInput: {
+        transformDataSource: {
+            s3DataSource: {
+                s3Uri: 's3://inputbucket/train',
+                s3DataType: S3DataType.S3Prefix,
+            }
+        }
+    },
+    transformOutput: {
+        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
+    },
+    transformResources: {
+        instanceCount: 1,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+});
+
+const task = new sfn.Task(this, 'Batch Inference', {
+    task: transformJob
+});
+```
+
+#### Step Functions example
+
+```ts
+// Define a state machine with one Pass state
+const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+});
+
+// Include the state machine in a Task state with callback pattern
+const task = new sfn.Task(stack, 'ChildTask', {
+  task: new tasks.ExecuteStateMachine(child, {
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    input: {
+      token: sfn.Context.taskToken,
+      foo: 'bar'
+    },
+    name: 'MyExecutionName'
+  })
+});
+
+// Define a second state machine with the Task state above
+new sfn.StateMachine(stack, 'ParentStateMachine', {
+  definition: task
 });
 ```
 

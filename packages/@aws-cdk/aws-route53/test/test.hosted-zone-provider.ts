@@ -1,6 +1,7 @@
-import cdk = require('@aws-cdk/cdk');
+import { SynthUtils } from '@aws-cdk/assert';
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
-import { HostedZone, HostedZoneAttributes, HostedZoneProvider } from '../lib';
+import { HostedZone, HostedZoneAttributes } from '../lib';
 
 export = {
   'Hosted Zone Provider': {
@@ -8,8 +9,11 @@ export = {
       // GIVEN
       const stack = new cdk.Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
       const filter = {domainName: 'test.com'};
-      new HostedZoneProvider(stack, filter).findHostedZone();
-      const key = Object.keys(stack.missingContext)[0];
+
+      HostedZone.fromLookup(stack, 'Ref', filter);
+
+      const missing = SynthUtils.synthesize(stack).assembly.manifest.missing!;
+      test.ok(missing && missing.length === 1);
 
       const fakeZone = {
         Id: "/hostedzone/11111111111111",
@@ -22,22 +26,20 @@ export = {
         ResourceRecordSetCount: 3
       };
 
-      stack.node.setContext(key, fakeZone);
+      const stack2 = new cdk.Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+      stack2.node.setContext(missing[0].key, fakeZone);
 
       const cdkZoneProps: HostedZoneAttributes = {
         hostedZoneId: fakeZone.Id,
         zoneName: 'example.com',
       };
 
-      const cdkZone = HostedZone.fromHostedZoneAttributes(stack, 'MyZone', cdkZoneProps);
+      const cdkZone = HostedZone.fromHostedZoneAttributes(stack2, 'MyZone', cdkZoneProps);
 
       // WHEN
-      const provider = new HostedZoneProvider(stack, filter);
-      const zoneProps = stack.node.resolve(provider.findHostedZone());
-      const zoneRef = provider.findAndImport(stack, 'MyZoneProvider');
+      const zoneRef = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
 
       // THEN
-      test.deepEqual(zoneProps, cdkZoneProps);
       test.deepEqual(zoneRef.hostedZoneId, cdkZone.hostedZoneId);
       test.done();
     },

@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -26,6 +26,8 @@ export interface CertificateProps {
    * Alternative domain names on your certificate.
    *
    * Use this to register alternative domain names that represent the same site.
+   *
+   * @default - No additional FQDNs will be included as alternative domain names.
    */
   readonly subjectAlternativeNames?: string[];
 
@@ -34,9 +36,16 @@ export interface CertificateProps {
    *
    * Has to be a superdomain of the requested domain.
    *
-   * @default Apex domain is used for every domain that's not overridden.
+   * @default - Apex domain is used for every domain that's not overridden.
    */
   readonly validationDomains?: {[domainName: string]: string};
+
+  /**
+   * Validation method used to assert domain ownership
+   *
+   * @default ValidationMethod.EMAIL
+   */
+  readonly validationMethod?: ValidationMethod;
 }
 
 /**
@@ -83,9 +92,10 @@ export class Certificate extends Resource implements ICertificate {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: allDomainNames.map(domainValidationOption),
+      validationMethod: props.validationMethod,
     });
 
-    this.certificateArn = cert.certificateArn;
+    this.certificateArn = cert.ref;
 
     /**
      * Return the domain validation options for the given domain
@@ -93,11 +103,34 @@ export class Certificate extends Resource implements ICertificate {
      * Closes over props.
      */
     function domainValidationOption(domainName: string): CfnCertificate.DomainValidationOptionProperty {
-      const overrideDomain = props.validationDomains && props.validationDomains[domainName];
-      return {
-        domainName,
-        validationDomain: overrideDomain || apexDomain(domainName)
-      };
+      let validationDomain = props.validationDomains && props.validationDomains[domainName];
+      if (validationDomain === undefined) {
+        if (Token.isUnresolved(domainName)) {
+          throw new Error(`When using Tokens for domain names, 'validationDomains' needs to be supplied`);
+        }
+        validationDomain = apexDomain(domainName);
+      }
+
+      return { domainName, validationDomain };
     }
   }
+}
+
+/**
+ * Method used to assert ownership of the domain
+ */
+export enum ValidationMethod {
+  /**
+   * Send email to a number of email addresses associated with the domain
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html
+   */
+  EMAIL = 'EMAIL',
+
+  /**
+   * Validate ownership by adding appropriate DNS records
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
+   */
+  DNS = 'DNS',
 }

@@ -38,30 +38,35 @@
         <!-- AWS Cloud Development Kit -->
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>cdk</artifactId>
-            <version>%cdk-version%</version>
+            <artifactId>core</artifactId>
+            <version>%cdk-version%.DEVPREVIEW</version>
         </dependency>
 
         <!-- Respective AWS Construct Libraries -->
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>iam</artifactId>
-            <version>%cdk-version%</version>
+            <version>%cdk-version%.DEVPREVIEW</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>s3</artifactId>
-            <version>%cdk-version%</version>
+            <version>%cdk-version%.DEVPREVIEW</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>sns</artifactId>
-            <version>%cdk-version%</version>
+            <version>%cdk-version%.DEVPREVIEW</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>sns-subscriptions</artifactId>
+            <version>%cdk-version%.DEVPREVIEW</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>sqs</artifactId>
-            <version>%cdk-version%</version>
+            <version>%cdk-version%.DEVPREVIEW</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->

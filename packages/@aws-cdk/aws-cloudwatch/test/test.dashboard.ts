@@ -1,5 +1,5 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
 
@@ -10,17 +10,17 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 10,
       height: 2,
       markdown: "first"
     }));
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 1,
       height: 4,
       markdown: "second"
     }));
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 4,
       height: 1,
       markdown: "third"
@@ -42,7 +42,7 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new TextWidget({
         width: 10,
         height: 2,
@@ -76,7 +76,7 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new GraphWidget({ width: 1, height: 1 }) // GraphWidget has internal reference to current region
     );
 
@@ -85,7 +85,7 @@ export = {
       DashboardBody: { "Fn::Join": [ "", [
         "{\"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
         { Ref: "AWS::Region" },
-        "\",\"metrics\":[],\"annotations\":{\"horizontal\":[]},\"yAxis\":{\"left\":{\"min\":0},\"right\":{\"min\":0}}}}]}"
+        "\",\"yAxis\":{}}}]}"
       ]]}
     }));
 
@@ -99,11 +99,11 @@ export = {
     {
       start: '-9H',
       end: '2018-12-17T06:00:00.000Z',
-      periodOverride: PeriodOverride.Inherit
+      periodOverride: PeriodOverride.INHERIT
     });
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new GraphWidget({ width: 1, height: 1 }) // GraphWidget has internal reference to current region
     );
 
@@ -113,7 +113,7 @@ export = {
         "{\"start\":\"-9H\",\"end\":\"2018-12-17T06:00:00.000Z\",\"periodOverride\":\"inherit\",\
 \"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
         { Ref: "AWS::Region" },
-        "\",\"metrics\":[],\"annotations\":{\"horizontal\":[]},\"yAxis\":{\"left\":{\"min\":0},\"right\":{\"min\":0}}}}]}"
+        "\",\"yAxis\":{}}}]}"
       ]]}
     }));
 
@@ -127,7 +127,7 @@ export = {
 
     // WHEN
     new Dashboard(stack, 'MyDashboard', {
-      dashboardName: 'MyCustomDashboardName'
+      dashboardName: 'MyCustomDashboardName',
     });
 
     // THEN
@@ -148,6 +148,24 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {}));
+
+    test.done();
+  },
+
+  'throws if DashboardName is not valid'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const toThrow = () => {
+      new Dashboard(stack, 'MyDashboard', {
+        dashboardName: 'My Invalid Dashboard Name',
+      });
+    };
+
+    // THEN
+    test.throws(() => toThrow(), /field dashboardName contains invalid characters/);
 
     test.done();
   }

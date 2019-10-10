@@ -2,20 +2,21 @@ from aws_cdk import (
     aws_iam as iam,
     aws_sqs as sqs,
     aws_sns as sns,
-    cdk
+    aws_sns_subscriptions as subs,
+    core
 )
 
-from hello_construct import HelloConstruct
+from .hello_construct import HelloConstruct
 
 
-class MyStack(cdk.Stack):
+class MyStack(core.Stack):
 
-    def __init__(self, app: cdk.App, id: str, **kwargs) -> None:
-        super().__init__(app, id, **kwargs)
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
 
         queue = sqs.Queue(
             self, "MyFirstQueue",
-            visibility_timeout_sec=300,
+            visibility_timeout=core.Duration.seconds(300),
         )
 
         topic = sns.Topic(
@@ -23,7 +24,7 @@ class MyStack(cdk.Stack):
             display_name="My First Topic"
         )
 
-        topic.subscribe_queue(queue)
+        topic.add_subscription(subs.SqsSubscription(queue))
 
         hello = HelloConstruct(self, "MyHelloConstruct", num_buckets=4)
         user = iam.User(self, "MyUser")

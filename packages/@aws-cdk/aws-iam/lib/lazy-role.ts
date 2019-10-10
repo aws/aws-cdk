@@ -1,8 +1,9 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Grant } from './grant';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
-import { IPrincipal } from './principals';
+import { PolicyStatement } from './policy-statement';
+import { IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
 // tslint:disable-next-line:no-empty-interface
@@ -18,14 +19,17 @@ export interface LazyRoleProps extends RoleProps {
  * (such as when AutoScaling is configured). The role can be configured in one
  * place, but if it never gets used it doesn't get instantiated and will
  * not be synthesized or deployed.
+ *
+ * @resource AWS::IAM::Role
  */
-export class LazyRole extends cdk.Construct implements IRole {
+export class LazyRole extends cdk.Resource implements IRole {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
+
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();
   private readonly policies = new Array<Policy>();
-  private readonly managedPolicies = new Array<string>();
+  private readonly managedPolicies = new Array<IManagedPolicy>();
 
   constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
     super(scope, id);
@@ -59,13 +63,13 @@ export class LazyRole extends cdk.Construct implements IRole {
 
   /**
    * Attaches a managed policy to this role.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The managed policy to attach.
    */
-  public attachManagedPolicy(arn: string): void {
+  public addManagedPolicy(policy: IManagedPolicy): void {
     if (this.role) {
-      this.role.attachManagedPolicy(arn);
+      this.role.addManagedPolicy(policy);
     } else {
-      this.managedPolicies.push(arn);
+      this.managedPolicies.push(policy);
     }
   }
 
@@ -76,6 +80,7 @@ export class LazyRole extends cdk.Construct implements IRole {
     return this.instantiate().roleArn;
   }
 
+  /** @attribute RoleId */
   public get roleId(): string {
     return this.instantiate().roleId;
   }
@@ -107,7 +112,7 @@ export class LazyRole extends cdk.Construct implements IRole {
       const role = new Role(this, 'Default', this.props);
       this.statements.forEach(role.addToPolicy.bind(role));
       this.policies.forEach(role.attachInlinePolicy.bind(role));
-      this.managedPolicies.forEach(role.attachManagedPolicy.bind(role));
+      this.managedPolicies.forEach(role.addManagedPolicy.bind(role));
       this.role = role;
     }
     return this.role;

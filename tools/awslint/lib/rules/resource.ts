@@ -1,12 +1,11 @@
+import camelcase = require('camelcase');
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
 import { CfnResourceReflection } from './cfn-resource';
-import { CORE_MODULE } from './common';
 import { ConstructReflection } from './construct';
+import { CoreTypes } from './core-types';
 import { getDocTag } from './util';
 
-const RESOURCE_BASE_CLASS_FQN = `${CORE_MODULE}.Resource`;
-const RESOURCE_BASE_INTERFACE_FQN = `${CORE_MODULE}.IResource`;
 const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
 export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
@@ -14,7 +13,7 @@ export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 export interface Attribute {
   site: AttributeSite;
   property: reflect.Property;
-  names: string[]; // bucketArn
+  cfnAttributeNames: string[]; // bucketArn
 }
 
 export enum AttributeSite {
@@ -25,24 +24,16 @@ export enum AttributeSite {
 export class ResourceReflection {
 
   /**
-   * @returns true if `classType` represents an AWS resource (i.e. extends `cdk.Resource`).
-   */
-  public static isResourceClass(classType: reflect.ClassType) {
-    const baseResource = classType.system.findClass(RESOURCE_BASE_CLASS_FQN);
-    return classType.extends(baseResource) || getDocTag(classType, 'resource');
-  }
-
-  /**
    * @returns all resource constructs (everything that extends `cdk.Resource`)
    */
   public static findAll(assembly: reflect.Assembly) {
-    if (!assembly.system.assemblies.find(a => a.name === CORE_MODULE)) {
+    if (CoreTypes.hasCoreModule(assembly)) {
       return []; // not part of the dep stack
     }
 
     return ConstructReflection
       .findAllConstructs(assembly)
-      .filter(c => ResourceReflection.isResourceClass(c.classType))
+      .filter(c => CoreTypes.isResourceClass(c.classType))
       .map(c => new ResourceReflection(c));
   }
 
@@ -53,6 +44,8 @@ export class ResourceReflection {
   public readonly sys: reflect.TypeSystem;
   public readonly cfn: CfnResourceReflection;
   public readonly basename: string; // i.e. Bucket
+  public readonly core: CoreTypes;
+  public readonly physicalNameProp?: reflect.Property;
 
   constructor(public readonly construct: ConstructReflection) {
     this.assembly = construct.classType.assembly;
@@ -65,10 +58,24 @@ export class ResourceReflection {
         `If not, use the "@resource" doc tag to indicate the full resource name (e.g. "@resource AWS::Route53::HostedZone")`);
     }
 
+    this.core = new CoreTypes(this.sys);
     this.cfn = cfn;
     this.basename = construct.classType.name;
     this.fqn = construct.fqn;
     this.attributes = this.findAttributeProperties();
+    this.physicalNameProp = this.findPhysicalNameProp();
+  }
+
+  private findPhysicalNameProp() {
+    if (!this.construct.propsType) {
+      return undefined;
+    }
+
+    const resourceName = camelcase(this.cfn.basename);
+
+    // if resource name ends with "Name" (e.g. DomainName, then just use it as-is, otherwise append "Name")
+    const physicalNameProp = resourceName.endsWith('Name') ? resourceName : `${resourceName}Name`;
+    return this.construct.propsType.allProperties.find(x => x.name === physicalNameProp);
   }
 
   /**
@@ -82,17 +89,40 @@ export class ResourceReflection {
         continue; // skip any protected properties
       }
 
+      const basename = camelcase(this.cfn.basename);
+
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
       const tag = getDocTag(p, 'attribute');
-      if (!p.name.startsWith(this.cfn.attributePrefix) && !tag) {
+      if (!p.name.startsWith(basename) && !tag) {
         continue;
       }
 
-      // if there's an `@attribute` doc tag with a value other than "true"
-      // it should be used as the attribute name instead of the property name
-      // multiple attribute names can be listed as a comma-delimited list
-      const propertyNames = (tag && tag !== 'true') ? tag.split(',') : [ p.name ];
+      let cfnAttributeNames;
+      if (tag && tag !== 'true') {
+        // if there's an `@attribute` doc tag with a value other than "true"
+        // it should be used as the CFN attribute name instead of the property name
+        // multiple attribute names can be listed as a comma-delimited list
+        cfnAttributeNames = tag.split(',');
+      } else {
+        // okay, we don't have an explicit CFN attribute name, so we'll guess it
+        // from the name of the property.
+
+        const name = camelcase(p.name, { pascalCase: true });
+        if (this.cfn.attributeNames.includes(name)) {
+          // special case: there is a cloudformation resource type in the attribute name
+          // for example 'RoleId'.
+          cfnAttributeNames = [ name ];
+        } else if (p.name.startsWith(basename)) {
+          // begins with the resource name, just trim it
+          cfnAttributeNames = [ name.substring(this.cfn.basename.length) ];
+        } else {
+          // we couldn't determine CFN attribute name, so we don't account for this
+          // as an attribute. this could be, for example, when a construct implements
+          // an interface that represents another resource (e.g. `lambda.Alias` implements `IFunction`).
+          continue;
+        }
+      }
 
       // check if this attribute is defined on an interface or on a class
       const property = findDeclarationSite(p);
@@ -100,7 +130,7 @@ export class ResourceReflection {
 
       result.push({
         site,
-        names: propertyNames,
+        cfnAttributeNames,
         property
       });
     }
@@ -128,7 +158,7 @@ resourceLinter.add({
   code: 'resource-class-extends-resource',
   message: `resource classes must extend "cdk.Resource" directly or indirectly`,
   eval: e => {
-    const resourceBase = e.ctx.sys.findClass(RESOURCE_BASE_CLASS_FQN);
+    const resourceBase = e.ctx.sys.findClass(e.ctx.core.resourceClass.fqn);
     e.assert(e.ctx.construct.classType.extends(resourceBase), e.ctx.construct.fqn);
   }
 });
@@ -149,18 +179,26 @@ resourceLinter.add({
     const resourceInterface = e.ctx.construct.interfaceType;
     if (!resourceInterface) { return; }
 
-    const interfaceBase = e.ctx.sys.findInterface(RESOURCE_BASE_INTERFACE_FQN);
+    const resourceInterfaceFqn = e.ctx.core.resourceInterface.fqn;
+    const interfaceBase = e.ctx.sys.findInterface(resourceInterfaceFqn);
     e.assert(resourceInterface.extends(interfaceBase), resourceInterface.fqn);
   }
 });
 
 resourceLinter.add({
   code: 'resource-attribute',
-  message: 'resources must represent all cloudformation attributes as attribute properties. missing property: ',
+  message:
+    'resources must represent all cloudformation attributes as attribute properties. ' +
+    '"@attribute ATTR[,ATTR]" can be used to tag non-standard attribute names. ' +
+    'missing property:',
   eval: e => {
     for (const name of e.ctx.cfn.attributeNames) {
-      const found = e.ctx.attributes.find(a => a.names.includes(name));
-      e.assert(found, `${e.ctx.fqn}.${name}`, name);
+      const expected = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename))
+        ? camelcase(name)
+        : camelcase(e.ctx.cfn.basename + name);
+
+      const found = e.ctx.attributes.find(a => a.cfnAttributeNames.includes(name));
+      e.assert(found, `${e.ctx.fqn}.${expected}`, expected);
     }
   }
 });
@@ -177,6 +215,26 @@ resourceLinter.add({
         returns: grantResultType
       });
     }
+  }
+});
+
+resourceLinter.add({
+  code: 'props-physical-name',
+  message: "Every Resource must have a single physical name construction property, " +
+    "with a name that is an ending substring of <cfnResource>Name",
+  eval: e => {
+    if (!e.ctx.construct.propsType) { return; }
+    e.assert(e.ctx.physicalNameProp, e.ctx.construct.propsFqn);
+  }
+});
+
+resourceLinter.add({
+  code: 'props-physical-name-type',
+  message: 'The type of the physical name prop should always be a "string"',
+  eval: e => {
+    if (!e.ctx.physicalNameProp) { return; }
+    const prop = e.ctx.physicalNameProp;
+    e.assertTypesEqual(e.ctx.sys, prop.type, 'string', `${e.ctx.construct.propsFqn}.${prop.name}`);
   }
 });
 

@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Bucket, StorageClass } from '../lib';
 
@@ -11,7 +11,7 @@ export = {
     // WHEN
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
-        expirationInDays: 30
+        expiration: Duration.days(30)
       }]
     });
 
@@ -35,7 +35,7 @@ export = {
     // WHEN
     const bucket = new Bucket(stack, 'Bucket');
     bucket.addLifecycleRule({
-      expirationInDays: 30
+      expiration: Duration.days(30)
     });
 
     // THEN
@@ -83,8 +83,8 @@ export = {
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
         transitions: [{
-          storageClass: StorageClass.Glacier,
-          transitionInDays: 30
+          storageClass: StorageClass.GLACIER,
+          transitionAfter: Duration.days(30)
         }]
       }]
     });
@@ -113,7 +113,7 @@ export = {
     test.throws(() => {
       new Bucket(stack, 'Bucket1', {
         lifecycleRules: [{
-          noncurrentVersionExpirationInDays: 10
+          noncurrentVersionExpiration: Duration.days(10)
         }]
       });
     });
@@ -122,7 +122,7 @@ export = {
     new Bucket(stack, 'Bucket2', {
       versioned: true,
       lifecycleRules: [{
-        noncurrentVersionExpirationInDays: 10
+        noncurrentVersionExpiration: Duration.days(10)
       }]
     });
 

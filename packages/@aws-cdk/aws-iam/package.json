@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iam",
-  "version": "0.31.0",
+  "version": "1.12.0",
   "description": "CDK routines for easily assigning correct and minimal IAM permissions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,17 @@
         "package": "software.amazon.awscdk.services.iam",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iam"
+          "artifactId": "iam",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.IAM",
         "packageId": "Amazon.CDK.AWS.IAM",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-iam",
@@ -28,7 +31,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git",
+    "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/@aws-cdk/aws-iam"
   },
   "scripts": {
@@ -40,7 +43,9 @@
     "integ": "cdk-integ",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::IAM"
@@ -60,22 +65,42 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.31.0",
-    "cdk-build-tools": "^0.31.0",
-    "cdk-integ-tools": "^0.31.0",
-    "cfn2ts": "^0.31.0",
-    "pkglint": "^0.31.0"
+    "@aws-cdk/assert": "^1.12.0",
+    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cfn2ts": "file:../../../tools/cfn2ts",
+    "jest": "^24.9.0",
+    "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.31.0",
-    "@aws-cdk/region-info": "^0.31.0"
+    "@aws-cdk/core": "^1.12.0",
+    "@aws-cdk/region-info": "^1.12.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.31.0",
-    "@aws-cdk/region-info": "^0.31.0"
+    "@aws-cdk/core": "^1.12.0",
+    "@aws-cdk/region-info": "^1.12.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 70
+      }
+    }
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 8.10.0"
-  }
+    "node": ">= 10.3.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy"
+    ]
+  },
+  "stability": "stable"
 }

@@ -72,7 +72,7 @@ export class StackActivityMonitor {
 
   constructor(private readonly cfn: aws.CloudFormation,
               private readonly stackName: string,
-              private readonly stack: cxapi.SynthesizedStack,
+              private readonly stack: cxapi.CloudFormationStackArtifact,
               private readonly resourcesTotal?: number) {
 
     if (this.resourcesTotal != null) {
@@ -175,7 +175,7 @@ export class StackActivityMonitor {
 
     let stackTrace = '';
     if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
-      stackTrace = `\n\t${md.entry.trace.join('\n\t\\_ ')}`;
+      stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
       reasonColor = colors.red;
     }
 
@@ -237,12 +237,15 @@ export class StackActivityMonitor {
   }
 
   private findMetadataFor(logicalId: string | undefined): { entry: cxapi.MetadataEntry, path: string } | undefined {
-    const metadata = this.stack.metadata;
+    const metadata = this.stack.manifest.metadata;
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
-      const entry = metadata[path].filter(e => e.type === 'aws:cdk:logicalId')
-                      .find(e => e.data === logicalId);
-      if (entry) { return { entry, path }; }
+      const entry = metadata[path]
+        .filter(e => e.type === cxapi.LOGICAL_ID_METADATA_KEY)
+        .find(e => e.data === logicalId);
+      if (entry) {
+        return { entry, path };
+      }
     }
     return undefined;
   }

@@ -54,7 +54,7 @@ function calculcateColumnWidths(rows: string[][], terminalWidth: number): number
   terminalWidth = Math.max(terminalWidth, 40);
 
   // use 'string-width' to not count ANSI chars as actual character width
-  const columns = rows[0].map((_, i) => Math.max(...rows.map(row => stringWidth(row[i]))));
+  const columns = rows[0].map((_, i) => Math.max(...rows.map(row => stringWidth(String(row[i])))));
 
   // If we have no terminal width, do nothing
   const contentWidth = terminalWidth - 2 - columns.length * 3;

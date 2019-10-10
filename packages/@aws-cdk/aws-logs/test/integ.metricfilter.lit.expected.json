@@ -2,6 +2,8 @@
   "Resources": {
     "LogGroupF5B46931": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Properties": {
         "RetentionInDays": 731
       }

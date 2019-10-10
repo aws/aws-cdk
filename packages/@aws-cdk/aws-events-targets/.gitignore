@@ -14,3 +14,6 @@ coverage
 .nycrc
 .LAST_PACKAGE
 *.snk
+.cdk.staging
+
+lib/sdk-api-metadata.json

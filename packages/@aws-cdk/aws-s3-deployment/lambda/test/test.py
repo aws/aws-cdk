@@ -6,25 +6,29 @@ import json
 import sys
 import traceback
 import logging
+import botocore
 from botocore.vendored import requests
+from botocore.exceptions import ClientError
 from unittest.mock import MagicMock
+from unittest.mock import patch
+
 
 class TestHandler(unittest.TestCase):
     def setUp(self):
         logger = logging.getLogger()
-
+        
         # clean up old aws.out file (from previous runs)
         try: os.remove("aws.out")
         except OSError: pass
 
     def test_invalid_request(self):
         resp = invoke_handler("Create", {}, expected_status="FAILED")
-        self.assertEqual(resp["Reason"], "missing request resource property 'SourceBucketName'. props: {}")
+        self.assertEqual(resp["Reason"], "missing request resource property 'SourceBucketNames'. props: {}")
 
     def test_create_update(self):
         invoke_handler("Create", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>"
         })
 
@@ -33,10 +37,25 @@ class TestHandler(unittest.TestCase):
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
         )
 
+    def test_create_update_multiple_sources(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket1>", "<source-bucket2>"],
+            "SourceObjectKeys": ["<source-object-key1>", "<source-object-key2>"],
+            "DestinationBucketName": "<dest-bucket-name>"
+        })
+
+        # Note: these are different files in real-life. For testing purposes, we hijack
+        #       the command to output a static filename, archive.zip
+        self.assertAwsCommands(
+            "s3 cp s3://<source-bucket1>/<source-object-key1> archive.zip",
+            "s3 cp s3://<source-bucket2>/<source-object-key2> archive.zip",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
+        )
+
     def test_create_with_backslash_prefix_same_as_no_prefix(self):
         invoke_handler("Create", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "DestinationBucketKeyPrefix": "/"
         })
@@ -49,8 +68,8 @@ class TestHandler(unittest.TestCase):
 
     def test_create_update_with_dest_key(self):
         invoke_handler("Create", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<dest-key-prefix>"
         })
@@ -62,8 +81,8 @@ class TestHandler(unittest.TestCase):
 
     def test_delete_no_retain(self):
         invoke_handler("Delete", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "RetainOnDelete": "false"
         }, physical_id="<physicalid>")
@@ -72,8 +91,8 @@ class TestHandler(unittest.TestCase):
 
     def test_delete_with_dest_key(self):
         invoke_handler("Delete", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<dest-key-prefix>",
             "RetainOnDelete": "false"
@@ -83,8 +102,8 @@ class TestHandler(unittest.TestCase):
 
     def test_delete_with_retain_explicit(self):
         invoke_handler("Delete", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "RetainOnDelete": "true"
         }, physical_id="<physicalid>")
@@ -95,8 +114,8 @@ class TestHandler(unittest.TestCase):
     # RetainOnDelete=true is the default
     def test_delete_with_retain_implicit_default(self):
         invoke_handler("Delete", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>"
         }, physical_id="<physicalid>")
 
@@ -105,8 +124,8 @@ class TestHandler(unittest.TestCase):
 
     def test_delete_with_retain_explicitly_false(self):
         invoke_handler("Delete", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "RetainOnDelete": "false"
         }, physical_id="<physicalid>")
@@ -121,8 +140,8 @@ class TestHandler(unittest.TestCase):
 
     def test_update_same_dest(self):
         invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
@@ -133,10 +152,76 @@ class TestHandler(unittest.TestCase):
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
         )
 
+    def test_update_same_dest_cf_invalidate(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'CreateInvalidation':
+                assert kwarg['DistributionId'] == '<cf-dist-id>'
+                assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 1
+                assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/*'
+                return {'Invalidation': {'Id': '<invalidation-id>'}}
+            if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
+                return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Update", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DistributionId": "<cf-dist-id>"
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, physical_id="<physical-id>")
+
+    def test_update_same_dest_cf_invalidate_custom_prefix(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'CreateInvalidation':
+                assert kwarg['DistributionId'] == '<cf-dist-id>'
+                assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 1
+                assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/<dest-prefix>/*'
+                return {'Invalidation': {'Id': '<invalidation-id>'}}
+            if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
+                return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Update", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DestinationBucketKeyPrefix": "<dest-prefix>",
+                "DistributionId": "<cf-dist-id>"
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, physical_id="<physical-id>")
+
+    def test_update_same_dest_cf_invalidate_custom_paths(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'CreateInvalidation':
+                assert kwarg['DistributionId'] == '<cf-dist-id>'
+                assert kwarg['InvalidationBatch']['Paths']['Quantity'] == 2
+                assert kwarg['InvalidationBatch']['Paths']['Items'][0] == '/path1/*'
+                assert kwarg['InvalidationBatch']['Paths']['Items'][1] == '/path2/*'
+                return {'Invalidation': {'Id': '<invalidation-id>'}}
+            if operation_name == 'GetInvalidation' and kwarg['Id'] == '<invalidation-id>':
+                return {'Invalidation': {'Id': '<invalidation-id>', 'Status': 'Completed'}}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Update", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DistributionId": "<cf-dist-id>",
+                "DistributionPaths": ["/path1/*", "/path2/*"]
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, physical_id="<physical-id>")
+
     def test_update_new_dest_retain(self):
         invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
@@ -150,8 +235,8 @@ class TestHandler(unittest.TestCase):
 
     def test_update_new_dest_no_retain(self):
         invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<new-dest-bucket-name>",
             "RetainOnDelete": "false"
         }, old_resource_props={
@@ -168,8 +253,8 @@ class TestHandler(unittest.TestCase):
 
     def test_update_new_dest_retain_implicit(self):
         invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<new-dest-bucket-name>",
         }, old_resource_props={
             "DestinationBucketName": "<old-dest-bucket-name>",
@@ -183,8 +268,8 @@ class TestHandler(unittest.TestCase):
 
     def test_update_new_dest_prefix_no_retain(self):
         invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<new-dest-prefix>",
             "RetainOnDelete": "false"
@@ -201,8 +286,8 @@ class TestHandler(unittest.TestCase):
 
     def test_update_new_dest_prefix_retain_implicit(self):
         invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<new-dest-prefix>"
         }, old_resource_props={
@@ -220,8 +305,8 @@ class TestHandler(unittest.TestCase):
 
     def test_physical_id_allocated_on_create_and_reused_afterwards(self):
         create_resp = invoke_handler("Create", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
         })
 
@@ -231,8 +316,8 @@ class TestHandler(unittest.TestCase):
         # now issue an update and pass in the physical id. expect the same
         # one to be returned back
         update_resp = invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<new-dest-bucket-name>",
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
@@ -241,8 +326,8 @@ class TestHandler(unittest.TestCase):
 
         # now issue a delete, and make sure this also applies
         delete_resp = invoke_handler("Delete", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
             "RetainOnDelete": "false"
         }, physical_id=phid)
@@ -250,8 +335,8 @@ class TestHandler(unittest.TestCase):
 
     def test_fails_when_physical_id_not_present_in_update(self):
         update_resp = invoke_handler("Update", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<new-dest-bucket-name>",
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
@@ -261,8 +346,8 @@ class TestHandler(unittest.TestCase):
 
     def test_fails_when_physical_id_not_present_in_delete(self):
         update_resp = invoke_handler("Delete", {
-            "SourceBucketName": "<source-bucket>",
-            "SourceObjectKey": "<source-object-key>",
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<new-dest-bucket-name>",
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",

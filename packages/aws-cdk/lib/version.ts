@@ -1,21 +1,20 @@
 import { exec as _exec } from 'child_process';
 import colors = require('colors/safe');
-import { close as _close, open as _open, stat as _stat } from 'fs';
+import fs = require('fs-extra');
+import os = require('os');
+import path = require('path');
 import semver = require('semver');
 import { promisify } from 'util';
-import { debug, print, warning } from '../lib/logging';
+import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
-const close = promisify(_close);
 const exec = promisify(_exec);
-const open = promisify(_open);
-const stat = promisify(_stat);
 
 export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
-function versionNumber(): string {
+export function versionNumber(): string {
   return require('../package.json').version.replace(/\+[0-9a-f]+$/, '');
 }
 
@@ -23,23 +22,39 @@ function commit(): string {
   return require('../build-info.json').commit;
 }
 
-export class TimestampFile {
+export class VersionCheckTTL {
+  public static timestampFilePath(): string {
+    // Get the home directory from the OS, first. Fallback to $HOME.
+    const homedir = os.userInfo().homedir || os.homedir();
+    if (!homedir || !homedir.trim()) {
+      throw new Error('Cannot determine home directory');
+    }
+    // Using the same path from account-cache.ts
+    return path.join(homedir, '.cdk', 'cache', 'repo-version-ttl');
+  }
+
   private readonly file: string;
 
-  // File modify times are accurate only till the second, hence using seconds as precision
+  // File modify times are accurate only to the second
   private readonly ttlSecs: number;
 
-  constructor(file: string, ttlSecs: number) {
-    this.file = file;
-    this.ttlSecs = ttlSecs;
+  constructor(file?: string, ttlSecs?: number) {
+    this.file = file || VersionCheckTTL.timestampFilePath();
+    try {
+      fs.mkdirsSync(path.dirname(this.file));
+      fs.accessSync(path.dirname(this.file), fs.constants.W_OK);
+    } catch {
+      throw new Error(`Directory (${path.dirname(this.file)}) is not writable.`);
+    }
+    this.ttlSecs = ttlSecs || ONE_DAY_IN_SECONDS;
   }
 
   public async hasExpired(): Promise<boolean> {
     try {
-      const lastCheckTime = (await stat(this.file)).mtimeMs;
+      const lastCheckTime = (await fs.stat(this.file)).mtimeMs;
       const today = new Date().getTime();
 
-      if ((today - lastCheckTime) / 1000 > this.ttlSecs) { // convert ms to secs
+      if ((today - lastCheckTime) / 1000 > this.ttlSecs) { // convert ms to sec
         return true;
       }
       return false;
@@ -52,15 +67,17 @@ export class TimestampFile {
     }
   }
 
-  public async update(): Promise<void> {
-    const fd = await open(this.file, 'w');
-    await close(fd);
+  public async update(latestVersion?: string): Promise<void> {
+    if (!latestVersion) {
+      latestVersion = '';
+    }
+    await fs.writeFile(this.file, latestVersion);
   }
 }
 
 // Export for unit testing only.
 // Don't use directly, use displayVersionMessage() instead.
-export async function latestVersionIfHigher(currentVersion: string, cacheFile: TimestampFile): Promise<string | null> {
+export async function latestVersionIfHigher(currentVersion: string, cacheFile: VersionCheckTTL): Promise<string|null> {
   if (!(await cacheFile.hasExpired())) {
     return null;
   }
@@ -74,7 +91,7 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: T
     throw new Error(`npm returned an invalid semver ${latestVersion}`);
   }
   const isNewer = semver.gt(latestVersion, currentVersion);
-  await cacheFile.update();
+  await cacheFile.update(latestVersion);
 
   if (isNewer) {
     return latestVersion;
@@ -83,14 +100,13 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: T
   }
 }
 
-const versionCheckCache = new TimestampFile(`${__dirname}/../.LAST_VERSION_CHECK`, ONE_DAY_IN_SECONDS);
-
 export async function displayVersionMessage(): Promise<void> {
   if (!process.stdout.isTTY) {
     return;
   }
 
   try {
+    const versionCheckCache = new VersionCheckTTL();
     const laterVersion = await latestVersionIfHigher(versionNumber(), versionCheckCache);
     if (laterVersion) {
       const bannerMsg = formatAsBanner([
@@ -100,6 +116,6 @@ export async function displayVersionMessage(): Promise<void> {
       bannerMsg.forEach((e) => print(e));
     }
   } catch (err) {
-    warning(`Could not run version check due to error ${err.message}`);
+    debug(`Could not run version check - ${err.message}`);
   }
 }

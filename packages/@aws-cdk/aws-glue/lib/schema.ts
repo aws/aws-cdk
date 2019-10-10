@@ -39,12 +39,12 @@ export interface Type {
  * @see https://docs.aws.amazon.com/athena/latest/ug/data-types.html
  */
 export class Schema {
-  public static readonly boolean: Type = {
+  public static readonly BOOLEAN: Type = {
     isPrimitive: true,
     inputString: 'boolean'
   };
 
-  public static readonly binary: Type = {
+  public static readonly BINARY: Type = {
     isPrimitive: true,
     inputString: 'binary'
   };
@@ -52,17 +52,17 @@ export class Schema {
   /**
    * A 64-bit signed INTEGER in two’s complement format, with a minimum value of -2^63 and a maximum value of 2^63-1.
    */
-  public static readonly bigint: Type = {
+  public static readonly BIG_INT: Type = {
     isPrimitive: true,
     inputString: 'bigint'
   };
 
-  public static readonly double: Type = {
+  public static readonly DOUBLE: Type = {
     isPrimitive: true,
     inputString: 'double'
   };
 
-  public static readonly float: Type = {
+  public static readonly FLOAT: Type = {
     isPrimitive: true,
     inputString: 'float'
   };
@@ -70,15 +70,15 @@ export class Schema {
   /**
    * A 32-bit signed INTEGER in two’s complement format, with a minimum value of -2^31 and a maximum value of 2^31-1.
    */
-  public static readonly integer: Type = {
+  public static readonly INTEGER: Type = {
     isPrimitive: true,
-    inputString: 'integer'
+    inputString: 'int'
   };
 
   /**
    * A 16-bit signed INTEGER in two’s complement format, with a minimum value of -2^15 and a maximum value of 2^15-1.
    */
-  public static readonly smallint: Type = {
+  public static readonly SMALL_INT: Type = {
     isPrimitive: true,
     inputString: 'smallint'
   };
@@ -86,7 +86,7 @@ export class Schema {
   /**
    * A 8-bit signed INTEGER in two’s complement format, with a minimum value of -2^7 and a maximum value of 2^7-1
    */
-  public static readonly tinyint: Type = {
+  public static readonly TINY_INT: Type = {
     isPrimitive: true,
     inputString: 'tinyint'
   };
@@ -94,7 +94,7 @@ export class Schema {
   /**
    * Date type.
    */
-  public static readonly date: Type = {
+  public static readonly DATE: Type = {
     isPrimitive: true,
     inputString: 'date'
   };
@@ -102,7 +102,7 @@ export class Schema {
   /**
    * Timestamp type (date and time).
    */
-  public static readonly timestamp: Type = {
+  public static readonly TIMESTAMP: Type = {
     isPrimitive: true,
     inputString: 'timestamp'
   };
@@ -110,7 +110,7 @@ export class Schema {
   /**
    * Arbitrary-length string type.
    */
-  public static readonly string: Type = {
+  public static readonly STRING: Type = {
     isPrimitive: true,
     inputString: 'string'
   };

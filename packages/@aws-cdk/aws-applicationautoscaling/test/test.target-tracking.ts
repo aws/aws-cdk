@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import appscaling = require('../lib');
 import { createScalableTarget } from './util';
@@ -13,7 +13,7 @@ export = {
 
     // WHEN
     target.scaleToTrackMetric('Tracking', {
-      predefinedMetric: appscaling.PredefinedMetric.EC2SpotFleetRequestAverageCPUUtilization,
+      predefinedMetric: appscaling.PredefinedMetric.EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION,
       targetValue: 30,
     });
 
@@ -46,7 +46,6 @@ export = {
       PolicyType: "TargetTrackingScaling",
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
-          Dimensions: [],
           MetricName: "Metric",
           Namespace: "Test",
           Statistic: "Average"

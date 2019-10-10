@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fs = require('fs');
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -27,8 +27,8 @@ class DemoResource extends cdk.Construct {
         // This makes the demo only work as top-level TypeScript program, but that's fine for now
         code: new lambda.InlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
         handler: 'index.main',
-        timeout: 300,
-        runtime: lambda.Runtime.Python27,
+        timeout: cdk.Duration.minutes(5),
+        runtime: lambda.Runtime.PYTHON_2_7,
       })),
       properties: props
     });
@@ -59,4 +59,4 @@ const app = new cdk.App();
 
 new SucceedingStack(app, 'SucceedingStack');
 
-app.run();
+app.synth();

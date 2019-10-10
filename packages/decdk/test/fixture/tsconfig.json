@@ -7,9 +7,7 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "lib": [
-      "es2016",
-      "es2017.object",
-      "es2017.string"
+      "es2016"
     ],
     "module": "CommonJS",
     "noEmitOnError": true,
@@ -24,7 +22,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
     "stripInternal": true,
-    "target": "ES2018"
+    "target": "ES2017"
   },
   "include": [
     "**/*.ts"

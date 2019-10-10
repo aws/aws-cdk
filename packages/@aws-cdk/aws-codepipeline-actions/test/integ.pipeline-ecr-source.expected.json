@@ -1,7 +1,9 @@
 {
   "Resources": {
     "MyBucketF68F3FF0": {
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
@@ -12,17 +14,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codepipeline.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "codepipeline.amazonaws.com"
               }
             }
           ],
@@ -69,11 +61,21 @@
               ]
             },
             {
-              "Action": "ecr:DescribeImages",
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "MyEcrRepo767466D0",
+                  "MyPipelineSourceECRSourceCodePipelineActionRole4C6714EE",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineApproveManualApprovalCodePipelineActionRole9E338F01",
                   "Arn"
                 ]
               }
@@ -113,13 +115,18 @@
                     "Ref": "MyEcrRepo767466D0"
                   }
                 },
-                "InputArtifacts": [],
                 "Name": "ECR_Source",
                 "OutputArtifacts": [
                   {
                     "Name": "Artifact_Source_ECR_Source"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceECRSourceCodePipelineActionRole4C6714EE",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -134,9 +141,13 @@
                   "Provider": "Manual",
                   "Version": "1"
                 },
-                "InputArtifacts": [],
                 "Name": "ManualApproval",
-                "OutputArtifacts": [],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "MyPipelineApproveManualApprovalCodePipelineActionRole9E338F01",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -155,6 +166,94 @@
         "MyPipelineRoleC0D47CA4"
       ]
     },
+    "MyPipelineSourceECRSourceCodePipelineActionRole4C6714EE": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyPipelineSourceECRSourceCodePipelineActionRoleDefaultPolicy7646B7FE": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ecr:DescribeImages",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyEcrRepo767466D0",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyBucketF68F3FF0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyPipelineSourceECRSourceCodePipelineActionRoleDefaultPolicy7646B7FE",
+        "Roles": [
+          {
+            "Ref": "MyPipelineSourceECRSourceCodePipelineActionRole4C6714EE"
+          }
+        ]
+      }
+    },
     "MyPipelineEventsRoleFAB99F32": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -164,17 +263,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "events.amazonaws.com"
               }
             }
           ],
@@ -225,8 +314,42 @@
         ]
       }
     },
+    "MyPipelineApproveManualApprovalCodePipelineActionRole9E338F01": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
     "MyEcrRepo767466D0": {
-      "Type": "AWS::ECR::Repository"
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "MyEcrRepoawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule911FDB6D": {
       "Type": "AWS::Events::Rule",
@@ -235,17 +358,20 @@
           "source": [
             "aws.ecr"
           ],
+          "detail-type": [
+            "AWS API Call via CloudTrail"
+          ],
           "detail": {
-            "eventName": [
-              "PutImage"
-            ],
             "requestParameters": {
               "repositoryName": [
                 {
                   "Ref": "MyEcrRepo767466D0"
                 }
               ]
-            }
+            },
+            "eventName": [
+              "PutImage"
+            ]
           }
         },
         "State": "ENABLED",
@@ -274,7 +400,7 @@
                 ]
               ]
             },
-            "Id": "MyPipeline",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyPipelineEventsRoleFAB99F32",

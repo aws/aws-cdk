@@ -2,7 +2,8 @@
   "Resources": {
     "MyDatabaseBucketCA6D21E6": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "MyDatabase1E2517DB": {
       "Type": "AWS::Glue::Database",
@@ -29,7 +30,8 @@
     },
     "MyTableBucketD51E7EDC": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "MyTable85A92380": {
       "Type": "AWS::Glue::Table",
@@ -118,7 +120,8 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -164,7 +167,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "MyEncryptedTableBucket7B28486D": {
       "Type": "AWS::S3::Bucket",
@@ -185,7 +189,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "MyEncryptedTable981A88C6": {
       "Type": "AWS::Glue::Table",
@@ -296,7 +301,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       "Ref": "MyDatabase1E2517DB"
                     },
@@ -373,7 +378,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       "Ref": "MyDatabase1E2517DB"
                     },

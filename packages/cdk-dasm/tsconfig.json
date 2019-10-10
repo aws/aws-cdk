@@ -15,7 +15,8 @@
     "noFallthroughCasesInSwitch": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "composite": true
   },
   "exclude": [
     "test/enrichments/**"

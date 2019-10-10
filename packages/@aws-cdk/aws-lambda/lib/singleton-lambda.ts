@@ -1,5 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Function as LambdaFunction, FunctionProps } from './function';
 import { FunctionBase, IFunction } from './function-base';
 import { Permission } from './permission';
@@ -41,6 +42,7 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
+  public readonly permissionsNode: cdk.ConstructNode;
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: IFunction;
 
@@ -48,6 +50,7 @@ export class SingletonFunction extends FunctionBase {
     super(scope, id);
 
     this.lambdaFunction = this.ensureLambda(props);
+    this.permissionsNode = this.lambdaFunction.node;
 
     this.functionArn = this.lambdaFunction.functionArn;
     this.functionName = this.lambdaFunction.functionName;
@@ -63,13 +66,13 @@ export class SingletonFunction extends FunctionBase {
 
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const existing = this.node.stack.node.tryFindChild(constructName);
+    const existing = Stack.of(this).node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
       return existing as FunctionBase;
     }
 
-    return new LambdaFunction(this.node.stack, constructName, props);
+    return new LambdaFunction(Stack.of(this), constructName, props);
   }
 }
 

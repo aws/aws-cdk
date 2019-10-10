@@ -1,26 +1,32 @@
 #!/usr/bin/env node
-import assets = require('@aws-cdk/assets');
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { Project } from '../lib';
+import cdk = require('@aws-cdk/core');
+import codebuild = require('../lib');
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
 const vpc = new ec2.Vpc(stack, 'MyVPC', {
-    maxAZs: 1,
+    maxAzs: 1,
     natGateways: 1,
 });
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
     allowAllOutbound: true,
     description: 'Example',
-    groupName: 'Bob',
-    vpc,
+    securityGroupName: 'Bob',
+  vpc,
 });
-new Project(stack, 'MyProject', {
-    buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' }),
+new codebuild.Project(stack, 'MyProject', {
+    buildSpec: codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      phases: {
+        build: {
+          commands: ['echo "Nothing to do!"'],
+        },
+      },
+    }),
     securityGroups: [securityGroup],
     vpc
 });
 
-app.run();
+app.synth();

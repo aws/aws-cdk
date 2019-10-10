@@ -19,10 +19,11 @@ setuptools.setup(
     packages=setuptools.find_packages(where="hello"),
 
     install_requires=[
-        "aws-cdk.cdk",
+        "aws-cdk.core",
         "aws-cdk.aws_iam",
         "aws-cdk.aws_sqs",
         "aws-cdk.aws_sns",
+        "aws-cdk.aws_sns_subscriptions",
         "aws-cdk.aws_s3",
     ],
 

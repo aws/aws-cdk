@@ -1,4 +1,7 @@
+import cxapi = require('@aws-cdk/cx-api');
+import { writeFileSync } from 'fs';
 import { Test } from 'nodeunit';
+import { join } from 'path';
 import { expect, haveResource } from '../lib/index';
 
 export = {
@@ -89,15 +92,16 @@ export = {
   },
 };
 
-function mkStack(template: any) {
-  return {
-    name: 'test',
-    template,
-    metadata: {},
-    environment: {
-      name: 'test',
-      account: 'test',
-      region: 'test'
+function mkStack(template: any): cxapi.CloudFormationStackArtifact {
+  const assembly = new cxapi.CloudAssemblyBuilder();
+  assembly.addArtifact('test', {
+    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    environment: cxapi.EnvironmentUtils.format('123456789', 'us-west-2'),
+    properties: {
+      templateFile: 'template.json'
     }
-  };
+  });
+
+  writeFileSync(join(assembly.outdir, 'template.json'), JSON.stringify(template));
+  return assembly.buildAssembly().getStack('test');
 }

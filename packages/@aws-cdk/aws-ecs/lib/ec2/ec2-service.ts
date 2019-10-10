@@ -1,77 +1,102 @@
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
-import { BaseService, BaseServiceProps, IService } from '../base/base-service';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { BaseService, BaseServiceOptions, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
-import { BinPackResource, PlacementConstraint, PlacementStrategy } from '../placement';
+import { PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
- * Properties to define an ECS service
+ * The properties for defining a service using the EC2 launch type.
  */
-export interface Ec2ServiceProps extends BaseServiceProps {
+export interface Ec2ServiceProps extends BaseServiceOptions {
   /**
-   * Task Definition used for running tasks in the service
+   * The task definition to use for tasks in the service.
    *
    * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
 
   /**
-   * In what subnets to place the task's ENIs
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   * If true, each task will receive a public IP address.
    *
-   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default Private subnets
+   * @default - Use subnet default.
+   */
+  readonly assignPublicIp?: boolean;
+
+  /**
+   * The subnets to associate with the service.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
+   *
+   * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Existing security group to use for the task's ENIs
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
-   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default A new security group is created
+   * @default - A new security group is created.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Placement constraints
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    *
-   * @default No constraints
+   * @default - No constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
-   * Placement strategies
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
-   * @default No strategies
+   * @default - No strategies.
    */
   readonly placementStrategies?: PlacementStrategy[];
 
   /**
-   * Deploy exactly one task on each instance in your cluster.
+   * Specifies whether the service will use the daemon scheduling strategy.
+   * If true, the service scheduler deploys exactly one task on each container instance in your cluster.
    *
-   * When using this strategy, do not specify a desired number of tasks or any
-   * task placement strategies.
+   * When you are using this strategy, do not specify a desired number of tasks orany task placement strategies.
    *
    * @default false
    */
   readonly daemon?: boolean;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @deprecated Use `propagateTags` instead.
+   * @default PropagatedTagSource.NONE
+   */
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
 }
 
+/**
+ * The interface for a service using the EC2 launch type on an ECS cluster.
+ */
 export interface IEc2Service extends IService {
 
 }
 
 /**
- * Start a service on an ECS cluster
+ * This creates a service using the EC2 launch type on an ECS cluster.
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IEc2Service {
 
+  /**
+   * Imports from the specified service ARN.
+   */
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
@@ -79,25 +104,23 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     return new Import(scope, id);
   }
 
-  /**
-   * Name of the cluster
-   */
-  public readonly clusterName: string;
-
   private readonly constraints: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
 
+  /**
+   * Constructs a new instance of the Ec2Service class.
+   */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
 
-    if (props.daemon && props.maximumPercent !== undefined && props.maximumPercent !== 100) {
+    if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
-    if (props.daemon && props.minimumHealthyPercent !== undefined && props.minimumHealthyPercent !== 0) {
+    if (props.daemon && props.minHealthyPercent !== undefined && props.minHealthyPercent !== 0) {
       throw new Error('Minimum healthy percent must be 0 for daemon mode.');
     }
 
@@ -105,29 +128,37 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
+                                      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+
     super(scope, id, {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
-      maximumPercent: props.daemon && props.maximumPercent === undefined ? 100 : props.maximumPercent,
-      minimumHealthyPercent: props.daemon && props.minimumHealthyPercent === undefined ? 0 : props.minimumHealthyPercent ,
+      maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
+      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
+      launchType: LaunchType.EC2,
+      propagateTags: propagateTagsFromSource,
+      enableECSManagedTags: props.enableECSManagedTags,
     },
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'EC2',
-      placementConstraints: new Token(() => this.constraints.length > 0 ? this.constraints : undefined),
-      placementStrategies: new Token(() => this.strategies.length > 0 ? this.strategies : undefined),
+      placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
+      placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.cluster.clusterName, props.taskDefinition);
+    }, props.taskDefinition);
 
-    this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;
 
-    if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcSubnets, props.securityGroup);
+    if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
+      this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -143,58 +174,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Place tasks only on instances matching the given query expression
-   *
-   * You can specify multiple expressions in one call. The tasks will only
-   * be placed on instances matching all expressions.
-   *
-   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html
-   * @deprecated Use addPlacementConstraints() instead.
-   */
-  public placeOnMemberOf(...expressions: string[]) {
-    this.addPlacementConstraints(PlacementConstraint.memberOf(...expressions));
-  }
-
-  /**
-   * Try to place tasks spread across instance attributes.
-   *
-   * You can use one of the built-in attributes found on `BuiltInAttributes`
-   * or supply your own custom instance attributes. If more than one attribute
-   * is supplied, spreading is done in order.
-   *
-   * @default attributes instanceId
-   * @deprecated Use addPlacementStrategies() instead.
-   */
-  public placeSpreadAcross(...fields: string[]) {
-    if (fields.length === 0) {
-      this.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
-    } else {
-      this.addPlacementStrategies(PlacementStrategy.spreadAcross(...fields));
-    }
-  }
-
-  /**
-   * Try to place tasks on instances with the least amount of indicated resource available
-   *
-   * This ensures the total consumption of this resource is lowest.
-   *
-   * @deprecated Use addPlacementStrategies() instead.
-   */
-  public placePackedBy(resource: BinPackResource) {
-    this.addPlacementStrategies(PlacementStrategy.packedBy(resource));
-  }
-
-  /**
-   * Place tasks randomly across the available instances.
-   *
-   * @deprecated Use addPlacementStrategies() instead.
-   */
-  public placeRandomly() {
-    this.addPlacementStrategies(PlacementStrategy.randomly());
-  }
-
-  /**
-   * Add one or more placement strategies
+   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
   public addPlacementStrategies(...strategies: PlacementStrategy[]) {
     if (strategies.length > 0 && this.daemon) {
@@ -207,7 +188,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Add one or more placement strategies
+   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
     for (const constraint of constraints) {
@@ -216,57 +198,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Register this service as the target of a Classic Load Balancer
-   *
-   * Don't call this. Call `loadBalancer.addTarget()` instead.
-   */
-  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
-    }
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
-      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
-    }
-
-    this.loadBalancers.push({
-      loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.node.id,
-      containerPort: this.taskDefinition.defaultContainer!.containerPort,
-    });
-  }
-
-  /**
-   * Return the given named metric for this Service
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ECS',
-      metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
-      ...props
-    });
-  }
-
-  /**
-   * Metric for cluster Memory utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryUtilization', props );
-  }
-
-  /**
-   * Metric for cluster CPU utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CPUUtilization', props);
-  }
-
-  /**
-   * Validate this Ec2Service
+   * Validates this Ec2Service.
    */
   protected validate(): string[] {
     const ret = super.validate();
@@ -281,39 +213,39 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
  * Validate combinations of networking arguments
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined) {
-    throw new Error('vpcSubnets and securityGroup can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined || props.assignPublicIp) {
+    throw new Error('vpcSubnets, securityGroup and assignPublicIp can only be used in AwsVpc networking mode');
   }
 }
 
 /**
- * Built-in container instance attributes
+ * The built-in container instance attributes
  */
 export class BuiltInAttributes {
   /**
-   * The Instance ID of the instance
+   * The id of the instance.
    */
-  public static readonly InstanceId = 'instanceId';
+  public static readonly INSTANCE_ID = 'instanceId';
 
   /**
-   * The AZ where the instance is running
+   * The AvailabilityZone where the instance is running in.
    */
-  public static readonly AvailabilityZone = 'attribute:ecs.availability-zone';
+  public static readonly AVAILABILITY_ZONE = 'attribute:ecs.availability-zone';
 
   /**
-   * The AMI ID of the instance
+   * The AMI id the instance is using.
    */
-  public static readonly AmiId = 'attribute:ecs.ami-id';
+  public static readonly AMI_ID = 'attribute:ecs.ami-id';
 
   /**
-   * The instance type
+   * The EC2 instance type.
    */
-  public static readonly InstanceType = 'attribute:ecs.instance-type';
+  public static readonly INSTANCE_TYPE = 'attribute:ecs.instance-type';
 
   /**
-   * The OS type
+   * The operating system of the instance.
    *
    * Either 'linux' or 'windows'.
    */
-  public static readonly OsType = 'attribute:ecs.os-type';
+  public static readonly OS_TYPE = 'attribute:ecs.os-type';
 }

@@ -55,10 +55,11 @@ export class LambdaIntegration extends AwsIntegration {
     super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    const desc = `${method.restApi.node.uniqueId}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
+      scope: method,
       sourceArn: method.methodArn,
     });
 
@@ -66,7 +67,8 @@ export class LambdaIntegration extends AwsIntegration {
     if (this.enableTest) {
       this.handler.addPermission(`ApiPermission.Test.${desc}`, {
         principal,
-        sourceArn: method.testMethodArn
+        scope: method,
+        sourceArn: method.testMethodArn,
       });
     }
   }

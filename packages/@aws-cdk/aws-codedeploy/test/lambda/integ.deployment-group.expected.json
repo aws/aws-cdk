@@ -9,17 +9,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -46,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "HandlerCodeS3Bucket8DD11ED9"
+            "Ref": "AssetParametersedb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3S3BucketD9AF62D9"
           },
           "S3Key": {
             "Fn::Join": [
@@ -59,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "HandlerCodeS3VersionKey0BB5191E"
+                          "Ref": "AssetParametersedb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3S3VersionKey3ACE0CAC"
                         }
                       ]
                     }
@@ -72,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "HandlerCodeS3VersionKey0BB5191E"
+                          "Ref": "AssetParametersedb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3S3VersionKey3ACE0CAC"
                         }
                       ]
                     }
@@ -143,17 +133,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -227,7 +207,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "PreHookCodeS3BucketE2616D65"
+            "Ref": "AssetParameters87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1S3Bucket1D1783A4"
           },
           "S3Key": {
             "Fn::Join": [
@@ -240,7 +220,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "PreHookCodeS3VersionKey292C5372"
+                          "Ref": "AssetParameters87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1S3VersionKey88595F37"
                         }
                       ]
                     }
@@ -253,7 +233,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "PreHookCodeS3VersionKey292C5372"
+                          "Ref": "AssetParameters87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1S3VersionKey88595F37"
                         }
                       ]
                     }
@@ -286,17 +266,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "lambda.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
+                "Service": "lambda.amazonaws.com"
               }
             }
           ],
@@ -370,7 +340,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "PostHookCodeS3BucketECF09EB8"
+            "Ref": "AssetParameters93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963cS3Bucket7EF62972"
           },
           "S3Key": {
             "Fn::Join": [
@@ -383,7 +353,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "PostHookCodeS3VersionKey53451C7E"
+                          "Ref": "AssetParameters93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963cS3VersionKeyBF9A490E"
                         }
                       ]
                     }
@@ -396,7 +366,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "PostHookCodeS3VersionKey53451C7E"
+                          "Ref": "AssetParameters93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963cS3VersionKeyBF9A490E"
                         }
                       ]
                     }
@@ -425,7 +395,6 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanThreshold",
         "EvaluationPeriods": 1,
-        "Threshold": 1,
         "Dimensions": [
           {
             "Name": "FunctionName",
@@ -440,10 +409,7 @@
                 "",
                 [
                   {
-                    "Fn::GetAtt": [
-                      "Handler886CB40B",
-                      "Arn"
-                    ]
+                    "Ref": "Handler886CB40B"
                   },
                   ":alias"
                 ]
@@ -454,7 +420,8 @@
         "MetricName": "Errors",
         "Namespace": "AWS/Lambda",
         "Period": 300,
-        "Statistic": "Sum"
+        "Statistic": "Sum",
+        "Threshold": 1
       }
     },
     "BlueGreenDeploymentApplication36C892C0": {
@@ -493,7 +460,18 @@
           "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+              ]
+            ]
+          }
         ]
       }
     },
@@ -571,29 +549,41 @@
     }
   },
   "Parameters": {
-    "HandlerCodeS3Bucket8DD11ED9": {
+    "AssetParametersedb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3S3BucketD9AF62D9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-codedeploy-lambda/Handler/Code\""
+      "Description": "S3 bucket for asset \"edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3\""
     },
-    "HandlerCodeS3VersionKey0BB5191E": {
+    "AssetParametersedb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3S3VersionKey3ACE0CAC": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/Handler/Code\""
+      "Description": "S3 key for asset version \"edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3\""
     },
-    "PreHookCodeS3BucketE2616D65": {
+    "AssetParametersedb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3ArtifactHash20E29DAB": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-codedeploy-lambda/PreHook/Code\""
+      "Description": "Artifact hash for asset \"edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3\""
     },
-    "PreHookCodeS3VersionKey292C5372": {
+    "AssetParameters87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1S3Bucket1D1783A4": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/PreHook/Code\""
+      "Description": "S3 bucket for asset \"87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1\""
     },
-    "PostHookCodeS3BucketECF09EB8": {
+    "AssetParameters87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1S3VersionKey88595F37": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-codedeploy-lambda/PostHook/Code\""
+      "Description": "S3 key for asset version \"87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1\""
     },
-    "PostHookCodeS3VersionKey53451C7E": {
+    "AssetParameters87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1ArtifactHash38509A01": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/PostHook/Code\""
+      "Description": "Artifact hash for asset \"87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1\""
+    },
+    "AssetParameters93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963cS3Bucket7EF62972": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963c\""
+    },
+    "AssetParameters93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963cS3VersionKeyBF9A490E": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963c\""
+    },
+    "AssetParameters93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963cArtifactHashBF6C1240": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963c\""
     }
   }
 }

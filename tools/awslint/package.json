@@ -1,38 +1,40 @@
 {
   "name": "awslint",
   "private": true,
-  "version": "0.31.0",
+  "version": "1.12.0",
   "description": "Enforces the AWS Construct Library guidelines",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && chmod +x bin/awslint",
-    "lint": "tslint && pkglint",
+    "build": "tsc -b && chmod +x bin/awslint",
+    "lint": "tslint -p . && pkglint",
     "test": "echo ok",
-    "watch": "tsc -w"
+    "watch": "tsc -b -w",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test"
   },
   "bin": {
     "awslint": "bin/awslint"
   },
   "dependencies": {
     "camelcase": "^5.3.1",
-    "colors": "^1.3.3",
-    "fs-extra": "^7.0.1",
-    "jsii-reflect": "^0.10.3",
-    "jsii-spec": "^0.10.3",
-    "yargs": "^13.2.2"
+    "colors": "^1.4.0",
+    "fs-extra": "^8.1.0",
+    "jsii-reflect": "^0.18.0",
+    "jsii-spec": "^0.18.0",
+    "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@types/colors": "^1.2.1",
-    "@types/fs-extra": "^5.0.5",
-    "@types/yargs": "^13.0.0",
-    "tslint": "^5.16.0",
-    "typescript": "^3.4.3"
+    "@types/fs-extra": "^8.0.0",
+    "@types/yargs": "^13.0.3",
+    "tslint": "^5.20.0",
+    "typescript": "~3.6.3"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk",
+  "homepage": "https://github.com/aws/aws-cdk",
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",

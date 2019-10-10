@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 
@@ -24,7 +24,6 @@ export = {
       Subnets: [
         { Ref: "StackPublicSubnet1Subnet0AD81D22" },
         { Ref: "StackPublicSubnet2Subnet3C7D2288" },
-        { Ref: "StackPublicSubnet3SubnetCC1055D9" }
       ],
       Type: "application"
     }));
@@ -48,7 +47,6 @@ export = {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
         'StackPublicSubnet2DefaultRoute0319539B',
-        'StackPublicSubnet3DefaultRouteBC0DA152'
       ]
     }, ResourcePart.CompleteDefinition));
 
@@ -69,7 +67,6 @@ export = {
       Subnets: [
         { Ref: "StackPrivateSubnet1Subnet47AC2BC7" },
         { Ref: "StackPrivateSubnet2SubnetA2F8EDD8" },
-        { Ref: "StackPrivateSubnet3Subnet28548F2E" }
       ],
       Type: "application"
     }));
@@ -87,7 +84,7 @@ export = {
       vpc,
       deletionProtection: true,
       http2Enabled: false,
-      idleTimeoutSecs: 1000,
+      idleTimeout: cdk.Duration.seconds(1000),
     });
 
     // THEN
@@ -113,7 +110,7 @@ export = {
 
   'Access logging'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' }});
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -143,10 +140,13 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: [ "s3:PutObject*", "s3:Abort*" ],
+            Action: ["s3:PutObject*", "s3:Abort*"],
             Effect: 'Allow',
-            Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
-            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/*" ] ] }
+            Principal: { AWS: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root"]] } },
+            Resource: {
+              "Fn::Join": ["", [{ "Fn::GetAtt": ["AccessLoggingBucketA6D88F29", "Arn"] }, "/AWSLogs/",
+              { Ref: "AWS::AccountId" }, "/*"]]
+            }
           }
         ]
       }
@@ -154,7 +154,7 @@ export = {
 
     // verify the ALB depends on the bucket *and* the bucket policy
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      DependsOn: [ 'AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29' ]
+      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29']
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -162,7 +162,7 @@ export = {
 
   'access logging with prefix'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' }});
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -195,10 +195,13 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: [ "s3:PutObject*", "s3:Abort*" ],
+            Action: ["s3:PutObject*", "s3:Abort*"],
             Effect: 'Allow',
-            Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
-            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/prefix-of-access-logs*" ] ] }
+            Principal: { AWS: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root"]] } },
+            Resource: {
+              "Fn::Join": ["", [{ "Fn::GetAtt": ["AccessLoggingBucketA6D88F29", "Arn"] }, "/prefix-of-access-logs/AWSLogs/",
+              { Ref: "AWS::AccountId" }, "/*"]]
+            }
           }
         ]
       }
@@ -222,13 +225,13 @@ export = {
     metrics.push(lb.metricElbAuthFailure());
     metrics.push(lb.metricElbAuthLatency());
     metrics.push(lb.metricElbAuthSuccess());
-    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.Elb3xxCount));
-    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
+    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.ELB_3XX_COUNT));
+    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
     metrics.push(lb.metricHttpFixedResponseCount());
     metrics.push(lb.metricHttpRedirectCount());
     metrics.push(lb.metricHttpRedirectUrlLimitExceededCount());
-    metrics.push(lb.metricIPv6ProcessedBytes());
-    metrics.push(lb.metricIPv6RequestCount());
+    metrics.push(lb.metricIpv6ProcessedBytes());
+    metrics.push(lb.metricIpv6RequestCount());
     metrics.push(lb.metricNewConnectionCount());
     metrics.push(lb.metricProcessedBytes());
     metrics.push(lb.metricRejectedConnectionCount());
@@ -240,7 +243,7 @@ export = {
 
     for (const metric of metrics) {
       test.equal('AWS/ApplicationELB', metric.namespace);
-      test.deepEqual(stack.node.resolve(metric.dimensions), {
+      test.deepEqual(stack.resolve(metric.dimensions), {
         LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] }
       });
     }

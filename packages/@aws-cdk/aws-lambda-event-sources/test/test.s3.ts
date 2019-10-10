@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sources = require('../lib');
 import { TestFunction } from './test-function';
@@ -16,7 +16,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.S3EventSource(bucket, {
-      events: [ s3.EventType.ObjectCreated, s3.EventType.ObjectRemoved ],
+      events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
       filters: [
         { prefix: 'prefix/' },
         { suffix: '.png' }

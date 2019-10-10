@@ -1,9 +1,11 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IConstruct } from '@aws-cdk/cdk';
-import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
-import { ApplicationProtocol } from '../shared/enums';
+import { Construct, Duration, IConstruct } from '@aws-cdk/core';
+import {
+  BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+  TargetGroupBase, TargetGroupImportProps
+} from '../shared/base-target-group';
+import { ApplicationProtocol, TargetType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
@@ -16,14 +18,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The protocol to use
    *
-   * @default Determined from port if known
+   * @default - Determined from port if known, optional for Lambda targets.
    */
   readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
-   * @default Determined from protocol if known
+   * @default - Determined from protocol if known, optional for Lambda targets.
    */
   readonly port?: number;
 
@@ -31,11 +33,11 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * The time period during which the load balancer sends a newly registered
    * target a linearly increasing share of the traffic to the target group.
    *
-   * The range is 30–900 seconds (15 minutes).
+   * The range is 30-900 seconds (15 minutes).
    *
    * @default 0
    */
-  readonly slowStartSec?: number;
+  readonly slowStart?: Duration;
 
   /**
    * The stickiness cookie expiration period.
@@ -45,9 +47,9 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default 86400 (1 day)
+   * @default Duration.days(1)
    */
-  readonly stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDuration?: Duration;
 
   /**
    * The targets to add to this target group.
@@ -55,6 +57,8 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
+   *
+   * @default - No targets.
    */
   readonly targets?: IApplicationLoadBalancerTarget[];
 }
@@ -72,26 +76,31 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
+  private readonly protocol?: ApplicationProtocol;
+  private readonly port?: number;
 
-  constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps) {
+  constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
-
-    super(scope, id, props, {
+    super(scope, id, { ...props }, {
       protocol,
       port,
     });
 
+    this.protocol = protocol;
+    this.port = port;
+
     this.connectableMembers = [];
     this.listeners = [];
 
-    if (props.slowStartSec !== undefined) {
-      this.setAttribute('slow_start.duration_seconds', props.slowStartSec.toString());
+    if (props) {
+      if (props.slowStart !== undefined) {
+        this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
+      }
+      if (props.stickinessCookieDuration !== undefined) {
+        this.enableCookieStickiness(props.stickinessCookieDuration);
+      }
+      this.addTarget(...(props.targets || []));
     }
-    if (props.stickinessCookieDurationSec !== undefined) {
-      this.enableCookieStickiness(props.stickinessCookieDurationSec);
-    }
-
-    this.addTarget(...(props.targets || []));
   }
 
   /**
@@ -107,10 +116,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Enable sticky routing via a cookie to members of this target group
    */
-  public enableCookieStickiness(durationSec: number) {
+  public enableCookieStickiness(duration: Duration) {
     this.setAttribute('stickiness.enabled', 'true');
     this.setAttribute('stickiness.type', 'lb_cookie');
-    this.setAttribute('stickiness.lb_cookie.duration_seconds', durationSec.toString());
+    this.setAttribute('stickiness.lb_cookie.duration_seconds', duration.toSeconds().toString());
   }
 
   /**
@@ -118,8 +127,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * Don't call this directly. It will be called by load balancing targets.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.IPortRange) {
-    portRange = portRange || new ec2.TcpPort(this.defaultPort);
+  public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port) {
+    portRange = portRange || ec2.Port.tcp(this.defaultPort);
 
     // Notify all listeners that we already know about of this new connectable.
     // Then remember for new listeners that might get added later.
@@ -181,7 +190,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
+  public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props
@@ -220,7 +229,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * @default Average over 5 minutes
    */
   public metricUnhealthyHostCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('UnhealthyHostCount', {
+    return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
       ...props
     });
@@ -292,6 +301,16 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
+  protected validate(): string[]  {
+    const ret = super.validate();
+
+    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
+      && (this.protocol === undefined || this.port === undefined)) {
+        ret.push(`At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup`);
+    }
+
+    return ret;
+  }
 }
 
 /**
@@ -306,7 +325,7 @@ interface ConnectableMember {
   /**
    * The port (range) the member is listening on
    */
-  portRange: ec2.IPortRange;
+  portRange: ec2.Port;
 }
 
 /**
@@ -319,6 +338,13 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    * Don't call this directly. It will be called by listeners.
    */
   registerListener(listener: IApplicationListener, associatingConstruct?: IConstruct): void;
+
+  /**
+   * Register a connectable as a member of this target group.
+   *
+   * Don't call this directly. It will be called by load balancing targets.
+   */
+  registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port): void;
 }
 
 /**
@@ -327,6 +353,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
+    this.node.addWarning(`Cannot register listener on imported target group -- security groups might need to be updated manually`);
+  }
+
+  public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
+    this.node.addWarning(`Cannot register connectable on imported target group -- security groups might need to be updated manually`);
   }
 }
 
@@ -340,5 +371,5 @@ export interface IApplicationLoadBalancerTarget {
    * May return JSON to directly add to the [Targets] list, or return undefined
    * if the target will register itself with the load balancer.
    */
-  attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps;
+  attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps;
 }

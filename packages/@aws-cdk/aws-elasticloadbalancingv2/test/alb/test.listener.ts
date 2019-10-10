@@ -1,6 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { ConstructNode, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -35,7 +36,7 @@ export = {
 
     // WHEN
     lb.addListener('Listener', {
-      protocol: elbv2.ApplicationProtocol.Http,
+      protocol: elbv2.ApplicationProtocol.HTTP,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 
@@ -88,8 +89,32 @@ export = {
     });
 
     // THEN
-    const errors = stack.node.validateTree();
+    const errors = ConstructNode.validate(stack.node);
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
+
+    test.done();
+  },
+
+  'HTTPS listener can add certificate after construction'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    listener.addCertificateArns("Arns", ['cert']);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Certificates: [
+        { CertificateArn: "cert" }
+      ],
+    }));
 
     test.done();
   },
@@ -103,7 +128,7 @@ export = {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
       port: 80,
-      targetType: elbv2.TargetType.Ip
+      targetType: elbv2.TargetType.IP
     });
 
     // THEN
@@ -291,7 +316,7 @@ export = {
       port: 80,
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
-    group.enableCookieStickiness(3600);
+    group.enableCookieStickiness(cdk.Duration.hours(1));
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -328,8 +353,8 @@ export = {
     });
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeoutSeconds: 3600,
-      intervalSecs: 30,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
       path: '/test',
     });
 
@@ -417,8 +442,8 @@ export = {
 
     // WHEN
     const metrics = [];
-    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
-    metrics.push(group.metricIPv6RequestCount());
+    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
+    metrics.push(group.metricIpv6RequestCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricRequestCount());
@@ -430,7 +455,7 @@ export = {
       test.equal('AWS/ApplicationELB', metric.namespace);
       const loadBalancerArn = { Ref: "LBSomeListenerCA01F1A0" };
 
-      test.deepEqual(lb.node.resolve(metric.dimensions), {
+      test.deepEqual(stack.resolve(metric.dimensions), {
          TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
          LoadBalancer: { 'Fn::Join':
             [ '',
@@ -533,6 +558,31 @@ export = {
     test.done();
   },
 
+  'Can configure deregistration_delay for targets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      deregistrationDelay: Duration.seconds(30)
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: "deregistration_delay.timeout_seconds",
+          Value: "30"
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'Throws with bad fixed responses': {
 
     'status code'(test: Test) {
@@ -598,7 +648,85 @@ export = {
     }), /`targetGroups`.*`fixedResponse`/);
 
     test.done();
-  }
+  },
+
+  'Imported listener with imported security group and allowAllOutbound set to false'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'Listener', {
+      listenerArn: 'listener-arn',
+      defaultPort: 443,
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'security-group-id', {
+        allowAllOutbound: false,
+      }),
+    });
+
+    // WHEN
+    listener.connections.allowToAnyIpv4(ec2.Port.tcp(443));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: 'security-group-id'
+    }));
+
+    test.done();
+  },
+
+  'Can pass multiple certificate arns to application listener constructor'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'HTTPS'
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    }));
+
+    test.done();
+  },
+
+  'Can add additional certificates via addCertficateArns to application listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    listener.addCertificateArns("ListenerCertificateX", ['cert3']);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'HTTPS'
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert3' }],
+    }));
+
+    test.done();
+  },
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {

@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import glue = require('../lib');
 
@@ -8,14 +8,15 @@ export = {
     const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
-      databaseName: 'test_database'
+      databaseName: 'test_database',
     });
 
     expect(stack).toMatch({
       Resources: {
         DatabaseBucket318AF64F: {
           Type: 'AWS::S3::Bucket',
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
         },
         DatabaseB269D8BB: {
           Type: 'AWS::Glue::Database',
@@ -84,9 +85,9 @@ export = {
     // THEN
     test.deepEqual(database.databaseArn, 'arn:aws:glue:us-east-1:123456789012:database/db1');
     test.deepEqual(database.databaseName, 'db1');
-    test.deepEqual(stack.node.resolve(database.catalogArn), { 'Fn::Join': [ '',
+    test.deepEqual(stack.resolve(database.catalogArn), { 'Fn::Join': [ '',
       [ 'arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog' ] ] });
-    test.deepEqual(stack.node.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
+    test.deepEqual(stack.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
     test.done();
   }
 };

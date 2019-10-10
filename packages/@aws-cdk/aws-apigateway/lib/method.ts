@@ -1,8 +1,11 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
+import { IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
+import { IModel } from './model';
+import { IRequestValidator } from './requestvalidator';
 import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -23,11 +26,8 @@ export interface MethodOptions {
   /**
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
-   *
-   * NOTE: in the future this will be replaced with an `IAuthorizer`
-   * construct.
    */
-  readonly authorizerId?: string;
+  readonly authorizer?: IAuthorizer;
 
   /**
    * Indicates whether the method requires clients to submit a valid API key.
@@ -56,9 +56,17 @@ export interface MethodOptions {
    */
   readonly requestParameters?: { [param: string]: boolean };
 
-  // TODO:
-  // - RequestValidatorId
-  // - RequestModels
+  /**
+   * The resources that are used for the response's content type. Specify request
+   * models as key-value pairs (string-to-string mapping), with a content type
+   * as the key and a Model resource name as the value
+   */
+  readonly requestModels?: { [param: string]: IModel };
+
+  /**
+   * The ID of the associated request validator.
+   */
+  readonly requestValidator?: IRequestValidator;
 }
 
 export interface MethodProps {
@@ -75,11 +83,15 @@ export interface MethodProps {
 
   /**
    * The backend system that the method calls when it receives a request.
+   *
+   * @default - a new `MockIntegration`.
    */
   readonly integration?: Integration;
 
   /**
    * Method options.
+   *
+   * @default - No options.
    */
   readonly options?: MethodOptions;
 }
@@ -101,9 +113,10 @@ export class Method extends Resource {
 
     validateHttpMethod(this.httpMethod);
 
-    const options = props.options || { };
+    const options = props.options || {};
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
+    const authorizer = options.authorizer || defaultMethodOptions.authorizer;
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
@@ -111,11 +124,13 @@ export class Method extends Resource {
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
-      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.None,
-      authorizerId: options.authorizerId || defaultMethodOptions.authorizerId,
-      requestParameters: options.requestParameters,
+      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE,
+      authorizerId: authorizer && authorizer.authorizerId,
+      requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
+      requestModels: this.renderRequestModels(options.requestModels),
+      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
@@ -149,7 +164,7 @@ export class Method extends Resource {
     }
 
     const stage = this.restApi.deploymentStage.stageName.toString();
-    return this.restApi.executeApiArn(this.httpMethod, this.resource.path, stage);
+    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, stage);
   }
 
   /**
@@ -157,7 +172,7 @@ export class Method extends Resource {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.restApi.executeApiArn(this.httpMethod, this.resource.path, 'test-invoke-stage');
+    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, 'test-invoke-stage');
   }
 
   private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {
@@ -173,18 +188,18 @@ export class Method extends Resource {
 
     integration.bind(this);
 
-    const options = integration.props.options || { };
+    const options = integration._props.options || { };
 
     let credentials;
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
       throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
     }
 
-    if (options.connectionType === ConnectionType.VpcLink && options.vpcLink === undefined) {
+    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
       throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
     }
 
-    if (options.connectionType === ConnectionType.Internet && options.vpcLink !== undefined) {
+    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
       throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
     }
 
@@ -193,16 +208,16 @@ export class Method extends Resource {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // tslint:disable-next-line:max-line-length
-      credentials = this.node.stack.formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
     }
 
     return {
-      type: integration.props.type,
-      uri: integration.props.uri,
+      type: integration._props.type,
+      uri: integration._props.uri,
       cacheKeyParameters: options.cacheKeyParameters,
       cacheNamespace: options.cacheNamespace,
       contentHandling: options.contentHandling,
-      integrationHttpMethod: integration.props.integrationHttpMethod,
+      integrationHttpMethod: integration._props.integrationHttpMethod,
       requestParameters: options.requestParameters,
       requestTemplates: options.requestTemplates,
       passthroughBehavior: options.passthroughBehavior,
@@ -240,13 +255,29 @@ export class Method extends Resource {
       return methodResponseProp;
     });
   }
+
+  private renderRequestModels(requestModels: { [param: string]: IModel } | undefined): { [param: string]: string } | undefined {
+    if (!requestModels) {
+      // Fall back to nothing
+      return undefined;
+    }
+
+    const models: {[param: string]: string} = {};
+    for (const contentType in requestModels) {
+      if (requestModels.hasOwnProperty(contentType)) {
+          models[contentType] = requestModels[contentType].modelId;
+      }
+    }
+
+    return models;
+  }
 }
 
 export enum AuthorizationType {
   /**
    * Open access.
    */
-  None = 'NONE',
+  NONE = 'NONE',
 
   /**
    * Use AWS IAM permissions.
@@ -256,10 +287,10 @@ export enum AuthorizationType {
   /**
    * Use a custom authorizer.
    */
-  Custom = 'CUSTOM',
+  CUSTOM = 'CUSTOM',
 
   /**
    * Use an AWS Cognito user pool.
    */
-  Cognito = 'COGNITO_USER_POOLS',
+  COGNITO = 'COGNITO_USER_POOLS',
 }

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from aws_cdk import cdk
+from aws_cdk import core
 
 from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 
-app = cdk.App()
-%name.PascalCased%Stack(app, "%name%-cdk-1")
+app = core.App()
+%name.PascalCased%Stack(app, "%name.StackName%")
 
-app.run()
+app.synth()

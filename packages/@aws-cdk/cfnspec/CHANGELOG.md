@@ -1,3 +1,536 @@
+# CloudFormation Resource Specification v6.3.0
+
+## New Resource Types
+
+* AWS::Cognito::UserPoolDomain
+* AWS::Cognito::UserPoolIdentityProvider
+* AWS::Cognito::UserPoolResourceServer
+* AWS::Cognito::UserPoolRiskConfigurationAttachment
+* AWS::Cognito::UserPoolUICustomizationAttachment
+* AWS::EC2::TrafficMirrorFilter
+* AWS::EC2::TrafficMirrorFilterRule
+* AWS::EC2::TrafficMirrorSession
+* AWS::EC2::TrafficMirrorTarget
+
+## Attribute Changes
+
+* AWS::Pinpoint::App Arn (__added__)
+* AWS::Pinpoint::Campaign Arn (__added__)
+* AWS::Pinpoint::Segment Arn (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool EnabledMfas (__added__)
+* AWS::Events::EventBusPolicy EventBusName (__added__)
+* AWS::Pinpoint::App Tags (__added__)
+* AWS::Pinpoint::Campaign Tags (__added__)
+* AWS::Pinpoint::Segment Tags (__added__)
+
+## Property Type Changes
+
+* AWS::Budgets::Budget.BudgetData PlannedBudgetLimits (__added__)
+
+
+# CloudFormation Resource Specification v6.2.0
+
+## New Resource Types
+
+* AWS::EC2::VPCEndpointService
+* AWS::Glue::Workflow
+* AWS::SageMaker::CodeRepository
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker HostInstanceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DocDB::DBCluster EnableCloudwatchLogsExports (__added__)
+* AWS::Glue::DevEndpoint Arguments (__added__)
+* AWS::Glue::DevEndpoint GlueVersion (__added__)
+* AWS::Glue::DevEndpoint NumberOfWorkers (__added__)
+* AWS::Glue::DevEndpoint WorkerType (__added__)
+* AWS::Glue::Job NotificationProperty (__added__)
+* AWS::Glue::Job Timeout (__added__)
+* AWS::Glue::Trigger StartOnCreation (__added__)
+* AWS::Glue::Trigger WorkflowName (__added__)
+* AWS::ServiceDiscovery::Instance InstanceAttributes.PrimitiveType (__changed__)
+  * Old: Map
+  * New: Json
+
+## Property Type Changes
+
+* AWS::Glue::Job.NotificationProperty (__added__)
+* AWS::Glue::Trigger.NotificationProperty (__added__)
+* AWS::Glue::Trigger.Action CrawlerName (__added__)
+* AWS::Glue::Trigger.Action NotificationProperty (__added__)
+* AWS::Glue::Trigger.Action Timeout (__added__)
+* AWS::Glue::Trigger.Condition CrawlState (__added__)
+* AWS::Glue::Trigger.Condition CrawlerName (__added__)
+
+
+# CloudFormation Resource Specification v6.1.0
+
+## New Resource Types
+
+* AWS::QLDB::Ledger
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Config::RemediationConfiguration Automatic (__added__)
+* AWS::Config::RemediationConfiguration ExecutionControls (__added__)
+* AWS::Config::RemediationConfiguration MaximumAutomaticAttempts (__added__)
+* AWS::Config::RemediationConfiguration RetryAttemptSeconds (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.Duration (__added__)
+* AWS::AppMesh::Route.HttpRetryPolicy (__added__)
+* AWS::Config::RemediationConfiguration.ExecutionControls (__added__)
+* AWS::Config::RemediationConfiguration.SsmControls (__added__)
+* AWS::AppMesh::Route.HttpRoute RetryPolicy (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
+# CloudFormation Resource Specification v6.0.0
+
+## New Resource Types
+
+* AWS::Config::OrganizationConfigRule
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker SecurityGroups.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ApplicationAutoScaling::ScalableTarget SuspendedState (__added__)
+* AWS::CloudWatch::Alarm ThresholdMetricId (__added__)
+* AWS::CloudWatch::Alarm Threshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Cognito::UserPoolClient RefreshTokenValidity.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::EC2::Instance CpuOptions (__added__)
+* AWS::ECS::TaskDefinition IpcMode (__added__)
+* AWS::ECS::TaskDefinition PidMode (__added__)
+* AWS::ElastiCache::ReplicationGroup KmsKeyId (__added__)
+* AWS::IAM::Role Description (__added__)
+* AWS::IAM::Role Tags (__added__)
+* AWS::Lambda::EventSourceMapping MaximumBatchingWindowInSeconds (__added__)
+* AWS::RDS::DBCluster AssociatedRoles (__added__)
+* AWS::RDS::DBCluster RestoreType (__added__)
+* AWS::RDS::DBCluster SourceDBClusterIdentifier (__added__)
+* AWS::RDS::DBCluster UseLatestRestorableTime (__added__)
+* AWS::RDS::DBInstance AssociatedRoles (__added__)
+* AWS::SNS::Subscription Region.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::ApplicationAutoScaling::ScalableTarget.SuspendedState (__added__)
+* AWS::EC2::Instance.CpuOptions (__added__)
+* AWS::ECS::TaskDefinition.SystemControl (__added__)
+* AWS::Elasticsearch::Domain.ZoneAwarenessConfig (__added__)
+* AWS::Events::Rule.AwsVpcConfiguration (__added__)
+* AWS::Events::Rule.NetworkConfiguration (__added__)
+* AWS::RDS::DBCluster.DBClusterRole (__added__)
+* AWS::RDS::DBInstance.DBInstanceRole (__added__)
+* AWS::Cognito::UserPool.AdminCreateUserConfig UnusedAccountValidityDays.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::Cognito::UserPool.PasswordPolicy TemporaryPasswordValidityDays.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::DynamoDB::Table.SSESpecification KMSMasterKeyId (__added__)
+* AWS::DynamoDB::Table.SSESpecification SSEType (__added__)
+* AWS::EC2::ClientVpnEndpoint.TagSpecification ResourceType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::ClientVpnEndpoint.TagSpecification Tags.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::Instance.Ebs KmsKeyId (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition Interactive (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition PseudoTerminal (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition SystemControls (__added__)
+* AWS::ECS::TaskDefinition.LogConfiguration SecretOptions (__added__)
+* AWS::ECS::TaskDefinition.Tmpfs Size.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig ZoneAwarenessConfig (__added__)
+* AWS::Events::Rule.EcsParameters Group (__added__)
+* AWS::Events::Rule.EcsParameters LaunchType (__added__)
+* AWS::Events::Rule.EcsParameters NetworkConfiguration (__added__)
+* AWS::Events::Rule.EcsParameters PlatformVersion (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+
+
+# CloudFormation Resource Specification v5.3.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Neptune::DBCluster EnableCloudwatchLogsExports (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.HeaderMatchMethod (__added__)
+* AWS::AppMesh::Route.HttpRouteHeader (__added__)
+* AWS::AppMesh::Route.MatchRange (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Headers (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Method (__added__)
+* AWS::AppMesh::Route.HttpRouteMatch Scheme (__added__)
+* AWS::AppMesh::Route.RouteSpec Priority (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
+# CloudFormation Resource Specification v5.2.0
+
+## New Resource Types
+
+* AWS::SSM::MaintenanceWindowTarget
+* AWS::SageMaker::Workteam
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DMS::ReplicationTask CdcStartPosition (__added__)
+* AWS::DMS::ReplicationTask CdcStopPosition (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LogConfig ExcludeVerboseContent (__added__)
+
+
+# CloudFormation Resource Specification v5.1.0
+
+## New Resource Types
+
+* AWS::CodeBuild::SourceCredential
+* AWS::Glue::MLTransform
+* AWS::LakeFormation::DataLakeSettings
+* AWS::LakeFormation::Permissions
+* AWS::LakeFormation::Resource
+* AWS::ManagedBlockchain::Member
+* AWS::ManagedBlockchain::Node
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EC2::ClientVpnEndpoint SplitTunnel (__added__)
+* AWS::Greengrass::ConnectorDefinition Tags (__added__)
+* AWS::Greengrass::CoreDefinition Tags (__added__)
+* AWS::Greengrass::DeviceDefinition Tags (__added__)
+* AWS::Greengrass::FunctionDefinition Tags (__added__)
+* AWS::Greengrass::Group Tags (__added__)
+* AWS::Greengrass::LoggerDefinition Tags (__added__)
+* AWS::Greengrass::ResourceDefinition Tags (__added__)
+* AWS::Greengrass::SubscriptionDefinition Tags (__added__)
+
+## Property Type Changes
+
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-input-tag.html#cfn-iotevents-input-tag-value
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api AccessLogSetting (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.AccessLogSetting (__added__)
+
+# CloudFormation Resource Specification v5.0.0
+
+## New Resource Types
+
+* AWS::CodeStar::GitHubRepository
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeCommit::Repository Tags (__added__)
+* AWS::Cognito::UserPool UserPoolAddOns (__added__)
+* AWS::Cognito::UserPool VerificationMessageTemplate (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlows (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlowsUserPoolClient (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthScopes (__added__)
+* AWS::Cognito::UserPoolClient AnalyticsConfiguration (__added__)
+* AWS::Cognito::UserPoolClient CallbackURLs (__added__)
+* AWS::Cognito::UserPoolClient DefaultRedirectURI (__added__)
+* AWS::Cognito::UserPoolClient LogoutURLs (__added__)
+* AWS::Cognito::UserPoolClient SupportedIdentityProviders (__added__)
+* AWS::Glue::Job GlueVersion (__added__)
+* AWS::Glue::Job MaxCapacity (__added__)
+* AWS::Glue::Job NumberOfWorkers (__added__)
+* AWS::Glue::Job WorkerType (__added__)
+* AWS::SSM::MaintenanceWindowTask ServiceRoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask WindowId.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.Device (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters (__added__)
+* AWS::Cognito::UserPool.UserPoolAddOns (__added__)
+* AWS::Cognito::UserPool.VerificationMessageTemplate (__added__)
+* AWS::Cognito::UserPoolClient.AnalyticsConfiguration (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources SecurityGroupIds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::JobDefinition.ContainerProperties LinuxParameters (__added__)
+* AWS::CodeCommit::Repository.RepositoryTrigger DestinationArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeCommit::Repository.RepositoryTrigger Events.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeCommit::Repository.RepositoryTrigger Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Cognito::UserPool.LambdaConfig PreTokenGeneration (__added__)
+* AWS::Cognito::UserPool.LambdaConfig UserMigration (__added__)
+* AWS::Glue::Job.JobCommand PythonVersion (__added__)
+
+
+# CloudFormation Resource Specification v4.3.0
+
+## New Resource Types
+
+* AWS::IoTEvents::DetectorModel
+* AWS::IoTEvents::Input
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker EncryptionOptions (__added__)
+* AWS::Amplify::App AutoBranchCreationConfig (__added__)
+* AWS::Amplify::Branch EnableAutoBuild (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.EncryptionOptions (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig (__added__)
+* AWS::Amplify::App.BasicAuthConfig Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Amplify::App.BasicAuthConfig Username.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v4.2.0
+
+## New Resource Types
+
+* AWS::Backup::BackupPlan
+* AWS::Backup::BackupSelection
+* AWS::Backup::BackupVault
+* AWS::CloudWatch::AnomalyDetector
+* AWS::Config::RemediationConfiguration
+* AWS::MediaLive::Channel
+* AWS::MediaLive::Input
+* AWS::MediaLive::InputSecurityGroup
+* AWS::SecurityHub::Hub
+* AWS::ServiceCatalog::StackSetConstraint
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Amplify::App Repository.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Api Tags (__added__)
+* AWS::ApiGatewayV2::DomainName Tags (__added__)
+* AWS::ApiGatewayV2::Stage Tags (__added__)
+* AWS::AppMesh::Mesh Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::Route Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualNode Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualRouter Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppMesh::VirtualService Tags.ItemType (__changed__)
+  * Old: TagRef
+  * New: Tag
+* AWS::AppStream::Fleet IdleDisconnectTimeoutInSeconds (__added__)
+* AWS::IoTAnalytics::Channel ChannelStorage (__added__)
+* AWS::IoTAnalytics::Datastore DatastoreStorage (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProvisioningPreferences (__added__)
+
+## Property Type Changes
+
+* AWS::Amplify::App.Token (__removed__)
+* AWS::AppMesh::Mesh.TagRef (__removed__)
+* AWS::AppMesh::Route.TagRef (__removed__)
+* AWS::AppMesh::VirtualNode.TagRef (__removed__)
+* AWS::AppMesh::VirtualRouter.TagRef (__removed__)
+* AWS::AppMesh::VirtualService.TagRef (__removed__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapInstanceAttribute (__added__)
+* AWS::AppMesh::VirtualNode.AwsCloudMapServiceDiscovery (__added__)
+* AWS::IoTAnalytics::Channel.ChannelStorage (__added__)
+* AWS::IoTAnalytics::Channel.CustomerManagedS3 (__added__)
+* AWS::IoTAnalytics::Channel.ServiceManagedS3 (__added__)
+* AWS::IoTAnalytics::Datastore.CustomerManagedS3 (__added__)
+* AWS::IoTAnalytics::Datastore.DatastoreStorage (__added__)
+* AWS::IoTAnalytics::Datastore.ServiceManagedS3 (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct.ProvisioningPreferences (__added__)
+* AWS::AppMesh::VirtualNode.ServiceDiscovery AWSCloudMap (__added__)
+* AWS::EC2::LaunchTemplate.SpotOptions BlockDurationMinutes (__added__)
+* AWS::EC2::LaunchTemplate.SpotOptions ValidUntil (__added__)
+* AWS::Route53Resolver::ResolverRule.TargetAddress Port.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-branch-tag.html#cfn-amplify-branch-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-branch-tag.html#cfn-amplify-branch-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-tag.html#cfn-transfer-user-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function Policies.ItemTypes (__changed__)
+  * Added SAMPolicyTemplate
+
+## Property Type Changes
+
+* AWS::Serverless::Function.BucketSAMPT (__added__)
+* AWS::Serverless::Function.CollectionSAMPT (__added__)
+* AWS::Serverless::Function.DomainSAMPT (__added__)
+* AWS::Serverless::Function.EmptySAMPT (__added__)
+* AWS::Serverless::Function.FunctionSAMPT (__added__)
+* AWS::Serverless::Function.IdentitySAMPT (__added__)
+* AWS::Serverless::Function.KeySAMPT (__added__)
+* AWS::Serverless::Function.LogGroupSAMPT (__added__)
+* AWS::Serverless::Function.QueueSAMPT (__added__)
+* AWS::Serverless::Function.SAMPolicyTemplate (__added__)
+* AWS::Serverless::Function.StateMachineSAMPT (__added__)
+* AWS::Serverless::Function.StreamSAMPT (__added__)
+* AWS::Serverless::Function.TableSAMPT (__added__)
+* AWS::Serverless::Function.TableStreamSAMPT (__added__)
+* AWS::Serverless::Function.TopicSAMPT (__added__)
+
+# CloudFormation Resource Specification v3.3.0
+
+## New Resource Types
+
+* AWS::EC2::CapacityReservation
+* AWS::PinpointEmail::ConfigurationSet
+* AWS::PinpointEmail::ConfigurationSetEventDestination
+* AWS::PinpointEmail::DedicatedIpPool
+* AWS::PinpointEmail::Identity
+* AWS::Transfer::Server
+* AWS::Transfer::User
+* AWS::WAFRegional::GeoMatchSet
+* AWS::WAFRegional::RateBasedRule
+* AWS::WAFRegional::RegexPatternSet
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeBuild::Project SecondarySourceVersions (__added__)
+* AWS::CodeBuild::Project SourceVersion (__added__)
+* AWS::CodeCommit::Repository Code (__added__)
+* AWS::ECS::TaskDefinition ProxyConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.ProjectSourceVersion (__added__)
+* AWS::CodeCommit::Repository.Code (__added__)
+* AWS::CodeCommit::Repository.S3 (__added__)
+* AWS::ECS::TaskDefinition.ContainerDependency (__added__)
+* AWS::ECS::TaskDefinition.ProxyConfiguration (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface InterfaceType (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DependsOn (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StartTimeout (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StopTimeout (__added__)
+
+
 # CloudFormation Resource Specification v3.0.0
 
 ## New Resource Types

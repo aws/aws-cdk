@@ -2,10 +2,10 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { ConnectionType, EmptyModel, ErrorModel } from '../lib';
+import { ConnectionType, JsonSchemaType, JsonSchemaVersion } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -112,7 +112,7 @@ export = {
   'use default integration from api'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HttpProxy, uri: 'https://amazon.com' });
+    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HTTP_PROXY, uri: 'https://amazon.com' });
     const api = new apigateway.RestApi(stack, 'test-api', {
       cloudWatchRole: false,
       deploy: false,
@@ -148,7 +148,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(method.node.resolve(method.methodArn), {
+    test.deepEqual(stack.resolve(method.methodArn), {
       "Fn::Join": [
         "",
         [
@@ -182,7 +182,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(method.node.resolve(method.testMethodArn), {
+    test.deepEqual(stack.resolve(method.testMethodArn), {
       "Fn::Join": [
         "",
         [
@@ -223,7 +223,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsRole: role
       }
@@ -245,7 +245,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true
       }
@@ -268,7 +268,7 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true,
         credentialsRole: role
@@ -287,10 +287,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.VpcLink,
+        connectionType: ConnectionType.VPC_LINK,
       }
     });
 
@@ -313,10 +313,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.Internet,
+        connectionType: ConnectionType.INTERNET,
         vpcLink: link
       }
     });
@@ -349,8 +349,8 @@ export = {
               'method.response.header.errthing': true
             },
             responseModels: {
-              'application/json': new EmptyModel(),
-              'text/plain': new ErrorModel()
+              'application/json': apigateway.Model.EMPTY_MODEL,
+              'text/plain': apigateway.Model.ERROR_MODEL
             }
           }
         ]
@@ -383,7 +383,7 @@ export = {
     test.done();
   },
 
-  'multiple integration responses can be used'(test: Test) { // @see https://github.com/awslabs/aws-cdk/issues/1608
+  'multiple integration responses can be used'(test: Test) { // @see https://github.com/aws/aws-cdk/issues/1608
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
@@ -444,5 +444,170 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "GET" }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "PUT" }));
     test.done();
-  }
+  },
+
+  'requestModel can be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const model = api.addModel('test-model', {
+      contentType: "application/json",
+      modelName: 'test-model',
+      schema: {
+        title: "test",
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
+      }
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestModels: {
+          "application/json": model
+        }
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      RequestModels: {
+        "application/json": { Ref: stack.getLogicalId(model.node.findChild('Resource') as cdk.CfnElement) }
+      }
+    }));
+
+    test.done();
+  },
+
+  'methodResponse has a mix of response modes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const htmlModel = api.addModel('my-model', {
+      schema: {
+        schema: JsonSchemaVersion.DRAFT4,
+        title: "test",
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
+      }
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        methodResponses: [{
+            statusCode: '200'
+          }, {
+            statusCode: "400",
+            responseParameters: {
+              'method.response.header.killerbees': false
+            }
+          }, {
+            statusCode: "500",
+            responseParameters: {
+              'method.response.header.errthing': true
+            },
+            responseModels: {
+              'application/json': apigateway.Model.EMPTY_MODEL,
+              'text/plain': apigateway.Model.ERROR_MODEL,
+              'text/html': htmlModel
+            }
+          }
+        ]
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [{
+          StatusCode: "200"
+        }, {
+          StatusCode: "400",
+          ResponseParameters: {
+            'method.response.header.killerbees': false
+          }
+        }, {
+          StatusCode: "500",
+          ResponseParameters: {
+            'method.response.header.errthing': true
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+            'text/plain': 'Error',
+            'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) }
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'method has a request validator'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const validator = api.addRequestValidator('validator', {
+      validateRequestBody: true,
+      validateRequestParameters: false
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestValidator: validator
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RequestValidatorId: { Ref: stack.getLogicalId(validator.node.findChild('Resource') as cdk.CfnElement) }
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      ValidateRequestBody: true,
+      ValidateRequestParameters: false
+    }));
+
+    test.done();
+  },
+
+  'use default requestParameters'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        requestParameters: {"method.request.path.proxy": true}
+      }
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'defaultRequestParameters', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        operationName: 'defaultRequestParameters'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      OperationName: 'defaultRequestParameters',
+      RequestParameters: {
+        "method.request.path.proxy": true
+      }
+    }));
+
+    test.done();
+  },
 };

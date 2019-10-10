@@ -1,10 +1,11 @@
-import cxapi = require('@aws-cdk/cx-api');
+import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { Tag } from "../api/cxapp/stacks";
 import { debug } from '../logging';
 import { deserializeStructure } from '../serialize';
 import { Mode } from './aws-auth/credentials';
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
-import { SDK } from './util/sdk';
+import { ISDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -16,38 +17,39 @@ export type Template = { [key: string]: any };
  * Provisioners apply templates to the cloud infrastructure.
  */
 export interface IDeploymentTarget {
-  readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template>;
+  readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template>;
   deployStack(options: DeployStackOptions): Promise<DeployStackResult>;
 }
 
 export interface DeployStackOptions {
-  stack: cxapi.SynthesizedStack;
+  stack: CloudFormationStackArtifact;
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;
   ci?: boolean;
   toolkitStackName?: string;
   reuseAssets?: string[];
+  tags?: Tag[];
 }
 
 export interface ProvisionerProps {
-  aws: SDK;
+  aws: ISDK;
 }
 
 /**
  * Default provisioner (applies to CloudFormation).
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
-  private readonly aws: SDK;
+  private readonly aws: ISDK;
 
   constructor(props: ProvisionerProps) {
     this.aws = props.aws;
   }
 
-  public async readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template> {
+  public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stack.name}.`);
 
-    const cfn = await this.aws.cloudFormation(stack.environment, Mode.ForReading);
+    const cfn = await this.aws.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
     try {
       const response = await cfn.getTemplate({ StackName: stack.name }).promise();
       return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
@@ -71,6 +73,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       ci: options.ci,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
+      tags: options.tags
     });
   }
 }
