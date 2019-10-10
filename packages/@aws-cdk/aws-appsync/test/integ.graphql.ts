@@ -4,7 +4,7 @@ import { join } from 'path';
 import { GraphQLApi, MappingTemplate } from '../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-appsync-integ');
 
 const api = new GraphQLApi(stack, 'Api', {
     name: `demoapi`,

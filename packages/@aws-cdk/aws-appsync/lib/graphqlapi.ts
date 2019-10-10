@@ -116,7 +116,7 @@ export class GraphQLApi extends Construct {
         if (props.userPoolConfig) {
             this.authenticationType = 'AMAZON_COGNITO_USER_POOLS';
         } else {
-            this.authenticationType = 'NONE';
+            this.authenticationType = 'API_KEY';
         }
 
         this.api = new CfnGraphQLApi(this, 'Resource', {
