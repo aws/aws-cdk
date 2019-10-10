@@ -71,6 +71,19 @@ export interface MapProps {
 }
 
 /**
+ * Returns true if the value passed is a positive integer
+ * @param value the value ti validate
+ */
+
+export const isPositiveInteger = (value: number) => {
+    const isFloat = Math.floor(value) !== value;
+
+    const isNotPositiveInteger = value < 0 || value > Number.MAX_SAFE_INTEGER;
+
+    return isFloat || isNotPositiveInteger;
+};
+
+/**
  * Define a Map state in the state machine
  *
  * A Map state can be used to dynamically process elements of an array through sub state machines
@@ -150,28 +163,15 @@ export class Map extends State implements INextable {
      * Validate this state
      */
     protected validate(): string[] {
-        const validateMaxConcurrency = () => {
-            const maxConcurrency = this.maxConcurrency;
-            if (maxConcurrency === undefined) {
-                return;
-            }
-
-            const isFloat = Math.floor(maxConcurrency) !== maxConcurrency;
-
-            const isNotPositiveInteger = maxConcurrency < 0 || maxConcurrency > Number.MAX_SAFE_INTEGER;
-
-            if (isFloat || isNotPositiveInteger) {
-                errors.push('maxConcurrency has to be a positive integer');
-            }
-        };
-
         const errors: string[] = [];
 
         if (this.iteration === undefined) {
             errors.push('Map state must have a non-empty iterator');
         }
 
-        validateMaxConcurrency();
+        if (this.maxConcurrency !== undefined && !isPositiveInteger(this.maxConcurrency)) {
+            errors.push('maxConcurrency has to be a positive integer');
+        }
 
         return errors;
     }
