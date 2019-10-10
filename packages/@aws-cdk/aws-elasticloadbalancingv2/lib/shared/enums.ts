@@ -14,36 +14,36 @@ export enum IpAddressType {
 }
 
 /**
- * Backend protocol for health checks
+ * Backend protocol for network load balancers and health checks
  */
 export enum Protocol {
   /**
-   * HTTP
+   * HTTP (health checks only)
    */
   HTTP = 'HTTP',
 
   /**
-   * HTTPS
+   * HTTPS (health checks only)
    */
   HTTPS = 'HTTPS',
 
   /**
-   * TCP
+   * TCP (NLB, health checks)
    */
   TCP = 'TCP',
 
   /**
-   * TLS
+   * TLS (NLB, health checks)
    */
   TLS = 'TLS',
 
   /**
-   * UDP
+   * UDP (NLB, health checks)
    */
   UDP = 'UDP',
 
   /**
-   * Listen to both TCP and UDP on the same port
+   * Listen to both TCP and UDP on the same port (NLB, health checks)
    */
   TCP_UDP = 'TCP_UDP',
 }
@@ -61,31 +61,6 @@ export enum ApplicationProtocol {
    * HTTPS
    */
   HTTPS = 'HTTPS'
-}
-
-/**
- * Load balancing protocol for network load balancers
- */
-export enum NetworkProtocol {
-  /**
-   * TCP
-   */
-  TCP = 'TCP',
-
-  /**
-   * TLS
-   */
-  TLS = 'TLS',
-
-  /**
-   * UDP
-   */
-  UDP = 'UDP',
-
-  /**
-   * Listen to both TCP and UDP on the same port
-   */
-  TCP_UDP = 'TCP_UDP',
 }
 
 /**
