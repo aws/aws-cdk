@@ -72,6 +72,13 @@ export interface BucketDeploymentProps {
   readonly memoryLimit?: number;
 
   /**
+   * Execution role associated with this function
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
+  
+  /**
    * User-defined object metadata to be set on all objects in the deployment
    * @default - No user metadata is set
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
@@ -165,6 +172,7 @@ export class BucketDeployment extends cdk.Construct {
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
+      role: props.role,
       memorySize: props.memoryLimit
     });
 

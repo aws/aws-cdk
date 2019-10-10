@@ -1,5 +1,6 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import cloudfront = require('@aws-cdk/aws-cloudfront');
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -271,7 +272,7 @@ export = {
           s3OriginSource: {
             s3BucketSource: bucket
           },
-          behaviors : [ {isDefaultBehavior: true}]
+          behaviors: [{ isDefaultBehavior: true }]
         }
       ]
     });
@@ -304,7 +305,7 @@ export = {
           s3OriginSource: {
             s3BucketSource: bucket
           },
-          behaviors : [ {isDefaultBehavior: true}]
+          behaviors: [{ isDefaultBehavior: true }]
         }
       ]
     });
@@ -464,8 +465,38 @@ export = {
     // we expect to find only two handlers, one for each configuration
 
     expect(stack).to(countResources('AWS::Lambda::Function', 2));
-    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256  }));
+    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256 }));
     expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 1024 }));
+    test.done();
+  },
+
+  'deployment allows custom role to be supplied'(test: Test) {
+
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+    const existingRole = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazon.com')
+    });
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'DeployWithRole', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      role: existingRole
+    });
+
+    // THEN
+    expect(stack).to(countResources('AWS::IAM::Role', 1));
+    expect(stack).to(countResources('AWS::Lambda::Function', 1));
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      "Role": {
+        "Fn::GetAtt": [
+          "Role1ABCC5F0",
+          "Arn"
+        ]
+      }
+    }));
     test.done();
   }
 };

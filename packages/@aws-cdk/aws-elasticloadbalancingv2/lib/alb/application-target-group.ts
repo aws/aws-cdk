@@ -5,7 +5,7 @@ import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupBase, TargetGroupImportProps
 } from '../shared/base-target-group';
-import { ApplicationProtocol, TargetType } from '../shared/enums';
+import { ApplicationProtocol, Protocol, TargetType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
@@ -309,6 +309,13 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         ret.push(`At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup`);
     }
 
+    if (this.healthCheck && this.healthCheck.protocol && !ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+      ret.push([
+        `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
+        `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`
+      ].join(''));
+    }
+
     return ret;
   }
 }
@@ -373,3 +380,5 @@ export interface IApplicationLoadBalancerTarget {
    */
   attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps;
 }
+
+const ALB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
