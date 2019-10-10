@@ -31,6 +31,7 @@ export interface DeployStackOptions {
   sdk: ISDK;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
+  notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
   ci?: boolean;
@@ -78,6 +79,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     TemplateURL: bodyParameter.TemplateURL,
     Parameters: params,
     RoleARN: options.roleArn,
+    NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
     Tags: options.tags
   }).promise();

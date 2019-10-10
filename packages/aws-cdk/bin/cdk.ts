@@ -57,6 +57,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
+      .option('notification-arns', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependees' })
@@ -198,6 +199,7 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
+          notificationArns: args.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
           ci: args.ci,
           reuseAssets: args['build-exclude'],
