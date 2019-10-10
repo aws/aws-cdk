@@ -80,7 +80,7 @@ export const isPositiveInteger = (value: number) => {
 
     const isNotPositiveInteger = value < 0 || value > Number.MAX_SAFE_INTEGER;
 
-    return isFloat || isNotPositiveInteger;
+    return !isFloat && !isNotPositiveInteger;
 };
 
 /**

@@ -133,22 +133,28 @@ export = {
     },
     'isPositiveInteger is false with negative number'(test: Test) {
         test.equals(isPositiveInteger(-1), false, '-1 is not a valid positive integer');
+        test.done();
     },
     'isPositiveInteger is false with decimal number'(test: Test) {
         test.equals(isPositiveInteger(1.2), false, '1.2 is not a valid positive integer');
+        test.done();
     },
     'isPositiveInteger is false with a value greater than safe integer '(test: Test) {
         const valueToTest = Number.MAX_SAFE_INTEGER + 1;
         test.equals(isPositiveInteger(valueToTest), false, `${valueToTest} is not a valid positive integer`);
+        test.done();
     },
     'isPositiveInteger is true with 0'(test: Test) {
         test.equals(isPositiveInteger(0), true, '0 is expected to be a positive integer');
+        test.done();
     },
     'isPositiveInteger is true with 10'(test: Test) {
         test.equals(isPositiveInteger(10), true, '10 is expected to be a positive integer');
+        test.done();
     },
     'isPositiveInteger is true with max integer value'(test: Test) {
         test.equals(isPositiveInteger(Number.MAX_SAFE_INTEGER), true, `${Number.MAX_SAFE_INTEGER} is expected to be a positive integer`);
+        test.done();
     }
 };
 
