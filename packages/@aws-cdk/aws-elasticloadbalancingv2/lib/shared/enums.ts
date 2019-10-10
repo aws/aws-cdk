@@ -18,32 +18,32 @@ export enum IpAddressType {
  */
 export enum Protocol {
   /**
-   * HTTP (health checks only)
+   * HTTP (ALB health checks and NLB health checks)
    */
   HTTP = 'HTTP',
 
   /**
-   * HTTPS (health checks only)
+   * HTTPS (ALB health checks and NLB health checks)
    */
   HTTPS = 'HTTPS',
 
   /**
-   * TCP (NLB, health checks)
+   * TCP (NLB, NLB health checks)
    */
   TCP = 'TCP',
 
   /**
-   * TLS (NLB, health checks)
+   * TLS (NLB)
    */
   TLS = 'TLS',
 
   /**
-   * UDP (NLB, health checks)
+   * UDP (NLB)
    */
   UDP = 'UDP',
 
   /**
-   * Listen to both TCP and UDP on the same port (NLB, health checks)
+   * Listen to both TCP and UDP on the same port (NLB)
    */
   TCP_UDP = 'TCP_UDP',
 }

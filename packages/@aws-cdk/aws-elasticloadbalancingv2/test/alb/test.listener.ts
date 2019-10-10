@@ -369,6 +369,34 @@ export = {
     test.done();
   },
 
+  'validation error if invalid health check protocol'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    const group = listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
+    });
+
+    group.configureHealthCheck({
+      unhealthyThresholdCount: 3,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
+      path: '/test',
+      protocol: elbv2.Protocol.TCP
+    });
+
+    // THEN
+    const validationErrors: string[] = (group as any).validate();
+    test.ok(validationErrors.includes("Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"));
+
+    test.done();
+  },
+
   'Can call addTargetGroups on imported listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

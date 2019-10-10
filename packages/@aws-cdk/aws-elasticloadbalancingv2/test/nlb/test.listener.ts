@@ -206,6 +206,30 @@ export = {
     test.done();
   },
 
+  'validation error if invalid health check protocol'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+    const targetGroup = listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60)
+      }
+    });
+
+    targetGroup.configureHealthCheck({
+      interval: cdk.Duration.seconds(30),
+      protocol: elbv2.Protocol.UDP
+    });
+
+    // THEN
+    const validationErrors: string[] = (targetGroup as any).validate();
+    test.ok(validationErrors.includes("Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]"));
+
+    test.done();
+  },
+
   'Protocol & certs TLS listener'(test: Test) {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
