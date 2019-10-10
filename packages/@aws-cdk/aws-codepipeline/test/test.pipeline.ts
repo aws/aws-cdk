@@ -116,7 +116,18 @@ export = {
                 "Type": "S3",
                 "EncryptionKey": {
                   "Type": "KMS",
-                  "Id": "alias/my-replication-alias",
+                  "Id": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-west-1:123456789012:alias/my-replication-alias",
+                      ],
+                    ],
+                  },
                 },
               },
             },
@@ -163,7 +174,7 @@ export = {
         test.done();
       },
 
-      "generates ArtifactStores with the alias' name as the KeyID"(test: Test) {
+      "generates ArtifactStores with the alias' ARN as the KeyID"(test: Test) {
         const app = new cdk.App();
         const replicationRegion = 'us-west-1';
 
@@ -200,7 +211,18 @@ export = {
                 "Type": "S3",
                 "EncryptionKey": {
                   "Type": "KMS",
-                  "Id": "alias/mystack-support-us-west-1tencryptionalias9b344b2b8e6825cb1f7d",
+                  "Id": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-west-1:123456789012:alias/s-west-1tencryptionalias9b344b2b8e6825cb1f7d",
+                      ],
+                    ],
+                  },
                 },
               },
             },
@@ -262,7 +284,7 @@ export = {
                 "Location": "my-us-west-1-replication-bucket",
                 "EncryptionKey": {
                   "Type": "KMS",
-                  "Id": "1234-5678-9012",
+                  "Id": "arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012",
                 },
               },
             },

@@ -107,7 +107,7 @@ export class Rule extends Resource implements IRule {
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
-      eventPattern: Lazy.anyValue({ produce: () => this.renderEventPattern() }),
+      eventPattern: Lazy.anyValue({ produce: () => this._renderEventPattern() }),
       targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
@@ -229,7 +229,29 @@ export class Rule extends Resource implements IRule {
 
         // The actual rule lives in the target stack.
         // Other than the account, it's identical to this one
-        new Rule(targetStack, `${this.node.uniqueId}-${id}`, {
+
+        // eventPattern is mutable through addEventPattern(), so we need to lazy evaluate it
+        // but only Tokens can be lazy in the framework, so make a subclass instead
+        const self = this;
+        class CopyRule extends Rule {
+          public _renderEventPattern(): any {
+            return self._renderEventPattern();
+          }
+
+          // we need to override validate(), as it uses the
+          // value of the eventPattern field,
+          // which might be empty in the case of the copied rule
+          // (as the patterns in the original might be added through addEventPattern(),
+          // not passed through the constructor).
+          // Anyway, even if the original rule is invalid,
+          // we would get duplicate errors if we didn't override this,
+          // which is probably a bad idea in and of itself
+          protected validate(): string[] {
+            return [];
+          }
+        }
+
+        new CopyRule(targetStack, `${this.node.uniqueId}-${id}`, {
           targets: [target],
           eventPattern: this.eventPattern,
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
@@ -297,23 +319,12 @@ export class Rule extends Resource implements IRule {
     mergeEventPattern(this.eventPattern, eventPattern);
   }
 
-  protected validate() {
-    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [ `Either 'eventPattern' or 'schedule' must be defined` ];
-    }
-
-    return [ ];
-  }
-
-  private renderTargets() {
-    if (this.targets.length === 0) {
-      return undefined;
-    }
-
-    return this.targets;
-  }
-
-  private renderEventPattern() {
+  /**
+   * Not private only to be overrideen in CopyRule.
+   *
+   * @internal
+   */
+  public _renderEventPattern(): any {
     const eventPattern = this.eventPattern;
 
     if (Object.keys(eventPattern).length === 0) {
@@ -331,5 +342,21 @@ export class Rule extends Resource implements IRule {
     }
 
     return out;
+  }
+
+  protected validate() {
+    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
+      return [ `Either 'eventPattern' or 'schedule' must be defined` ];
+    }
+
+    return [ ];
+  }
+
+  private renderTargets() {
+    if (this.targets.length === 0) {
+      return undefined;
+    }
+
+    return this.targets;
   }
 }
