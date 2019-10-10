@@ -1,3 +1,36 @@
+# CloudFormation Resource Specification v6.3.0
+
+## New Resource Types
+
+* AWS::Cognito::UserPoolDomain
+* AWS::Cognito::UserPoolIdentityProvider
+* AWS::Cognito::UserPoolResourceServer
+* AWS::Cognito::UserPoolRiskConfigurationAttachment
+* AWS::Cognito::UserPoolUICustomizationAttachment
+* AWS::EC2::TrafficMirrorFilter
+* AWS::EC2::TrafficMirrorFilterRule
+* AWS::EC2::TrafficMirrorSession
+* AWS::EC2::TrafficMirrorTarget
+
+## Attribute Changes
+
+* AWS::Pinpoint::App Arn (__added__)
+* AWS::Pinpoint::Campaign Arn (__added__)
+* AWS::Pinpoint::Segment Arn (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool EnabledMfas (__added__)
+* AWS::Events::EventBusPolicy EventBusName (__added__)
+* AWS::Pinpoint::App Tags (__added__)
+* AWS::Pinpoint::Campaign Tags (__added__)
+* AWS::Pinpoint::Segment Tags (__added__)
+
+## Property Type Changes
+
+* AWS::Budgets::Budget.BudgetData PlannedBudgetLimits (__added__)
+
+
 # CloudFormation Resource Specification v6.2.0
 
 ## New Resource Types
