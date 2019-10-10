@@ -69,15 +69,15 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.12.0",
     "@types/aws-lambda": "^8.10.33",
-    "@types/lodash": "^4.14.141",
+    "@types/lodash": "^4.14.142",
     "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.543.0",
+    "aws-sdk": "^2.545.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "lodash": "^4.17.15",
-    "nock": "^11.3.5",
+    "nock": "^11.4.0",
     "pkglint": "file:../../../tools/pkglint",
     "sinon": "^7.5.0"
   },
