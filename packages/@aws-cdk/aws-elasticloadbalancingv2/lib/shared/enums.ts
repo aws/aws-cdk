@@ -83,6 +83,21 @@ export enum SslPolicy {
   RECOMMENDED = 'ELBSecurityPolicy-2016-08',
 
   /**
+   * Strong forward secrecy ciphers and TLS1.2 only
+   */
+  FORWARD_SECRECY_TLS12_RES = 'ELBSecurityPolicy-FS-1-2-Res-2019-08',
+
+  /**
+   * Forward secrecy ciphers and TLS1.2 only
+   */
+  FORWARD_SECRECY_TLS12 = 'ELBSecurityPolicy-FS-1-2-2019-08',
+
+  /**
+   * Forward secrecy ciphers only with TLS1.1 and higher
+   */
+  FORWARD_SECRECY_TLS11 = 'ELBSecurityPolicy-FS-1-1-2019-08',
+
+  /**
    * Forward secrecy ciphers only
    */
   FORWARD_SECRECY = 'ELBSecurityPolicy-FS-2018-06',
