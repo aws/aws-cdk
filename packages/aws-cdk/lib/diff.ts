@@ -21,11 +21,6 @@ export function printStackDiff(
       context: number,
       stream?: FormatStream): number {
 
-  if (newTemplate.assets.length > 0) {
-    const issue = 'https://github.com/aws/aws-cdk/issues/395';
-    warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
-  }
-
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
   // filter out 'AWS::CDK::Metadata' resources from the template
