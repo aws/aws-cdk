@@ -5,10 +5,13 @@ import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Token } from '@aws-cdk/core';
+import crypto = require('crypto');
+import fs = require('fs');
 import path = require('path');
 import { ISource, SourceConfig } from './source';
 
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
+const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
   /**
@@ -67,6 +70,13 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   * Execution role associated with this function
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -77,13 +87,18 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error("Distribution must be specified if distribution paths are specified");
     }
 
+    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    // tslint:disable-next-line: no-console
+    console.error({sourceHash});
+
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
+      role: props.role,
       memorySize: props.memoryLimit
     });
 
@@ -130,4 +145,23 @@ export class BucketDeployment extends cdk.Construct {
 
     return uuid;
   }
+}
+
+/**
+ * We need a custom source hash calculation since the bundle.zip file
+ * contains python dependencies installed during build and results in a
+ * non-deterministic behavior.
+ *
+ * So we just take the `src/` directory of our custom resoruce code.
+ */
+function calcSourceHash(srcDir: string): string {
+  const sha = crypto.createHash('sha256');
+  for (const file of fs.readdirSync(srcDir)) {
+    const data = fs.readFileSync(path.join(srcDir, file));
+    sha.update(`<file name=${file}>`);
+    sha.update(data);
+    sha.update('</file>');
+  }
+
+  return sha.digest('hex');
 }

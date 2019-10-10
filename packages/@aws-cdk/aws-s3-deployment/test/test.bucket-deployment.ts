@@ -1,5 +1,6 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import cloudfront = require('@aws-cdk/aws-cloudfront');
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -30,7 +31,7 @@ export = {
         ]
       },
       "SourceBucketNames": [{
-        "Ref": "DeployAsset1S3BucketC03B223F"
+        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
       }],
       "SourceObjectKeys": [{
         "Fn::Join": [
@@ -43,7 +44,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                     }
                   ]
                 }
@@ -56,7 +57,7 @@ export = {
                   "Fn::Split": [
                     "||",
                     {
-                      "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                      "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                     }
                   ]
                 }
@@ -96,10 +97,10 @@ export = {
       },
       "SourceBucketNames": [
         {
-          "Ref": "DeployAsset1S3BucketC03B223F"
+          "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A"
         },
         {
-          "Ref": "DeployAsset2S3Bucket155AFD20"
+          "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3Bucket99793559"
         }
       ],
       "SourceObjectKeys": [
@@ -114,7 +115,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                       }
                     ]
                   }
@@ -127,7 +128,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset1S3VersionKey7642D9E0"
+                        "Ref": "AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C"
                       }
                     ]
                   }
@@ -147,7 +148,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
                       }
                     ]
                   }
@@ -160,7 +161,7 @@ export = {
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "DeployAsset2S3VersionKey8324D51E"
+                        "Ref": "AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665"
                       }
                     ]
                   }
@@ -234,7 +235,7 @@ export = {
           s3OriginSource: {
             s3BucketSource: bucket
           },
-          behaviors : [ {isDefaultBehavior: true}]
+          behaviors: [{ isDefaultBehavior: true }]
         }
       ]
     });
@@ -267,7 +268,7 @@ export = {
           s3OriginSource: {
             s3BucketSource: bucket
           },
-          behaviors : [ {isDefaultBehavior: true}]
+          behaviors: [{ isDefaultBehavior: true }]
         }
       ]
     });
@@ -427,8 +428,38 @@ export = {
     // we expect to find only two handlers, one for each configuration
 
     expect(stack).to(countResources('AWS::Lambda::Function', 2));
-    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256  }));
+    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256 }));
     expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 1024 }));
+    test.done();
+  },
+
+  'deployment allows custom role to be supplied'(test: Test) {
+
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+    const existingRole = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazon.com')
+    });
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'DeployWithRole', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      role: existingRole
+    });
+
+    // THEN
+    expect(stack).to(countResources('AWS::IAM::Role', 1));
+    expect(stack).to(countResources('AWS::Lambda::Function', 1));
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      "Role": {
+        "Fn::GetAtt": [
+          "Role1ABCC5F0",
+          "Arn"
+        ]
+      }
+    }));
     test.done();
   }
 };

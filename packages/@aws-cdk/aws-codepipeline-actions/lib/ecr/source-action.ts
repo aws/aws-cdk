@@ -41,6 +41,7 @@ export class EcrSourceAction extends Action {
   constructor(props: EcrSourceActionProps) {
     super({
       ...props,
+      resource: props.repository,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'ECR',
       artifactBounds: sourceArtifactBounds(),
