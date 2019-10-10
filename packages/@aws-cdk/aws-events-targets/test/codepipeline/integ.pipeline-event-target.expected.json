@@ -71,8 +71,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "pipelinePipeline22F2A91DArtifactsBucketC1799DCD": {
       "Type": "AWS::S3::Bucket",
@@ -107,8 +107,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "pipelinePipeline22F2A91DRole58B7B05E": {
       "Type": "AWS::IAM::Role",
