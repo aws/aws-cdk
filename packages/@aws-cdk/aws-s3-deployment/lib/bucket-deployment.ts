@@ -10,8 +10,8 @@ import fs = require('fs');
 import path = require('path');
 import { ISource, SourceConfig } from './source';
 
-const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
-const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
+const handlerCodeBundle = path.join(__dirname, '../..', 'lambda', 'bundle.zip');
+const handlerSourceDirectory = path.join(__dirname, '../..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
   /**
