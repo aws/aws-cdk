@@ -47,6 +47,7 @@ should be sufficient.
 ```console
 $ git clone git@github.com:aws/aws-cdk.git
 $ cd aws-cdk
+$ ./install.sh
 $ ./build.sh
 ```
 
