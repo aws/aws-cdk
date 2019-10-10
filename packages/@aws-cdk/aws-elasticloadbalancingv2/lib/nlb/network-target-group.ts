@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/core');
-import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
@@ -89,6 +89,31 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
+  }
+
+  protected validate(): string[]  {
+    const ret = super.validate();
+
+    const healthCheck: HealthCheck = this.healthCheck || {};
+
+    const allowedIntervals = [10, 30];
+    if (healthCheck.interval) {
+      const seconds = healthCheck.interval.toSeconds();
+      if (!cdk.Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
+        ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
+      }
+    }
+    if (healthCheck.path) {
+      ret.push('Health check paths are not supported for Network Load Balancer health checks');
+    }
+    if (healthCheck.protocol && healthCheck.protocol !== Protocol.TCP && healthCheck.protocol !== Protocol.TLS) {
+      ret.push(`Health check protocol '${healthCheck.protocol}' is not supported. Must be one of [TCP, TLS]`);
+    }
+    if (healthCheck.timeout) {
+      ret.push('Custom health check timeouts are not supported for Network Load Balancer health checks');
+    }
+
+    return ret;
   }
 }
 
