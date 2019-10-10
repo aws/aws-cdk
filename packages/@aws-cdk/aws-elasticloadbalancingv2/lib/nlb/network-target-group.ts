@@ -106,8 +106,8 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (healthCheck.path) {
       ret.push('Health check paths are not supported for Network Load Balancer health checks');
     }
-    if (healthCheck.protocol && healthCheck.protocol !== Protocol.TCP && healthCheck.protocol !== Protocol.TLS) {
-      ret.push(`Health check protocol '${healthCheck.protocol}' is not supported. Must be one of [TCP, TLS]`);
+    if (healthCheck.protocol && !NLB_HEALTH_CHECK_PROTOCOLS.includes(healthCheck.protocol)) {
+      ret.push(`Health check protocol '${healthCheck.protocol}' is not supported. Must be one of [${NLB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`);
     }
     if (healthCheck.timeout) {
       ret.push('Custom health check timeouts are not supported for Network Load Balancer health checks');
@@ -151,3 +151,5 @@ export interface INetworkLoadBalancerTarget {
    */
   attachToNetworkTargetGroup(targetGroup: INetworkTargetGroup): LoadBalancerTargetProps;
 }
+
+const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
