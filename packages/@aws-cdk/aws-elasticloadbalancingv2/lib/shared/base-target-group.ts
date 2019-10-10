@@ -84,8 +84,8 @@ export interface HealthCheck {
   /**
    * The protocol the load balancer uses when performing health checks on targets.
    *
-   * The TCP protocol is supported only if the protocol of the target group
-   * is TCP.
+   * The TCP protocol is supported for health checks only if the protocol of the target group is TCP, TLS, UDP, or TCP_UDP.
+   * The TLS, UDP, and TCP_UDP protocols are not supported for health checks.
    *
    * @default HTTP for ALBs, TCP for NLBs
    */

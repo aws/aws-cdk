@@ -179,10 +179,10 @@ export = {
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     test.throws(() => lb.addListener('Listener', {
-        port: 443,
-        protocol: elbv2.Protocol.HTTP,
-        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-      }), Error, '/The protocol must be either TCP or TLS. Found HTTP/');
+      port: 443,
+      protocol: elbv2.Protocol.HTTP,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    }), /The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
 
     test.done();
   },
@@ -206,6 +206,30 @@ export = {
     test.done();
   },
 
+  'validation error if invalid health check protocol'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+    const targetGroup = listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60)
+      }
+    });
+
+    targetGroup.configureHealthCheck({
+      interval: cdk.Duration.seconds(30),
+      protocol: elbv2.Protocol.UDP
+    });
+
+    // THEN
+    const validationErrors: string[] = (targetGroup as any).validate();
+    test.deepEqual(validationErrors, ["Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]"]);
+
+    test.done();
+  },
+
   'Protocol & certs TLS listener'(test: Test) {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -215,7 +239,7 @@ export = {
       port: 443,
       protocol: elbv2.Protocol.TLS,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-    }), Error, '/When the protocol is set to TLS, you must specify certificates/');
+    }), /When the protocol is set to TLS, you must specify certificates/);
 
     test.done();
   },
@@ -233,7 +257,7 @@ export = {
       protocol: elbv2.Protocol.TCP,
       certificates: [ { certificateArn: cert.certificateArn } ],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-    }), Error, '/Protocol must be TLS when certificates have been specified/');
+    }), /Protocol must be TLS when certificates have been specified/);
 
     test.done();
   },
