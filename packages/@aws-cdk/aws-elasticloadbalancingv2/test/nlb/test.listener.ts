@@ -225,7 +225,7 @@ export = {
 
     // THEN
     const validationErrors: string[] = (targetGroup as any).validate();
-    test.ok(validationErrors.includes("Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]"));
+    test.deepEqual(validationErrors, ["Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]"]);
 
     test.done();
   },
