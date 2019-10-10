@@ -233,8 +233,8 @@ export = {
         }));
 
         expect(pipeline.crossRegionSupport[replicationRegion].stack).to(haveResourceLike('AWS::KMS::Alias', {
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
+          "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
         }, ResourcePart.CompleteDefinition));
 
         test.done();

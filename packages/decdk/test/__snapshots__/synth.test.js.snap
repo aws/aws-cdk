@@ -1891,7 +1891,7 @@ Object {
       "UpdateReplacePolicy": "Retain",
     },
     "PipelineArtifactsBucketEncryptionKey01D58D69": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "KeyPolicy": Object {
           "Statement": Array [
@@ -2010,10 +2010,10 @@ Object {
         },
       },
       "Type": "AWS::KMS::Key",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
     },
     "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "AliasName": "alias/codepipeline-pipelinepipeline22f2a91d",
         "TargetKeyId": Object {
@@ -2024,7 +2024,7 @@ Object {
         },
       },
       "Type": "AWS::KMS::Alias",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
     },
     "PipelineBuildCodePipelineActionRoleD77A08E6": Object {
       "Properties": Object {
