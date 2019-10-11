@@ -77,7 +77,7 @@ export interface BucketDeploymentProps {
    * @default - A role is automatically created
    */
   readonly role?: iam.IRole;
-  
+
   /**
    * User-defined object metadata to be set on all objects in the deployment
    * @default - No user metadata is set
