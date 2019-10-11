@@ -69,25 +69,25 @@
     "proxyquire": "^2.1.3"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^1.12.0",
-    "@aws-cdk/aws-cloudformation": "^1.12.0",
-    "@aws-cdk/aws-ecr": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/aws-s3": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0",
-    "@aws-cdk/cx-api": "^1.12.0"
+    "@aws-cdk/assets": "1.12.0",
+    "@aws-cdk/aws-cloudformation": "1.12.0",
+    "@aws-cdk/aws-ecr": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/aws-s3": "1.12.0",
+    "@aws-cdk/core": "1.12.0",
+    "@aws-cdk/cx-api": "1.12.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^1.12.0",
-    "@aws-cdk/aws-cloudformation": "^1.12.0",
-    "@aws-cdk/aws-ecr": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/aws-s3": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0",
-    "@aws-cdk/cx-api": "^1.12.0"
+    "@aws-cdk/assets": "1.12.0",
+    "@aws-cdk/aws-cloudformation": "1.12.0",
+    "@aws-cdk/aws-ecr": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/aws-s3": "1.12.0",
+    "@aws-cdk/core": "1.12.0",
+    "@aws-cdk/cx-api": "1.12.0"
   },
   "nyc": {
     "statements": 70

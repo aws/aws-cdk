@@ -31,9 +31,9 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0",
-    "@aws-cdk/cx-api": "^1.12.0",
+    "@aws-cdk/cloudformation-diff": "1.12.0",
+    "@aws-cdk/core": "1.12.0",
+    "@aws-cdk/cx-api": "1.12.0",
     "jest": "^24.9.0",
     "source-map-support": "^0.5.13"
   },

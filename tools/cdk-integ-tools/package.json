@@ -35,8 +35,8 @@
     "pkglint": "file:../pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^1.12.0",
-    "@aws-cdk/cx-api": "^1.12.0",
+    "@aws-cdk/cloudformation-diff": "1.12.0",
+    "@aws-cdk/cx-api": "1.12.0",
     "aws-cdk": "^1.12.0",
     "fs-extra": "^8.1.0",
     "yargs": "^14.2.0"

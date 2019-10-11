@@ -73,12 +73,12 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.12.0",
-    "@aws-cdk/region-info": "^1.12.0"
+    "@aws-cdk/core": "1.12.0",
+    "@aws-cdk/region-info": "1.12.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.12.0",
-    "@aws-cdk/region-info": "^1.12.0"
+    "@aws-cdk/core": "1.12.0",
+    "@aws-cdk/region-info": "1.12.0"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -47,11 +47,11 @@
     "global"
   ],
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.12.0",
-    "@aws-cdk/aws-dynamodb": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-cloudformation": "1.12.0",
+    "@aws-cdk/aws-dynamodb": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/core": "1.12.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "^1.12.0",
@@ -61,11 +61,11 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.12.0",
-    "@aws-cdk/aws-dynamodb": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-cloudformation": "1.12.0",
+    "@aws-cdk/aws-dynamodb": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/core": "1.12.0"
   },
   "scripts": {
     "build": "cdk-build",
