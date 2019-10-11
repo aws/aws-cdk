@@ -35,12 +35,12 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       const destFileDir = path.dirname(destFilePath);
 
       if (!fs.existsSync(destFileDir)) {
+        // {recursive: true} is node 10+
         // FIXME fs.mkdirpSync(destFileDir);
-        fs.mkdirSync(destFileDir);
+        fs.mkdirSync(destFileDir, {recursive: true});
       }
     }
 
-    console.log(sourceFilePath, destFilePath);
     fs.copyFileSync(sourceFilePath, destFilePath);
   }
 }

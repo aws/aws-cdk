@@ -3,7 +3,7 @@ import fs = require('fs');
 import path = require('path');
 import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
-import { shouldExclude, shouldFollow } from './utils';
+import { listFilesRecursively, shouldFollow } from './utils';
 
 const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';
@@ -38,41 +38,26 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()
     ? fileOrDirectory
     : path.dirname(fileOrDirectory);
-  const exclude = options.exclude || [];
-  // _processFileOrDirectory(fileOrDirectory);
+  const exclude = [...(options.exclude || [])];
 
-  for (const file of listFilesRecursively(fileOrDirectory, {...options, follow}, exclude)) {
-    // TODO process
-  }
-
-  return hash.digest('hex');
-
-  function _processFileOrDirectory(symbolicPath: string, realPath = symbolicPath) {
-    if (shouldExclude(exclude, symbolicPath)) {
-      return;
-    }
-
+  for (const realPath of listFilesRecursively(fileOrDirectory, {...options, follow, exclude}, rootDirectory)) {
     const stat = fs.lstatSync(realPath);
-    const relativePath = path.relative(fileOrDirectory, symbolicPath);
+    const relativePath = path.relative(fileOrDirectory, realPath);
 
     if (stat.isSymbolicLink()) {
       const linkTarget = fs.readlinkSync(realPath);
       const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
-      if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
-        _processFileOrDirectory(symbolicPath, resolvedLinkTarget);
-      } else {
+      if (!shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
         _hashField(hash, `link:${relativePath}`, linkTarget);
       }
     } else if (stat.isFile()) {
       _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, stat));
-    } else if (stat.isDirectory()) {
-      for (const item of fs.readdirSync(realPath).sort()) {
-        _processFileOrDirectory(path.join(symbolicPath, item), path.join(realPath, item));
-      }
     } else {
-      throw new Error(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
+      throw new Error(`Unable to hash ${realPath}: it is neither a file nor a directory`);
     }
   }
+
+  return hash.digest('hex');
 }
 
 function _contentFingerprint(file: string, stat: fs.Stats): string {

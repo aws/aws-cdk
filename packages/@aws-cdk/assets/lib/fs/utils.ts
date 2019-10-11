@@ -60,12 +60,9 @@ export function shouldFollow(mode: FollowMode, sourceRoot: string, realPath: str
   }
 }
 
-export function listFilesRecursively(
-  dir: string,
-  options: CopyOptions = {},
-  rootDir?: string,
-  files: string[] = []
-): string[] {
+export function listFilesRecursively(dir: string, options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, rootDir?: string): string[] {
+  const files = [];
+
   let exclude = [...(options.exclude || [])];
   rootDir = rootDir || dir;
   {
@@ -82,7 +79,7 @@ export function listFilesRecursively(
   for (const file of fs.readdirSync(dir)) {
     let fullFilePath = path.join(dir, file);
 
-    let stat: fs.Stats | undefined = follow === FollowMode.ALWAYS
+    let stat: fs.Stats | undefined = options.follow === FollowMode.ALWAYS
       ? fs.statSync(fullFilePath)
       : fs.lstatSync(fullFilePath);
 
@@ -97,7 +94,7 @@ export function listFilesRecursively(
       // is outside of the root directory).
       const targetPath = path.normalize(path.resolve(dir, target));
 
-      if (shouldFollow(follow, rootDir, targetPath)) {
+      if (shouldFollow(options.follow, rootDir, targetPath)) {
         stat = fs.statSync(fullFilePath);
         if (!stat) {
           continue;
