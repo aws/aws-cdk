@@ -79,6 +79,21 @@ class TestHandler(unittest.TestCase):
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/<dest-key-prefix>"
         )
 
+    def test_create_update_with_metadata(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "DestinationBucketKeyPrefix": "<dest-key-prefix>",
+            "UserMetadata": { "best": "game" },
+            "SystemMetadata": { "content-type": "text/html", "content-language": "en" }
+        })
+
+        self.assertAwsCommands(
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/<dest-key-prefix> --content-type 'text/html' --content-language 'en' --metadata '{\"x-amzn-meta-best\": \"game\"}' --metadata-directive REPLACE"
+        )
+
     def test_delete_no_retain(self):
         invoke_handler("Delete", {
             "SourceBucketNames": ["<source-bucket>"],
