@@ -80,10 +80,14 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     const ignore = path.join(dir, '.dockerignore');
 
     if (fs.existsSync(ignore)) {
-      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
+      exclude = [
+        ...exclude,
+        ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e),
+        // prevents accidentally excluding Dockerfile with a "*"
+        '!Dockerfile',
+      ];
     }
 
-    console.log(exclude);
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
       exclude,

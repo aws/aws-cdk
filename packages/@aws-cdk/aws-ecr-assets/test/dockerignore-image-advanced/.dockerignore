@@ -16,3 +16,7 @@ deep/**/*.txt
 subdirectory/**
 # but baz should be added back
 !subdirectory/baz*
+
+config/config*.txt
+!config/config-*.txt
+config/config-test.txt
