@@ -6,16 +6,8 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author=eladb
-      - author=RomainMuller
-      - author=garnaat
-      - author=nija-at
-      - author=shivlaks
-      - author=skinny85
-      - author=rix0rrr
-      - author=NGL321
-      - author=Jerry-AWS
-      - author=SomayaB
+      - author=(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB)
+      - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
