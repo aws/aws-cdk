@@ -116,6 +116,30 @@ export = {
     test.done();
   },
 
+  'Stacks can have a description given to them'(test: Test) {
+    const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!'});
+    const output = toCloudFormation(stack);
+    test.equal(output.Description, 'My stack, hands off!');
+    test.done();
+  },
+
+  'Stack descriptions have a limited length'(test: Test) {
+    const desc = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+     incididunt ut labore et dolore magna aliqua. Consequat interdum varius sit amet mattis vulputate
+     enim nulla aliquet. At imperdiet dui accumsan sit amet nulla facilisi morbi. Eget lorem dolor sed
+     viverra ipsum. Diam volutpat commodo sed egestas egestas. Sit amet porttitor eget dolor morbi non.
+     Lorem dolor sed viverra ipsum. Id porta nibh venenatis cras sed felis. Augue interdum velit euismod
+     in pellentesque. Suscipit adipiscing bibendum est ultricies integer quis. Condimentum id venenatis a
+     condimentum vitae sapien pellentesque habitant morbi. Congue mauris rhoncus aenean vel elit scelerisque
+     mauris pellentesque pulvinar.
+     Faucibus purus in massa tempor nec. Risus viverra adipiscing at in. Integer feugiat scelerisque varius
+     morbi. Malesuada nunc vel risus commodo viverra maecenas accumsan lacus. Vulputate sapien nec sagittis
+     aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
+     Ultrices tincidunt arcu non sodales neque sodales.`;
+    test.throws(() => new Stack(new App(), 'MyStack', { description: desc}));
+    test.done();
+  },
+
   'Include should support non-hash top-level template elements like "Description"'(test: Test) {
     const stack = new Stack();
 

@@ -18,6 +18,13 @@ const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 export interface StackProps {
   /**
+   * A description of the stack.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
+
+  /**
    * The AWS environment (account/region) where this stack will be deployed.
    *
    * @default - The `default-account` and `default-region` context parameters will be
@@ -210,6 +217,15 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
+
+    if (props.description !== undefined) {
+      // Max length 1024 bytes
+      // Typically 2 bytes per character, may be more for more exotic characters
+      if (props.description.length > 512) {
+        throw new Error(`Stack description must be <= 1024 bytes. Received description: '${props.description}'`);
+      }
+      this.templateOptions.description = props.description;
+    }
 
     this._stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
