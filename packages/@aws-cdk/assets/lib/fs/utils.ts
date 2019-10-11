@@ -1,6 +1,7 @@
 import fs = require('fs');
 import minimatch = require('minimatch');
 import path = require('path');
+import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
 
 /**
@@ -57,4 +58,83 @@ export function shouldFollow(mode: FollowMode, sourceRoot: string, realPath: str
   function _isInternal(): boolean {
     return path.resolve(realPath).startsWith(path.resolve(sourceRoot));
   }
+}
+
+export function listFilesRecursively(
+  dir: string,
+  options: CopyOptions = {},
+  rootDir?: string,
+  files: string[] = []
+): string[] {
+  let exclude = [...(options.exclude || [])];
+  rootDir = rootDir || dir;
+  {
+    const stat = fs.statSync(dir);
+    if (!stat) {
+      return [];
+    }
+
+    if (!stat.isDirectory()) {
+      return [dir];
+    }
+  }
+
+  for (const file of fs.readdirSync(dir)) {
+    let fullFilePath = path.join(dir, file);
+
+    let stat: fs.Stats | undefined = follow === FollowMode.ALWAYS
+      ? fs.statSync(fullFilePath)
+      : fs.lstatSync(fullFilePath);
+
+    if (!stat) {
+      continue;
+    }
+
+    if (stat.isSymbolicLink()) {
+      const target = fs.readlinkSync(fullFilePath);
+
+      // determine if this is an external link (i.e. the target's absolute path
+      // is outside of the root directory).
+      const targetPath = path.normalize(path.resolve(dir, target));
+
+      if (shouldFollow(follow, rootDir, targetPath)) {
+        stat = fs.statSync(fullFilePath);
+        if (!stat) {
+          continue;
+        }
+
+        fullFilePath = target;
+      }
+    }
+
+    const relativeFilePath = path.relative(rootDir, fullFilePath);
+
+    // we've just discovered that we have a directory
+    if (stat.isDirectory()) {
+      // to help future shouldExclude calls, we're changing the exlusion patterns
+      // by expliciting "dir" exclusions to "dir/*" (same with "!dir" -> "!dir/*")
+      exclude = exclude.reduce<string[]>((res, pattern) => {
+        res.push(pattern);
+        if (pattern.trim().replace(/^!/, '') === relativeFilePath) {
+          // we add the pattern immediately after to preserve the exclusion order
+          res.push(`${pattern}/*`);
+        }
+
+        return res;
+      }, []);
+    }
+
+    const isExcluded = shouldExclude(exclude, relativeFilePath);
+    if (isExcluded && !stat.isDirectory()) {
+      continue;
+    }
+
+    if (stat.isFile()) {
+      files.push(fullFilePath);
+    } else if (stat.isDirectory()) {
+      files.push(...listFilesRecursively(fullFilePath, { ...options, exclude }, rootDir));
+    }
+  }
+
+  return files;
 }

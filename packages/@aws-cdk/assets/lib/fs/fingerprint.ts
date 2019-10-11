@@ -39,7 +39,11 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
     ? fileOrDirectory
     : path.dirname(fileOrDirectory);
   const exclude = options.exclude || [];
-  _processFileOrDirectory(fileOrDirectory);
+  // _processFileOrDirectory(fileOrDirectory);
+
+  for (const file of listFilesRecursively(fileOrDirectory, {...options, follow}, exclude)) {
+    // TODO process
+  }
 
   return hash.digest('hex');
 
