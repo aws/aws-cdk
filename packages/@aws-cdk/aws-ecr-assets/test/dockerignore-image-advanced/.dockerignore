@@ -1,0 +1,18 @@
+# This a comment, followed by an empty line
+
+# The following line should be ignored
+#index.py
+
+# This shouldn't ignore foo.txt
+foo.?
+# This shoul ignore foobar.txt
+foobar.???
+# This should catch qux.txt
+deep/**/*.txt
+# but quuz should be added back
+!deep/include_me/**
+
+# baz and quux should be ignored
+subdirectory/**
+# but baz should be added back
+!subdirectory/baz*

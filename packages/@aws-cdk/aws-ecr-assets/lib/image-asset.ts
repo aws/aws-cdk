@@ -83,6 +83,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
     }
 
+    console.log(exclude);
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
       exclude,

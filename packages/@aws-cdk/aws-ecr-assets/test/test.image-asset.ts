@@ -250,6 +250,40 @@ export = {
     test.done();
   },
 
+  'advanced .dockerignore test case'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    const image = new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'dockerignore-image-advanced')
+    });
+
+    const session = app.synth();
+
+    const expectedFiles = [
+      '.dockerignore',
+      'Dockerfile',
+      'index.py',
+      'foo.txt',
+      path.join('subdirectory', 'baz.txt'),
+      path.join('deep', 'include_me', 'sub', 'dir', 'quuz.txt'),
+    ];
+    const unexpectedFiles = [
+      'foobar.txt',
+      path.join('deep', 'dir', 'struct', 'qux.txt'),
+      path.join('subdirectory', 'quux.txt'),
+    ];
+
+    for (const expectedFile of expectedFiles) {
+      test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, expectedFile)), expectedFile);
+    }
+    for (const unexpectedFile of unexpectedFiles) {
+      test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
+    }
+
+    test.done();
+  },
+
   'fails if using tokens in build args keys or values'(test: Test) {
     // GIVEN
     const stack = new Stack();
