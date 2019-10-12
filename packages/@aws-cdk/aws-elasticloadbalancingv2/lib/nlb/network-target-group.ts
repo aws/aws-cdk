@@ -10,9 +10,25 @@ import { INetworkListener } from './network-listener';
  */
 export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
   /**
-   * The port on which the listener listens for requests.
+   * The protocol on which the container listens for requests.
    */
-  readonly port: number;
+  readonly protocol: Protocol;
+
+  /**
+   * The port on which the container listens for requests.
+   * @deprecated Use `containerPort` instead
+   * @default - containerPort or port required
+   */
+  readonly port?: number;
+
+  /**
+   * TODO: Remove port and make containerPort not optional in v2.0
+   */
+  /**
+   * The port on which the container listens for requests.
+   * @default - containerPort or port required
+   */
+  readonly containerPort?: number;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
@@ -40,19 +56,30 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   /**
    * Import an existing listener
    */
-  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
+  public static import(scope: cdk.Construct, id: string, props: NetworkTargetGroupImportProps): INetworkTargetGroup {
     return new ImportedNetworkTargetGroup(scope, id, props);
   }
+
+  /**
+   * Default protocol configured for members of this target group
+   */
+  public readonly defaultProtocol: Protocol;
 
   private readonly listeners: INetworkListener[];
 
   constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+    const containerPort = props.containerPort || props.port;
+    if (!containerPort) {
+      throw new Error('Missing containerPort - The port on which the container listens is required when adding a target.');
+    }
+
     super(scope, id, props, {
-      protocol: Protocol.TCP,
-      port: props.port,
+      protocol: props.protocol,
+      port: containerPort,
     });
 
     this.listeners = [];
+    this.defaultProtocol = props.protocol;
 
     if (props.proxyProtocolV2) {
       this.setAttribute('proxy_protocol_v2.enabled', 'true');
@@ -123,6 +150,11 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 // tslint:disable-next-line:no-empty-interface
 export interface INetworkTargetGroup extends ITargetGroup {
   /**
+   * Default protocol configured for members of this target group
+   */
+  readonly defaultProtocol: Protocol;
+
+  /**
    * Register a listener that is load balancing to this target group.
    *
    * Don't call this directly. It will be called by listeners.
@@ -134,9 +166,27 @@ export interface INetworkTargetGroup extends ITargetGroup {
  * An imported network target group
  */
 class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
+
+  /**
+   * Default protocol configured for members of this target group
+   */
+  public readonly defaultProtocol: Protocol;
+
+  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupImportProps) {
+    super(scope, id, props);
+    this.defaultProtocol = props.defaultProtocol;
+  }
+
   public registerListener(_listener: INetworkListener) {
     // Nothing to do, we know nothing of our members
   }
+}
+
+export interface NetworkTargetGroupImportProps extends TargetGroupImportProps {
+  /**
+   * Default protocol configured for members of this target group
+   */
+  readonly defaultProtocol: Protocol;
 }
 
 /**

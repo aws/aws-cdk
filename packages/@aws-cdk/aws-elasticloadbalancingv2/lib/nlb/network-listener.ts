@@ -139,10 +139,16 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
     }
 
+    const protocol = props.containerProtocol || Protocol.TCP;
+    const containerPort = props.containerPort || props.port;
+    if (!containerPort) {
+      throw new Error('Missing containerPort - The port on which the container listens is required when adding a target.');
+    }
     const group = new NetworkTargetGroup(this, id + 'Group', {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
-      port: props.port,
+      containerPort,
+      protocol,
       proxyProtocolV2: props.proxyProtocolV2,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
@@ -171,11 +177,26 @@ export interface INetworkListener extends IResource {
  */
 export interface AddNetworkTargetsProps {
   /**
-   * The port on which the listener listens for requests.
+   * The port on which the container listens for requests.
    *
-   * @default Determined from protocol if known
+   * @default - containerPort or port required
+   * @deprecated Use `containerPort` instead
    */
-  readonly port: number;
+  readonly port?: number;
+
+  /**
+   * The port on which the container listens for requests.
+   *
+   * @default - containerPort or port required
+   */
+  readonly containerPort?: number;
+
+  /**
+   * The protocol on which the container listens for requests.
+   *
+   * @default - Protocol.TCP
+   */
+  readonly containerProtocol?: Protocol;
 
   /**
    * The targets to add to this target group.

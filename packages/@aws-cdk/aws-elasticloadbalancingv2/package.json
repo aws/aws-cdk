@@ -96,6 +96,7 @@
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseListener.<initializer>.params[2]",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.<initializer>",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>",
+      "construct-ctor-props-optional:@aws-cdk/aws-elasticloadbalancingv2.NetworkTargetGroup",
       "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerProps",
       "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.NetworkListenerProps"
     ]

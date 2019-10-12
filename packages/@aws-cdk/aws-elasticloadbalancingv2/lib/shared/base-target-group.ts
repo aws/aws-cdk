@@ -178,7 +178,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * Default port configured for members of this target group
    */
-  protected readonly defaultPort: number;
+  public readonly defaultPort: number;
 
   /**
    * Configurable dependable with all resources that lead to load balancer attachment
@@ -347,6 +347,11 @@ export interface ITargetGroup extends cdk.IConstruct {
    * Return an object to depend on the listeners added to this target group
    */
   readonly loadBalancerAttached: cdk.IDependable;
+
+  /**
+   * Default port configured for members of this target group
+   */
+  readonly defaultPort: number;
 }
 
 /**

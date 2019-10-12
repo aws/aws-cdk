@@ -344,7 +344,12 @@ export abstract class BaseService extends Resource
    * to add this service to a load balancer.
    */
   public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    return this.defaultLoadBalancerTarget.attachToApplicationTargetGroup(targetGroup);
+    const defaultLoadBalancerTarget = this.loadBalancerTarget({
+      containerName: this.taskDefinition.defaultContainer!.containerName,
+      containerPort: targetGroup.defaultPort
+    });
+
+    return defaultLoadBalancerTarget.attachToApplicationTargetGroup(targetGroup);
   }
 
   /**
@@ -353,7 +358,11 @@ export abstract class BaseService extends Resource
    * Don't call this. Call `loadBalancer.addTarget()` instead.
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    return this.defaultLoadBalancerTarget.attachToClassicLB(loadBalancer);
+    const defaultLoadBalancerTarget = this.loadBalancerTarget({
+      containerName: this.taskDefinition.defaultContainer!.containerName
+    });
+
+    return defaultLoadBalancerTarget.attachToClassicLB(loadBalancer);
   }
 
   /**
@@ -428,7 +437,18 @@ export abstract class BaseService extends Resource
    * to add this service to a load balancer.
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    return this.defaultLoadBalancerTarget.attachToNetworkTargetGroup(targetGroup);
+    let protocol = Protocol.TCP;
+    if (targetGroup.defaultProtocol === elbv2.Protocol.UDP) {
+      protocol = Protocol.UDP;
+    }
+
+    const defaultLoadBalancerTarget = this.loadBalancerTarget({
+      containerName: this.taskDefinition.defaultContainer!.containerName,
+      containerPort: targetGroup.defaultPort,
+      protocol
+    });
+
+    return defaultLoadBalancerTarget.attachToNetworkTargetGroup(targetGroup);
   }
 
   /**
@@ -608,12 +628,6 @@ export abstract class BaseService extends Resource
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
-  }
-
-  private get defaultLoadBalancerTarget() {
-    return this.loadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName
-    });
   }
 
   /**

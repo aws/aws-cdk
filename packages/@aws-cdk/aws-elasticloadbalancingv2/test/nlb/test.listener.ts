@@ -7,7 +7,7 @@ import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
-  'Trivial add listener'(test: Test) {
+  'Trivial add tcp listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -16,12 +16,34 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 443,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.Protocol.TCP })]
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'TCP',
+      Port: 443
+    }));
+
+    test.done();
+  },
+
+  'Trivial add udp listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.UDP,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.Protocol.UDP })]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'UDP',
       Port: 443
     }));
 
@@ -34,7 +56,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
-    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80, protocol: elbv2.Protocol.TCP });
 
     // WHEN
     listener.addTargetGroups('Default', group);
@@ -157,7 +179,7 @@ export = {
       protocol: elbv2.Protocol.TLS,
       certificates: [ { certificateArn: cert.certificateArn } ],
       sslPolicy: elbv2.SslPolicy.TLS12,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.Protocol.TCP })]
     });
 
     // THEN
@@ -181,7 +203,7 @@ export = {
     test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.HTTP,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.Protocol.TCP })]
     }), /The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
 
     test.done();
@@ -238,7 +260,7 @@ export = {
     test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TLS,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.Protocol.TCP })]
     }), /When the protocol is set to TLS, you must specify certificates/);
 
     test.done();
@@ -256,7 +278,7 @@ export = {
       port: 443,
       protocol: elbv2.Protocol.TCP,
       certificates: [ { certificateArn: cert.certificateArn } ],
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.Protocol.TCP })]
     }), /Protocol must be TLS when certificates have been specified/);
 
     test.done();

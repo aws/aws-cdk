@@ -212,10 +212,14 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
     }
 
+    const containerPort = props.containerPort || props.port;
+    if (!containerPort) {
+      throw new Error('Missing containerPort - The port on which the container listens is required when adding a target.');
+    }
     const group = new ApplicationTargetGroup(this, id + 'Group', {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
-      port: props.port,
+      containerPort,
       protocol: props.protocol,
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
@@ -534,11 +538,19 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
   readonly protocol?: ApplicationProtocol;
 
   /**
-   * The port on which the listener listens for requests.
+   * The port on which the container listens for requests.
    *
-   * @default Determined from protocol if known
+   * @default - containerPort or port required
+   * @deprecated Use `containerPort` instead
    */
   readonly port?: number;
+
+  /**
+   * The port on which the container listens for requests.
+   *
+   * @default - containerPort or port required
+   */
+  readonly containerPort?: number;
 
   /**
    * The time period during which the load balancer sends a newly registered

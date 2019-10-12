@@ -23,11 +23,20 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly protocol?: ApplicationProtocol;
 
   /**
-   * The port on which the listener listens for requests.
-   *
-   * @default - Determined from protocol if known, optional for Lambda targets.
+   * The port on which the container listens for requests.
+   * @deprecated Use `containerPort` instead
+   * @default - containerPort or port required
    */
   readonly port?: number;
+
+  /**
+   * TODO: Remove port and make containerPort not optional in v2.0
+   */
+  /**
+   * The port on which the container listens for requests.
+   * @default - containerPort or port required
+   */
+  readonly containerPort?: number;
 
   /**
    * The time period during which the load balancer sends a newly registered
@@ -80,7 +89,12 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   private readonly port?: number;
 
   constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
-    const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
+    const containerPort = props.containerPort || props.port;
+    if (!containerPort) {
+      throw new Error('Missing containerPort - The port on which the container listens is required when adding a target.');
+    }
+
+    const [protocol, port] = determineProtocolAndPort(props.protocol, containerPort);
     super(scope, id, { ...props }, {
       protocol,
       port,
