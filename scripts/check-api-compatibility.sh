@@ -2,6 +2,25 @@
 # Check API compatibility of all packages
 set -eu
 
+scope=""
+while [[ "${1:-}" != "" ]]; do
+    case $1 in
+        -h|--help)
+            echo "Usage: check-api-compatibility.sh [--scope <package-name>]"
+            exit 1
+            ;;
+        --scope)
+            scope="--scope $2"
+            shift
+            ;;
+        *)
+            echo "Unrecognized parameter: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 repo_root="$(cd $(dirname $0)/.. && pwd)"
 tmpdir=/tmp/compat-check
 
@@ -14,7 +33,7 @@ package_name() {
 echo "Listing packages..." >&2
 package_dirs=()
 package_names=()
-for dir in $(npx lerna ls -p); do
+for dir in $(npx lerna ls -p $scope); do
     if [[ -f $dir/.jsii ]]; then
         package_dirs+=("$dir")
         package_names+=("$(package_name $dir)")
@@ -46,7 +65,7 @@ fi
 #----------------------------------------------------------------------
 
 # get the current version from Lerna
-current_version=$(npx lerna ls -pl | head -n 1 | cut -d ':' -f 3)
+current_version=$(npx lerna ls -pl $scope | head -n 1 | cut -d ':' -f 3)
 
 echo "Checking compatibility..." >&2
 success=true

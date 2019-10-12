@@ -2,11 +2,12 @@
 set -euo pipefail
 
 bail="--bail"
+scope=""
 runtarget="build+test"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--scope <package-name>]"
             exit 1
             ;;
         --no-bail)
@@ -17,6 +18,10 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-test|--skip-tests)
             runtarget="build"
+            ;;
+        --scope)
+            scope="--scope $2"
+            shift
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -53,8 +58,8 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream $runtarget || fail
+time lerna run $bail --stream $runtarget $scope || fail
 
-/bin/bash scripts/check-api-compatibility.sh
+/bin/bash scripts/check-api-compatibility.sh $scope
 
 touch $BUILD_INDICATOR
