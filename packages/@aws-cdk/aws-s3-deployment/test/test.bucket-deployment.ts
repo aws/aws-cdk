@@ -6,6 +6,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import path = require('path');
 import s3deploy = require('../lib');
+import { CacheControl, Expires, ServerSideEncryption, StorageClass } from '../lib';
 
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
@@ -220,6 +221,42 @@ export = {
 
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
       RetainOnDelete: true
+    }));
+
+    test.done();
+  },
+
+  'object metadata can be given'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+      destinationBucket: bucket,
+      metadata: { "A": "1", "b": "2" },
+      contentType: "text/html",
+      contentLanguage: "en",
+      storageClass: StorageClass.INTELLIGENT_TIERING,
+      contentDisposition: "inline",
+      serverSideEncryption: ServerSideEncryption.AES_256,
+      cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+      expires: Expires.after(cdk.Duration.hours(12))
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
+      UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
+      SystemMetadata: {
+        'content-type': 'text/html',
+        'content-language': 'en',
+        'content-disposition': 'inline',
+        'storage-class': 'INTELLIGENT_TIERING',
+        'server-side-encryption': 'AES256',
+        'cache-control': 'public, max-age=3600',
+        'expires': new Date(Date.now() + 12 * 60 * 60 * 1000).toUTCString()
+      }
     }));
 
     test.done();
