@@ -317,4 +317,30 @@ export = {
 
     test.done();
   },
+
+  'allows overriding custom values of dashboard widgets'(test: Test) {
+    class HiddenMetric extends Metric {
+      public toGraphConfig(): any {
+        const ret = super.toGraphConfig();
+        // @ts-ignore
+        ret.renderingProperties.visible = false;
+        return ret;
+      }
+    }
+
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [
+        new HiddenMetric({ namespace: 'CDK', metricName: 'Test' })
+      ]
+    });
+
+    // test.ok(widget.toJson()[0].properties.metrics[0].visible === false);
+    test.deepEqual(
+      stack.resolve(widget.toJson())[0].properties.metrics[0],
+      ["CDK", "Test", { yAxis: 'left', period: 300, stat: 'Average', visible: false }]
+    );
+
+    test.done();
+  },
 };

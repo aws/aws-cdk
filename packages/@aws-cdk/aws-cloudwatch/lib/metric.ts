@@ -195,11 +195,12 @@ export class Metric implements IMetric {
       dimensions: this.dimensionsAsList(),
       namespace: this.namespace,
       metricName: this.metricName,
-      period: this.period.toSeconds(),
-      statistic: this.statistic,
-      unit: this.unit,
-      color: this.color,
-      label: this.label,
+      renderingProperties: {
+        period: this.period.toSeconds(),
+        stat: this.statistic,
+        color: this.color,
+        label: this.label,
+      },
     };
   }
 

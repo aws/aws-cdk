@@ -133,6 +133,16 @@ export interface MetricGraphConfig {
   readonly metricName: string;
 
   /**
+   * Rendering properties override yAxis parameter of the widget object
+   */
+  readonly renderingProperties: MetricRenderingProperties;
+}
+
+/**
+ * Custom rendering properties that override the default rendering properties specified in the yAxis parameter of the widget object.
+ */
+export interface MetricRenderingProperties {
+  /**
    * How many seconds to aggregate over
    */
   readonly period: number;
@@ -150,10 +160,5 @@ export interface MetricGraphConfig {
   /**
    * Aggregation function to use (can be either simple or a percentile)
    */
-  readonly statistic?: string;
-
-  /**
-   * The unit of the alarm
-   */
-  readonly unit?: Unit;
+  readonly stat?: string;
 }
