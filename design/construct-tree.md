@@ -122,170 +122,177 @@ The construct tree will be a list of paths that are indexed into a map of constr
 
 ### Construct properties
 
-|Property   |Type             |Required     |Description  |
-|---        |---              |---          |---          |
-|id         |string           |Required     |id of the construct within the current scope |
-|path       |string           |Required     |full, absolute path of the construct within the tree |
-|children   |Array<Path>      |Not Required |All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
-|metadata   |Array<Metadata>  |Not Required |Metadata describing all constructs/resources that are encapsulated by the construct  |
+|Property   |Type             |Required     |Source     | Description  |
+|---        |---              |---          |---        | ---          |
+|id         |string           |Required     |TODO       | id of the construct within the current scope |
+|path       |string           |Required     |TODO       | full, absolute path of the construct within the tree |
+|children   |Array<Path>      |Not Required |TODO       | All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
+|metadata   |Array<Metadata>  |Not Required |TODO       | Metadata describing all constructs/resources that are encapsulated by the construct  |
 
 ### Metadata Properties
 
 The following metadata properties will be included by the construct that produces the `tree.json` output.
 
-|Property       |Type             |Required     |Description    |
-|---            |---              |---          |---            |
-|sourceLocation |string           |Required     |location in source code where the construct is defined |
-|description    |string           |Not Required |description of the construct |
-|renderedView   |Array<Metadata>  |Not Required |constructs can fill in arbitrary metadata such as configuration. ClouFormation agnostic. CFN constructs could pre-populate it with the output of `this.toCloudFormation()` |
-|errors         |Array<Metadata>  |Not Required |array of errors associated with this construct.  |
-|warnings       |Array<Metadata>  |Not Required |array of warnings associated with this construct |
+|Property       |Type             |Required     |Source | Description    |
+|---            |---              |---          |---    | ---            |
+|sourceLocation |string           |Required     |TODO   | location in source code where the construct is defined |
+|description    |string           |Not Required |TODO   | description of the construct |
+|properties     |Array<Metadata>  |Not Required |TODO   | constructs can fill in arbitrary metadata such as configuration. ClouFormation agnostic. CFN constructs could pre-populate it with the output of `this.toCloudFormation()` |
+|errors         |Array<Metadata>  |Not Required |TODO   | array of errors associated with this construct.  |
+|warnings       |Array<Metadata>  |Not Required |TODO   | array of warnings associated with this construct |
 
 **TODO** - add detail and a more concrete walkthrough with samples of all the attributes referenced in construct and metadata properties.
 
 ```json
 {
-  "id": "App",
-  "path": "",
-  "metadata": {
-    "sourceLocation": "",
-  },
-  "children": [
-    {
-      "id": "CdkWorkshopStack",
-      "path": "CdkWorkshopStack",
-      "metadata": [
-        {
-          "sourceLocation": "/lib/cdkworkshop-stack.ts:8:22",
-          "description": "Construct for a CloudFormation Stack",
-          "renderedView": [
+    "version": "1.0-experimental",
+    "tree": {
+        "id": "App",
+        "path": "/",
+        "metadata": {
+            "sourceLocation": ""
+        },
+        "children": [
             {
-              "notificationArn": "sample-notification-arn",
-              "retentionPolicy": "RETAIN",
-              "role-arn": "sample-role-arn"
+                "id": "CdkWorkshopStack",
+                "path": "CdkWorkshopStack",
+                "metadata": [
+                    {
+                        "sourceLocation": "/lib/cdkworkshop-stack.ts:8:22",
+                        "description": "Construct for a CloudFormation Stack",
+                        "properties": [
+                            {
+                                "notificationArn": "sample-notification-arn",
+                                "retentionPolicy": "RETAIN",
+                                "role-arn": "sample-role-arn"
+                            }
+                        ],
+                        "warnings": [
+                            {
+                                "deprecatedParameter": "`transform` is deprecated, use `transforms` instead"
+                            }
+                        ]
+                    }
+                ],
+                "children": [
+                    {
+                        "id": "HelloHandler",
+                        "path": "CdkWorkshopStack/HelloHandler",
+                        "metadata": [
+                            {
+                                "sourceLocation": "sample-source-location",
+                                "properties": [
+                                    {
+                                        "memorySize": "128MB",
+                                        "Role": "sample-role",
+                                        "Tags": [
+                                            {
+                                                "sample-tag": "yay-cdk",
+                                                "safe-to-delete": "yup"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "children": [
+                            {
+                                "id": "ServiceRole",
+                                "path": "CdkWorkshopStack/HelloHandler/ServiceRole",
+                                "metadata": [
+                                    {
+                                        "sourceLocation": "sample-source-location",
+                                        "properties": "...properties"
+                                    },
+                                    {
+                                        "id": "Resource",
+                                        "path": "CdkWorkshopStack/HelloHandler/Resource",
+                                        "metadata": [
+                                            {
+                                                "sourceLocation": "sample-source-location",
+                                                "properties": [
+                                                    {
+                                                        "logicalId": "HelloHandler2E4FBA4D"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "Code",
+                                        "path": "CdkWorkshopStack/HelloHandler/Code",
+                                        "metadata": [
+                                            {
+                                                "sourceLocation": "sample-source-location"
+                                            }
+                                        ],
+                                        "children": [
+                                            {
+                                                "id": "S3Bucket",
+                                                "path": "CdkWorkshopStack/HelloHandler/Code/S3Bucket",
+                                                "resourecType": "AWS::S3::Bucket",
+                                                "metadata": [
+                                                    {
+                                                        "sourceLocation": "sample-source-location"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "id": "S3VersionKey",
+                                                "path": "CdkWorkshopStack/HelloHandler/Code/S3VersionKey",
+                                                "metadata": [
+                                                    {
+                                                        "sourceLocation": "sample-source-location"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "id": "AssetBucket",
+                                                "path": "CdkWorkshopStack/HelloHandler/Code/AssetBucket",
+                                                "metadata": [
+                                                    {
+                                                        "sourceLocation": "sample-source-location"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "children": [
+                                    {
+                                        "id": "Resource",
+                                        "path": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
+                                        "metadata": [
+                                            {
+                                                "sourceLocation": "sample-source-location",
+                                                "properties": [
+                                                    {
+                                                        "logicalId": "HelloHandlerServiceRole11EF7C63"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
-          ],
-          "warnings": [
-            {
-              "deprecatedParameter": "`transform` is deprecated, use `transforms` instead"
-            }
-          ]
-        }
-      ],
-      "children": [
-        {
-          "id": "HelloHandler",
-          "path": "CdkWorkshopStack/HelloHandler",
-          "metadata": [
-            {
-              "sourceLocation": "sample-source-location",
-              "renderedView": [
-                {
-                  "memorySize": "128MB",
-                  "Role": "sample-role",
-                  "Tags": [
-                    {
-                      "sample-tag": "yay-cdk",
-                      "safe-to-delete": "yup"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "children": [
-            {
-              "id": "ServiceRole",
-              "path": "CdkWorkshopStack/HelloHandler/ServiceRole",
-              "metadata": [
-                {
-                  "sourceLocation": "sample-source-location",
-                  "renderedView": "renderedView",
-                },
-                {
-                  "id": "Resource",
-                  "path": "CdkWorkshopStack/HelloHandler/Resource",
-                  "metadata": [
-                    {
-                      "sourceLocation": "sample-source-location",
-                      "renderedView": [
-                        {
-                          "logicalId": "HelloHandler2E4FBA4D"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "id": "Code",
-                  "path": "CdkWorkshopStack/HelloHandler/Code",
-                  "metadata": [
-                    {
-                      "sourceLocation": "sample-source-location"
-                    }
-                  ],
-                  "children": [
-                    {
-                      "id": "S3Bucket",
-                      "path": "CdkWorkshopStack/HelloHandler/Code/S3Bucket",
-                      "resourecType": "AWS::S3::Bucket",
-                      "metadata": [
-                        {
-                          "sourceLocation": "sample-source-location"
-                        }
-                      ]
-                    },
-                    {
-                      "id": "S3VersionKey",
-                      "path": "CdkWorkshopStack/HelloHandler/Code/S3VersionKey",
-                      "metadata": [
-                        {
-                          "sourceLocation": "sample-source-location"
-                        }
-                      ]
-                    },
-                    {
-                      "id": "AssetBucket",
-                      "path": "CdkWorkshopStack/HelloHandler/Code/AssetBucket",
-                      "metadata": [
-                        {
-                          "sourceLocation": "sample-source-location"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ],
-              "children": [
-                {
-                  "id": "Resource",
-                  "path": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
-                  "metadata": [
-                    {
-                      "sourceLocation": "sample-source-location",
-                      "renderedView": [
-                        {
-                          "logicalId": "HelloHandlerServiceRole11EF7C63"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+        ]
     }
-  ]
 }
 ```
 
 ### Construct metadata
 
-We will also introduce an interface that constructs *can* implement to provide metadata such as properties, additional context, anything a construct would want to report back into the rendered view. Constructs will be able to supply information about themselves for inclusion into the context tree.
+We will also introduce an interface that constructs *can* implement to provide metadata such as properties,
+additional context, anything a construct would want to report back as properties.
+Constructs will be able to supply information about themselves for inclusion into the context tree.
 
-The context tree provides the skeleton and the structure for rendering a tree-view of a CDK application. The proposed Interface will be added to `construct.ts` in the core library and implemented by `constructs` that have additional information to contribute to the construct tree :
+The context tree provides the skeleton and the structure for rendering a tree-view of a CDK application.
+The proposed Interface will be added to `construct.ts` in the core library and implemented by `constructs`
+that have additional information to contribute to the construct tree :
 
 ```typescript
 /***
