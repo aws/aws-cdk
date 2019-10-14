@@ -306,6 +306,13 @@ export interface DatabaseInstanceNewProps {
   readonly vpcPlacement?: ec2.SubnetSelection;
 
   /**
+   * The security group to assign to the DB instance.
+   *
+   * @default - a new security group is created
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
    * The port for the instance.
    *
    * @default - the default port for the chosen engine.
@@ -474,7 +481,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
-  protected readonly securityGroup: ec2.SecurityGroup;
+  protected readonly securityGroup: ec2.ISecurityGroup;
 
   private readonly cloudwatchLogsExports?: string[];
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
@@ -493,7 +500,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       subnetIds
     });
 
-    this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       description: `Security group for ${this.node.id} database`,
       vpc: props.vpc
     });

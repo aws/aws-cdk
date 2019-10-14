@@ -547,4 +547,29 @@ export = {
 
     test.done();
   },
+
+  'create an instance with an existing security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      allowAllOutbound: false
+    });
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      securityGroup,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      VPCSecurityGroups: ['sg-123456789']
+    }));
+
+    test.done();
+  }
 };
