@@ -72,7 +72,7 @@
     "@aws-cdk/aws-ssm": "^1.12.0",
     "@types/aws-lambda": "^8.10.33",
     "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.545.0",
+    "aws-sdk": "^2.548.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
@@ -82,19 +82,19 @@
     "sinon": "^7.5.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/aws-sns": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-cloudformation": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/aws-sns": "1.12.0",
+    "@aws-cdk/core": "1.12.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/aws-sns": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-cloudformation": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/aws-sns": "1.12.0",
+    "@aws-cdk/core": "1.12.0"
   },
   "engines": {
     "node": ">= 10.3.0"
