@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -271,6 +271,28 @@ export = {
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       // no need to do any assertions
     }));
+
+    test.done();
+  },
+
+  'can use an imported Role with mutable = false for a Project within a VPC'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const importedRole = iam.Role.fromRoleArn(stack, 'Role',
+        'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role', {
+      mutable: false,
+    });
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHubEnterprise({
+        httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+      }),
+      role: importedRole,
+      vpc,
+    });
+
+    expect(stack).to(countResources('AWS::IAM::Policy', 0));
 
     test.done();
   },

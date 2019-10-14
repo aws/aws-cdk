@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/core');
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
-import { Policy } from './policy';
+import { Policy, PolicyProps } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
@@ -47,6 +47,12 @@ export class LazyRole extends cdk.Resource implements IRole {
       this.statements.push(statement);
       return true;
     }
+  }
+
+  public addPolicy(id: string, props?: PolicyProps): Policy | undefined {
+    const policy = new Policy(this, id, props);
+    this.attachInlinePolicy(policy);
+    return policy;
   }
 
   /**

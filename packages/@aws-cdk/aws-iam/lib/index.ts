@@ -2,6 +2,7 @@ export * from './policy-document';
 export * from './policy-statement';
 export * from './managed-policy';
 export * from './role';
+export * from './immutable-role';
 export * from './policy';
 export * from './user';
 export * from './group';

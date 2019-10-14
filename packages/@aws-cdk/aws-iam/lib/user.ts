@@ -3,7 +3,7 @@ import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
-import { Policy } from './policy';
+import { Policy, PolicyProps } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
 import { IPrincipal } from './principals';
@@ -147,6 +147,10 @@ export class User extends Resource implements IIdentity, IUser {
         throw new Error('Cannot add imported User to Group');
       }
 
+      public addPolicy(_id: string, _props?: PolicyProps): Policy | undefined {
+        return undefined;
+      }
+
       public attachInlinePolicy(_policy: Policy): void {
         throw new Error('Cannot add inline policy to imported User');
       }
@@ -232,6 +236,12 @@ export class User extends Resource implements IIdentity, IUser {
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
+  }
+
+  public addPolicy(id: string, props?: PolicyProps): Policy | undefined {
+    const policy = new Policy(this, id, props);
+    this.attachInlinePolicy(policy);
+    return policy;
   }
 
   /**

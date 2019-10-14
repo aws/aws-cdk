@@ -343,7 +343,7 @@
         ]
       }
     },
-    "MyProjectPolicyDocument646EE0F2": {
+    "MyProjectRoleCodeBuildVpcPolicyE806ED54": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -364,7 +364,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "CodeBuildEC2Policy",
+        "PolicyName": "MyProjectRoleCodeBuildVpcPolicyE806ED54",
         "Roles": [
           {
             "Ref": "MyProjectRole9BBE5233"
@@ -414,7 +414,7 @@
         }
       },
       "DependsOn": [
-        "MyProjectPolicyDocument646EE0F2"
+        "MyProjectRoleCodeBuildVpcPolicyE806ED54"
       ]
     }
   }

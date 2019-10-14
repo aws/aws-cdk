@@ -3,7 +3,7 @@ import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
-import { Policy } from './policy';
+import { Policy, PolicyProps } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
@@ -168,6 +168,8 @@ export class Role extends Resource implements IRole {
 
       public abstract attachInlinePolicy(policy: Policy): void;
 
+      public abstract addPolicy(id: string, props?: PolicyProps): Policy | undefined;
+
       public addManagedPolicy(_policy: IManagedPolicy): void {
         // FIXME: Add warning that we're ignoring this
       }
@@ -207,6 +209,12 @@ export class Role extends Resource implements IRole {
         return true;
       }
 
+      public addPolicy(identifier: string, props?: PolicyProps): Policy | undefined {
+        const policy = new Policy(this, identifier, props);
+        this.attachInlinePolicy(policy);
+        return policy;
+      }
+
       public attachInlinePolicy(policy: Policy): void {
         const policyAccount = Stack.of(policy).account;
 
@@ -220,6 +228,10 @@ export class Role extends Resource implements IRole {
     class ImmutableImport extends Import {
       public addToPolicy(_statement: PolicyStatement): boolean {
         return false;
+      }
+
+      public addPolicy(_id: string, _props?: PolicyProps): Policy | undefined {
+        return undefined;
       }
 
       public attachInlinePolicy(_policy: Policy): void {
@@ -351,6 +363,12 @@ export class Role extends Resource implements IRole {
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
+  }
+
+  public addPolicy(id: string, props?: PolicyProps): Policy | undefined {
+    const policy = new Policy(this, id, props);
+    this.attachInlinePolicy(policy);
+    return policy;
   }
 
   /**

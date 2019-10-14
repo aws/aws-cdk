@@ -945,8 +945,7 @@ export class Project extends ProjectBase {
       },
     }));
 
-    const policy = new iam.Policy(this, 'PolicyDocument', {
-      policyName: 'CodeBuildEC2Policy',
+    const policy = this.role.addPolicy('CodeBuildVpcPolicy', {
       statements: [
         new iam.PolicyStatement({
           resources: ['*'],
@@ -962,13 +961,13 @@ export class Project extends ProjectBase {
         }),
       ],
     });
-    this.role.attachInlinePolicy(policy);
-
-    // add an explicit dependency between the EC2 Policy and this Project -
-    // otherwise, creating the Project fails,
-    // as it requires these permissions to be already attached to the Project's Role
-    const cfnPolicy = policy.node.findChild('Resource') as CfnResource;
-    project.addDependsOn(cfnPolicy);
+    if (policy) {
+      // add an explicit dependency between the VPC Policy and this Project -
+      // otherwise, creating the Project fails,
+      // as it requires these permissions to be already attached to the Project's Role
+      const cfnPolicy = policy.node.defaultChild as CfnResource;
+      project.addDependsOn(cfnPolicy);
+    }
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {
