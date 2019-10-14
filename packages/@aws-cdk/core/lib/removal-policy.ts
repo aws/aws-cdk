@@ -16,7 +16,7 @@ export interface RemovalPolicyOptions {
   /**
    * The default policy to apply in case the removal policy is not defined.
    *
-   * @default RemovalPolicy.Retain
+   * @default RemovalPolicy.Destroy
    */
   readonly default?: RemovalPolicy;
 
