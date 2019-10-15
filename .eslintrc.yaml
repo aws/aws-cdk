@@ -3,7 +3,10 @@ plugins:
   - "@typescript-eslint"
   - import
 parserOptions:
-  project: ./tsconfig.json
+  project:
+    # FIXME - ./packages/@aws-cdk/*/tsconfig.json
+    - ./packages/@aws-cdk/assert/tsconfig.json
+    - ./packages/*/tsconfig.json
   ecmaVersion: 6
   sourceType: module
   ecmaFeatures:
