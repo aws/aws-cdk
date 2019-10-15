@@ -3,10 +3,7 @@ plugins:
   - "@typescript-eslint"
   - import
 parserOptions:
-  project:
-    # FIXME - ./packages/@aws-cdk/*/tsconfig.json
-    - ./packages/@aws-cdk/assert/tsconfig.json
-    - ./packages/*/tsconfig.json
+  project: ./package.json
   ecmaVersion: 6
   sourceType: module
   ecmaFeatures:
@@ -120,6 +117,8 @@ rules:
         parameters: first
       FunctionExpression:
         parameters: first
+      ignoredNodes:
+        - ConditionalExpression
   no-multiple-empty-lines: error
   space-before-function-paren:
     - error
