@@ -7,7 +7,7 @@ dist
 lib/generated/resources.ts
 node_modules
 tsconfig.json
-tslint.json
+.eslintrc.yaml
 
 .LAST_BUILD
 .nyc_output

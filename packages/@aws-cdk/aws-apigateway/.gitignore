@@ -2,7 +2,7 @@
 *.js.map
 *.d.ts
 tsconfig.json
-tslint.json
+.eslintrc.yaml
 node_modules
 *.generated.ts
 dist

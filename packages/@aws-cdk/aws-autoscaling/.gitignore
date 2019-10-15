@@ -3,7 +3,7 @@
 *.d.ts
 *.generated.ts
 tsconfig.json
-tslint.json
+.eslintrc.yaml
 node_modules
 dist
 .jsii

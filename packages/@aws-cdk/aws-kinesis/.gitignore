@@ -5,7 +5,7 @@ node_modules
 *.generated.ts
 dist
 tsconfig.json
-tslint.json
+.eslintrc.yaml
 .jsii
 
 .LAST_BUILD

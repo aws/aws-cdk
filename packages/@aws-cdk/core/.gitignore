@@ -1,7 +1,7 @@
 *.js
 *.d.ts
 tsconfig.json
-tslint.json
+.eslintrc.yaml
 *.js.map
 dist
 coverage

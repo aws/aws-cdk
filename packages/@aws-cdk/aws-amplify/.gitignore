@@ -11,4 +11,4 @@
 coverage
 dist
 tsconfig.json
-tslint.json
+.eslintrc.yaml

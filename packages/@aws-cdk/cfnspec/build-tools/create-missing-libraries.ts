@@ -192,7 +192,7 @@ async function main() {
       'coverage',
       'dist',
       'tsconfig.json',
-      'tslint.json',
+      '.eslintrc.yaml',
     ]);
 
     await write('.npmignore', [
