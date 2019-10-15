@@ -1,7 +1,7 @@
 {
   "name": "pkgtools",
   "private": true,
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Tools for generating cross-package artifacts",
   "main": "index.js",
   "repository": {
