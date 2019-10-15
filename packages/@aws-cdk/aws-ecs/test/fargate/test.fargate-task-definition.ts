@@ -112,29 +112,6 @@ export = {
       }, /Cannot set placement constraints on tasks that run on Fargate/);
 
       test.done();
-    },
-
-    'throws when setting proxyConfiguration without networkMode AWS_VPC'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      const proxyConfiguration = ecs.ProxyConfigurations.appMeshProxyConfiguration({
-        containerName: 'envoy',
-        properties: {
-          ignoredUID: 1337,
-          proxyIngressPort: 15000,
-          proxyEgressPort: 15001,
-          appPorts: [9080, 9081],
-          egressIgnoredIPs: ["169.254.170.2", "169.254.169.254"]
-        }
-      });
-
-      // THEN
-      test.throws(() => {
-        new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.BRIDGE, proxyConfiguration });
-      }, /ProxyConfiguration can only be used with AwsVpc network mode, got: bridge/);
-
-      test.done();
     }
   }
 };
