@@ -3,11 +3,14 @@ set -euo pipefail
 
 bail="--bail"
 scope=""
+up=""
+down=""
+skipapi=false
 runtarget="build+test"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--scope <package-name>]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--scope <package-name> [--up] [--down]] [--skip-api-check]"
             exit 1
             ;;
         --no-bail)
@@ -23,6 +26,15 @@ while [[ "${1:-}" != "" ]]; do
             scope="--scope $2"
             shift
             ;;
+        --up)
+            up="--include-filtered-dependencies"
+            ;;
+        --down)
+            down="--include-filtered-dependents"
+            ;;
+        --skip-api-check|--skip-api-checks)
+            skipapi=true
+            ;;
         *)
             echo "Unrecognized parameter: $1"
             exit 1
@@ -30,6 +42,11 @@ while [[ "${1:-}" != "" ]]; do
     esac
     shift
 done
+
+if [ -z $scope ]; then
+    up=""
+    down=""
+fi
 
 if [ ! -d node_modules ]; then
     /bin/bash ./install.sh
@@ -58,8 +75,10 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream $runtarget $scope || fail
+time lerna run $bail --stream $runtarget $scope $up $down || fail
 
-/bin/bash scripts/check-api-compatibility.sh $scope
+if [ "$skipapi" = false ]; then
+    /bin/bash scripts/check-api-compatibility.sh $scope $up $down
+fi
 
 touch $BUILD_INDICATOR

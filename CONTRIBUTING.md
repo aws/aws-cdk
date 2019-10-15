@@ -199,12 +199,18 @@ The build process is divided into stages, so you can invoke them as needed:
   (running this script requires that you installed the [toolchains](#Toolchains) for all target languages on your
   system).
 
-### Partial build tools
+##### Partial builds
 
-There are also two useful scripts in the `scripts` directory that can help you build part of the repo:
+When working on an individual module, the `build.sh` can be used to build that module specifically along with any related modules. The following is a list of scripts to build a module under development:
 
-- __`scripts/buildup`__: builds the current module and all of its dependencies (in topological order).
-- __`scripts/builddown`__: builds the current module and all of its consumers (in topological order).
+- __`build.sh --scope <module-name>`__: builds the module with the specidied name.
+- __`build.sh --scope <module-name> --up`__: builds the module specified and all of its dependencies (in topological order).
+- __`build.sh --scope <module-name> --down`__: builds the module specified and all of its consumers (in topological order).
+
+Here are a couple of other useful build scripts:
+
+- __`build.sh --scope <module-name> --skip-test`__: builds the module with the specidied name and skips the execution of any tests.
+- __`build.sh --scope <module-name> --skip-api-check`__: builds the module with the specidied name and skips validating the api for changes.
 
 ### Useful aliases
 
@@ -366,8 +372,7 @@ In many cases, you don't really need to build the entire project. Say you want t
 
 ```console
 $ ./install.sh
-$ cd packages/@aws-cdk/aws-ec2
-$ ../../../scripts/buildup
+$ ./build --scope @aws-cdk/aws-ec2 --skip-test --skip-api-check
 ```
 
 ### Quick Iteration

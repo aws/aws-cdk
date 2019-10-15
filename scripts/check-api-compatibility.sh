@@ -3,15 +3,23 @@
 set -eu
 
 scope=""
+up=""
+down=""
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: check-api-compatibility.sh [--scope <package-name>]"
+            echo "Usage: check-api-compatibility.sh [--scope <package-name> [--up] [--down]]"
             exit 1
             ;;
         --scope)
             scope="--scope $2"
             shift
+            ;;
+        --up)
+            up="--include-filtered-dependencies"
+            ;;
+        --down)
+            down="--include-filtered-dependents"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -33,7 +41,7 @@ package_name() {
 echo "Listing packages..." >&2
 package_dirs=()
 package_names=()
-for dir in $(npx lerna ls -p $scope); do
+for dir in $(npx lerna ls -p $scope $up $down); do
     if [[ -f $dir/.jsii ]]; then
         package_dirs+=("$dir")
         package_names+=("$(package_name $dir)")
@@ -65,7 +73,7 @@ fi
 #----------------------------------------------------------------------
 
 # get the current version from Lerna
-current_version=$(npx lerna ls -pl $scope | head -n 1 | cut -d ':' -f 3)
+current_version=$(npx lerna ls -pl $scope $up $down | head -n 1 | cut -d ':' -f 3)
 
 echo "Checking compatibility..." >&2
 success=true
