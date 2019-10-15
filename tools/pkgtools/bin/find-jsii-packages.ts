@@ -26,7 +26,7 @@ function main() {
   const objectPath = argv.key ? argv.key.split('.') : [];
 
   // Find the package directories
-  const packages = enumeratePackages(process.cwd(), (packageJson) => {
+  const packages = enumeratePackages(process.cwd(), packageJson => {
     const isJsii = packageJson.jsii;
     const matches = deepGet(packageJson, objectPath);
     return isJsii && matches;
@@ -57,6 +57,7 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
   const seen = new Set<string>();
 
   function recurse(directory: string, includeDevDependencies: boolean) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const packageJson = require(path.join(directory, '/package.json'));
 
     // Make sure we don't keep on doing the same packages over and over.
