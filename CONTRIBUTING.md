@@ -5,39 +5,41 @@ Thanks for your interest in contributing to the AWS CDK! ❤️
 This document describes how to set up a development environment and submit your contributions. Please read it carefully
 and let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
-- [Getting Started](#getting-started)
-- [Pull Requests](#pull-requests)
-  - [Step 1: Open Issue](#step-1-open-issue)
-  - [Step 2: Design (optional)](#step-2-design-optional)
-  - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Commit](#step-4-commit)
-  - [Step 5: Pull Request](#step-5-pull-request)
-  - [Step 6: Merge](#step-6-merge)
-- [Tools](#tools)
-  - [Main build scripts](#main-build-scripts)
-  - [Partial build tools](#partial-build-tools)
-  - [Useful aliases](#useful-aliases)
-  - [pkglint](#pkglint)
-  - [awslint](#awslint)
-  - [cfn2ts](#cfn2ts)
-  - [scripts/foreach.sh](#scriptsforeachsh)
-  - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
-- [Workflows](#workflows)
-  - [Full clean build](#full-clean-build)
-  - [Full Docker build](#full-docker-build)
-  - [Partial build](#partial-build)
-  - [Quick Iteration](#quick-iteration)
-  - [Linking against this repository](#linking-against-this-repository)
-  - [Running integration tests in parallel](#running-integration-tests-in-parallel)
-  - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
-  - [Adding Dependencies](#adding-dependencies)
-  - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
-  - [Updating all Dependencies](#updating-all-dependencies)
-  - [Running CLI integration tests](#running-cli-integration-tests)
-- [Troubleshooting](#troubleshooting)
-- [Debugging](#debugging)
-  - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
-- [Related Repositories](#related-repositories)
+- [Contributing to the AWS Cloud Development Kit](#contributing-to-the-aws-cloud-development-kit)
+  - [Getting Started](#getting-started)
+  - [Pull Requests](#pull-requests)
+    - [Pull Request Checklist](#pull-request-checklist)
+    - [Step 1: Open Issue](#step-1-open-issue)
+    - [Step 2: Design (optional)](#step-2-design-optional)
+    - [Step 3: Work your Magic](#step-3-work-your-magic)
+    - [Step 4: Commit](#step-4-commit)
+    - [Step 5: Pull Request](#step-5-pull-request)
+    - [Step 6: Merge](#step-6-merge)
+  - [Tools](#tools)
+    - [Main build scripts](#main-build-scripts)
+    - [Partial build tools](#partial-build-tools)
+    - [Useful aliases](#useful-aliases)
+    - [pkglint](#pkglint)
+    - [awslint](#awslint)
+    - [cfn2ts](#cfn2ts)
+    - [scripts/foreach.sh](#scriptsforeachsh)
+    - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
+  - [Workflows](#workflows)
+    - [Full clean build](#full-clean-build)
+    - [Full Docker build](#full-docker-build)
+    - [Partial build](#partial-build)
+    - [Quick Iteration](#quick-iteration)
+    - [Linking against this repository](#linking-against-this-repository)
+    - [Running integration tests in parallel](#running-integration-tests-in-parallel)
+    - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
+    - [Adding Dependencies](#adding-dependencies)
+    - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
+    - [Updating all Dependencies](#updating-all-dependencies)
+    - [Running CLI integration tests](#running-cli-integration-tests)
+  - [Troubleshooting](#troubleshooting)
+  - [Debugging](#debugging)
+    - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+  - [Related Repositories](#related-repositories)
 
 ## Getting Started
 
@@ -185,7 +187,7 @@ However, in many cases, you can probably get away with just building a portion o
 want to work on.
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK. Be sure to install
-the [tslint extension](https://marketplace.visualstudio.com/items?itemName=eg2.tslint) for it as well, since we have
+the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for it as well, since we have
 strict linting rules that will prevent your code from compiling, but with VSCode and this extension can be automatically
 fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
