@@ -43,7 +43,7 @@ while [[ "${1:-}" != "" ]]; do
     shift
 done
 
-if [ -z $scope ]; then
+if [ -z "$scope" ]; then
     up=""
     down=""
 fi
