@@ -119,6 +119,7 @@ rules:
         parameters: first
       ignoredNodes:
         - ConditionalExpression
+      SwitchCase: 1
   no-multiple-empty-lines: error
   space-before-function-paren:
     - error
