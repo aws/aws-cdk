@@ -93,6 +93,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
+      serviceName: props.serviceName,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
     });

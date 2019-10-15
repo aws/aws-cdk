@@ -86,13 +86,15 @@ export = {
         TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
       },
       queue,
-      maxScalingCapacity: 5
+      maxScalingCapacity: 5,
+      serviceName: "fargate-test-service"
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 2,
-      LaunchType: "FARGATE"
+      LaunchType: "FARGATE",
+      ServiceName: "fargate-test-service"
     }));
 
     expect(stack).to(haveResource("AWS::SQS::Queue", { QueueName: 'fargate-test-sqs-queue' }));
