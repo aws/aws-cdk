@@ -39,6 +39,7 @@ rules:
   "@typescript-eslint/no-non-null-assertion": off
   "@typescript-eslint/no-parameter-properties": warn
   "@typescript-eslint/no-use-before-define": off
+  "@typescript-eslint/no-inferrable-types": warn
   no-case-declarations: warn
   no-console: warn
   no-constant-condition: warn
