@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-autoscaling-hooktargets",
-  "version": "1.8.0",
+  "version": "1.12.0",
   "description": "Lifecycle hook for AWS AutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.AutoScaling.HookTargets",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-autoscaling-hooktargets",
@@ -70,8 +71,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
-    "@aws-cdk/aws-ec2": "^1.8.0",
+    "@aws-cdk/assert": "^1.12.0",
+    "@aws-cdk/aws-ec2": "^1.12.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
@@ -79,26 +80,26 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-sns": "^1.8.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.8.0",
-    "@aws-cdk/aws-sqs": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-autoscaling": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/aws-sns": "1.12.0",
+    "@aws-cdk/aws-sns-subscriptions": "1.12.0",
+    "@aws-cdk/aws-sqs": "1.12.0",
+    "@aws-cdk/core": "1.12.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-lambda": "^1.8.0",
-    "@aws-cdk/aws-sns": "^1.8.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.8.0",
-    "@aws-cdk/aws-sqs": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-autoscaling": "1.12.0",
+    "@aws-cdk/aws-iam": "1.12.0",
+    "@aws-cdk/aws-lambda": "1.12.0",
+    "@aws-cdk/aws-sns": "1.12.0",
+    "@aws-cdk/aws-sns-subscriptions": "1.12.0",
+    "@aws-cdk/aws-sqs": "1.12.0",
+    "@aws-cdk/core": "1.12.0"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "stable"
 }

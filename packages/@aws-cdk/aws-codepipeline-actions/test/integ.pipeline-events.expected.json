@@ -103,8 +103,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "MyPipelineArtifactsBucket727923DD": {
       "Type": "AWS::S3::Bucket",
@@ -139,8 +139,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
@@ -330,7 +330,10 @@
         "ArtifactStore": {
           "EncryptionKey": {
             "Id": {
-              "Ref": "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3"
+              "Fn::GetAtt": [
+                "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                "Arn"
+              ]
             },
             "Type": "KMS"
           },

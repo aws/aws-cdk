@@ -174,7 +174,7 @@ async function main() {
         "@aws-cdk/core": `^${version}`,
       },
       'engines': {
-        node: '>= 8.10.0'
+        node: '>= 10.3.0'
       }
     });
 

@@ -31,16 +31,16 @@ Object {
     },
   },
   "Parameters": Object {
-    "HelloLambdaCodeArtifactHashBB927E34": Object {
-      "Description": "Artifact hash for asset \\"apigw/HelloLambda/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cArtifactHash47CFB54E": Object {
+      "Description": "Artifact hash for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
-    "HelloLambdaCodeS3BucketB83F7900": Object {
-      "Description": "S3 bucket for asset \\"apigw/HelloLambda/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3Bucket0D05C9AA": Object {
+      "Description": "S3 bucket for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
-    "HelloLambdaCodeS3VersionKey2936C385": Object {
-      "Description": "S3 key for asset version \\"apigw/HelloLambda/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3": Object {
+      "Description": "S3 key for asset version \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
   },
@@ -173,7 +173,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Ref": "HelloLambdaCodeS3BucketB83F7900",
+            "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3Bucket0D05C9AA",
           },
           "S3Key": Object {
             "Fn::Join": Array [
@@ -186,7 +186,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "HelloLambdaCodeS3VersionKey2936C385",
+                          "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3",
                         },
                       ],
                     },
@@ -199,7 +199,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "HelloLambdaCodeS3VersionKey2936C385",
+                          "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3",
                         },
                       ],
                     },
@@ -927,16 +927,16 @@ Object {
     },
   },
   "Parameters": Object {
-    "HelloWorldFunctionCodeArtifactHashEF4E01C5": Object {
-      "Description": "Artifact hash for asset \\"lambda-events/HelloWorldFunction/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cArtifactHash47CFB54E": Object {
+      "Description": "Artifact hash for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
-    "HelloWorldFunctionCodeS3BucketF87BE172": Object {
-      "Description": "S3 bucket for asset \\"lambda-events/HelloWorldFunction/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3Bucket0D05C9AA": Object {
+      "Description": "S3 bucket for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
-    "HelloWorldFunctionCodeS3VersionKeyF84D6469": Object {
-      "Description": "S3 key for asset version \\"lambda-events/HelloWorldFunction/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3": Object {
+      "Description": "S3 key for asset version \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
   },
@@ -965,7 +965,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Ref": "HelloWorldFunctionCodeS3BucketF87BE172",
+            "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3Bucket0D05C9AA",
           },
           "S3Key": Object {
             "Fn::Join": Array [
@@ -978,7 +978,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "HelloWorldFunctionCodeS3VersionKeyF84D6469",
+                          "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3",
                         },
                       ],
                     },
@@ -991,7 +991,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "HelloWorldFunctionCodeS3VersionKeyF84D6469",
+                          "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3",
                         },
                       ],
                     },
@@ -1478,16 +1478,16 @@ Object {
 exports[`lambda-topic.json: lambda-topic 1`] = `
 Object {
   "Parameters": Object {
-    "LambdaCodeArtifactHash305E64BB": Object {
-      "Description": "Artifact hash for asset \\"lambda-topic/Lambda/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cArtifactHash47CFB54E": Object {
+      "Description": "Artifact hash for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
-    "LambdaCodeS3Bucket65766E44": Object {
-      "Description": "S3 bucket for asset \\"lambda-topic/Lambda/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3Bucket0D05C9AA": Object {
+      "Description": "S3 bucket for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
-    "LambdaCodeS3VersionKey10FC11BE": Object {
-      "Description": "S3 key for asset version \\"lambda-topic/Lambda/Code\\"",
+    "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3": Object {
+      "Description": "S3 key for asset version \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
       "Type": "String",
     },
   },
@@ -1515,7 +1515,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Ref": "LambdaCodeS3Bucket65766E44",
+            "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3Bucket0D05C9AA",
           },
           "S3Key": Object {
             "Fn::Join": Array [
@@ -1528,7 +1528,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "LambdaCodeS3VersionKey10FC11BE",
+                          "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3",
                         },
                       ],
                     },
@@ -1541,7 +1541,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "LambdaCodeS3VersionKey10FC11BE",
+                          "Ref": "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cS3VersionKeyDC0BC7B3",
                         },
                       ],
                     },
@@ -1891,7 +1891,7 @@ Object {
       "UpdateReplacePolicy": "Retain",
     },
     "PipelineArtifactsBucketEncryptionKey01D58D69": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "KeyPolicy": Object {
           "Statement": Array [
@@ -2010,10 +2010,10 @@ Object {
         },
       },
       "Type": "AWS::KMS::Key",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
     },
     "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "AliasName": "alias/codepipeline-pipelinepipeline22f2a91d",
         "TargetKeyId": Object {
@@ -2024,7 +2024,7 @@ Object {
         },
       },
       "Type": "AWS::KMS::Alias",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
     },
     "PipelineBuildCodePipelineActionRoleD77A08E6": Object {
       "Properties": Object {
@@ -2097,7 +2097,10 @@ Object {
         "ArtifactStore": Object {
           "EncryptionKey": Object {
             "Id": Object {
-              "Ref": "PipelineArtifactsBucketEncryptionKey01D58D69",
+              "Fn::GetAtt": Array [
+                "PipelineArtifactsBucketEncryptionKey01D58D69",
+                "Arn",
+              ],
             },
             "Type": "KMS",
           },

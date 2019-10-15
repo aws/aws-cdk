@@ -8,6 +8,7 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
 export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBaseProps {
   /**
    * The number of cpu units used by the task.
+   *
    * Valid values, which determines your range of valid values for the memory parameter:
    *
    * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
@@ -91,7 +92,9 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     this.service = new Ec2Service(this, 'QueueProcessingService', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
-      taskDefinition: this.taskDefinition
+      taskDefinition: this.taskDefinition,
+      propagateTags: props.propagateTags,
+      enableECSManagedTags: props.enableECSManagedTags,
     });
     this.configureAutoscalingForService(this.service);
   }

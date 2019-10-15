@@ -123,6 +123,23 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+### Spot Instances
+
+To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
+
+```ts
+// Add an AutoScalingGroup with spot instances to the existing cluster
+cluster.addCapacity('AsgSpot', {
+  maxCapacity: 2,
+  minCapacity: 2,
+  desiredCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.xlarge'),
+  spotPrice: '0.0735',
+  // Enable the Automated Spot Draining support for Amazon ECS
+  spotInstanceDraining: true,
+});
+```
+
 ## Task definitions
 
 A task Definition describes what a single copy of a **task** should look like.
@@ -242,10 +259,9 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
-### Include a load balancer
+### Include an application/network load balancer
 
-`Services` are load balancing targets and can be directly attached to load
-balancers:
+`Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
 
 ```ts
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
@@ -257,6 +273,75 @@ const listener = lb.addListener('Listener', { port: 80 });
 const target = listener.addTargets('ECS', {
   port: 80,
   targets: [service]
+});
+```
+
+Note that in the example above, if you have multiple containers with multiple ports, then only the first essential container along with its first added container port will be registered as target. To have more control over which container and port to register as targets:
+
+```ts
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
+const service = new ecs.FargateService(this, 'Service', { /* ... */ });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
+const listener = lb.addListener('Listener', { port: 80 });
+const target = listener.addTargets('ECS', {
+  port: 80,
+  targets: [service.loadBalancerTarget({
+    containerName: 'MyContainer',
+    containerPort: 12345
+  })]
+});
+```
+
+Alternatively, you can also create all load balancer targets to be registered in this service, add them to target groups, and attach target groups to listeners accordingly.
+
+```ts
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
+const service = new ecs.FargateService(this, 'Service', { /* ... */ });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
+const listener = lb.addListener('Listener', { port: 80 });
+service.registerLoadBalancerTargets(
+  {
+    containerTarget: {
+      containerName: 'web',
+      containerPort: 80,
+    },
+    targetGroupId: 'ECS',
+    listener: ecs.ListenerConfig.applicationListener(listener, {
+      protocol: elbv2.ApplicationProtocol.HTTPS
+    }),
+  },
+);
+```
+
+### Include a classic load balancer
+`Services` can also be directly attached to a classic load balancer as targets:
+
+```ts
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
+
+const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+lb.addListener({ externalPort: 80 });
+lb.addTarget(service);
+```
+
+Similarly, if you want to have more control over load balancer targeting:
+
+```ts
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
+
+const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+lb.addListener({ externalPort: 80 });
+lb.addTarget(service.loadBalancerTarget{
+  containerName: 'MyContainer',
+  containerPort: 80
 });
 ```
 
