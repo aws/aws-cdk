@@ -1,8 +1,10 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
-import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
+import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 
 /**
  * The interface for all task definitions.
@@ -62,6 +64,13 @@ export interface CommonTaskDefinitionProps {
    * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * The configuration details for the App Mesh proxy.
+   *
+   * @default - No proxy configuration.
+   */
+  readonly proxyConfiguration?: ProxyConfiguration;
 
   /**
    * The list of volume definitions for the task. For more information, see
@@ -249,7 +258,9 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
-
+    if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
+      throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
+    }
     if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
@@ -274,10 +285,11 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
-      networkMode: this.networkMode,
+      networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.anyValue({ produce: () =>
         !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
       }, { omitEmptyArray: true }),
+      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
@@ -291,6 +303,44 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  /**
+   * Validate the existence of the input target and set default values.
+   *
+   * @internal
+   */
+  public _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
+    const targetContainer = this.findContainer(options.containerName);
+    if (targetContainer === undefined) {
+      throw new Error(`No container named '${options.containerName}'. Did you call "addContainer()"?`);
+    }
+    const targetProtocol = options.protocol || Protocol.TCP;
+    const targetContainerPort = options.containerPort || targetContainer.containerPort;
+    const portMapping = targetContainer._findPortMapping(targetContainerPort, targetProtocol);
+    if (portMapping === undefined) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMapping()"?`);
+    }
+    return {
+      containerName: options.containerName,
+      portMapping
+    };
+  }
+
+  /**
+   * Returns the port range to be opened that match the provided container name and container port.
+   *
+   * @internal
+   */
+  public _portRangeFromPortMapping(portMapping: PortMapping): ec2.Port {
+    if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
+      return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
+    }
+    if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
+      return EPHEMERAL_PORT_RANGE;
+    }
+    return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
   }
 
   /**
@@ -382,7 +432,23 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
     return ret;
   }
+
+  /**
+   * Returns the container that match the provided containerName.
+   */
+  private findContainer(containerName: string): ContainerDefinition | undefined {
+    return this.containers.find(c => c.containerName === containerName);
+  }
+
+  private renderNetworkMode(networkMode: NetworkMode): string | undefined {
+    return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
+  }
 }
+
+/**
+ * The port range to open up for dynamic port mapping
+ */
+const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
 
 /**
  * The networking mode to use for the containers in the task.
@@ -410,6 +476,14 @@ export enum NetworkMode {
    * single container instance when port mappings are used.
    */
   HOST = 'host',
+
+  /**
+   * The task utilizes NAT network mode required by Windows containers.
+   *
+   * This is the only supported network mode for Windows containers. For more information, see
+   * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
+   */
+  NAT = 'nat'
 }
 
 /**
@@ -462,6 +536,47 @@ export interface Host {
    * This property is not supported for tasks that use the Fargate launch type.
    */
   readonly sourcePath?: string;
+}
+
+/**
+ * Properties for an ECS target.
+ *
+ * @internal
+ */
+export interface LoadBalancerTarget {
+  /**
+   * The name of the container.
+   */
+  readonly containerName: string;
+
+  /**
+   * The port mapping of the target.
+   */
+  readonly portMapping: PortMapping
+}
+
+/**
+ * Properties for defining an ECS target. The port mapping for it must already have been created through addPortMapping().
+ */
+export interface LoadBalancerTargetOptions {
+  /**
+   * The name of the container.
+   */
+  readonly containerName: string;
+
+  /**
+   * The port number of the container. Only applicable when using application/network load balancers.
+   *
+   * @default - Container port of the first added port mapping.
+   */
+  readonly containerPort?: number;
+
+  /**
+   * The protocol used for the port mapping. Only applicable when using application load balancers.
+   *
+   * @default Protocol.TCP
+   */
+  readonly protocol?: Protocol;
 }
 
 /**

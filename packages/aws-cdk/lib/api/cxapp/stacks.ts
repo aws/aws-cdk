@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import regionInfo = require('@aws-cdk/region-info');
+import { RegionInfo } from '@aws-cdk/region-info';
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
@@ -200,18 +200,32 @@ export class AppStacks {
     const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
+    let previouslyMissingKeys: Set<string> | undefined;
     while (true) {
       const assembly = await this.props.synthesizer(this.props.aws, this.props.configuration);
 
       if (assembly.manifest.missing) {
-        debug(`Some context information is missing. Fetching...`);
+        const missingKeys = missingContextKeys(assembly.manifest.missing);
 
-        await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
+        let tryLookup = true;
+        if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
+          debug(`Not making progress trying to resolve environmental context. Giving up.`);
+          tryLookup = false;
+        }
 
-        // Cache the new context to disk
-        await this.props.configuration.saveContext();
+        previouslyMissingKeys = missingKeys;
 
-        continue;
+        if (tryLookup) {
+          debug(`Some context information is missing. Fetching...`);
+
+          await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
+
+          // Cache the new context to disk
+          await this.props.configuration.saveContext();
+
+          // Execute again
+          continue;
+        }
       }
 
       if (trackVersions && assembly.runtime) {
@@ -221,7 +235,7 @@ export class AppStacks {
             stack.template.Resources = {};
           }
           const resourcePresent = stack.environment.region === cxapi.UNKNOWN_REGION
-            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES';
+            || RegionInfo.get(stack.environment.region).cdkMetadataResourceAvailable;
           if (resourcePresent) {
             if (!stack.template.Resources.CDKMetadata) {
               stack.template.Resources.CDKMetadata = {
@@ -230,6 +244,16 @@ export class AppStacks {
                   Modules: modules
                 }
               };
+              if (stack.environment.region === cxapi.UNKNOWN_REGION) {
+                stack.template.Conditions = stack.template.Conditions || {};
+                const condName = 'CDKMetadataAvailable';
+                if (!stack.template.Conditions[condName]) {
+                  stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
+                  stack.template.Resources.CDKMetadata.Condition = condName;
+                } else {
+                  warning(`The stack ${stack.name} already includes a ${condName} condition`);
+                }
+              }
             } else {
               warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
             }
@@ -402,4 +426,50 @@ export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+/**
+ * Return all keys of misisng context items
+ */
+function missingContextKeys(missing?: cxapi.MissingContext[]): Set<string> {
+  return new Set((missing || []).map(m => m.key));
+}
+
+function setsEqual<A>(a: Set<A>, b: Set<A>) {
+  if (a.size !== b.size) { return false; }
+  for (const x of a) {
+    if (!b.has(x)) { return false; }
+  }
+  return true;
+}
+
+function _makeCdkMetadataAvailableCondition() {
+  return _fnOr(RegionInfo.regions
+    .filter(ri => ri.cdkMetadataResourceAvailable)
+    .map(ri => ({ 'Fn::Equals': [{ Ref: 'AWS::Region' }, ri.name] })));
+}
+
+/**
+ * This takes a bunch of operands and crafts an `Fn::Or` for those. Funny thing is `Fn::Or` requires
+ * at least 2 operands and at most 10 operands, so we have to... do this.
+ */
+function _fnOr(operands: any[]): any {
+  if (operands.length === 0) {
+    throw new Error('Cannot build `Fn::Or` with zero operands!');
+  }
+  if (operands.length === 1) {
+    return operands[0];
+  }
+  if (operands.length <= 10) {
+    return { 'Fn::Or': operands };
+  }
+  return _fnOr(_inGroupsOf(operands, 10).map(group => _fnOr(group)));
+}
+
+function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
+  const result = new Array<T[]>();
+  for (let i = 0; i < array.length; i += maxGroup) {
+    result.push(array.slice(i, i + maxGroup));
+  }
+  return result;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iam",
-  "version": "1.8.0",
+  "version": "1.13.1",
   "description": "CDK routines for easily assigning correct and minimal IAM permissions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,8 @@
         "packageId": "Amazon.CDK.AWS.IAM",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview"
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-iam",
@@ -64,7 +65,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
+    "@aws-cdk/assert": "1.13.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
@@ -72,12 +73,12 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/region-info": "^1.8.0"
+    "@aws-cdk/core": "1.13.1",
+    "@aws-cdk/region-info": "1.13.1"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/region-info": "^1.8.0"
+    "@aws-cdk/core": "1.13.1",
+    "@aws-cdk/region-info": "1.13.1"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -92,7 +93,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [

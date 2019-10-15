@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assert",
-  "version": "1.8.0",
+  "version": "1.13.1",
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -31,9 +31,9 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0",
-    "@aws-cdk/cx-api": "^1.8.0",
+    "@aws-cdk/cloudformation-diff": "1.13.1",
+    "@aws-cdk/core": "1.13.1",
+    "@aws-cdk/cx-api": "1.13.1",
     "jest": "^24.9.0",
     "source-map-support": "^0.5.13"
   },
@@ -48,7 +48,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   },
   "stability": "experimental"
 }

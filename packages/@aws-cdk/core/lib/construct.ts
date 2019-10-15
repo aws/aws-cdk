@@ -2,7 +2,6 @@ import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
 import { makeUniqueId } from './private/uniqueid';
-import { IResolvable } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
@@ -40,26 +39,24 @@ export class ConstructNode {
     // prepare
     this.prepare(root);
 
-    // do not allow adding children after this stage
-    root._lock();
-
-    try {
-      // validate
-      const validate = options.skipValidation === undefined ? true : !options.skipValidation;
-      if (validate) {
-        const errors = this.validate(root);
-        if (errors.length > 0) {
-          const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-          throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-        }
+    // validate
+    const validate = options.skipValidation === undefined ? true : !options.skipValidation;
+    if (validate) {
+      const errors = this.validate(root);
+      if (errors.length > 0) {
+        const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+        throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
       }
+    }
 
-      // synthesize (leaves first)
-      for (const construct of root.findAll(ConstructOrder.POSTORDER)) {
+    // synthesize (leaves first)
+    for (const construct of root.findAll(ConstructOrder.POSTORDER)) {
+      try {
+        construct.node._lock();
         (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
+      } finally {
+        construct.node._unlock();
       }
-    } finally {
-      root._unlock();
     }
 
     // write session manifest and lock store
@@ -122,7 +119,6 @@ export class ConstructNode {
   private readonly _children: { [id: string]: IConstruct } = { };
   private readonly _context: { [key: string]: any } = { };
   private readonly _metadata = new Array<cxapi.MetadataEntry>();
-  private readonly _references = new Set<Reference>();
   private readonly _dependencies = new Set<IDependable>();
   private readonly invokedAspects: IAspect[] = [];
   private _defaultChild: IConstruct | undefined;
@@ -198,7 +194,10 @@ export class ConstructNode {
   }
 
   /**
-   * Returns the child construct that has the id `Default` or `Resource"`
+   * Returns the child construct that has the id `Default` or `Resource"`.
+   * This is usually the construct that provides the bulk of the underlying functionality.
+   * Useful for modifications of the underlying construct that are not available at the higher levels.
+   *
    * @throws if there is more than one child
    * @returns a construct or undefined if there is no default child
    */
@@ -401,38 +400,6 @@ export class ConstructNode {
     }
 
     return false;
-  }
-
-  /**
-   * Record a reference originating from this construct node
-   */
-  public addReference(...refs: IResolvable[]) {
-    for (const ref of refs) {
-      if (Reference.isReference(ref)) {
-        this._references.add(ref);
-      }
-    }
-  }
-
-  /**
-   * Return all references originating from this node or any of its children
-   */
-  public get references(): OutgoingReference[] {
-    const ret = new Set<OutgoingReference>();
-
-    function recurse(node: ConstructNode) {
-      for (const reference of node._references) {
-        ret.add({ source: node.host, reference });
-      }
-
-      for (const child of node.children) {
-        recurse(child.node);
-      }
-    }
-
-    recurse(this);
-
-    return Array.from(ret);
   }
 
   /**
@@ -660,21 +627,6 @@ export interface Dependency {
 }
 
 /**
- * Represents a reference that originates from a specific construct.
- */
-export interface OutgoingReference {
-  /**
-   * The originating construct.
-   */
-  readonly source: IConstruct;
-
-  /**
-   * The reference.
-   */
-  readonly reference: Reference;
-}
-
-/**
  * Represents a single session of synthesis. Passed into `Construct.synthesize()` methods.
  */
 export interface ISynthesisSession {
@@ -706,9 +658,6 @@ function ignore(_x: any) {
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
-
-import { Reference } from './reference';
-
 const PATH_SEP_REGEX = new RegExp(`${ConstructNode.PATH_SEP}`, 'g');
 
 /**

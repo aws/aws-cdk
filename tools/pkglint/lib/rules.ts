@@ -10,6 +10,7 @@ import {
   fileShouldBe, fileShouldContain,
   findInnerPackages,
   monoRepoRoot,
+  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -453,6 +454,10 @@ export class NoAtTypesInDependencies extends ValidationRule {
   }
 }
 
+function isCdkModuleName(name: string) {
+  return !!name.match(/^@aws-cdk\//);
+}
+
 /**
  * Computes the module name for various other purposes (java package, ...)
  */
@@ -512,6 +517,20 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
         });
       }
     }
+  }
+}
+
+/**
+ * JSII .NET namespace is required and must look sane
+ */
+export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
+  public readonly name = 'jsii/dotnet/icon-url';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const CDK_LOGO_URL = 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png';
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.iconUrl', CDK_LOGO_URL);
   }
 }
 
@@ -620,6 +639,28 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
   }
 }
 
+/**
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ */
+export class MustDependonCdkByPointVersions extends ValidationRule {
+  public readonly name = 'dependencies/cdk-point-dependencies';
+
+  public validate(pkg: PackageJson): void {
+    const expectedVersion = monoRepoVersion();
+
+    for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
+      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
+          fix: () => pkg.addDependency(depName, expectedVersion)
+        });
+      }
+    }
+  }
+}
+
 export class MustIgnoreSNK extends ValidationRule {
   public readonly name = 'ignore/strong-name-key';
 
@@ -716,7 +757,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 8.10.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.3.0');
   }
 }
 
