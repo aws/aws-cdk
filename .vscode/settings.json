@@ -1,4 +1,10 @@
 {
+	"eslint.validate": [
+		"javascript",
+		{ "language": "typescript", "autoFix": true }
+    ],
+    "eslint.lintTask.options": ". --ignore-path .gitignore",
+    "eslint.lintTask.enable": true,
     "eslint.workingDirectories": [
         { "directory": "./packages/@aws-cdk/alexa-ask", "changeProcessCWD": true },
         { "directory": "./packages/@aws-cdk/app-delivery", "changeProcessCWD": true },
