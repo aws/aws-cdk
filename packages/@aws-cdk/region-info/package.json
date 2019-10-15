@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
