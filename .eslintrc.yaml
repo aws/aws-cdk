@@ -81,7 +81,6 @@ rules:
       - 'constructor'
       - 'instance-method'
   new-parens: error
-  "@typescript-eslint/consistent-type-assertions": error
   no-caller: error
   no-bitwise: error
   no-new-wrappers: error
