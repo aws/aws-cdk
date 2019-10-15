@@ -15,6 +15,7 @@ const directory = argv._[0] || '.';
 argv.directory = path.resolve(directory, process.cwd());
 
 async function main(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const ruleClasses = require('../lib/rules');
   const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 

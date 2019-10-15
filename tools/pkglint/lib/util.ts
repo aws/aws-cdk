@@ -129,6 +129,7 @@ export function deepSet(x: any, jsonPath: string[], value: any) {
  */
 export function monoRepoVersion() {
   const found = findLernaJSON();
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const lernaJson = require(found);
   return lernaJson.version;
 }
