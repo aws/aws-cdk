@@ -132,7 +132,7 @@ export = {
       // THEN
       test.throws(() => {
         new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.BRIDGE, proxyConfiguration });
-      }, /"proxyConfiguration" requires AwsVpc network mode, got: bridge/);
+      }, /ProxyConfiguration can only be used with AwsVpc network mode, got: bridge/);
 
       test.done();
     }

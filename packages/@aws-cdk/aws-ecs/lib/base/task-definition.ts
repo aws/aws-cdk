@@ -259,7 +259,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
     if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
-      throw new Error(`"proxyConfiguration" requires AwsVpc network mode, got: ${this.networkMode}`);
+      throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
     }
     if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
