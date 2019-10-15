@@ -142,7 +142,7 @@ export class CdkToolkit {
       try {
         const result = await this.provisioner.deployStack({
           stack,
-          deployName: stack.name,
+          deployName: options.deployName || stack.name,
           roleArn: options.roleArn,
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
@@ -307,6 +307,11 @@ export interface DeployOptions {
    * AWS SDK
    */
   sdk: ISDK;
+
+  /**
+   * Overwrites the cdk stackName
+   */
+  deployName?: string;
 }
 
 export interface DestroyOptions {

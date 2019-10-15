@@ -46,6 +46,27 @@ export = nodeunit.testCase({
         // THEN
         test.done();
       },
+      'with deploy-name'(test: nodeunit.Test) {
+        // GIVEN
+        const deployName = 'MyCustomStackName';
+        const toolkit = new CdkToolkit({
+          appStacks: new TestAppStacks(test),
+          provisioner: new TestProvisioner(test, {
+            'Test-Stack-A': { Foo: 'Bar' },
+            'Test-Stack-B': { Baz: 'Zinga!' },
+          }, undefined, deployName),
+        });
+
+        // WHEN
+        toolkit.deploy({
+          stackNames: ['Test-Stack-A', 'Test-Stack-B'],
+          deployName,
+          sdk: new SDK()
+        });
+
+        // THEN
+        test.done();
+      },
     },
   },
 });
@@ -59,7 +80,7 @@ class MockStack {
     public readonly assets: cxapi.AssetMetadataEntry[] = [],
     public readonly parameters: { [id: string]: string } = {},
     public readonly environment: cxapi.Environment = { name: 'MockEnv', account: '123456789012', region: 'bermuda-triangle-1' },
-  ) {}
+  ) { }
 }
 
 class TestAppStacks extends AppStacks {
@@ -112,19 +133,24 @@ class TestAppStacks extends AppStacks {
 class TestProvisioner implements IDeploymentTarget {
   private readonly expectedTags: { [stackName: string]: Tag[] } = {};
   private readonly expectedNotificationArns: string[];
+  private readonly expectedDeployName: string;
 
   constructor(
     private readonly test: nodeunit.Test,
     expectedTags: { [stackName: string]: { [key: string]: string } } = {},
     expectedNotificationArns?: string[],
+    expectedDeployName?: string,
   ) {
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
         Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
-          .sort((l, r) =>  l.Key.localeCompare(r.Key));
+          .sort((l, r) => l.Key.localeCompare(r.Key));
     }
     if (expectedNotificationArns) {
       this.expectedNotificationArns = expectedNotificationArns;
+    }
+    if (expectedDeployName) {
+      this.expectedDeployName = expectedDeployName;
     }
   }
 
@@ -135,10 +161,11 @@ class TestProvisioner implements IDeploymentTarget {
     );
     this.test.deepEqual(options.tags, this.expectedTags[options.stack.name]);
     this.test.deepEqual(options.notificationArns, this.expectedNotificationArns);
+    this.test.equals(options.deployName, this.expectedDeployName || options.stack.name);
     return Promise.resolve({
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.name}/MockedOut`,
       noOp: false,
-      outputs: { StackName: options.stack.name },
+      outputs: { StackName: this.expectedDeployName || options.stack.name },
     });
   }
 

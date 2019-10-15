@@ -58,7 +58,8 @@ async function parseCommandLineArguments() {
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
       .option('notification-arns', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
-      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true }))
+      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
+      .option('deploy-name', { type: 'string', desc: 'CloudFormation stack will be deployed with this name instead of the one defined in the code', nargs: 1, requiresArg: true }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -205,6 +206,7 @@ async function initCommandLine() {
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           sdk: aws,
+          deployName: args.deployName,
         });
 
       case 'destroy':
