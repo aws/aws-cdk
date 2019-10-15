@@ -81,8 +81,7 @@ rules:
       - 'constructor'
       - 'instance-method'
   new-parens: error
-  # FIXME https://github.com/typescript-eslint/typescript-eslint/releases/v1.14.0
-  # "@typescript-eslint/consistent-type-assertions": error
+  "@typescript-eslint/consistent-type-assertions": error
   no-caller: error
   no-bitwise: error
   no-new-wrappers: error
@@ -102,7 +101,7 @@ rules:
   "@typescript-eslint/prefer-for-of": error
   radix: error
   "@typescript-eslint/semi": error
-  eqeqeq: 
+  eqeqeq:
     - error
     - always
     - {null: "ignore"}
