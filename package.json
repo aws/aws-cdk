@@ -31,7 +31,7 @@
     "url": "git://github.com/aws/aws-cdk"
   },
   "standard-version": {
-    "releaseCommitMessageFormat": "{{currentTag}}",
+    "releaseCommitMessageFormat": "v{{currentTag}}",
     "scripts": {
       "prebump": "echo $(node -pe \"require('./lerna.json').version\")",
       "precommit": "git add ."
@@ -41,5 +41,6 @@
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
-  }
+  },
+  "version": "1.13.0"
 }

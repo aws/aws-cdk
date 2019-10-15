@@ -653,7 +653,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
 
         pkg.report({
           ruleName: this.name,
-          message: `dependency ${depName}: dependency version must be ${monoRepoVersion}`,
+          message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
           fix: () => pkg.addDependency(depName, expectedVersion)
         });
       }
