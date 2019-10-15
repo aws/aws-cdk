@@ -24,7 +24,6 @@
     "nyc": "^14.1.1",
     "standard-version": "^7.0.0",
     "ts-jest": "^24.1.0",
-    "tslint": "^5.20.0",
     "typescript": "~3.6.3"
   },
   "repository": {
