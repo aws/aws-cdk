@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.13.1](https://github.com/aws/aws-cdk/compare/v1.13.0...v1.13.1) (2019-10-15)
+## [1.13.1](https://github.com/aws/aws-cdk/compare/v1.13.0...v1.13.1) (2019-10-15)
 
 
 ### Bug Fixes
