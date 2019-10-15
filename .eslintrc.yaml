@@ -44,6 +44,9 @@ rules:
   no-console: warn
   no-constant-condition: warn
   no-inner-declarations: warn
+  no-cond-assign:
+    - error
+    - always
   # duplicate of @typescript-eslint/semi
   semi: off
   # duplicate of "camelcase"
