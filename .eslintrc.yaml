@@ -116,6 +116,10 @@ rules:
   "@typescript-eslint/indent":
     - error
     - 2
+    - FunctionDeclaration:
+        parameters: first
+      FunctionExpression:
+        parameters: first
   no-multiple-empty-lines: error
   space-before-function-paren:
     - error
