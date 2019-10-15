@@ -11,8 +11,9 @@ import { INetworkListener } from './network-listener';
 export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The protocol on which the container listens for requests.
+   * @default Protocol.TCP
    */
-  readonly protocol: Protocol;
+  readonly protocol?: Protocol;
 
   /**
    * The port on which the container listens for requests.
@@ -72,14 +73,15 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (!containerPort) {
       throw new Error('Missing containerPort - The port on which the container listens is required when adding a target.');
     }
+    const containerProtocol = props.protocol || Protocol.TCP;
 
     super(scope, id, props, {
-      protocol: props.protocol,
+      protocol: containerProtocol,
       port: containerPort,
     });
 
     this.listeners = [];
-    this.defaultProtocol = props.protocol;
+    this.defaultProtocol = containerProtocol;
 
     if (props.proxyProtocolV2) {
       this.setAttribute('proxy_protocol_v2.enabled', 'true');
@@ -151,8 +153,9 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 export interface INetworkTargetGroup extends ITargetGroup {
   /**
    * Default protocol configured for members of this target group
+   * @default Protocol.TCP
    */
-  readonly defaultProtocol: Protocol;
+  readonly defaultProtocol?: Protocol;
 
   /**
    * Register a listener that is load balancing to this target group.
@@ -174,7 +177,7 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
 
   constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupImportProps) {
     super(scope, id, props);
-    this.defaultProtocol = props.defaultProtocol;
+    this.defaultProtocol = props.defaultProtocol || Protocol.TCP;
   }
 
   public registerListener(_listener: INetworkListener) {
@@ -185,8 +188,9 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
 export interface NetworkTargetGroupImportProps extends TargetGroupImportProps {
   /**
    * Default protocol configured for members of this target group
+   * @default Protocol.TCP
    */
-  readonly defaultProtocol: Protocol;
+  readonly defaultProtocol?: Protocol;
 }
 
 /**

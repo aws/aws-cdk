@@ -194,7 +194,7 @@ export interface AddNetworkTargetsProps {
   /**
    * The protocol on which the container listens for requests.
    *
-   * @default - Protocol.TCP
+   * @default Protocol.TCP
    */
   readonly containerProtocol?: Protocol;
 
