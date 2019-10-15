@@ -570,7 +570,7 @@
       "DeletionPolicy": "Delete",
       "UpdateReplacePolicy": "Delete"
     },
-    "PipelineBucketawscdkcodepipelinelambdaPipeline87A4B3D3SourceEventRuleCE4D4505": {
+    "PipelineBucketawscdkcodepipelinelambdaPipeline87A4B3D3SourceEventRulekey23D3C004": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
