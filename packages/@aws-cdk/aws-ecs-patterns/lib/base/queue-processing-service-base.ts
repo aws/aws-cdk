@@ -118,6 +118,13 @@ export interface QueueProcessingServiceBaseProps {
    * @default false
    */
   readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The name of a family that the task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly taskDefinitionFamily?: string;
 }
 
 /**
