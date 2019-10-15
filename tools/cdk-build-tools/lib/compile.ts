@@ -16,7 +16,7 @@ export async function compileCurrentPackage(timers: Timers, compilers: CompilerO
   }
 
   // Always call linters
-  await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.'], { timers });
+  await shell([compilers.eslint || require.resolve('eslint/bin/eslint'), '--project', '.'], { timers });
   await shell(['pkglint'], { timers });
   await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ], { timers });
 }
