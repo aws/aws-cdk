@@ -16,11 +16,11 @@
     "pkglint": "bin/pkglint"
   },
   "scripts": {
-    "build": "tsc -b && tslint -p . && eslint . --ext .ts,.js --ignore-path .gitignore && chmod +x bin/pkglint",
+    "build": "tsc -b && eslint . --ext .ts,.js --ignore-path .gitignore && chmod +x bin/pkglint",
     "build+test": "npm run build",
     "build+test+package": "npm run build",
     "watch": "tsc -b -w",
-    "lint": "tsc -b && tslint -p . --force && eslint . --ext .ts,.js --ignore-path .gitignore"
+    "lint": "tsc -b && eslint . --ext .ts,.js --ignore-path .gitignore"
   },
   "keywords": [
     "aws",

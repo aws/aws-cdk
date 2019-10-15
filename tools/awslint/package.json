@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -b && chmod +x bin/awslint",
-    "lint": "tslint -p . && pkglint",
+    "lint": "eslint . --ext .ts,.js --ignore-path .gitignore  && pkglint",
     "test": "echo ok",
     "watch": "tsc -b -w",
     "build+test+package": "npm run build+test",
@@ -27,7 +27,10 @@
     "@types/colors": "^1.2.1",
     "@types/fs-extra": "^8.0.0",
     "@types/yargs": "^13.0.3",
-    "tslint": "^5.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.4.0",
+    "@typescript-eslint/parser": "^2.4.0",
+    "eslint": "^6.5.1",
+    "eslint-plugin-import": "^2.18.2",
     "typescript": "~3.6.3"
   },
   "repository": {
