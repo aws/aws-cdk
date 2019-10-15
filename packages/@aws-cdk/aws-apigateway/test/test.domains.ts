@@ -1,4 +1,4 @@
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 import { expect, haveResource } from '@aws-cdk/assert';
 import acm = require('@aws-cdk/aws-certificatemanager');
 import { Stack } from '@aws-cdk/core';

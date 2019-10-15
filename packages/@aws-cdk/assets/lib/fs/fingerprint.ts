@@ -74,11 +74,11 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
 function _contentFingerprint(file: string, stat: fs.Stats): string {
   const hash = crypto.createHash('sha256');
   const buffer = Buffer.alloc(BUFFER_SIZE);
-  // tslint:disable-next-line: no-bitwise
+  // eslint-disable-next-line no-bitwise
   const fd = fs.openSync(file, fs.constants.O_DSYNC | fs.constants.O_RDONLY | fs.constants.O_SYNC);
   try {
     let read = 0;
-    // tslint:disable-next-line: no-conditional-assignment
+    // eslint-disable-next-line no-cond-assign
     while ((read = fs.readSync(fd, buffer, 0, BUFFER_SIZE, null)) !== 0) {
       hash.update(buffer.slice(0, read));
     }

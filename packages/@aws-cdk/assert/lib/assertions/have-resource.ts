@@ -85,7 +85,6 @@ export class HaveResourceAssertion extends Assertion<StackInspector> {
   }
 
   public get description(): string {
-    // tslint:disable-next-line:max-line-length
     return `resource '${this.resourceType}' with properties ${JSON.stringify(this.properties, undefined, 2)}`;
   }
 }
