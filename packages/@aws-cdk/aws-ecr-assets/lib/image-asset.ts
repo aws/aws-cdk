@@ -93,6 +93,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
 
     const stack = Stack.of(this);
     const location = stack.addDockerImageAsset({
+      id: this.node.uniqueId,
       directoryName: staging.stagedPath,
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
