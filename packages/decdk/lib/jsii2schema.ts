@@ -1,7 +1,7 @@
 import jsiiReflect = require('jsii-reflect');
 import util = require('util');
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 export class SchemaContext {
   public static root(definitions?: { [fqn: string]: any }): SchemaContext {

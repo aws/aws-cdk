@@ -3,7 +3,7 @@ import fs = require('fs-extra');
 import yargs = require('yargs');
 import generate from '../lib';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /* eslint-disable max-len */
 
 async function main() {

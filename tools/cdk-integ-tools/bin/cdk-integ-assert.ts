@@ -3,7 +3,7 @@
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 async function main() {
   const tests = await new IntegrationTests('test').fromCliArgs(); // always assert all tests

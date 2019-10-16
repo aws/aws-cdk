@@ -88,7 +88,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
   }
 }
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * Lambda event handler for the custom resource. Bear in mind that we are going

@@ -201,7 +201,7 @@ export class DropSpamReceiptRule extends Construct {
 }
 
 // Adapted from https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
-// tslint:disable:no-console
+/* eslint-disable no-console */
 function dropSpamCode(event: any, _: any, callback: any) {
   console.log('Spam filter');
 
