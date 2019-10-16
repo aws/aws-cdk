@@ -2,7 +2,7 @@ import fs = require('fs');
 import path = require('path');
 
 import { ArtifactType } from '@aws-cdk/cx-api';
-import { Construct, IConstruct, ISynthesisSession } from '../construct';
+import { CfnResource, Construct, IConstruct, ISynthesisSession } from '../index';
 
 const FILE_PATH = 'tree.json';
 
@@ -23,10 +23,13 @@ export class TreeMetadata extends Construct {
 
     const visit = (construct: IConstruct): Node => {
       const children = construct.node.children.map(visit);
+      const childrenMap = children.reduce((map, child) => Object.assign(map, { [child.id]: child }), {});
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
-        children: children.length === 0 ? undefined : children,
+        type: this.inferType(construct),
+        properties: this.inferProperties(construct),
+        children: children.length === 0 ? undefined : childrenMap,
       };
 
       lookup[node.path] = node;
@@ -49,10 +52,33 @@ export class TreeMetadata extends Construct {
       }
     });
   }
+
+  private inferType(construct: IConstruct): Type | undefined {
+    if (CfnResource.isCfnResource(construct)) {
+      return {
+        cfnResourceType: (construct as CfnResource).cfnResourceType
+      };
+    }
+    return undefined;
+  }
+
+  private inferProperties(construct: IConstruct): { [key: string]: any } | undefined {
+    if (CfnResource.isCfnResource(construct)) {
+      return (construct as any).cfnProperties;
+    } else {
+      return undefined;
+    }
+  }
 }
 
 interface Node {
   id: string;
   path: string;
-  children?: Node[];
+  type?: Type;
+  properties?: { [key: string]: any };
+  children?: { [key: string]: Node };
+}
+
+interface Type {
+  cfnResourceType?: string;
 }
