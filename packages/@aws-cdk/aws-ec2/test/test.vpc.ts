@@ -906,11 +906,11 @@ function hasTags(expectedTags: Array<{Key: string, Value: string}>): (props: any
       });
       return actualTags.length === expectedTags.length;
     } catch (e) {
-      // tslint:disable:no-console
+      /* eslint-disable no-console */
       console.error('Tags are incorrect');
       console.error('found tags ', props.Tags);
       console.error('expected tags ', expectedTags);
-      // tslint:enable:no-console
+      /* eslint-enable no-console */
       throw e;
     }
   };

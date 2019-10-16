@@ -141,7 +141,8 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
   }
 }
 
-// tslint:disable:max-line-length Because of long URLs in documentation
+// Because of long URLs in documentation
+/* eslint-disable max-len */
 /**
  * Properties common to CloudFormation actions that stage deployments
  */
@@ -237,7 +238,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    */
   readonly extraInputs?: codepipeline.Artifact[];
 }
-// tslint:enable:max-line-length
+/* eslint-enable max-len */
 
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.

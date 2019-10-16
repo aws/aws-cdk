@@ -435,7 +435,7 @@ export interface DatabaseInstanceNewProps {
    */
   readonly autoMinorVersionUpgrade?: boolean;
 
-  // tslint:disable:max-line-length
+  /* eslint-disable max-len */
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *
@@ -446,7 +446,7 @@ export interface DatabaseInstanceNewProps {
    * time for each AWS Region, occurring on a random day of the week. To see
    * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow
    */
-  // tslint:enable:max-line-length
+  /* eslint-enable max-len */
   readonly preferredMaintenanceWindow?: string;
 
   /**

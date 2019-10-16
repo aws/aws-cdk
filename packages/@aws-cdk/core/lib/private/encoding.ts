@@ -173,13 +173,13 @@ export function createTokenDouble(x: number) {
   const buf = new ArrayBuffer(8);
   const ints = new Uint32Array(buf);
 
-  // tslint:disable:no-bitwise
+  /* eslint-disable no-bitwise */
   ints[0] =  x & 0x0000FFFFFFFF; // Bottom 32 bits of number
 
   // This needs an "x >> 32" but that will make it a 32-bit number instead
   // of a 64-bit number.
   ints[1] = (shr32(x) & 0xFFFF) | DOUBLE_TOKEN_MARKER_BITS; // Top 16 bits of number and the mask
-  // tslint:enable:no-bitwise
+  /* eslint-enable no-bitwise */
 
   return (new Float64Array(buf))[0];
 }
@@ -209,7 +209,7 @@ export function extractTokenDouble(encoded: number): number | undefined {
 
   const ints = new Uint32Array(buf);
 
-  // tslint:disable:no-bitwise
+  /* eslint-disable no-bitwise */
   if ((ints[1] & 0xFFFF0000) !== DOUBLE_TOKEN_MARKER_BITS) {
     return undefined;
   }
@@ -217,5 +217,5 @@ export function extractTokenDouble(encoded: number): number | undefined {
   // Must use + instead of | here (bitwise operations
   // will force 32-bits integer arithmetic, + will not).
   return ints[0] + shl32(ints[1] & 0xFFFF);
-  // tslint:enable:no-bitwise
+  /* eslint-enable no-bitwise */
 }

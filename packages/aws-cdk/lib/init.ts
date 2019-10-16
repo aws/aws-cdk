@@ -7,10 +7,11 @@ import { error, print, warning } from './logging';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
-// tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+// those libraries don't have up-to-date @types modules
+/* eslint-disable @typescript-eslint/no-var-requires */
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
-// tslint:enable:no-var-requires
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');

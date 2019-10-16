@@ -20,7 +20,7 @@ export interface CustomActionProperty {
   description?: string;
 
   // because of @see URLs
-  // tslint:disable:max-line-length
+  /* eslint-disable max-len */
 
   /**
    * Whether this property is a key.
@@ -39,7 +39,7 @@ export interface CustomActionProperty {
    */
   queryable?: boolean;
 
-  // tslint:enable:max-line-length
+  /* eslint-enable max-len */
 
   /**
    * Whether this property is required.

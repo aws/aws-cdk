@@ -42,14 +42,14 @@ export class CodeName {
     return new CodeName('', '', primitiveName);
   }
 
-  // tslint:disable:no-shadowed-variable
+  /* eslint-disable no-shadow */
   constructor(readonly packageName: string,
               readonly namespace: string,
               readonly className: string,
               readonly specName?: SpecName,
               readonly methodName?: string) {
   }
-  // tslint:enable:no-shadowed-variable
+  /* eslint-enable no-shadow */
 
   /**
    * Alias for className

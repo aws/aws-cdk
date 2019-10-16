@@ -9,7 +9,7 @@ import { Action } from '../action';
  */
 export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionProps {
   // because of @see links
-  // tslint:disable:max-line-length
+  /* eslint-disable max-len */
 
   /**
    * The optional input Artifacts of the Action.
@@ -41,7 +41,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    */
   readonly userParameters?: { [key: string]: any };
 
-  // tslint:enable:max-line-length
+  /* eslint-enable max-len */
 
   /**
    * The lambda function to invoke.
