@@ -1,6 +1,6 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { App, Lazy, Stack } from '@aws-cdk/core';
+import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
@@ -281,6 +281,27 @@ export = {
       repositoryName: token
     }), /Cannot use Token as value of 'repositoryName'/);
 
+    test.done();
+  },
+
+  'repositoryName is derived from id if not specified'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    class CoolConstruct extends Resource {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+      }
+    }
+    const construct = new CoolConstruct(stack, 'CoolConstruct');
+
+    // WHEN
+    new DockerImageAsset(construct, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    test.deepEqual(assetMetadata && assetMetadata.data.repositoryName, 'cdk/coolconstructimage78ab38fc');
     test.done();
   }
 };
