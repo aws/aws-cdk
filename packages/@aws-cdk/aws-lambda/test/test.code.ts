@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import path = require('path');
 import lambda = require('../lib');
 
-// tslint:disable:no-string-literal
+/* eslint-disable dot-notation */
 
 export = {
   'lambda.Code.fromInline': {
