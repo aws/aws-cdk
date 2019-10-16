@@ -83,15 +83,12 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly imageNameParameter: string;
 
   /**
-   * ECR repository name, if omitted a default name based on the asset's
-   * ID is used instead. Specify this property if you need to statically
-   * address the image, e.g. from a Kubernetes Pod.
+   * ECR repository name.
+   *
    * Note, this is only the repository name, without the registry and
    * the tag parts.
-   *
-   * @default automatically derived from the asset's ID.
    */
-  readonly repositoryName?: string;
+  readonly repositoryName: string;
 
   /**
    * Build args to pass to the `docker build` command

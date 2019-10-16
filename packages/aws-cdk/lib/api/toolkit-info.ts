@@ -107,15 +107,7 @@ export class ToolkitInfo {
    */
   public async prepareEcrRepository(asset: cxapi.ContainerImageAssetMetadataEntry): Promise<EcrRepositoryInfo> {
     const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
-    let repositoryName;
-    if ( asset.repositoryName ) {
-      // Repository name provided by user
-      repositoryName = asset.repositoryName;
-    } else {
-      // Repository name based on asset id
-      const assetId = asset.id;
-      repositoryName = 'cdk/' + assetId.replace(/[:/]/g, '-').toLowerCase();
-    }
+    const repositoryName = asset.repositoryName;
 
     let repository;
     try {
