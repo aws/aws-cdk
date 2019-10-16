@@ -5,7 +5,7 @@ import fs = require('fs');
 import path = require('path');
 import yargs = require('yargs');
 
-// tslint:disable:no-shadowed-variable
+/* eslint-disable no-shadow */
 const argv = yargs
   .usage('$0')
   .option('verbose', { alias: 'v', type: 'boolean', desc: 'Turn on verbose logging' })

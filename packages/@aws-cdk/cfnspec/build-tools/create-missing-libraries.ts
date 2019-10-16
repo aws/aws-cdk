@@ -11,8 +11,7 @@ import path = require('path');
 import cfnspec = require('../lib');
 
 // don't be a prude:
-// tslint:disable:no-console
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable no-console */
 
 async function main() {
   const root = path.join(__dirname, '..', '..');
@@ -35,6 +34,7 @@ async function main() {
     // we already have a module for this namesapce, move on.
     if (await fs.pathExists(packagePath)) {
       const packageJsonPath = path.join(packagePath, 'package.json');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const packageJson = require(packageJsonPath);
       let scopes: string | string[] = packageJson['cdk-build'].cloudformation;
       if (typeof scopes === 'string') { scopes = [scopes]; }

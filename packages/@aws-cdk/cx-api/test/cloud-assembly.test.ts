@@ -75,7 +75,7 @@ test('fails for invalid environment format', () => {
 
 test('fails if stack artifact does not have properties', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'stack-without-params')))
-    .toThrow('Invalid CloudFormation stack artifact. Missing \"templateFile\" property in cloud assembly manifest');
+    .toThrow('Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest');
 });
 
 test('messages', () => {
@@ -113,7 +113,7 @@ test('fails for invalid dependencies', () => {
 
 test('verifyManifestVersion', () => {
   verifyManifestVersion(CLOUD_ASSEMBLY_VERSION);
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   expect(() => verifyManifestVersion('0.31.0')).toThrow(`The CDK CLI you are using requires your app to use CDK modules with version >= ${CLOUD_ASSEMBLY_VERSION}`);
   expect(() => verifyManifestVersion('99.99.99')).toThrow(`A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app`);
 });

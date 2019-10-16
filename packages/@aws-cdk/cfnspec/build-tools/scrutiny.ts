@@ -85,5 +85,5 @@ function isPolicyDocumentProperty(propertyName: string, propertySpec: schema.Pro
  * every # of arguments.
  */
 function apply2<T1, T2, R>(fn: (a1: T1, a2: T2) => R): (as: [T1, T2]) => R {
-  return (as) => fn.apply(fn, as);
+  return as => fn.apply(fn, as);
 }

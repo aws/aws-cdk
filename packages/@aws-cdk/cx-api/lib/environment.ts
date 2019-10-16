@@ -3,7 +3,7 @@
  *
  * Account validation is relaxed to allow account aliasing in the future.
  */
-const AWS_ENV_REGEX = /aws\:\/\/([a-z0-9A-Z\-\@\.\_]+)\/([a-z\-0-9]+)/;
+const AWS_ENV_REGEX = /aws:\/\/([a-z0-9A-Z\-@._]+)\/([a-z\-0-9]+)/;
 
 /**
  * Models an AWS execution environment, for use within the CDK toolkit.

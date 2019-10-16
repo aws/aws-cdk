@@ -53,6 +53,8 @@ rules:
   semi: off
   # duplicate of "camelcase"
   "@typescript-eslint/camelcase": off
+  # duplicate of "@typescript-eslint/no-empty-function"
+  no-empty-function: off
 
   # tslint:recommended rules equivalents
   arrow-body-style: error
@@ -80,9 +82,10 @@ rules:
   "@typescript-eslint/member-ordering":
     - error
     - default:
+      - 'static-field'
       - 'static-method'
       - 'instance-field'
-      - 'static-field'
+      - 'private-static-field'
       - 'constructor'
       - 'instance-method'
   new-parens: error

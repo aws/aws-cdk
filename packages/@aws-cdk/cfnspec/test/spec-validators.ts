@@ -110,8 +110,8 @@ function validateProperties(typeName: string,
     }
 
     test.deepEqual(
-        without(Object.keys(property), expectedKeys), [],
-        `${typeName}.Properties.${name} has no extra properties`);
+      without(Object.keys(property), expectedKeys), [],
+      `${typeName}.Properties.${name} has no extra properties`);
   }
 }
 

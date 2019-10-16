@@ -4,7 +4,7 @@ import util = require('util');
 // tslint:disable-next-line:no-var-requires
 const jsonDiff = require('json-diff').diff;
 
-function line(fmt: string = '', ...param: any[]) {
+function line(fmt = '', ...param: any[]) {
   process.stdout.write(util.format(fmt, ...param));
   process.stdout.write('\n');
 }
@@ -90,22 +90,22 @@ async function main() {
     pushDownFirstAdditions(update);
     for (const key of Object.keys(update)) {
       switch (key) {
-      case 'Properties':
-        for (const prop of Object.keys(update.Properties)) {
-          describeChanges(resourceType, prop, update.Properties[prop]).forEach(change => {
-            propertyChanges.push(change);
-          });
-        }
-        break;
-      case 'Attributes':
-        for (const attr of Object.keys(update.Attributes)) {
-          describeChanges(resourceType, attr, update.Attributes[attr]).forEach(change => {
-            attributeChanges.push(change);
-          });
-        }
-        break;
-      default:
-        throw new Error(`Unexpected update to ${resourceType}: ${key}`);
+        case 'Properties':
+          for (const prop of Object.keys(update.Properties)) {
+            describeChanges(resourceType, prop, update.Properties[prop]).forEach(change => {
+              propertyChanges.push(change);
+            });
+          }
+          break;
+        case 'Attributes':
+          for (const attr of Object.keys(update.Attributes)) {
+            describeChanges(resourceType, attr, update.Attributes[attr]).forEach(change => {
+              attributeChanges.push(change);
+            });
+          }
+          break;
+        default:
+          throw new Error(`Unexpected update to ${resourceType}: ${key}`);
       }
     }
   }
@@ -203,16 +203,16 @@ async function main() {
           throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
         }
         switch (entry[0]) {
-        case '+':
-          changes.push(`  * Added ${entry[1]}`);
-          break;
-        case '-':
-          throw new Error(`Something awkward happened: ${entry[1]} was deleted from ${namespace} ${prefix}!`);
-        case ' ':
+          case '+':
+            changes.push(`  * Added ${entry[1]}`);
+            break;
+          case '-':
+            throw new Error(`Something awkward happened: ${entry[1]} was deleted from ${namespace} ${prefix}!`);
+          case ' ':
           // This entry is "context"
-          break;
-        default:
-          throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
+            break;
+          default:
+            throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
         }
       }
     } else {

@@ -58,11 +58,11 @@ function merge(spec: any, fragment: any, jsonPath: string[]) {
       const specVal = spec[key];
       const fragVal = fragment[key];
       if (typeof specVal !== typeof fragVal) {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Attempted to merge ${JSON.stringify(fragVal)} into incompatible ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
       }
       if (typeof specVal !== 'object') {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Conflict when attempting to merge ${JSON.stringify(fragVal)} into ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
       }
       merge(specVal, fragVal, [...jsonPath, key]);

@@ -39,10 +39,11 @@ export class Default {
 
       // Services with a universal principal across all regions/partitions (the default case)
       default:
-          return `${service}.amazonaws.com`;
+        return `${service}.amazonaws.com`;
 
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() { }
 }
