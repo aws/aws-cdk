@@ -40,7 +40,8 @@ export default class CodeGenerator {
     this.code.line('// See: docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html');
     this.code.line(`// @cfn2ts:meta@ ${JSON.stringify(meta)}`);
     this.code.line();
-    this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
+    this.code.line('// This is generated code - line lengths are difficult to control');
+    this.code.line('/* eslint-disable max-len */');
     this.code.line();
     this.code.line(`import ${CORE} = require('@aws-cdk/core');`);
   }
@@ -570,7 +571,8 @@ export default class CodeGenerator {
 
     this.docLink(propTypeSpec.Documentation, '@stability external');
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
-      this.code.line(`// tslint:disable-next-line:no-empty-interface | A genuine empty-object type`);
+      this.code.line(`// A genuine empty-object type`);
+      this.code.line(`// eslint-disable-next-line @typescript-eslint/no-empty-interface`);
     }
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};

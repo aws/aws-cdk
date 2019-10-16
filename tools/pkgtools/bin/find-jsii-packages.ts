@@ -107,7 +107,7 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
  * a build tool and not shipped, I'm fine with it for now.
  */
 function findPackageFrom(packageName: string, relativeTo: string) {
-  // tslint:disable-next-line:variable-name
+  // eslint-disable-next-line camelcase
   const Module = module.constructor as any;
 
   const searchDirs: string[] = Module._nodeModulePaths(relativeTo).concat(Module.globalPaths);

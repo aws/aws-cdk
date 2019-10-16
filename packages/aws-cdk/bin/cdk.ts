@@ -19,7 +19,7 @@ import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import version = require('../lib/version');
 
-// tslint:disable:no-shadowed-variable max-line-length
+/* eslint-disable no-shadow, max-len */
 async function parseCommandLineArguments() {
   const initTemplateLanuages = await availableInitLanguages;
   return yargs

@@ -1,7 +1,8 @@
 import colors = require('colors/safe');
 import util = require('util');
 
-// tslint:disable:no-console the whole point of those methods is precisely to output to the console...
+// the whole point of those methods is precisely to output to the console...
+/* eslint-disable no-console */
 
 export let isVerbose = false;
 

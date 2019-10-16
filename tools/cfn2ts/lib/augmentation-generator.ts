@@ -14,7 +14,8 @@ export class AugmentationGenerator {
 
     this.code.line(`// Copyright 2012-${new Date().getFullYear()} Amazon.com, Inc. or its affiliates. All Rights Reserved.`);
     this.code.line();
-    this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
+    this.code.line('// This is generated code - line lengths are difficult to control');
+    this.code.line('/* eslint-disable max-len */');
   }
 
   public emitCode(): boolean {

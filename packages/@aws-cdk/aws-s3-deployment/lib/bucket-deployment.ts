@@ -162,7 +162,7 @@ export class BucketDeployment extends cdk.Construct {
     }
 
     const sourceHash = calcSourceHash(handlerSourceDirectory);
-    // tslint:disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.error({sourceHash});
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {

@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
-// tslint:disable:variable-name
+/* eslint-disable camelcase */
 
 export = {
   'the "Root" construct is a special construct which can be used as the root of the tree'(test: Test) {

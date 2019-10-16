@@ -104,7 +104,7 @@ export = {
         });
       // incredibly, an arrow function below causes nodeunit to crap out with:
       // "TypeError: Function has non-object prototype 'undefined' in instanceof check"
-      // tslint:disable-next-line:only-arrow-functions
+      // FIXME ESLint doesn't support this rule, see #3430 tslint:disable-next-line:only-arrow-functions
       }, function(e: any) {
         return /rightBefore/.test(e) && /justAfter/.test(e);
       });

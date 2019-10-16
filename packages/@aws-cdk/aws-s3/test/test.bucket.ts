@@ -129,7 +129,7 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       bucketName: bucket,
-      // tslint:disable-next-line:only-arrow-functions
+      // FIXME ESLint doesn't support this rule, see #3430 tslint:disable-next-line:only-arrow-functions
     }), function(err: Error) {
       return expectedErrors === err.message;
     });
