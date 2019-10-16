@@ -177,7 +177,7 @@ const EXTENSION_MAP = new Map<string, CommandGenerator>([
 async function guessExecutable(commandLine: string[]) {
   if (commandLine.length === 1) {
     const fstat = await fs.stat(commandLine[0]);
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
     const isWindows = process.platform === "win32";
 

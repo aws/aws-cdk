@@ -139,7 +139,7 @@ export function unresolved(obj: any): boolean {
  *
  * Currently not supporting BE architectures.
  */
-// tslint:disable-next-line:no-bitwise
+// eslint-disable-next-line no-bitwise
 const DOUBLE_TOKEN_MARKER_BITS = 0xFBFF << 16;
 
 /**

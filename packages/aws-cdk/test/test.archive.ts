@@ -34,7 +34,7 @@ export = {
 
     // check that mode is preserved
     const stat = await fs.stat(path.join(extractDir, 'executable.txt'));
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const isExec = (stat.mode & fs.constants.S_IXUSR) || (stat.mode & fs.constants.S_IXGRP) || (stat.mode & fs.constants.S_IXOTH);
     test.ok(isExec, 'File is not executable');
 
