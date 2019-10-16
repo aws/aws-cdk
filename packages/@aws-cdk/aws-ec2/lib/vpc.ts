@@ -1352,7 +1352,7 @@ export class Subnet extends Resource implements ISubnet {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PublicSubnetProps extends SubnetProps {
 
 }
@@ -1390,7 +1390,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PrivateSubnetProps extends SubnetProps {
 
 }

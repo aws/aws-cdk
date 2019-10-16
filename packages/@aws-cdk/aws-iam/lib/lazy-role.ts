@@ -6,7 +6,7 @@ import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
-// tslint:disable-next-line:no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface LazyRoleProps extends RoleProps {
 
 }

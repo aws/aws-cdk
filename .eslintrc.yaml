@@ -29,7 +29,7 @@ rules:
   no-unused-expressions: error
   camelcase: error
   "@typescript-eslint/no-floating-promises": error
-  "@typescript-eslint/no-empty-interface": off
+  "@typescript-eslint/no-empty-interface": error
 
   # recommendation overrides
   "@typescript-eslint/array-type": warn

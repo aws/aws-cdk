@@ -4,7 +4,7 @@ import { NamespaceType } from './namespace';
 import { IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 
-// tslint:disable-next-line:no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
 }
 
