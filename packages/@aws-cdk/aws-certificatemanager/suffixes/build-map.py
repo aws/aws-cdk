@@ -31,5 +31,5 @@ with file('public_suffix_list.dat') as f:
 
 with file('../lib/public-suffixes.ts', 'w') as o:
   o.write('// This file has been generated using ../suffixes/build-map.py\n')
-  o.write('// tslint:disable:no-trailing-whitespace object-literal-key-quotes\n')
+  o.write('/* eslint-disable quote-props, @typescript-eslint/indent */\n')
   o.write('export = %s;' % json.dumps(trie, indent=2))
