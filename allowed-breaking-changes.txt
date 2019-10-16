@@ -27,3 +27,4 @@ incompatible-argument:@aws-cdk/aws-servicediscovery.Service.fromServiceAttribute
 removed:@aws-cdk/core.ConstructNode.addReference
 removed:@aws-cdk/core.ConstructNode.references
 removed:@aws-cdk/core.OutgoingReference
+incompatible-argument:@aws-cdk/core.Stack.addDockerImageAsset
