@@ -9,18 +9,21 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-      containerName: "envoy",
-      properties: {
-        ignoredUID: 1337,
-        ignoredGID: 1338,
-        appPorts: [80, 81],
-        proxyIngressPort: 80,
-        proxyEgressPort: 81,
-        egressIgnoredPorts: [8081],
-        egressIgnoredIPs: ["169.254.170.2", "169.254.169.254"],
-      }
-    })});
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+      networkMode: ecs.NetworkMode.AWS_VPC,
+      proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
+        containerName: "envoy",
+        properties: {
+          ignoredUID: 1337,
+          ignoredGID: 1338,
+          appPorts: [80, 81],
+          proxyIngressPort: 80,
+          proxyEgressPort: 81,
+          egressIgnoredPorts: [8081],
+          egressIgnoredIPs: ["169.254.170.2", "169.254.169.254"],
+        }
+      })
+    });
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
@@ -75,15 +78,18 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-      containerName: "envoy",
-      properties: {
-        ignoredUID: 1337,
-        appPorts: [80, 81],
-        proxyIngressPort: 80,
-        proxyEgressPort: 81
-      }
-    })});
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+      networkMode: ecs.NetworkMode.AWS_VPC,
+      proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
+        containerName: "envoy",
+        properties: {
+          ignoredUID: 1337,
+          appPorts: [80, 81],
+          proxyIngressPort: 80,
+          proxyEgressPort: 81
+        }
+      })
+    });
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
@@ -126,17 +132,20 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-      containerName: "envoy",
-      properties: {
-        ignoredUID: 1337,
-        appPorts: [80, 81],
-        proxyIngressPort: 80,
-        proxyEgressPort: 81,
-        egressIgnoredIPs: [],
-        egressIgnoredPorts: []
-      }
-    })});
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+      networkMode: ecs.NetworkMode.AWS_VPC,
+      proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
+        containerName: "envoy",
+        properties: {
+          ignoredUID: 1337,
+          appPorts: [80, 81],
+          proxyIngressPort: 80,
+          proxyEgressPort: 81,
+          egressIgnoredIPs: [],
+          egressIgnoredPorts: []
+        }
+      })
+    });
     taskDefinition.addContainer("web", {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
@@ -180,14 +189,17 @@ export = {
 
     // THEN
     test.throws(() => {
-      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
-        containerName: "envoy",
-        properties: {
-          appPorts: [80, 81],
-          proxyIngressPort: 80,
-          proxyEgressPort: 81
-        }
-      })});
+      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        proxyConfiguration: ecs.ProxyConfigurations.appMeshProxyConfiguration({
+          containerName: "envoy",
+          properties: {
+            appPorts: [80, 81],
+            proxyIngressPort: 80,
+            proxyEgressPort: 81
+          }
+        })
+      });
     }, /At least one of ignoredUID or ignoredGID should be specified./);
 
     test.done();
