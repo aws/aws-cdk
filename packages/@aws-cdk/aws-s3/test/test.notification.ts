@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import s3 = require('../lib');
@@ -60,6 +60,34 @@ export = {
         ]
       }
     }));
+
+    test.done();
+  },
+
+  'the notification lambda handler must depend on the role to prevent executing too early'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC
+      })
+    });
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
+      Type: "AWS::Lambda::Function",
+      Properties: {
+        Role: {
+          "Fn::GetAtt": [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+            "Arn"
+          ]
+        },
+      }, DependsOn: [ "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC" ]
+     }, ResourcePart.CompleteDefinition ) );
 
     test.done();
   },

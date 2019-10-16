@@ -1,9 +1,9 @@
 {
   "Resources": {
     "Bucket83908E77": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "BucketNotifications8F2E257D": {
       "Type": "Custom::S3BucketNotifications",
@@ -222,12 +222,16 @@
         },
         "Runtime": "nodejs8.10",
         "Timeout": 300
-      }
+      },
+      "DependsOn": [
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+      ]
     },
     "Bucket25524B414": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "Bucket2NotificationsD9BA2A77": {
       "Type": "Custom::S3BucketNotifications",
