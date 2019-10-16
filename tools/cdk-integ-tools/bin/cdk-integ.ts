@@ -39,7 +39,7 @@ async function main() {
     }
 
     try {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       await test.invoke([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
         verbose: argv.verbose
         // Note: no "context" and "env", so use default user settings!

@@ -1,4 +1,4 @@
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import cxapi = require('@aws-cdk/cx-api');
 import { CloudFormation } from 'aws-sdk';
 import colors = require('colors');
@@ -10,7 +10,7 @@ import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
   reuse = reuse || [];
   const assets = stack.assets;
@@ -20,7 +20,7 @@ export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, to
   }
 
   if (!toolkitInfo) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue("cdk bootstrap " + stack.environment!.name)}")`);
   }
 
@@ -47,7 +47,7 @@ export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, to
   return params;
 }
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
@@ -57,7 +57,7 @@ async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry
     case 'container-image':
       return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse, ci);
     default:
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }

@@ -76,7 +76,7 @@ export = {
         return steps.every(step => {
           return reportFalse(intervals.find(interval => {
             const acceptableLowerBounds = step.MetricIntervalLowerBound === -Infinity ? [undefined, 0] : [undefined, step.MetricIntervalLowerBound];
-            // tslint:disable-next-line:max-line-length
+            // eslint-disable-next-line max-len
             const acceptableUpperBounds = step.MetricIntervalUpperBound === Infinity ? [undefined, Infinity] : [undefined, step.MetricIntervalUpperBound];
 
             return (acceptableLowerBounds.includes(interval.lower) && acceptableUpperBounds.includes(interval.upper));

@@ -40,7 +40,7 @@ export = {
             },
             ManagedPolicyArns:
               // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
           }
         },
@@ -88,7 +88,7 @@ export = {
               Version: '2012-10-17'
             },
             ManagedPolicyArns:
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
           }
         },
@@ -171,7 +171,7 @@ export = {
                 "Version": "2012-10-17"
               },
               "ManagedPolicyArns":
-                // tslint:disable-next-line:max-line-length
+                // eslint-disable-next-line max-len
                 [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
             }
           },
@@ -1210,7 +1210,7 @@ export = {
             },
             ManagedPolicyArns:
               // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
           }
         },
@@ -1347,7 +1347,7 @@ export = {
             },
             ManagedPolicyArns:
               // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
           }
         },

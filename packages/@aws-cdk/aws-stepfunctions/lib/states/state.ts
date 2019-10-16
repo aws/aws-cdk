@@ -195,7 +195,7 @@ export abstract class State extends cdk.Construct implements IChainable {
         if (this.containingGraph === graph) { return; }
 
         if (this.containingGraph) {
-            // tslint:disable-next-line:max-line-length
+            // eslint-disable-next-line max-len
             throw new Error(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
         }
 

@@ -94,7 +94,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
   await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
   debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
   await waitForStack(cfn, deployName);

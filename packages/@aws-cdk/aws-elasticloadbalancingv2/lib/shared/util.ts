@@ -50,7 +50,7 @@ export function defaultProtocolForPort(port: number): ApplicationProtocol {
 /**
  * Given a protocol and a port, try to guess the other one if it's undefined
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export function determineProtocolAndPort(protocol: ApplicationProtocol | undefined, port: number | undefined): [ApplicationProtocol | undefined, number | undefined] {
   if (protocol === undefined && port === undefined) {
     return [undefined, undefined];

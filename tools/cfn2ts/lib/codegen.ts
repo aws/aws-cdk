@@ -272,7 +272,7 @@ export default class CodeGenerator {
       const transformField = `${resourceName.className}.REQUIRED_TRANSFORM`;
       this.code.line('// If a different transform than the required one is in use, this resource cannot be used');
       this.code.openBlock(`if (this.stack.templateOptions.transform && this.stack.templateOptions.transform !== ${transformField})`);
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.stack.templateOptions.transform)} is used.\`);`);
       this.code.closeBlock();
       this.code.line('// Automatically configure the required transform');
@@ -426,7 +426,7 @@ export default class CodeGenerator {
           const scalarValidator = `${CORE}.unionValidator(${validatorNames})`;
           const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemValidatorNames}))`;
           const scalarMapper = `${CORE}.unionMapper([${validatorNames}], [${types.map(type => this.visitScalar(type)).join(', ')}])`;
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           const listMapper = `${CORE}.listMapper(${CORE}.unionMapper([${itemValidatorNames}], [${itemTypes.map(type => this.visitScalar(type)).join(', ')}]))`;
 
           return `${CORE}.unionMapper([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;

@@ -197,9 +197,9 @@ export = {
 
       test.equal(parsed.sep, '/');
 
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [ 0, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
 
       test.done();

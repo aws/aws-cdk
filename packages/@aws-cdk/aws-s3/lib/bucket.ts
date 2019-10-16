@@ -1191,7 +1191,7 @@ export class Bucket extends BucketBase {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
       const x: CfnBucket.RuleProperty = {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration && rule.expiration.toDays(),

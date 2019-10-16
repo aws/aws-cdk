@@ -444,7 +444,7 @@ export = {
 
     test.throws(() => {
       ConstructNode.prepare(app.node);
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
     test.done();

@@ -59,13 +59,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
       public get loadBalancerCanonicalHostedZoneId(): string {
         if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
 
       public get loadBalancerDnsName(): string {
         if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
     }

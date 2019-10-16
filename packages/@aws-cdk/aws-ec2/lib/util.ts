@@ -58,7 +58,7 @@ export class ImportSubnetGroup {
     this.groups = this.subnetIds.length / this.availabilityZones.length;
 
     if (Math.floor(this.groups) !== this.groups) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
     if (this.routeTableIds.length !== this.subnetIds.length && routeTableIds != null) {

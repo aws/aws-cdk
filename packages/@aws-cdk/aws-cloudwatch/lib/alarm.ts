@@ -162,7 +162,7 @@ export class Alarm extends Resource implements IAlarm {
 
     this.metric = props.metric;
     this.annotation = {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * config.period)}`,
       value: props.threshold,
     };

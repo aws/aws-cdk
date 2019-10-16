@@ -95,7 +95,7 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
   debug('Waiting for changeset %s on stack %s to finish creating...', changeSetName, stackName);
   const ret = await waitFor(async () => {
@@ -111,7 +111,7 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
       return description;
     }
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`Failed to create ChangeSet ${changeSetName} on ${stackName}: ${description.Status || 'NO_STATUS'}, ${description.StatusReason || 'no reason provided'}`);
   });
 

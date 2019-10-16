@@ -135,7 +135,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
     }
 

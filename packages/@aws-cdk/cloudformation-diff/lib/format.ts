@@ -152,7 +152,7 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {

@@ -688,7 +688,7 @@ export = {
       sortKey: GSI_SORT_KEY,
       projectionType: ProjectionType.INCLUDE,
       nonKeyAttributes: [GSI_NON_KEY, TABLE_PARTITION_KEY.name]
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
     }), /a key attribute, hashKey, is part of a list of non-key attributes, gsiNonKey,hashKey, which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure/);
 
     test.done();

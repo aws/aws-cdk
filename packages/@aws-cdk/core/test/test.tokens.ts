@@ -120,7 +120,7 @@ export = {
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")'(test: Test) {
     test.deepEqual(resolve({ prop: new DataType() }), { prop: { foo: 12, goo: 'hello' } });
     test.done();

@@ -308,7 +308,7 @@ export class Stack extends Construct implements ITaggable {
     reason = reason || 'dependency added using stack.addDependency()';
     const dep = stack.stackDependencyReasons(this);
     if (dep !== undefined) {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'${stack.node.path}' depends on '${this.node.path}' (${dep.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
     this._stackDependencies.add({ stack, reason });

@@ -96,9 +96,9 @@ export = nodeunit.testCase({
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
             ],
           }
@@ -168,9 +168,9 @@ export = nodeunit.testCase({
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
             ],
           }

@@ -143,7 +143,7 @@ export = {
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'construct.setContext(k,v) sets context at some level and construct.getContext(key) will return the lowermost value defined in the stack'(test: Test) {
     const root = new Root();
     const highChild = new Construct(root, 'highChild');
@@ -307,7 +307,7 @@ export = {
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'construct.validate() can be implemented to perform validation, ConstructNode.validate(construct.node) will return all errors from the subtree (DFS)'(test: Test) {
 
     class MyConstruct extends Construct {

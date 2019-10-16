@@ -59,7 +59,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudForm
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
   if (difRequiresApproval(diff, requireApproval)) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning(`Please confirm you intend to make the following modifications:\n`);
 

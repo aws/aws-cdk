@@ -205,7 +205,7 @@ export = {
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.cfnOptions.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     r1.cfnOptions.updatePolicy = {
       autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
       autoScalingReplacingUpdate: { willReplace: true },

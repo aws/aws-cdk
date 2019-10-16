@@ -103,7 +103,7 @@ export async function prepareContainerAsset(assemblyDir: string,
     ];
   } catch (e) {
     if (e.code === 'ENOENT') {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Error building Docker image asset; you need to have Docker installed in order to be able to build image assets. Please install Docker and try again.');
     }
     throw e;

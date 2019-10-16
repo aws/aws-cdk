@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, SubnetType, Vpc } from '../lib';
 
 export = {

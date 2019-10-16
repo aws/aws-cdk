@@ -386,7 +386,7 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
         LifecyclePolicy: {
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":10,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"abc\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":1},\"action\":{\"type\":\"expire\"}}]}",
           RegistryId: "123456789101"
         },

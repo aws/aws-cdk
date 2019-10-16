@@ -94,7 +94,7 @@ export class CfnReference extends Reference {
     const token = this.replacementTokens.get(consumingStack);
 
     // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     //   throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
     // }
 
