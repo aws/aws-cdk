@@ -93,7 +93,8 @@ export = {
           id: 'SomeStackSomeResource4567',
           packaging: 'container-image',
           imageNameParameter: 'asdf',
-          sourceHash: 'source-hash'
+          sourceHash: 'source-hash',
+          repositoryName: 'repository-name'
         }
       ],
       template: {

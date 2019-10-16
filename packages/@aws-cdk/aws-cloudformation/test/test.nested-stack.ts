@@ -780,6 +780,7 @@ export = {
       dockerBuildArgs: { key: 'value', boom: 'bam' },
       dockerBuildTarget: 'buildTarget',
       sourceHash: 'hash-of-source',
+      repositoryName: 'repository-name',
     });
 
     // use the asset, so the parameters will be wired.
