@@ -261,7 +261,7 @@ function apply<T, U>(x: T | undefined, f: (x: T) => U | undefined): U | undefine
  */
 function reportFalse(cond: boolean, ...repr: any[]) {
   if (!cond) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error('PROPERTY FAILS ON:', ...repr);
   }
   return cond;

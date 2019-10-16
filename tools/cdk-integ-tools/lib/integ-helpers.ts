@@ -229,7 +229,7 @@ function exec(commandLine: string[], options: { cwd?: string, json?: boolean, ve
     }
     return output;
   } catch (e) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error("Not JSON: " + output);
     throw new Error('Command output is not JSON');
   }

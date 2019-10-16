@@ -36,7 +36,7 @@ async function main(): Promise<void> {
 }
 
 main().catch(e => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(e);
   process.exit(1);
 });

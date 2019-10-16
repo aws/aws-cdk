@@ -8,7 +8,7 @@ export = {
   'quote the word "ON"'(test: Test) {
     // NON NEGOTIABLE! If not quoted, will be interpreted as the boolean TRUE
 
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     const output = toYAML({
       notABoolean: "ON"
     });

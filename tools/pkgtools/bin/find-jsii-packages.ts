@@ -113,7 +113,7 @@ function findPackageFrom(packageName: string, relativeTo: string) {
   const searchDirs: string[] = Module._nodeModulePaths(relativeTo).concat(Module.globalPaths);
   const ret = Module._findPath(packageName, searchDirs, false);
   if (ret === false) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.warn(`Could not find package ${packageName} in scope of ${relativeTo}`);
     return undefined;
   }

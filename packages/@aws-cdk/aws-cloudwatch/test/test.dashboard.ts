@@ -180,7 +180,7 @@ function thatHasWidgets(widgets: any): (props: any) => boolean {
       const actualWidgets = JSON.parse(props.DashboardBody).widgets;
       return isSuperObject(actualWidgets, widgets);
     } catch (e) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error('Error parsing', props);
       throw e;
     }

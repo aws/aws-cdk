@@ -314,7 +314,7 @@ export class Stack extends Construct implements ITaggable {
     this._stackDependencies.add({ stack, reason });
 
     if (process.env.CDK_DEBUG_DEPS) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${stack.node.path}" because: ${reason}`);
     }
   }

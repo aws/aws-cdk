@@ -75,7 +75,7 @@ function merge(spec: any, fragment: any, jsonPath: string[]) {
 function patch(spec: any, fragment: any) {
   if (!fragment) { return; }
   if ('patch' in fragment) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.log(`Applying patch: ${fragment.patch.description}`);
     fastJsonPatch.applyPatch(spec, fragment.patch.operations);
   } else {
@@ -110,7 +110,7 @@ function normalize(spec: schema.Specification): schema.Specification {
 
 main()
   .catch(e => {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(e.stack);
     process.exit(-1);
   });

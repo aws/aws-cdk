@@ -182,7 +182,7 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
   } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
     attrType = 'string[]';
   } else {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a native type`);
     attrType = TOKEN_NAME.fqn;
   }
