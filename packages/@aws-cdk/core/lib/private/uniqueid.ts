@@ -1,4 +1,4 @@
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 import crypto = require('crypto');
 import { unresolved } from './encoding';
 

@@ -8,7 +8,7 @@ import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { structuredPatch } = require('diff');
 
 export interface FormatStream extends NodeJS.WritableStream {

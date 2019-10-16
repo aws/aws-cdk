@@ -1,7 +1,7 @@
 import fs = require('fs-extra');
 import util = require('util');
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const jsonDiff = require('json-diff').diff;
 
 function line(fmt = '', ...param: any[]) {
