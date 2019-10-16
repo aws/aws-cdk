@@ -115,7 +115,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_SWEDISH_FULL_BASE = 'Windows_Server-2016-Swedish-Full-Base',
   WINDOWS_SERVER_2016_TURKISH_FULL_BASE = 'Windows_Server-2016-Turkish-Full-Base',
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_CORE_SQL_2012_SP4_STANDARD = 'Windows_Server-2008-R2_SP1-English-64Bit-Core_SQL_2012_SP4_Standard',
-// tslint:disable-next-line: max-line-length
+// eslint-disable-next-line max-len
   WINDOWS_SERVER_2008_R2_SP1_LANGUAGE_PACKS_64BIT_SQL_2008_R2_SP3_STANDARD = 'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-SQL_2008_R2_SP3_Standard',
   WINDOWS_SERVER_2012_RTM_CZECH_64BIT_BASE = 'Windows_Server-2012-RTM-Czech-64Bit-Base',
   WINDOWS_SERVER_2012_RTM_TURKISH_64BIT_BASE = 'Windows_Server-2012-RTM-Turkish-64Bit-Base',

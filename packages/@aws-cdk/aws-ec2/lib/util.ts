@@ -63,7 +63,7 @@ export class ImportSubnetGroup {
     }
     if (this.routeTableIds.length !== this.subnetIds.length && routeTableIds != null) {
       // We don't err if no routeTableIds were provided to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
 

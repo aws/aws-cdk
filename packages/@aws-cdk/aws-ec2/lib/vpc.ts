@@ -1516,7 +1516,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       const ref = Token.isUnresolved(attrs.subnetId)
         ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 

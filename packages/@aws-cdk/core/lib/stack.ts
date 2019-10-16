@@ -733,7 +733,7 @@ export class Stack extends Construct implements ITaggable {
    */
   protected _toCloudFormation() {
     if (this.templateOptions.transform) {
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `templateOptions.transforms`.');
       if (!this.templateOptions.transforms) {
         this.templateOptions.transforms = [];
