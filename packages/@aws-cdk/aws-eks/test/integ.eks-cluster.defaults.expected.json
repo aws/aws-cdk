@@ -672,7 +672,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "ClusterResourceHandlerCodeS3Bucket1A051297"
+            "Ref": "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3BucketA2C12383"
           },
           "S3Key": {
             "Fn::Join": [
@@ -685,7 +685,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "ClusterResourceHandlerCodeS3VersionKeyD4764A45"
+                          "Ref": "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3VersionKeyB5F0BEF8"
                         }
                       ]
                     }
@@ -698,7 +698,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "ClusterResourceHandlerCodeS3VersionKeyD4764A45"
+                          "Ref": "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3VersionKeyB5F0BEF8"
                         }
                       ]
                     }
@@ -788,7 +788,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "ClusterKubernetesResourceHandlerCodeS3Bucket8DF6F33F"
+            "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB"
           },
           "S3Key": {
             "Fn::Join": [
@@ -801,7 +801,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "ClusterKubernetesResourceHandlerCodeS3VersionKeyE1F5124A"
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                         }
                       ]
                     }
@@ -814,7 +814,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "ClusterKubernetesResourceHandlerCodeS3VersionKeyE1F5124A"
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                         }
                       ]
                     }
@@ -1051,7 +1051,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "m5.large",
         "IamInstanceProfile": {
@@ -1186,33 +1186,15 @@
     }
   },
   "Parameters": {
-    "ClusterResourceHandlerCodeS3Bucket1A051297": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"eks-integ-defaults/Cluster/Resource/ResourceHandler/Code\""
-    },
-    "ClusterResourceHandlerCodeS3VersionKeyD4764A45": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"eks-integ-defaults/Cluster/Resource/ResourceHandler/Code\""
-    },
-    "ClusterResourceHandlerCodeArtifactHashA32F2E77": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"eks-integ-defaults/Cluster/Resource/ResourceHandler/Code\""
-    },
-    "ClusterKubernetesResourceHandlerCodeS3Bucket8DF6F33F": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"eks-integ-defaults/Cluster/KubernetesResourceHandler/Code\""
-    },
-    "ClusterKubernetesResourceHandlerCodeS3VersionKeyE1F5124A": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"eks-integ-defaults/Cluster/KubernetesResourceHandler/Code\""
-    },
-    "ClusterKubernetesResourceHandlerCodeArtifactHash27D4393F": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"eks-integ-defaults/Cluster/KubernetesResourceHandler/Code\""
-    },
-    "SsmParameterValueawsserviceeksoptimizedami113amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3BucketA2C12383": {"Type":"String","Description":"S3 bucket for asset \"c58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128\""},
+    "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3VersionKeyB5F0BEF8": {"Type":"String","Description":"S3 key for asset version \"c58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128\""},
+    "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128ArtifactHash8E5121DE": {"Type":"String","Description":"Artifact hash for asset \"c58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128\""},
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB": {"Type":"String","Description":"S3 bucket for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""},
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54": {"Type":"String","Description":"S3 key for asset version \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""},
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {"Type":"String","Description":"Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""},
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/eks/optimized-ami/1.13/amazon-linux-2/recommended/image_id"
+      "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
     }
   },
   "Outputs": {

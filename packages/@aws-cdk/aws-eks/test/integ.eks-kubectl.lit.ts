@@ -17,7 +17,6 @@ class VpcStack extends TestStack {
 
 class ClusterStack extends TestStack {
   public readonly cluster: Cluster;
-  public readonly instanceRoleExportName: string;
 
   constructor(scope: Construct, id: string, props: { vpc: ec2.Vpc }) {
     super(scope, id);

@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { IAction, IPipeline, IStage } from "./action";
+import { ActionCategory, IAction, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
 import { FullActionDescriptor } from './full-action-descriptor';
@@ -206,6 +206,7 @@ export class Pipeline extends PipelineBase {
   private readonly stages = new Array<Stage>();
   private readonly crossRegionBucketsPassed: boolean;
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
+  private readonly _crossAccountSupport: { [account: string]: Stack } = {};
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -222,7 +223,11 @@ export class Pipeline extends PipelineBase {
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
     if (!propsBucket) {
-      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
+      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey', {
+        // remove the key - there is a grace period of a few days before it's gone for good,
+        // that should be enough for any emergency access to the bucket artifacts
+        removalPolicy: RemovalPolicy.DESTROY,
+      });
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
@@ -233,7 +238,7 @@ export class Pipeline extends PipelineBase {
       new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
         aliasName: this.generateNameForDefaultBucketKeyAlias(),
         targetKey: encryptionKey,
-        removalPolicy: RemovalPolicy.RETAIN, // alias should be retained, like the key
+        removalPolicy: RemovalPolicy.DESTROY, // destroy the alias along with the key
       });
     }
     this.artifactBucket = propsBucket;
@@ -379,7 +384,11 @@ export class Pipeline extends PipelineBase {
       const actionResourceStack = Stack.of(actionResource);
       if (pipelineStack.region !== actionResourceStack.region) {
         actionRegion = actionResourceStack.region;
-        otherStack = actionResourceStack;
+        // if the resource is from a different stack in another region but the same account,
+        // use that stack as home for the cross-region support resources
+        if (pipelineStack.account === actionResourceStack.account) {
+          otherStack = actionResourceStack;
+        }
       }
     } else {
       actionRegion = action.actionProperties.region;
@@ -400,6 +409,11 @@ export class Pipeline extends PipelineBase {
       return {
         artifactBucket: this.artifactBucket,
       };
+    }
+
+    // source actions have to be in the same region as the pipeline
+    if (action.actionProperties.category === ActionCategory.SOURCE) {
+      throw new Error(`Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`);
     }
 
     // check whether we already have a bucket in that region,
@@ -565,9 +579,12 @@ export class Pipeline extends PipelineBase {
     if (action.actionProperties.resource) {
       const resourceStack = Stack.of(action.actionProperties.resource);
       // check if resource is from a different account
-      return pipelineStack.account === resourceStack.account
-        ? undefined
-        : resourceStack;
+      if (pipelineStack.account === resourceStack.account) {
+        return undefined;
+      } else {
+        this._crossAccountSupport[resourceStack.account] = resourceStack;
+        return resourceStack;
+      }
     }
 
     if (!action.actionProperties.account) {
@@ -588,17 +605,21 @@ export class Pipeline extends PipelineBase {
       return undefined;
     }
 
-    const stackId = `cross-account-support-stack-${targetAccount}`;
-    const app = this.requireApp();
-    let targetAccountStack = app.node.tryFindChild(stackId) as Stack;
+    let targetAccountStack: Stack | undefined = this._crossAccountSupport[targetAccount];
     if (!targetAccountStack) {
-      targetAccountStack = new Stack(app, stackId, {
-        stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
-        env: {
-          account: targetAccount,
-          region: action.actionProperties.region ? action.actionProperties.region : pipelineStack.region,
-        },
-      });
+      const stackId = `cross-account-support-stack-${targetAccount}`;
+      const app = this.requireApp();
+      targetAccountStack = app.node.tryFindChild(stackId) as Stack;
+      if (!targetAccountStack) {
+        targetAccountStack = new Stack(app, stackId, {
+          stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
+          env: {
+            account: targetAccount,
+            region: action.actionProperties.region ? action.actionProperties.region : pipelineStack.region,
+          },
+        });
+      }
+      this._crossAccountSupport[targetAccount] = targetAccountStack;
     }
     return targetAccountStack;
   }
@@ -747,7 +768,7 @@ export class Pipeline extends PipelineBase {
     if (bucketKey) {
       encryptionKey = {
         type: 'KMS',
-        id: bucketKey.keyId,
+        id: bucketKey.keyArn,
       };
     }
 
