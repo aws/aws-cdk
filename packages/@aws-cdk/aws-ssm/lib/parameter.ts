@@ -1,4 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
+import kms = require('@aws-cdk/aws-kms');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   Construct, ContextProvider, Fn, IConstruct, IResource, Resource, Stack, Token
@@ -130,7 +131,12 @@ abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
 
+  public readonly encryptionKey?: kms.IKey;
+
   public grantRead(grantee: iam.IGrantable): iam.Grant {
+    if (this.encryptionKey) {
+      this.encryptionKey.grantDecrypt(grantee);
+    }
     return iam.Grant.addToPrincipal({
       grantee,
       actions: [
@@ -144,6 +150,9 @@ abstract class ParameterBase extends Resource implements IParameter {
   }
 
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
+    if (this.encryptionKey) {
+      this.encryptionKey.grantEncrypt(grantee);
+    }
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['ssm:PutParameter'],
@@ -206,6 +215,13 @@ export interface SecureStringParameterAttributes {
    * The version number of the value you wish to retrieve. This is required for secure strings.
    */
   readonly version: number;
+
+  /**
+   * The encryption key that is used to encrypt this parameter
+   *
+   * @default - default master key
+   */
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -256,6 +272,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
       public readonly parameterType = ParameterType.SECURE_STRING;
       public readonly stringValue = stringValue;
+      public readonly encryptionKey = attrs.encryptionKey;
     }
 
     return new Import(scope, id);

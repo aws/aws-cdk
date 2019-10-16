@@ -71,12 +71,14 @@
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "1.13.1",
+    "@aws-cdk/aws-kms": "1.13.1",    
     "@aws-cdk/core": "1.13.1",
     "@aws-cdk/cx-api": "1.13.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "1.13.1",
+    "@aws-cdk/aws-kms": "1.13.1",    
     "@aws-cdk/core": "1.13.1",
     "@aws-cdk/cx-api": "1.13.1"
   },
