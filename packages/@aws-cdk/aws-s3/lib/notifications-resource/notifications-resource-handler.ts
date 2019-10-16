@@ -84,6 +84,8 @@ export class NotificationsResourceHandler extends cdk.Construct {
       }
     });
 
+    resource.node.addDependency(role);
+
     this.functionArn = resource.getAtt('Arn').toString();
   }
 }
