@@ -5,7 +5,7 @@ import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default stream'(test: Test) {

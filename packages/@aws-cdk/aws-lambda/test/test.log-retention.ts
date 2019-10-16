@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { LogRetention } from '../lib/log-retention';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'log retention construct'(test: Test) {

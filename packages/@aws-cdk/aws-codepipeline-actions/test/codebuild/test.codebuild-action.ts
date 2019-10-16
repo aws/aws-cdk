@@ -5,7 +5,7 @@ import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'a cross-account CodeBuild action with outputs': {

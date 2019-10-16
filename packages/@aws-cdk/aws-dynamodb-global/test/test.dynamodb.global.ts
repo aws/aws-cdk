@@ -9,7 +9,7 @@ import {
   GlobalTableProps
 } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 // CDK parameters
 const CONSTRUCT_NAME = 'aws-cdk-dynamodb-global';

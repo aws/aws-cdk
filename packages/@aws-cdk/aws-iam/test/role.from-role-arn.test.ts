@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { App, CfnElement, Lazy, Stack } from "@aws-cdk/core";
 import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from "../lib";
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 const roleAccount = '123456789012';
 const notRoleAccount = '012345678901';

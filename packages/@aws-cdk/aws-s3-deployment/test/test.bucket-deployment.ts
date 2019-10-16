@@ -9,7 +9,7 @@ import s3deploy = require('../lib');
 import { CacheControl, Expires, ServerSideEncryption, StorageClass } from '../lib';
 
 // tslint:disable:max-line-length
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'deploy from local directory asset'(test: Test) {

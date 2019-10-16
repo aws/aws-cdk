@@ -4,7 +4,7 @@ import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'ProxyResource defines a "{proxy+}" resource with ANY method'(test: Test) {

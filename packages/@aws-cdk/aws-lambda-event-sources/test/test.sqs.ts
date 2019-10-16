@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import sources = require('../lib');
 import { TestFunction } from './test-function';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'defaults'(test: Test) {

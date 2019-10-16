@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'can use filename as buildspec'(test: Test) {

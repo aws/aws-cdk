@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default alias'(test: Test) {

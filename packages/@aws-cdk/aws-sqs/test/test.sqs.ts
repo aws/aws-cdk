@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import sqs = require('../lib');
 import { Queue } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default properties'(test: Test) {

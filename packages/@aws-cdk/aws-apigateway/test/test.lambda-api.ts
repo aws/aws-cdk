@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'LambdaRestApi defines a REST API with Lambda proxy integration'(test: Test) {

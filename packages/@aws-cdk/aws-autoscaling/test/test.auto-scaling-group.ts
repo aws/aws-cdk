@@ -7,7 +7,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default fleet'(test: Test) {

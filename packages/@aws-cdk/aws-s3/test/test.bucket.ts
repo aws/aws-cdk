@@ -9,7 +9,7 @@ import s3 = require('../lib');
 import { Bucket } from '../lib';
 
 // to make it easy to copy & paste from output:
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default bucket'(test: Test) {

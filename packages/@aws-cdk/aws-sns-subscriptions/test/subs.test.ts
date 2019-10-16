@@ -5,7 +5,7 @@ import sqs = require('@aws-cdk/aws-sqs');
 import { SecretValue, Stack } from '@aws-cdk/core';
 import subs = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 let stack: Stack;
 let topic: sns.Topic;

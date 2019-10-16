@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/core');
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = testCase({
   'custom resources honor removalPolicy': {

@@ -2,7 +2,7 @@ import { Test } from 'nodeunit';
 import { App, CfnOutput, CfnResource, Construct, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CrossEnvironmentToken': {

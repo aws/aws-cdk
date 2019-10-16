@@ -7,7 +7,7 @@ import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CodeDeploy Server Deployment Group': {

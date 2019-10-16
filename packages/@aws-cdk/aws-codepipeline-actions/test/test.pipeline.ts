@@ -11,7 +11,7 @@ import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'basic pipeline'(test: Test) {

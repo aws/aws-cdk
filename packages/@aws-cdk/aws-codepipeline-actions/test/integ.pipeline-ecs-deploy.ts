@@ -7,7 +7,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 const app = new cdk.App();
 

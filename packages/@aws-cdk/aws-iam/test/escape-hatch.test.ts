@@ -5,7 +5,7 @@ import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import iam = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('IAM escape hatches', () => {
   test('addPropertyOverride should allow overriding supported properties', () => {

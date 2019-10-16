@@ -8,7 +8,7 @@ import { Test } from 'nodeunit';
 import path = require('path');
 import lambda = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default function'(test: Test) {

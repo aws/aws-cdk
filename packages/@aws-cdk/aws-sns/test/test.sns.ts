@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import sns = require('../lib');
 import { SubscriptionProtocol, Topic } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'topic tests': {

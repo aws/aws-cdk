@@ -9,7 +9,7 @@ import codebuild = require('../lib');
 import { CodePipelineSource } from '../lib/codepipeline-source';
 import { NoSource } from '../lib/no-source';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default properties': {

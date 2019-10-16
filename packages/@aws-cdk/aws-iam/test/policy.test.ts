@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { App, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('IAM policy', () => {
   test('fails when policy is empty', () => {

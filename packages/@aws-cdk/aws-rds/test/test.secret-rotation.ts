@@ -7,7 +7,7 @@ import { Test } from 'nodeunit';
 import rds = require('../lib');
 import { SecretRotationApplication } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'add a rds rotation single user to a cluster'(test: Test) {

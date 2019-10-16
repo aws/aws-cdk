@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/core');
 import { ConstructNode, Stack } from '@aws-cdk/core';
 import s3n = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 // tslint:disable:max-line-length
 
 test('bucket without notifications', () => {

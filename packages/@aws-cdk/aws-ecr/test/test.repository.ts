@@ -5,7 +5,7 @@ import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'construct repository'(test: Test) {
