@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 import { CfnRestApi, JsonSchemaType, JsonSchemaVersion } from '../lib';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'minimal setup'(test: Test) {

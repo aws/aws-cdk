@@ -1,4 +1,4 @@
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 import childProcess = require('child_process');
 import colors = require('colors');
 import fs = require('fs-extra');

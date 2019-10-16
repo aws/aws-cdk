@@ -9,7 +9,7 @@ import os = require('os');
 import path = require('path');
 import { Asset } from '../lib/asset';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');
 

@@ -6,7 +6,7 @@ import {Tag} from "./cxapp/stacks";
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { ISDK } from './util/sdk';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 /** @experimental */
 export const BUCKET_NAME_OUTPUT = 'BucketName';

@@ -7,7 +7,7 @@ import { Test } from 'nodeunit';
 import path = require('path');
 import { NestedStack } from '../lib/nested-stack';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'fails if defined as a root'(test: Test) {

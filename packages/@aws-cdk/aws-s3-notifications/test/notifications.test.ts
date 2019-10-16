@@ -7,7 +7,7 @@ import { ConstructNode, Stack } from '@aws-cdk/core';
 import s3n = require('../lib');
 
 /* eslint-disable quote-props */
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 test('bucket without notifications', () => {
   const stack = new cdk.Stack();

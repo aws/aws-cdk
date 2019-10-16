@@ -9,7 +9,7 @@ import { KubernetesResource } from '../lib';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'a default cluster spans all subnets'(test: Test) {

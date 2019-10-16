@@ -4,7 +4,7 @@ import yargs = require('yargs');
 import generate from '../lib';
 
 // tslint:disable:no-console
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 async function main() {
   const argv = yargs.usage('Usage: cfn2ts')

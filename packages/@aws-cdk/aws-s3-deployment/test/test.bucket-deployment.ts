@@ -8,7 +8,7 @@ import path = require('path');
 import s3deploy = require('../lib');
 import { CacheControl, Expires, ServerSideEncryption, StorageClass } from '../lib';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 /* eslint-disable quote-props */
 
 export = {
