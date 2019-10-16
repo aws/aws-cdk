@@ -10,6 +10,7 @@ import {
   fileShouldBe, fileShouldContain,
   findInnerPackages,
   monoRepoRoot,
+  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -453,6 +454,10 @@ export class NoAtTypesInDependencies extends ValidationRule {
   }
 }
 
+function isCdkModuleName(name: string) {
+  return !!name.match(/^@aws-cdk\//);
+}
+
 /**
  * Computes the module name for various other purposes (java package, ...)
  */
@@ -628,6 +633,28 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
           ruleName: this.name,
           message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
           fix: () => pkg.addPeerDependency(depName, depVersion)
+        });
+      }
+    }
+  }
+}
+
+/**
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ */
+export class MustDependonCdkByPointVersions extends ValidationRule {
+  public readonly name = 'dependencies/cdk-point-dependencies';
+
+  public validate(pkg: PackageJson): void {
+    const expectedVersion = monoRepoVersion();
+
+    for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
+      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
+          fix: () => pkg.addDependency(depName, expectedVersion)
         });
       }
     }
