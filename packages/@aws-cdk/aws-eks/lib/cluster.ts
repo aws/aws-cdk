@@ -477,6 +477,15 @@ export class Cluster extends Resource implements ICluster {
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   public addWindowsCapacity(id: string, options: WindowsCapacityOptions): autoscaling.AutoScalingGroup {
+    // see https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html
+    if (
+      this.version &&
+      // not the cleanest, but avoids implementing version comparision
+      ['1.10', '1.11', '1.12', '1.13'].includes(this.version.split('.').slice(0, 2).join('.'))
+    ) {
+      throw new Error('Windows nodes require an EKS cluster with Kubernetes 1.14 or later');
+    }
+
     return this.addBaseCapacity(id, options, new WindowsEksOptimizedImage({
       variant: options.variant,
       kubernetesVersion: this.version,
