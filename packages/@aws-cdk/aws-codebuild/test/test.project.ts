@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import s3 = require('@aws-cdk/aws-s3');
 import { Bucket } from '@aws-cdk/aws-s3';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -145,6 +146,24 @@ export = {
           Webhook: true,
         },
       }));
+
+      test.done();
+    },
+
+    'cannot have bindToCodePipeline() be called on it'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+        }),
+      });
+
+      test.throws(() => {
+        project.bindToCodePipeline(project, {
+          artifactBucket: new s3.Bucket(stack, 'Bucket'),
+        });
+      }, /Only a PipelineProject can be added to a CodePipeline/);
 
       test.done();
     },
