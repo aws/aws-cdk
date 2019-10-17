@@ -465,6 +465,10 @@ export class Cluster extends Resource implements ICluster {
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   public addWindowsCapacity(id: string, options: WindowsCapacityOptions): autoscaling.AutoScalingGroup {
+    if (!this.kubectlEnabled) {
+      throw new Error(`Cannot configure the VPC to support Windows nodes if kubectl is disabled for the cluster`);
+    }
+
     // see https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html
     if (
       this.version &&
