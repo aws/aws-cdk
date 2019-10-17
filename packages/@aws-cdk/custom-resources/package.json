@@ -85,12 +85,16 @@
     "@aws-cdk/aws-cloudformation": "1.13.1",
     "@aws-cdk/aws-iam": "1.13.1",
     "@aws-cdk/aws-lambda": "1.13.1",
+    "@aws-cdk/aws-stepfunctions": "1.13.1",
+    "@aws-cdk/aws-stepfunctions-tasks": "1.13.1",
     "@aws-cdk/aws-sns": "1.13.1",
     "@aws-cdk/core": "1.13.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudformation": "1.13.1",
+    "@aws-cdk/aws-stepfunctions": "1.13.1",
+    "@aws-cdk/aws-stepfunctions-tasks": "1.13.1",
     "@aws-cdk/aws-iam": "1.13.1",
     "@aws-cdk/aws-lambda": "1.13.1",
     "@aws-cdk/aws-sns": "1.13.1",
