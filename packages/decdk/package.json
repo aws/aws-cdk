@@ -154,12 +154,12 @@
     "fs-extra": "^8.1.0",
     "jsii-reflect": "^0.19.0",
     "jsonschema": "^1.2.4",
-    "yaml": "1.7.1",
+    "yaml": "1.7.2",
     "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.0.19",
     "@types/yaml": "1.2.0",
     "@types/yargs": "^13.0.3",
     "jest": "^24.9.0",

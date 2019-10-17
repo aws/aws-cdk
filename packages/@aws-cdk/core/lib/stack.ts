@@ -860,6 +860,11 @@ export class Stack extends Construct implements ITaggable {
     return output;
 
     function visit(node: IConstruct) {
+      // break off if we reached a node that is not a child of this stack
+      const parent = findParentStack(node);
+      if (parent !== stack) {
+        return;
+      }
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
@@ -869,6 +874,18 @@ export class Stack extends Construct implements ITaggable {
       for (const child of node.node.children) {
         visit(child);
       }
+    }
+
+    function findParentStack(node: IConstruct): Stack | undefined {
+      if (node instanceof Stack && node.parentStack === undefined) {
+        return node;
+      }
+
+      if (!node.node.scope) {
+        return undefined;
+      }
+
+      return findParentStack(node.node.scope);
     }
   }
 

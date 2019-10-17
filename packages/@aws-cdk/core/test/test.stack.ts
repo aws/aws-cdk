@@ -655,6 +655,29 @@ export = {
     test.done();
   },
 
+  'metadata is collected at the stack boundary'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.DISABLE_METADATA_STACK_TRACE]: 'true'
+      }
+    });
+    const parent = new Stack(app, 'parent');
+    const child = new Stack(parent, 'child');
+
+    // WHEN
+    child.node.addMetadata('foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    test.deepEqual(asm.getStack(parent.stackName).findMetadataByType('foo'), []);
+    test.deepEqual(asm.getStack(child.stackName).findMetadataByType('foo'), [
+      { path: '/parent/child', type: 'foo', data: 'bar' }
+    ]);
+
+    test.done();
+  },
+
   'addDockerImageAsset correctly sets metadata and creates a parameter'(test: Test) {
     // GIVEN
     const stack = new Stack();
