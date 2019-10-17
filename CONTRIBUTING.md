@@ -203,14 +203,14 @@ The build process is divided into stages, so you can invoke them as needed:
 
 When working on an individual module, the `build.sh` can be used to build that module specifically along with any related modules. The following is a list of scripts to build a module under development:
 
-- __`build.sh --scope <module-name>`__: builds the module with the specified name.
-- __`build.sh --scope <module-name> --up`__: builds the module specified and all of its dependencies (in topological order).
-- __`build.sh --scope <module-name> --down`__: builds the module specified and all of its consumers (in topological order).
+- __`build.sh --scope [<module-name>]`__: builds the module with the specified name.
+- __`build.sh --scope [<module-name>] --up`__: builds the module specified and all of its dependencies (in topological order).
+- __`build.sh --scope [<module-name>] --down`__: builds the module specified and all of its consumers (in topological order).
 
 Here are a couple of other useful build scripts:
 
-- __`build.sh --scope <module-name> --skip-test`__: builds the module with the specified name and skips the execution of any tests.
-- __`build.sh --scope <module-name> --skip-api-check`__: builds the module with the specified name and skips validating the api for changes.
+- __`build.sh --scope [<module-name>] --skip-test`__: builds the module with the specified name and skips the execution of any tests.
+- __`build.sh --scope [<module-name>] --skip-api-check`__: builds the module with the specified name and skips validating the api for changes.
 
 ### Useful aliases
 
@@ -373,6 +373,14 @@ In many cases, you don't really need to build the entire project. Say you want t
 ```console
 $ ./install.sh
 $ ./build --scope @aws-cdk/aws-ec2 --skip-test --skip-api-check
+```
+
+Alternatively, you can also build from the directory containing the `@aws-cdk/aws-ec2` module:
+
+```console
+$ ./install.sh
+$ cd packages/@aws-cdk/aws-ec2
+$ ./build --scope --skip-test --skip-api-check
 ```
 
 ### Quick Iteration

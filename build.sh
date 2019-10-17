@@ -11,7 +11,7 @@ runtarget="build+test"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--scope <package-name> [--up] [--down]] [--skip-api-check] [--skip-clean]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--scope [<package-name>] [--up|-u] [--down|-d]] [--skip-api-check] [--skip-clean]"
             exit 1
             ;;
         --no-bail)
@@ -33,10 +33,10 @@ while [[ "${1:-}" != "" ]]; do
             fi
             scope="--scope $target"
             ;;
-        --up)
+        -u|--up)
             up="--include-filtered-dependencies"
             ;;
-        --down)
+        -d|--down)
             down="--include-filtered-dependents"
             ;;
         --skip-api-check|--skip-api-checks)
