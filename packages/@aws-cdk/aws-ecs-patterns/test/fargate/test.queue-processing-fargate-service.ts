@@ -87,7 +87,7 @@ export = {
       },
       queue,
       maxScalingCapacity: 5,
-      taskDefinitionFamily: "fargate-task-family"
+      family: "fargate-task-family"
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.

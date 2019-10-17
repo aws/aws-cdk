@@ -89,7 +89,7 @@ export = {
       },
       queue,
       maxScalingCapacity: 5,
-      taskDefinitionFamily: "ecs-task-family"
+      family: "ecs-task-family"
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.

@@ -124,7 +124,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - Automatically generated name.
    */
-  readonly taskDefinitionFamily?: string;
+  readonly family?: string;
 }
 
 /**

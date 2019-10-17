@@ -76,7 +76,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
 
     // Create a Task Definition for the container to start
     this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef', {
-      family: props.taskDefinitionFamily
+      family: props.family
     });
     this.taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
