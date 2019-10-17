@@ -486,6 +486,26 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('Windows nodes require an EKS cluster with Kubernetes 1.14 or later');
     }
 
+    {
+      const instanceTypeIdentifier = options.instanceType.toString();
+      const [instanceClass, instanceSize] = instanceTypeIdentifier.split('.') as [ec2.InstanceClass, ec2.InstanceSize];
+
+      if ([
+        ec2.InstanceClass.COMPUTE3,
+        ec2.InstanceClass.COMPUTE4,
+        ec2.InstanceClass.STORAGE2,
+        // TODO 'i2' (IO2) not in InstanceClass, do we ignore it?
+        ec2.InstanceClass.MEMORY3,
+      ].includes(instanceClass) ||
+        (instanceClass === ec2.InstanceClass.STANDARD4 && instanceSize !== ec2.InstanceSize.XLARGE16)
+      ) {
+        throw new Error([
+          `Unsupported instance type for Widnows nodes: ${instanceTypeIdentifier}.`,
+          'See https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#considerations for more info',
+        ].join(' '));
+      }
+    }
+
     return this.addBaseCapacity(id, options, new WindowsEksOptimizedImage({
       variant: options.variant,
       kubernetesVersion: this.version,
