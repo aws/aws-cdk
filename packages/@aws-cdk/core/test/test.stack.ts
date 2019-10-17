@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack } from '../lib';
 import { validateString } from '../lib';
@@ -651,6 +652,37 @@ export = {
     // THEN
     test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
     test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
+    test.done();
+  },
+
+  'addDockerImageAsset correctly sets metadata and creates a parameter'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    stack.addDockerImageAsset({
+      id: 'asset-id',
+      sourceHash: 'source-hash',
+      directoryName: 'directory-name'
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
+
+    test.equal(assetMetadata && assetMetadata.data.id, 'asset-id');
+    test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
+    test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
+    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
+
+    test.deepEqual(toCloudFormation(stack), {
+      Parameters: {
+        AssetParameterssourcehashImageName3B572B12: {
+          Type: 'String',
+          Description: 'ECR repository name and tag for asset "source-hash"'
+        }
+      }
+    });
+
     test.done();
   }
 };
