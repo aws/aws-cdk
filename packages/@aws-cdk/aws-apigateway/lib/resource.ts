@@ -46,6 +46,11 @@ export interface IResource extends IResourceBase {
   readonly defaultMethodOptions?: MethodOptions;
 
   /**
+   * Default options for CORS preflight OPTIONS method.
+   */
+  readonly defaultCorsPreflightOptions?: CorsOptions;
+
+  /**
    * Gets or create all resources leading up to the specified path.
    *
    * - Path may only start with "/" if this method is called on the root resource.
@@ -120,6 +125,16 @@ export interface ResourceOptions {
    * @default - Inherited from parent.
    */
   readonly defaultMethodOptions?: MethodOptions;
+
+  /**
+   * Adds a CORS preflight OPTIONS method to this resource and all child
+   * resources.
+   *
+   * You can add CORS at the resource-level using `addCorsPreflight`.
+   *
+   * @default - CORS is disabled
+   */
+  readonly defaultCorsPreflightOptions?: CorsOptions;
 }
 
 export interface ResourceProps extends ResourceOptions {
@@ -142,6 +157,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   public abstract readonly path: string;
   public abstract readonly defaultIntegration?: Integration;
   public abstract readonly defaultMethodOptions?: MethodOptions;
+  public abstract readonly defaultCorsPreflightOptions?: CorsOptions;
 
   private readonly children: { [pathPart: string]: Resource } = { };
 
@@ -333,6 +349,7 @@ export class Resource extends ResourceBase {
 
   public readonly defaultIntegration?: Integration;
   public readonly defaultMethodOptions?: MethodOptions;
+  public readonly defaultCorsPreflightOptions?: CorsOptions;
 
   constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id);
@@ -373,6 +390,11 @@ export class Resource extends ResourceBase {
       ...props.parent.defaultMethodOptions,
       ...props.defaultMethodOptions
     };
+    this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
+
+    if (this.defaultCorsPreflightOptions) {
+      this.addCorsPreflight(this.defaultCorsPreflightOptions);
+    }
   }
 }
 
