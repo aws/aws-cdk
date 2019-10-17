@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
@@ -510,7 +510,7 @@ export = {
     });
 
     const child1 = api.root.addResource('child1');
-    const child2 = child1.addResource('child2');
+    child1.addResource('child2');
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
