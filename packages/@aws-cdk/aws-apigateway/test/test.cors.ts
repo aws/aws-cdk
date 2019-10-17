@@ -25,7 +25,8 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
-              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              "method.response.header.Vary": "'Origin'",
+              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
             StatusCode: "204"
           }
@@ -40,6 +41,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true
           },
           StatusCode: "204"
@@ -71,6 +73,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
               "method.response.header.Access-Control-Allow-Credentials": "'true'"
             },
@@ -87,6 +90,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true,
             "method.response.header.Access-Control-Allow-Credentials": true
           },
@@ -119,6 +123,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'GET,PUT'",
             },
             StatusCode: "204"
@@ -134,6 +139,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true,
           },
           StatusCode: "204"
@@ -165,6 +171,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
             StatusCode: "204"
@@ -180,6 +187,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true,
           },
           StatusCode: "204"
@@ -226,6 +234,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
             StatusCode: "200"
@@ -241,6 +250,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true,
           },
           StatusCode: "200"
@@ -285,6 +295,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://twitch.tv'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
             },
             ResponseTemplates: {
@@ -303,6 +314,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true
           },
           StatusCode: "204"
@@ -334,6 +346,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
               "method.response.header.Access-Control-Max-Age": `'${60 * 60}'`
             },
@@ -350,6 +363,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true,
             "method.response.header.Access-Control-Max-Age": true
           },
@@ -382,6 +396,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
               "method.response.header.Access-Control-Max-Age": `'-1'`
             },
@@ -398,6 +413,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true,
             "method.response.header.Access-Control-Max-Age": true
           },
@@ -446,6 +462,7 @@ export = {
             ResponseParameters: {
               "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+              "method.response.header.Vary": "'Origin'",
               "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
               "method.response.header.Access-Control-Expose-Headers": "'Authorization,Foo'",
             },
@@ -462,6 +479,7 @@ export = {
           ResponseParameters: {
             "method.response.header.Access-Control-Allow-Headers": true,
             "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
             "method.response.header.Access-Control-Allow-Methods": true,
             "method.response.header.Access-Control-Expose-Headers": true,
           },
@@ -527,4 +545,105 @@ export = {
     }));
     test.done();
   },
+
+  'Vary: Origin is sent back if Allow-Origin is not "*"'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+
+    // WHEN
+    api.root.addResource('AllowAll', {
+      defaultCorsPreflightOptions: {
+        allowOrigins: [ '*' ]
+      }
+    });
+
+    api.root.addResource('AllowSpecific', {
+      defaultCorsPreflightOptions: {
+        allowOrigins: [ 'http://specific.com' ]
+      }
+    });
+
+    // THENB
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      ResourceId: {
+        Ref: "apiAllowAll2F5BC564"
+      },
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              "method.response.header.Access-Control-Allow-Origin": "'*'",
+              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+            },
+            StatusCode: "204"
+          }
+        ],
+        RequestTemplates: {
+          "application/json": "{ statusCode: 200 }"
+        },
+        Type: "MOCK"
+      },
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            "method.response.header.Access-Control-Allow-Headers": true,
+            "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Access-Control-Allow-Methods": true
+          },
+          StatusCode: "204"
+        }
+      ]
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      ResourceId: {
+        Ref: "apiAllowSpecific77DD8AF1"
+      },
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              "method.response.header.Access-Control-Allow-Origin": "'http://specific.com'",
+              "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+              "method.response.header.Vary": "'Origin'"
+            },
+            StatusCode: "204"
+          }
+        ],
+        RequestTemplates: {
+          "application/json": "{ statusCode: 200 }"
+        },
+        Type: "MOCK"
+      },
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            "method.response.header.Access-Control-Allow-Headers": true,
+            "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Access-Control-Allow-Methods": true,
+            "method.response.header.Vary": true
+          },
+          StatusCode: "204"
+        }
+      ]
+    }));
+    test.done();
+  },
+
+  'If "*" is specified in allow-origin, it cannot be mixed with specific origins'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+
+    // WHEN
+    test.throws(() => api.root.addResource('AllowAll', {
+      defaultCorsPreflightOptions: {
+        allowOrigins: [ 'https://bla.com', '*', 'https://specific' ]
+      }
+    }), /Invalid "allowOrigins" - cannot mix "\*" with specific origins: https:\/\/bla\.com,\*,https:\/\/specific/);
+
+    test.done();
+  }
 };

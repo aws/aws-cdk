@@ -193,9 +193,20 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       throw new Error('allowOrigins must contain at least one origin');
     }
 
+    if (options.allowOrigins.includes('*') && options.allowOrigins.length > 1) {
+      throw new Error(`Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`);
+    }
+
     // we use the first origin here and if there are more origins in the list, we
     // will match against them in the response velocity template
-    headers['Access-Control-Allow-Origin'] = `'${options.allowOrigins[0]}'`;
+    const initialOrigin = options.allowOrigins[0];
+    headers['Access-Control-Allow-Origin'] = `'${initialOrigin}'`;
+
+    // the "Vary" header is required if we allow a specific origin
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#CORS_and_caching
+    if (initialOrigin !== '*') {
+      headers.Vary = `'Origin'`;
+    }
 
     //
     // Access-Control-Allow-Methods
