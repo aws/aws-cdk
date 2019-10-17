@@ -526,7 +526,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "handlerCodeS3Bucket9583A349"
+            "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3Bucket9DD8E176"
           },
           "S3Key": {
             "Fn::Join": [
@@ -539,7 +539,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "handlerCodeS3VersionKey5F6149CC"
+                          "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE"
                         }
                       ]
                     }
@@ -552,7 +552,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "handlerCodeS3VersionKey5F6149CC"
+                          "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE"
                         }
                       ]
                     }
@@ -605,17 +605,17 @@
     }
   },
   "Parameters": {
-    "handlerCodeS3Bucket9583A349": {
+    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3Bucket9DD8E176": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"cors-twitch-test/handler/Code\""
+      "Description": "S3 bucket for asset \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
     },
-    "handlerCodeS3VersionKey5F6149CC": {
+    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE": {
       "Type": "String",
-      "Description": "S3 key for asset version \"cors-twitch-test/handler/Code\""
+      "Description": "S3 key for asset version \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
     },
-    "handlerCodeArtifactHashA96ADEB4": {
+    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4ArtifactHash1D8265F7": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"cors-twitch-test/handler/Code\""
+      "Description": "Artifact hash for asset \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
     }
   }
 }
