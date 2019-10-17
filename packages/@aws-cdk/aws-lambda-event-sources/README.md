@@ -67,7 +67,7 @@ import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 const bucket = new s3.Bucket(...);
 
 lambda.addEventSource(new S3EventSource(bucket, {
-  events: [ s3.EventType.ObjectCreated, s3.EventType.ObjectDeleted ],
+  events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
   filters: [ { prefix: 'subdir/' } ] // optional
 }));
 ```
