@@ -2,6 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
+import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
 import { Integration } from './integration';
@@ -449,6 +450,7 @@ class RootResource extends ResourceBase {
   public readonly path: string;
   public readonly defaultIntegration?: Integration | undefined;
   public readonly defaultMethodOptions?: MethodOptions | undefined;
+  public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
   constructor(api: RestApi, props: RestApiProps, resourceId: string) {
     super(api, 'Default');
@@ -456,8 +458,13 @@ class RootResource extends ResourceBase {
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
     this.defaultMethodOptions = props.defaultMethodOptions;
+    this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions;
     this.restApi = api;
     this.resourceId = resourceId;
     this.path = '/';
+
+    if (this.defaultCorsPreflightOptions) {
+      this.addCorsPreflight(this.defaultCorsPreflightOptions);
+    }
   }
 }
