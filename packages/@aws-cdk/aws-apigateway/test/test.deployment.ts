@@ -1,12 +1,14 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import lambda = require('@aws-cdk/aws-lambda');
+import { CfnResource, Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import path = require('path');
 import apigateway = require('../lib');
 
 export = {
   'minimal setup'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
     api.root.addMethod('GET');
 
@@ -57,7 +59,7 @@ export = {
 
   '"retainDeployments" can be used to control the deletion policy of the resource'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
     api.root.addMethod('GET');
 
@@ -110,7 +112,7 @@ export = {
 
   '"description" can be set on the deployment'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
     api.root.addMethod('GET');
 
@@ -127,7 +129,7 @@ export = {
 
   '"addToLogicalId" will "salt" the logical ID of the deployment resource'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
     const deployment = new apigateway.Deployment(stack, 'deployment', { api });
     api.root.addMethod('GET');
@@ -145,7 +147,7 @@ export = {
 
     // tokens supported, and are resolved upon synthesis
     const value = 'hello hello';
-    deployment.addToLogicalId({ foo: cdk.Lazy.stringValue({ produce: () => value }) });
+    deployment.addToLogicalId({ foo: Lazy.stringValue({ produce: () => value }) });
 
     const template2 = synthesize();
     test.ok(template2.Resources.deployment33381975a12dfe81474913364dc31c06e37f9449);
@@ -159,12 +161,12 @@ export = {
 
   '"addDependency" can be used to add a resource as a dependency'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
     const deployment = new apigateway.Deployment(stack, 'deployment', { api });
     api.root.addMethod('GET');
 
-    const dep = new cdk.CfnResource(stack, 'MyResource', { type: 'foo' });
+    const dep = new CfnResource(stack, 'MyResource', { type: 'foo' });
 
     // WHEN
     deployment.node.addDependency(dep);
@@ -175,4 +177,39 @@ export = {
 
     test.done();
   },
+
+  'integration change invalidates deployment'(test: Test) {
+    // GIVEN
+    const stack1 = new Stack();
+    const stack2 = new Stack();
+    const handler1 = new lambda.Function(stack1, 'handler1', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler'
+    });
+    const handler2 = new lambda.Function(stack2, 'handler2', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler'
+    });
+
+    // WHEN
+    const api1 = new apigateway.RestApi(stack1, 'myapi', {
+      defaultIntegration: new apigateway.LambdaIntegration(handler1)
+    });
+    const api2 = new apigateway.RestApi(stack2, 'myapi', {
+      defaultIntegration: new apigateway.LambdaIntegration(handler2)
+    });
+    api1.root.addMethod('GET');
+    api2.root.addMethod('GET');
+
+    // THEN
+    expect(stack1).to(haveResource('AWS::ApiGateway::Stage', {
+      DeploymentId: { Ref: 'myapiDeploymentB7EF8EB7e0b8372768854261d2d1218739e0a307' }
+    }));
+    expect(stack2).to(haveResource('AWS::ApiGateway::Stage', {
+      DeploymentId: { Ref: 'myapiDeploymentB7EF8EB77c517352b0f7ab73c333e36585c8f1f3' }
+    }));
+    test.done();
+  }
 };
