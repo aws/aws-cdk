@@ -24,6 +24,14 @@ export interface FileAssetSource {
 
 export interface DockerImageAssetSource {
   /**
+   * The id for the image.
+   *
+   * This will be used to construct the repository name if `repositoryName`
+   * is not specified.
+   */
+  readonly id: string;
+
+  /**
    * The hash of the contents of the docker build context. This hash is used
    * throughout the system to identify this image and avoid duplicate work
    * in case the source did not change.
@@ -60,10 +68,13 @@ export interface DockerImageAssetSource {
   /**
    * ECR repository name
    *
-   * Note, this is only the repository name, without the registry and
-   * the tag parts.
+   * Specify this property if you need to statically address the image, e.g.
+   * from a Kubernetes Pod. Note, this is only the repository name, without the
+   * registry and the tag parts.
+   *
+   * @default - automatically derived from the asset's ID.
    */
-  readonly repositoryName: string;
+  readonly repositoryName?: string;
 }
 
 /**
