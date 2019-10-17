@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
-import { CloudFrontWebDistribution, LambdaEdgeEventType, ViewerProtocolPolicy, CfnDistribution } from '../lib';
+import { CfnDistribution, CloudFrontWebDistribution, LambdaEdgeEventType, ViewerProtocolPolicy } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
