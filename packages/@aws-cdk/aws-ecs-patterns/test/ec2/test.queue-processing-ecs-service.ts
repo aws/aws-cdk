@@ -59,7 +59,8 @@ export = {
           Image: "test",
           Memory: 512
         }
-      ]
+      ],
+      Family: "ServiceQueueProcessingTaskDef83DB34F1"
     }));
 
     test.done();
