@@ -33,6 +33,8 @@ export interface CorsOptions {
    * The Access-Control-Allow-Methods response header specifies the method or
    * methods allowed when accessing the resource in response to a preflight request.
    *
+   * If `ANY` is specified, it will be expanded to `Cors.ALL_METHODS`.
+   *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
    * @default Cors.ALL_METHODS
    */
