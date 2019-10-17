@@ -65,6 +65,48 @@ By default, the contents of the destination bucket will be deleted when the
 changed. You can use the option `retainOnDelete: true` to disable this behavior,
 in which case the contents will be retained.
 
+## Objects metadata
+
+You can specify metadata to be set on all the objects in your deployment.
+There are 2 types of metadata in S3: system-defined metadata and user-defined metadata.
+System-defined metadata have a special purpose, for example cache-control defines how long to keep an object cached.
+User-defined metadata are not used by S3 and keys always begin with `x-amzn-meta-` (if this is not provided, it is added automatically).
+
+System defined metadata keys include the following:
+
+- cache-control
+- content-disposition
+- content-encoding
+- content-language
+- content-type
+- expires
+- server-side-encryption
+- storage-class
+- website-redirect-location
+- ssekms-key-id
+- sse-customer-algorithm
+
+```ts
+const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
+  websiteIndexDocument: 'index.html',
+  publicReadAccess: true
+});
+
+new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: websiteBucket,
+  destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
+  userMetadata: { "A": "1", "b": "2" }, // user-defined metadata
+
+  // system-defined metadata
+  contentType: "text/html",
+  contentLanguage: "en",
+  storageClass: StorageClass.INTELLIGENT_TIERING,
+  serverSideEncryption: ServerSideEncryption.AES_256,
+  cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+});
+```
+
 ## CloudFront Invalidation
 
 You can provide a CloudFront distribution and optional paths to invalidate after the bucket deployment finishes.

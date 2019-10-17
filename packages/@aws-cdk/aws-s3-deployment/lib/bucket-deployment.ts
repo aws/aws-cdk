@@ -1,14 +1,17 @@
-import cloudformation = require('@aws-cdk/aws-cloudformation');
-import cloudfront = require('@aws-cdk/aws-cloudfront');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Token } from '@aws-cdk/core';
-import path = require('path');
-import { ISource, SourceConfig } from './source';
+import cloudformation = require("@aws-cdk/aws-cloudformation");
+import cloudfront = require("@aws-cdk/aws-cloudfront");
+import iam = require("@aws-cdk/aws-iam");
+import lambda = require("@aws-cdk/aws-lambda");
+import s3 = require("@aws-cdk/aws-s3");
+import cdk = require("@aws-cdk/core");
+import { Token } from "@aws-cdk/core";
+import crypto = require('crypto');
+import fs = require('fs');
+import path = require("path");
+import { ISource, SourceConfig } from "./source";
 
-const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
+const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
+const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
   /**
@@ -67,6 +70,87 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   * Execution role associated with this function
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * User-defined object metadata to be set on all objects in the deployment
+   * @default - No user metadata is set
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
+   */
+  readonly metadata?: UserDefinedObjectMetadata;
+
+  /**
+   * System-defined cache-control metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly cacheControl?: CacheControl[];
+  /**
+   * System-defined cache-disposition metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentDisposition?: string;
+  /**
+   * System-defined content-encoding metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentEncoding?: string;
+  /**
+   * System-defined content-language metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentLanguage?: string;
+  /**
+   * System-defined content-type metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly contentType?: string;
+  /**
+   * System-defined expires metadata to be set on all objects in the deployment.
+   * @default - The objects in the distribution will not expire.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly expires?: Expires;
+  /**
+   * System-defined x-amz-server-side-encryption metadata to be set on all objects in the deployment.
+   * @default - Server side encryption is not used.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly serverSideEncryption?: ServerSideEncryption;
+  /**
+   * System-defined x-amz-storage-class metadata to be set on all objects in the deployment.
+   * @default - Default storage-class for the bucket is used.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly storageClass?: StorageClass;
+  /**
+   * System-defined x-amz-website-redirect-location metadata to be set on all objects in the deployment.
+   * @default - No website redirection.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly websiteRedirectLocation?: string;
+  /**
+   * System-defined x-amz-server-side-encryption-aws-kms-key-id metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly serverSideEncryptionAwsKmsKeyId?: string;
+  /**
+   * System-defined x-amz-server-side-encryption-customer-algorithm metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+   */
+  readonly serverSideEncryptionCustomerAlgorithm?: string;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -77,13 +161,18 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error("Distribution must be specified if distribution paths are specified");
     }
 
+    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    // tslint:disable-next-line: no-console
+    console.error({sourceHash});
+
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
+      role: props.role,
       memorySize: props.memoryLimit
     });
 
@@ -108,6 +197,8 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
+        SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths
       }
@@ -130,4 +221,149 @@ export class BucketDeployment extends cdk.Construct {
 
     return uuid;
   }
+}
+
+/**
+ * We need a custom source hash calculation since the bundle.zip file
+ * contains python dependencies installed during build and results in a
+ * non-deterministic behavior.
+ *
+ * So we just take the `src/` directory of our custom resoruce code.
+ */
+function calcSourceHash(srcDir: string): string {
+  const sha = crypto.createHash('sha256');
+  for (const file of fs.readdirSync(srcDir)) {
+    const data = fs.readFileSync(path.join(srcDir, file));
+    sha.update(`<file name=${file}>`);
+    sha.update(data);
+    sha.update('</file>');
+  }
+
+  return sha.digest('hex');
+}
+
+/**
+ * Metadata
+ */
+
+function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
+  const mapKey = (key: string) =>
+    key.toLowerCase().startsWith("x-amzn-meta-")
+      ? key.toLowerCase()
+      : `x-amzn-meta-${key.toLowerCase()}`;
+
+  return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
+}
+
+function mapSystemMetadata(metadata: BucketDeploymentProps) {
+  function mapCacheControlDirective(cacheControl: CacheControl) {
+    const { value } = cacheControl;
+
+    if (typeof value === "string") { return value; }
+    if ("max-age" in value) { return `max-age=${value["max-age"].toSeconds()}`; }
+    if ("s-max-age" in value) { return `s-max-age=${value["s-max-age"].toSeconds()}`; }
+
+    throw new Error(`Unsupported cache-control directive ${value}`);
+  }
+  function mapExpires(expires: Expires) {
+    const { value } = expires;
+
+    if (typeof value === "string") { return value; }
+    if (value instanceof Date) { return value.toUTCString(); }
+    if (value instanceof cdk.Duration) { return new Date(Date.now() + value.toMilliseconds()).toUTCString(); }
+
+    throw new Error(`Unsupported expires ${expires}`);
+  }
+
+  const res: { [key: string]: string } = {};
+
+  if (metadata.cacheControl) { res["cache-control"] = metadata.cacheControl.map(mapCacheControlDirective).join(", "); }
+  if (metadata.expires) { res.expires = mapExpires(metadata.expires); }
+  if (metadata.contentDisposition) { res["content-disposition"] = metadata.contentDisposition; }
+  if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
+  if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
+  if (metadata.contentType) { res["content-type"] = metadata.contentType; }
+  if (metadata.serverSideEncryption) { res["server-side-encryption"] = metadata.serverSideEncryption; }
+  if (metadata.storageClass) { res["storage-class"] = metadata.storageClass; }
+  if (metadata.websiteRedirectLocation) { res["website-redirect-location"] = metadata.websiteRedirectLocation; }
+  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["ssekms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
+  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-customer-algorithm"] = metadata.serverSideEncryptionCustomerAlgorithm; }
+
+  return Object.keys(res).length === 0 ? undefined : res;
+}
+
+/**
+ * Used for HTTP cache-control header, which influences downstream caches.
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
+export class CacheControl {
+  public static mustRevalidate() { return new CacheControl("must-revalidate"); }
+  public static noCache() { return new CacheControl("no-cache"); }
+  public static noTransform() { return new CacheControl("no-transform"); }
+  public static setPublic() { return new CacheControl("public"); }
+  public static setPrivate() { return new CacheControl("private"); }
+  public static proxyRevalidate() { return new CacheControl("proxy-revalidate"); }
+  public static maxAge(t: cdk.Duration) { return new CacheControl({ "max-age": t }); }
+  public static sMaxAge(t: cdk.Duration) { return new CacheControl({ "s-max-age": t }); }
+  public static fromString(s: string) {  return new CacheControl(s); }
+
+  private constructor(public value: any) {}
+}
+
+/**
+ * Indicates whether server-side encryption is enabled for the object, and whether that encryption is
+ * from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3).
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
+export enum ServerSideEncryption {
+  AES_256 = 'AES256',
+  AWS_KMS = 'aws:kms'
+}
+
+/**
+ * Storage class used for storing the object.
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
+export enum StorageClass {
+  STANDARD = 'STANDARD',
+  REDUCED_REDUNDANCY = 'REDUCED_REDUNDANCY',
+  STANDARD_IA = 'STANDARD_IA',
+  ONEZONE_IA = 'ONEZONE_IA',
+  INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
+  GLACIER = 'GLACIER',
+  DEEP_ARCHIVE = 'DEEP_ARCHIVE'
+}
+
+/**
+ * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
+export class Expires {
+  /**
+   * Expire at the specified date
+   * @param d date to expire at
+   */
+  public static atDate(d: Date) { return new Expires(d); }
+  /**
+   * Expire at the specified timestamp
+   * @param t timestamp in unix milliseconds
+   */
+  public static atTimestamp(t: number) { return new Expires(t); }
+  /**
+   * Expire once the specified duration has passed since deployment time
+   * @param t the duration to wait before expiring
+   */
+  public static after(t: cdk.Duration) { return new Expires(t); }
+  public static fromString(s: string) { return new Expires(s); }
+
+  private constructor(public value: any) {}
+}
+
+export interface UserDefinedObjectMetadata {
+  /**
+   * Arbitrary metadata key-values
+   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
+   */
+  readonly [key: string]: string;
 }

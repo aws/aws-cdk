@@ -1,3 +1,72 @@
+# CloudFormation Resource Specification v6.3.0
+
+## New Resource Types
+
+* AWS::Cognito::UserPoolDomain
+* AWS::Cognito::UserPoolIdentityProvider
+* AWS::Cognito::UserPoolResourceServer
+* AWS::Cognito::UserPoolRiskConfigurationAttachment
+* AWS::Cognito::UserPoolUICustomizationAttachment
+
+## Attribute Changes
+
+* AWS::Pinpoint::App Arn (__added__)
+* AWS::Pinpoint::Campaign Arn (__added__)
+* AWS::Pinpoint::Segment Arn (__added__)
+
+## Property Changes
+
+* AWS::Cognito::UserPool EnabledMfas (__added__)
+* AWS::Events::EventBusPolicy EventBusName (__added__)
+* AWS::Pinpoint::App Tags (__added__)
+* AWS::Pinpoint::Campaign Tags (__added__)
+* AWS::Pinpoint::Segment Tags (__added__)
+
+## Property Type Changes
+
+* AWS::Budgets::Budget.BudgetData PlannedBudgetLimits (__added__)
+
+
+# CloudFormation Resource Specification v6.2.0
+
+## New Resource Types
+
+* AWS::EC2::VPCEndpointService
+* AWS::Glue::Workflow
+* AWS::SageMaker::CodeRepository
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker HostInstanceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DocDB::DBCluster EnableCloudwatchLogsExports (__added__)
+* AWS::Glue::DevEndpoint Arguments (__added__)
+* AWS::Glue::DevEndpoint GlueVersion (__added__)
+* AWS::Glue::DevEndpoint NumberOfWorkers (__added__)
+* AWS::Glue::DevEndpoint WorkerType (__added__)
+* AWS::Glue::Job NotificationProperty (__added__)
+* AWS::Glue::Job Timeout (__added__)
+* AWS::Glue::Trigger StartOnCreation (__added__)
+* AWS::Glue::Trigger WorkflowName (__added__)
+* AWS::ServiceDiscovery::Instance InstanceAttributes.PrimitiveType (__changed__)
+  * Old: Map
+  * New: Json
+
+## Property Type Changes
+
+* AWS::Glue::Job.NotificationProperty (__added__)
+* AWS::Glue::Trigger.NotificationProperty (__added__)
+* AWS::Glue::Trigger.Action CrawlerName (__added__)
+* AWS::Glue::Trigger.Action NotificationProperty (__added__)
+* AWS::Glue::Trigger.Action Timeout (__added__)
+* AWS::Glue::Trigger.Condition CrawlState (__added__)
+* AWS::Glue::Trigger.Condition CrawlerName (__added__)
+
+
 # CloudFormation Resource Specification v6.1.0
 
 ## New Resource Types

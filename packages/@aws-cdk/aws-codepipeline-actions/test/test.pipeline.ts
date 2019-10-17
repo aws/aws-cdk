@@ -789,7 +789,18 @@ export = {
               "Type": "S3",
               "Location": "replicationstackeplicationbucket2464cd5c33b386483b66",
               "EncryptionKey": {
-                "Id": "alias/replicationstacktencryptionalias043cb2f8ceac9da9c07c",
+                "Id": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":kms:us-west-1:123456789012:alias/ionstacktencryptionalias043cb2f8ceac9da9c07c",
+                    ],
+                  ],
+                },
                 "Type": "KMS"
               },
             },
@@ -873,7 +884,6 @@ export = {
                 actionName: 'CodeBuild',
                 project,
                 input: sourceOutput,
-                outputs: [new codepipeline.Artifact()],
               }),
             ],
           },
@@ -922,9 +932,6 @@ export = {
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*",
               ],
               "Effect": "Allow",
               "Resource": [
@@ -958,9 +965,6 @@ export = {
               "Action": [
                 "kms:Decrypt",
                 "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
               ],
               "Effect": "Allow",
               "Resource": "*",

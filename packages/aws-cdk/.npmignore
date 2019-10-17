@@ -13,5 +13,6 @@ dist
 
 !lib/init-templates/*/*/tsconfig.json
 !test/integ/cli/**/*.js
+!test/integ/run-wrappers/dist
 
 *.tsbuildinfo

@@ -64,8 +64,8 @@ test('assembly with multiple stacks', () => {
 });
 
 test('fails for invalid artifact type', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-artifact-type')))
-    .toThrow('unsupported artifact type: who:am:i');
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'invalid-artifact-type'));
+  expect(assembly.tryGetArtifact('MyArt')).toBeUndefined();
 });
 
 test('fails for invalid environment format', () => {
@@ -88,6 +88,13 @@ test('assets', () => {
   expect(assembly.stacks[0].assets).toMatchSnapshot();
 });
 
+test('can-read-0.36.0', () => {
+  // WHEN
+  new CloudAssembly(path.join(FIXTURES, 'single-stack-0.36'));
+  // THEN: no eexception
+  expect(true).toBeTruthy();
+});
+
 test('dependencies', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'depends'));
   expect(assembly.stacks).toHaveLength(4);
@@ -106,6 +113,7 @@ test('fails for invalid dependencies', () => {
 
 test('verifyManifestVersion', () => {
   verifyManifestVersion(CLOUD_ASSEMBLY_VERSION);
-  expect(() => verifyManifestVersion('0.31.0')).toThrow(`CDK CLI can only be used with apps created by CDK >= ${CLOUD_ASSEMBLY_VERSION}`);
-  expect(() => verifyManifestVersion('99.99.99')).toThrow(`CDK CLI >= 99.99.99 is required to interact with this app`);
+  // tslint:disable-next-line:max-line-length
+  expect(() => verifyManifestVersion('0.31.0')).toThrow(`The CDK CLI you are using requires your app to use CDK modules with version >= ${CLOUD_ASSEMBLY_VERSION}`);
+  expect(() => verifyManifestVersion('99.99.99')).toThrow(`A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app`);
 });

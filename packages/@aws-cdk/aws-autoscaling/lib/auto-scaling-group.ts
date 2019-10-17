@@ -5,7 +5,10 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag, Token, withResolved } from '@aws-cdk/core';
+import {
+  CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
+  Tag, Token, withResolved
+} from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -414,6 +417,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
 
