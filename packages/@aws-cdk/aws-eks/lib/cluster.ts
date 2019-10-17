@@ -1005,9 +1005,6 @@ export enum OperatingSystem {
 
 export type WindowsVariant = OperatingSystem.WINDOWS_SERVER_2019_CORE | OperatingSystem.WINDOWS_SERVER_2019_FULL;
 
-const isWindowsVariant = (operatingSystem: OperatingSystem): operatingSystem is WindowsVariant =>
-  [OperatingSystem.WINDOWS_SERVER_2019_CORE, OperatingSystem.WINDOWS_SERVER_2019_FULL].includes(operatingSystem);
-
 /**
  * Whether the worker nodes should support GPU or just standard instances
  */
