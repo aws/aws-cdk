@@ -1,7 +1,7 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import s3_assets = require('@aws-cdk/aws-s3-assets');
 import sns = require('@aws-cdk/aws-sns');
-import { App, CfnParameter, CfnResource, Construct, Resource, Stack } from '@aws-cdk/core';
+import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
