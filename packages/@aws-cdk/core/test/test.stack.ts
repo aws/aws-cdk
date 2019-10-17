@@ -661,18 +661,18 @@ export = {
 
     // WHEN
     stack.addDockerImageAsset({
-      id: 'asset-id',
       sourceHash: 'source-hash',
-      directoryName: 'directory-name'
+      directoryName: 'directory-name',
+      repositoryName: 'repository-name'
     });
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
 
-    test.equal(assetMetadata && assetMetadata.data.id, 'asset-id');
     test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
     test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
     test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
+    test.equal(assetMetadata && assetMetadata.data.repositoryName, 'repository-name');
 
     test.deepEqual(toCloudFormation(stack), {
       Parameters: {

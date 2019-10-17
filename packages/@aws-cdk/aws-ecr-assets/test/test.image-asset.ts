@@ -29,7 +29,7 @@ export = {
     test.done();
   },
 
-  'node unique id is passed as asset id'(test: Test) {
+  'repository name is derived from node unique id'(test: Test) {
     // GIVEN
     const stack = new Stack();
     class CoolConstruct extends Resource {
@@ -46,7 +46,7 @@ export = {
 
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.id, 'CoolConstructImage78AB38FC');
+    test.deepEqual(assetMetadata && assetMetadata.data.repositoryName, 'cdk/coolconstructimage78ab38fc');
     test.done();
   },
 

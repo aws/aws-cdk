@@ -776,7 +776,6 @@ export = {
 
     // WHEN
     const location = nested.addDockerImageAsset({
-      id: 'id',
       directoryName: 'my-image',
       dockerBuildArgs: { key: 'value', boom: 'bam' },
       dockerBuildTarget: 'buildTarget',

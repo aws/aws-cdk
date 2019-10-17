@@ -532,7 +532,7 @@ export class Stack extends Construct implements ITaggable {
       params = new DockerImageAssetParameters(this.assetParameters, asset.sourceHash);
 
       const metadata: cxapi.ContainerImageAssetMetadataEntry = {
-        id: asset.id,
+        id: asset.sourceHash,
         packaging: 'container-image',
         path: asset.directoryName,
         sourceHash: asset.sourceHash,

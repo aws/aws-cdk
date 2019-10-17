@@ -24,14 +24,6 @@ export interface FileAssetSource {
 
 export interface DockerImageAssetSource {
   /**
-   * The id for the image.
-   *
-   * This will be used to construct the repository name if `repositoryName`
-   * is not specified.
-   */
-  readonly id: string;
-
-  /**
    * The hash of the contents of the docker build context. This hash is used
    * throughout the system to identify this image and avoid duplicate work
    * in case the source did not change.
