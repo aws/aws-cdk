@@ -6,6 +6,7 @@ scope=""
 up=""
 down=""
 skipapi=false
+skipclean=false
 runtarget="build+test"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
@@ -40,6 +41,9 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-api-check|--skip-api-checks)
             skipapi=true
+            ;;
+        --skip-clean)
+            skipclean=true
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -79,11 +83,19 @@ export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 export MERKLE_BUILD_CACHE=$(mktemp -d)
 trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
+if [ "$skipclean" = false ]; then
+    echo "============================================================================================="
+    echo "removing stale files..."
+    /bin/bash scripts/clean-stale-files.sh
+fi
+
 echo "============================================================================================="
 echo "building..."
 time lerna run $bail --stream $runtarget $scope $up $down || fail
 
 if [ "$skipapi" = false ]; then
+    echo "============================================================================================="
+    echo "running api checks..."
     /bin/bash scripts/check-api-compatibility.sh $scope $up $down
 fi
 
