@@ -106,7 +106,6 @@ This list describes only the minimal set of requirements from this feature. Afte
     3. ***Metadata -*** Constructs will expose metadata which will include an array of objects associated with the construct.
         1. **Location** - The full path of the location where the construct is defined. This will support use cases where the construct-tree nodes can support navigability back to the declaration in the IDE itself.
         2. ***Properties*** - Constructs will opt into the set of properties, and these will be exposed. Higher level constructs (L2 and L3) will expose properties and values of the resources they contain and not necessarily enumerate every property that’s available for a resource. This will especially be useful for constructs that are opinionated and set defaults on behalf of developers. Low level constructs (L1) will expose all properties that are configured.
-        3. ***Errors/Warnings*** - Errors and warnings that are produced during synthesis indicating validation failures, deprecation notices, guidance, etc will be included in the tree. These are emitted at the construct level although the message may point towards a specific property. The construct tree should be complete and include validation failures for all resources in the CDK application rather than just just fail on the first error.
     4. **Assets** - Assets information will be included in the construct tree. Assets represent actions that the CDK *will* take ahead of stack deployments (i.e. S3 assets are zipped and uploaded directly, Docker images are uploaded to ECR). The asset metadata in the tree is the S3 key that an asset *would* have
 3. **Local** - The construct tree is produced at synthesis time. Connectivity to AWS and CloudFormation should not be required to produce a tree view of a CDK application.
 
@@ -122,21 +121,21 @@ The construct tree will be a list of paths that are indexed into a map of constr
 
 ### Construct properties
 
-|Property   |Type             |Required     |Source     | Description  |
-|---        |---              |---          |---        | ---          |
-|path       |string           |Required     |TODO       | full, absolute path of the construct within the tree |
-|children   |Array<Path>      |Not Required |TODO       | All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
-|metadata   |Array<Metadata>  |Not Required |TODO       | Metadata describing all constructs/resources that are encapsulated by the construct  |
+|Property   |Type             |Required     |Source                     | Description  |
+|---        |---              |---          |---                        | ---          |
+|path       |string           |Required     |`construct.node.path`      | Full, absolute path of the construct within the tree |
+|children   |Array<Path>      |Not Required |`construct.node.children`  | All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
+|metadata   |Array<Metadata>  |Not Required |`construct.node.metadata`  | Metadata describing all constructs/resources that are encapsulated by the construct  |
 
 ### Metadata Properties
 
 The following metadata properties will be included by the construct that produces the `tree.json` output.
 
-|Property       |Type             |Required     |Source | Description    |
-|---            |---              |---          |---    | ---            |
-|sourceLocation |string           |Required     |TODO   | location in source code where the construct is defined |
-|description    |string           |Not Required |TODO   | description of the construct |
-|properties     |Array<Metadata>  |Not Required |TODO   | constructs can fill in arbitrary metadata such as configuration. CloudFormation agnostic. CFN constructs will include the properties in `this.toCloudFormation()` |
+|Property       |Type             |Required     | Description    |
+|---            |---              |---          | ---            |
+|sourceLocation |string           |Required     | location in source code where the construct is defined |
+|description    |string           |Not Required | description of the construct |
+|properties     |Array<Metadata>  |Not Required | constructs can fill in arbitrary metadata such as configuration. CloudFormation agnostic. CFN constructs will include the properties in `this.toCloudFormation()` |
 
 **TODO** - add detail and a more concrete walkthrough with samples of all the attributes referenced in construct and metadata properties.
 
@@ -315,4 +314,4 @@ With a construct tree model in place and construct tree being published as a `.j
 
 **Navigability** include the location in code where the construct is defined. This would start to pave the way towards building tooling and extensions that IDE's can leverage.
 
-**Errors/Warnings** constructs can report errors/warnings as metadata. Surfacing this information through tooling would be helpful in resolving problems when constructing applications with the CDK.
+**Errors/Warnings** - Errors and warnings that are produced during synthesis indicating validation failures, deprecation notices, guidance, etc will be included in the tree. These are emitted at the construct level although the message may point towards a specific property. The construct tree should be complete and include failures for all resources in the CDK application rather than just just fail on the first error.
