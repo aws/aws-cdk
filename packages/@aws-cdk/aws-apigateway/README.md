@@ -518,6 +518,9 @@ const subtree = resource.addResource('subtree', {
 This means that all resources under `subtree` (inclusive) will have a preflight
 OPTIONS added to them.
 
+See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
+features which are not yet supported.
+
 ----
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
