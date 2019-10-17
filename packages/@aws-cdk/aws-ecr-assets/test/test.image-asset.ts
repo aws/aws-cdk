@@ -304,5 +304,5 @@ export = {
     }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
-  },
+  }
 };
