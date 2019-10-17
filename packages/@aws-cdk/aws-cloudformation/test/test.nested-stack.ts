@@ -803,5 +803,30 @@ export = {
     }));
 
     test.done();
+  },
+
+  'metadata defined in nested stacks is reported at the parent stack level in the cloud assembly'(test: Test) {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const parent = new Stack(app, 'parent');
+    const child = new Stack(parent, 'child');
+    const nested = new NestedStack(child, 'nested');
+    const resource = new CfnResource(nested, 'resource', { type: 'foo' });
+
+    // WHEN
+    resource.node.addMetadata('foo', 'bar');
+
+    // THEN: the first non-nested stack records the assembly metadata
+    const asm = app.synth();
+    test.deepEqual(asm.stacks.length, 2); // only one stack is defined as an artifact
+    test.deepEqual(asm.getStack(parent.stackName).findMetadataByType('foo'), []);
+    test.deepEqual(asm.getStack(child.stackName).findMetadataByType('foo'), [
+      {
+        path: '/parent/child/nested/resource',
+        type: 'foo',
+        data: 'bar'
+      }
+    ]);
+    test.done();
   }
 };
