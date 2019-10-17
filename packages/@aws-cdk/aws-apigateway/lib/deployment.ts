@@ -121,20 +121,13 @@ class LatestDeploymentResource extends CfnDeployment {
    * add via `addToLogicalId`.
    */
   protected prepare() {
+    const stack = Stack.of(this);
+
     // if hash components were added to the deployment, we use them to calculate
     // a logical ID for the deployment resource.
     if (this.hashComponents.length > 0) {
       const md5 = crypto.createHash('md5');
-      this.hashComponents
-        .map(c => {
-          return Tokenization.resolve(c, {
-            scope: this,
-            resolver: new DefaultTokenResolver(new StringConcat()),
-            preparing: true,
-          });
-        })
-        .forEach(c => md5.update(JSON.stringify(c)));
-
+      this.hashComponents.map(x => stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
       this.overrideLogicalId(this.originalLogicalId + md5.digest("hex"));
     }
     super.prepare();
