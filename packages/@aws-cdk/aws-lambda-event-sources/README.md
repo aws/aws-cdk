@@ -157,7 +157,7 @@ const stream = new kinesis.Stream(this, 'MyStream');
 
 myFunction.addEventSource(new KinesisEventSource(queue, {
   batchSize: 100, // default
-  startingPosition: lambda.StartingPosition.TrimHorizon
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON
 });
 ```
 
