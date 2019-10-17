@@ -6,7 +6,7 @@
         "Name": "cors-api-test"
       }
     },
-    "corsapitestDeployment2BF1633Af56aad239353437f465d2090f2edab0c": {
+    "corsapitestDeployment2BF1633A197b7a426736ab40a59d8a41c2d3d50d": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -29,7 +29,7 @@
           "Ref": "corsapitest8682546E"
         },
         "DeploymentId": {
-          "Ref": "corsapitestDeployment2BF1633Af56aad239353437f465d2090f2edab0c"
+          "Ref": "corsapitestDeployment2BF1633A197b7a426736ab40a59d8a41c2d3d50d"
         },
         "StageName": "prod"
       }

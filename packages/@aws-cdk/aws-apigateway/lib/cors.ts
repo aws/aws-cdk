@@ -10,10 +10,13 @@ export interface CorsOptions {
   readonly statusCode?: number;
 
   /**
-   * The Access-Control-Allow-Origin response header indicates whether the
-   * response can be shared with requesting code from the given origin.
+   * Specifies the list of origins that are allowed to make requests to this
+   * resource. If you wish to allow all origins, specify `Cors.ALL_ORIGINS` or
+   * `[ * ]`.
    *
-   * Specifies the list of origins that are allowed to make requests to this resource.
+   * Responses will include the `Access-Control-Allow-Origin` response header.
+   * If `Cors.ALL_ORIGINS` is specified, the `Vary: Origin` response header will
+   * also be included.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
    */
@@ -99,7 +102,15 @@ export class Cors {
   public static readonly ALL_METHODS = ALL_METHODS;
 
   /**
+   * All origins.
+   */
+  public static readonly ALL_ORIGINS = [ '*' ];
+
+  /**
    * The set of default headers allowed for CORS and useful for API Gateway.
    */
   public static readonly DEFAULT_HEADERS = [ 'Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent' ];
+
+  // utility class
+  private constructor() { }
 }
