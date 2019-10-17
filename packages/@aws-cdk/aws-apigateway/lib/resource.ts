@@ -105,6 +105,8 @@ export interface IResource extends IResourceBase {
    * own.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+   * @param options CORS options
+   * @returns a `Method` object
    */
   addCorsPreflight(options: CorsOptions): Method;
 }
