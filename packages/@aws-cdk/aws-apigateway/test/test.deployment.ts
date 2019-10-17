@@ -183,12 +183,12 @@ export = {
     const stack1 = new Stack();
     const stack2 = new Stack();
     const handler1 = new lambda.Function(stack1, 'handler1', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler'
     });
     const handler2 = new lambda.Function(stack2, 'handler2', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler'
     });
