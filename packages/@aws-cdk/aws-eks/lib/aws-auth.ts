@@ -104,7 +104,7 @@ export class AwsAuth extends Construct {
   private synthesizeMapUsers() {
     return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
-        userarn: this.stack.formatArn({ service: 'iam', resource: 'user', resourceName: m.user.userName }),
+        userarn: m.user.userArn,
         username: m.mapping.username,
         groups: m.mapping.groups
       })))
