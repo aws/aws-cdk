@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-secretsmanager",
-  "version": "1.12.0",
+  "version": "1.13.1",
   "description": "The CDK Construct Library for AWS::SecretsManager",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,25 +64,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.12.0",
+    "@aws-cdk/assert": "1.13.1",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "1.12.0",
-    "@aws-cdk/aws-iam": "1.12.0",
-    "@aws-cdk/aws-kms": "1.12.0",
-    "@aws-cdk/aws-lambda": "1.12.0",
-    "@aws-cdk/core": "1.12.0"
+    "@aws-cdk/aws-ec2": "1.13.1",
+    "@aws-cdk/aws-iam": "1.13.1",
+    "@aws-cdk/aws-kms": "1.13.1",
+    "@aws-cdk/aws-lambda": "1.13.1",
+    "@aws-cdk/core": "1.13.1"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "1.12.0",
-    "@aws-cdk/aws-iam": "1.12.0",
-    "@aws-cdk/aws-kms": "1.12.0",
-    "@aws-cdk/aws-lambda": "1.12.0",
-    "@aws-cdk/core": "1.12.0"
+    "@aws-cdk/aws-ec2": "1.13.1",
+    "@aws-cdk/aws-iam": "1.13.1",
+    "@aws-cdk/aws-kms": "1.13.1",
+    "@aws-cdk/aws-lambda": "1.13.1",
+    "@aws-cdk/core": "1.13.1"
   },
   "engines": {
     "node": ">= 10.3.0"
