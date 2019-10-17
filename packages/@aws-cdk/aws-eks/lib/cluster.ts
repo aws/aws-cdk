@@ -199,14 +199,6 @@ export interface ClusterProps {
   readonly defaultCapacityInstance?: ec2.InstanceType;
 
   /**
-   * The operating system to use for the default capacity. This will only be taken
-   * into account if `defaultCapacity` is > 0.
-   *
-   * @default OperatingSystem.AmazonLinux2
-   */
-  readonly defaultCapacityOperatingSystem?: OperatingSystem;
-
-  /**
    * Determines whether a CloudFormation output with the name of the cluster
    * will be synthesized.
    *
@@ -430,11 +422,7 @@ export class Cluster extends Resource implements ICluster {
     const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
     if (desiredCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      const operatingSystem = props.defaultCapacityOperatingSystem || OperatingSystem.AMAZON_LINUX_2;
-
-      this.defaultCapacity = isWindowsVariant(operatingSystem) ?
-        this.addWindowsCapacity('DefaultCapacity', {instanceType, desiredCapacity, variant: operatingSystem}) :
-        this.addAmazonLinuxCapacity('DefaultCapacity', {instanceType, desiredCapacity});
+      this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
