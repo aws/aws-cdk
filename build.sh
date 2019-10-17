@@ -23,8 +23,14 @@ while [[ "${1:-}" != "" ]]; do
             runtarget="build"
             ;;
         --scope)
-            scope="--scope $2"
-            shift
+            target="${2:-}"
+            if [ -z "$target" ] || [[ $target =~ ^--* ]]; then 
+                scriptdir=$(cd $(dirname $0) && pwd)
+                target=$(${scriptdir}/scripts/current-scope)
+            else
+                shift
+            fi
+            scope="--scope $target"
             ;;
         --up)
             up="--include-filtered-dependencies"
