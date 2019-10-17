@@ -1,6 +1,7 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { App, Lazy, Stack } from '@aws-cdk/core';
+import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ASSET_METADATA } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
@@ -28,6 +29,27 @@ export = {
     test.done();
   },
 
+  'node unique id is passed as asset id'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    class CoolConstruct extends Resource {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+      }
+    }
+    const coolConstruct = new CoolConstruct(stack, 'CoolConstruct');
+
+    // WHEN
+    new DockerImageAsset(coolConstruct, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
+    test.deepEqual(assetMetadata && assetMetadata.data.id, 'CoolConstructImage78AB38FC');
+    test.done();
+  },
+
   'with build args'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -41,7 +63,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
     test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
     test.done();
   },
@@ -60,7 +82,7 @@ export = {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
     test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
     test.done();
   },
