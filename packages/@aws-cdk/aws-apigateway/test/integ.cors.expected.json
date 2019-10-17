@@ -6,7 +6,7 @@
         "Name": "cors-api-test"
       }
     },
-    "corsapitestDeployment2BF1633Ab835c2bfdc07db9c80c58bb34e202728": {
+    "corsapitestDeployment2BF1633Af56aad239353437f465d2090f2edab0c": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -29,7 +29,7 @@
           "Ref": "corsapitest8682546E"
         },
         "DeploymentId": {
-          "Ref": "corsapitestDeployment2BF1633Ab835c2bfdc07db9c80c58bb34e202728"
+          "Ref": "corsapitestDeployment2BF1633Af56aad239353437f465d2090f2edab0c"
         },
         "StageName": "prod"
       }
@@ -465,6 +465,7 @@
               "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://google.com'",
+                "method.response.header.Vary": "'Origin'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
               },
               "ResponseTemplates": {
@@ -483,6 +484,7 @@
             "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Headers": true,
               "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Vary": true,
               "method.response.header.Access-Control-Allow-Methods": true
             },
             "StatusCode": "204"
