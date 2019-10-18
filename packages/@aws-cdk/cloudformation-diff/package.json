@@ -36,11 +36,10 @@
     "table": "^5.4.6"
   },
   "devDependencies": {
-    "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-build-tools": "^1.13.1",
     "fast-check": "^1.17.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "^1.13.1"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

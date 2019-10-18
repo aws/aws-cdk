@@ -65,11 +65,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.13.1",
     "aws-sdk": "^2.550.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
+    "cdk-build-tools": "^1.13.1",
+    "cdk-integ-tools": "^1.13.1",
+    "cfn2ts": "^1.13.1",
     "colors": "^1.4.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "^1.13.1"
   },
   "dependencies": {
     "@aws-cdk/aws-events": "1.13.1",

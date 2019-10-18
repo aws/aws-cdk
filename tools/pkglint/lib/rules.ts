@@ -581,7 +581,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-build-tools',
-      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-build-tools'))}`);
+      `^${pkg.json.version}`);
   }
 }
 
@@ -776,7 +776,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
-      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-integ-tools'))}`);
+      `^${pkg.json.version}`);
   }
 }
 
@@ -786,7 +786,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../'))}`);
+    expectDevDependency(this.name, pkg, 'pkglint', `^${pkg.json.version}`);
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({

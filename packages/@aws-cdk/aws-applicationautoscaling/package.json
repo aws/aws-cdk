@@ -64,10 +64,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.13.1",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
+    "cdk-build-tools": "^1.13.1",
+    "cfn2ts": "^1.13.1",
     "fast-check": "^1.17.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "^1.13.1"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling-common": "1.13.1",

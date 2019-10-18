@@ -34,6 +34,6 @@
     "build+test+package": "npm run build+test && npm run package"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 10.3.0"
   }
 }
