@@ -47,4 +47,4 @@ export const getCertificateRegion = (cert: ICertificate): string | undefined => 
   }
 
   return Stack.of(stack).region;
-}
+};
