@@ -674,38 +674,6 @@ export = {
     test.deepEqual(asm.getStack(child.stackName).findMetadataByType('foo'), [
       { path: '/parent/child', type: 'foo', data: 'bar' }
     ]);
-
-    test.done();
-  },
-
-  'addDockerImageAsset correctly sets metadata and creates a parameter'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    stack.addDockerImageAsset({
-      sourceHash: 'source-hash',
-      directoryName: 'directory-name',
-      repositoryName: 'repository-name'
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxapi.ASSET_METADATA);
-
-    test.equal(assetMetadata && assetMetadata.data.packaging, 'container-image');
-    test.equal(assetMetadata && assetMetadata.data.path, 'directory-name');
-    test.equal(assetMetadata && assetMetadata.data.sourceHash, 'source-hash');
-    test.equal(assetMetadata && assetMetadata.data.repositoryName, 'repository-name');
-
-    test.deepEqual(toCloudFormation(stack), {
-      Parameters: {
-        AssetParameterssourcehashImageName3B572B12: {
-          Type: 'String',
-          Description: 'ECR repository name and tag for asset "source-hash"'
-        }
-      }
-    });
-
     test.done();
   }
 };
