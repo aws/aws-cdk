@@ -1199,4 +1199,123 @@ export = {
 
     test.done();
   },
+
+  "properly builds a stack with a public VPC without NAT Gateways"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyPublicVpc', {
+      natGateways: 0,
+      subnetConfiguration: [
+        { cidrMask: 24, name: "ingress", subnetType: ec2.SubnetType.PUBLIC }
+      ]
+    });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    cluster.addCapacity("DefaultAutoScalingGroup", {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      associatePublicIpAddress: true,
+      vpcSubnets: {
+        onePerAz: true,
+        subnetType: ec2.SubnetType.PUBLIC
+      },
+    });
+
+    expect(stack).to(haveResource("AWS::ECS::Cluster"));
+
+    expect(stack).to(haveResource("AWS::EC2::VPC", {
+      CidrBlock: '10.0.0.0/16',
+      EnableDnsHostnames: true,
+      EnableDnsSupport: true,
+      InstanceTenancy: ec2.DefaultInstanceTenancy.DEFAULT,
+      Tags: [
+        {
+          Key: "Name",
+          Value: "MyPublicVpc"
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      ImageId: {
+        Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      InstanceType: "t2.micro",
+      AssociatePublicIpAddress: true,
+      IamInstanceProfile: {
+        Ref: "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
+      },
+      SecurityGroups: [
+        {
+          "Fn::GetAtt": [
+            "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
+            "GroupId"
+          ]
+        }
+      ],
+      UserData: {
+        "Fn::Base64": {
+          "Fn::Join": [
+            "",
+            [
+              "#!/bin/bash\necho ECS_CLUSTER=",
+              {
+                Ref: "EcsCluster97242B84"
+              },
+              // tslint:disable-next-line:max-line-length
+              " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+            ]
+          ]
+        }
+      }
+    }));
+
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+      MaxSize: "1",
+      MinSize: "1",
+      DesiredCapacity: "1",
+      LaunchConfigurationName: {
+        Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
+      },
+      Tags: [
+        {
+          Key: "Name",
+          PropagateAtLaunch: true,
+          Value: "EcsCluster/DefaultAutoScalingGroup"
+        }
+      ],
+      VPCZoneIdentifier: [
+        {
+          Ref: "MyPublicVpcingressSubnet1Subnet9191044C"
+        },
+        {
+          Ref: "MyPublicVpcingressSubnet2SubnetD2F2E034"
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource("AWS::EC2::SecurityGroup", {
+      GroupDescription: "EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow all outbound traffic by default",
+          IpProtocol: "-1"
+        }
+      ],
+      Tags: [
+        {
+          Key: "Name",
+          Value: "EcsCluster/DefaultAutoScalingGroup"
+        }
+      ],
+      VpcId: {
+        Ref: "MyPublicVpcA2BF6CDA"
+      }
+    }));
+
+    // THEN
+    test.done();
+  },
 };
