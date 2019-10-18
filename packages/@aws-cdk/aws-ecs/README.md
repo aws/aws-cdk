@@ -37,9 +37,7 @@ cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   desiredCapacity: 3,
 });
 
-const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
-  compatibility: ecs.Compatibility.EC2,
-});
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 
 taskDefinition.addContainer('DefaultContainer', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
