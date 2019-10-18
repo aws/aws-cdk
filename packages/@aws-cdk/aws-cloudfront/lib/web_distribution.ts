@@ -1,7 +1,7 @@
+import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
-import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import { CfnDistribution } from './cloudfront.generated';
 import { IDistribution } from './distribution';
 
