@@ -1,6 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import * as lambda from '@aws-cdk/aws-lambda';
 import certificatemanager = require('@aws-cdk/aws-certificatemanager');
+import * as lambda from '@aws-cdk/aws-lambda';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -691,7 +691,7 @@ export = {
             aliasConfiguration: {acmCertRef: 'test', names: ['ftp.example.com']},
             viewerCertificate: ViewerCertificate.cloudFrontDefaultCertificate('example.com', 'www.example.com'),
           });
-        }, /You cannot set both aliasConfiguration and viewerCertificate properties/)
+        }, /You cannot set both aliasConfiguration and viewerCertificate properties/);
 
         test.done();
       },
@@ -711,7 +711,7 @@ export = {
               sslMethod: SSLMethod.VIP
             }),
           });
-        }, /TLSv1.1_2016 is not compabtible with sslMethod vip./)
+        }, /TLSv1.1_2016 is not compabtible with sslMethod vip./);
 
         test.done();
       },
