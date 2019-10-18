@@ -715,6 +715,26 @@ export = {
 
         test.done();
       },
+      'throws if acmCertificate explicitly not in us-east-1'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        const certificate = certificatemanager.Certificate.fromCertificateArn(
+          stack, 'cert', 'arn:aws:acm:eu-west-3:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+        );
+
+        test.throws(() => {
+          new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+            originConfigs: [{
+              s3OriginSource: { s3BucketSource: sourceBucket },
+              behaviors: [{ isDefaultBehavior: true }]
+            }],
+            viewerCertificate: ViewerCertificate.acmCertificate({ certificate }),
+          });
+        }, /acmCertificate certficate must be in the us-east-1 region, got eu-west-3/);
+
+        test.done();
+      },
     }
   },
 

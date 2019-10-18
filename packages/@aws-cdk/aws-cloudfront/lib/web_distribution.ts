@@ -4,6 +4,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { CfnDistribution } from './cloudfront.generated';
 import { IDistribution } from './distribution';
+import { Certificate } from 'crypto';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
@@ -444,6 +445,12 @@ export class ViewerCertificate {
        sslMethod: sslSupportMethod = SSLMethod.SNI,
        securityPolicy: minimumProtocolVersion
     } = options;
+
+    const certificateRegion = certificatemanager.getCertificateRegion(certificate);
+
+    if (certificateRegion && !cdk.Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
+      throw new Error(`acmCertificate certficate must be in the us-east-1 region, got ${certificateRegion}`);
+    }
 
     return new ViewerCertificate({
       acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion
