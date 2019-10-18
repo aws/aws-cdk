@@ -57,7 +57,8 @@ export = {
           },
           Image: "test",
         }
-      ]
+      ],
+      Family: "ServiceQueueProcessingTaskDef83DB34F1"
     }));
 
     test.done();
@@ -86,7 +87,8 @@ export = {
         TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
       },
       queue,
-      maxScalingCapacity: 5
+      maxScalingCapacity: 5,
+      family: "fargate-task-family"
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
@@ -126,7 +128,8 @@ export = {
           ],
           Image: "test",
         }
-      ]
+      ],
+      Family: "fargate-task-family"
     }));
 
     test.done();
