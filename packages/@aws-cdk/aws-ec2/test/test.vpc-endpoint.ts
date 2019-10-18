@@ -264,7 +264,16 @@ export = {
         GroupDescription: 'VpcNetwork/EcrDocker/SecurityGroup',
         VpcId: {
           Ref: 'VpcNetworkB258E83A'
-        }
+        },
+        SecurityGroupIngress: [
+          {
+            CidrIp: Vpc.DEFAULT_CIDR_RANGE,
+            Description: `from ${Vpc.DEFAULT_CIDR_RANGE}:${InterfaceVpcEndpointAwsService.ECR_DOCKER.port}`,
+            FromPort: InterfaceVpcEndpointAwsService.ECR_DOCKER.port,
+            IpProtocol: "tcp",
+            ToPort: InterfaceVpcEndpointAwsService.ECR_DOCKER.port
+          }
+        ]
       }));
 
       test.done();

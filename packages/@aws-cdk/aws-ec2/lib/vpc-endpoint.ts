@@ -366,7 +366,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     });
 
     if (props.vpc.vpcCidrBlock) {
-      securityGroup.addIngressRule(Peer.ipv4(props.vpc.vpcCidrBlock!), Port.tcp(props.service.port));
+      securityGroup.addIngressRule(Peer.ipv4(props.vpc.vpcCidrBlock), Port.tcp(props.service.port));
     }
 
     if (props.vpc.vpcIpv6CidrBlocks) {

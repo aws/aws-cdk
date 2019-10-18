@@ -44,6 +44,8 @@ export = nodeunit.testCase({
     // THEN
     test.deepEqual(result, {
       vpcId: 'vpc-1234567',
+      vpcCidrBlock: '10.0.0.0/16',
+      vpcIpv6CidrBlocks: undefined,
       availabilityZones: ['bermuda-triangle-1337'],
       isolatedSubnetIds: undefined,
       isolatedSubnetNames: undefined,
@@ -128,6 +130,8 @@ export = nodeunit.testCase({
     // THEN
     test.deepEqual(result, {
       vpcId: 'vpc-1234567',
+      vpcCidrBlock: '10.0.0.0/16',
+      vpcIpv6CidrBlocks: undefined,
       availabilityZones: ['bermuda-triangle-1337'],
       isolatedSubnetIds: undefined,
       isolatedSubnetNames: undefined,
@@ -188,6 +192,8 @@ export = nodeunit.testCase({
     // THEN
     test.deepEqual(result, {
       vpcId: 'vpc-1234567',
+      vpcCidrBlock: '10.0.0.0/16',
+      vpcIpv6CidrBlocks: undefined,
       availabilityZones: ['bermuda-triangle-1337'],
       isolatedSubnetIds: undefined,
       isolatedSubnetNames: undefined,
@@ -214,10 +220,11 @@ interface VpcLookupOptions {
 
 function mockVpcLookup(test: nodeunit.Test, options: VpcLookupOptions) {
   const VpcId = 'vpc-1234567';
+  const CidrBlock = '10.0.0.0/16';
 
   AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
     test.deepEqual(params.Filters, [{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId }] });
+    return cb(null, { Vpcs: [{ VpcId, CidrBlock }] });
   });
 
   AWS.mock('EC2', 'describeSubnets', (params: aws.EC2.DescribeSubnetsRequest, cb: AwsCallback<aws.EC2.DescribeSubnetsResult>) => {

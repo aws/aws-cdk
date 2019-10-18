@@ -587,8 +587,8 @@
         ],
         "SecurityGroupIngress": [
           {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "from 0.0.0.0/0:443",
+            "CidrIp": "10.0.0.0/16",
+            "Description": "from 10.0.0.0/16:443",
             "FromPort": 443,
             "IpProtocol": "tcp",
             "ToPort": 443

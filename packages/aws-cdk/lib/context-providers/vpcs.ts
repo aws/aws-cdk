@@ -42,7 +42,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     const vpcId = vpc.VpcId!;
     debug(`Describing VPC ${vpcId}`);
 
-    const vpcIpv6CidrBlocks = vpc.Ipv6CidrBlockAssociationSet ? undefined :
+    const vpcIpv6CidrBlocks = !vpc.Ipv6CidrBlockAssociationSet ? undefined :
       vpc.Ipv6CidrBlockAssociationSet!.filter((block) => block.Ipv6CidrBlock)
         .map((block) => block.Ipv6CidrBlock!);
 

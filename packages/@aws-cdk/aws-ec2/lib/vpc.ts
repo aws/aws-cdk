@@ -62,11 +62,13 @@ export interface IVpc extends IResource {
 
   /**
    * The primary IPv4 CIDR block for the VPC.
+   * @attribute
    */
   readonly vpcCidrBlock?: string;
 
   /**
    * The IPv6 CIDR blocks associated with the VPC.
+   * @attribute
    */
   readonly vpcIpv6CidrBlocks?: string[];
 
@@ -860,7 +862,7 @@ export class Vpc extends VpcBase {
   /**
    * @attribute
    */
-  public readonly vpcCidrBlock: string;
+  public readonly vpcCidrBlock?: string;
 
   /**
    * @attribute
@@ -880,7 +882,7 @@ export class Vpc extends VpcBase {
   /**
    * @attribute
    */
-  public readonly vpcIpv6CidrBlocks: string[];
+  public readonly vpcIpv6CidrBlocks?: string[];
 
   /**
    * List of public subnets in this VPC
@@ -969,9 +971,12 @@ export class Vpc extends VpcBase {
 
     this.vpcDefaultNetworkAcl = this.resource.attrDefaultNetworkAcl;
     this.vpcCidrBlockAssociations = this.resource.attrCidrBlockAssociations;
-    this.vpcCidrBlock = this.resource.attrCidrBlock;
+    this.vpcCidrBlock = cidrBlock;
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
-    this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
+
+    // TODO: There is no way to provide an IPv6 CIDR Block given the current VpcProps
+    // This is not a breaking change since vpcIpv6CidrBlocks is optional
+    // this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
     this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
