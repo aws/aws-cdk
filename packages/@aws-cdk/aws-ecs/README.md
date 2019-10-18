@@ -37,11 +37,17 @@ cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   desiredCapacity: 3,
 });
 
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+
+taskDefinition.addContainer('DefaultContainer', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 512,
+});
+
 // Instantiate an Amazon ECS Service
 const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
-  memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskDefinition,
 });
 ```
 
