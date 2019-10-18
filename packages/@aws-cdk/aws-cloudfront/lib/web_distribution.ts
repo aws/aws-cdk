@@ -4,7 +4,6 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { CfnDistribution } from './cloudfront.generated';
 import { IDistribution } from './distribution';
-import { Certificate } from 'crypto';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
