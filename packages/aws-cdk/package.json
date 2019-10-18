@@ -37,7 +37,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/archiver": "^3.0.0",
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/glob": "^7.1.1",
     "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
