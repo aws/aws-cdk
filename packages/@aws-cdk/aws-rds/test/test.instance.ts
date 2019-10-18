@@ -499,9 +499,9 @@ export = {
       instanceEndpointAddress: 'address',
       instanceIdentifier: 'identifier',
       port: 3306,
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
         allowAllOutbound: false
-      }),
+      })],
     });
 
     // WHEN
@@ -562,7 +562,7 @@ export = {
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
-      securityGroup,
+      securityGroups: [securityGroup],
     });
 
     // THEN

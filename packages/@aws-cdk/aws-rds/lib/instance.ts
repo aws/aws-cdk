@@ -45,11 +45,6 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   readonly instanceEndpoint: Endpoint;
 
   /**
-   * The security group identifier of the instance.
-   */
-  readonly securityGroupId: string;
-
-  /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
@@ -76,9 +71,9 @@ export interface DatabaseInstanceAttributes {
   readonly port: number;
 
   /**
-   * The security group of the instance.
+   * The security groups of the instance.
    */
-  readonly securityGroup: ec2.ISecurityGroup;
+  readonly securityGroups: ec2.ISecurityGroup[];
 }
 
 /**
@@ -92,14 +87,13 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
+        securityGroups: attrs.securityGroups,
         defaultPort: this.defaultPort
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
-      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);
@@ -110,7 +104,6 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceEndpoint: Endpoint;
   public abstract readonly connections: ec2.Connections;
-  public abstract readonly securityGroupId: string;
 
   /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
@@ -310,7 +303,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - a new security group is created
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The port for the instance.
@@ -476,12 +469,11 @@ export interface DatabaseInstanceNewProps {
  * A new database instance.
  */
 abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IDatabaseInstance {
-  public readonly securityGroupId: string;
   public readonly vpc: ec2.IVpc;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
-  protected readonly securityGroup: ec2.ISecurityGroup;
+  protected readonly securityGroups: ec2.ISecurityGroup[];
 
   private readonly cloudwatchLogsExports?: string[];
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
@@ -500,11 +492,10 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       subnetIds
     });
 
-    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+    this.securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
       description: `Security group for ${this.node.id} database`,
       vpc: props.vpc
-    });
-    this.securityGroupId = this.securityGroup.securityGroupId;
+    })];
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
@@ -552,7 +543,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
-      vpcSecurityGroups: [this.securityGroupId]
+      vpcSecurityGroups: this.securityGroups.map(s => s.securityGroupId)
     };
   }
 
@@ -777,7 +768,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     }
 
     this.connections = new ec2.Connections({
-      securityGroups: [this.securityGroup],
+      securityGroups: this.securityGroups,
       defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
@@ -871,7 +862,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     }
 
     this.connections = new ec2.Connections({
-      securityGroups: [this.securityGroup],
+      securityGroups: this.securityGroups,
       defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
@@ -942,7 +933,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     });
 
     this.connections = new ec2.Connections({
-      securityGroups: [this.securityGroup],
+      securityGroups: this.securityGroups,
       defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
