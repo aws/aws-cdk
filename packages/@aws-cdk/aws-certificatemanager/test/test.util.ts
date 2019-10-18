@@ -81,6 +81,18 @@ export = {
       test.equals(getCertificateRegion(certificate), 'eu-west-3');
       test.done();
     },
+    'fromCertificateArn'(test: Test) {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'RegionStack', {env: {region: 'eu-west-1'}});
+
+      const certificate = Certificate.fromCertificateArn(
+        stack, 'TestCertificate', 'arn:aws:acm:us-east-2:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+        );
+
+      test.equals(getCertificateRegion(certificate), 'us-east-2');
+      test.done();
+    },
     'region agnostic stack'(test: Test) {
       // GIVEN
       const stack = new Stack();
