@@ -299,7 +299,7 @@ export interface DatabaseInstanceNewProps {
   readonly vpcPlacement?: ec2.SubnetSelection;
 
   /**
-   * The security group to assign to the DB instance.
+   * The security groups to assign to the DB instance.
    *
    * @default - a new security group is created
    */
