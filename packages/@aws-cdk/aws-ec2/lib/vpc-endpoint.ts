@@ -2,6 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
+import { Peer } from './peer';
 import { Port } from './port';
 import { SecurityGroup } from './security-group';
 import { allRouteTableIds } from './util';
@@ -363,6 +364,17 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const securityGroup = new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc
     });
+
+    if (props.vpc.vpcCidrBlock) {
+      securityGroup.addIngressRule(Peer.ipv4(props.vpc.vpcCidrBlock!), Port.tcp(props.service.port));
+    }
+
+    if (props.vpc.vpcIpv6CidrBlocks) {
+      props.vpc.vpcIpv6CidrBlocks!.forEach((block) => {
+        securityGroup.addIngressRule(Peer.ipv6(block), Port.tcp(props.service.port));
+      });
+    }
+
     this.securityGroupId = securityGroup.securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),

@@ -15,12 +15,12 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     const ec2 = await this.aws.ec2(account, region, Mode.ForReading);
 
-    const vpcId = await this.findVpc(ec2, args);
+    const vpc = await this.findVpc(ec2, args);
 
-    return await this.readVpcProps(ec2, vpcId);
+    return await this.readVpcProps(ec2, vpc);
   }
 
-  private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<string> {
+  private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<AWS.EC2.Vpc> {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
     const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
@@ -35,11 +35,16 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       throw new Error(`Found ${vpcs.length} VPCs matching ${JSON.stringify(args)}; please narrow the search criteria`);
     }
 
-    return vpcs[0].VpcId!;
+    return vpcs[0];
   }
 
-  private async readVpcProps(ec2: AWS.EC2, vpcId: string): Promise<cxapi.VpcContextResponse> {
+  private async readVpcProps(ec2: AWS.EC2, vpc: AWS.EC2.Vpc): Promise<cxapi.VpcContextResponse> {
+    const vpcId = vpc.VpcId!;
     debug(`Describing VPC ${vpcId}`);
+
+    const vpcIpv6CidrBlocks = vpc.Ipv6CidrBlockAssociationSet ? undefined :
+      vpc.Ipv6CidrBlockAssociationSet!.filter((block) => block.Ipv6CidrBlock)
+        .map((block) => block.Ipv6CidrBlock!);
 
     const filters = { Filters: [{ Name: 'vpc-id', Values: [vpcId] }] };
 
@@ -112,6 +117,8 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     return {
       vpcId,
+      vpcCidrBlock: vpc.CidrBlock,
+      vpcIpv6CidrBlocks,
       availabilityZones: grouped.azs,
       isolatedSubnetIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.subnetId))),
       isolatedSubnetNames: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.name ? [group.name] : [])),

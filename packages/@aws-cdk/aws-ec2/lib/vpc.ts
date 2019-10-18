@@ -61,6 +61,16 @@ export interface IVpc extends IResource {
   readonly vpcId: string;
 
   /**
+   * The primary IPv4 CIDR block for the VPC.
+   */
+  readonly vpcCidrBlock?: string;
+
+  /**
+   * The IPv6 CIDR blocks associated with the VPC.
+   */
+  readonly vpcIpv6CidrBlocks?: string[];
+
+  /**
    * List of public subnets in this VPC
    */
   readonly publicSubnets: ISubnet[];
@@ -84,6 +94,7 @@ export interface IVpc extends IResource {
    * Identifier for the VPN gateway
    */
   readonly vpnGatewayId?: string;
+
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
@@ -248,6 +259,16 @@ abstract class VpcBase extends Resource implements IVpc {
   public abstract readonly vpcId: string;
 
   /**
+   * The primary IPv4 CIDR block for the VPC.
+   */
+  public abstract readonly vpcCidrBlock?: string;
+
+  /**
+   * The IPv6 CIDR blocks associated with the VPC.
+   */
+  public abstract readonly vpcIpv6CidrBlocks?: string[];
+
+  /**
    * List of public subnets in this VPC
    */
   public abstract readonly publicSubnets: ISubnet[];
@@ -394,6 +415,16 @@ export interface VpcAttributes {
    * VPC's identifier
    */
   readonly vpcId: string;
+
+  /**
+   * The primary IPv4 CIDR block for the VPC.
+   */
+  readonly vpcCidrBlock?: string;
+
+  /**
+   * The IPv6 CIDR blocks associated with the VPC.
+   */
+  readonly vpcIpv6CidrBlocks?: string[];
 
   /**
    * List of availability zones for the subnets in this VPC.
@@ -1419,6 +1450,8 @@ function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
 
 class ImportedVpc extends VpcBase {
   public readonly vpcId: string;
+  public readonly vpcCidrBlock?: string;
+  public readonly vpcIpv6CidrBlocks?: string[];
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
@@ -1430,6 +1463,8 @@ class ImportedVpc extends VpcBase {
     super(scope, id);
 
     this.vpcId = props.vpcId;
+    this.vpcCidrBlock = props.vpcCidrBlock;
+    this.vpcIpv6CidrBlocks = props.vpcIpv6CidrBlocks;
     this.availabilityZones = props.availabilityZones;
     this.vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;

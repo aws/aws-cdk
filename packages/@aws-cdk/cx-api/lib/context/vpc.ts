@@ -106,4 +106,15 @@ export interface VpcContextResponse {
    * The VPN gateway ID
    */
   readonly vpnGatewayId?: string;
+
+  /**
+   * The primary IPv4 CIDR block for the VPC.
+   */
+  readonly vpcCidrBlock?: string;
+
+  /**
+   * The IPv6 CIDR blocks associated with the VPC.
+   */
+  readonly vpcIpv6CidrBlocks?: string[];
+
 }
