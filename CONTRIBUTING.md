@@ -193,7 +193,6 @@ fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
 The build process is divided into stages, so you can invoke them as needed:
 
-- __`install.sh`__: installs all external dependencies and symlinks internal dependencies (using `lerna link`).
 - __`build.sh`__: runs `yarn build` and `yarn test` in all modules (in topological order).
 - __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
   (running this script requires that you installed the [toolchains](#Toolchains) for all target languages on your
