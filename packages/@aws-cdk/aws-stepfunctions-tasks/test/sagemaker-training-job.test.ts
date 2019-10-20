@@ -40,7 +40,18 @@ test('create basic training job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTrainingJob",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         AlgorithmSpecification: {
@@ -186,7 +197,18 @@ test('create complex training job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTrainingJob.sync',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTrainingJob.sync",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         TrainingJobName: 'MyTrainJob',
@@ -306,7 +328,18 @@ test('pass param to training job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTrainingJob",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         'TrainingJobName.$': '$.JobName',
