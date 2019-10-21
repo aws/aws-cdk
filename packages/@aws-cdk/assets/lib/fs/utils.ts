@@ -77,7 +77,7 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
   }
 
   for (const file of fs.readdirSync(dir)) {
-    let fullFilePath = path.join(dir, file);
+    const fullFilePath = path.join(dir, file);
 
     let stat: fs.Stats | undefined = options.follow === FollowMode.ALWAYS
       ? fs.statSync(fullFilePath)
