@@ -99,8 +99,6 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
         if (!stat) {
           continue;
         }
-
-        fullFilePath = path.resolve(dir, target);
       }
     }
 
