@@ -40,6 +40,10 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       }
     }
 
-    fs.copyFileSync(sourceFilePath, destFilePath);
+    if (!sourceFilePath.endsWith('/')) {
+      fs.copyFileSync(sourceFilePath, destFilePath);
+    } else {
+      mkdirpSync(destFilePath);
+    }
   }
 }

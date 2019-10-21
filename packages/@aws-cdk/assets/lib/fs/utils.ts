@@ -127,7 +127,13 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
     if (stat.isFile() || stat.isSymbolicLink()) {
       files.push(fullFilePath);
     } else if (stat.isDirectory()) {
-      files.push(...listFilesRecursively(fullFilePath, { ...options, exclude }, rootDir));
+      const dirFiles = listFilesRecursively(fullFilePath, { ...options, exclude }, rootDir);
+
+      if (dirFiles.length) {
+        files.push(...dirFiles);
+      } else if (!isExcluded) {
+        files.push(fullFilePath + '/');
+      }
     }
   }
 
