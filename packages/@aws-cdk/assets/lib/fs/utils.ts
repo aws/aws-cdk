@@ -91,9 +91,9 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
 
   recurse(dir);
 
-  function recurse(currentPath: string): void {
+  function recurse(currentPath: string, currentStat?: fs.Stats): void {
     {
-      const stat = fs.statSync(currentPath);
+      const stat = currentStat || fs.statSync(currentPath);
       if (!stat) {
         return;
       }
@@ -156,7 +156,7 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
         files.push(generateAssetSymlinkFile(rootDir, fullFilePath, stat, target));
       } else if (stat.isDirectory()) {
         const previousLength = files.length;
-        recurse(fullFilePath);
+        recurse(fullFilePath, stat);
 
         if (files.length === previousLength && !isExcluded) {
           // helps "copy" create an empty directory
