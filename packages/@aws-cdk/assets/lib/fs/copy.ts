@@ -32,15 +32,8 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       }
     }
 
-    {
-      const destFileDir = path.dirname(destFilePath);
-
-      if (!fs.existsSync(destFileDir)) {
-        mkdirpSync(destFileDir);
-      }
-    }
-
     if (!sourceFilePath.endsWith('/')) {
+      mkdirpSync(path.dirname(destFilePath));
       fs.copyFileSync(sourceFilePath, destFilePath);
     } else {
       mkdirpSync(destFilePath);
