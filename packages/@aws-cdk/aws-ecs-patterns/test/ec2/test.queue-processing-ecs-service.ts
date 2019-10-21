@@ -59,7 +59,8 @@ export = {
           Image: "test",
           Memory: 512
         }
-      ]
+      ],
+      Family: "ServiceQueueProcessingTaskDef83DB34F1"
     }));
 
     test.done();
@@ -88,7 +89,8 @@ export = {
         TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
       },
       queue,
-      maxScalingCapacity: 5
+      maxScalingCapacity: 5,
+      family: "ecs-task-family"
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -131,7 +133,8 @@ export = {
           Image: "test",
           Memory: 1024
         }
-      ]
+      ],
+      Family: "ecs-task-family"
     }));
 
     test.done();
