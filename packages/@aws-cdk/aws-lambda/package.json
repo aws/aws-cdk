@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "CDK Constructs for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -67,11 +67,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.0",
+    "@aws-cdk/assert": "1.13.1",
     "@types/aws-lambda": "^8.10.33",
     "@types/lodash": "^4.14.144",
     "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.548.0",
+    "aws-sdk": "^2.553.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
@@ -82,29 +82,29 @@
     "sinon": "^7.5.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.13.0",
-    "@aws-cdk/aws-ec2": "1.13.0",
-    "@aws-cdk/aws-events": "1.13.0",
-    "@aws-cdk/aws-iam": "1.13.0",
-    "@aws-cdk/aws-logs": "1.13.0",
-    "@aws-cdk/aws-s3": "1.13.0",
-    "@aws-cdk/aws-s3-assets": "1.13.0",
-    "@aws-cdk/aws-sqs": "1.13.0",
-    "@aws-cdk/core": "1.13.0",
-    "@aws-cdk/cx-api": "1.13.0"
+    "@aws-cdk/aws-cloudwatch": "1.13.1",
+    "@aws-cdk/aws-ec2": "1.13.1",
+    "@aws-cdk/aws-events": "1.13.1",
+    "@aws-cdk/aws-iam": "1.13.1",
+    "@aws-cdk/aws-logs": "1.13.1",
+    "@aws-cdk/aws-s3": "1.13.1",
+    "@aws-cdk/aws-s3-assets": "1.13.1",
+    "@aws-cdk/aws-sqs": "1.13.1",
+    "@aws-cdk/core": "1.13.1",
+    "@aws-cdk/cx-api": "1.13.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.13.0",
-    "@aws-cdk/aws-ec2": "1.13.0",
-    "@aws-cdk/aws-events": "1.13.0",
-    "@aws-cdk/aws-iam": "1.13.0",
-    "@aws-cdk/aws-logs": "1.13.0",
-    "@aws-cdk/aws-s3": "1.13.0",
-    "@aws-cdk/aws-s3-assets": "1.13.0",
-    "@aws-cdk/aws-sqs": "1.13.0",
-    "@aws-cdk/core": "1.13.0",
-    "@aws-cdk/cx-api": "1.13.0"
+    "@aws-cdk/aws-cloudwatch": "1.13.1",
+    "@aws-cdk/aws-ec2": "1.13.1",
+    "@aws-cdk/aws-events": "1.13.1",
+    "@aws-cdk/aws-iam": "1.13.1",
+    "@aws-cdk/aws-logs": "1.13.1",
+    "@aws-cdk/aws-s3": "1.13.1",
+    "@aws-cdk/aws-s3-assets": "1.13.1",
+    "@aws-cdk/aws-sqs": "1.13.1",
+    "@aws-cdk/core": "1.13.1",
+    "@aws-cdk/cx-api": "1.13.1"
   },
   "engines": {
     "node": ">= 10.3.0"

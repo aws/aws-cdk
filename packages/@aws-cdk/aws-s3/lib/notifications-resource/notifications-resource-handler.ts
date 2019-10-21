@@ -84,6 +84,8 @@ export class NotificationsResourceHandler extends cdk.Construct {
       }
     });
 
+    resource.node.addDependency(role);
+
     this.functionArn = resource.getAtt('Arn').toString();
   }
 }
@@ -135,7 +137,7 @@ const handler = (event: any, context: any) => {
     const responseBody = JSON.stringify({
       Status: responseStatus,
       Reason: reason || "See the details in CloudWatch Log Stream: " + context.logStreamName,
-      PhysicalResourceId: context.logStreamName,
+      PhysicalResourceId: event.PhysicalResourceId || event.LogicalResourceId,
       StackId: event.StackId,
       RequestId: event.RequestId,
       LogicalResourceId: event.LogicalResourceId,

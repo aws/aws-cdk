@@ -1,7 +1,7 @@
 {
   "name": "awslint",
   "private": true,
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Enforces the AWS Construct Library guidelines",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@types/colors": "^1.2.1",
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/yargs": "^13.0.3",
     "@typescript-eslint/eslint-plugin": "^2.4.0",
     "@typescript-eslint/parser": "^2.4.0",

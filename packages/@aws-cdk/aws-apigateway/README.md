@@ -466,6 +466,57 @@ new route53.ARecord(this, 'CustomDomainAliasRecord', {
 });
 ```
 
+### Cross Origin Resource Sharing (CORS)
+
+[Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a mechanism
+that uses additional HTTP headers to tell browsers to give a web application
+running at one origin, access to selected resources from a different origin. A
+web application executes a cross-origin HTTP request when it requests a resource
+that has a different origin (domain, protocol, or port) from its own.
+
+You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS HTTP method to any API resource via the `defaultCorsPreflightOptions` option or by calling the `addCorsPreflight` on a specific resource.
+
+The following example will enable CORS for all methods and all origins on all resources of the API:
+
+```ts
+new apigateway.RestApi(this, 'api', {
+  defaultCorsPreflightOptions: {
+    allowOrigins: apigateway.Cors.ALL_ORIGINS,
+    allowMethods: apigateway.Cors.ALL_METHODS // this is also the default
+  }
+})
+```
+
+The following example will add an OPTIONS method to the `myResource` API resource, which
+only allows GET and PUT HTTP requests from the origin https://amazon.com.
+
+```ts
+myResource.addCorsPreflight({
+  allowOrigins: [ 'https://amazon.com' ],
+  allowMethods: [ 'GET', 'PUT' ]
+});
+```
+
+See the
+[`CorsOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-apigateway.CorsOptions.html)
+API reference for a detailed list of supported configuration options.
+
+You can specify defaults this at the resource level, in which case they will be applied to the entire resource sub-tree:
+
+```ts
+const subtree = resource.addResource('subtree', {
+  defaultCorsPreflightOptions: {
+    allowOrigins: [ 'https://amazon.com' ]
+  }
+});
+```
+
+This means that all resources under `subtree` (inclusive) will have a preflight
+OPTIONS added to them.
+
+See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
+features which are not yet supported.
+
 ----
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
