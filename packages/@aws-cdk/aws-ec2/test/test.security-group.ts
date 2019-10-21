@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, not } from '@aws-cdk/assert';
 import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Peer, Port, SecurityGroup, Vpc } from "../lib";
@@ -108,6 +108,42 @@ export = {
     test.throws(() => {
       sg.addEgressRule(Peer.anyIpv4(), Port.allTraffic(), 'All traffic');
     }, /Cannot add/);
+
+    test.done();
+  },
+
+  'immutable imports do not add rules'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const sg = SecurityGroup.fromSecurityGroupId(stack, 'SG1', "test-id", {mutable: false});
+    sg.addEgressRule(Peer.anyIpv4(), Port.tcp(86), 'This rule was not added');
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcp(86), 'This rule was not added');
+
+    expect(stack).to(not(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "This rule was not added",
+          FromPort: 86,
+          IpProtocol: "tcp",
+          ToPort: 86
+        }
+      ],
+    })));
+
+    expect(stack).to(not(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "This rule was not added",
+          FromPort: 86,
+          IpProtocol: "tcp",
+          ToPort: 86
+        }
+      ],
+    })));
 
     test.done();
   },
