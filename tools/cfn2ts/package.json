@@ -41,7 +41,7 @@
     "yargs": "^14.2.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/yargs": "^13.0.3",
     "cdk-build-tools": "^1.13.1",
     "pkglint": "^1.13.1"

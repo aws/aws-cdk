@@ -22,7 +22,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/md5": "^2.1.33",
     "cdk-build-tools": "^1.13.1",
     "fast-json-patch": "^3.0.0-1",
