@@ -29,7 +29,8 @@ async function main(): Promise<void> {
     'ap-southeast-1',
     'ap-southeast-2',
     'ap-northeast-1',
-    'sa-east-1'
+    'sa-east-1',
+    'eu-west-1',
   ]);
 
   const AWS_CDK_METADATA = new Set([
