@@ -49,6 +49,8 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
       const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
       if (!shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
         _hashField(hash, `link:${relativePath}`, linkTarget);
+      } else {
+        _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, fs.statSync(realPath)));
       }
     } else if (stat.isFile()) {
       _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, stat));
