@@ -25,6 +25,8 @@ export interface EvalTaskProps {
 
 /**
  * The event received by the Lambda function
+ *
+ * @internal
  */
 export interface Event {
   /**
