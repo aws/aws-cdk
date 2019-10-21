@@ -54,7 +54,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
       }
     } else if (stat.isFile()) {
       _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, stat));
-    } else {
+    } else if (!stat.isDirectory()) {
       throw new Error(`Unable to hash ${realPath}: it is neither a file nor a directory`);
     }
   }
