@@ -14,27 +14,24 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
     throw new Error(`${srcDir} is not a directory`);
   }
 
-  for (const sourceFilePath of listFilesRecursively(srcDir, {...options, follow}, rootDir)) {
-    const filePath = path.relative(rootDir, sourceFilePath);
+  for (const assetFile of listFilesRecursively(srcDir, {...options, follow}, rootDir)) {
+    const filePath = assetFile.relativePath;
     const destFilePath = path.join(destDir, filePath);
 
     if (follow !== FollowMode.ALWAYS) {
-      const stat = fs.lstatSync(sourceFilePath);
-
-      if (stat && stat.isSymbolicLink()) {
-        const target = fs.readlinkSync(sourceFilePath);
-        const targetPath = path.normalize(path.resolve(srcDir, target));
+      if (assetFile.isSymbolicLink) {
+        const targetPath = path.normalize(path.resolve(srcDir, assetFile.symlinkTarget));
         if (!shouldFollow(follow, rootDir, targetPath)) {
-          fs.symlinkSync(target, destFilePath);
+          fs.symlinkSync(assetFile.symlinkTarget, destFilePath);
 
           continue;
         }
       }
     }
 
-    if (!sourceFilePath.endsWith('/')) {
+    if (!assetFile.isDirectory) {
       mkdirpSync(path.dirname(destFilePath));
-      fs.copyFileSync(sourceFilePath, destFilePath);
+      fs.copyFileSync(assetFile.absolutePath, destFilePath);
     } else {
       mkdirpSync(destFilePath);
     }

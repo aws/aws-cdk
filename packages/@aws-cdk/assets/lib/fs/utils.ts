@@ -60,8 +60,31 @@ export function shouldFollow(mode: FollowMode, sourceRoot: string, realPath: str
   }
 }
 
-export function listFilesRecursively(dir: string, options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, rootDir?: string): string[] {
-  const files = [];
+type AssetFile = {
+  absolutePath: string;
+  relativePath: string;
+  isFile: boolean;
+  isDirectory: boolean;
+  size: number;
+} & ({ isSymbolicLink: false } | { isSymbolicLink: true; symlinkTarget: string});
+
+const generateAssetFile = (rootDir: string, fullFilePath: string, stat: fs.Stats): AssetFile => ({
+  absolutePath: fullFilePath,
+  relativePath: path.relative(rootDir, fullFilePath),
+  isFile: stat.isFile(),
+  isDirectory: stat.isDirectory(),
+  size: stat.size,
+  isSymbolicLink: false,
+});
+
+const generateAssetSymlinkFile = (rootDir: string, fullFilePath: string, stat: fs.Stats, symlinkTarget: string): AssetFile => ({
+  ...generateAssetFile(rootDir, fullFilePath, stat),
+  isSymbolicLink: true,
+  symlinkTarget,
+});
+
+export function listFilesRecursively(dir: string, options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, rootDir?: string): AssetFile[] {
+  const files: AssetFile[] = [];
 
   let exclude = options.exclude || [];
   rootDir = rootDir || dir;
@@ -72,7 +95,7 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
     }
 
     if (!stat.isDirectory()) {
-      return [dir];
+      return [generateAssetFile(rootDir, dir, stat)];
     }
   }
 
@@ -87,8 +110,9 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
       continue;
     }
 
+    let target = '';
     if (stat.isSymbolicLink()) {
-      const target = fs.readlinkSync(fullFilePath);
+      target = fs.readlinkSync(fullFilePath);
 
       // determine if this is an external link (i.e. the target's absolute path
       // is outside of the root directory).
@@ -124,15 +148,18 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
       continue;
     }
 
-    if (stat.isFile() || stat.isSymbolicLink()) {
-      files.push(fullFilePath);
-    } else if (stat.isDirectory()) {
+    if (stat.isFile()) {
+      files.push(generateAssetFile(rootDir, fullFilePath, stat));
+    } else if (stat.isSymbolicLink()) {
+      files.push(generateAssetSymlinkFile(rootDir, fullFilePath, stat, target));
+    }  else if (stat.isDirectory()) {
       const dirFiles = listFilesRecursively(fullFilePath, { ...options, exclude }, rootDir);
 
       if (dirFiles.length) {
         files.push(...dirFiles);
       } else if (!isExcluded) {
-        files.push(fullFilePath + '/');
+        // helps "copy" create an empty directory
+        files.push(generateAssetFile(rootDir, fullFilePath, stat));
       }
     }
   }
