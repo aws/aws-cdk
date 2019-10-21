@@ -465,6 +465,7 @@ export interface ResolverProps extends BaseResolverProps {
     readonly api: GraphQLApi;
     /**
      * The data source this resolver is using
+     * @default - No datasource
      */
     readonly dataSource?: BaseDataSource;
 }
