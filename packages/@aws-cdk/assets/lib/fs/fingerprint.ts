@@ -38,9 +38,8 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()
     ? fileOrDirectory
     : path.dirname(fileOrDirectory);
-  const exclude = [...(options.exclude || [])];
 
-  for (const realPath of listFilesRecursively(fileOrDirectory, {...options, follow, exclude}, rootDirectory)) {
+  for (const realPath of listFilesRecursively(fileOrDirectory, {...options, follow}, rootDirectory)) {
     const stat = fs.lstatSync(realPath);
     const relativePath = path.relative(fileOrDirectory, realPath);
 

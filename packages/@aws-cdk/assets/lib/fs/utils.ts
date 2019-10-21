@@ -63,7 +63,7 @@ export function shouldFollow(mode: FollowMode, sourceRoot: string, realPath: str
 export function listFilesRecursively(dir: string, options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, rootDir?: string): string[] {
   const files = [];
 
-  let exclude = [...(options.exclude || [])];
+  let exclude = options.exclude || [];
   rootDir = rootDir || dir;
   {
     const stat = fs.statSync(dir);
