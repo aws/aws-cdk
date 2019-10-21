@@ -2,6 +2,7 @@ import fs = require('fs');
 import path = require('path');
 import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
+import { mkdirpSync } from './mkdirpSync';
 import { listFilesRecursively, shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
@@ -35,9 +36,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       const destFileDir = path.dirname(destFilePath);
 
       if (!fs.existsSync(destFileDir)) {
-        // {recursive: true} is node 10+
-        // FIXME fs.mkdirpSync(destFileDir);
-        fs.mkdirSync(destFileDir, {recursive: true});
+        mkdirpSync(destFileDir);
       }
     }
 
