@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Stack } from '@aws-cdk/core';
-import { resourceArnSuffix } from './resource-arn-suffix';
+import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for StartExecution
@@ -59,10 +59,8 @@ export class StartExecution implements sfn.IStepFunctionsTask {
   }
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const resourceArn = 'arn:aws:states:::states:startExecution' + resourceArnSuffix.get(this.integrationPattern);
-
     return {
-      resourceArn,
+      resourceArn: getResourceArn("states", "startExecution", this.integrationPattern),
       policyStatements: this.createScopedAccessPolicy(task),
       parameters: {
         Input: this.props.input,

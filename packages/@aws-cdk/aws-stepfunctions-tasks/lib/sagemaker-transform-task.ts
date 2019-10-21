@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Stack } from '@aws-cdk/core';
-import { resourceArnSuffix } from './resource-arn-suffix';
+import { getResourceArn } from './resource-arn-suffix';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
 /**
@@ -141,7 +141,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         }
 
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + resourceArnSuffix.get(this.integrationPattern),
+          resourceArn: getResourceArn("sagemaker", "createTransformJob", this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };

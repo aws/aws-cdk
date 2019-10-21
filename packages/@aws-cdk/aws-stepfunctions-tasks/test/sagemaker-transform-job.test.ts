@@ -41,7 +41,18 @@ test('create basic transform job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTransformJob',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTransformJob",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         TransformJobName: 'MyTransformJob',
@@ -124,7 +135,18 @@ test('create complex transform job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
-      Resource: 'arn:aws:states:::sagemaker:createTransformJob.sync',
+      Resource: {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              Ref: "AWS::Partition",
+            },
+            ":states:::sagemaker:createTransformJob.sync",
+          ],
+        ],
+      },
       End: true,
       Parameters: {
         TransformJobName: 'MyTransformJob',
@@ -185,7 +207,18 @@ test('pass param to transform job', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
         Type: 'Task',
-        Resource: 'arn:aws:states:::sagemaker:createTransformJob',
+        Resource: {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  Ref: "AWS::Partition",
+                },
+                ":states:::sagemaker:createTransformJob",
+              ],
+            ],
+        },
         End: true,
         Parameters: {
           'TransformJobName.$': '$.TransformJobName',

@@ -104,7 +104,18 @@ test('Running a Fargate Task', () => {
         ],
       },
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 
@@ -193,7 +204,18 @@ test('Running an EC2 Task with bridge network', () => {
         ],
       },
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 
@@ -277,7 +299,18 @@ test('Running an EC2 Task with placement strategies', () => {
         { Type: "random", },
       ],
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 });
@@ -326,7 +359,18 @@ test('Running an EC2 Task with overridden number values', () => {
         ],
       },
     },
-    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::ecs:runTask.sync",
+        ],
+      ],
+    },
     Type: "Task",
   });
 });

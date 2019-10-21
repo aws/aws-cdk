@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
-import { resourceArnSuffix } from './resource-arn-suffix';
+import { getResourceArn } from './resource-arn-suffix';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -251,7 +251,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         }
 
         return {
-          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + resourceArnSuffix.get(this.integrationPattern),
+          resourceArn: getResourceArn("sagemaker", "createTrainingJob", this.integrationPattern),
           parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };

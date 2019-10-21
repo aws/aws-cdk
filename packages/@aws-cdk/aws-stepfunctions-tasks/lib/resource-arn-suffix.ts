@@ -1,4 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { Aws } from '@aws-cdk/core';
 
 /**
  * Suffixes corresponding to different service integration patterns
@@ -12,4 +13,10 @@ resourceArnSuffix.set(sfn.ServiceIntegrationPattern.FIRE_AND_FORGET, "");
 resourceArnSuffix.set(sfn.ServiceIntegrationPattern.SYNC, ".sync");
 resourceArnSuffix.set(sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN, ".waitForTaskToken");
 
-export { resourceArnSuffix };
+export function getResourceArn(service: string, api: string, integrationPattern: sfn.ServiceIntegrationPattern): string {
+    if (!service || !api) {
+        throw new Error("Both 'service' and 'api' must be provided to build the resource ARN.");
+    }
+    return `arn:${Aws.PARTITION}:states:::${service}:${api}` +
+        (integrationPattern ? resourceArnSuffix.get(integrationPattern) : "");
+}
