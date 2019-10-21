@@ -69,7 +69,6 @@
     "cdk-build-tools": "^1.13.1",
     "cdk-integ-tools": "^1.13.1",
     "pkglint": "^1.13.1"
-    "cfn2ts": "^1.13.1",
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "1.13.1",
