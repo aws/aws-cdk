@@ -310,7 +310,17 @@ export class LogGroup extends LogGroupBase {
   public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
     class Import extends LogGroupBase {
       public readonly logGroupArn = logGroupArn;
-      public readonly logGroupName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
+      public readonly logGroupName = this.getLogGroupName();
+
+      private getLogGroupName() {
+          const resourceName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
+          const components = resourceName.split(':');
+          if (components.length < 2) {
+              throw new Error('LogGroupARN resourceName must have at least 2 components: ' + resourceName);
+          }
+          return components[0];
+      }
+
     }
 
     return new Import(scope, id);

@@ -115,7 +115,7 @@ export = {
     const stack2 = new Stack();
 
     // WHEN
-    const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+    const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*');
     imported.addStream('MakeMeAStream');
 
     // THEN
