@@ -1,63 +1,40 @@
 {
   "Resources": {
-    "myapi4C7BF186": {
+    "corsapitest8682546E": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "my-api"
+        "Name": "cors-api-test"
       }
     },
-    "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {
+    "corsapitestDeployment2BF1633A197b7a426736ab40a59d8a41c2d3d50d": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "corsapitest8682546E"
         },
         "Description": "Automatically created by the RestApi construct"
       },
       "DependsOn": [
-        "myapiv1appliancesGET8FE872EC",
-        "myapiv1appliances507FEFF4",
-        "myapiv1booksGETC6B996D0",
-        "myapiv1booksPOST53E2832E",
-        "myapiv1books1D4BE6C1",
-        "myapiv113487378",
-        "myapiv1toysGET7348114D",
-        "myapiv1toysPOST55128058",
-        "myapiv1toysPUT59AFBBC2",
-        "myapiv1toysA55FCBC4"
-      ],
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+        "corsapitesttwitchDELETEB4C94228",
+        "corsapitesttwitchGET4270341B",
+        "corsapitesttwitchOPTIONSE5EEB527",
+        "corsapitesttwitchPOSTB52CFB02",
+        "corsapitesttwitch0E3D1559"
+      ]
     },
-    "myapiDeploymentStagebeta96434BEB": {
+    "corsapitestDeploymentStageprod8F31F2AB": {
       "Type": "AWS::ApiGateway::Stage",
       "Properties": {
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "corsapitest8682546E"
         },
-        "CacheClusterEnabled": true,
-        "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff"
+          "Ref": "corsapitestDeployment2BF1633A197b7a426736ab40a59d8a41c2d3d50d"
         },
-        "Description": "beta stage",
-        "MethodSettings": [
-          {
-            "DataTraceEnabled": true,
-            "HttpMethod": "*",
-            "LoggingLevel": "INFO",
-            "ResourcePath": "/*"
-          },
-          {
-            "CachingEnabled": true,
-            "HttpMethod": "GET",
-            "ResourcePath": "/~1api~1appliances"
-          }
-        ],
-        "StageName": "beta"
+        "StageName": "prod"
       }
     },
-    "myapiCloudWatchRole095452E5": {
+    "corsapitestCloudWatchRole9AF5A81A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -88,54 +65,42 @@
         ]
       }
     },
-    "myapiAccountEC421A0A": {
+    "corsapitestAccount7D1D6854": {
       "Type": "AWS::ApiGateway::Account",
       "Properties": {
         "CloudWatchRoleArn": {
           "Fn::GetAtt": [
-            "myapiCloudWatchRole095452E5",
+            "corsapitestCloudWatchRole9AF5A81A",
             "Arn"
           ]
         }
       },
       "DependsOn": [
-        "myapi4C7BF186"
+        "corsapitest8682546E"
       ]
     },
-    "myapiv113487378": {
+    "corsapitesttwitch0E3D1559": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
         "ParentId": {
           "Fn::GetAtt": [
-            "myapi4C7BF186",
+            "corsapitest8682546E",
             "RootResourceId"
           ]
         },
-        "PathPart": "v1",
+        "PathPart": "twitch",
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "corsapitest8682546E"
         }
       }
     },
-    "myapiv1toysA55FCBC4": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": {
-          "Ref": "myapiv113487378"
-        },
-        "PathPart": "toys",
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        }
-      }
-    },
-    "myapiv1toysGETApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1toysA829D1CC": {
+    "corsapitesttwitchGETApiPermissioncorstwitchtestcorsapitest1E81FF74GETtwitchDD74718A": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "MyHandler6B74D312",
+            "handlerE1533BD5",
             "Arn"
           ]
         },
@@ -158,25 +123,25 @@
               },
               ":",
               {
-                "Ref": "myapi4C7BF186"
+                "Ref": "corsapitest8682546E"
               },
               "/",
               {
-                "Ref": "myapiDeploymentStagebeta96434BEB"
+                "Ref": "corsapitestDeploymentStageprod8F31F2AB"
               },
-              "/GET/v1/toys"
+              "/GET/twitch"
             ]
           ]
         }
       }
     },
-    "myapiv1toysGETApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1toys9E0BAE9F": {
+    "corsapitesttwitchGETApiPermissionTestcorstwitchtestcorsapitest1E81FF74GETtwitch730CD01F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "MyHandler6B74D312",
+            "handlerE1533BD5",
             "Arn"
           ]
         },
@@ -199,25 +164,24 @@
               },
               ":",
               {
-                "Ref": "myapi4C7BF186"
+                "Ref": "corsapitest8682546E"
               },
-              "/test-invoke-stage/GET/v1/toys"
+              "/test-invoke-stage/GET/twitch"
             ]
           ]
         }
       }
     },
-    "myapiv1toysGET7348114D": {
+    "corsapitesttwitchGET4270341B": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "GET",
         "ResourceId": {
-          "Ref": "myapiv1toysA55FCBC4"
+          "Ref": "corsapitesttwitch0E3D1559"
         },
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "corsapitest8682546E"
         },
-        "ApiKeyRequired": true,
         "AuthorizationType": "NONE",
         "Integration": {
           "IntegrationHttpMethod": "POST",
@@ -237,7 +201,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "MyHandler6B74D312",
+                    "handlerE1533BD5",
                     "Arn"
                   ]
                 },
@@ -248,165 +212,93 @@
         }
       }
     },
-    "myapiv1toysPOST55128058": {
+    "corsapitesttwitchPOSTApiPermissioncorstwitchtestcorsapitest1E81FF74POSTtwitchD6548E1B": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "handlerE1533BD5",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "corsapitest8682546E"
+              },
+              "/",
+              {
+                "Ref": "corsapitestDeploymentStageprod8F31F2AB"
+              },
+              "/POST/twitch"
+            ]
+          ]
+        }
+      }
+    },
+    "corsapitesttwitchPOSTApiPermissionTestcorstwitchtestcorsapitest1E81FF74POSTtwitch9C9C1E14": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "handlerE1533BD5",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "corsapitest8682546E"
+              },
+              "/test-invoke-stage/POST/twitch"
+            ]
+          ]
+        }
+      }
+    },
+    "corsapitesttwitchPOSTB52CFB02": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "POST",
         "ResourceId": {
-          "Ref": "myapiv1toysA55FCBC4"
+          "Ref": "corsapitesttwitch0E3D1559"
         },
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        },
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "Type": "MOCK"
-        }
-      }
-    },
-    "myapiv1toysPUT59AFBBC2": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "PUT",
-        "ResourceId": {
-          "Ref": "myapiv1toysA55FCBC4"
-        },
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        },
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "Type": "MOCK"
-        }
-      }
-    },
-    "myapiv1appliances507FEFF4": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": {
-          "Ref": "myapiv113487378"
-        },
-        "PathPart": "appliances",
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        }
-      }
-    },
-    "myapiv1appliancesGET8FE872EC": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "GET",
-        "ResourceId": {
-          "Ref": "myapiv1appliances507FEFF4"
-        },
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        },
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "Type": "MOCK"
-        }
-      }
-    },
-    "myapiv1books1D4BE6C1": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": {
-          "Ref": "myapiv113487378"
-        },
-        "PathPart": "books",
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        }
-      }
-    },
-    "myapiv1booksGETApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1books484ACD3F": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyHandler6B74D312",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "myapi4C7BF186"
-              },
-              "/",
-              {
-                "Ref": "myapiDeploymentStagebeta96434BEB"
-              },
-              "/GET/v1/books"
-            ]
-          ]
-        }
-      }
-    },
-    "myapiv1booksGETApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1booksE255E31A": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyHandler6B74D312",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "myapi4C7BF186"
-              },
-              "/test-invoke-stage/GET/v1/books"
-            ]
-          ]
-        }
-      }
-    },
-    "myapiv1booksGETC6B996D0": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "GET",
-        "ResourceId": {
-          "Ref": "myapiv1books1D4BE6C1"
-        },
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "corsapitest8682546E"
         },
         "AuthorizationType": "NONE",
         "Integration": {
@@ -427,7 +319,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "MyHandler6B74D312",
+                    "handlerE1533BD5",
                     "Arn"
                   ]
                 },
@@ -438,13 +330,13 @@
         }
       }
     },
-    "myapiv1booksPOSTApiPermissiontestapigatewayrestapimyapi1AE401C4POSTv1books2B1BC62B": {
+    "corsapitesttwitchDELETEApiPermissioncorstwitchtestcorsapitest1E81FF74DELETEtwitch2AF8A510": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "MyHandler6B74D312",
+            "handlerE1533BD5",
             "Arn"
           ]
         },
@@ -467,25 +359,25 @@
               },
               ":",
               {
-                "Ref": "myapi4C7BF186"
+                "Ref": "corsapitest8682546E"
               },
               "/",
               {
-                "Ref": "myapiDeploymentStagebeta96434BEB"
+                "Ref": "corsapitestDeploymentStageprod8F31F2AB"
               },
-              "/POST/v1/books"
+              "/DELETE/twitch"
             ]
           ]
         }
       }
     },
-    "myapiv1booksPOSTApiPermissionTesttestapigatewayrestapimyapi1AE401C4POSTv1books816A6B37": {
+    "corsapitesttwitchDELETEApiPermissionTestcorstwitchtestcorsapitest1E81FF74DELETEtwitch0CD7A81B": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "MyHandler6B74D312",
+            "handlerE1533BD5",
             "Arn"
           ]
         },
@@ -508,23 +400,23 @@
               },
               ":",
               {
-                "Ref": "myapi4C7BF186"
+                "Ref": "corsapitest8682546E"
               },
-              "/test-invoke-stage/POST/v1/books"
+              "/test-invoke-stage/DELETE/twitch"
             ]
           ]
         }
       }
     },
-    "myapiv1booksPOST53E2832E": {
+    "corsapitesttwitchDELETEB4C94228": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "HttpMethod": "POST",
+        "HttpMethod": "DELETE",
         "ResourceId": {
-          "Ref": "myapiv1books1D4BE6C1"
+          "Ref": "corsapitesttwitch0E3D1559"
         },
         "RestApiId": {
-          "Ref": "myapi4C7BF186"
+          "Ref": "corsapitest8682546E"
         },
         "AuthorizationType": "NONE",
         "Integration": {
@@ -545,7 +437,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "MyHandler6B74D312",
+                    "handlerE1533BD5",
                     "Arn"
                   ]
                 },
@@ -556,65 +448,51 @@
         }
       }
     },
-    "myapiApiKey43446CCF": {
-      "Type": "AWS::ApiGateway::ApiKey",
+    "corsapitesttwitchOPTIONSE5EEB527": {
+      "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "Enabled": true,
-        "StageKeys": [
-          {
-            "RestApiId": {
-              "Ref": "myapi4C7BF186"
-            },
-            "StageName": {
-              "Ref": "myapiDeploymentStagebeta96434BEB"
+        "HttpMethod": "OPTIONS",
+        "ResourceId": {
+          "Ref": "corsapitesttwitch0E3D1559"
+        },
+        "RestApiId": {
+          "Ref": "corsapitest8682546E"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://google.com'",
+                "method.response.header.Vary": "'Origin'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              },
+              "ResponseTemplates": {
+                "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\"https://www.test-cors.org\"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+              },
+              "StatusCode": "204"
             }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Vary": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "StatusCode": "204"
           }
         ]
       }
     },
-    "myapiUsagePlan56F9C4F2": {
-      "Type": "AWS::ApiGateway::UsagePlan",
-      "Properties": {
-        "ApiStages": [
-          {
-            "ApiId": {
-              "Ref": "myapi4C7BF186"
-            },
-            "Stage": {
-              "Ref": "myapiDeploymentStagebeta96434BEB"
-            },
-            "Throttle": {
-              "/v1/toys/GET": {
-                "BurstLimit": 2,
-                "RateLimit": 10
-              }
-            }
-          }
-        ],
-        "Description": "Free tier monthly usage plan",
-        "Quota": {
-          "Limit": 10000,
-          "Period": "MONTH"
-        },
-        "Throttle": {
-          "RateLimit": 5
-        },
-        "UsagePlanName": "Basic"
-      }
-    },
-    "myapiUsagePlanUsagePlanKeyResource050D133F": {
-      "Type": "AWS::ApiGateway::UsagePlanKey",
-      "Properties": {
-        "KeyId": {
-          "Ref": "myapiApiKey43446CCF"
-        },
-        "KeyType": "API_KEY",
-        "UsagePlanId": {
-          "Ref": "myapiUsagePlan56F9C4F2"
-        }
-      }
-    },
-    "MyHandlerServiceRoleFFA06653": {
+    "handlerServiceRole187D5A5A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -645,35 +523,70 @@
         ]
       }
     },
-    "MyHandler6B74D312": {
+    "handlerE1533BD5": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event)\n            });\n        }"
+          "S3Bucket": {
+            "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3Bucket9DD8E176"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
         },
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "MyHandlerServiceRoleFFA06653",
+            "handlerServiceRole187D5A5A",
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
-        "MyHandlerServiceRoleFFA06653"
+        "handlerServiceRole187D5A5A"
       ]
     }
   },
   "Outputs": {
-    "myapiEndpoint3628AFE3": {
+    "corsapitestEndpointE63606AE": {
       "Value": {
         "Fn::Join": [
           "",
           [
             "https://",
             {
-              "Ref": "myapi4C7BF186"
+              "Ref": "corsapitest8682546E"
             },
             ".execute-api.",
             {
@@ -685,12 +598,26 @@
             },
             "/",
             {
-              "Ref": "myapiDeploymentStagebeta96434BEB"
+              "Ref": "corsapitestDeploymentStageprod8F31F2AB"
             },
             "/"
           ]
         ]
       }
+    }
+  },
+  "Parameters": {
+    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3Bucket9DD8E176": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
+    },
+    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4S3VersionKey0275D4BE": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
+    },
+    "AssetParameters90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4ArtifactHash1D8265F7": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"90f989e3ccf22eb90814665d7725476b19c790c4f37045ad8d6fbe1dbde112f4\""
     }
   }
 }

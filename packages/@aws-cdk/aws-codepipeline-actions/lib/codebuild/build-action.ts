@@ -113,6 +113,12 @@ export class CodeBuildAction extends Action {
       options.bucket.grantRead(this.props.project);
     }
 
+    if (this.props.project instanceof codebuild.Project) {
+      this.props.project.bindToCodePipeline(scope, {
+        artifactBucket: options.bucket,
+      });
+    }
+
     const configuration: any = {
       ProjectName: this.props.project.projectName,
     };
