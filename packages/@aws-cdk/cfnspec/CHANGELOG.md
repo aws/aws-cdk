@@ -7,10 +7,6 @@
 * AWS::Cognito::UserPoolResourceServer
 * AWS::Cognito::UserPoolRiskConfigurationAttachment
 * AWS::Cognito::UserPoolUICustomizationAttachment
-* AWS::EC2::TrafficMirrorFilter
-* AWS::EC2::TrafficMirrorFilterRule
-* AWS::EC2::TrafficMirrorSession
-* AWS::EC2::TrafficMirrorTarget
 
 ## Attribute Changes
 

@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "1.12.0",
+  "version": "1.13.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -37,12 +37,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/archiver": "^3.0.0",
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/glob": "^7.1.1",
     "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^8.10.54",
+    "@types/node": "^8.10.55",
     "@types/request": "^2.48.3",
     "@types/semver": "^6.0.2",
     "@types/sinon": "^7.5.0",
@@ -58,11 +58,11 @@
     "sinon": "^7.5.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "1.12.0",
-    "@aws-cdk/cx-api": "1.12.0",
-    "@aws-cdk/region-info": "1.12.0",
+    "@aws-cdk/cloudformation-diff": "1.13.1",
+    "@aws-cdk/cx-api": "1.13.1",
+    "@aws-cdk/region-info": "1.13.1",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.547.0",
+    "aws-sdk": "^2.553.0",
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "decamelize": "^3.2.0",
@@ -76,7 +76,7 @@
     "semver": "^6.3.0",
     "source-map-support": "^0.5.13",
     "table": "^5.4.6",
-    "yaml": "^1.7.1",
+    "yaml": "^1.7.2",
     "yargs": "^14.2.0"
   },
   "repository": {
