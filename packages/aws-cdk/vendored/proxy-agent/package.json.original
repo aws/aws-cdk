@@ -32,8 +32,9 @@
     "agent-base": "^4.2.0",
     "debug": "^3.1.0",
     "http-proxy-agent": "^2.1.0",
-    "https-proxy-agent": "^3.0.0",
+    "https-proxy-agent": "^2.2.1",
     "lru-cache": "^4.1.2",
+    "pac-proxy-agent": "^3.0.0",
     "proxy-from-env": "^1.0.0",
     "socks-proxy-agent": "^4.0.1"
   },

@@ -80,33 +80,28 @@ describe('PacProxyAgent', function () {
 
 
   after(function (done) {
-    //socksServer.once('close', function () { done(); });
+    socksServer.once('close', function () { done(); });
     socksServer.close();
-    done();
   });
 
   after(function (done) {
-    //httpServer.once('close', function () { done(); });
+    httpServer.once('close', function () { done(); });
     httpServer.close();
-    done();
   });
 
   after(function (done) {
-    //httpsServer.once('close', function () { done(); });
+    httpsServer.once('close', function () { done(); });
     httpsServer.close();
-    done();
   });
 
   after(function (done) {
-    //proxyServer.once('close', function () { done(); });
+    proxyServer.once('close', function () { done(); });
     proxyServer.close();
-    done();
   });
 
   after(function (done) {
-    //proxyHttpsServer.once('close', function () { done(); });
+    proxyHttpsServer.once('close', function () { done(); });
     proxyHttpsServer.close();
-    done();
   });
 
   it('should allow a `sandbox` to be passed in', function (done) {
