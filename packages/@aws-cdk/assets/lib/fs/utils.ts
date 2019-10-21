@@ -100,7 +100,7 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
           continue;
         }
 
-        fullFilePath = target;
+        fullFilePath = path.resolve(dir, target);
       }
     }
 
@@ -126,7 +126,7 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
       continue;
     }
 
-    if (stat.isFile()) {
+    if (stat.isFile() || stat.isSymbolicLink()) {
       files.push(fullFilePath);
     } else if (stat.isDirectory()) {
       files.push(...listFilesRecursively(fullFilePath, { ...options, exclude }, rootDir));
