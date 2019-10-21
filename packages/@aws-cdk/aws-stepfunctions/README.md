@@ -133,6 +133,7 @@ couple of the tasks available are:
 * `tasks.SagemakerTrainTask` -- run a SageMaker training job
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
+* `tasks.EvalTask` -- evaluate an expression referencing state paths
 
 Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
@@ -329,6 +330,47 @@ new sfn.StateMachine(stack, 'ParentStateMachine', {
 });
 ```
 
+#### Eval example
+Use the `EvalTask` to perform simple operations referencing state paths. The
+`expression` referenced in the task will be evaluated in a Lambda function
+(`eval()`). This allows to write less Lambda runtime code for simple operations.
+
+Example: convert a wait time from milliseconds to seconds, concat this in a message and wait
+```ts
+const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
+  task: new tasks.EvalTask({ expression: '$.waitMilliseconds / 1000' }),
+  resultPath: '$.waitSeconds'
+});
+
+const createMessage = new sfn.Task(this, 'Create message', {
+  task: new tasks.EvalTask({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
+  resultPath: '$.message'
+});
+
+const publishMessage = new sfn.Task(this, 'Publish message', {
+  task: new tasks.PublishToTopic(topic, {
+    message: sfn.TaskInput.fromDataAt('$.message'),
+  }),
+  resultPath: '$.sns'
+});
+
+const wait = new sfn.Wait(this, 'Wait', {
+  time: sfn.WaitTime.secondsPath('$.waitSeconds')
+});
+
+new sfn.StateMachine(this, 'StateMachine', {
+  definition: convertToSeconds
+    .next(createMessage)
+    .next(publishMessage)
+    .next(wait)
+});
+```
+
+The `EvalTask` supports a `runtime` prop to specify the Lambda runtime to use
+to evaluate the expression. Currently, the only runtime supported is
+`lambda.Runtime.NODEJS_10_X`.
+
+
 ### Pass
 
 A `Pass` state does no work, but it can optionally transform the execution's
@@ -355,7 +397,7 @@ state.
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
 const wait = new stepfunctions.Wait(this, 'Wait For Trigger Time', {
-    duration: stepfunctions.WaitDuration.timestampPath('$.triggerTime'),
+    time: stepfunctions.WaitTime.timestampPath('$.triggerTime'),
 });
 
 // Set the next state
