@@ -466,7 +466,7 @@ export interface ResolverProps extends BaseResolverProps {
     /**
      * The data source this resolver is using
      */
-    readonly dataSource: BaseDataSource;
+    readonly dataSource?: BaseDataSource;
 }
 
 export class Resolver extends Construct {
@@ -485,13 +485,15 @@ export class Resolver extends Construct {
             apiId: props.api.apiId,
             typeName: props.typeName,
             fieldName: props.fieldName,
-            dataSourceName: props.dataSource.name,
+            dataSourceName: props.dataSource ? props.dataSource.name : undefined,
             kind: props.pipelineConfig ? 'PIPELINE' : 'UNIT',
             requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
             responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
         });
         this.resolver.addDependsOn(props.api.schema);
-        this.resolver.addDependsOn(props.dataSource.ds);
+        if (props.dataSource) {
+            this.resolver.addDependsOn(props.dataSource.ds);
+        }
         this.arn = this.resolver.attrResolverArn;
     }
 }
