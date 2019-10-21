@@ -16,3 +16,4 @@ dist
 !test/integ/run-wrappers/dist
 
 *.tsbuildinfo
+!vendored/**/*
