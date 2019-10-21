@@ -16,5 +16,3 @@ coverage
 *.snk
 
 !test/integ/run-wrappers/dist
-!vendored/**/*
-
