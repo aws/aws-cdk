@@ -66,7 +66,7 @@ type AssetFile = {
   isFile: boolean;
   isDirectory: boolean;
   size: number;
-} & ({ isSymbolicLink: false } | { isSymbolicLink: true; symlinkTarget: string});
+} & ({ isSymbolicLink: false } | { isSymbolicLink: true; symlinkTarget: string });
 
 const generateAssetFile = (rootDir: string, fullFilePath: string, stat: fs.Stats): AssetFile => ({
   absolutePath: fullFilePath,
@@ -83,83 +83,85 @@ const generateAssetSymlinkFile = (rootDir: string, fullFilePath: string, stat: f
   symlinkTarget,
 });
 
-export function listFilesRecursively(dir: string, options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, rootDir?: string): AssetFile[] {
+export function listFilesRecursively(dir: string, options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, _rootDir?: string): AssetFile[] {
   const files: AssetFile[] = [];
-
   let exclude = options.exclude || [];
-  rootDir = rootDir || dir;
-  {
-    const stat = fs.statSync(dir);
-    if (!stat) {
-      return [];
-    }
+  const rootDir = _rootDir || dir;
+  const followStatsFn = options.follow === FollowMode.ALWAYS ? fs.statSync : fs.lstatSync;
 
-    if (!stat.isDirectory()) {
-      return [generateAssetFile(rootDir, dir, stat)];
-    }
-  }
+  recurse(dir);
 
-  for (const file of fs.readdirSync(dir)) {
-    const fullFilePath = path.join(dir, file);
+  function recurse(currentPath: string): void {
+    {
+      const stat = fs.statSync(currentPath);
+      if (!stat) {
+        return;
+      }
 
-    let stat: fs.Stats | undefined = options.follow === FollowMode.ALWAYS
-      ? fs.statSync(fullFilePath)
-      : fs.lstatSync(fullFilePath);
-
-    if (!stat) {
-      continue;
-    }
-
-    let target = '';
-    if (stat.isSymbolicLink()) {
-      target = fs.readlinkSync(fullFilePath);
-
-      // determine if this is an external link (i.e. the target's absolute path
-      // is outside of the root directory).
-      const targetPath = path.normalize(path.resolve(dir, target));
-
-      if (shouldFollow(options.follow, rootDir, targetPath)) {
-        stat = fs.statSync(fullFilePath);
-        if (!stat) {
-          continue;
-        }
+      if (!stat.isDirectory()) {
+        files.push(generateAssetFile(rootDir, currentPath, stat));
+        return;
       }
     }
 
-    const relativeFilePath = path.relative(rootDir, fullFilePath);
+    for (const file of fs.readdirSync(currentPath)) {
+      const fullFilePath = path.join(currentPath, file);
 
-    // we've just discovered that we have a directory
-    if (stat.isDirectory()) {
-      // to help future shouldExclude calls, we're changing the exlusion patterns
-      // by expliciting "dir" exclusions to "dir/*" (same with "!dir" -> "!dir/*")
-      exclude = exclude.reduce<string[]>((res, pattern) => {
-        res.push(pattern);
-        if (pattern.trim().replace(/^!/, '') === relativeFilePath) {
-          // we add the pattern immediately after to preserve the exclusion order
-          res.push(`${pattern}/*`);
+      let stat: fs.Stats | undefined = followStatsFn(fullFilePath);
+      if (!stat) {
+        continue;
+      }
+
+      let target = '';
+      if (stat.isSymbolicLink()) {
+        target = fs.readlinkSync(fullFilePath);
+
+        // determine if this is an external link (i.e. the target's absolute path
+        // is outside of the root directory).
+        const targetPath = path.normalize(path.resolve(currentPath, target));
+
+        if (shouldFollow(options.follow, rootDir, targetPath)) {
+          stat = fs.statSync(fullFilePath);
+          if (!stat) {
+            continue;
+          }
         }
+      }
 
-        return res;
-      }, []);
-    }
+      const relativeFilePath = path.relative(rootDir, fullFilePath);
 
-    const isExcluded = shouldExclude(exclude, relativeFilePath);
-    if (isExcluded && !stat.isDirectory()) {
-      continue;
-    }
+      // we've just discovered that we have a directory
+      if (stat.isDirectory()) {
+        // to help future shouldExclude calls, we're changing the exlusion patterns
+        // by expliciting "dir" exclusions to "dir/*" (same with "!dir" -> "!dir/*")
+        exclude = exclude.reduce<string[]>((res, pattern) => {
+          res.push(pattern);
+          if (pattern.trim().replace(/^!/, '') === relativeFilePath) {
+            // we add the pattern immediately after to preserve the exclusion order
+            res.push(`${pattern}/*`);
+          }
 
-    if (stat.isFile()) {
-      files.push(generateAssetFile(rootDir, fullFilePath, stat));
-    } else if (stat.isSymbolicLink()) {
-      files.push(generateAssetSymlinkFile(rootDir, fullFilePath, stat, target));
-    }  else if (stat.isDirectory()) {
-      const dirFiles = listFilesRecursively(fullFilePath, { ...options, exclude }, rootDir);
+          return res;
+        }, []);
+      }
 
-      if (dirFiles.length) {
-        files.push(...dirFiles);
-      } else if (!isExcluded) {
-        // helps "copy" create an empty directory
+      const isExcluded = shouldExclude(exclude, relativeFilePath);
+      if (isExcluded && !stat.isDirectory()) {
+        continue;
+      }
+
+      if (stat.isFile()) {
         files.push(generateAssetFile(rootDir, fullFilePath, stat));
+      } else if (stat.isSymbolicLink()) {
+        files.push(generateAssetSymlinkFile(rootDir, fullFilePath, stat, target));
+      } else if (stat.isDirectory()) {
+        const previousLength = files.length;
+        recurse(fullFilePath);
+
+        if (files.length === previousLength && !isExcluded) {
+          // helps "copy" create an empty directory
+          files.push(generateAssetFile(rootDir, fullFilePath, stat));
+        }
       }
     }
   }
