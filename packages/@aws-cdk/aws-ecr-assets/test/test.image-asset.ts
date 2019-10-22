@@ -487,12 +487,7 @@ const createFsStructureFromTree = (parentDir: string, tree: string): void => {
     const fileName = line.slice(indentCharacters.length).replace(TRAILING_CHARACTERS_REGEX, '');
 
     const current = indentLevel <= previousIndentLevel ?
-      path.join(
-        ...previousDir.split(path.sep)
-          .slice(0, indentLevel - 1),
-        // .slice(0, indentLevel === previousIndentLevel ? indentLevel - 1 : indentLevel),
-        fileName
-      ) :
+      path.join(...previousDir.split(path.sep).slice(0, indentLevel - 1), fileName) :
       path.join(previousDir, fileName);
 
     if (previousDir) {
