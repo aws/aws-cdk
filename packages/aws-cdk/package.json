@@ -71,8 +71,7 @@
     "json-diff": "^0.5.4",
     "minimatch": ">=3.0",
     "promptly": "^3.0.3",
-    "proxy-agent": "file:./vendored/proxy-agent",
-    "pac-proxy-agent": "file:./vendored/pac-proxy-agent",
+    "proxy-agent": "^3.1.1",
     "request": "^2.88.0",
     "semver": "^6.3.0",
     "source-map-support": "^0.5.13",
@@ -80,7 +79,6 @@
     "yaml": "^1.7.2",
     "yargs": "^14.2.0"
   },
-  "bundledDependencies": [ "proxy-agent", "pac-proxy-agent" ],
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
