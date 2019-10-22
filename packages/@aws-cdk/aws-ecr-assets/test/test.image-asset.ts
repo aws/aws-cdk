@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import { App, Lazy, Stack } from '@aws-cdk/core';
 import fs = require('fs');
 import { Test } from 'nodeunit';
+import os = require('os');
 import path = require('path');
 import { DockerImageAsset } from '../lib';
 
@@ -212,9 +213,17 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image')
-    });
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image'));
+    createFsStructureFromTree(directory, `
+      ├── Dockerfile
+      ├── .dockerignore
+      ├── foobar.txt
+      ├── index.py
+      └── subdirectory
+          └── baz.txt`);
+    fs.writeFileSync(path.join(directory, '.dockerignore'), 'foobar.txt');
+
+    const image = new DockerImageAsset(stack, 'MyAsset', { directory });
 
     const session = app.synth();
 
@@ -244,8 +253,18 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image'));
+    createFsStructureFromTree(directory, `
+      ├── Dockerfile
+      ├── .dockerignore
+      ├── foobar.txt
+      ├── index.py
+      └── subdirectory
+          └── baz.txt`);
+    fs.writeFileSync(path.join(directory, '.dockerignore'), 'foobar.txt');
+
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image'),
+      directory,
       exclude: ['subdirectory']
     });
 
@@ -276,14 +295,62 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image-advanced')
-    });
+    // GIVEN
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image-advanced'));
+    createFsStructureFromTree(directory, `
+      ├── config
+      │   ├── config-prod.txt
+      │   ├── config-test.txt
+      │   └── config.txt
+      ├── deep
+      │   ├── dir
+      │   │   └── struct
+      │   │       └── qux.txt
+      │   └── include_me
+      │       └── sub
+      │           └── dir
+      │               └── quuz.txt
+      ├── foobar.txt
+      ├── foo.txt
+      ├── Dockerfile
+      ├── index.py
+      ├── .hidden-file
+      └── empty-directory (D)
+      └── subdirectory
+          ├── baz.txt
+          └── quux.txt`);
 
+    fs.writeFileSync(path.join(directory, '.dockerignore'), `
+      # This a comment, followed by an empty line
+
+      # The following line should be ignored
+      #index.py
+
+      # This shouldn't ignore foo.txt
+      foo.?
+      # This shoul ignore foobar.txt
+      foobar.???
+      # This should catch qux.txt
+      deep/**/*.txt
+      # but quuz should be added back
+      !deep/include_me/**
+
+      # baz and quux should be ignored
+      subdirectory/**
+      # but baz should be added back
+      !subdirectory/baz*
+
+      config/config*.txt
+      !config/config-*.txt
+      config/config-test.txt
+    `.split('\n').map(line => line.trim()).join('\n'));
+
+    const image = new DockerImageAsset(stack, 'MyAsset', { directory });
     const session = app.synth();
 
     const expectedFiles = [
       '.dockerignore',
+      '.hidden-file',
       'Dockerfile',
       'index.py',
       'foo.txt',
@@ -313,9 +380,32 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image-negative')
-    });
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image-advanced'));
+    createFsStructureFromTree(directory, `
+      ├── deep
+      │   └── dir
+      │       └── struct
+      │           └── qux.txt
+      ├── Dockerfile
+      ├── .dockerignore
+      ├── foobar.txt
+      ├── index.py
+      └── subdirectory
+          ├── baz.txt
+          └── foo.txt`);
+
+    fs.writeFileSync(path.join(directory, '.dockerignore'), `
+      # Comment
+
+      *
+      !index.py
+      !subdirectory
+      subdirectory/foo.txt
+
+      # Dockerfile isn't explicitly included, but we'll add it anyway to build the image
+    `.split('\n').map(line => line.trim()).join('\n'));
+
+    const image = new DockerImageAsset(stack, 'MyAsset', { directory });
 
     const session = app.synth();
 
@@ -375,5 +465,52 @@ export = {
     }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
+  }
+};
+
+const INDENT_CHARACTERS_REGEX = /^[\s├─│└]+/;
+const TRAILING_CHARACTERS_REGEX = /(\/|\(D\))\s*$/i;
+const IS_DIRECTORY_REGEX = /\(D\)\s*$/i;
+
+const createFsStructureFromTree = (parentDir: string, tree: string): void => {
+  const directories: string[] = [];
+  const files: string[] = [];
+
+  // we push an element at the end because we push the files/directories during the previous iteration
+  const lines = [...tree.replace(/^\n/, '').split('\n'), ''];
+  const initialIndentLevel = (lines[0].match(/^\s*/) || [''])[0].length;
+
+  lines.reduce<[string, number, boolean]>(([previousDir, previousIndentLevel, wasDirectory], line) => {
+    const indentCharacters = (line.match(INDENT_CHARACTERS_REGEX) || [''])[0];
+    const indentLevel = (indentCharacters.length - initialIndentLevel) / 4;
+
+    const fileName = line.slice(indentCharacters.length).replace(TRAILING_CHARACTERS_REGEX, '');
+
+    const current = indentLevel <= previousIndentLevel ?
+      path.join(
+        ...previousDir.split(path.sep)
+          .slice(0, indentLevel - 1),
+        // .slice(0, indentLevel === previousIndentLevel ? indentLevel - 1 : indentLevel),
+        fileName
+      ) :
+      path.join(previousDir, fileName);
+
+    if (previousDir) {
+      if (indentLevel > previousIndentLevel || wasDirectory) {
+        directories.push(previousDir);
+      } else {
+        files.push(previousDir);
+      }
+    }
+
+    return [current, indentLevel, IS_DIRECTORY_REGEX.test(line)];
+  }, ['', 0, false]);
+
+  for (const directory of directories) {
+    fs.mkdirSync(path.join(parentDir, directory));
+  }
+
+  for (const file of files) {
+    fs.writeFileSync(path.join(parentDir, file), 'content');
   }
 };

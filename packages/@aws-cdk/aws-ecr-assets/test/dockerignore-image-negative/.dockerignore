@@ -1,8 +1,0 @@
-# Comment
-
-*
-!index.py
-!subdirectory
-subdirectory/foo.txt
-
-# Dockerfile isn't explicitly included, but we'll add it anyway to build the image
