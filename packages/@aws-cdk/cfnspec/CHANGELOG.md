@@ -1,3 +1,43 @@
+# CloudFormation Resource Specification v7.1.0
+
+## New Resource Types
+
+* AWS::EC2::TrafficMirrorFilter
+* AWS::EC2::TrafficMirrorFilterRule
+* AWS::EC2::TrafficMirrorSession
+* AWS::EC2::TrafficMirrorTarget
+* AWS::Events::EventBus
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::FSx::FileSystem FileSystemType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::FSx::FileSystem SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MSK::Cluster NumberOfBrokerNodes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::FSx::FileSystem.SelfManagedActiveDirectoryConfiguration (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy (__added__)
+* AWS::Cognito::IdentityPoolRoleAttachment.RoleMapping IdentityProvider (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration SelfManagedActiveDirectoryConfiguration (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## Property Type Changes
+
+* AWS::Serverless::Function.S3Location Version.Required (__changed__)
+  * Old: true
+  * New: false
+
 # CloudFormation Resource Specification v6.3.0
 
 ## New Resource Types
