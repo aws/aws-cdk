@@ -30,8 +30,9 @@ export class Runtime {
   public static readonly NODEJS =       new Runtime('nodejs',         RuntimeFamily.NODEJS, { supportsInlineCode: true });
   /** @deprecated Use `Nodejs810` or `Nodejs10x` */
   public static readonly NODEJS_4_3 =     new Runtime('nodejs4.3',      RuntimeFamily.NODEJS, { supportsInlineCode: true });
-  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  /** @deprecated Use `NODEJS_10_X` */
   public static readonly NODEJS_6_10 =    new Runtime('nodejs6.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  /** @deprecated Use `NODEJS_10_X` */
   public static readonly NODEJS_8_10 =    new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
   public static readonly NODEJS_10_X =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: false });
   public static readonly PYTHON_2_7 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
