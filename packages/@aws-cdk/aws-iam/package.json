@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iam",
-  "version": "1.13.1",
+  "version": "1.14.0",
   "description": "CDK routines for easily assigning correct and minimal IAM permissions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -65,7 +65,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.1",
+    "@aws-cdk/assert": "1.14.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
@@ -73,12 +73,12 @@
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.13.1",
-    "@aws-cdk/region-info": "1.13.1"
+    "@aws-cdk/core": "1.14.0",
+    "@aws-cdk/region-info": "1.14.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.13.1",
-    "@aws-cdk/region-info": "1.13.1"
+    "@aws-cdk/core": "1.14.0",
+    "@aws-cdk/region-info": "1.14.0"
   },
   "jest": {
     "moduleFileExtensions": [
