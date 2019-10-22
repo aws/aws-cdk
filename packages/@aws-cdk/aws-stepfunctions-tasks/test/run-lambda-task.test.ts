@@ -30,14 +30,31 @@ test('Invoke lambda with default magic ARN', () => {
     definition: task
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-    DefinitionString: {
-      "Fn::Join": ["", [
-          "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
-          { Ref: "Fn9270CBC0" },
-          "\",\"Payload\":{\"foo\":\"bar\"},\"InvocationType\":\"RequestResponse\",\"ClientContext\":\"eyJoZWxsbyI6IndvcmxkIn0=\","
-          + "\"Qualifier\":\"1\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::lambda:invoke\"}}}"
-      ]]
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::lambda:invoke",
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      FunctionName: {
+        Ref: "Fn9270CBC0"
+      },
+      Payload: {
+        foo: "bar"
+      },
+      InvocationType: "RequestResponse",
+      ClientContext: "eyJoZWxsbyI6IndvcmxkIn0=",
+      Qualifier: "1"
     },
   });
 });
@@ -55,13 +72,28 @@ test('Lambda function can be used in a Task with Task Token', () => {
     definition: task
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-    DefinitionString: {
-      "Fn::Join": ["", [
-          "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
-          { Ref: "Fn9270CBC0" },
-          "\",\"Payload\":{\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::lambda:invoke.waitForTaskToken\"}}}"
-      ]]
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::lambda:invoke.waitForTaskToken",
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      FunctionName: {
+        Ref: "Fn9270CBC0"
+      },
+      Payload: {
+        "token.$": "$$.Task.Token"
+      }
     },
   });
 });
