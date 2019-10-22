@@ -207,10 +207,15 @@ export interface SubnetSelection {
   readonly onePerAz?: boolean;
 
   /**
-   * Explicit Subnet selection.
+   * Explicitly select individual subnets
    *
-   * The subnet selection is an identity function that binds
-   * explicity created subnets with other AWS resources.
+   * Use this if you don't want to automatically use all subnets in
+   * a group, but have a need to control selection down to
+   * individual subnets.
+   *
+   * Cannot be specified together with `subnetType` or `subnetGroupName`.
+   *
+   * @default - Use all subnets in a selected group (all private subnets by default)
    */
   readonly subnets?: ISubnet[]
 }
@@ -1471,16 +1476,10 @@ function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
     placement = {...placement, subnetGroupName: placement.subnetName };
   }
 
-  if (placement.subnetType !== undefined && placement.subnetGroupName !== undefined) {
-    throw new Error(`Only one of 'subnetType' and 'subnetGroupName' can be supplied`);
-  }
-
-  if (placement.subnets !== undefined && placement.subnetType !== undefined) {
-    throw new Error(`Only one of 'subnets' and 'subnetType' can be supplied`);
-  }
-
-  if (placement.subnets !== undefined && placement.subnetGroupName !== undefined) {
-    throw new Error(`Only one of 'subnets' and 'subnetGroupName' can be supplied`);
+  const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
+  const providedSelections = exclusiveSelections.filter(key => placement[key] !== undefined);
+  if (providedSelections.length > 1) {
+    throw new Error(`Only one of '${providedSelections}' can be supplied to subnet selection.`);
   }
 
   if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
