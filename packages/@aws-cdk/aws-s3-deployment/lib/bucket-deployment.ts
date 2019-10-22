@@ -10,6 +10,7 @@ import fs = require('fs');
 import path = require("path");
 import { ISource, SourceConfig } from "./source";
 
+const now = Date.now();
 const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
 const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
@@ -336,7 +337,7 @@ export class Expires {
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static after(t: cdk.Duration) { return Expires.atDate(new Date(cdk.Duration.now + t.toMilliseconds())); }
+  public static after(t: cdk.Duration) { return Expires.atDate(new Date(now + t.toMilliseconds())); }
 
   public static fromString(s: string) { return new Expires(s); }
 

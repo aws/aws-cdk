@@ -10,11 +10,6 @@ import { Token } from "./token";
  */
 export class Duration {
   /**
-   * A reference `now` that can be used throughout the CDK.
-   */
-  public static now = Date.now();
-
-  /**
    * @param amount the amount of Milliseconds the `Duration` will represent.
    * @returns a new `Duration` representing `amount` ms.
    */
