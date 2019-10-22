@@ -205,6 +205,14 @@ export interface SubnetSelection {
    * @default false
    */
   readonly onePerAz?: boolean;
+
+  /**
+   * Explicit Subnet selection.
+   *
+   * The subnet selection is an identity function that binds
+   * explicity created subnets with other AWS resources.
+   */
+  readonly subnets?: ISubnet[]
 }
 
 /**
@@ -339,7 +347,10 @@ abstract class VpcBase extends Resource implements IVpc {
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
     selection = reifySelectionDefaults(selection);
 
-    if (selection.subnetGroupName !== undefined) { // Select by name
+    if (selection.subnets !== undefined) {
+      return selection.subnets;
+
+    } else if (selection.subnetGroupName !== undefined) { // Select by name
       return this.selectSubnetObjectsByName(selection.subnetGroupName);
 
     } else {
@@ -1464,7 +1475,15 @@ function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
     throw new Error(`Only one of 'subnetType' and 'subnetGroupName' can be supplied`);
   }
 
-  if (placement.subnetType === undefined && placement.subnetGroupName === undefined) {
+  if (placement.subnets !== undefined && placement.subnetType !== undefined) {
+    throw new Error(`Only one of 'subnets' and 'subnetType' can be supplied`);
+  }
+
+  if (placement.subnets !== undefined && placement.subnetGroupName !== undefined) {
+    throw new Error(`Only one of 'subnets' and 'subnetGroupName' can be supplied`);
+  }
+
+  if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
     return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz };
   }
 
