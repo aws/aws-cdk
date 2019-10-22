@@ -354,6 +354,7 @@ export = {
       'Dockerfile',
       'index.py',
       'foo.txt',
+      'empty-directory',
       path.join('subdirectory', 'baz.txt'),
       path.join('deep', 'include_me', 'sub', 'dir', 'quuz.txt'),
       path.join('config', 'config-prod.txt'),
@@ -469,7 +470,7 @@ export = {
 };
 
 const INDENT_CHARACTERS_REGEX = /^[\s├─│└]+/;
-const TRAILING_CHARACTERS_REGEX = /(\/|\(D\))\s*$/i;
+const TRAILING_CHARACTERS_REGEX = /\/|\(D\)$/i;
 const IS_DIRECTORY_REGEX = /\(D\)\s*$/i;
 
 const createFsStructureFromTree = (parentDir: string, tree: string): void => {
@@ -484,7 +485,7 @@ const createFsStructureFromTree = (parentDir: string, tree: string): void => {
     const indentCharacters = (line.match(INDENT_CHARACTERS_REGEX) || [''])[0];
     const indentLevel = (indentCharacters.length - initialIndentLevel) / 4;
 
-    const fileName = line.slice(indentCharacters.length).replace(TRAILING_CHARACTERS_REGEX, '');
+    const fileName = line.slice(indentCharacters.length).replace(TRAILING_CHARACTERS_REGEX, '').trimRight();
 
     const current = indentLevel <= previousIndentLevel ?
       path.join(...previousDir.split(path.sep).slice(0, indentLevel - 1), fileName) :
