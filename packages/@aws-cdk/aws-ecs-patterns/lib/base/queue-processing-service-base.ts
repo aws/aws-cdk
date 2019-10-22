@@ -9,7 +9,7 @@ import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
  */
 export interface QueueProcessingServiceBaseProps {
   /**
-   * The name of the Fargate service.
+   * The name of the service.
    *
    * @default - CloudFormation-generated name.
    */
