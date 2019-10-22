@@ -32,15 +32,6 @@
 
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 
-## New Resource Types
-
-
-## Attribute Changes
-
-
-## Property Changes
-
-
 ## Property Type Changes
 
 * AWS::Serverless::Function.S3Location Version.Required (__changed__)
