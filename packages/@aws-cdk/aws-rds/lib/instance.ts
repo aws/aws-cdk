@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup } from './option-group';
@@ -470,6 +470,7 @@ export interface DatabaseInstanceNewProps {
  */
 abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IDatabaseInstance {
   public readonly vpc: ec2.IVpc;
+  public readonly connections: ec2.Connections;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
@@ -496,6 +497,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       description: `Security group for ${this.node.id} database`,
       vpc: props.vpc
     })];
+
+    this.connections = new ec2.Connections({
+      securityGroups: this.securityGroups,
+      defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port }))
+    });
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
@@ -722,7 +728,6 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
-  public readonly connections: ec2.Connections;
   public readonly secret?: secretsmanager.ISecret;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
@@ -767,11 +772,6 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       });
     }
 
-    this.connections = new ec2.Connections({
-      securityGroups: this.securityGroups,
-      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
-    });
-
     this.setLogRetention();
   }
 }
@@ -814,7 +814,6 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
-  public readonly connections: ec2.Connections;
   public readonly secret?: secretsmanager.ISecret;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
@@ -861,11 +860,6 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       });
     }
 
-    this.connections = new ec2.Connections({
-      securityGroups: this.securityGroups,
-      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
-    });
-
     this.setLogRetention();
   }
 }
@@ -908,7 +902,6 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
-  public readonly connections: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
@@ -930,11 +923,6 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     instance.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true
-    });
-
-    this.connections = new ec2.Connections({
-      securityGroups: this.securityGroups,
-      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();

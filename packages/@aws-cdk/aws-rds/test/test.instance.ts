@@ -557,17 +557,34 @@ export = {
     });
 
     // WHEN
-    new rds.DatabaseInstance(stack, 'Instance', {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
       securityGroups: [securityGroup],
     });
+    instance.connections.allowDefaultPortFromAnyIpv4();
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       VPCSecurityGroups: ['sg-123456789']
+    }));
+
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      FromPort: {
+        'Fn::GetAtt': [
+          'InstanceC1063A87',
+          'Endpoint.Port'
+        ]
+      },
+      GroupId: 'sg-123456789',
+      ToPort: {
+        'Fn::GetAtt': [
+          'InstanceC1063A87',
+          'Endpoint.Port'
+        ]
+      }
     }));
 
     test.done();
