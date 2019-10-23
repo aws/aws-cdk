@@ -90,13 +90,15 @@ export = {
       },
       queue,
       maxScalingCapacity: 5,
+      serviceName: "ecs-test-service",
       family: "ecs-task-family"
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 2,
-      LaunchType: "EC2"
+      LaunchType: "EC2",
+      ServiceName: "ecs-test-service"
     }));
 
     expect(stack).to(haveResource("AWS::SQS::Queue", {
