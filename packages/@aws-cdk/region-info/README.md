@@ -32,7 +32,7 @@ import { RegionInfo } from '@aws-cdk/region-info';
 const region = RegionInfo.get('eu-west-1');
 
 // Access attributes:
-region.s3StaticWebsiteEndpoint; // s3-website.eu-west-1.amazonaws.com
+region.s3StaticWebsiteEndpoint; // s3-website-eu-west-1.amazonaws.com
 region.servicePrincipal('logs.amazonaws.com'); // logs.eu-west-1.amazonaws.com
 ```
 
