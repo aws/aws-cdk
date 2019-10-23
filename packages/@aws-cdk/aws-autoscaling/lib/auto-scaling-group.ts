@@ -379,6 +379,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public readonly role: iam.IRole;
 
   /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  /**
    * Name of the AutoScalingGroup
    */
   public readonly autoScalingGroupName: string;
@@ -420,6 +425,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+
+    this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [ this.role.roleName ]
