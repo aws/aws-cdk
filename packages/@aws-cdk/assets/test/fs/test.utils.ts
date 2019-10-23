@@ -192,4 +192,87 @@ export = {
       },
     }
   },
+
+  shouldExcludeDeep: {
+    'basic usage'(test: Test) {
+      testShouldExcludeDeep(test, ['foo.txt'], [
+        'foo.txt',
+        'foo.txt/file',
+        'dir/foo.txt',
+      ], [
+        'bar.txt',
+        'foo',
+        'foo.txt.old',
+      ]);
+
+      test.done();
+    },
+    'contridactory'(test: Test) {
+      testShouldExcludeDeep(test, ['foo.txt', '!foo.txt'], [], ['foo.txt']);
+
+      test.done();
+    },
+    'dir single wildcard'(test: Test) {
+      testShouldExcludeDeep(test, ['d?r'], [
+        'dir',
+        'dir/exclude',
+        'dir/exclude/file',
+      ], [
+        'door',
+        'door/file',
+      ]);
+
+      test.done();
+    },
+    'dir wildcard'(test: Test) {
+      testShouldExcludeDeep(test, ['d*r'], [
+        'dir',
+        'dir/file',
+        'door',
+        'door/file',
+      ], [
+        'dog',
+        'dog/file',
+      ]);
+
+      test.done();
+    },
+    'deep structure'(test: Test) {
+      testShouldExcludeDeep(test, ['deep/exclude'], [
+        'deep/exclude',
+        'deep/exclude/file',
+      ], [
+        'deep',
+        'deep/include',
+        'deep/include/file',
+      ]);
+
+      test.done();
+    },
+    'inverted pattern'(test: Test) {
+      testShouldExcludeDeep(test, ['*', '!foo.txt', '!d?r', 'dir/exclude'], [
+        'bar.txt',
+        'dir/exclude',
+        'dir/exclude/file',
+      ], [
+        '.hidden-file',
+        'foo.txt',
+        'dir',
+        'dir/include',
+        'dir/include/subdir',
+        'exclude/foo.txt',
+      ]);
+
+      test.done();
+    },
+  },
+};
+
+const testShouldExcludeDeep = (test: Test, pattern: string[], expectExclude: string[], expectInclude: string[]) => {
+  for (const include of expectExclude) {
+    test.ok(util.shouldExcludeDeep(pattern, include), `${include} should have been included, but wasn't`);
+  }
+  for (const exclude of expectInclude) {
+    test.ok(!util.shouldExcludeDeep(pattern, exclude), `${exclude} should have been excluded, but wasn't`);
+  }
 };

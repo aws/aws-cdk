@@ -14,22 +14,50 @@ import { FollowMode } from './follow-mode';
  * @returns `true` if the file should be excluded
  */
 export function shouldExclude(exclude: string[], filePath: string): boolean {
-  let excludeOutput = false;
+  const [_shouldExclude] = shouldExcludePriority(exclude, filePath);
+  return _shouldExclude;
+}
 
-  for (const pattern of exclude) {
+/**
+ * Determines whether a given file should be excluded or not based on given
+ * exclusion glob patterns.
+ *
+ * @param exclude  exclusion patterns
+ * @param filePath file apth to be assessed against the pattern
+ *
+ * @returns `true` if the file should be excluded, followed by the index of the rule applied
+ */
+export function shouldExcludePriority(exclude: string[], filePath: string): [boolean, number] {
+  return exclude.reduce<[boolean, number]>((res, pattern, patternIndex) => {
     const negate = pattern.startsWith('!');
     const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
 
     if (!negate && match) {
-      excludeOutput = true;
+      res = [true, patternIndex];
     }
 
     if (negate && match) {
-      excludeOutput = false;
+      res = [false, patternIndex];
     }
-  }
 
-  return excludeOutput;
+    return res;
+  }, [false, -1]);
+}
+
+export function shouldExcludeDeep(exclude: string[], relativePath: string): boolean {
+  const [_shouldExclude] = relativePath.split(path.sep).reduce<[boolean, number, string]>(
+    ([accExclude, accPriority, pathIterator], pathComponent) => {
+      pathIterator = path.join(pathIterator, pathComponent);
+
+      const [shouldExcludeIt, priorityIt] = shouldExcludePriority(exclude, pathIterator);
+      if (priorityIt > accPriority) {
+        return [shouldExcludeIt, priorityIt, pathIterator];
+      }
+
+      return [accExclude, accPriority, pathIterator];
+    }, [false, -1, '']);
+
+  return _shouldExclude;
 }
 
 /**
