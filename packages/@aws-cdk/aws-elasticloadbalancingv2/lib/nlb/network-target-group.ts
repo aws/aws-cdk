@@ -54,8 +54,8 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
     this.listeners = [];
 
-    if (props.proxyProtocolV2) {
-      this.setAttribute('proxy_protocol_v2.enabled', 'true');
+    if (props.proxyProtocolV2 != null) {
+      this.setAttribute('proxy_protocol_v2.enabled', props.proxyProtocolV2 ? 'true' : 'false');
     }
 
     this.addTarget(...(props.targets || []));
@@ -103,14 +103,25 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
         ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
       }
     }
-    if (healthCheck.path) {
-      ret.push('Health check paths are not supported for Network Load Balancer health checks');
+
+    if (!healthCheck.protocol) {
+      return ret;
     }
-    if (healthCheck.protocol && !NLB_HEALTH_CHECK_PROTOCOLS.includes(healthCheck.protocol)) {
+
+    if (!NLB_HEALTH_CHECK_PROTOCOLS.includes(healthCheck.protocol)) {
       ret.push(`Health check protocol '${healthCheck.protocol}' is not supported. Must be one of [${NLB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`);
     }
-    if (healthCheck.timeout) {
-      ret.push('Custom health check timeouts are not supported for Network Load Balancer health checks');
+    if (healthCheck.path && !NLB_PATH_HEALTH_CHECK_PROTOCOLS.includes(healthCheck.protocol)) {
+      ret.push([
+        `'${healthCheck.protocol}' health checks do not support the path property.`,
+        `Must be one of [${NLB_PATH_HEALTH_CHECK_PROTOCOLS.join(', ')}]`
+      ].join(' '));
+    }
+    if (healthCheck.timeout && healthCheck.timeout.toSeconds() !== NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]) {
+      ret.push([
+        'Custom health check timeouts are not supported for Network Load Balancer health checks.',
+        `Expected ${NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]} seconds for ${healthCheck.protocol}, got ${healthCheck.timeout.toSeconds()}`
+      ].join(' '));
     }
 
     return ret;
@@ -153,3 +164,9 @@ export interface INetworkLoadBalancerTarget {
 }
 
 const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
+const NLB_PATH_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
+const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} =  {
+  [Protocol.HTTP]: 6,
+  [Protocol.HTTPS]: 10,
+  [Protocol.TCP]: 10,
+};

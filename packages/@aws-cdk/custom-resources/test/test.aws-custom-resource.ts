@@ -223,4 +223,47 @@ export = {
 
     test.done();
   },
+
+  'timeout defaults to 30 seconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      onCreate: {
+        service: 'service',
+        action: 'action',
+        physicalResourceId: 'id'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Timeout: 30
+    }));
+
+    test.done();
+  },
+
+  'can specify timeout'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      onCreate: {
+        service: 'service',
+        action: 'action',
+        physicalResourceId: 'id'
+      },
+      timeout: cdk.Duration.minutes(15)
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Timeout: 900
+    }));
+
+    test.done();
+  }
 };
