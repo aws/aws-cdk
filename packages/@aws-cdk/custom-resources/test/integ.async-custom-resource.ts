@@ -1,5 +1,7 @@
-import { App, Construct, Stack } from '@aws-cdk/core';
-import { AsyncCustomResource } from '../lib/async-custom-resource';
+import lambda = require('@aws-cdk/aws-lambda');
+import { App, CfnOutput, Construct, Stack, Token } from '@aws-cdk/core';
+import path = require('path');
+import { AsyncCustomResource } from '../lib';
 
 const app = new App();
 
@@ -7,26 +9,23 @@ class CustomResourceConsumer extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new AsyncCustomResource(this, 'MyCustomResource', {
-      uuid: 'unique-id-of-custom-resource',
+    const res = new AsyncCustomResource(this, 'MyCustomResource', {
+      handlerCode: lambda.Code.fromAsset(path.join(__dirname, 'acr-demo-handler')),
+      resourceType: 'Custom::Boom',
+      uuid: 'resource1',
       properties: {
         Prop1: 1234,
         Prop2: 'hello'
       },
-      resourceType: 'Custom::Boom',
     });
 
-    new AsyncCustomResource(this, 'YourCustomResource', {
-      resourceType: 'Custom::Boom',
-      uuid: 'unique-id-of-custom-resource',
-      properties: {
-        Prop1: 9999,
-        Prop2: 'bar'
-      },
+    new CfnOutput(this, 'CustomResourceAttribute', {
+      value: Token.asString(res.getAtt('MyAttribute'))
     });
+
   }
 }
 
-new CustomResourceConsumer(app, 'async-custom-resource-integ-5');
+new CustomResourceConsumer(app, 'acr-3');
 
 app.synth();

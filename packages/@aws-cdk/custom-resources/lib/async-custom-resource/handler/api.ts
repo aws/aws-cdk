@@ -1,19 +1,7 @@
+export type OnEventHandler = (event: LifecycleEvent) => Promise<LifecycleEvent>;
+export type IsCompleteHandler = (event: LifecycleEvent) => Promise<boolean>;
 
-export interface AsyncResourceHandler {
-  begin(event: ResourceEvent): BeginResult;
-  complete(event: CompleteResourceEvent): CompleteResult;
-}
-
-export interface CompleteResult {
-  readonly complete: boolean;
-}
-
-export interface BeginResult {
-  readonly PhysicalResourceId: string;
-  readonly Data?: any;
-}
-
-export interface ResourceEvent {
+export interface LifecycleEvent {
   readonly RequestType: RequestType;
   readonly RequestId: string;
   readonly Data?: any; // attributes
@@ -24,10 +12,6 @@ export interface ResourceEvent {
   readonly ResourceProperties: { [key: string]: any };
   readonly PhysicalResourceId?: string;
   readonly ServiceToken: string;
-}
-
-export interface CompleteResourceEvent extends ResourceEvent {
-  readonly PhysicalResourceId: string;
 }
 
 export enum RequestType {
