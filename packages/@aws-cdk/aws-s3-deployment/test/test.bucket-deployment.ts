@@ -255,7 +255,7 @@ export = {
         'storage-class': 'INTELLIGENT_TIERING',
         'server-side-encryption': 'AES256',
         'cache-control': 'public, max-age=3600',
-        'expires': new Date(Date.now() + 12 * 60 * 60 * 1000).toUTCString()
+        'expires': Expires.after(cdk.Duration.hours(12)).value
       }
     }));
 
