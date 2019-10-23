@@ -153,7 +153,7 @@
           ]
         },
         "Runtime": "nodejs10.x",
-        "Timeout": 6
+        "Timeout": 30
       },
       "DependsOn": [
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",

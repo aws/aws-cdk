@@ -224,7 +224,7 @@ export = {
     test.done();
   },
 
-  'timeout defaults to 6 seconds'(test: Test) {
+  'timeout defaults to 30 seconds'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -239,7 +239,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Function', {
-      Timeout: 6
+      Timeout: 30
     }));
 
     test.done();

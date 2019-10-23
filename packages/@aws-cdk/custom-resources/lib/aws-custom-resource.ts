@@ -128,7 +128,7 @@ export interface AwsCustomResourceProps {
   /**
    * The timeout for the Lambda function implementing this custom resource.
    *
-   * @default Duration.seconds(6)
+   * @default Duration.seconds(30)
    */
   readonly timeout?: cdk.Duration
 }
@@ -155,7 +155,7 @@ export class AwsCustomResource extends cdk.Construct {
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
-      timeout: props.timeout || cdk.Duration.seconds(6),
+      timeout: props.timeout || cdk.Duration.seconds(30),
     });
 
     if (props.policyStatements) {
