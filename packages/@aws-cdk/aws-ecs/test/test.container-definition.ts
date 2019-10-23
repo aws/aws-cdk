@@ -66,8 +66,8 @@ export = {
         hostname: "host.example.com",
         privileged: true,
         readonlyRootFilesystem: true,
-        startTimeOut: cdk.Duration.millis(2000),
-        stopTimeOut: cdk.Duration.millis(5000),
+        startTimeout: cdk.Duration.millis(2000),
+        stopTimeout: cdk.Duration.millis(5000),
         user: "rootUser",
         workingDirectory: "a/b/c",
         healthCheck: {

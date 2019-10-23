@@ -129,18 +129,18 @@ export interface ContainerDefinitionOptions {
   readonly secrets?: { [key: string]: Secret };
 
   /**
-   * Time duration to wait before giving up on resolving dependencies for a container.
+   * Time duration (in seconds) to wait before giving up on resolving dependencies for a container.
    *
-   * @default - No start timeout.
+   * @default - none
    */
-  readonly startTimeOut?: cdk.Duration;
+  readonly startTimeout?: cdk.Duration;
 
   /**
-   * Time duration to wait before the container is forcefully killed if it doesn't exit normally on its own.
+   * Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.
    *
-   * @default - No stop timeout.
+   * @default - none
    */
-  readonly stopTimeOut?: cdk.Duration;
+  readonly stopTimeout?: cdk.Duration;
 
   /**
    * Specifies whether the container is marked essential.
@@ -536,8 +536,8 @@ export class ContainerDefinition extends cdk.Construct {
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
-      startTimeout: this.props.startTimeOut && this.props.startTimeOut.toSeconds(),
-      stopTimeout: this.props.stopTimeOut && this.props.stopTimeOut.toSeconds(),
+      startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
+      stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
       ulimits: cdk.Lazy.anyValue({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
       volumesFrom: cdk.Lazy.anyValue({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
