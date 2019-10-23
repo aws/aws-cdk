@@ -12,6 +12,23 @@ export interface IPolicy extends IResource {
    * @attribute
    */
   readonly policyName: string;
+
+  addStatements(...statements: PolicyStatement[]): void;
+
+  /**
+   * Attaches this policy to a user.
+   */
+  attachToUser(user: IUser): void;
+
+  /**
+   * Attaches this policy to a role.
+   */
+  attachToRole(role: IRole): void
+
+  /**
+   * Attaches this policy to a group.
+   */
+  attachToGroup(group: IGroup): void
 }
 
 export interface PolicyProps {
@@ -69,6 +86,22 @@ export class Policy extends Resource implements IPolicy {
   public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;
+
+      public addStatements(..._statements: PolicyStatement[]): void {
+        // do nothing
+      }
+
+      public attachToGroup(_group: IGroup): void {
+        // do nothing
+      }
+
+      public attachToRole(_role: IRole): void {
+        // do nothing
+      }
+
+      public attachToUser(_user: IUser): void {
+        // do nothing
+      }
     }
 
     return new Import(scope, id);
@@ -129,14 +162,14 @@ export class Policy extends Resource implements IPolicy {
   /**
    * Adds a statement to the policy document.
    */
-  public addStatements(...statement: PolicyStatement[]) {
-    this.document.addStatements(...statement);
+  public addStatements(...statements: PolicyStatement[]): void {
+    this.document.addStatements(...statements);
   }
 
   /**
    * Attaches this policy to a user.
    */
-  public attachToUser(user: IUser) {
+  public attachToUser(user: IUser): void {
     if (this.users.find(u => u === user)) { return; }
     this.users.push(user);
     user.attachInlinePolicy(this);
@@ -145,7 +178,7 @@ export class Policy extends Resource implements IPolicy {
   /**
    * Attaches this policy to a role.
    */
-  public attachToRole(role: IRole) {
+  public attachToRole(role: IRole): void {
     if (this.roles.find(r => r === role)) { return; }
     this.roles.push(role);
     role.attachInlinePolicy(this);
@@ -154,7 +187,7 @@ export class Policy extends Resource implements IPolicy {
   /**
    * Attaches this policy to a group.
    */
-  public attachToGroup(group: IGroup) {
+  public attachToGroup(group: IGroup): void {
     if (this.groups.find(g => g === group)) { return; }
     this.groups.push(group);
     group.attachInlinePolicy(this);

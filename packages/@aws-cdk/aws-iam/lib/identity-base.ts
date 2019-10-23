@@ -1,6 +1,6 @@
 import { IResource } from '@aws-cdk/core';
 import { IManagedPolicy } from './managed-policy';
-import { Policy, PolicyProps } from "./policy";
+import { IPolicy, PolicyProps } from './policy';
 import { IPrincipal } from "./principals";
 
 /**
@@ -17,20 +17,20 @@ export interface IIdentity extends IPrincipal, IResource {
    * @returns the newly created Policy resource if this principal is mutable,
    *   or undefined if this principal is immutable
    */
-  addPolicy(id: string, props?: PolicyProps): Policy | undefined;
+  addPolicy(id: string, props?: PolicyProps): IPolicy;
 
   /**
    * Attaches an inline policy to this principal, if this principal is mutable.
    * For a mutable principal, it is the same as calling `policy.addToXxx(principal)`.
    * For an immutable principal, this method does nothing.
    *
-   * @param policy The policy resource to attach to this principal [disable-awslint:ref-via-interface]
+   * @param policy The policy resource to attach to this principal
    *
    * @deprecated for immutable principals, this will leave the policy passed as the first parameter
    *   possibly not attached to any principal, which is invalid in CloudFormation.
    *   Use the {@link addPolicy} method instead
    */
-  attachInlinePolicy(policy: Policy): void;
+  attachInlinePolicy(policy: IPolicy): void;
 
   /**
    * Attaches a managed policy to this principal.

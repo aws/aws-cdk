@@ -2,7 +2,7 @@ import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
-import { Policy, PolicyProps } from './policy';
+import { IPolicy, Policy, PolicyProps } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IUser } from './user';
@@ -73,7 +73,7 @@ abstract class GroupBase extends Resource implements IGroup {
     return new ArnPrincipal(this.groupArn).policyFragment;
   }
 
-  public addPolicy(id: string, props?: PolicyProps): Policy | undefined {
+  public addPolicy(id: string, props?: PolicyProps): IPolicy {
     const policy = new Policy(this, id, props);
     this.attachInlinePolicy(policy);
     return policy;
@@ -83,19 +83,19 @@ abstract class GroupBase extends Resource implements IGroup {
    * Attaches a policy to this group.
    * @param policy The policy to attach.
    */
-  public attachInlinePolicy(policy: Policy) {
+  public attachInlinePolicy(policy: IPolicy): void {
     this.attachedPolicies.attach(policy);
     policy.attachToGroup(this);
   }
 
-  public addManagedPolicy(_policy: IManagedPolicy) {
+  public addManagedPolicy(_policy: IManagedPolicy): void {
     // drop
   }
 
   /**
    * Adds a user to this group.
    */
-  public addUser(user: IUser) {
+  public addUser(user: IUser): void {
     user.addToGroup(this);
   }
 

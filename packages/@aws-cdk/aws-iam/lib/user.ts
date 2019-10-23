@@ -2,8 +2,9 @@ import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { LazyPolicy } from './lazy-policy';
 import { IManagedPolicy } from './managed-policy';
-import { Policy, PolicyProps } from './policy';
+import { IPolicy, Policy, PolicyProps } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
 import { IPrincipal } from './principals';
@@ -114,7 +115,7 @@ export interface UserProps {
 /**
  * Define a new IAM user
  */
-export class User extends Resource implements IIdentity, IUser {
+export class User extends Resource implements IUser {
   /**
    * Import an existing user given a username
    */
@@ -147,11 +148,11 @@ export class User extends Resource implements IIdentity, IUser {
         throw new Error('Cannot add imported User to Group');
       }
 
-      public addPolicy(_id: string, _props?: PolicyProps): Policy | undefined {
-        return undefined;
+      public addPolicy(i: string, props?: PolicyProps): IPolicy {
+        return new LazyPolicy(this, i, props);
       }
 
-      public attachInlinePolicy(_policy: Policy): void {
+      public attachInlinePolicy(_policy: IPolicy): void {
         throw new Error('Cannot add inline policy to imported User');
       }
 
@@ -225,7 +226,7 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Adds this user to a group.
    */
-  public addToGroup(group: IGroup) {
+  public addToGroup(group: IGroup): void {
     this.groups.push(group.groupName);
   }
 
@@ -233,12 +234,12 @@ export class User extends Resource implements IIdentity, IUser {
    * Attaches a managed policy to the user.
    * @param policy The managed policy to attach.
    */
-  public addManagedPolicy(policy: IManagedPolicy) {
+  public addManagedPolicy(policy: IManagedPolicy): void {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
   }
 
-  public addPolicy(id: string, props?: PolicyProps): Policy | undefined {
+  public addPolicy(id: string, props?: PolicyProps): IPolicy {
     const policy = new Policy(this, id, props);
     this.attachInlinePolicy(policy);
     return policy;
@@ -247,7 +248,7 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Attaches a policy to this user.
    */
-  public attachInlinePolicy(policy: Policy) {
+  public attachInlinePolicy(policy: IPolicy): void {
     this.attachedPolicies.attach(policy);
     policy.attachToUser(this);
   }

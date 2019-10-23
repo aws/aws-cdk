@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/core');
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
-import { Policy, PolicyProps } from './policy';
+import { IPolicy, Policy, PolicyProps } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
@@ -28,7 +28,7 @@ export class LazyRole extends cdk.Resource implements IRole {
 
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();
-  private readonly policies = new Array<Policy>();
+  private readonly policies = new Array<IPolicy>();
   private readonly managedPolicies = new Array<IManagedPolicy>();
 
   constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
@@ -49,7 +49,7 @@ export class LazyRole extends cdk.Resource implements IRole {
     }
   }
 
-  public addPolicy(id: string, props?: PolicyProps): Policy | undefined {
+  public addPolicy(id: string, props?: PolicyProps): IPolicy {
     const policy = new Policy(this, id, props);
     this.attachInlinePolicy(policy);
     return policy;
@@ -59,7 +59,7 @@ export class LazyRole extends cdk.Resource implements IRole {
    * Attaches a policy to this role.
    * @param policy The policy to attach
    */
-  public attachInlinePolicy(policy: Policy): void {
+  public attachInlinePolicy(policy: IPolicy): void {
     if (this.role) {
       this.role.attachInlinePolicy(policy);
     } else {

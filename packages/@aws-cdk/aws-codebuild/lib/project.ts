@@ -961,13 +961,11 @@ export class Project extends ProjectBase {
         }),
       ],
     });
-    if (policy) {
-      // add an explicit dependency between the VPC Policy and this Project -
-      // otherwise, creating the Project fails,
-      // as it requires these permissions to be already attached to the Project's Role
-      const cfnPolicy = policy.node.defaultChild as CfnResource;
-      project.addDependsOn(cfnPolicy);
-    }
+    // add an explicit dependency between the VPC Policy and this Project -
+    // otherwise, creating the Project fails,
+    // as it requires these permissions to be already attached to the Project's Role
+    const cfnPolicy = policy.node.defaultChild as CfnResource;
+    project.addDependsOn(cfnPolicy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {

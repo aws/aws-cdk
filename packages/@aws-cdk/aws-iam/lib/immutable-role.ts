@@ -1,9 +1,12 @@
+import { ConstructNode, Stack } from "@aws-cdk/core";
 import { Grant } from './grant';
+import { IGroup } from './group';
 import { IManagedPolicy } from './managed-policy';
-import { Policy, PolicyProps } from './policy';
+import { IPolicy, PolicyProps } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal } from './principals';
 import { IRole } from './role';
+import { IUser } from './user';
 
 /**
  * An immutable wrapper around an IRole that ignores all mutating operations,
@@ -26,11 +29,11 @@ export class ImmutableRole implements IRole {
   constructor(private readonly role: IRole) {
   }
 
-  public addPolicy(_id: string, _props?: PolicyProps): Policy | undefined {
-    return undefined;
+  public addPolicy(_id: string, _props?: PolicyProps): IPolicy {
+    return new ImmutablePolicy();
   }
 
-  public attachInlinePolicy(_policy: Policy): void {
+  public attachInlinePolicy(_policy: IPolicy): void {
     // do nothing
   }
 
@@ -48,5 +51,35 @@ export class ImmutableRole implements IRole {
 
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
+  }
+}
+
+class ImmutablePolicy implements IPolicy {
+  public addStatements(..._statements: PolicyStatement[]): void {
+    // do nothing
+  }
+
+  public attachToGroup(_group: IGroup): void {
+    // do nothing
+  }
+
+  public attachToRole(_role: IRole): void {
+    // do nothing
+  }
+
+  public attachToUser(_user: IUser): void {
+    // do nothing
+  }
+
+  public get node(): ConstructNode {
+    throw new Error('IConstruct.node is not implemented for ImmutablePolicy');
+  }
+
+  public get policyName(): string {
+    throw new Error('IPolicy.policyName is not implemented for ImmutablePolicy');
+  }
+
+  public get stack(): Stack {
+    throw new Error('IResource.stack is not implemented for ImmutablePolicy');
   }
 }
