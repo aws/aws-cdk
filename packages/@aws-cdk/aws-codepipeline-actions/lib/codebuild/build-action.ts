@@ -60,6 +60,15 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default CodeBuildActionType.BUILD
    */
   readonly type?: CodeBuildActionType;
+
+  /**
+   * The environment variables to pass to the CodeBuild project when this action executes.
+   * If a variable with the same name was set both on the project level, and here,
+   * this value will take precedence.
+   *
+   * @default - No additional environment variables are specified.
+   */
+  readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable };
 }
 
 /**
@@ -125,6 +134,8 @@ export class CodeBuildAction extends Action {
 
     const configuration: any = {
       ProjectName: this.props.project.projectName,
+      EnvironmentVariables: this.props.environmentVariables &&
+        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
