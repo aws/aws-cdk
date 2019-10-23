@@ -10,6 +10,7 @@ import fs = require('fs');
 import path = require("path");
 import { ISource, SourceConfig } from "./source";
 
+const now = Date.now();
 const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
 const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
@@ -256,29 +257,10 @@ function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
 }
 
 function mapSystemMetadata(metadata: BucketDeploymentProps) {
-  function mapCacheControlDirective(cacheControl: CacheControl) {
-    const { value } = cacheControl;
-
-    if (typeof value === "string") { return value; }
-    if ("max-age" in value) { return `max-age=${value["max-age"].toSeconds()}`; }
-    if ("s-max-age" in value) { return `s-max-age=${value["s-max-age"].toSeconds()}`; }
-
-    throw new Error(`Unsupported cache-control directive ${value}`);
-  }
-  function mapExpires(expires: Expires) {
-    const { value } = expires;
-
-    if (typeof value === "string") { return value; }
-    if (value instanceof Date) { return value.toUTCString(); }
-    if (value instanceof cdk.Duration) { return new Date(Date.now() + value.toMilliseconds()).toUTCString(); }
-
-    throw new Error(`Unsupported expires ${expires}`);
-  }
-
   const res: { [key: string]: string } = {};
 
-  if (metadata.cacheControl) { res["cache-control"] = metadata.cacheControl.map(mapCacheControlDirective).join(", "); }
-  if (metadata.expires) { res.expires = mapExpires(metadata.expires); }
+  if (metadata.cacheControl) { res["cache-control"] = metadata.cacheControl.map(c => c.value).join(", "); }
+  if (metadata.expires) { res.expires = metadata.expires.value; }
   if (metadata.contentDisposition) { res["content-disposition"] = metadata.contentDisposition; }
   if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
@@ -303,11 +285,11 @@ export class CacheControl {
   public static setPublic() { return new CacheControl("public"); }
   public static setPrivate() { return new CacheControl("private"); }
   public static proxyRevalidate() { return new CacheControl("proxy-revalidate"); }
-  public static maxAge(t: cdk.Duration) { return new CacheControl({ "max-age": t }); }
-  public static sMaxAge(t: cdk.Duration) { return new CacheControl({ "s-max-age": t }); }
+  public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
+  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-max-age=${t.toSeconds()}`); }
   public static fromString(s: string) {  return new CacheControl(s); }
 
-  private constructor(public value: any) {}
+  private constructor(public readonly value: any) {}
 }
 
 /**
@@ -343,20 +325,23 @@ export class Expires {
    * Expire at the specified date
    * @param d date to expire at
    */
-  public static atDate(d: Date) { return new Expires(d); }
+  public static atDate(d: Date) { return new Expires(d.toUTCString()); }
+
   /**
    * Expire at the specified timestamp
    * @param t timestamp in unix milliseconds
    */
-  public static atTimestamp(t: number) { return new Expires(t); }
+  public static atTimestamp(t: number) { return Expires.atDate(new Date(t)); }
+
   /**
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static after(t: cdk.Duration) { return new Expires(t); }
+  public static after(t: cdk.Duration) { return Expires.atDate(new Date(now + t.toMilliseconds())); }
+
   public static fromString(s: string) { return new Expires(s); }
 
-  private constructor(public value: any) {}
+  private constructor(public readonly value: any) {}
 }
 
 export interface UserDefinedObjectMetadata {
