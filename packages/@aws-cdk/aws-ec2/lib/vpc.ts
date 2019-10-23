@@ -205,6 +205,19 @@ export interface SubnetSelection {
    * @default false
    */
   readonly onePerAz?: boolean;
+
+  /**
+   * Explicitly select individual subnets
+   *
+   * Use this if you don't want to automatically use all subnets in
+   * a group, but have a need to control selection down to
+   * individual subnets.
+   *
+   * Cannot be specified together with `subnetType` or `subnetGroupName`.
+   *
+   * @default - Use all subnets in a selected group (all private subnets by default)
+   */
+  readonly subnets?: ISubnet[]
 }
 
 /**
@@ -339,7 +352,10 @@ abstract class VpcBase extends Resource implements IVpc {
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
     selection = reifySelectionDefaults(selection);
 
-    if (selection.subnetGroupName !== undefined) { // Select by name
+    if (selection.subnets !== undefined) {
+      return selection.subnets;
+
+    } else if (selection.subnetGroupName !== undefined) { // Select by name
       return this.selectSubnetObjectsByName(selection.subnetGroupName);
 
     } else {
@@ -1460,11 +1476,13 @@ function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
     placement = {...placement, subnetGroupName: placement.subnetName };
   }
 
-  if (placement.subnetType !== undefined && placement.subnetGroupName !== undefined) {
-    throw new Error(`Only one of 'subnetType' and 'subnetGroupName' can be supplied`);
+  const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
+  const providedSelections = exclusiveSelections.filter(key => placement[key] !== undefined);
+  if (providedSelections.length > 1) {
+    throw new Error(`Only one of '${providedSelections}' can be supplied to subnet selection.`);
   }
 
-  if (placement.subnetType === undefined && placement.subnetGroupName === undefined) {
+  if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
     return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz };
   }
 
