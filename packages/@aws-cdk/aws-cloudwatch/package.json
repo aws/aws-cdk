@@ -81,6 +81,7 @@
   "awslint": {
     "exclude": [
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.period",
+      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.period",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.NONE",
@@ -115,7 +116,12 @@
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.extendedStatistic",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.statistic",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.unit",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.color",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.dimensions",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.label",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.statistic",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.unit",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.color",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.label",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.stat",

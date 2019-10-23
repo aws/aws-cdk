@@ -201,6 +201,12 @@ export class Metric implements IMetric {
         color: this.color,
         label: this.label,
       },
+      // deprecated properties for backwards compatibility
+      period: this.period.toSeconds(),
+      statistic: this.statistic,
+      unit: this.unit,
+      color: this.color,
+      label: this.label,
     };
   }
 

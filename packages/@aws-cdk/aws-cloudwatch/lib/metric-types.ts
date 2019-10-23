@@ -136,6 +136,41 @@ export interface MetricGraphConfig {
    * Rendering properties override yAxis parameter of the widget object
    */
   readonly renderingProperties: MetricRenderingProperties;
+
+  /**
+   * How many seconds to aggregate over
+   *
+   * @deprecated Use `period` in `renderingProperties`
+   */
+  readonly period: number;
+
+  /**
+   * Label for the metric
+   *
+   * @deprecated Use `label` in `renderingProperties`
+   */
+  readonly label?: string;
+
+  /**
+   * Color for the graph line
+   *
+   * @deprecated Use `color` in `renderingProperties`
+   */
+  readonly color?: string;
+
+  /**
+   * Aggregation function to use (can be either simple or a percentile)
+   *
+   * @deprecated Use `stat` in `renderingProperties`
+   */
+  readonly statistic?: string;
+
+  /**
+   * The unit of the alarm
+   *
+   * @deprecated not used in dashboard widgets
+   */
+  readonly unit?: Unit;
 }
 
 /**
