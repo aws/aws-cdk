@@ -494,7 +494,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.acmCertificate({ certificate }),
+          viewerCertificate: ViewerCertificate.fromAcmCertificate({ certificate }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -524,7 +524,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.acmCertificate({ certificate }),
+          viewerCertificate: ViewerCertificate.fromAcmCertificate({ certificate }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -552,7 +552,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.acmCertificate({
+          viewerCertificate: ViewerCertificate.fromAcmCertificate({
             certificate,
             securityPolicy: SecurityPolicyProtocol.SSL_V3,
             sslMethod: SSLMethod.VIP
@@ -587,7 +587,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.iamCertificate({ certificateId: 'test' }),
+          viewerCertificate: ViewerCertificate.fromIamCertificate({ certificateId: 'test' }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -611,7 +611,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.iamCertificate({
+          viewerCertificate: ViewerCertificate.fromIamCertificate({
             certificateId: 'test',
             securityPolicy: SecurityPolicyProtocol.TLS_V1,
             sslMethod: SSLMethod.VIP
@@ -642,7 +642,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.cloudFrontDefaultCertificate(),
+          viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate(),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -665,7 +665,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.cloudFrontDefaultCertificate('example.com', 'www.example.com'),
+          viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -692,7 +692,7 @@ export = {
               behaviors: [{ isDefaultBehavior: true }]
             }],
             aliasConfiguration: {acmCertRef: 'test', names: ['ftp.example.com']},
-            viewerCertificate: ViewerCertificate.cloudFrontDefaultCertificate('example.com', 'www.example.com'),
+            viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
           });
         }, /You cannot set both aliasConfiguration and viewerCertificate properties/);
 
@@ -708,7 +708,7 @@ export = {
               s3OriginSource: { s3BucketSource: sourceBucket },
               behaviors: [{ isDefaultBehavior: true }]
             }],
-            viewerCertificate: ViewerCertificate.iamCertificate({
+            viewerCertificate: ViewerCertificate.fromIamCertificate({
               certificateId: 'test',
               securityPolicy: SecurityPolicyProtocol.TLS_V1_1_2016,
               sslMethod: SSLMethod.VIP
@@ -732,7 +732,7 @@ export = {
               s3OriginSource: { s3BucketSource: sourceBucket },
               behaviors: [{ isDefaultBehavior: true }]
             }],
-            viewerCertificate: ViewerCertificate.acmCertificate({ certificate }),
+            viewerCertificate: ViewerCertificate.fromAcmCertificate({ certificate }),
           });
         }, /acmCertificate certficate must be in the us-east-1 region, got eu-west-3/);
 

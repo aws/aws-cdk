@@ -438,7 +438,7 @@ export class ViewerCertificate {
    * @param options ACM certificate configuration options
    * @param aliases Domain names on the certificate (both main domain name and Subject Alternative names)
    */
-  public static acmCertificate(options: ViewerCertificateAcmCertficateOptions, ...aliases: string[]) {
+  public static fromAcmCertificate(options: ViewerCertificateAcmCertficateOptions, ...aliases: string[]) {
     const {
        certificate,
        sslMethod: sslSupportMethod = SSLMethod.SNI,
@@ -462,7 +462,7 @@ export class ViewerCertificate {
    * @param options IAM certificate configuration options
    * @param aliases Domain names on the certificate (both main domain name and Subject Alternative names)
    */
-  public static iamCertificate(options: ViewerCertificateIamCertficateOptions, ...aliases: string[]) {
+  public static fromIamCertificate(options: ViewerCertificateIamCertficateOptions, ...aliases: string[]) {
     const {
       certificateId: iamCertificateId,
       sslMethod: sslSupportMethod = SSLMethod.SNI,
@@ -482,7 +482,7 @@ export class ViewerCertificate {
    * @param aliases Alternative CNAME aliases
    *                You also must create a CNAME record with your DNS service to route queries
    */
-  public static cloudFrontDefaultCertificate(...aliases: string[]) {
+  public static fromCloudFrontDefaultCertificate(...aliases: string[]) {
     return new ViewerCertificate({ cloudFrontDefaultCertificate: true }, aliases);
   }
 
@@ -580,7 +580,7 @@ export interface CloudFrontWebDistributionProps {
    * whether you're using an alternate domain name with HTTPS, and if so,
    * if you're using AWS Certificate Manager (ACM) or a third-party certificate authority.
    *
-   * @default ViewerCertificate.cloudFrontDefaultCertificate()
+   * @default ViewerCertificate.fromCloudFrontDefaultCertificate()
    *
    * @see https://aws.amazon.com/premiumsupport/knowledge-center/custom-ssl-certificate-cloudfront/
    */
@@ -775,7 +775,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     if (props.aliasConfiguration) {
       const {acmCertRef, securityPolicy, sslMethod, names} = props.aliasConfiguration;
 
-      _viewerCertificate = ViewerCertificate.acmCertificate({
+      _viewerCertificate = ViewerCertificate.fromAcmCertificate({
         certificate: certificatemanager.Certificate.fromCertificateArn(scope, 'AliasConfigurationCert', acmCertRef),
         securityPolicy,
         sslMethod
