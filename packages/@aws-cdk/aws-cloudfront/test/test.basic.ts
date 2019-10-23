@@ -494,7 +494,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.fromAcmCertificate({ certificate }),
+          viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -524,7 +524,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.fromAcmCertificate({ certificate }),
+          viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -552,13 +552,11 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.fromAcmCertificate({
-            certificate,
+          viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate, {
             securityPolicy: SecurityPolicyProtocol.SSL_V3,
-            sslMethod: SSLMethod.VIP
-          },
-            'example.com', 'www.example.com'
-          ),
+            sslMethod: SSLMethod.VIP,
+            aliases: ['example.com', 'www.example.com']
+          }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -587,7 +585,7 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.fromIamCertificate({ certificateId: 'test' }),
+          viewerCertificate: ViewerCertificate.fromIamCertificate('test'),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -611,11 +609,11 @@ export = {
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }]
           }],
-          viewerCertificate: ViewerCertificate.fromIamCertificate({
-            certificateId: 'test',
+          viewerCertificate: ViewerCertificate.fromIamCertificate('test', {
             securityPolicy: SecurityPolicyProtocol.TLS_V1,
-            sslMethod: SSLMethod.VIP
-          }, 'example.com'),
+            sslMethod: SSLMethod.VIP,
+            aliases: ['example.com']
+          }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
@@ -708,8 +706,7 @@ export = {
               s3OriginSource: { s3BucketSource: sourceBucket },
               behaviors: [{ isDefaultBehavior: true }]
             }],
-            viewerCertificate: ViewerCertificate.fromIamCertificate({
-              certificateId: 'test',
+            viewerCertificate: ViewerCertificate.fromIamCertificate('test', {
               securityPolicy: SecurityPolicyProtocol.TLS_V1_1_2016,
               sslMethod: SSLMethod.VIP
             }),
@@ -732,7 +729,7 @@ export = {
               s3OriginSource: { s3BucketSource: sourceBucket },
               behaviors: [{ isDefaultBehavior: true }]
             }],
-            viewerCertificate: ViewerCertificate.fromAcmCertificate({ certificate }),
+            viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
           });
         }, /acmCertificate certficate must be in the us-east-1 region, got eu-west-3/);
 

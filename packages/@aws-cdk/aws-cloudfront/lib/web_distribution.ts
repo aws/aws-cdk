@@ -390,7 +390,7 @@ export enum LambdaEdgeEventType {
   VIEWER_RESPONSE = "viewer-response",
 }
 
-interface ViewerCertificateBaseCertficateOptions {
+export interface ViewerCertificateOptions {
   /**
    * How CloudFront should serve HTTPS requests.
    *
@@ -410,22 +410,11 @@ interface ViewerCertificateBaseCertficateOptions {
    * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
    */
   readonly securityPolicy?: SecurityPolicyProtocol;
-}
 
-export interface ViewerCertificateAcmCertficateOptions extends ViewerCertificateBaseCertficateOptions {
   /**
-   * AWS Certificate Manager (ACM) certificate.
-   *
-   * Your certificate must be located in the us-east-1 (US East (N. Virginia)) region to be accessed by CloudFront
+   * Domain names on the certificate (both main domain name and Subject Alternative names)
    */
-  readonly certificate: certificatemanager.ICertificate;
-}
-
-export interface ViewerCertificateIamCertficateOptions extends ViewerCertificateBaseCertficateOptions {
-  /**
-   * Identifier of the IAM certificate.
-   */
-  readonly certificateId: string;
+  readonly aliases?: string[];
 }
 
 /**
@@ -435,14 +424,15 @@ export class ViewerCertificate {
   /**
    * Generate an AWS Certificate Manager (ACM) viewer certificate configuration
    *
-   * @param options ACM certificate configuration options
-   * @param aliases Domain names on the certificate (both main domain name and Subject Alternative names)
+   * @param certificate AWS Certificate Manager (ACM) certificate.
+   *                    Your certificate must be located in the us-east-1 (US East (N. Virginia)) region to be accessed by CloudFront
+   * @param options certificate configuration options
    */
-  public static fromAcmCertificate(options: ViewerCertificateAcmCertficateOptions, ...aliases: string[]) {
+  public static fromAcmCertificate(certificate: certificatemanager.ICertificate, options: ViewerCertificateOptions = {}) {
     const {
-       certificate,
        sslMethod: sslSupportMethod = SSLMethod.SNI,
-       securityPolicy: minimumProtocolVersion
+       securityPolicy: minimumProtocolVersion,
+       aliases,
     } = options;
 
     const certificateRegion = certificatemanager.getCertificateRegion(certificate);
@@ -459,14 +449,14 @@ export class ViewerCertificate {
   /**
    * Generate an IAM viewer certificate configuration
    *
-   * @param options IAM certificate configuration options
-   * @param aliases Domain names on the certificate (both main domain name and Subject Alternative names)
+   * @param iamCertificateId Identifier of the IAM certificate
+   * @param options certificate configuration options
    */
-  public static fromIamCertificate(options: ViewerCertificateIamCertficateOptions, ...aliases: string[]) {
+  public static fromIamCertificate(iamCertificateId: string, options: ViewerCertificateOptions = {}) {
     const {
-      certificateId: iamCertificateId,
       sslMethod: sslSupportMethod = SSLMethod.SNI,
-      securityPolicy: minimumProtocolVersion
+      securityPolicy: minimumProtocolVersion,
+      aliases,
     } = options;
 
     return new ViewerCertificate({
@@ -773,13 +763,12 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
     let _viewerCertificate = props.viewerCertificate;
     if (props.aliasConfiguration) {
-      const {acmCertRef, securityPolicy, sslMethod, names} = props.aliasConfiguration;
+      const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
 
-      _viewerCertificate = ViewerCertificate.fromAcmCertificate({
-        certificate: certificatemanager.Certificate.fromCertificateArn(scope, 'AliasConfigurationCert', acmCertRef),
-        securityPolicy,
-        sslMethod
-      }, ...names);
+      _viewerCertificate = ViewerCertificate.fromAcmCertificate(
+        certificatemanager.Certificate.fromCertificateArn(scope, 'AliasConfigurationCert', acmCertRef),
+        { securityPolicy, sslMethod, aliases }
+      );
     }
 
     if (_viewerCertificate) {
