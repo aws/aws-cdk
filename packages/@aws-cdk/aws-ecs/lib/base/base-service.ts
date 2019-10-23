@@ -368,7 +368,7 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
-   * listener.addTarget(service.loadBalancerTarget({
+   * listener.addTargets(service.loadBalancerTarget({
    *   containerName: 'MyContainer',
    *   containerPort: 1234
    * }));
@@ -395,6 +395,8 @@ export abstract class BaseService extends Resource
   /**
    * Use this function to create all load balancer targets to be registered in this service, add them to
    * target groups, and attach target groups to listeners accordingly.
+   *
+   * Alternatively, you can use `listener.addTargets()` to create targets and add them to target groups.
    *
    * @example
    *
