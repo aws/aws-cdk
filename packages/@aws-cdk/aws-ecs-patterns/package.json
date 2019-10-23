@@ -102,5 +102,13 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedFargateService.assignPublicIp",
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ApplicationLoadBalancedTaskImageOptions",
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedTaskImageOptions",
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ScheduledTaskImageProps"
+    ]
+  }
 }

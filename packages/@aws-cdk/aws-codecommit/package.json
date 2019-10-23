@@ -90,5 +90,20 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awslint": {
+    "exclude": [
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.events",
+      "docs-public-apis:@aws-cdk/aws-codecommit.Repository.fromRepositoryName",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryProps",
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.branches",
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.customData",
+      "docs-public-apis:@aws-cdk/aws-codecommit.IRepository",
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.name",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.ALL",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.UPDATE_REF",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.CREATE_REF",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.DELETE_REF"
+    ]
+  }
 }

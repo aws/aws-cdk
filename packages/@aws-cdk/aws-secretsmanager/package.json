@@ -92,7 +92,13 @@
       "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
       "from-attributes:fromSecretTargetAttachmentAttributes",
       "props-physical-name:@aws-cdk/aws-secretsmanager.RotationScheduleProps",
-      "props-physical-name:@aws-cdk/aws-secretsmanager.SecretTargetAttachmentProps"
+      "props-physical-name:@aws-cdk/aws-secretsmanager.SecretTargetAttachmentProps",
+      "docs-public-apis:@aws-cdk/aws-secretsmanager.Secret.fromSecretArn",
+      "props-default-doc:@aws-cdk/aws-secretsmanager.SecretStringGenerator.secretStringTemplate",
+      "props-default-doc:@aws-cdk/aws-secretsmanager.SecretStringGenerator.generateStringKey",
+      "props-default-doc:@aws-cdk/aws-secretsmanager.SecretAttributes.encryptionKey",
+      "docs-public-apis:@aws-cdk/aws-secretsmanager.ISecretTargetAttachment",
+      "docs-public-apis:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn"
     ]
   },
   "stability": "stable"

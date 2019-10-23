@@ -96,5 +96,14 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-sns-subscriptions.EmailSubscription.bind",
+      "docs-public-apis:@aws-cdk/aws-sns-subscriptions.LambdaSubscription.bind",
+      "docs-public-apis:@aws-cdk/aws-sns-subscriptions.SqsSubscription.bind",
+      "docs-public-apis:@aws-cdk/aws-sns-subscriptions.UrlSubscription.bind",
+      "docs-public-apis:@aws-cdk/aws-sns-subscriptions.SubscriptionProps"
+    ]
+  }
 }

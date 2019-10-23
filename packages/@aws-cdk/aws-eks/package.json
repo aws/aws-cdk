@@ -93,7 +93,13 @@
   },
   "awslint": {
     "exclude": [
-      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn"
+      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
+      "props-default-doc:@aws-cdk/aws-eks.AutoScalingGroupOptions.bootstrapOptions",
+      "docs-public-apis:@aws-cdk/aws-eks.AwsAuthProps",
+      "docs-public-apis:@aws-cdk/aws-eks.BootstrapOptions",
+      "docs-public-apis:@aws-cdk/aws-eks.ClusterAttributes",
+      "docs-public-apis:@aws-cdk/aws-eks.KubernetesResourceProps",
+      "docs-public-apis:@aws-cdk/aws-eks.Mapping"
     ]
   },
   "stability": "experimental"

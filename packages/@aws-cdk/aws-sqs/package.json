@@ -90,7 +90,12 @@
   "awslint": {
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-sqs.QueueBase",
-      "props-physical-name:@aws-cdk/aws-sqs.QueuePolicyProps"
+      "props-physical-name:@aws-cdk/aws-sqs.QueuePolicyProps",
+      "docs-public-apis:@aws-cdk/aws-sqs.Queue.fromQueueArn",
+      "docs-public-apis:@aws-cdk/aws-sqs.IQueue",
+      "props-default-doc:@aws-cdk/aws-sqs.QueueAttributes.keyArn",
+      "props-default-doc:@aws-cdk/aws-sqs.QueueAttributes.queueUrl",
+      "docs-public-apis:@aws-cdk/aws-sqs.QueuePolicyProps"
     ]
   },
   "stability": "stable"
