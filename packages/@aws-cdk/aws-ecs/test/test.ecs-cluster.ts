@@ -1200,7 +1200,7 @@ export = {
     test.done();
   },
 
-  "properly builds a stack with a public VPC without NAT Gateways"(test: Test) {
+  "ASG with a public VPC without NAT Gateways"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyPublicVpc', {
