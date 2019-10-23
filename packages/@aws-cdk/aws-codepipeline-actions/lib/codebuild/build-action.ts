@@ -107,10 +107,14 @@ export class CodeBuildAction extends Action {
     }));
 
     // allow the Project access to the Pipeline's artifact Bucket
-    if ((this.actionProperties.outputs || []).length > 0) {
-      options.bucket.grantReadWrite(this.props.project);
-    } else {
-      options.bucket.grantRead(this.props.project);
+    // but only if the project is not imported
+    // (ie., has a role) - otherwise, the IAM library throws an error
+    if (this.props.project.role) {
+      if ((this.actionProperties.outputs || []).length > 0) {
+        options.bucket.grantReadWrite(this.props.project);
+      } else {
+        options.bucket.grantRead(this.props.project);
+      }
     }
 
     if (this.props.project instanceof codebuild.Project) {
