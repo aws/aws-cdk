@@ -21,7 +21,7 @@ export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 /bin/bash ./install.sh
 
-npx lerna version ${version} --exact --force-publish=* --no-git-tag-version --no-push
+npx lerna version ${version} --yes --exact --force-publish=* --no-git-tag-version --no-push
 
 # Another round of install to fix package-lock.jsons
 /bin/bash ./install.sh
