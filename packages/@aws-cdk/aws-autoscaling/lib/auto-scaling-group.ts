@@ -348,7 +348,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget {
+  elbv2.INetworkLoadBalancerTarget,
+  iam.IGrantable {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
