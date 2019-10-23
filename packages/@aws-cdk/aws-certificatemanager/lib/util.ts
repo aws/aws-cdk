@@ -20,10 +20,11 @@ export function apexDomain(domainName: string): string {
   return accumulated.reverse().join('.');
 }
 
-export const isDnsValidatedCertificate = (cert: ICertificate): cert is DnsValidatedCertificate =>
-  cert.hasOwnProperty('domainName');
+export function isDnsValidatedCertificate(cert: ICertificate): cert is DnsValidatedCertificate {
+  return cert.hasOwnProperty('domainName');
+}
 
-export const getCertificateRegion = (cert: ICertificate): string | undefined => {
+export function getCertificateRegion(cert: ICertificate): string | undefined {
   const { certificateArn, stack } = cert;
 
   if (isDnsValidatedCertificate(cert)) {
@@ -47,4 +48,4 @@ export const getCertificateRegion = (cert: ICertificate): string | undefined => 
   }
 
   return Stack.of(stack).region;
-};
+}
