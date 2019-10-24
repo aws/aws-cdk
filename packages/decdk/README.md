@@ -107,7 +107,7 @@ Based on the AWS Construct Library's consistent guidelines and conventions, whic
 ```ts
 new lambda.Function(this, 'MyHandler', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NodeJS810,
+  runtime: lambda.Runtime.NODEJS_10_X,
   code: lambda.Code.asset('./src')
 });
 ```
@@ -120,7 +120,7 @@ And here's the deCDK version:
     "Type": "@aws-cdk/aws-lambda.Function",
     "Properties": {
       "handler": "index.handler",
-      "runtime": "NodeJS810",
+      "runtime": "nodejs10.x",
       "code": { "asset": { "path": "./src" } }
     }
   }

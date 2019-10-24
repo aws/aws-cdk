@@ -1256,7 +1256,7 @@ export = {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
     }));
 
     // THEN

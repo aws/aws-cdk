@@ -19,7 +19,7 @@ class FirstStack extends cdk.Stack {
           }
         }`),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
       });
     }
 }
