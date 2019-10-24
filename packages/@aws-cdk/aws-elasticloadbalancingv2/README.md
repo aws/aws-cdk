@@ -208,6 +208,22 @@ listener.addTargets('AppFleet', {
 listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
 
+### Using a Load Balancer from a different Stack
+
+If you want to put your Load Balancer and the Targets it is load balancing to in
+different stacks, you may not be able to use the convenience methods
+`loadBalancer.addListener()` and `listener.addTargets()`.
+
+The reason is that these methods will create resources in the same Stack as the
+object they're called on, which may lead to cyclic references between stacks.
+Instead, you will have to create an `ApplicationListener` in the service stack,
+or an empty `TargetGroup` in the load balancer stack that you attach your
+service to.
+
+For an example of the alternatives while load balancing to an ECS service, see the
+[ecs/cross-stack-load-balancer
+example](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/ecs/cross-stack-load-balancer/).
+
 ### Protocol for Load Balancer Targets
 
 Constructs that want to be a load balancer target should implement

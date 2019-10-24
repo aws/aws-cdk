@@ -402,7 +402,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.portMappings.push(...portMappings.map(pm => {
       if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
-          throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
+          throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
         }
       }
 
