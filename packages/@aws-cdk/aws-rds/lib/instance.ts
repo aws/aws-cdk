@@ -474,7 +474,6 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
-  protected readonly securityGroups: ec2.ISecurityGroup[];
 
   private readonly cloudwatchLogsExports?: string[];
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
@@ -493,13 +492,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       subnetIds
     });
 
-    this.securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
+    const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
       description: `Security group for ${this.node.id} database`,
       vpc: props.vpc
     })];
 
     this.connections = new ec2.Connections({
-      securityGroups: this.securityGroups,
+      securityGroups,
       defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port }))
     });
 
@@ -549,7 +548,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
-      vpcSecurityGroups: this.securityGroups.map(s => s.securityGroupId)
+      vpcSecurityGroups: securityGroups.map(s => s.securityGroupId)
     };
   }
 
