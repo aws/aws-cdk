@@ -449,7 +449,7 @@
                 "Version": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveType": "Integer",
-                    "Required": true,
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
