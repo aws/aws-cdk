@@ -348,7 +348,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget {
+  elbv2.INetworkLoadBalancerTarget,
+  iam.IGrantable {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
@@ -377,6 +378,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * The IAM role assumed by instances of this fleet.
    */
   public readonly role: iam.IRole;
+
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Name of the AutoScalingGroup
@@ -420,6 +426,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+
+    this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [ this.role.roleName ]
