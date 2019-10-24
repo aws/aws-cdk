@@ -55,6 +55,53 @@ export = {
     test.done();
   },
 
+  async 'derives repository name from asset id'(test: Test) {
+    // GIVEN
+
+    let createdName;
+
+    const sdk = new MockSDK();
+    sdk.stubEcr({
+      describeRepositories() {
+        return { repositories: [] };
+      },
+
+      createRepository(req) {
+        createdName = req.repositoryName;
+
+        // Stop the test so that we don't actually docker build
+        throw new Error('STOPTEST');
+      },
+    });
+
+    const toolkit = new ToolkitInfo({
+      sdk,
+      bucketName: 'BUCKET_NAME',
+      bucketEndpoint: 'BUCKET_ENDPOINT',
+      environment: { name: 'env', account: '1234', region: 'abc' }
+    });
+
+    // WHEN
+    const asset: cxapi.ContainerImageAssetMetadataEntry = {
+      id: 'Stack:Construct/ABC123',
+      imageNameParameter: 'MyParameter',
+      packaging: 'container-image',
+      path: '/foo',
+      sourceHash: '0123456789abcdef',
+    };
+
+    try {
+      await prepareContainerAsset('.', asset, toolkit, false);
+    } catch (e) {
+      if (!/STOPTEST/.test(e.toString())) { throw e; }
+    }
+
+    // THEN
+    test.deepEqual(createdName, 'cdk/stack-construct-abc123');
+
+    test.done();
+  },
+
   async 'passes the correct target to docker build'(test: Test) {
     // GIVEN
     const toolkit = new ToolkitInfo({
