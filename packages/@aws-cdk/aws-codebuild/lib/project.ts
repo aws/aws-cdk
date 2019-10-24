@@ -5,6 +5,7 @@ import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import s3 = require('@aws-cdk/aws-s3');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
@@ -547,6 +548,16 @@ export interface ProjectProps extends CommonProjectProps {
 }
 
 /**
+ * The extra options passed to the {@link IProject.bindToCodePipeline} method.
+ */
+export interface BindToCodePipelineOptions {
+  /**
+   * The artifact bucket that will be used by the action that invokes this project.
+   */
+  readonly artifactBucket: s3.IBucket;
+}
+
+/**
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
@@ -606,6 +617,23 @@ export class Project extends ProjectBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Convert the environment variables map of string to {@link BuildEnvironmentVariable},
+   * which is the customer-facing type, to a list of {@link CfnProject.EnvironmentVariableProperty},
+   * which is the representation of environment variables in CloudFormation.
+   *
+   * @param environmentVariables the map of string to environment variables
+   * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
+   */
+  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
+      CfnProject.EnvironmentVariableProperty[] {
+    return Object.keys(environmentVariables).map(name => ({
+      name,
+      type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
+      value: environmentVariables[name].value,
+    }));
+  }
+
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
@@ -627,6 +655,7 @@ export class Project extends ProjectBase {
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: CfnProject.SourceProperty[];
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
+  private _encryptionKey?: kms.IKey;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -689,7 +718,8 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
-      encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
+      // lazy, because we have a setter for it in setEncryptionKey
+      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey && this._encryptionKey.keyArn }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
@@ -712,7 +742,7 @@ export class Project extends ProjectBase {
     this.addToRolePolicy(this.createLoggingPermission());
 
     if (props.encryptionKey) {
-      props.encryptionKey.grantEncryptDecrypt(this);
+      this.encryptionKey = props.encryptionKey;
     }
   }
 
@@ -743,6 +773,32 @@ export class Project extends ProjectBase {
   }
 
   /**
+   * A callback invoked when the given project is added to a CodePipeline.
+   *
+   * @param _scope the construct the binding is taking place in
+   * @param options additional options for the binding
+   */
+  public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
+    if (this.source.type !== CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
+      throw new Error('Only a PipelineProject can be added to a CodePipeline');
+    }
+
+    // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
+    // and always uses its own, project-level key
+    if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
+      // we cannot safely do this assignment if the key is of type kms.Key,
+      // and belongs to a stack in a different account or region than the project
+      // (that would cause an illegal reference, as KMS keys don't have physical names)
+      const keyStack = Stack.of(options.artifactBucket.encryptionKey);
+      const projectStack = Stack.of(this);
+      if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
+          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+        this.encryptionKey = options.artifactBucket.encryptionKey;
+      }
+    }
+  }
+
+  /**
    * @override
    */
   protected validate(): string[] {
@@ -758,6 +814,11 @@ export class Project extends ProjectBase {
       }
     }
     return ret;
+  }
+
+  private set encryptionKey(encryptionKey: kms.IKey) {
+    this._encryptionKey = encryptionKey;
+    encryptionKey.grantEncryptDecrypt(this);
   }
 
   private createLoggingPermission() {
@@ -826,11 +887,7 @@ export class Project extends ProjectBase {
         : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
-      environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
-        name,
-        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
-        value: vars[name].value
-      }))
+      environmentVariables: hasEnvironmentVars ? Project.serializeEnvVariables(vars) : undefined,
     };
   }
 
