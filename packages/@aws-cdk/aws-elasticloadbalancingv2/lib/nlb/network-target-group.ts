@@ -63,8 +63,8 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
     this.listeners = [];
 
-    if (props.proxyProtocolV2) {
-      this.setAttribute('proxy_protocol_v2.enabled', 'true');
+    if (props.proxyProtocolV2 != null) {
+      this.setAttribute('proxy_protocol_v2.enabled', props.proxyProtocolV2 ? 'true' : 'false');
     }
 
     this.addTarget(...(props.targets || []));
