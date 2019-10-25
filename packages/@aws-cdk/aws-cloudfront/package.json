@@ -133,7 +133,11 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2016",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016",
-      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2_2018"
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2_2018",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.aliases",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.props",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificateOptions",
+      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases"
     ]
   }
 }
