@@ -34,4 +34,8 @@ new cdk.CfnOutput(stack, 'StringListOutput', {
   value: cdk.Fn.join('+', listParameter.stringListValue),
 });
 
+new cdk.CfnOutput(stack, 'ParamArn', {
+  value: param.parameterArn
+});
+
 app.synth();

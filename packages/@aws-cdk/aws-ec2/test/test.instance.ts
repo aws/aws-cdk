@@ -87,7 +87,7 @@ export = {
                   {
                     Ref: "AWS::AccountId"
                   },
-                  ":parameter",
+                  ":parameter/",
                   {
                     Ref: "Param165332EC"
                   }
