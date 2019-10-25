@@ -301,7 +301,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   protected validate(): string[]  {
     const ret = super.validate();
 
-    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
+    if (this.targetType === undefined && this.targetsJson.length === 0) {
+      this.node.addWarning(`When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).`);
+    }
+
+    if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
       ret.push(`'vpc' is required for a non-Lambda TargetGroup`);
     }
 
@@ -312,7 +316,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
 /**
  * Properties to reference an existing target group
  */
-export interface TargetGroupImportProps {
+export interface TargetGroupAttributes {
   /**
    * ARN of the target group
    */
@@ -320,13 +324,23 @@ export interface TargetGroupImportProps {
 
   /**
    * Port target group is listening on
+   *
+   * @deprecated - This property is unused and the wrong type. No need to use it.
    */
-  readonly defaultPort: string;
+  readonly defaultPort?: string;
 
   /**
    * A Token representing the list of ARNs for the load balancer routing to this target group
    */
   readonly loadBalancerArns?: string;
+}
+
+/**
+ * Properties to reference an existing target group
+ *
+ * @deprecated Use TargetGroupAttributes instead
+ */
+export interface TargetGroupImportProps extends TargetGroupAttributes {
 }
 
 /**

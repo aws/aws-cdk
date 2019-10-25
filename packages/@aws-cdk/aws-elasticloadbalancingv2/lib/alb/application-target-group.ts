@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Duration, IConstruct } from '@aws-cdk/core';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupBase, TargetGroupImportProps
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps
 } from '../shared/base-target-group';
 import { ApplicationProtocol, Protocol, TargetType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
@@ -70,8 +70,17 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Import an existing target group
    */
+  public static fromTargetGroupAttributes(scope: Construct, id: string, attrs: TargetGroupAttributes): IApplicationTargetGroup {
+    return new ImportedApplicationTargetGroup(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing target group
+   *
+   * @deprecated Use `fromTargetGroupAttributes` instead
+   */
   public static import(scope: Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
-    return new ImportedApplicationTargetGroup(scope, id, props);
+    return ApplicationTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];
@@ -352,6 +361,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    * Don't call this directly. It will be called by load balancing targets.
    */
   registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port): void;
+
+  /**
+   * Add a load balancing target to this target group
+   */
+  addTarget(...targets: IApplicationLoadBalancerTarget[]): void;
 }
 
 /**
@@ -365,6 +379,16 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
     this.node.addWarning(`Cannot register connectable on imported target group -- security groups might need to be updated manually`);
+  }
+
+  public addTarget(...targets: IApplicationLoadBalancerTarget[]) {
+    for (const target of targets) {
+      const result = target.attachToApplicationTargetGroup(this);
+
+      if (result.targetJson !== undefined) {
+        throw new Error('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.');
+      }
+    }
   }
 }
 
