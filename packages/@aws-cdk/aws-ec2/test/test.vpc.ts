@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject, 
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry,
-  Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+  PrivateSubnet, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -880,6 +880,30 @@ export = {
       // THEN
       test.deepEqual(subnetIds.length, 1);
       test.deepEqual(subnetIds[0], vpc.privateSubnets[0].subnetId);
+      test.done();
+    },
+
+    'select explicitly defined subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
+      });
+      const subnet = new PrivateSubnet(stack, 'Subnet', {
+        availabilityZone: vpc.availabilityZones[0],
+        cidrBlock: '10.0.0.0/28',
+        vpcId: vpc.vpcId
+      });
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ subnets: [subnet] });
+
+      // THEN
+      test.deepEqual(subnetIds.length, 1);
+      test.deepEqual(subnetIds[0], subnet.subnetId);
       test.done();
     }
   },
