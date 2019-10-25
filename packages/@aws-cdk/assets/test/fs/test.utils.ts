@@ -1,3 +1,4 @@
+import { FsUtils } from '@aws-cdk/assert';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
@@ -194,6 +195,13 @@ export = {
   },
 
   shouldExcludeDeep: {
+    'without pattern'(test: Test) {
+      testShouldExcludeDeep(test, [], [], ['foo.txt']);
+      testShouldExcludeDeep(test, [''], [], ['foo.txt']);
+      testShouldExcludeDeep(test, ['# comment'], [], ['foo.txt']);
+
+      test.done();
+    },
     'basic usage'(test: Test) {
       testShouldExcludeDeep(test, ['foo.txt'], [
         'foo.txt',
@@ -282,6 +290,13 @@ export = {
   },
 
   shouldExcludeDirectory: {
+    'without pattern'(test: Test) {
+      testShouldExcludeDirectory(test, [], [], ['dir']);
+      testShouldExcludeDirectory(test, [''], [], ['dir']);
+      testShouldExcludeDirectory(test, ['# comment'], [], ['dir']);
+
+      test.done();
+    },
     'basic usage'(test: Test) {
       const pattern = ['dir', '!dir/*', 'other_dir'];
 
@@ -330,6 +345,62 @@ export = {
         ['dir', 'dir/deep', 'dir/deep/struct', 'dir/really/really/really/really/deep']
       );
 
+      test.done();
+    },
+  },
+
+  listFilesRecursively: {
+    'basic usage'(test: Test) {
+      const exclude = [''];
+      const follow = FollowMode.ALWAYS;
+      const tree = `
+      ├── directory
+      │   ├── foo.txt
+      │   └── bar.txt
+      ├── deep
+      │   ├── dir
+      │   │   └── struct
+      │   │       └── qux.txt
+      ├── foobar.txt`;
+
+      const { directory, cleanup } = FsUtils.fromTree('basic', tree);
+      const paths = util.listFilesRecursively(directory, { exclude, follow }).map(({ relativePath }) => relativePath);
+
+      test.deepEqual(paths, [
+        'deep/dir/struct/qux.txt',
+        'directory/bar.txt',
+        'directory/foo.txt',
+        'foobar.txt',
+      ]);
+
+      cleanup();
+      test.done();
+    },
+    'exclude'(test: Test) {
+      const exclude = ['foobar.txt', 'deep', '!deep/foo.txt'];
+      const follow = FollowMode.ALWAYS;
+      const tree = `
+      ├── directory
+      │   ├── foo.txt
+      │   └── bar.txt
+      ├── deep
+      │   ├── dir
+      │   │   └── struct
+      │   │       └── qux.txt
+      │   ├── foo.txt
+      │   └── bar.txt
+      ├── foobar.txt`;
+
+      const { directory, cleanup } = FsUtils.fromTree('exclude', tree);
+      const paths = util.listFilesRecursively(directory, { exclude, follow }).map(({ relativePath }) => relativePath);
+
+      test.deepEqual(paths, [
+        'deep/foo.txt',
+        'directory/bar.txt',
+        'directory/foo.txt',
+      ]);
+
+      cleanup();
       test.done();
     },
   },

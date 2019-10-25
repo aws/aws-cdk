@@ -76,18 +76,24 @@ export function shouldExcludeDeep(exclude: string[], relativePath: string): bool
  */
 export function shouldExcludeDirectory(exclude: string[], directoryPath: string): boolean {
   const splitPatterns = exclude.map((exc) => exc.split(path.sep));
-  const patternLength = splitPatterns.map(({length}) => length);
+  const patternLength = splitPatterns.map(({ length }) => length);
   const maxPatternLength = Math.max(...patternLength);
 
-  const [_shouldExclude] = directoryPath.split(path.sep).reduce<[boolean, string]>(
+  const [_shouldExclude] = directoryPath.split(path.sep).reduce<[boolean | null, string]>(
     ([accExclude, pathIterator], pathComponent) => {
       pathIterator = path.join(pathIterator, pathComponent);
 
       for (let pattenItLength = 1; pattenItLength <= maxPatternLength; ++pattenItLength) {
         const excludeSliced = splitPatterns.map((pattern) => pattern.slice(0, pattenItLength).join(path.sep));
         const [shouldExcludeIt, patternIndex] = shouldExcludePriority(excludeSliced, pathIterator);
+        if (patternIndex < 0) {
+          continue;
+        }
 
-        if (shouldExcludeIt || patternIndex < 0) {
+        if (shouldExcludeIt) {
+          if (accExclude == null) {
+            accExclude = true;
+          }
           continue;
         }
 
@@ -99,9 +105,9 @@ export function shouldExcludeDirectory(exclude: string[], directoryPath: string)
       }
 
       return [accExclude, pathIterator];
-    }, [true,  '']);
+    }, [null, '']);
 
-  return _shouldExclude;
+  return _shouldExclude || false;
 }
 
 /**
@@ -142,7 +148,7 @@ type AssetFile = {
 
 const generateAssetFile = (rootDir: string, fullFilePath: string, stat: fs.Stats): AssetFile => ({
   absolutePath: fullFilePath,
-  relativePath: path.relative(rootDir, fullFilePath),
+  relativePath: path.relative(rootDir, fullFilePath) || path.relative(path.dirname(rootDir), fullFilePath),
   isFile: stat.isFile(),
   isDirectory: stat.isDirectory(),
   size: stat.size,
@@ -155,13 +161,58 @@ const generateAssetSymlinkFile = (rootDir: string, fullFilePath: string, stat: f
   symlinkTarget,
 });
 
-export function listFilesRecursively(dir: string, options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, _rootDir?: string): AssetFile[] {
+export function listFilesRecursively(
+  dirOrFile: string,
+  options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, _rootDir?: string
+): AssetFile[] {
   const files: AssetFile[] = [];
-  let exclude = options.exclude || [];
-  const rootDir = _rootDir || dir;
+  const exclude = options.exclude || [];
+  const rootDir = _rootDir || dirOrFile;
   const followStatsFn = options.follow === FollowMode.ALWAYS ? fs.statSync : fs.lstatSync;
 
-  recurse(dir);
+  recurse(dirOrFile);
+
+  function recurse(currentPath: string, _currentStat?: fs.Stats): void {
+    const currentStat = _currentStat || fs.statSync(currentPath);
+    if (!currentStat) {
+      return;
+    }
+
+    for (const file of currentStat.isDirectory() ? fs.readdirSync(currentPath) : ['']) {
+      const fullFilePath = path.join(currentPath, file);
+      const relativeFilePath = path.relative(rootDir, fullFilePath);
+
+      let stat: fs.Stats | undefined = followStatsFn(fullFilePath);
+      if (!stat) {
+        continue;
+      }
+
+      const excluded = shouldExcludeDeep(exclude, relativeFilePath);
+      if (!excluded) {
+        if (stat.isFile()) {
+          files.push(generateAssetFile(rootDir, fullFilePath, stat));
+        }
+      }
+
+      if (stat.isDirectory() && (!excluded || !shouldExcludeDirectory(exclude, relativeFilePath))) {
+        recurse(fullFilePath, stat);
+      }
+    }
+  }
+
+  return files;
+}
+
+export function listFilesRecursivelyOld(
+  dirOrFile: string,
+  options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, _rootDir?: string
+): AssetFile[] {
+  const files: AssetFile[] = [];
+  let exclude = options.exclude || [];
+  const rootDir = _rootDir || dirOrFile;
+  const followStatsFn = options.follow === FollowMode.ALWAYS ? fs.statSync : fs.lstatSync;
+
+  recurse(dirOrFile);
 
   function recurse(currentPath: string, currentStat?: fs.Stats): void {
     {
@@ -171,8 +222,13 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
       }
 
       if (!stat.isDirectory()) {
-        // FIXME not checking wether the file was ignored or not
-        files.push(generateAssetFile(rootDir, currentPath, stat));
+        const relativePath =
+          path.relative(rootDir, currentPath) ||
+          path.relative(path.dirname(rootDir), currentPath);
+
+        if (!shouldExclude(exclude, relativePath)) {
+          files.push(generateAssetFile(rootDir, currentPath, stat));
+        }
         return;
       }
     }
