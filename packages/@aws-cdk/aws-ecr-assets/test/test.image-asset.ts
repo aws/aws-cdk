@@ -1,10 +1,9 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, FsUtils, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { ASSET_METADATA } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import { Test } from 'nodeunit';
-import os = require('os');
 import path = require('path');
 import { DockerImageAsset } from '../lib';
 
@@ -235,8 +234,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image'));
-    createFsStructureFromTree(directory, `
+    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image', `
       ├── Dockerfile
       ├── .dockerignore
       ├── foobar.txt
@@ -268,6 +266,7 @@ export = {
       test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
     }
 
+    cleanup();
     test.done();
   },
 
@@ -275,8 +274,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image'));
-    createFsStructureFromTree(directory, `
+    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image', `
       ├── Dockerfile
       ├── .dockerignore
       ├── foobar.txt
@@ -310,6 +308,7 @@ export = {
       test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
     }
 
+    cleanup();
     test.done();
   },
 
@@ -318,8 +317,7 @@ export = {
     const stack = new Stack(app, 'stack');
 
     // GIVEN
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image-advanced'));
-    createFsStructureFromTree(directory, `
+    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image-advanced', `
       ├── config
       │   ├── config-prod.txt
       │   ├── config-test.txt
@@ -334,6 +332,7 @@ export = {
       │               └── quuz.txt
       ├── foobar.txt
       ├── foo.txt
+      ├── .dockerignore
       ├── Dockerfile
       ├── index.py
       ├── .hidden-file
@@ -396,15 +395,15 @@ export = {
       test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
     }
 
+    cleanup();
     test.done();
   },
 
-  'negagive .dockerignore test case'(test: Test) {
+  'negative .dockerignore test case'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dockerignore-image-advanced'));
-    createFsStructureFromTree(directory, `
+    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image-advanced', `
       ├── deep
       │   └── dir
       │       └── struct
@@ -453,6 +452,7 @@ export = {
       test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
     }
 
+    cleanup();
     test.done();
   },
 
@@ -488,47 +488,5 @@ export = {
     }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
-  }
-};
-
-const INDENT_CHARACTERS_REGEX = /^[\s├─│└]+/;
-const TRAILING_CHARACTERS_REGEX = /\/|\(D\)$/i;
-const IS_DIRECTORY_REGEX = /\(D\)\s*$/i;
-
-const createFsStructureFromTree = (parentDir: string, tree: string): void => {
-  const directories: string[] = [];
-  const files: string[] = [];
-
-  // we push an element at the end because we push the files/directories during the previous iteration
-  const lines = [...tree.replace(/^\n/, '').split('\n'), ''];
-  const initialIndentLevel = (lines[0].match(/^\s*/) || [''])[0].length;
-
-  lines.reduce<[string, number, boolean]>(([previousDir, previousIndentLevel, wasDirectory], line) => {
-    const indentCharacters = (line.match(INDENT_CHARACTERS_REGEX) || [''])[0];
-    const indentLevel = (indentCharacters.length - initialIndentLevel) / 4;
-
-    const fileName = line.slice(indentCharacters.length).replace(TRAILING_CHARACTERS_REGEX, '').trimRight();
-
-    const current = indentLevel <= previousIndentLevel ?
-      path.join(...previousDir.split(path.sep).slice(0, indentLevel - 1), fileName) :
-      path.join(previousDir, fileName);
-
-    if (previousDir) {
-      if (indentLevel > previousIndentLevel || wasDirectory) {
-        directories.push(previousDir);
-      } else {
-        files.push(previousDir);
-      }
-    }
-
-    return [current, indentLevel, IS_DIRECTORY_REGEX.test(line)];
-  }, ['', 0, false]);
-
-  for (const directory of directories) {
-    fs.mkdirSync(path.join(parentDir, directory));
-  }
-
-  for (const file of files) {
-    fs.writeFileSync(path.join(parentDir, file), 'content');
   }
 };

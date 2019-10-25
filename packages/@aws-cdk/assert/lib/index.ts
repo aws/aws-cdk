@@ -1,5 +1,6 @@
 export * from './assertion';
 export * from './expect';
+export * from './fs-utils';
 export * from './inspector';
 export * from './synth-utils';
 
