@@ -9,7 +9,7 @@ import { FollowMode } from './follow-mode';
  * exclusion glob patterns.
  *
  * @param exclude  exclusion patterns
- * @param filePath file apth to be assessed against the pattern
+ * @param filePath file path to be assessed against the pattern
  *
  * @returns `true` if the file should be excluded
  */
@@ -23,7 +23,7 @@ export function shouldExclude(exclude: string[], filePath: string): boolean {
  * exclusion glob patterns.
  *
  * @param exclude  exclusion patterns
- * @param filePath file apth to be assessed against the pattern
+ * @param filePath file patg to be assessed against the pattern
  *
  * @returns `true` if the file should be excluded, followed by the index of the rule applied
  */
@@ -44,6 +44,12 @@ export function shouldExcludePriority(exclude: string[], filePath: string): [boo
   }, [false, -1]);
 }
 
+/**
+ * Determines whether a given file should be excluded,taking into account deep file structures
+ *
+ * @param exclude  exclusion patterns
+ * @param filePath file path to be assessed against the pattern
+ */
 export function shouldExcludeDeep(exclude: string[], relativePath: string): boolean {
   const [_shouldExclude] = relativePath.split(path.sep).reduce<[boolean, number, string]>(
     ([accExclude, accPriority, pathIterator], pathComponent) => {
@@ -56,6 +62,44 @@ export function shouldExcludeDeep(exclude: string[], relativePath: string): bool
 
       return [accExclude, accPriority, pathIterator];
     }, [false, -1, '']);
+
+  return _shouldExclude;
+}
+
+/**
+ * Determines whether a given directory should be excluded and not explored further
+ * This might be true even if the directory is explicitly excluded,
+ * but one of its children might be inclunded
+ *
+ * @param exclude  exclusion patterns
+ * @param directoryPath directory path to be assessed against the pattern
+ */
+export function shouldExcludeDirectory(exclude: string[], directoryPath: string): boolean {
+  const splitPatterns = exclude.map((exc) => exc.split(path.sep));
+  const patternLength = splitPatterns.map(({length}) => length);
+  const maxPatternLength = Math.max(...patternLength);
+
+  const [_shouldExclude] = directoryPath.split(path.sep).reduce<[boolean, string]>(
+    ([accExclude, pathIterator], pathComponent) => {
+      pathIterator = path.join(pathIterator, pathComponent);
+
+      for (let pattenItLength = 1; pattenItLength <= maxPatternLength; ++pattenItLength) {
+        const excludeSliced = splitPatterns.map((pattern) => pattern.slice(0, pattenItLength).join(path.sep));
+        const [shouldExcludeIt, patternIndex] = shouldExcludePriority(excludeSliced, pathIterator);
+
+        if (shouldExcludeIt || patternIndex < 0) {
+          continue;
+        }
+
+        if (pattenItLength < patternLength[patternIndex]) {
+          accExclude = shouldExcludeIt;
+        } else if (!excludeSliced[patternIndex].includes('**')) {
+          accExclude = true;
+        }
+      }
+
+      return [accExclude, pathIterator];
+    }, [true,  '']);
 
   return _shouldExclude;
 }
@@ -127,6 +171,7 @@ export function listFilesRecursively(dir: string, options: CopyOptions & Require
       }
 
       if (!stat.isDirectory()) {
+        // FIXME not checking wether the file was ignored or not
         files.push(generateAssetFile(rootDir, currentPath, stat));
         return;
       }

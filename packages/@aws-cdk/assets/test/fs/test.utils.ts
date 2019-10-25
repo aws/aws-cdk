@@ -237,6 +237,20 @@ export = {
 
       test.done();
     },
+    'dir deep wildcard'(test: Test) {
+      testShouldExcludeDeep(test, ['dir/**/*', '!dir/include/**/*'], [
+        'dir/deep',
+        'dir/deep/file',
+        'dir/deep/deeper/file',
+        'dir/include',
+      ], [
+        'dir',
+        'dir/include/deep',
+        'dir/include/deep/deeper',
+      ]);
+
+      test.done();
+    },
     'deep structure'(test: Test) {
       testShouldExcludeDeep(test, ['deep/exclude'], [
         'deep/exclude',
@@ -266,13 +280,77 @@ export = {
       test.done();
     },
   },
+
+  shouldExcludeDirectory: {
+    'basic usage'(test: Test) {
+      const pattern = ['dir', '!dir/*', 'other_dir'];
+
+      testShouldExcludeDeep(test, pattern, ['dir', 'other_dir'], ['dir/file']);
+      testShouldExcludeDirectory(test, pattern, ['dir/deep', 'other_dir'], ['dir']);
+
+      test.done();
+    },
+    'deep structure'(test: Test) {
+      const pattern = ['dir', '!dir/subdir/?', 'other_dir', 'really/deep/structure/of/files/and/dirs'];
+
+      testShouldExcludeDeep(test, pattern,
+        ['dir', 'dir/subdir', 'other_dir'],
+        ['dir/subdir/a']
+      );
+      testShouldExcludeDirectory(test, pattern,
+        ['other_dir', 'dir/subdir/d'],
+        ['dir', 'dir/subdir']
+      );
+
+      test.done();
+    },
+    'wildcard pattern'(test: Test) {
+      const pattern = ['dir', '!dir/*/*', 'other_dir'];
+
+      testShouldExcludeDeep(test, pattern,
+        ['dir', 'other_dir', 'dir/file'],
+        ['dir/file/deep']
+      );
+      testShouldExcludeDirectory(test, pattern,
+        ['other_dir', 'dir/deep/struct'],
+        ['dir', 'dir/deep', 'dir/deep']
+      );
+
+      test.done();
+    },
+    'deep wildcard'(test: Test) {
+      const pattern = ['dir', '!dir/**/*', 'other_dir'];
+
+      testShouldExcludeDeep(test, pattern,
+        ['dir', 'other_dir'],
+        ['dir/file', 'dir/file/deep']
+      );
+      testShouldExcludeDirectory(test, pattern,
+        ['other_dir'],
+        ['dir', 'dir/deep', 'dir/deep/struct', 'dir/really/really/really/really/deep']
+      );
+
+      test.done();
+    },
+  },
 };
 
-const testShouldExcludeDeep = (test: Test, pattern: string[], expectExclude: string[], expectInclude: string[]) => {
-  for (const include of expectExclude) {
-    test.ok(util.shouldExcludeDeep(pattern, include), `${include} should have been included, but wasn't`);
+const testShouldExclude = (
+  test: Test,
+  pattern: string[],
+  expectExclude: string[],
+  expectInclude: string[],
+  shouldExcludeMethod: (pattern: string[], path: string) => boolean) => {
+  for (const exclude of expectExclude) {
+    test.ok(shouldExcludeMethod(pattern, exclude), `${exclude} should have been excluded, but wasn't`);
   }
-  for (const exclude of expectInclude) {
-    test.ok(!util.shouldExcludeDeep(pattern, exclude), `${exclude} should have been excluded, but wasn't`);
+  for (const include of expectInclude) {
+    test.ok(!shouldExcludeMethod(pattern, include), `${include} should have been included, but wasn't`);
   }
 };
+
+const testShouldExcludeDeep = (test: Test, pattern: string[], expectExclude: string[], expectInclude: string[]) =>
+  testShouldExclude(test, pattern, expectExclude, expectInclude, util.shouldExcludeDeep);
+
+const testShouldExcludeDirectory = (test: Test, pattern: string[], expectExclude: string[], expectInclude: string[]) =>
+  testShouldExclude(test, pattern, expectExclude, expectInclude, util.shouldExcludeDirectory);
