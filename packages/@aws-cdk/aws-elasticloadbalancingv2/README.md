@@ -216,7 +216,7 @@ different stacks, you may not be able to use the convenience methods
 
 The reason is that these methods will create resources in the same Stack as the
 object they're called on, which may lead to cyclic references between stacks.
-Instead, you will have to create an `ApplicationListener` in the service stack,
+Instead, you will have to create an `ApplicationListener` in the target stack,
 or an empty `TargetGroup` in the load balancer stack that you attach your
 service to.
 

@@ -323,6 +323,13 @@ export interface TargetGroupAttributes {
   readonly targetGroupArn: string;
 
   /**
+   * Port target group is listening on
+   *
+   * @deprecated - This property is unused and the wrong type. No need to use it.
+   */
+  readonly defaultPort?: string;
+
+  /**
    * A Token representing the list of ARNs for the load balancer routing to this target group
    */
   readonly loadBalancerArns?: string;

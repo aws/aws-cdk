@@ -325,7 +325,7 @@ service.registerLoadBalancerTargets(
 
 ### Using a Load Balancer from a different Stack
 
-If you want to put your Load Balancer and the Servid3 it is load balancing to in
+If you want to put your Load Balancer and the Service it is load balancing to in
 different stacks, you may not be able to use the convenience methods
 `loadBalancer.addListener()` and `listener.addTargets()`.
 
