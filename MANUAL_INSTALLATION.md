@@ -1,11 +1,7 @@
 # CDK Manual Installation Instructions
 
-The CDK is also distributed as a single zip file which contains:
-
-1. The CDK command-line toolkit
-2. Documentation HTML
-2. JavaScript/TypeScript Framework and AWS Constructs
-3. Java Framework and AWS Constructs
+The CDK is also distributed as a single zip file which contains the
+same packages that we also publish to the various package managers.
 
 You can download the zip file from the
 [Releases](http://github.com/aws/aws-cdk/releases) page on GitHub.
@@ -15,62 +11,55 @@ can be verified (see below).
 
 ## Installation overview
 
-We recommend you extract the package to `~/.cdk`, and use the binaries from `~/.cdk/bin`.
+After extracting the archive, follow the following instructions:
 
-When using the manual installation method, use the command `y-npm` (provided
-with the distribution) wherever you would normally use `npm`.
+### Installing the CLI
 
-## Step by step instructions
+The CLI (the `cdk` command) is always installed using npm, regardless of your language.
 
-### Extract the installation archive to ~/.cdk
-
-Once you've downloaded the bits, install them into `~/.cdk` and add to your `PATH`:
-
-#### Linux/MacOS (bash/zsh)
-
-```shell
-# Unpack to ~/.cdk
-rm -fr ~/.cdk
-mkdir ~/.cdk
-unzip <path-to-zip-file> -d ~/.cdk
-
-# Add to PATH and reload profile
-echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.bashrc && source ~/.bashrc  # for bash
-echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.zshrc && source ~/.zshrc    # for zsh
+```
+npm install -g /path/to/zip/js/aws-cdk-1.2.3.tgz
 ```
 
-#### Windows (PowerShell)
+### TypeScript/JavaScript (npm)
 
-Open an elevated PowerShell terminal ("Run as Administrator"):
+Run `npm install` on the desired tarballs:
 
-```powershell
-# Unpack to ~/.cdk
-Remove-Item -Force -Recurse ~/.cdk
-New-Item -Type Directory ~/.cdk
-Expand-Archive -Path <path-to-zip-file> -DestinationPath ~/.cdk
-
-# Add to PATH and reload profile
-New-Item -Force -ItemType Directory -Path (Split-Path $PROFILE)
-Add-Content -Path $PROFILE -Value '$env:Path = "$env:Path;$env:UserProfile\.cdk\node_modules\.bin"'
-Set-ExecutionPolicy Unrestricted
-& $PROFILE
+```
+# Install individual packages into your current project
+npm install /path/to/zip/js/aws-lambda@1.2.3.jsii.tgz ...
 ```
 
-#### Install the command-line toolkit
+### Python (pip)
 
-Install (or update) `aws-cdk` globally
+Run `pip install` on the `.whl` files you want to install into your current virtual
+env (or the global Python install):
 
-```shell
-y-npm install --global aws-cdk # sudo might be needed
+```
+# Install all wheels into your current Python env
+pip install path/to/zip/python/*.whl
 ```
 
-> `y-npm` is an npm wrapper which allows installing npm modules from a local repository located at `~/.cdk/y/npm`. `y-npm` will fall back to the public npm repository if a module cannot be found locally.
+### Java (Maven)
 
-To check which CDK version you have installed:
+Install the packages using Maven:
 
-```shell
-cdk --version
 ```
+# For every package you want to install
+mvn install:install-file -Dfile=/path/to/zip/java/software/amazon/awscdk/dynamodb/1.2.3/dynamodb-1.2.3.jar
+mvn install:install-file -Dfile=/path/to/zip/java/software/amazon/awscdk/dynamodb/1.2.3/dynamodb-1.2.3-sources.jar
+mvn install:install-file -Dfile=/path/to/zip/java/software/amazon/awscdk/dynamodb/1.2.3/dynamodb-1.2.3-javadoc.jar
+```
+
+### .NET (NuGet)
+
+From a NuGet shell:
+
+```
+# For every package you want to install
+Install-Package C:\Path\To\Zip\dotnet\Amazon.CDK.AWS.Events.1.2.3.nupkg
+```
+
 
 ## Verifying the integrity of your download
 
