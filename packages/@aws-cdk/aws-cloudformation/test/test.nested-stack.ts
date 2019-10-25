@@ -828,5 +828,49 @@ export = {
       }
     ]);
     test.done();
+  },
+
+  'referencing attributes with period across stacks'(test: Test) {
+    // GIVEN
+    const parent = new Stack();
+    const nested = new NestedStack(parent, 'nested');
+    const consumed = new CfnResource(nested, 'resource-in-nested', { type: 'CONSUMED' });
+
+    // WHEN
+    new CfnResource(parent, 'resource-in-parent', {
+      type: 'CONSUMER',
+      properties: {
+        ConsumedAttribute: consumed.getAtt('Consumed.Attribute')
+      }
+    });
+
+    // THEN
+    expect(nested).toMatch({
+      Resources: {
+        resourceinnested: {
+          Type: "CONSUMED"
+        }
+      },
+      Outputs: {
+        nestedresourceinnested59B1F01CConsumedAttribute: {
+          Value: {
+            "Fn::GetAtt": [
+              "resourceinnested",
+              "Consumed.Attribute"
+            ]
+          }
+        }
+      }
+    });
+    expect(parent).to(haveResource('CONSUMER', {
+      ConsumedAttribute: {
+        "Fn::GetAtt": [
+          "nestedNestedStacknestedNestedStackResource3DD143BF",
+          "Outputs.nestedresourceinnested59B1F01CConsumedAttribute"
+        ]
+      }
+    }));
+
+    test.done();
   }
 };
