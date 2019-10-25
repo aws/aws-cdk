@@ -444,10 +444,18 @@ function makeIdentityForImportedValue(parameterName: string) {
 }
 
 function arnForParameterName(scope: IConstruct, parameterName: string): string {
+
+  // remove trailing "/" if we can resolve parameter name.
+  if (!Token.isUnresolved(parameterName)) {
+    if (parameterName.startsWith('/')) {
+      parameterName = parameterName.substr(1);
+    }
+  }
+
   return Stack.of(scope).formatArn({
     service: 'ssm',
     resource: 'parameter',
-    sep: '', // Sep is empty because this.parameterName starts with a / already!
+    sep: '/', // Sep is empty because this.parameterName starts with a / already!
     resourceName: parameterName,
   });
 }
