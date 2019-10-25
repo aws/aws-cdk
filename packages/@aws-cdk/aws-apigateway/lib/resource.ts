@@ -157,6 +157,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   public abstract readonly restApi: RestApi;
   public abstract readonly resourceId: string;
   public abstract readonly path: string;
+  public abstract readonly url: string;
   public abstract readonly defaultIntegration?: Integration;
   public abstract readonly defaultMethodOptions?: MethodOptions;
   public abstract readonly defaultCorsPreflightOptions?: CorsOptions;
@@ -359,6 +360,7 @@ export class Resource extends ResourceBase {
   public readonly restApi: RestApi;
   public readonly resourceId: string;
   public readonly path: string;
+  public readonly url: string;
 
   public readonly defaultIntegration?: Integration;
   public readonly defaultMethodOptions?: MethodOptions;
@@ -389,6 +391,7 @@ export class Resource extends ResourceBase {
     this.path = props.parent.path;
     if (!this.path.endsWith('/')) { this.path += '/'; }
     this.path += props.pathPart;
+    this.url = this.restApi.urlForPath(this.path);
 
     const deployment = props.parent.restApi.latestDeployment;
     if (deployment) {
