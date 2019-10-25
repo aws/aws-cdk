@@ -33,9 +33,10 @@ export class FsUtils {
 
     const directories: string[] = [];
     const files: string[] = [];
+    const symlinks: Array<[string, string]> = [];
 
     // we push an element at the end because we push the files/directories during the previous iteration
-    const lines = [...tree.replace(/^\n/, '').split('\n'), ''];
+    const lines = [...tree.replace(/^\n+/, '').trimRight().split('\n'), ''];
     const initialIndentLevel = (lines[0].match(/^\s*/) || [''])[0].length;
 
     lines.reduce<[string, number, boolean]>(([previousDir, previousIndentLevel, wasDirectory], line) => {
@@ -51,6 +52,9 @@ export class FsUtils {
       if (previousDir) {
         if (indentLevel > previousIndentLevel || wasDirectory) {
           directories.push(previousDir);
+        } else if (previousDir.includes('->')) {
+          const [link, target] = previousDir.split(/\s*->\s*/);
+          symlinks.push([link, target]);
         } else {
           files.push(previousDir);
         }
@@ -65,10 +69,16 @@ export class FsUtils {
     for (const file of files) {
       fs.writeFileSync(path.join(directory, file), content);
     }
+    for (const [link, target] of symlinks) {
+      fs.symlinkSync(target, path.join(directory, link));
+    }
 
     return {
       directory,
       cleanup: () => {
+        for (const [link] of symlinks) {
+          fs.unlinkSync(path.join(directory, link));
+        }
         for (const file of files) {
           fs.unlinkSync(path.join(directory, file));
         }
