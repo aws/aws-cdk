@@ -352,6 +352,10 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     return resource.resourceForPath(parts.join('/'));
   }
+
+  public get url(): string {
+    return this.restApi.urlForPath(this.path);
+  }
 }
 
 export class Resource extends ResourceBase {
