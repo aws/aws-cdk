@@ -8,24 +8,11 @@ import { arnForDeploymentConfig } from '../utils';
  *
  * Note: CloudFormation does not currently support creating custom ECS configs outside
  * of using a custom resource. You can import custom deployment config created outside the
- * CDK or via a custom resource with {@link EcsDeploymentConfig#import}.
+ * CDK or via a custom resource with {@link EcsDeploymentConfig#fromEcsDeploymentConfigName}.
  */
 export interface IEcsDeploymentConfig {
   readonly deploymentConfigName: string;
   readonly deploymentConfigArn: string;
-}
-
-/**
- * Properties of a reference to a CodeDeploy ECS Deployment Configuration.
- *
- * @see EcsDeploymentConfig#import
- */
-export interface EcsDeploymentConfigImportProps {
-  /**
-   * The physical, human-readable name of the custom CodeDeploy ECS Deployment Configuration
-   * that we are referencing.
-   */
-  readonly deploymentConfigName: string;
 }
 
 /**
@@ -45,11 +32,11 @@ export class EcsDeploymentConfig {
    *
    * @param _scope the parent Construct for this new Construct
    * @param _id the logical ID of this new Construct
-   * @param props the properties of the referenced custom Deployment Configuration
+   * @param ecsDeploymentConfigName the name of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(_scope: cdk.Construct, _id: string, props: EcsDeploymentConfigImportProps): IEcsDeploymentConfig {
-    return deploymentConfig(props.deploymentConfigName);
+  public static fromEcsDeploymentConfigName(_scope: cdk.Construct, _id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
+    return deploymentConfig(ecsDeploymentConfigName);
   }
 
   private constructor() {
@@ -60,6 +47,6 @@ export class EcsDeploymentConfig {
 function deploymentConfig(name: string): IEcsDeploymentConfig {
   return {
     deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name)
+    deploymentConfigArn: arnForDeploymentConfig(name),
   };
 }

@@ -65,7 +65,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: this.physicalName,
-      computePlatform: 'ECS'
+      computePlatform: 'ECS',
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);

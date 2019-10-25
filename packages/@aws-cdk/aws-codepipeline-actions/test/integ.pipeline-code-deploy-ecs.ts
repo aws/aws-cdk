@@ -38,10 +38,8 @@ const deployStage = pipeline.addStage({ stageName: 'Deploy' });
 deployStage.addAction(new cpactions.CodeDeployEcsDeployAction({
   actionName: 'CodeDeploy',
   deploymentGroup,
-  taskDefinitionTemplateInput: sourceOutput,
-  taskDefinitionTemplatePath: 'task-definition-test.json',
-  appSpecTemplateInput: sourceOutput,
-  appSpecTemplatePath: 'appspec-test.json',
+  taskDefinitionTemplateFile: new codepipeline.ArtifactPath(sourceOutput, 'task-definition-test.json'),
+  appSpecTemplateFile: new codepipeline.ArtifactPath(sourceOutput, 'appspec-test.json'),
   containerImageInputs: [
     {
       input: sourceOutput,

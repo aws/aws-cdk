@@ -27,7 +27,77 @@ export = {
           appSpecTemplateInput: artifact,
           containerImageInputs,
         });
-      }, /Action cannot have more than 4 container image inputs/);
+      }, /Action cannot have more than 4 container image inputs, got: 5/);
+
+      test.done();
+    },
+
+    'throws an exception if both appspec artifact input and file are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      const deploymentGroup = addEcsDeploymentGroup(stack);
+      const artifact = new codepipeline.Artifact('Artifact');
+      const artifactPath = new codepipeline.ArtifactPath(artifact, 'hello');
+
+      test.throws(() => {
+        new cpactions.CodeDeployEcsDeployAction({
+          actionName: 'DeployToECS',
+          deploymentGroup,
+          taskDefinitionTemplateInput: artifact,
+          appSpecTemplateInput: artifact,
+          appSpecTemplateFile: artifactPath,
+        });
+      }, /Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action/);
+
+      test.done();
+    },
+
+    'throws an exception if neither appspec artifact input nor file are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      const deploymentGroup = addEcsDeploymentGroup(stack);
+      const artifact = new codepipeline.Artifact('Artifact');
+
+      test.throws(() => {
+        new cpactions.CodeDeployEcsDeployAction({
+          actionName: 'DeployToECS',
+          deploymentGroup,
+          taskDefinitionTemplateInput: artifact,
+        });
+      }, /Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action/);
+
+      test.done();
+    },
+
+    'throws an exception if both task definition artifact input and file are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      const deploymentGroup = addEcsDeploymentGroup(stack);
+      const artifact = new codepipeline.Artifact('Artifact');
+      const artifactPath = new codepipeline.ArtifactPath(artifact, 'hello');
+
+      test.throws(() => {
+        new cpactions.CodeDeployEcsDeployAction({
+          actionName: 'DeployToECS',
+          deploymentGroup,
+          taskDefinitionTemplateInput: artifact,
+          taskDefinitionTemplateFile: artifactPath,
+          appSpecTemplateInput: artifact,
+        });
+      }, /Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action/);
+
+      test.done();
+    },
+
+    'throws an exception if neither task definition artifact input nor file are specified'(test: Test) {
+      const stack = new cdk.Stack();
+      const deploymentGroup = addEcsDeploymentGroup(stack);
+      const artifact = new codepipeline.Artifact('Artifact');
+
+      test.throws(() => {
+        new cpactions.CodeDeployEcsDeployAction({
+          actionName: 'DeployToECS',
+          deploymentGroup,
+          appSpecTemplateInput: artifact,
+        });
+      }, /Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action/);
 
       test.done();
     },
@@ -81,10 +151,8 @@ export = {
       addCodeDeployECSCodePipeline(stack, {
         actionName: 'DeployToECS',
         deploymentGroup,
-        taskDefinitionTemplateInput: artifact1,
-        taskDefinitionTemplatePath: 'task-definition.json',
-        appSpecTemplateInput: artifact2,
-        appSpecTemplatePath: 'appspec-test.yaml',
+        taskDefinitionTemplateFile: new codepipeline.ArtifactPath(artifact1, 'task-definition.json'),
+        appSpecTemplateFile: new codepipeline.ArtifactPath(artifact2, 'appspec-test.yaml'),
         containerImageInputs: [
           {
             input: artifact1
@@ -150,14 +218,14 @@ function addCodeDeployECSCodePipeline(stack: cdk.Stack, props: cpactions.CodeDep
         actions: [
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub',
-            output: props.taskDefinitionTemplateInput,
+            output: props.taskDefinitionTemplateInput || props.taskDefinitionTemplateFile!.artifact,
             oauthToken: cdk.SecretValue.plainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk',
           }),
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub2',
-            output: props.appSpecTemplateInput,
+            output: props.appSpecTemplateInput || props.appSpecTemplateFile!.artifact,
             oauthToken: cdk.SecretValue.plainText('secret'),
             owner: 'awslabs',
             repo: 'aws-cdk-2',

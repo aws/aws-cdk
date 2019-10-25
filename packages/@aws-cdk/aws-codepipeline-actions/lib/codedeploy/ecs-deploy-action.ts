@@ -45,16 +45,26 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
    * The artifact containing the ECS task definition template file.
    * During deployment, the task definition template file contents
    * will be registered with ECS.
+   *
+   * If you use this property, it's assumed the file is called 'taskdef.json'.
+   * If your task definition template uses a different filename, leave this property empty,
+   * and use the `taskDefinitionTemplateFile` property instead.
+   *
+   * @default - one of this property, or `taskDefinitionTemplateFile`, is required
    */
-  readonly taskDefinitionTemplateInput: codepipeline.Artifact;
+  readonly taskDefinitionTemplateInput?: codepipeline.Artifact;
 
   /**
-   * The path and filename of the ECS task definition template file in the
-   * `taskDefinitionTemplateInput` artifact.
+   * The name of the ECS task definition template file.
+   * During deployment, the task definition template file contents
+   * will be registered with ECS.
    *
-   * @default taskdef.json
+   * Use this property if you want to use a different name for this file than the default 'taskdef.json'.
+   * If you use this property, you don't need to specify the `taskDefinitionTemplateInput` property.
+   *
+   * @default - one of this property, or `taskDefinitionTemplateInput`, is required
    */
-  readonly taskDefinitionTemplatePath?: string;
+  readonly taskDefinitionTemplateFile?: codepipeline.ArtifactPath;
 
   /**
    * The artifact containing the CodeDeploy AppSpec file.
@@ -62,16 +72,28 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
    * with ECS, and the new task definition ID will be inserted into
    * the CodeDeploy AppSpec file.  The AppSpec file contents will be
    * provided to CodeDeploy for the deployment.
+   *
+   * If you use this property, it's assumed the file is called 'appspec.yaml'.
+   * If your AppSpec file uses a different filename, leave this property empty,
+   * and use the `appSpecTemplateFile` property instead.
+   *
+   * @default - one of this property, or `appSpecTemplateFile`, is required
    */
-  readonly appSpecTemplateInput: codepipeline.Artifact;
+  readonly appSpecTemplateInput?: codepipeline.Artifact;
 
   /**
-   * The path and filename of the CodeDeploy AppSpec file in the
-   * `appSpecTemplateInput` artifact.
+   * The name of the CodeDeploy AppSpec file.
+   * During deployment, a new task definition will be registered
+   * with ECS, and the new task definition ID will be inserted into
+   * the CodeDeploy AppSpec file.  The AppSpec file contents will be
+   * provided to CodeDeploy for the deployment.
    *
-   * @default appspec.yaml
+   * Use this property if you want to use a different name for this file than the default 'appspec.yaml'.
+   * If you use this property, you don't need to specify the `appSpecTemplateInput` property.
+   *
+   * @default - one of this property, or `appSpecTemplateInput`, is required
    */
-  readonly appSpecTemplatePath?: string;
+  readonly appSpecTemplateFile?: codepipeline.ArtifactPath;
 
   /**
    * Configuration for dynamically updated images in the task definition.
@@ -84,21 +106,16 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
 }
 
 export class CodeDeployEcsDeployAction extends Action {
-  private readonly deploymentGroup: codedeploy.IEcsDeploymentGroup;
-  private readonly taskDefinitionTemplateInput: codepipeline.Artifact;
-  private readonly taskDefinitionTemplatePath: string;
-  private readonly appSpecTemplateInput: codepipeline.Artifact;
-  private readonly appSpecTemplatePath: string;
-  private readonly containerImageInputs: CodeDeployEcsContainerImageInput[];
+  private readonly actionProps: CodeDeployEcsDeployActionProps;
 
   constructor(props: CodeDeployEcsDeployActionProps) {
     const inputs: codepipeline.Artifact[] = [];
-    inputs.push(props.taskDefinitionTemplateInput);
-    inputs.push(props.appSpecTemplateInput);
+    inputs.push(determineTaskDefinitionArtifact(props));
+    inputs.push(determineAppSpecArtifact(props));
 
     if (props.containerImageInputs) {
       if (props.containerImageInputs.length > 4) {
-        throw new Error('Action cannot have more than 4 container image inputs');
+        throw new Error(`Action cannot have more than 4 container image inputs, got: ${props.containerImageInputs.length}`);
       }
 
       for (const imageInput of props.containerImageInputs) {
@@ -115,12 +132,7 @@ export class CodeDeployEcsDeployAction extends Action {
       inputs,
     });
 
-    this.deploymentGroup = props.deploymentGroup;
-    this.taskDefinitionTemplateInput = props.taskDefinitionTemplateInput;
-    this.taskDefinitionTemplatePath = props.taskDefinitionTemplatePath ? props.taskDefinitionTemplatePath : 'taskdef.json';
-    this.appSpecTemplateInput = props.appSpecTemplateInput;
-    this.appSpecTemplatePath = props.appSpecTemplatePath ? props.appSpecTemplatePath : 'appspec.yaml';
-    this.containerImageInputs = props.containerImageInputs ? props.containerImageInputs : [];
+    this.actionProps = props;
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
@@ -129,17 +141,17 @@ export class CodeDeployEcsDeployAction extends Action {
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
     options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.deploymentGroup.application.applicationArn],
+      resources: [this.actionProps.deploymentGroup.application.applicationArn],
       actions: ['codedeploy:GetApplication', 'codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision']
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.deploymentGroup.deploymentGroupArn],
+      resources: [this.actionProps.deploymentGroup.deploymentGroupArn],
       actions: ['codedeploy:CreateDeployment', 'codedeploy:GetDeployment'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.deploymentGroup.deploymentConfig.deploymentConfigArn],
+      resources: [this.actionProps.deploymentGroup.deploymentConfig.deploymentConfigArn],
       actions: ['codedeploy:GetDeploymentConfig']
     }));
 
@@ -167,23 +179,57 @@ export class CodeDeployEcsDeployAction extends Action {
 
     const actionConfig: codepipeline.ActionConfig = {
       configuration: {
-        ApplicationName: this.deploymentGroup.application.applicationName,
-        DeploymentGroupName: this.deploymentGroup.deploymentGroupName,
-        TaskDefinitionTemplateArtifact: this.taskDefinitionTemplateInput.artifactName,
-        TaskDefinitionTemplatePath: this.taskDefinitionTemplatePath,
-        AppSpecTemplateArtifact: this.appSpecTemplateInput.artifactName,
-        AppSpecTemplatePath: this.appSpecTemplatePath,
+        ApplicationName: this.actionProps.deploymentGroup.application.applicationName,
+        DeploymentGroupName: this.actionProps.deploymentGroup.deploymentGroupName,
+
+        TaskDefinitionTemplateArtifact: determineTaskDefinitionArtifact(this.actionProps).artifactName,
+        TaskDefinitionTemplatePath: this.actionProps.taskDefinitionTemplateFile
+          ? this.actionProps.taskDefinitionTemplateFile.fileName
+          : 'taskdef.json',
+
+        AppSpecTemplateArtifact: determineAppSpecArtifact(this.actionProps).artifactName,
+        AppSpecTemplatePath: this.actionProps.appSpecTemplateFile
+          ? this.actionProps.appSpecTemplateFile.fileName
+          : 'appspec.yaml',
       },
     };
 
-    let i = 1;
-    for (const imageInput of this.containerImageInputs) {
-      actionConfig.configuration[`Image${i}ArtifactName`] = imageInput.input.artifactName;
-      actionConfig.configuration[`Image${i}ContainerName`] = imageInput.taskDefinitionPlaceholder ?
-       imageInput.taskDefinitionPlaceholder : 'IMAGE';
-      i++;
+    if (this.actionProps.containerImageInputs) {
+      for (let i = 1; i <= this.actionProps.containerImageInputs.length; i++) {
+        const imageInput = this.actionProps.containerImageInputs[i - 1];
+        actionConfig.configuration[`Image${i}ArtifactName`] = imageInput.input.artifactName;
+        actionConfig.configuration[`Image${i}ContainerName`] = imageInput.taskDefinitionPlaceholder
+          ? imageInput.taskDefinitionPlaceholder
+          : 'IMAGE';
+      }
     }
 
     return actionConfig;
   }
+}
+
+function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
+  if (props.taskDefinitionTemplateFile && props.taskDefinitionTemplateInput) {
+    throw new Error("Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action");
+  }
+  if (props.taskDefinitionTemplateFile) {
+    return props.taskDefinitionTemplateFile.artifact;
+  }
+  if (props.taskDefinitionTemplateInput) {
+    return props.taskDefinitionTemplateInput;
+  }
+  throw new Error("Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action");
+}
+
+function determineAppSpecArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
+  if (props.appSpecTemplateFile && props.appSpecTemplateInput) {
+    throw new Error("Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action");
+  }
+  if (props.appSpecTemplateFile) {
+    return props.appSpecTemplateFile.artifact;
+  }
+  if (props.appSpecTemplateInput) {
+    return props.appSpecTemplateInput;
+  }
+  throw new Error("Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action");
 }
