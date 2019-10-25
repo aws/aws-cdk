@@ -76,7 +76,7 @@
     "@types/lodash": "^4.14.144",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
-    "fast-check": "^1.17.0",
+    "fast-check": "^1.18.1",
     "lodash": "^4.17.15",
     "pkglint": "file:../../../tools/pkglint"
   },
