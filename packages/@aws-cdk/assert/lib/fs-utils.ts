@@ -92,7 +92,7 @@ export class FsUtils {
   }
 
   private static readonly INDENT_CHARACTERS_REGEX = /^[\s├─│└]+/;
-  private static readonly TRAILING_CHARACTERS_REGEX = /\/|\(D\)$/i;
+  private static readonly TRAILING_CHARACTERS_REGEX = /(\/|\(D\))$/i;
   private static readonly IS_DIRECTORY_REGEX = /\(D\)\s*$/i;
 
 }

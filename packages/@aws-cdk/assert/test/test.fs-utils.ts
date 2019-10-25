@@ -1,5 +1,6 @@
 import fs = require('fs');
 import { Test } from 'nodeunit';
+import os = require('os');
 import path = require('path');
 import { FsUtils } from '../lib';
 
@@ -10,11 +11,11 @@ export = {
       const tree = `
       ├── foo
       └── dir
-        └── subdir
+        └── subdir/
           └── bar.txt`;
 
       // THEN
-      const {directory, cleanup} = FsUtils.fromTree('basic-usage', tree);
+      const { directory, cleanup } = FsUtils.fromTree('basic-usage', tree);
 
       test.ok(fs.existsSync(path.join(directory, 'foo')));
       test.ok(fs.existsSync(path.join(directory, 'dir', 'subdir', 'bar.txt')));
@@ -35,7 +36,7 @@ export = {
           └── foo.txt`;
 
       // THEN
-      const {directory, cleanup} = FsUtils.fromTree('empty-directory', tree);
+      const { directory, cleanup } = FsUtils.fromTree('symlink', tree);
 
       test.ok(fs.existsSync(path.join(directory, 'target', 'foo.txt')));
       test.ok(fs.existsSync(path.join(directory, 'link', 'foo.txt')));
@@ -49,13 +50,41 @@ export = {
 
       test.done();
     },
+    'external smylinks'(test: Test) {
+      // GIVEN
+      const externalTree = FsUtils.fromTree('external', `
+        ├── external_dir
+        │   ├── foobar.txt`);
+
+      // THEN
+
+      const externalRelativeDirectory = path.relative(os.tmpdir(), externalTree.directory);
+      const externalLink = `../${externalRelativeDirectory}/external_dir`;
+
+      const internalTree = FsUtils.fromTree('internal', `
+        ├── external_link -> ${externalLink}`);
+
+      test.ok(fs.existsSync(path.join(externalTree.directory, 'external_dir', 'foobar.txt')));
+      test.ok(fs.existsSync(path.join(internalTree.directory, 'external_link', 'foobar.txt')));
+      test.equal(fs.readlinkSync(path.join(internalTree.directory, 'external_link')), externalLink);
+
+      externalTree.cleanup();
+      internalTree.cleanup();
+
+      test.ok(!fs.existsSync(path.join(externalTree.directory, 'external_dir')));
+      test.ok(!fs.existsSync(path.join(internalTree.directory, 'external_link')));
+      test.ok(!fs.existsSync(internalTree.directory));
+      test.ok(!fs.existsSync(externalTree.directory));
+
+      test.done();
+    },
     'empty directory'(test: Test) {
       // GIVEN
       const tree = `
       ├── dir (D)`;
 
       // THEN
-      const {directory, cleanup} = FsUtils.fromTree('empty-directory', tree);
+      const { directory, cleanup } = FsUtils.fromTree('empty-directory', tree);
 
       test.ok(fs.existsSync(path.join(directory, 'dir')));
 
@@ -81,7 +110,7 @@ export = {
                                         `;
 
       // THEN
-      const {directory, cleanup} = FsUtils.fromTree('any-indent', tree);
+      const { directory, cleanup } = FsUtils.fromTree('any-indent', tree);
 
       test.ok(fs.existsSync(path.join(directory, 'foo')));
       test.ok(fs.existsSync(path.join(directory, 'dir', 'subdir', 'bar.txt')));
