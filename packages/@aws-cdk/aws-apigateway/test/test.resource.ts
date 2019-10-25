@@ -178,6 +178,51 @@ export = {
     test.done();
   },
 
+  'url for a resource'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+
+    // WHEN
+    const aResource = api.root.addResource('a');
+    const cResource = aResource.addResource('b').addResource('c');
+
+    // THEN
+    test.deepEqual(stack.resolve(aResource.url), {
+      'Fn::Join': [
+        '',
+        [
+          'https://',
+          { Ref: 'apiC8550315' },
+          '.execute-api.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/a'
+        ]
+      ]
+    });
+    test.deepEqual(stack.resolve(cResource.url), {
+      'Fn::Join': [
+        '',
+        [
+          'https://',
+          { Ref: 'apiC8550315' },
+          '.execute-api.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/a/b/c'
+        ]
+      ]
+    });
+    test.done();
+  },
+
   'getResource': {
 
     'root resource': {
