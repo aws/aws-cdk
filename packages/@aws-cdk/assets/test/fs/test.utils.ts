@@ -1,6 +1,7 @@
 import { FsUtils } from '@aws-cdk/assert';
 import fs = require('fs');
 import { Test } from 'nodeunit';
+import os = require('os');
 import path = require('path');
 import { ImportMock } from 'ts-mock-imports';
 import { FollowMode } from '../../lib/fs';
@@ -357,6 +358,7 @@ export = {
       ├── directory
       │   ├── foo.txt
       │   └── bar.txt
+      ├── empty-dir (D)
       ├── deep
       │   ├── dir
       │   │   └── struct
@@ -370,6 +372,7 @@ export = {
         'deep/dir/struct/qux.txt',
         'directory/bar.txt',
         'directory/foo.txt',
+        'empty-dir',
         'foobar.txt',
       ]);
 
@@ -401,6 +404,98 @@ export = {
       ]);
 
       cleanup();
+      test.done();
+    },
+    'symlinks': {
+      'without exclusion'(test: Test) {
+        const exclude = [''];
+        const externalTree = FsUtils.fromTree('exclude', `
+          ├── external_dir
+          │   ├── foobar.txt`);
+
+        const internalTree = FsUtils.fromTree('exclude', `
+          ├── directory
+          │   ├── foo.txt
+          ├── internal_link -> directory
+          ├── external_link -> ../${path.relative(os.tmpdir(), externalTree.directory)}/external_dir`);
+
+        const expected: { [followMode in FollowMode]: string[] } = {
+          [FollowMode.NEVER]: [
+            'directory/foo.txt',
+            'external_link',
+            'internal_link',
+          ],
+          [FollowMode.ALWAYS]: [
+            'directory/foo.txt',
+            'external_link/foobar.txt',
+            'internal_link/foo.txt',
+          ],
+          [FollowMode.EXTERNAL]: [
+            'directory/foo.txt',
+            'external_link/foobar.txt',
+            'internal_link'
+          ],
+          [FollowMode.BLOCK_EXTERNAL]: [
+            'directory/foo.txt',
+            'external_link',
+            'internal_link/foo.txt',
+          ],
+        };
+
+        for (const follow of Object.values(FollowMode)) {
+          const paths = util.listFilesRecursively(internalTree.directory, { exclude, follow }).map(({ relativePath }) => relativePath);
+
+          test.deepEqual(paths, expected[follow], follow);
+        }
+
+        internalTree.cleanup();
+        externalTree.cleanup();
+        test.done();
+      },
+    },
+    'exclude targets'(test: Test) {
+      const exclude = ['external_dir', 'directory'];
+      const follow = FollowMode.ALWAYS;
+      const externalTree = FsUtils.fromTree('exclude', `
+        ├── external_dir
+        │   ├── foobar.txt`);
+
+      const internalTree = FsUtils.fromTree('exclude', `
+        ├── directory
+        │   ├── foo.txt
+        ├── internal_link -> directory
+        ├── external_link -> ../${path.relative(os.tmpdir(), externalTree.directory)}/external_dir`);
+      const paths = util.listFilesRecursively(internalTree.directory, { exclude, follow }).map(({ relativePath }) => relativePath);
+
+      test.deepEqual(paths, [
+        'external_link/foobar.txt',
+        'internal_link/foo.txt'
+      ]);
+
+      internalTree.cleanup();
+      externalTree.cleanup();
+      test.done();
+    },
+    'exclude links'(test: Test) {
+      const exclude = ['internal_link', 'external_link'];
+      const follow = FollowMode.ALWAYS;
+      const externalTree = FsUtils.fromTree('exclude', `
+        ├── external_dir
+        │   ├── foobar.txt`);
+
+      const internalTree = FsUtils.fromTree('exclude', `
+        ├── directory
+        │   ├── foo.txt
+        ├── internal_link -> directory
+        ├── external_link -> ../${path.relative(os.tmpdir(), externalTree.directory)}/external_dir`);
+      const paths = util.listFilesRecursively(internalTree.directory, { exclude, follow }).map(({ relativePath }) => relativePath);
+
+      test.deepEqual(paths, [
+        'directory/foo.txt'
+      ]);
+
+      internalTree.cleanup();
+      externalTree.cleanup();
       test.done();
     },
   },

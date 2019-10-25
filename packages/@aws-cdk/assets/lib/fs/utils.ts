@@ -187,103 +187,30 @@ export function listFilesRecursively(
         continue;
       }
 
-      const excluded = shouldExcludeDeep(exclude, relativeFilePath);
-      if (!excluded) {
+      const isExcluded = shouldExcludeDeep(exclude, relativeFilePath);
+      if (!isExcluded) {
+        let target = '';
+        if (stat.isSymbolicLink()) {
+          target = fs.readlinkSync(fullFilePath);
+
+          // determine if this is an external link (i.e. the target's absolute path  is outside of the root directory).
+          const targetPath = path.normalize(path.resolve(currentPath, target));
+          if (shouldFollow(options.follow, rootDir, targetPath)) {
+            stat = fs.statSync(fullFilePath);
+            if (!stat) {
+              continue;
+            }
+          }
+        }
+
         if (stat.isFile()) {
           files.push(generateAssetFile(rootDir, fullFilePath, stat));
+        } else if (stat.isSymbolicLink()) {
+          files.push(generateAssetSymlinkFile(rootDir, fullFilePath, stat, target));
         }
       }
 
-      if (stat.isDirectory() && (!excluded || !shouldExcludeDirectory(exclude, relativeFilePath))) {
-        recurse(fullFilePath, stat);
-      }
-    }
-  }
-
-  return files;
-}
-
-export function listFilesRecursivelyOld(
-  dirOrFile: string,
-  options: CopyOptions & Required<Pick<CopyOptions, 'follow'>>, _rootDir?: string
-): AssetFile[] {
-  const files: AssetFile[] = [];
-  let exclude = options.exclude || [];
-  const rootDir = _rootDir || dirOrFile;
-  const followStatsFn = options.follow === FollowMode.ALWAYS ? fs.statSync : fs.lstatSync;
-
-  recurse(dirOrFile);
-
-  function recurse(currentPath: string, currentStat?: fs.Stats): void {
-    {
-      const stat = currentStat || fs.statSync(currentPath);
-      if (!stat) {
-        return;
-      }
-
-      if (!stat.isDirectory()) {
-        const relativePath =
-          path.relative(rootDir, currentPath) ||
-          path.relative(path.dirname(rootDir), currentPath);
-
-        if (!shouldExclude(exclude, relativePath)) {
-          files.push(generateAssetFile(rootDir, currentPath, stat));
-        }
-        return;
-      }
-    }
-
-    for (const file of fs.readdirSync(currentPath)) {
-      const fullFilePath = path.join(currentPath, file);
-
-      let stat: fs.Stats | undefined = followStatsFn(fullFilePath);
-      if (!stat) {
-        continue;
-      }
-
-      let target = '';
-      if (stat.isSymbolicLink()) {
-        target = fs.readlinkSync(fullFilePath);
-
-        // determine if this is an external link (i.e. the target's absolute path
-        // is outside of the root directory).
-        const targetPath = path.normalize(path.resolve(currentPath, target));
-
-        if (shouldFollow(options.follow, rootDir, targetPath)) {
-          stat = fs.statSync(fullFilePath);
-          if (!stat) {
-            continue;
-          }
-        }
-      }
-
-      const relativeFilePath = path.relative(rootDir, fullFilePath);
-
-      // we've just discovered that we have a directory
-      if (stat.isDirectory()) {
-        // to help future shouldExclude calls, we're changing the exlusion patterns
-        // by expliciting "dir" exclusions to "dir/*" (same with "!dir" -> "!dir/*")
-        exclude = exclude.reduce<string[]>((res, pattern) => {
-          res.push(pattern);
-          if (pattern.trim().replace(/^!/, '') === relativeFilePath) {
-            // we add the pattern immediately after to preserve the exclusion order
-            res.push(`${pattern}/*`);
-          }
-
-          return res;
-        }, []);
-      }
-
-      const isExcluded = shouldExclude(exclude, relativeFilePath);
-      if (isExcluded && !stat.isDirectory()) {
-        continue;
-      }
-
-      if (stat.isFile()) {
-        files.push(generateAssetFile(rootDir, fullFilePath, stat));
-      } else if (stat.isSymbolicLink()) {
-        files.push(generateAssetSymlinkFile(rootDir, fullFilePath, stat, target));
-      } else if (stat.isDirectory()) {
+      if (stat.isDirectory() && (!isExcluded || !shouldExcludeDirectory(exclude, relativeFilePath))) {
         const previousLength = files.length;
         recurse(fullFilePath, stat);
 
