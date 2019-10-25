@@ -16,3 +16,4 @@ coverage
 *.snk
 
 !test/integ/run-wrappers/dist
+!test/integ/cli/**/*
