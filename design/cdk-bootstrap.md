@@ -1,21 +1,24 @@
-# cdk-bootstrap
+# `cdk bootstrap`
 
-`cdk-bootstrap` is a tool in the AWS CDK toolchain responsible for populating a given environment
+`cdk bootstrap` is a tool in the AWS CDK command-line interface responsible for populating a given environment
 (that is, a combination of AWS account and region)
 with resources required by the CDK to perform deployments into that environment.
-It's a successor to the `cdk bootstrap` sub-command that is part of the `@aws-cdk/core` package,
-and is needed because of the increased bootstrapping requirements present in the
-["Continuous delivery for CDK apps"](https://github.com/aws/aws-cdk/pull/3437) design document.
 
-## Command-line interface
+This document is a design for extending the capabilities of the `bootstrap` command motivated by the needs of the
+["Continuous delivery for CDK apps"](https://github.com/aws/aws-cdk/pull/3437) epic.
 
-Invoking the `bootstrap` tool looks something like this:
+## Required changes
+
+### `--trust`
+
+We will add a new command-line option called `--trust` to the `bootstrap` command.
+Its value is a list of AWS account IDs:
 
 ```shell
-$ cdk-bootstrap [--trust accountId[,otherAccountId]...] aws:://account/region
+$ cdk bootstrap [--trust accountId[,otherAccountId]...] aws:://account/region
 ```
 
-If the `trust` option has been passed on the CLI,
+If the `--trust` option has been passed on the CLI,
 the tool will present the user with the following "menu":
 
 ```shell
@@ -45,81 +48,39 @@ separated by commas.
 >
 ```
 
+(For an explanation what is the generated CloudFormation deployment role, see below)
+
 After the user has made their choice,
-or if the `trust` option has not been passed,
+or if the `--trust` option has not been passed,
 bootstrapping will proceed.
+
+We will also add a another option,
+`--cfn-deployment-role-policies`,
+that allows you to pass a list of managed policy ARNs on the command line,
+so that the `bootstrap` command can also be executed in non-interactive mode.
 
 ### Bootstrap resources
 
 The `bootstrap` command creates a CloudFormation stack in the environment passed on the command line.
-The resources in that stack are:
+Currently, the only resource in that stack is:
 
 * An S3 bucket that holds the file assets and the resulting CloudFormation template to deploy.
 
-If the `trust` option has been passed,
-additionally, we will create the following:
+We will add the following resources to the bootstrap stack:
 
 * An ECR repository that stores the images that are the results of building Docker assets.
 
+If the `--trust` option has been passed,
+additionally, we will create the following resources:
+
 * An IAM role, called the **Publishing role**,
   that has permissions to write to both the S3 bucket and the ECR repository from above.
-  This role will be assumable by any principal from the account(s) passed by the `trust` option.
-  
-  This role has the following permissions:
-  
-  ```json
-  {
-    "PolicyDocument": {
-      "Statement": [
-        {
-          "Action": [
-            "s3:GetObject*",    "s3:GetBucket*", "s3:List*",
-            "s3:DeleteObject*", "s3:PutObject*", "s3:Abort*"
-          ],
-          "Resource": [
-            "arn-of-the-S3-assets-bucket",
-            "arn-of-the-S3-assets-bucket/*"
-          ]
-        },
-        {
-          "Action": [
-            "ecr:PutImage",        "ecr:InitiateLayerUpload",
-            "ecr:UploadLayerPart", "ecr:CompleteLayerUpload"
-          ],
-          "Resource": "arn-of-the-docker-assets-ecr-repository"
-        }
-      ]
-    }
-  }
-  ```
+  This role will be assumable by any principal from the account(s) passed by the `--trust` option.
 
 * An IAM role, called the **Action role**,
   that will be assumed when executing the CloudFormation deployment actions
-  (CreateChangeSet and ExecuteChangeSet) in the continuous delivery pipeline.
-  It is also assumable by any principal from the account(s) passed by the `trust` option.
-  
-  This role has the following permissions:
-  
-  ```json
-  {
-    "PolicyDocument": {
-      "Statement": [
-        {
-          "Action": [
-            "cloudformation:CreateChangeSet",   "cloudformation:DeleteChangeSet",
-            "cloudformation:DescribeChangeSet", "cloudformation:DescribeStacks",
-            "cloudformation:ExecuteChangeSet"
-          ],
-          "Resource": "*"
-        },
-        {
-          "Action": "iam:PassRole",
-          "Resource": "arn-of-the-cfn-deployment-role"
-        }
-      ]
-    }
-  }
-  ```
+  (CreateChangeSet and ExecuteChangeSet).
+  It is also assumable by any principal from the account(s) passed by the `--trust` option.
 
 * An IAM role, called the **CFN deployment role**,
   that will be used to perform the actual CFN stack deployment in the continuous delivery pipeline to this environment.
@@ -136,7 +97,7 @@ This is so that the other stages of CDK synthesis,
 like asset resolution, can rely on the concrete names
 (there is no reliable way to transfer this kind of information in an automated way across regions and/or accounts).
 This also allows for more fine-grained permissions -
-for instance, the continuous delivery pipeline needs to grant the **action role**
+for instance, the continuous delivery pipeline needs to grant the **Action role**
 permissions to read from the pipeline's bucket
 (to read the artifact that contains the CFN template to deploy);
 this way, it can add a well-defined name to the resource policy of the artifact bucket,
@@ -151,18 +112,21 @@ The naming scheme will include the following elements in order to minimize the c
 
 ### CLI options in detail
 
-These options are inherited from the current CLI experience:
+These options are inherited from the current CLI experience,
+and need to be kept for backwards compatibility reasons:
 
 * `--profile`: use the given local AWS credentials profile when interacting with the target environment.
 
-* `--stack-name`, `-s`: allows you to explicitly name the CloudFormation bootstrap stack
+* `--toolkit-stack-name`: allows you to explicitly name the CloudFormation bootstrap stack
   (instead of relying on the default naming scheme).
 
-* `--bucket-name`, `-b`: allows you to explicitly name the file assets S3 bucket
+* `--bootstrap-bucket-name`, `-b`: allows you to explicitly name the file assets S3 bucket
   (instead of relying on the default naming scheme).
 
-* `--kms-key-id`, `-k`: optional identifier of the KMS key used for encrypting the file assets S3 bucket.
+* `--bootstrap-kms-key-id`: optional identifier of the KMS key used for encrypting the file assets S3 bucket.
 
+* `--tags`, `-t`: a list of key=value pairs to add as tags to add to the bootstrap stack.
+ 
 These are the new options:
 
 * `--trust`: allows specifying an AWS account ID, or a list of them,
@@ -170,7 +134,11 @@ These are the new options:
   This will be required to be passed as the pipeline account,
   for deployment from a Continuous Delivery CDK pipeline to work.
 
-* `--qualifier`, `-q`: an optional qualifier added to the physical names of the bootstrap resources
+* `--cfn-deployment-role-policies`: allows specifying the ManagedPolicy ARN(s)
+  that should be attached to the **CFN deployment role**
+  instead of choosing them from a menu interactively.
+
+* `--qualifier`: an optional qualifier added to the physical names of the bootstrap resources
   in order to protect against name collisions, especially for things like S3 buckets
   (which are globally unique in a given AWS partition).
 
@@ -186,14 +154,291 @@ I worry that calculating a full diff of actual versus desired resource state mig
 `deploy` too negatively.
 
 My proposal is to have an export on the bootstrap stack,
-called `ResourcesChecksum`, that will contain the SHA-256 hash of the state of all resources.
-To see if a given environment is up to date,
-we only need to calculate the hash locally,
-and then get the value of the export from a CloudFormation API call,
-and compare the 2.
-If the export is not present, or if the local and remote values differ,
-we know that the bootstrapping has either not been performed,
-or is out of date;
-we can then either prompt the user to call `bootstrap`,
-or attempt to perform the bootstrapping for them, automatically
-(and only show the message if it fails, most likely because of insufficient permissions).
+called `BootstrapVersion`, that will simply contain a number.
+We will start with the bootstrap template setting that export to the value `1`.
+With time, as we change the bootstrap template,
+we will increment the version export number.
+
+In the `cdk` commands,
+we can add a CLI option that will perform a 'bootstrap version check'
+before doing any operations.
+It will call the `DescribeStack` CFN API,
+and get the value of the `BootstrapVersion` export.
+Depending on the value retrieved, it will then:
+
+* If no such stack was found, that means bootstrapping was not performed for this environment.
+  Fail with the appropriate message.
+
+* If the stack was found, but it didn't have an export called `BootstrapVersion`,
+  that means the bootstrap stack is of an older version than the used CLI version,
+  and needs to be updated.
+  Fail with the appropriate message.
+
+* If the export is the same as the `BOOTSTRAP_VERSION` constant in the current CLI,
+  everything is fine - nothing to do.
+
+* If the export value is smaller than the `BOOTSTRAP_VERSION` constant in the current CLI,
+  that means the bootstrap stack is of an older version than the used CLI version,
+  and needs to be updated.
+  Fail with the appropriate message.
+
+* If the export value is larger than the `BOOTSTRAP_VERSION` constant in the current CLI,
+  that means the bootstrap stack is actually from a later version than the used CLI version.
+  In this case, I think it's correct to proceed with carrying out the operation;
+  perhaps print a warning that the user should consider updating their CLI version
+  if they encounter any errors.
+
+## Bootstrap template
+
+Here is the JSON of the bootstrap CloudFormation template:
+
+```json
+{
+  "Parameters": {
+    "ResourceNamePrefix": {
+      "Description": "The prefix to use for all of the physical names of the bootstrap resources",
+      "Default": "aws-cdk-bootstrap-hnb659fds",
+      "Type": "String"
+    },
+    "StagingBucketName": {
+      "Description": "The name of the S3 bucket used to store the file assets (without the prefix and suffix)",
+      "Default": "staging-bucket",
+      "Type": "String"
+    },
+    "StagingBucketKmsKeyId": {
+      "Description": "The identifier of the KMS Key used to encrypt the contents of the ",
+      "Default": "",
+      "Type": "String"
+    },
+    "DockerAssetsStagingRepositoryName": {
+      "Description": "The name of the ECR Docker repository used to store the Docker assets (without the prefix and suffix)",
+      "Default": "docker-assets-repository",
+      "Type": "String"
+    },
+    "TrustedAccounts": {
+      "Description": "List of AWS account IDs that the publish and action roles should trust to be assumed from",
+      "Default": "",
+      "Type": "CommaDelimitedList"
+    },
+    "CfnDeploymentRoleManagedPolicies": {
+      "Description": "List of the ManagedPolicy ARN(s) to attach to the CloudFormation deployment role",
+      "Default": "",
+      "Type": "CommaDelimitedList"
+    }
+  },
+  "Conditions": {
+    "HasStagingBucketKmsKeyId": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            { "Ref": "StagingBucketKmsKeyId" }
+          ]
+        }
+      ]
+    },
+    "HasTrustedAccounts": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            {
+              "Fn::Join": [
+                "",
+                {
+                  "Ref": "TrustedAccounts"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "StagingBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Sub": "${ResourceNamePrefix}-${StagingBucketName}-${AWS::AccountId}-${AWS::Region}"
+        },
+        "AccessControl": "Private",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [{
+            "ServerSideEncryptionByDefault": {
+              "SSEAlgorithm": "aws:kms",
+              "KMSMasterKeyID": {
+                "Fn::If": [
+                  "HasStagingBucketKmsKeyId",
+                  { "Ref":  "StagingBucketKmsKeyId" },
+                  { "Ref":  "AWS::NoValue" }
+                ]
+              }
+            }
+          }]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      }
+    },
+    "DockerAssetsStagingRepository": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "RepositoryName": {
+          "Fn::Sub": "${ResourceNamePrefix}-${DockerAssetsStagingRepositoryName}-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "PublishingRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Ref": "AWS::AccountId"
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject*",    "s3:GetBucket*", "s3:List*",
+                    "s3:DeleteObject*", "s3:PutObject*", "s3:Abort*"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "${StagingBucket.Arn}"
+                    },
+                    {
+                      "Fn::Sub": "${StagingBucket.Arn}/*"
+                    }
+                  ]
+                },
+                {
+                  "Action": [
+                    "ecr:PutImage",        "ecr:InitiateLayerUpload",
+                    "ecr:UploadLayerPart", "ecr:CompleteLayerUpload"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${DockerAssetsStagingRepository.Arn}"
+                  }
+                }
+              ]
+            },
+            "PolicyName": {
+              "Fn::Sub": "DefaultBootstrapPublishRolePolicy-${AWS::Region}"
+            }
+          }
+        ],
+        "RoleName": "some-name"
+      }
+    },
+    "AssumedActionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Ref": "TrustedAccounts"
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "cloudformation:CreateChangeSet",   "cloudformation:DeleteChangeSet",
+                    "cloudformation:DescribeChangeSet", "cloudformation:DescribeStacks",
+                    "cloudformation:ExecuteChangeSet",
+                    "s3:GetObject*",                    "s3:GetBucket*",
+                    "s3:List*",                         "s3:Abort*",
+                    "s3:DeleteObject*",                 "s3:PutObject*",
+                    "kms:Decrypt",                      "kms:DescribeKey"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Action": "iam:PassRole",
+                  "Resource": {
+                    "Fn::Sub": "${CfnDeploymentRole.Arn}"
+                  }
+                }
+              ]
+            },
+            "PolicyName": {
+              "Fn::Sub": "DefaultBootstrapAssumedActionRolePolicy-${AWS::Region}"
+            }
+          }
+        ],
+        "Condition": "HasTrustedAccounts"
+      }
+    },
+    "CfnDeploymentRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudformation.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": {
+          "Ref": "CfnDeploymentRoleManagedPolicies"
+        },
+        "Condition": "HasTrustedAccounts"
+      }
+    }
+  },
+  "Outputs": {
+    "BucketName": {
+      "Description": "The name of the S3 bucket owned by the CDK toolkit stack",
+      "Value": { "Fn::Sub":  "${StagingBucket.Arn}" },
+      "Export": {
+        "Name": { "Fn::Sub": "${AWS::StackName}:BucketName" }
+      }
+    },
+    "BucketDomainName": {
+      "Description": "The domain name of the S3 bucket owned by the CDK toolkit stack",
+      "Value": { "Fn::Sub":  "${StagingBucket.RegionalDomainName}" },
+      "Export": {
+        "Name": { "Fn::Sub": "${AWS::StackName}:BucketDomainName" }
+      }
+    },
+    "BootstrapVersion": {
+      "Description": "The version of the bootstrap resources that are currently mastered in this stack",
+      "Value": "1",
+      "Export": {
+        "Name": { "Fn::Sub": "AwsCdkBootstrapVersion-${AWS::Region}" }
+      }
+    }
+  }
+}
+```
+
+## Non-functional requirements
