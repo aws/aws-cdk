@@ -779,10 +779,6 @@ export class Project extends ProjectBase {
    * @param options additional options for the binding
    */
   public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
-    if (this.source.type !== CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
-      throw new Error('Only a PipelineProject can be added to a CodePipeline');
-    }
-
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
     if (options.artifactBucket.encryptionKey && !this._encryptionKey) {

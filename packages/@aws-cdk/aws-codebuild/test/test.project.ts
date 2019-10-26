@@ -150,7 +150,7 @@ export = {
       test.done();
     },
 
-    'cannot have bindToCodePipeline() be called on it'(test: Test) {
+    'can be added to a CodePipeline'(test: Test) {
       const stack = new cdk.Stack();
       const project = new codebuild.Project(stack, 'Project', {
         source: codebuild.Source.gitHub({
@@ -159,11 +159,9 @@ export = {
         }),
       });
 
-      test.throws(() => {
-        project.bindToCodePipeline(project, {
-          artifactBucket: new s3.Bucket(stack, 'Bucket'),
-        });
-      }, /Only a PipelineProject can be added to a CodePipeline/);
+      project.bindToCodePipeline(project, {
+        artifactBucket: new s3.Bucket(stack, 'Bucket'),
+      }); // no exception
 
       test.done();
     },
