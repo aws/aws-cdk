@@ -10,7 +10,7 @@ class TestStack extends Stack {
     const api = new apigw.RestApi(this, 'cors-api-test');
 
     const handler = new lambda.Function(this, 'handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler'))
     });
