@@ -163,7 +163,8 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
     system_metadata = { format_system_metadata_key(k): v for k, v in raw_system_metadata.items() }
     user_metadata = { format_user_metadata_key(k): v for k, v in raw_user_metadata.items() }
 
-    system_args = [f"--{k} '{v}'" for k, v in system_metadata.items()]
+    flatten = lambda l: [item for sublist in l for item in sublist]
+    system_args = flatten([[f"--{k}", f"'{v}'"] for k, v in system_metadata.items()])
     user_args = ["--metadata", f"'{json.dumps(user_metadata)}'"] if len(user_metadata) > 0 else []
 
     return system_args + user_args + ["--metadata-directive", "REPLACE"]

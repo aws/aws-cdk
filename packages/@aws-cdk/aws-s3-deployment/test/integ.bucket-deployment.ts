@@ -2,6 +2,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import path = require('path');
 import s3deploy = require('../lib');
+import { CacheControl } from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -26,6 +27,17 @@ class TestBucketDeployment extends cdk.Stack {
       destinationBucket: bucket2,
       destinationKeyPrefix: 'deploy/here/',
       retainOnDelete: false, // default is true, which will block the integration test cleanup
+    });
+
+    const bucket3 = new s3.Bucket(this, 'Destination3');
+
+    new s3deploy.BucketDeployment(this, 'DeployWithMetadata', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket3,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.minutes(1))],
+      contentType: 'text/html',
+      metadata: { A: 'aaa', B: 'bbb', C: 'ccc' }
     });
   }
 }
