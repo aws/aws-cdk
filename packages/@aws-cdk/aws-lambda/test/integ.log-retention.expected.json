@@ -44,7 +44,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "OneWeekServiceRole05A6F9F8"
@@ -227,7 +227,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "OneMonthServiceRoleFBD1064F"
@@ -300,7 +300,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "OneYearServiceRole24D47762"

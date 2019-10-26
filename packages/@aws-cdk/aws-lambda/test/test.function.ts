@@ -81,7 +81,7 @@ export = testCase({
     // WHEN/THEN
     test.throws(() => new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_8_10,
       code: lambda.Code.fromInline('')
     }), /Lambda inline code cannot be empty/);
     test.done();

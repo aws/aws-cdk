@@ -16,7 +16,7 @@ export = {
     },
     'fails if larger than 4096 bytes'(test: Test) {
       test.throws(
-        () => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_10_X),
+        () => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_8_10),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
     }
@@ -40,13 +40,13 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_8_10,
         code: directoryAsset
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_8_10,
         code: directoryAsset
       });
 
@@ -69,7 +69,7 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         code: lambda.Code.fromAsset(location),
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_8_10,
         handler: 'foom',
       });
 
@@ -90,7 +90,7 @@ export = {
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_8_10,
         handler: 'index.handler',
       });
 
@@ -144,7 +144,7 @@ export = {
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_8_10,
         handler: 'index.handler',
       });
 
@@ -189,7 +189,7 @@ export = {
   },
 };
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_10_X) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_8_10) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',
