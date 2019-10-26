@@ -15,7 +15,7 @@ class ConfigStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'CustomFunction', {
       code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_LATEST
     });
 
     const customRule = new config.CustomRule(this, 'Custom', {

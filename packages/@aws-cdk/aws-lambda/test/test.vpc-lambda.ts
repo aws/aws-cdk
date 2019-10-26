@@ -21,7 +21,7 @@ export = {
       this.lambda = new lambda.Function(this.stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         vpc: this.vpc,
         allowAllOutbound: false
       });
@@ -128,7 +128,7 @@ export = {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -149,7 +149,7 @@ export = {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
       });

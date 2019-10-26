@@ -33,7 +33,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       lambdaPurpose: 'AdoptEcrRepository',
       handler: 'handler.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'adopt-repository')),

@@ -23,7 +23,7 @@ class Test extends cdk.Stack {
     });
 
     const handler = new lambda.Function(this, 'MyHandler', {
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline(`exports.handler = ${handlerCode}`),
       handler: 'index.handler',
     });

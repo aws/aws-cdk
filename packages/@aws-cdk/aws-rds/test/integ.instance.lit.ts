@@ -85,7 +85,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_LATEST
     });
 
     const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });

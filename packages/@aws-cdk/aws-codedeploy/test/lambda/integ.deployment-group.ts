@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda');
 const handler = new lambda.Function(stack, `Handler`, {
   code: lambda.Code.fromAsset(path.join(__dirname, 'handler')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10,
+  runtime: lambda.Runtime.NODEJS_LATEST,
 });
 const version = handler.addVersion('1');
 const blueGreenAlias = new lambda.Alias(stack, `Alias`, {
@@ -22,12 +22,12 @@ const blueGreenAlias = new lambda.Alias(stack, `Alias`, {
 const preHook = new lambda.Function(stack, `PreHook`, {
   code: lambda.Code.fromAsset(path.join(__dirname, 'preHook')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10
+  runtime: lambda.Runtime.NODEJS_LATEST
 });
 const postHook = new lambda.Function(stack, `PostHook`, {
   code: lambda.Code.fromAsset(path.join(__dirname, 'postHook')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10
+  runtime: lambda.Runtime.NODEJS_LATEST
 });
 
 new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {

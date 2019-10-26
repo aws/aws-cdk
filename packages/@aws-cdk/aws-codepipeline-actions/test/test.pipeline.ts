@@ -429,7 +429,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');

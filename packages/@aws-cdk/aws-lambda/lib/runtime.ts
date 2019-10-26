@@ -47,6 +47,8 @@ export class Runtime {
   public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
   public static readonly PROVIDED =     new Runtime('provided',       RuntimeFamily.OTHER);
 
+  public static NODEJS_LATEST = Runtime.NODEJS_10_X;
+
   /**
    * The name of this runtime, as expected by the Lambda resource.
    */

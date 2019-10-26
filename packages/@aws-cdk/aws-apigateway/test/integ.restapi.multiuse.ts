@@ -7,7 +7,7 @@ class MultiStack extends cdk.Stack {
     super(scope, id);
 
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.inline(`exports.handler = ${helloCode}`)
     }));

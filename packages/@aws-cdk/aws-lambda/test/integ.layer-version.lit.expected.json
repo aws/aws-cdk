@@ -42,7 +42,7 @@
           }
         },
         "CompatibleRuntimes": [
-          "nodejs8.10"
+          "nodejs10.x"
         ],
         "Description": "A layer to test the L2 construct",
         "LicenseInfo": "Apache-2.0"
@@ -104,7 +104,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Layers": [
           {
             "Ref": "MyLayer38944FA5"

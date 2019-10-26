@@ -36,7 +36,7 @@ class MyNestedStack extends cfn.NestedStack {
 
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.inline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
