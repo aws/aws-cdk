@@ -75,7 +75,7 @@ const resource = new serverless.CfnFunction(this, 'Func', {
     bucket: asset.s3BucketName,
     key: asset.s3ObjectKey
   },
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: 'nodejs8.10',
   handler: 'index.handler'
 });
 

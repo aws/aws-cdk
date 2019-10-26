@@ -56,7 +56,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "CustomFunctionServiceRoleD3F73B79"

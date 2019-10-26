@@ -44,7 +44,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "HelloServiceRole1E55EA16"

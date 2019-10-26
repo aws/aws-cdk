@@ -91,7 +91,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "MyFunctionServiceRole3C357FF2"
@@ -244,7 +244,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs8.10",
         "Timeout": 300
       },
       "DependsOn": [

@@ -25,7 +25,7 @@ export = testCase({
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: [lambda.Runtime.NODEJS_10_X.name]
+      CompatibleRuntimes: [lambda.Runtime.NODEJS_10_X]
     }));
 
     test.done();

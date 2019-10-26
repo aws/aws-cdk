@@ -49,7 +49,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "LambdaServiceRoleA8ED4D3B"

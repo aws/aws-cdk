@@ -44,7 +44,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "FServiceRole3AC82EE1"
@@ -185,7 +185,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs8.10",
         "Timeout": 300
       },
       "DependsOn": [

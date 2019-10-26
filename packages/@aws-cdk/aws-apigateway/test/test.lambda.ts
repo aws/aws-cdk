@@ -56,7 +56,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_8_10,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler'
     });
@@ -106,7 +106,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_8_10,
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler'
     });
@@ -132,7 +132,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'test-api');
 
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`loo`)
     });

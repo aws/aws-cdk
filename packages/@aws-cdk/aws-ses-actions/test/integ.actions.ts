@@ -15,7 +15,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.fromInline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X
+  runtime: lambda.Runtime.NODEJS_8_10
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');

@@ -79,8 +79,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
         Code: { ZipFile: `exports.handler = ${handler.toString()};` },
         Handler: 'index.handler',
         Role: role.roleArn,
-        // Lambda.Runtime.NODEJS_10_X
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs8.10',
         Timeout: 300,
       }
     });

@@ -10,7 +10,7 @@ test('lambda as notification target', () => {
   const stack = new Stack();
   const bucketA = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`foo`)
   });

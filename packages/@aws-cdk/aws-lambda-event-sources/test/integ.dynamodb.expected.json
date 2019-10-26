@@ -79,7 +79,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "FServiceRoleDefaultPolicy17A19BFA",

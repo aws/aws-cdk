@@ -14,7 +14,7 @@ const sourceBucket = new s3.Bucket(stack, 'Bucket', {
 const lambdaFunction = new lambda.Function(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X
+  runtime: lambda.Runtime.NODEJS_8_10
 });
 
 const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {
