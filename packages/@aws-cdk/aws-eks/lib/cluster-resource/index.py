@@ -98,17 +98,20 @@ def handler(event, context):
             resp = eks.create_cluster(**config)
             logger.info("create response: %s" % resp)
         elif request_type == 'Update':
-            logger.info("updating cluster %s" % cluster_name)
-
-            current_state = eks.describe_cluster(name=cluster_name)['cluster']
+            # physical_id is always defined for "update"
+            logger.info("updating cluster %s" % physical_id)
+            current_state = eks.describe_cluster(name=physical_id)['cluster']
 
             # changes to "name", "resourcesVpcConfig" and "roleArn" all require replacement
             # according to the cloudformation spec, so if one of these change, we basically need to create
             # a new cluster with the new configuration (in this case, if "version" has been changed, the
             # new version will be used by the new cluster).
             if should_replace_cluster():
-                cluster_name = new_cluster_name()
-                config['name'] = cluster_name
+                # unless we are renaming the cluster, allocate a new cluster name
+                if cluster_name == physical_id:
+                    cluster_name = new_cluster_name()
+                    config['name'] = cluster_name
+
                 logger.info("replacing cluster %s with a new cluster %s" % (physical_id, cluster_name))
                 resp = eks.create_cluster(**config)
                 logger.info("create (replacement) response: %s" % resp)
