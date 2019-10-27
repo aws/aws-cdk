@@ -24,7 +24,7 @@ export class CfnInclude extends CfnElement {
    * stack.
    * @param scope The parent construct of this template
    * @param id The ID of this construct
-   * @param template The template to adopt.
+   * @param props Initialization properties.
    */
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
