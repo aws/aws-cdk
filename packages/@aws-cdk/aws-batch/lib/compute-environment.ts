@@ -36,6 +36,12 @@ export enum ComputeResourceType {
  * Properties for how to prepare compute resources
  * that are provisioned for a compute environment
  */
+export enum AllocationStrategy {
+    BEST_FIT = 'BEST_FIT',
+    BEST_FIT_PROGRESSIVE = 'BEST_FIT_PROGRESSIVE',
+    SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
+}
+
 export interface ComputeResourceProps {
     /**
      * The IAM role applied to EC2 resources in the compute environment.
@@ -47,23 +53,33 @@ export interface ComputeResourceProps {
      * families to launch any instance type within those families (for example, c4 or p3), or you can specify
      * specific sizes within a family (such as c4.8xlarge). You can also choose optimal to pick instance types
      * (from the C, M, and R instance families) on the fly that match the demand of your job queues.
+     *
+     * @default optimal
      */
-    readonly instanceTypes: ec2.InstanceType[];
+    readonly instanceTypes?: ec2.InstanceType[];
 
     /**
-     * The maximum number of EC2 vCPUs that an environment can reach.
+     * The maximum number of EC2 vCPUs that an environment can reach. Each vCPU is equivalent to
+     * 1,024 CPU shares. You must specify at least one vCPU.
+     *
+     * @default 256
      */
-    readonly maxvCpus: number;
+    readonly maxvCpus?: number;
 
     /**
      * The minimum number of EC2 vCPUs that an environment should maintain (even if the compute environment state is DISABLED).
+     * Each vCPU is equivalent to 1,024 CPU shares. You must specify at least one vCPU.
+     *
+     * @default 0
      */
-    readonly minvCpus: number;
+    readonly minvCpus?: number;
 
     /**
      * The EC2 security group(s) associated with instances launched in the compute environment.
+     *
+     * @default AWS default security group
      */
-    readonly securityGroupIds: ec2.ISecurityGroup[];
+    readonly securityGroupIds?: ec2.ISecurityGroup[];
 
     /**
      * The VPC subnets into which the compute resources are launched.
@@ -72,8 +88,10 @@ export interface ComputeResourceProps {
 
     /**
      * The type of compute environment: EC2 or SPOT.
+     *
+     * @default EC2
      */
-    readonly type: ComputeResourceType;
+    readonly type?: ComputeResourceType;
 
     /**
      * The maximum percentage that a Spot Instance price can be when compared with the On-Demand price for
@@ -151,6 +169,22 @@ export interface ComputeResourceProps {
  * Properties for creating a new Compute Environment
  */
 export interface ComputeEnvironmentProps {
+    /**
+     * The allocation strategy to use for the compute resource in case not enough instances ofthe best
+     * fitting instance type can be allocated. This could be due to availability of the instance type in
+     * the region or Amazon EC2 service limits. If this is not specified, the default is BEST_FIT, which
+     * will use only the best fitting instance type, waiting for additional capacity if it's not available.
+     * This allocation strategy keeps costs lower but can limit scaling. If you are using Spot Fleets with
+     * BEST_FIT then the Spot Fleet IAM Role must be specified. BEST_FIT_PROGRESSIVE will select an additional
+     * instance type that is large enough to meet the requirements of the jobs in the queue, with a preference
+     * for an instance type with a lower cost. SPOT_CAPACITY_OPTIMIZED is only available for Spot Instance
+     * compute resources and will select an additional instance type that is large enough to meet the requirements
+     * of the jobs in the queue, with a preference for an instance type that is less likely to be interrupted.
+     *
+     * @default AllocationStrategy.BEST_FIT
+     */
+    readonly allocationStrategy?: AllocationStrategy;
+
     /**
      * A name for the compute environment.
      *
@@ -242,71 +276,112 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
      */
     public readonly computeEnvironmentName: string;
 
-    constructor(scope: Construct, id: string, props: ComputeEnvironmentProps = {}) {
+    constructor(scope: Construct, id: string, props?: ComputeEnvironmentProps) {
         super(scope, id, {
-            physicalName: props.computeEnvironmentName,
+            physicalName: props ? props.computeEnvironmentName : undefined,
         });
 
-        // Should we...?
         this.validateProps(props);
 
-        let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
+        let computeResources: CfnComputeEnvironment.ComputeResourcesProperty;
 
-        if (props.computeResources) {
+        if (props && props.computeResources) {
             computeResources = {
+                allocationStrategy: props.allocationStrategy || AllocationStrategy.BEST_FIT,
                 bidPercentage: props.computeResources.bidPercentage,
                 desiredvCpus: props.computeResources.desiredvCpus,
                 ec2KeyPair: props.computeResources.ec2KeyPair,
                 imageId: props.computeResources.imagedId ? props.computeResources.imagedId.getImage(this).imageId : undefined,
-                instanceRole: props.computeResources.instanceRole.roleArn,
-                instanceTypes: props.computeResources.instanceTypes.reduce((types: string[], type: ec2.InstanceType): string[] => {
-                    return [...types, type.toString()];
-                }, []),
+                instanceRole: props.computeResources.instanceRole.roleArn || new iam.Role(this, 'Resource-Role', {
+                    assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+                }).roleArn,
+                instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
                 launchTemplate: props.computeResources.launchTemplate,
-                maxvCpus: props.computeResources.maxvCpus,
-                minvCpus: props.computeResources.minvCpus,
+                maxvCpus: props.computeResources.maxvCpus || 256,
+                minvCpus: props.computeResources.minvCpus || 0,
                 placementGroup: props.computeResources.placementGroup ? props.computeResources.placementGroup.ref : undefined,
-                securityGroupIds: props.computeResources.securityGroupIds.reduce((ids: string[], group: ec2.ISecurityGroup): string[] => {
-                    return [...ids, group.securityGroupId];
-                }, []),
+                securityGroupIds: this.buildSecurityGroupIds(props.computeResources.securityGroupIds),
                 spotIamFleetRole: props.computeResources.spotIamFleetRole ? props.computeResources.spotIamFleetRole.roleArn : undefined,
                 subnets: props.computeResources.subnets.reduce((ids: string[], subnet: ec2.ISubnet): string[] => {
                     return [...ids, subnet.subnetId];
                 }, []),
                 tags: props.computeResources.tags ? props.computeResources.tags.value : undefined,
-                type: props.computeResources.type as string,
+                type: props.computeResources.type || ComputeResourceType.EC2,
+            };
+        } else {
+            const defaultVpc = ec2.Vpc.fromLookup(this, 'Resource-Default-VPC', {
+                isDefault: true,
+            });
+
+            // Compose an environment from free tier resources on default AWS VPC
+            computeResources = {
+                allocationStrategy: AllocationStrategy.BEST_FIT,
+                instanceRole: new iam.Role(this, 'Resource-Role', {
+                    assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+                }).roleArn,
+                instanceTypes: this.buildInstanceTypes(),
+                maxvCpus: 256,
+                minvCpus: 0,
+                subnets: defaultVpc.privateSubnets.map(subnet => subnet.subnetId),
+                type: ComputeResourceType.EC2,
             };
         }
 
         const computeEnvironment = new CfnComputeEnvironment(this, 'Resource', {
             computeEnvironmentName: this.physicalName,
             computeResources,
-            serviceRole: new iam.CfnServiceLinkedRole(this, 'Resource', {
+            serviceRole: new iam.CfnServiceLinkedRole(this, 'Resource-Service-Linked-Role', {
                 awsServiceName: 'batch.amazonaws.com',
                 customSuffix: `-${id}`,
             }).ref,
-            state: props.state ? 'true' : 'false',
-            type: props.type as string,
+            state: props ? (props.state ? 'true' : 'false') : 'false',
+            type: props ? (props.type ? props.type : ComputeEnvironmentType.MANAGED) : ComputeEnvironmentType.MANAGED,
         });
 
         this.computeEnvironmentArn = computeEnvironment.ref;
-        this.computeEnvironmentName = this.getResourceNameAttribute(props.computeEnvironmentName || this.physicalName);
+        this.computeEnvironmentName = this.getResourceNameAttribute(props ? props.computeEnvironmentName || this.physicalName : this.physicalName);
     }
 
     /**
      * Validates the properties provided for a new batch compute environment
      */
-    public validateProps(props: ComputeEnvironmentProps) {
-        if (props.type === ComputeEnvironmentType.MANAGED && props.computeResources === undefined) {
-            throw new Error('compute resources are required to be defined when environment type is set to MANAGED');
+    public validateProps(props?: ComputeEnvironmentProps) {
+        if (props === undefined) {
+            return;
         }
 
-        const allowedChars = /[A-Z0-9\-\_]/gi;
-
-        if (props.computeEnvironmentName &&
-            (props.computeEnvironmentName.length > 128 || props.computeEnvironmentName.match(allowedChars) !== null)
-            ) {
-            throw new Error('up to 128 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed');
+        // Setting a bid percentage is only allowed on SPOT resources
+        if (props.computeResources && props.computeResources.type &&
+            props.computeResources.type === ComputeResourceType.EC2 && props.computeResources.bidPercentage !== undefined) {
+            throw new Error('Setting the bid percentage is only allowed for SPOT type resources on a batch compute environment');
         }
+
+        // Bid percentage must be from 0 - 100
+        if (props.computeResources && props.computeResources.bidPercentage !== undefined &&
+            (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
+            throw new Error('Bid percentage can only be a value between 0 and 100');
+        }
+    }
+
+    private buildInstanceTypes(instanceTypes?: ec2.InstanceType[]): string[] {
+        if (instanceTypes === undefined) {
+            return [
+                'optimal',
+            ];
+        }
+
+        return instanceTypes.reduce((types: string[], type: ec2.InstanceType): string[] => {
+            return [...types, type.toString()];
+        }, []);
+    }
+
+    private buildSecurityGroupIds(securityGroupIds?: ec2.ISecurityGroup[]): string[] | undefined {
+        if (securityGroupIds === undefined) {
+            return undefined;
+        }
+
+        return securityGroupIds.reduce((ids: string[], group: ec2.ISecurityGroup): string[] => {
+            return [...ids, group.securityGroupId];
+        }, []);
     }
 }

@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnJobQueue } from './batch.generated';
-import { IComputeEnvironment } from './compute-environment';
+import { ComputeEnvironment, IComputeEnvironment } from './compute-environment';
 
 /**
  * Property to determine if the Batch Job
@@ -50,8 +50,10 @@ export interface JobQueueProps {
      * The set of compute environments mapped to a job queue and their order relative to each other. The job scheduler uses this parameter to
      * determine which compute environment should execute a given job. Compute environments must be in the VALID state before you can associate them
      * with a job queue. You can associate up to three compute environments with a job queue.
+     *
+     * @default Default-Compute-Environment
      */
-    readonly computeEnvironmentOrder: JobQueueComputeEnvironment[];
+    readonly computeEnvironmentOrder?: JobQueueComputeEnvironment[];
 
     /**
      * The priority of the job queue. Job queues with a higher priority (or a higher integer value for the priority parameter) are evaluated first
@@ -129,7 +131,12 @@ export class JobQueue extends Resource implements IJobQueue {
                     computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
                     order: cp.order,
                 } as CfnJobQueue.ComputeEnvironmentOrderProperty;
-            }) : [],
+            }) : [
+                {
+                    computeEnvironment: new ComputeEnvironment(this, 'Resource-Batch-Compute-Environment').computeEnvironmentArn,
+                    order: 1,
+                },
+            ],
             jobQueueName: this.physicalName,
             priority: props.priority || 1,
             state: props.state || JobQueueState.DISABLED,
