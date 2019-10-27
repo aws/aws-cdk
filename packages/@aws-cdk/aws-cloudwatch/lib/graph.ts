@@ -201,6 +201,13 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    * Metrics to display
    */
   readonly metrics: IMetric[];
+
+  /**
+   * Whether to show the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
 }
 
 /**
@@ -225,7 +232,8 @@ export class SingleValueWidget extends ConcreteWidget {
         view: 'singleValue',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
-        metrics: this.props.metrics.map(m => metricJson(m, 'left'))
+        metrics: this.props.metrics.map(m => metricJson(m, 'left')),
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange
       }
     }];
   }
