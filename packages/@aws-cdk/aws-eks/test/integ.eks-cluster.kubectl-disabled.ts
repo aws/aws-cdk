@@ -28,6 +28,6 @@ const app = new cdk.App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-new EksClusterStack(app, 'eks-integ-test');
+new EksClusterStack(app, 'eks-integ-kubectl-disabled');
 
 app.synth();
