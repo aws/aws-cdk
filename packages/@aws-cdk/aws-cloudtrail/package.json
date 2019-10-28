@@ -91,5 +91,16 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.Trail.trailArn",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.Trail.trailSnsTopicArn",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.TrailProps",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.READ_ONLY",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.WRITE_ONLY",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.ALL"
+    ]
+  }
 }

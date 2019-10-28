@@ -90,5 +90,12 @@
   "bundledDependencies": [
     "minimatch"
   ],
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/assets.StagingProps",
+      "docs-public-apis:@aws-cdk/assets.StagingProps.sourcePath",
+      "docs-public-apis:@aws-cdk/assets.FollowMode"
+    ]
+  }
 }

@@ -84,7 +84,22 @@
   "awslint": {
     "exclude": [
       "from-method:@aws-cdk/aws-events.Rule",
-      "no-unused-type:@aws-cdk/aws-events.OnEventOptions"
+      "no-unused-type:@aws-cdk/aws-events.OnEventOptions",
+      "docs-public-apis:@aws-cdk/aws-events.RuleProps",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputTemplate",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputPathsMap",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputPath",
+      "docs-public-apis:@aws-cdk/aws-events.EventField.displayHint",
+      "docs-public-apis:@aws-cdk/aws-events.EventField.path",
+      "docs-public-apis:@aws-cdk/aws-events.EventField.toJSON",
+      "docs-public-apis:@aws-cdk/aws-events.Rule.fromEventRuleArn",
+      "docs-public-apis:@aws-cdk/aws-events.IRule",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.input",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.ecsParameters",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.kinesisParameters",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.role",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.runCommandParameters",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.sqsParameters"
     ]
   },
   "stability": "stable"

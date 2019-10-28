@@ -76,7 +76,23 @@
   },
   "awslint": {
     "exclude": [
-      "no-unused-type:@aws-cdk/aws-autoscaling-common.*"
+      "no-unused-type:@aws-cdk/aws-autoscaling-common.*",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.ArbitraryIntervals",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.IRandomGenerator.nextInt",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.IRandomGenerator.nextBoolean",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.IRandomGenerator",
+      "props-default-doc:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.change",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.Alarms",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.Alarms.lowerAlarmIntervalIndex",
+      "props-default-doc:@aws-cdk/aws-autoscaling-common.Alarms.lowerAlarmIntervalIndex",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.Alarms.upperAlarmIntervalIndex",
+      "props-default-doc:@aws-cdk/aws-autoscaling-common.Alarms.upperAlarmIntervalIndex",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.change",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.ArbitraryIntervals.absolute",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.ArbitraryIntervals.intervals",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.lower",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.upper"
     ]
   },
   "engines": {

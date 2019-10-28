@@ -116,6 +116,14 @@ export class Evaluation<T> {
     this.diagnostics = diagnostics;
   }
 
+  /**
+   * Record a failure if `condition` is not truthy.
+   *
+   * @param condition The condition to assert.
+   * @param scope Used to diagnose the location in the source, and is used in the
+   * ignore pattern.
+   * @param extra Used to replace %s in the default message format string.
+   */
   public assert(condition: any, scope: string, extra?: string): condition is true {
     // deduplicate: skip if this specific assertion ("rule:scope") was already examined
     if (this.diagnostics.find(d => d.rule.code === this.curr.code && d.scope === scope)) {

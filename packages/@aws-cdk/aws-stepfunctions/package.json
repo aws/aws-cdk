@@ -91,7 +91,17 @@
       "export:@aws-cdk/aws-stepfunctions.IActivity",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.WaitProps.duration",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT",
-      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
+      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.TaskInput.value",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.InputType.OBJECT",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.Data.isJsonPathString",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.Result.value",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.StateGraph.startState",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.TaskInput.type",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.InputType.TEXT",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.WaitTime",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.ActivityProps",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.IActivity"
     ]
   },
   "stability": "experimental"

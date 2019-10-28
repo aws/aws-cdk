@@ -102,5 +102,11 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirect",
+      "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirectProps"
+    ]
+  }
 }

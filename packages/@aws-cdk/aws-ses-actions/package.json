@@ -101,5 +101,17 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-ses-actions.BounceTemplate.MAILBOX_DOES_NOT_EXIST",
+      "docs-public-apis:@aws-cdk/aws-ses-actions.BounceTemplate.MAILBOX_FULL",
+      "docs-public-apis:@aws-cdk/aws-ses-actions.BounceTemplate.MESSAGE_CONTENT_REJECTED",
+      "docs-public-apis:@aws-cdk/aws-ses-actions.BounceTemplate.MESSAGE_TOO_LARGE",
+      "docs-public-apis:@aws-cdk/aws-ses-actions.BounceTemplate.TEMPORARY_FAILURE",
+      "docs-public-apis:@aws-cdk/aws-ses-actions.BounceTemplate.props",
+      "props-default-doc:@aws-cdk/aws-ses-actions.BounceTemplateProps.statusCode",
+      "props-default-doc:@aws-cdk/aws-ses-actions.StopProps.topic"
+    ]
+  }
 }

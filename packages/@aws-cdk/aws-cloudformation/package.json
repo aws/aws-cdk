@@ -101,7 +101,10 @@
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
       "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource",
       "no-unused-type:@aws-cdk/aws-cloudformation.CloudFormationCapabilities",
-      "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps"
+      "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.CustomResourceProvider",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.CustomResourceProvider.serviceToken",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.NestedStackProps"
     ]
   },
   "stability": "stable"
