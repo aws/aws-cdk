@@ -111,7 +111,14 @@
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualRouter.virtualRouterMeshName",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualRouter.virtualRouterUid",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualService.virtualServiceMeshName",
-      "resource-attribute:@aws-cdk/aws-appmesh.VirtualService.virtualServiceUid"
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualService.virtualServiceUid",
+      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.TCP",
+      "docs-public-apis:@aws-cdk/aws-appmesh.VirtualRouter",
+      "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.mesh",
+      "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.meshName",
+      "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.virtualRouterArn",
+      "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.virtualRouterName",
+      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP"
     ]
   },
   "stability": "experimental"
