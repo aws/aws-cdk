@@ -99,7 +99,8 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         memoryLimitMiB: props.memoryLimitMiB,
         cpu: props.cpu,
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
       });
 
       // Create log driver if logging is enabled

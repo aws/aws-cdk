@@ -203,6 +203,13 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default 80
    */
   readonly containerPort?: number;
+
+  /**
+   * The name of a family that this task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
 }
 
 /**
