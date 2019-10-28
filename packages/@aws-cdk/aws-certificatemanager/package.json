@@ -89,7 +89,9 @@
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-certificatemanager.CertificateProps",
-      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps"
+      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps",
+      "docs-public-apis:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps",
+      "docs-public-apis:@aws-cdk/aws-certificatemanager.ICertificate"
     ]
   },
   "stability": "stable"

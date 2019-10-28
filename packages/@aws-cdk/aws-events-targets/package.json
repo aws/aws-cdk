@@ -122,5 +122,16 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-events-targets.EcsTask.securityGroup",
+      "docs-public-apis:@aws-cdk/aws-events-targets.SfnStateMachine.machine",
+      "docs-public-apis:@aws-cdk/aws-events-targets.SnsTopic.topic",
+      "docs-public-apis:@aws-cdk/aws-events-targets.SqsQueue.queue",
+      "docs-public-apis:@aws-cdk/aws-events-targets.ContainerOverride",
+      "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
+      "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"
+    ]
+  }
 }

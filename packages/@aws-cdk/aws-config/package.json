@@ -88,5 +88,14 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWENTY_FOUR_HOURS",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.ONE_HOUR",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.THREE_HOURS",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.SIX_HOURS",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWELVE_HOURS"
+    ]
+  }
 }
