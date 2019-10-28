@@ -3,6 +3,7 @@ tsconfig.json
 tslint.json
 *.js.map
 *.d.ts
+!lib/async-custom-resource/types.d.ts
 *.generated.ts
 dist
 lib/generated/resources.ts

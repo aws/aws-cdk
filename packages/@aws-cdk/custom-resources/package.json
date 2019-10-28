@@ -100,13 +100,25 @@
     "@aws-cdk/aws-sns": "1.13.1",
     "@aws-cdk/core": "1.13.1"
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 80
+      }
+    }
+  },  
   "engines": {
     "node": ">= 10.3.0"
   },
   "stability": "experimental",
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
+      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource",
+      "props-physical-name:@aws-cdk/custom-resources.AsyncCustomResourceProps"
     ]
   }
 }

@@ -5,10 +5,10 @@ import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
 import { Construct, Stack } from '@aws-cdk/core';
 import path = require('path');
 import { AsyncCustomResourceProps } from '.';
-import { calculateRetryPolicy } from '../util';
-import consts = require('./handler/consts');
+import consts = require('./runtime/consts');
+import { calculateRetryPolicy } from './util';
 
-const HANDLER_PATH = path.join(__dirname, 'handler');
+const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 
 export class ProviderStack extends NestedStack {
   /**
@@ -37,23 +37,20 @@ export class ProviderStack extends NestedStack {
     this.userOnEventHandler = props.onEventHandler || 'index.onEvent';
     this.userIsCompleteHandler = props.isCompleteHandler || 'index.isComplete';
 
-    validateHandlerSpec('onEvent', this.userOnEventHandler);
-    validateHandlerSpec('isComplete', this.userIsCompleteHandler);
-
     this.userCodeLayer = new lambda.LayerVersion(this, 'user-layer', {
       description: 'async custom resource user code',
       code: props.handlerCode,
     });
 
-    const isCompleteTask = this.createTask(consts.IS_COMPLETE_ENTRYPOINT);
-    isCompleteTask.addCatch(this.createTask(consts.TIMEOUT_ENTRYPOINT));
+    const isCompleteTask = this.createTask('isCompleteHandler');
+    isCompleteTask.addCatch(this.createTask('timeoutHandler'));
     isCompleteTask.addRetry(calculateRetryPolicy(props));
 
     const waiterStateMachine = new sfn.StateMachine(this, 'waiter-state-machine', {
       definition: isCompleteTask
     });
 
-    this.onEventHandler = this.createHandler(consts.ON_EVENT_ENTRYPOINT);
+    this.onEventHandler = this.createHandler('onEventHandler');
 
     // the on-event entrypoint is going to start the execution of the waiter
     this.onEventHandler.addEnvironment(consts.ENV_WAITER_STATE_MACHINE_ARN, waiterStateMachine.stateMachineArn);
@@ -61,14 +58,19 @@ export class ProviderStack extends NestedStack {
   }
 
   private createHandler(entrypoint: string) {
+    const { file: onEventFile, func: onEventFunc } = parseHandler('onEvent', this.userOnEventHandler);
+    const { file: isCompleteFile, func: isCompleteFunc } = parseHandler('isComplete', this.userIsCompleteHandler);
+
     return new lambda.Function(this, `${entrypoint}-handler`, {
-      code: lambda.Code.fromAsset(HANDLER_PATH),
+      code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: `index.${entrypoint}`,
       layers: [ this.userCodeLayer ],
       environment: {
-        [consts.ENV_ON_EVENT_USER_HANDLER]: this.userOnEventHandler,
-        [consts.ENV_IS_COMPLETE_USER_HANDLER]: this.userIsCompleteHandler
+        [consts.ENV_IS_COMPLETE_USER_HANDLER_FILE]: isCompleteFile,
+        [consts.ENV_IS_COMPLETE_USER_HANDLER_FUNCTION]: isCompleteFunc,
+        [consts.ENV_ON_EVENT_USER_HANDLER_FILE]: onEventFile,
+        [consts.ENV_ON_EVENT_USER_HANDLER_FUNCTION]: onEventFunc
       }
     });
   }
@@ -80,8 +82,12 @@ export class ProviderStack extends NestedStack {
   }
 }
 
-function validateHandlerSpec(name: string, spec: string) {
-  if (spec.split('.').length !== 2) {
-    throw new Error(`Invalid handler specification for ${name} ("${spec}"). Format is "<filename>.<export>"`);
+function parseHandler(name: string, spec: string) {
+  const parts = spec.split('.');
+  if (parts.length !== 2) {
+    throw new Error(`Invalid handler specification for ${name} ("${spec}"). Format is "<filename>.<export-function>"`);
   }
+
+  const [ file, func ] = parts;
+  return { file, func };
 }

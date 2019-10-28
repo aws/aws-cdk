@@ -1,7 +1,7 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import { App, CfnOutput, Construct, Stack, Token } from '@aws-cdk/core';
 import path = require('path');
-import { AsyncCustomResource } from '../lib';
+import { AsyncCustomResource } from '../../lib';
 
 const app = new App();
 
