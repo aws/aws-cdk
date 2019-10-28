@@ -414,6 +414,10 @@ export class ConstructNode {
     }
   }
 
+  public deleteChild(childName: string) {
+    delete this._children[childName];
+  }
+
   /**
    * Return all dependencies registered on this node or any of its children
    */

@@ -193,6 +193,10 @@ export class Policy extends Resource implements IPolicy {
     group.attachInlinePolicy(this);
   }
 
+  protected get isAttached() {
+    return this.groups.length + this.users.length + this.roles.length > 0;
+  }
+
   protected validate(): string[] {
     const result = new Array<string>();
 
@@ -202,7 +206,7 @@ export class Policy extends Resource implements IPolicy {
     }
 
     // validate that the policy is attached to at least one principal (role, user or group).
-    if (this.groups.length + this.users.length + this.roles.length === 0) {
+    if (!this.isAttached) {
       result.push(`Policy must be attached to at least one principal: user, group or role`);
     }
 

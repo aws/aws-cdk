@@ -1,112 +1,47 @@
-import { Aws, CfnRefElement, Construct, Lazy, Resource } from '@aws-cdk/core';
-import { IGroup } from './group';
-import { CfnPolicy } from './iam.generated';
-import { IPolicy, Policy, PolicyProps } from './policy';
-import { PolicyStatement } from './policy-statement';
-import { IRole } from './role';
-import { IUser } from './user';
+import { Lazy } from '@aws-cdk/core';
+import { IPolicy, Policy } from './policy';
 
-export class LazyPolicy extends Resource implements IPolicy {
-  // private readonly scope: Construct;
-  // private readonly id: string;
-  private readonly policyProps?: PolicyProps;
-  private readonly statements: PolicyStatement[];
-
-  private policy?: Policy;
-
-  constructor(scope: Construct, id: string, policyProps: PolicyProps | undefined) {
-    super(scope, id);
-
-    // this.scope = scope;
-    // this.id = id;
-    this.policyProps = policyProps;
-    this.statements = (policyProps && policyProps.statements) || [];
-
-    const self = this;
-    class CustomCfnPolicy extends CfnPolicy {
-      constructor(s: Construct, i: string) {
-        super(s, i, {
-          groups: [],
-          roles: [],
-          users: [],
-          policyName: self.policyName,
-          policyDocument: {},
-        });
-      }
-
-      public get ref(): string {
-        return Lazy.stringValue({ produce: () => {
-          if (self.policy) {
-            return (self.policy.node.defaultChild as CfnRefElement).ref;
-          } else {
-            return Aws.NO_VALUE;
-          }
-        }});
-      }
-
-      public get logicalId(): string {
-        return Lazy.stringValue({ produce: () => {
-          if (self.policy) {
-            return (self.policy.node.defaultChild as CfnRefElement).logicalId;
-          } else {
-            return Aws.NO_VALUE;
-          }
-        }});
-      }
-    }
-    this.node.defaultChild = new CustomCfnPolicy(this, 'Resource');
-  }
-
-  // public get node(): ConstructNode {
-  //   if (this.policy) {
-  //     return this.policy.node;
-  //   } else {
-  //     // omit the getter to not fall into an endless loop
-  //     return (this as any).node;
-  //   }
-  // }
+export class LazyPolicy extends Policy implements IPolicy {
+  private _policyName!: string;
 
   public get policyName(): string {
     return Lazy.stringValue({ produce: () => {
-      if (this.policy) {
-        return this.policy.policyName;
+      if (this.isAttached) {
+        return super.policyName;
       } else {
-        return Aws.NO_VALUE;
+        return this._policyName;
       }
     }});
   }
 
-  public addStatements(...statements: PolicyStatement[]): void {
-    this.statements.push(...statements);
+  public set policyName(value: string) {
+    this._policyName = value;
   }
 
-  public attachToGroup(group: IGroup): void {
-    this.instantiate().attachToGroup(group);
+  public get ref(): string {
+    return Lazy.stringValue({ produce: () => {
+      if (this.isAttached) {
+        return super.policyName;
+      } else {
+        throw Error('Cannot get ref of unattached/empty LazyPolicy');
+      }
+    }});
   }
 
-  public attachToRole(role: IRole): void {
-    this.instantiate().attachToRole(role);
-  }
-
-  public attachToUser(user: IUser): void {
-    this.instantiate().attachToUser(user);
-  }
-
-  private instantiate(): Policy {
-    if (!this.policy) {
-      // this.policy = new Policy(this.scope, this.id, {
-      this.policy = new Policy(this, 'Default', {
-        statements: this.statements,
-        ...this.policyProps,
-      });
-
-      this.node.defaultChild = this.policy.node.defaultChild;
+  protected prepare() {
+    if (!this.isMeaningful) {
+      this.node.deleteChild('Resource');
     }
-
-    return this.policy;
   }
 
-  // private get isInstantiated(): boolean {
-  //   return !!this.policy;
-  // }
+  protected validate(): string[] {
+    // Inherited validate would validate that we are attached and
+    // have statements. This version of policy does not validate that,
+    // it just won't render.
+    return [];
+  }
+
+  private get isMeaningful() {
+    return this.document.statementCount > 0 && this.isAttached;
+  }
 }
