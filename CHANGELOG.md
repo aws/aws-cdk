@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES
 
 * **cli:** `cdk diff` now exits with 0 even when there's a diff, use `--fail` to exit with 1.
+* **rds:** `securityGroup: ec2.ISecurityGroup` is now `securityGroups: ec2.ISecurityGroup[]` in `DatabaseInstanceAttributes`
+* **rds:** removed `securityGroupId` from `IDatabaseInstance`
 
 ### Bug Fixes
 
