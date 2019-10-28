@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* **cli:** `cdk diff` now exits with 0 even when there's a diff, use `--fail` to exit with 1.
 * **rds:** `securityGroup: ec2.ISecurityGroup` is now `securityGroups: ec2.ISecurityGroup[]` in `DatabaseInstanceAttributes`
 * **rds:** removed `securityGroupId` from `IDatabaseInstance`
 
@@ -17,7 +16,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **assets:** docker asset versions are pushed to separate repositories ([#4537](https://github.com/aws/aws-cdk/issues/4537)) ([8484114](https://github.com/aws/aws-cdk/commit/8484114)), closes [#4535](https://github.com/aws/aws-cdk/issues/4535)
 * **aws-lambda:** update deprecation warning for node.js 8.10 ([#4624](https://github.com/aws/aws-cdk/issues/4624)) ([ace8041](https://github.com/aws/aws-cdk/commit/ace8041))
 * **cli:** add Cloud Assembly backwards compat tests ([#4625](https://github.com/aws/aws-cdk/issues/4625)) ([5d2e5e3](https://github.com/aws/aws-cdk/commit/5d2e5e3)), closes [#4475](https://github.com/aws/aws-cdk/issues/4475) [#4544](https://github.com/aws/aws-cdk/issues/4544)
-* **cli:** always exit with 0 on cdk diff ([#4650](https://github.com/aws/aws-cdk/issues/4650)) ([4f765b2](https://github.com/aws/aws-cdk/commit/4f765b2)), closes [#2111](https://github.com/aws/aws-cdk/issues/2111)
 * **cloudformation:** cannot reference resource attributes with "." in nested stacks ([#4684](https://github.com/aws/aws-cdk/issues/4684)) ([561bb73](https://github.com/aws/aws-cdk/commit/561bb73))
 * **codebuild:** revert validation that only a project with source CODEPIPELINE can be added to a pipeline ([#4689](https://github.com/aws/aws-cdk/issues/4689)) ([8e72720](https://github.com/aws/aws-cdk/commit/8e72720)), closes [#4646](https://github.com/aws/aws-cdk/issues/4646)
 * **codepipeline:** the CodeBuild action now works with imported projects ([#4637](https://github.com/aws/aws-cdk/issues/4637)) ([6c4085e](https://github.com/aws/aws-cdk/commit/6c4085e)), closes [#4613](https://github.com/aws/aws-cdk/issues/4613)
