@@ -94,7 +94,7 @@ export class HostedZone extends Resource implements IHostedZone {
       response.Name = response.Name.substring(0, response.Name.length - 1);
     }
 
-    return this.fromHostedZoneAttributes(scope, id, {
+    return HostedZone.fromHostedZoneAttributes(scope, id, {
       hostedZoneId: response.Id,
       zoneName: response.Name,
     });
