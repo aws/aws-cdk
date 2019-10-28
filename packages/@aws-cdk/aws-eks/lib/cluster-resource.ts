@@ -55,7 +55,7 @@ export class ClusterResource extends Construct {
 
     // since we don't know the cluster name at this point, we must give this role star resource permissions
     handler.addToRolePolicy(new PolicyStatement({
-      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster' ],
+      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion' ],
       resources: [ '*' ]
     }));
 
