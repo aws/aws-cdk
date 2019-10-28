@@ -230,7 +230,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    this.desiredCount = props.desiredCount || 1;
+    this.desiredCount = props.desiredCount != null ? props.desiredCount : 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
 

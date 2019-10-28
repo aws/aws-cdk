@@ -211,7 +211,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.secrets = props.secrets;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
-    this.desiredCount = props.desiredTaskCount || 1;
+    this.desiredCount = props.desiredTaskCount != null ? props.desiredTaskCount : 1;
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });

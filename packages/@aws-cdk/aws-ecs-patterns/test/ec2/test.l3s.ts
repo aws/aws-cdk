@@ -729,4 +729,60 @@ export = {
 
     test.done();
   },
+
+  'ALB - can set desiredTaskCount to 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 0,
+      LaunchType: "EC2",
+    }));
+
+    test.done();
+  },
+
+  'NLB - can set desiredTaskCount to 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 0,
+      LaunchType: "EC2",
+    }));
+
+    test.done();
+  },
 };
