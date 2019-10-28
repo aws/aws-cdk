@@ -230,6 +230,8 @@ async function initCommandLine() {
         } else {
           return await cliInit(args.TEMPLATE, language);
         }
+      case 'version':
+        return print(version.DISPLAY_VERSION);
 
       default:
         throw new Error('Unknown command: ' + command);
