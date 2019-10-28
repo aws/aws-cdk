@@ -99,5 +99,12 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.ApplicationScalingAction.bind",
+      "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.AutoScalingAction.bind",
+      "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.SnsAction.bind"
+    ]
+  }
 }

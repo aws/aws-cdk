@@ -102,7 +102,10 @@
   "stability": "experimental",
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource"
+      "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource",
+      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResource",
+      "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResourceProps",
+      "props-default-doc:@aws-cdk/custom-resources.AwsSdkCall.parameters"
     ]
   }
 }
