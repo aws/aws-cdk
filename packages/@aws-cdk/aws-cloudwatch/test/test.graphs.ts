@@ -288,4 +288,33 @@ export = {
 
     test.done();
   },
+
+  'add setPeriodToTimeRange to singleValueWidget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [ metric ],
+      setPeriodToTimeRange: true
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+        ],
+        setPeriodToTimeRange: true
+      }
+    }]);
+
+    test.done();
+  },
 };
