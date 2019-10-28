@@ -51,7 +51,7 @@ export class CdkToolkit {
     const contextLines = options.contextLines || 3;
     const stream = options.stream || process.stderr;
 
-    let diffs = 0;
+    let ret = 0;
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.length !== 1) {
@@ -62,17 +62,19 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      diffs = printStackDiff(template, stacks[0], strict, contextLines, stream);
+      ret = printStackDiff(template, stacks[0], strict, contextLines, options.stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks) {
         stream.write(format('Stack %s\n', colors.bold(stack.name)));
         const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
-        diffs = printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        if (printStackDiff(currentTemplate, stack, !!options.strict, options.contextLines || 3, stream) !== 0) {
+          ret = 1;
+        }
       }
     }
 
-    return diffs && options.fail ? 1 : 0;
+    return ret;
   }
 
   public async deploy(options: DeployOptions) {
@@ -245,13 +247,6 @@ export interface DiffOptions {
    * @default stderr
    */
   stream?: NodeJS.WritableStream;
-
-  /**
-   * Whether to fail with exit code 1 in case of diff
-   *
-   * @default false
-   */
-  fail?: boolean;
 }
 
 export interface DeployOptions {

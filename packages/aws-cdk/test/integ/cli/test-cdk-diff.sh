@@ -6,14 +6,11 @@ source ${scriptdir}/common.bash
 
 setup
 
-cdk diff ${STACK_NAME_PREFIX}-test-1 2>&1 | grep "AWS::SNS::Topic"
-cdk diff ${STACK_NAME_PREFIX}-test-2 2>&1 | grep "AWS::SNS::Topic"
+function cdk_diff() {
+    cdk diff $1 2>&1 || true
+}
 
-fail=0
-cdk diff --fail ${STACK_NAME_PREFIX}-test-1 2>&1 || fail=1
-
-if [ $fail -ne 1 ]; then
-  fail 'cdk diff with --fail does not fail'
-fi
+cdk_diff ${STACK_NAME_PREFIX}-test-1 | grep "AWS::SNS::Topic"
+cdk_diff ${STACK_NAME_PREFIX}-test-2 | grep "AWS::SNS::Topic"
 
 echo "✅  success"
