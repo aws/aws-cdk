@@ -154,7 +154,9 @@
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.S3SourceActionProps.output",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubTrigger.NONE",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubTrigger.POLL",
-      "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubTrigger.WEBHOOK"
+      "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubTrigger.WEBHOOK",
+      "docs-public-apis:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployAction",
+      "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployActionProps.containerImageInputs"
     ]
   }
 }

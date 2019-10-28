@@ -144,7 +144,14 @@
       "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.application",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.deploymentConfig",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.deploymentGroupArn",
-      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.deploymentGroupName"
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.deploymentGroupName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.EcsApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.EcsApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.EcsDeploymentConfig.ALL_AT_ONCE",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName"
     ]
   },
   "stability": "stable"
