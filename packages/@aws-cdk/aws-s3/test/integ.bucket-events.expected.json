@@ -1,0 +1,69 @@
+{
+  "Resources": {
+    "Bucket83908E77": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "BucketOnPutObject88EA8A08": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.s3"
+          ],
+          "detail-type": [
+            "AWS API Call via CloudTrail"
+          ],
+          "detail": {
+            "resources": {
+              "ARN": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "/key"
+                    ]
+                  ]
+                }
+              ]
+            },
+            "eventName": [
+              "CompleteMultipartUpload",
+              "CopyObject",
+              "PutObject"
+            ],
+            "requestParameters": {
+              "bucketName": [
+                {
+                  "Ref": "Bucket83908E77"
+                }
+              ],
+              "key": [
+                "key"
+              ]
+            }
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "MyTopic"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "MyTopic": {
+      "Type": "AWS::SNS::Topic"
+    }
+  }
+}

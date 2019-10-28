@@ -172,7 +172,7 @@ export interface IBucket extends IResource {
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this repository
+   * Define a CloudWatch event that triggers when something happens to this bucket
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -183,8 +183,9 @@ export interface IBucket extends IResource {
   onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
+   * Defines an AWS CloudWatch event rule that can trigger a target when the
+   * object at the specified key in this bucket is written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -325,8 +326,9 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
+   * Defines an AWS CloudWatch event rule that can trigger a target when the
+   * object at the specified key in this bucket is written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -338,7 +340,15 @@ abstract class BucketBase extends Resource implements IBucket {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
-        eventName: ['PutObject'],
+        eventName: [
+          'CompleteMultipartUpload',
+          'CopyObject',
+          'PutObject'
+        ],
+        requestParameters: {
+          bucketName: [ this.bucketName ],
+          key: options.paths,
+        },
       },
     });
     return rule;
