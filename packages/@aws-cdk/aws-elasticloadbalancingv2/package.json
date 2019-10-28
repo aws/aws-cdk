@@ -116,7 +116,9 @@
       "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.HealthCheck.healthyHttpCodes",
       "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ILoadBalancerV2",
       "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.LoadBalancerTargetProps.targetJson",
-      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupImportProps.loadBalancerArns"
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupImportProps.loadBalancerArns",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupAttributes.defaultPort",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupAttributes.loadBalancerArns"
     ]
   },
   "stability": "stable"

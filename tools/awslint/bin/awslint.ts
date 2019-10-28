@@ -11,6 +11,7 @@ let stackTrace = false;
 
 async function main() {
   const argv = yargs
+    .env('AWSLINT')
     .usage('awslint [options] [command]')
     .showHelpOnFail(true)
     .command('', 'lint the current module (default)')
