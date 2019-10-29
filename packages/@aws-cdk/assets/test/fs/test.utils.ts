@@ -216,8 +216,13 @@ export = {
 
       test.done();
     },
-    'contridactory'(test: Test) {
+    'negative contridactory'(test: Test) {
       testShouldExcludeDeep(test, ['foo.txt', '!foo.txt'], [], ['foo.txt']);
+
+      test.done();
+    },
+    'positive contridactory'(test: Test) {
+      testShouldExcludeDeep(test, ['!foo.txt', 'foo.txt'], ['foo.txt'], []);
 
       test.done();
     },
