@@ -65,10 +65,10 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.15.0",
     "@aws-cdk/aws-events-targets": "1.15.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
     "@aws-cdk/aws-events": "1.15.0",
@@ -88,5 +88,14 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWENTY_FOUR_HOURS",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.ONE_HOUR",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.THREE_HOURS",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.SIX_HOURS",
+      "docs-public-apis:@aws-cdk/aws-config.MaximumExecutionFrequency.TWELVE_HOURS"
+    ]
+  }
 }

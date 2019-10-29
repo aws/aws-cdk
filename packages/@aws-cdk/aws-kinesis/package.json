@@ -63,9 +63,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "cdk-build-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "1.15.0",
@@ -83,5 +83,13 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-kinesis.Stream.fromStreamArn",
+      "docs-public-apis:@aws-cdk/aws-kinesis.IStream",
+      "props-default-doc:@aws-cdk/aws-kinesis.StreamAttributes.encryptionKey",
+      "docs-public-apis:@aws-cdk/aws-kinesis.StreamProps"
+    ]
+  }
 }

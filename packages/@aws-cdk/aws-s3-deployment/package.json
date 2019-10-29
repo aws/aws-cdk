@@ -78,9 +78,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "pkglint": "file:../../../tools/pkglint"
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "1.15.0",
@@ -104,5 +104,34 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.Expires.fromString",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.BucketDeployment",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.fromString",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.maxAge",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.mustRevalidate",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.noCache",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.noTransform",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.proxyRevalidate",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.setPrivate",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.setPublic",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.sMaxAge",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.Expires.value",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.CacheControl.value",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.BucketDeploymentProps",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.SourceConfig",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.UserDefinedObjectMetadata",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.ServerSideEncryption.AES_256",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.ServerSideEncryption.AWS_KMS",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.STANDARD",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.REDUCED_REDUNDANCY",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.STANDARD_IA",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.ONEZONE_IA",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.INTELLIGENT_TIERING",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.GLACIER",
+      "docs-public-apis:@aws-cdk/aws-s3-deployment.StorageClass.DEEP_ARCHIVE"
+    ]
+  }
 }

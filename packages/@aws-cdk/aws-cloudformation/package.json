@@ -70,10 +70,10 @@
     "@aws-cdk/aws-sqs": "1.15.0",
     "@aws-cdk/aws-ssm": "1.15.0",
     "@types/aws-lambda": "^8.10.33",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "1.15.0",
@@ -101,7 +101,10 @@
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
       "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource",
       "no-unused-type:@aws-cdk/aws-cloudformation.CloudFormationCapabilities",
-      "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps"
+      "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.CustomResourceProvider",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.CustomResourceProvider.serviceToken",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.NestedStackProps"
     ]
   },
   "stability": "stable"
