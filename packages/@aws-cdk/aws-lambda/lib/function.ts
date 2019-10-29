@@ -250,8 +250,6 @@ export class Function extends FunctionBase {
    * Creates a Lambda function object which represents a function not defined
    * within this stack.
    *
-   *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
-   *
    * @param scope The parent construct
    * @param id The name of the lambda construct
    * @param attrs the attributes of the function to import
