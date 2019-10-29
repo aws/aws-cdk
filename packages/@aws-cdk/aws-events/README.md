@@ -36,6 +36,9 @@ event when the pipeline changes it's state.
   enables different parts of an organization to look for and process the events
   that are of interest to them. A rule can customize the JSON sent to the
   target, by passing only certain parts or by overwriting it with a constant.
+* __EventBuses__: An event bus can receive events from your own custom applications
+  or it can receive events from applications and services created by AWS SaaS partners.
+  See [Creating an Event Bus](https://docs.aws.amazon.com/eventbridge/latest/userguide/create-event-bus.html).
 
 The `Rule` construct defines a CloudWatch events rule which monitors an
 event based on an [event
