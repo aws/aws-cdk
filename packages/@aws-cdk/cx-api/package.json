@@ -63,9 +63,9 @@
   "devDependencies": {
     "@types/jest": "^24.0.19",
     "@types/semver": "^6.0.2",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-build-tools": "^1.15.0",
     "jest": "^24.9.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "^1.15.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

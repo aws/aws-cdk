@@ -26,9 +26,12 @@ while [[ "${1:-}" != "" ]]; do
     shift
 done
 
-if [ ! -d node_modules ]; then
-    /bin/bash ./install.sh
-fi
+export PATH=$(npm bin):$PATH
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+
+echo "============================================================================================="
+echo "installing..."
+yarn install
 
 fail() {
   echo "❌  Last command failed. Scroll up to see errors in log (search for '!!!!!!!!')."
@@ -42,9 +45,6 @@ fail() {
 
 BUILD_INDICATOR=".BUILD_COMPLETED"
 rm -rf $BUILD_INDICATOR
-
-export PATH=$(npm bin):$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 # Speed up build by reusing calculated tree hashes
 # On dev machine, this speeds up the TypeScript part of the build by ~30%.

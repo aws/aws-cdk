@@ -5,6 +5,8 @@ import { Test } from 'nodeunit';
 import sinon = require('sinon');
 import provider = require('../lib/log-retention-provider');
 
+AWS.setSDK(require.resolve('aws-sdk'));
+
 const eventCommon = {
   ServiceToken: 'token',
   ResponseURL: 'https://localhost',

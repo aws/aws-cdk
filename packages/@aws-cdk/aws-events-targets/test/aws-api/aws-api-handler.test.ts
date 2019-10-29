@@ -4,6 +4,8 @@ import AWS = require('aws-sdk-mock');
 import { AwsApiProps } from '../../lib';
 import { handler } from '../../lib/aws-api-handler';
 
+AWS.setSDK(require.resolve('aws-sdk'));
+
 console.log = jest.fn();
 
 const event: AwsApiProps = {

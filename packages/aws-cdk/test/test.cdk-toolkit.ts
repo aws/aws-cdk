@@ -111,7 +111,7 @@ class TestAppStacks extends AppStacks {
 
 class TestProvisioner implements IDeploymentTarget {
   private readonly expectedTags: { [stackName: string]: Tag[] } = {};
-  private readonly expectedNotificationArns: string[];
+  private readonly expectedNotificationArns?: string[];
 
   constructor(
     private readonly test: nodeunit.Test,

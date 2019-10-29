@@ -1,22 +1,20 @@
 {
   "compilerOptions": {
     "target": "ES2018",
-    "lib": ["es2016", "es2017.object", "es2017.string"],
     "module": "commonjs",
-    "declaration": true,
+    "lib": ["es2018"],
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noImplicitThis": true,
     "alwaysStrict": true,
+    "declaration": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "noEmitOnError": false,
-    "composite": true
+    "resolveJsonModule": true,
+    "composite": true,
+    "incremental": true
   },
   "exclude": [
     "test/enrichments/**"

@@ -4,7 +4,7 @@ import nodeunit = require('nodeunit');
 import { ISDK } from '../../lib/api';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
 
-AWS.setSDKInstance(aws);
+AWS.setSDK(require.resolve('aws-sdk'));
 
 const mockSDK: ISDK = {
   defaultAccount: () => Promise.resolve('123456789012'),

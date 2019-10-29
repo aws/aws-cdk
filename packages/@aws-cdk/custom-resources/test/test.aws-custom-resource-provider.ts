@@ -6,6 +6,8 @@ import sinon = require('sinon');
 import { AwsSdkCall } from '../lib';
 import { handler } from '../lib/aws-custom-resource-provider';
 
+AWS.setSDK(require.resolve('aws-sdk'));
+
 const eventCommon = {
   ServiceToken: 'token',
   ResponseURL: 'https://localhost',
