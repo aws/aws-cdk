@@ -1,4 +1,3 @@
-import { FsUtils } from '@aws-cdk/assert';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
@@ -6,6 +5,7 @@ import path = require('path');
 import { ImportMock } from 'ts-mock-imports';
 import { FollowMode } from '../../lib/fs';
 import util = require('../../lib/fs/utils');
+import { FsUtils } from './fs-utils';
 
 export = {
   shouldExclude: {
