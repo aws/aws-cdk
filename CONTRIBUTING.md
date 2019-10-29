@@ -42,7 +42,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
-should be sufficient.
+with [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install) should be sufficient.
 
 ```console
 $ git clone git@github.com:aws/aws-cdk.git
@@ -193,8 +193,7 @@ fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
 The build process is divided into stages, so you can invoke them as needed:
 
-- __`install.sh`__: installs all external dependencies and symlinks internal dependencies (using `lerna link`).
-- __`build.sh`__: runs `npm build` and `npm test` in all modules (in topological order).
+- __`build.sh`__: runs `yarn build` and `yarn test` in all modules (in topological order).
 - __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
   (running this script requires that you installed the [toolchains](#Toolchains) for all target languages on your
   system).
@@ -214,11 +213,11 @@ You can also add a few useful aliases to your shell profile:
 # runs an npm script via lerna for a the current module
 alias lr='lerna run --stream --scope $(node -p "require(\"./package.json\").name")'
 
-# runs "npm run build" (build + test) for the current module
+# runs "yarn build" (build + test) for the current module
 alias lb='lr build'
 alias lt='lr test'
 
-# runs "npm run watch" for the current module (recommended to run in a separate terminal session):
+# runs "yarn watch" for the current module (recommended to run in a separate terminal session):
 alias lw='lr watch'
 ```
 
@@ -254,9 +253,9 @@ the [guidelines](./design/aws-guidelines.md).
 
 Here are a few useful commands:
 
- * `npm run awslint` in every module will run __awslint__ for that module.
- * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
- * `scripts/foreach.sh npm run awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
+ * `yarn awslint` in every module will run __awslint__ for that module.
+ * `yarn awslint list` prints all rules (details and rationale in the guidelines doc)
+ * `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
  * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./tools/awslint/README.md)
@@ -275,7 +274,7 @@ between those.
 
 Each module also has an npm script called `cfn2ts`:
 
-* `npm run cfn2ts`: generates L1 for a specific module
+* `yarn cfn2ts`: generates L1 for a specific module
 * `lerna run cfn2ts`: generates L1 for the entire repo
 
 ### scripts/foreach.sh
@@ -409,7 +408,7 @@ One can use the `postinstall` script to symlink this repo:
 ```
 
 This assumes this repo is a sibling of the target repo and will install the CDK as a linked dependency during
-__npm install__.
+__yarn install__.
 
 ### Running integration tests in parallel
 
@@ -437,8 +436,8 @@ $ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > 
 The root [package.json](./package.json) includes global devDependencies (see
 [lerna docs](https://github.com/lerna/lerna#common-devdependencies)) on the topic.
 
- * To add a global dependency, run `npm i --save-dev <dep>` at  the root.
- * To add a dependency for a specific module, run `npm i <dep>` inside the module's directory.
+ * To add a global dependency, run `yarn add <dep> --dev` at  the root.
+ * To add a dependency for a specific module, run `yarn add <dep>` inside the module's directory.
 
 Guidelines:
 
@@ -557,7 +556,7 @@ $ CDK_TEST_BUILD=false lr test
 To debug your CDK application along with the CDK repository,
 
 1. Clone the CDK repository locally and build the repository. See [Workflows](#workflows) section for the different build options.
-2. Build the CDK application using the appropriate npm script (typically, `npm run build`) and then run the `link-all.sh` script as so -
+2. Build the CDK application using the appropriate npm script (typically, `yarn build`) and then run the `link-all.sh` script as so -
 
    ```
    cd /path/to/cdk/app
