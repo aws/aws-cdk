@@ -421,6 +421,10 @@ test('if $ExecutionRoleArn is passed as a property, this role will be assumed an
   expectCloudFormationSuccess();
 });
 
+test('$ExecutionRoleArn is not used to start the waiter state machine', async () => {
+  fail('boom');
+});
+
 // -----------------------------------------------------------------------------------------------------------------------
 
 async function simulateWaiterAndExpect(expectedInput: any) {
