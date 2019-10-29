@@ -51,7 +51,7 @@ const logGroup = new LogGroup(this, 'LogGroup', { ... });
 
 new SubscriptionFilter(this, 'Subscription', {
     logGroup,
-    destination: fn,
+    destination: new LogsDestinations.LambdaDestination(fn),
     filterPattern: FilterPattern.allTerms("ERROR", "MainThread")
 });
 ```
