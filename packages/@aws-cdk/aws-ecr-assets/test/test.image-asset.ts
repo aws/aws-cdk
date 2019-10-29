@@ -1,4 +1,5 @@
-import { expect, FsUtils, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { FsUtils } from '@aws-cdk/assets/test/fs/fs-utils';
 import iam = require('@aws-cdk/aws-iam');
 import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { ASSET_METADATA } from '@aws-cdk/cx-api';
