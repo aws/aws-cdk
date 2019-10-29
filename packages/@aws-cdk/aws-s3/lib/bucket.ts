@@ -172,7 +172,7 @@ export interface IBucket extends IResource {
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this bucket
+   * Defines a CloudWatch event that triggers when something happens to this bucket
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -183,9 +183,12 @@ export interface IBucket extends IResource {
   onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when the
-   * object at the specified key in this bucket is written to.  This includes
-   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   * Defines an AWS CloudWatch event that triggers when an object is uploaded
+   * to the specified paths (keys) in this bucket using the PutObject API call.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using `onCloudTrailWriteObject` may be preferable.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -194,6 +197,23 @@ export interface IBucket extends IResource {
    * @param options Options for adding the rule
    */
   onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
+
+  /**
+   * Defines an AWS CloudWatch event that triggers when an object at the
+   * specified paths (keys) in this bucket are written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using this method may be preferable to `onCloudTrailPutObject`.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onCloudTrailWriteObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -326,9 +346,12 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when the
-   * object at the specified key in this bucket is written to.  This includes
-   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   * Defines an AWS CloudWatch event that triggers when an object is uploaded
+   * to the specified paths (keys) in this bucket using the PutObject API call.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using `onCloudTrailWriteObject` may be preferable.
    *
    * Requires that there exists at least one CloudTrail Trail in your account
    * that captures the event. This method will not create the Trail.
@@ -337,6 +360,31 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param options Options for adding the rule
    */
   public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
+    const rule = this.onCloudTrailEvent(id, options);
+    rule.addEventPattern({
+      detail: {
+        eventName: ['PutObject'],
+      },
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event that triggers when an object at the
+   * specified paths (keys) in this bucket are written to.  This includes
+   * the events PutObject, CopyObject, and CompleteMultipartUpload.
+   *
+   * Note that some tools like `aws s3 cp` will automatically use either
+   * PutObject or the multipart upload API depending on the file size,
+   * so using this method may be preferable to `onCloudTrailPutObject`.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onCloudTrailWriteObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
