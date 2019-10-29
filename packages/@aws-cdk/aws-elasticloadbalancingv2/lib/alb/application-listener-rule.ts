@@ -17,20 +17,28 @@ export interface BaseApplicationListenerRuleProps {
   readonly priority: number;
 
   /**
-   * Target groups to forward requests to. Only one of `targetGroups` or
-   * `fixedResponse` can be specified.
+   * Target groups to forward requests to. Only one of `fixedResponse`, `redirectResponse` or
+   * `targetGroups` can be specified.
    *
    * @default - No target groups.
    */
   readonly targetGroups?: IApplicationTargetGroup[];
 
   /**
-   * Fixed response to return. Only one of `fixedResponse` or
+   * Fixed response to return. Only one of `fixedResponse`, `redirectResponse` or
    * `targetGroups` can be specified.
    *
    * @default - No fixed response.
    */
   readonly fixedResponse?: FixedResponse;
+
+  /**
+   * Redirect response to return. Only one of `fixedResponse`, `redirectResponse` or
+   * `targetGroups` can be specified.
+   *
+   * @default - No redirect response.
+   */
+  readonly redirectResponse?: RedirectResponse;
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -101,6 +109,50 @@ export interface FixedResponse {
 }
 
 /**
+ * A redirect response
+ */
+export interface RedirectResponse {
+  /**
+   * The hostname. This component is not percent-encoded. The hostname can contain #{host}.
+   *
+   * @default origin host of request
+   */
+  readonly host?: string;
+  /**
+   * The absolute path, starting with the leading "/". This component is not percent-encoded.
+   * The path can contain #{host}, #{path}, and #{port}.
+   *
+   * @default origin path of request
+   */
+  readonly path?: string;
+  /**
+   * The port. You can specify a value from 1 to 65535 or #{port}.
+   *
+   * @default origin port of request
+   */
+  readonly port?: string;
+  /**
+   * The protocol. You can specify HTTP, HTTPS, or #{protocol}. You can redirect HTTP to HTTP,
+   * HTTP to HTTPS, and HTTPS to HTTPS. You cannot redirect HTTPS to HTTP.
+   *
+   * @default origin protocol of request
+   */
+  readonly protocol?: string;
+  /**
+   * The query parameters, URL-encoded when necessary, but not percent-encoded.
+   * Do not include the leading "?", as it is automatically added.
+   * You can specify any of the reserved keywords.
+   *
+   * @default origin query string of request
+   */
+  readonly query?: string;
+  /**
+   * The HTTP redirect code (HTTP_301 or HTTP_302)
+   */
+  readonly statusCode: string;
+}
+
+/**
  * Define a new listener rule
  */
 export class ApplicationListenerRule extends cdk.Construct {
@@ -121,8 +173,10 @@ export class ApplicationListenerRule extends cdk.Construct {
       throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);
     }
 
-    if (props.targetGroups && props.fixedResponse) {
-      throw new Error('Cannot combine `targetGroups` with `fixedResponse`.');
+    const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];
+    const providedActions = possibleActions.filter(action => props[action] !== undefined);
+    if (providedActions.length > 1) {
+      throw new Error(`'${providedActions}' specified together, specify only one`);
     }
 
     this.listener = props.listener;
@@ -145,6 +199,8 @@ export class ApplicationListenerRule extends cdk.Construct {
 
     if (props.fixedResponse) {
       this.addFixedResponse(props.fixedResponse);
+    } else if (props.redirectResponse) {
+      this.addRedirectResponse(props.redirectResponse);
     }
 
     this.listenerRuleArn = resource.ref;
@@ -177,6 +233,18 @@ export class ApplicationListenerRule extends cdk.Construct {
     this.actions.push({
       fixedResponseConfig: fixedResponse,
       type: 'fixed-response'
+    });
+  }
+
+  /**
+   * Add a redirect response
+   */
+  public addRedirectResponse(redirectResponse: RedirectResponse) {
+    validateRedirectResponse(redirectResponse);
+
+    this.actions.push({
+      redirectConfig: redirectResponse,
+      type: 'redirect'
     });
   }
 
@@ -216,5 +284,20 @@ export function validateFixedResponse(fixedResponse: FixedResponse) {
 
   if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
     throw new Error('`messageBody` cannot have more than 1024 characters.');
+  }
+}
+
+/**
+ * Validate the status code and message body of a redirect response
+ *
+ * @internal
+ */
+export function validateRedirectResponse(redirectResponse: RedirectResponse) {
+  if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
+    throw new Error('`protocol` must be HTTP, HTTPS, or #{protocol}.');
+  }
+
+  if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
+    throw new Error('`statusCode` must be HTTP_301 or HTTP_302.');
   }
 }

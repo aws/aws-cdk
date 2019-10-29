@@ -5,7 +5,7 @@ import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, validateFixedResponse } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 
@@ -259,6 +259,37 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       this._addDefaultAction({
         fixedResponseConfig: fixedResponse,
         type: 'fixed-response'
+      });
+    }
+  }
+
+  /**
+   * Add a redirect response
+   */
+  public addRedirectResponse(id: string, props: AddRedirectResponseProps) {
+    checkAddRuleProps(props);
+    const redirectResponse = {
+      host: props.host,
+      path: props.path,
+      port: props.port,
+      protocol: props.protocol,
+      query: props.query,
+      statusCode: props.statusCode
+    };
+
+    validateRedirectResponse(redirectResponse);
+
+    if (props.priority) {
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        priority: props.priority,
+        redirectResponse,
+        ...props
+      });
+    } else {
+      this._addDefaultAction({
+        redirectConfig: redirectResponse,
+        type: 'redirect'
       });
     }
   }
@@ -602,6 +633,12 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
  * Properties for adding a fixed response to a listener
  */
 export interface AddFixedResponseProps extends AddRuleProps, FixedResponse {
+}
+
+/**
+ * Properties for adding a redirect response to a listener
+ */
+export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse {
 }
 
 function checkAddRuleProps(props: AddRuleProps) {
