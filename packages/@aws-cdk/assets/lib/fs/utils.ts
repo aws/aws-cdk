@@ -68,7 +68,7 @@ export function shouldExcludeDeep(exclude: string[], relativePath: string): bool
 
 /**
  * Determines whether a given directory should be excluded and not explored further
- * This might be true even if the directory is explicitly excluded,
+ * This might be `false` even if the directory is explicitly excluded,
  * but one of its children might be inclunded
  *
  * @param exclude  exclusion patterns
