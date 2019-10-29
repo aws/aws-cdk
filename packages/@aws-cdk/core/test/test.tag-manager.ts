@@ -59,7 +59,6 @@ export = {
   },
   '#renderTags() handles standard, map, keyValue, and ASG tag formats'(test: Test) {
     const tagged: TagManager[] = [];
-    // const props = Object.assign({}, defaultProps, {tagType: TagType.AUTOSCALING_GROUP});
     const standard = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
     const asg = new TagManager(TagType.AUTOSCALING_GROUP, 'AWS::Resource::Type');
     const keyValue = new TagManager(TagType.KEY_VALUE, 'AWS::Resource::Type');

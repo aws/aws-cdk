@@ -245,7 +245,8 @@ export class TagManager {
     if (tagStructure !== undefined) {
       this._setTag(...this.tagFormatter.parseTags(tagStructure, this.initialTagPriority));
     }
-    this.tagPropertyName = options !== undefined ? options.tagPropertyName || 'tags' : 'tags';
+    options = options || {};
+    this.tagPropertyName = options.tagPropertyName || 'tags';
   }
 
   /**
