@@ -435,12 +435,6 @@ export class ViewerCertificate {
        aliases,
     } = options;
 
-    const certificateRegion = certificatemanager.getCertificateRegion(certificate);
-
-    if (certificateRegion && !cdk.Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-      throw new Error(`acmCertificate certficate must be in the us-east-1 region, got ${certificateRegion}`);
-    }
-
     return new ViewerCertificate({
       acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion
     }, aliases);
