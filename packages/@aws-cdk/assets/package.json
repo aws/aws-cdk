@@ -68,9 +68,9 @@
     "@types/minimatch": "^3.0.3",
     "@types/sinon": "^7.5.0",
     "aws-cdk": "1.15.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "pkglint": "file:../../../tools/pkglint",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "pkglint": "^1.15.0",
     "sinon": "^7.5.0",
     "ts-mock-imports": "^1.2.6"
   },
