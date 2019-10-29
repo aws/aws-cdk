@@ -208,7 +208,8 @@ export interface TagManagerOptions {
    * The name of the property in CloudFormation for these tags
    *
    * Normally this is Tags, but Cognito UserPool uses UserPoolTags
-   * @default tags
+   *
+   * @default "Tags"
    */
   readonly tagPropertyName?: string;
 }
