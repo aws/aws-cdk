@@ -12,102 +12,113 @@ import { FollowMode } from './follow-mode';
  * @param filePath file path to be assessed against the pattern
  *
  * @returns `true` if the file should be excluded
+ *
+ * @deprecated see {@link ExcludeRules.excludeFile}
  */
 export function shouldExclude(exclude: string[], filePath: string): boolean {
-  const [_shouldExclude] = shouldExcludePriority(exclude, filePath);
+  const [_shouldExclude] = ExcludeRules.evaluateFile(exclude, filePath);
   return _shouldExclude;
 }
 
 /**
- * Determines whether a given file should be excluded or not based on given
- * exclusion glob patterns.
- *
- * @param exclude  exclusion patterns
- * @param filePath file patg to be assessed against the pattern
- *
- * @returns `true` if the file should be excluded, followed by the index of the rule applied
+ * Set of exclusion evaluation methods
  */
-export function shouldExcludePriority(exclude: string[], filePath: string): [boolean, number] {
-  return exclude.reduce<[boolean, number]>((res, pattern, patternIndex) => {
-    const negate = pattern.startsWith('!');
-    const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
+export class ExcludeRules {
+  /**
+   * Determines whether a given file should be excluded or not based on given
+   * exclusion glob patterns.
+   *
+   * @param exclude  exclusion patterns
+   * @param filePath file path to be assessed against the pattern
+   *
+   * @returns `true` if the file should be excluded, followed by the index of the rule applied
+   */
+  public static evaluateFile(exclude: string[], filePath: string): [boolean, number] {
+    return exclude.reduce<[boolean, number]>((res, pattern, patternIndex) => {
+      const negate = pattern.startsWith('!');
+      const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
 
-    if (!negate && match) {
-      res = [true, patternIndex];
-    }
-
-    if (negate && match) {
-      res = [false, patternIndex];
-    }
-
-    return res;
-  }, [false, -1]);
-}
-
-/**
- * Determines whether a given file should be excluded,taking into account deep file structures
- *
- * @param exclude  exclusion patterns
- * @param filePath file path to be assessed against the pattern
- */
-export function shouldExcludeDeep(exclude: string[], relativePath: string): boolean {
-  const [_shouldExclude] = relativePath.split(path.sep).reduce<[boolean, number, string]>(
-    ([accExclude, accPriority, pathIterator], pathComponent) => {
-      pathIterator = path.join(pathIterator, pathComponent);
-
-      const [shouldExcludeIt, priorityIt] = shouldExcludePriority(exclude, pathIterator);
-      if (priorityIt > accPriority) {
-        return [shouldExcludeIt, priorityIt, pathIterator];
+      if (!negate && match) {
+        res = [true, patternIndex];
       }
 
-      return [accExclude, accPriority, pathIterator];
-    }, [false, -1, '']);
+      if (negate && match) {
+        res = [false, patternIndex];
+      }
 
-  return _shouldExclude;
-}
+      return res;
+    }, [false, -1]);
+  }
 
-/**
- * Determines whether a given directory should be excluded and not explored further
- * This might be `false` even if the directory is explicitly excluded,
- * but one of its children might be inclunded
- *
- * @param exclude  exclusion patterns
- * @param directoryPath directory path to be assessed against the pattern
- */
-export function shouldExcludeDirectory(exclude: string[], directoryPath: string): boolean {
-  const splitPatterns = exclude.map((exc) => exc.split(path.sep));
-  const patternLength = splitPatterns.map(({ length }) => length);
-  const maxPatternLength = Math.max(...patternLength);
+  private static getComponents = (value: string): string[] =>  value.split(path.sep);
 
-  const [_shouldExclude] = directoryPath.split(path.sep).reduce<[boolean | null, string]>(
-    ([accExclude, pathIterator], pathComponent) => {
-      pathIterator = path.join(pathIterator, pathComponent);
+  private readonly patternComponents: string[][] = this.patterns.map(ExcludeRules.getComponents);
+  public constructor(private readonly patterns: string[]) {
+  }
 
-      for (let pattenItLength = 1; pattenItLength <= maxPatternLength; ++pattenItLength) {
-        const excludeSliced = splitPatterns.map((pattern) => pattern.slice(0, pattenItLength).join(path.sep));
-        const [shouldExcludeIt, patternIndex] = shouldExcludePriority(excludeSliced, pathIterator);
-        if (patternIndex < 0) {
-          continue;
+  /**
+   * Determines whether a given file should be excluded,taking into account deep file structures
+   *
+   * @param filePath file path to be assessed against the pattern
+   */
+  public excludeFile(relativePath: string): boolean {
+    const [_shouldExclude] = ExcludeRules.getComponents(relativePath).reduce<[boolean, number, string]>(
+      ([accExclude, accPriority, pathIterator], pathComponent) => {
+        pathIterator = path.join(pathIterator, pathComponent);
+
+        const [shouldExcludeIt, priorityIt] = ExcludeRules.evaluateFile(this.patterns, pathIterator);
+        if (priorityIt > accPriority) {
+          return [shouldExcludeIt, priorityIt, pathIterator];
         }
 
-        if (shouldExcludeIt) {
-          if (accExclude == null) {
+        return [accExclude, accPriority, pathIterator];
+      }, [false, -1, '']);
+
+    return _shouldExclude;
+  }
+
+  /**
+   * Determines whether a given directory should be excluded and not explored further
+   * This might be `true` even if the directory is explicitly excluded,
+   * but one of its children might be inclunded
+   *
+   * @param directoryPath directory path to be assessed against the pattern
+   */
+  public excludeDirectory(directoryPath: string): boolean {
+    const patternLength = this.patternComponents.map(({ length }) => length);
+    const maxPatternLength = Math.max(...patternLength);
+
+    const [_shouldExclude] = directoryPath.split(path.sep).reduce<[boolean | null, string]>(
+      ([accExclude, pathIterator], pathComponent) => {
+        pathIterator = path.join(pathIterator, pathComponent);
+
+        for (let pattenItLength = 1; pattenItLength <= maxPatternLength; ++pattenItLength) {
+          const excludeSliced = this.patternComponents.map((pattern) => pattern.slice(0, pattenItLength).join(path.sep));
+          const [shouldExcludeIt, patternIndex] = ExcludeRules.evaluateFile(excludeSliced, pathIterator);
+          if (patternIndex < 0) {
+            continue;
+          }
+
+          if (shouldExcludeIt) {
+            if (accExclude == null) {
+              accExclude = true;
+            }
+            continue;
+          }
+
+          if (pattenItLength < patternLength[patternIndex]) {
+            accExclude = shouldExcludeIt;
+          } else if (!excludeSliced[patternIndex].includes('**')) {
             accExclude = true;
           }
-          continue;
         }
 
-        if (pattenItLength < patternLength[patternIndex]) {
-          accExclude = shouldExcludeIt;
-        } else if (!excludeSliced[patternIndex].includes('**')) {
-          accExclude = true;
-        }
-      }
+        return [accExclude, pathIterator];
+      }, [null, '']);
 
-      return [accExclude, pathIterator];
-    }, [null, '']);
+    return _shouldExclude || false;
+  }
 
-  return _shouldExclude || false;
 }
 
 /**
@@ -170,6 +181,8 @@ export function listFilesRecursively(
   const rootDir = _rootDir || dirOrFile;
   const followStatsFn = options.follow === FollowMode.ALWAYS ? fs.statSync : fs.lstatSync;
 
+  const excludeRules = new ExcludeRules(exclude);
+
   recurse(dirOrFile);
 
   function recurse(currentPath: string, _currentStat?: fs.Stats): void {
@@ -187,7 +200,7 @@ export function listFilesRecursively(
         continue;
       }
 
-      const isExcluded = shouldExcludeDeep(exclude, relativeFilePath);
+      const isExcluded = excludeRules.excludeFile(relativeFilePath);
       if (!isExcluded) {
         let target = '';
         if (stat.isSymbolicLink()) {
@@ -210,7 +223,7 @@ export function listFilesRecursively(
         }
       }
 
-      if (stat.isDirectory() && (!isExcluded || !shouldExcludeDirectory(exclude, relativeFilePath))) {
+      if (stat.isDirectory() && (!isExcluded || !excludeRules.excludeDirectory(relativeFilePath))) {
         const previousLength = files.length;
         recurse(fullFilePath, stat);
 

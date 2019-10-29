@@ -521,7 +521,13 @@ const testShouldExclude = (
 };
 
 const testShouldExcludeDeep = (test: Test, pattern: string[], expectExclude: string[], expectInclude: string[]) =>
-  testShouldExclude(test, pattern, expectExclude, expectInclude, util.shouldExcludeDeep);
+  testShouldExclude(test, pattern, expectExclude, expectInclude, (patterns: string[], _path: string) => {
+    const excludeRules = new util.ExcludeRules(patterns);
+    return excludeRules.excludeFile(_path);
+  });
 
 const testShouldExcludeDirectory = (test: Test, pattern: string[], expectExclude: string[], expectInclude: string[]) =>
-  testShouldExclude(test, pattern, expectExclude, expectInclude, util.shouldExcludeDirectory);
+  testShouldExclude(test, pattern, expectExclude, expectInclude, (patterns: string[], _path: string) => {
+    const excludeRules = new util.ExcludeRules(patterns);
+    return excludeRules.excludeDirectory(_path);
+  });
