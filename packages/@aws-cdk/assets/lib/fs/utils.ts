@@ -28,26 +28,22 @@ export class ExcludeRules {
    * Determines whether a given file should be excluded or not based on given
    * exclusion glob patterns.
    *
-   * @param exclude  exclusion patterns
+   * @param patterns  exclusion patterns
    * @param filePath file path to be assessed against the pattern
    *
    * @returns `true` if the file should be excluded, followed by the index of the rule applied
    */
-  public static evaluateFile(exclude: string[], filePath: string): [boolean, number] {
-    return exclude.reduce<[boolean, number]>((res, pattern, patternIndex) => {
-      const negate = pattern.startsWith('!');
-      const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
+  public static evaluateFile(patterns: string[], filePath: string): [boolean, number] {
+    let _shouldExclude = false;
+    let exclusionIndex = -1;
 
-      if (!negate && match) {
-        res = [true, patternIndex];
+    patterns.map((pattern, patternIndex) => {
+      if (minimatch(filePath, pattern, { matchBase: true, flipNegate: true })) {
+        [_shouldExclude, exclusionIndex] = [!pattern.startsWith('!'), patternIndex];
       }
+    });
 
-      if (negate && match) {
-        res = [false, patternIndex];
-      }
-
-      return res;
-    }, [false, -1]);
+    return [_shouldExclude, exclusionIndex];
   }
 
   private static getComponents = (value: string): string[] =>  value.split(path.sep);
