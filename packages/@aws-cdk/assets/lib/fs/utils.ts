@@ -46,11 +46,39 @@ export class ExcludeRules {
     return [_shouldExclude, exclusionIndex];
   }
 
-  private static getComponents = (value: string): string[] =>  value.split(path.sep);
+  /**
+   * Splits a file or directory path in an array of elements
+   * containing each path component (directories and file)
+   *
+   * @param filePath the path to split
+   * @returns an array containing each path component
+   *
+   * @example ExcludeRules.getPathComponents('a/b/c') = ['a', 'b', 'c']
+   */
+  private static getPathComponents = (filePath: string): string[] => filePath.split(path.sep);
 
-  private readonly patternComponents: string[][] = this.patterns.map(ExcludeRules.getComponents);
-  public constructor(private readonly patterns: string[]) {
+  /**
+   * Splits a file or directory path in an array of elements
+   * containing each partial path up to that point
+   *
+   * @param filePath the path to split
+   * @returns an array containing each path component
+   *
+   * @example ExcludeRules.getAccumulatedPathComponents('a/b/c') = ['a', 'a/b', 'a/b/c']
+   */
+  private static getAccumulatedPathComponents(filePath: string): string[] {
+    const accComponents: string[] = [];
+    for (const component of ExcludeRules.getPathComponents(filePath)) {
+      accComponents.push(accComponents.length ?
+        [accComponents[accComponents.length - 1], component].join(path.sep) :
+        component
+      );
+    }
+    return accComponents;
   }
+
+  private readonly patternComponents: string[][] = this.patterns.map(ExcludeRules.getPathComponents);
+  public constructor(private readonly patterns: string[]) { }
 
   /**
    * Determines whether a given file should be excluded,taking into account deep file structures
@@ -58,19 +86,17 @@ export class ExcludeRules {
    * @param filePath file path to be assessed against the pattern
    */
   public excludeFile(relativePath: string): boolean {
-    const [_shouldExclude] = ExcludeRules.getComponents(relativePath).reduce<[boolean, number, string]>(
-      ([accExclude, accPriority, pathIterator], pathComponent) => {
-        pathIterator = path.join(pathIterator, pathComponent);
+    let accExclude = false;
+    let accPriority = -1;
 
-        const [shouldExcludeIt, priorityIt] = ExcludeRules.evaluateFile(this.patterns, pathIterator);
-        if (priorityIt > accPriority) {
-          return [shouldExcludeIt, priorityIt, pathIterator];
-        }
+    for (const pathComponent of ExcludeRules.getAccumulatedPathComponents(relativePath)) {
+      const [shouldExcludeIt, priorityIt] = ExcludeRules.evaluateFile(this.patterns, pathComponent);
+      if (priorityIt > accPriority) {
+        [accExclude, accPriority] = [shouldExcludeIt, priorityIt];
+      }
+    }
 
-        return [accExclude, accPriority, pathIterator];
-      }, [false, -1, '']);
-
-    return _shouldExclude;
+    return accExclude;
   }
 
   /**
