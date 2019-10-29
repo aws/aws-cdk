@@ -16,7 +16,7 @@
     "pkglint": "bin/pkglint"
   },
   "scripts": {
-    "build": "tsc -b && tslint -p . && chmod +x bin/pkglint.js",
+    "build": "tsc -b && tslint -p . && chmod +x bin/pkglint",
     "build+test": "npm run build",
     "build+test+package": "npm run build",
     "watch": "tsc -b -w",
