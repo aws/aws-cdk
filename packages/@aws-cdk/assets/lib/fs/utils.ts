@@ -78,6 +78,18 @@ export class ExcludeRules {
   }
 
   private readonly patternComponents: string[][] = this.patterns.map(ExcludeRules.getPathComponents);
+  private get accumulatedPatternComponents(): string[][] {
+    const patternComponentsLength = this.patternComponents.map(({ length }) => length);
+    const maxPatternLength = Math.max(...patternComponentsLength);
+
+    const accPatternComponents: string[][] = [];
+    for (let pattenComponentsLength = 1; pattenComponentsLength <= maxPatternLength; ++pattenComponentsLength) {
+      accPatternComponents.push(this.patternComponents.map((pattern) => pattern.slice(0, pattenComponentsLength).join(path.sep)));
+    }
+
+    return accPatternComponents;
+  }
+
   public constructor(private readonly patterns: string[]) { }
 
   /**
@@ -89,8 +101,8 @@ export class ExcludeRules {
     let accExclude = false;
     let accPriority = -1;
 
-    for (const pathComponent of ExcludeRules.getAccumulatedPathComponents(relativePath)) {
-      const [shouldExcludeIt, priorityIt] = ExcludeRules.evaluateFile(this.patterns, pathComponent);
+    for (const accPath of ExcludeRules.getAccumulatedPathComponents(relativePath)) {
+      const [shouldExcludeIt, priorityIt] = ExcludeRules.evaluateFile(this.patterns, accPath);
       if (priorityIt > accPriority) {
         [accExclude, accPriority] = [shouldExcludeIt, priorityIt];
       }
@@ -107,36 +119,26 @@ export class ExcludeRules {
    * @param directoryPath directory path to be assessed against the pattern
    */
   public excludeDirectory(directoryPath: string): boolean {
-    const patternLength = this.patternComponents.map(({ length }) => length);
-    const maxPatternLength = Math.max(...patternLength);
+    let _shouldExclude: boolean | null = null;
 
-    const [_shouldExclude] = directoryPath.split(path.sep).reduce<[boolean | null, string]>(
-      ([accExclude, pathIterator], pathComponent) => {
-        pathIterator = path.join(pathIterator, pathComponent);
-
-        for (let pattenItLength = 1; pattenItLength <= maxPatternLength; ++pattenItLength) {
-          const excludeSliced = this.patternComponents.map((pattern) => pattern.slice(0, pattenItLength).join(path.sep));
-          const [shouldExcludeIt, patternIndex] = ExcludeRules.evaluateFile(excludeSliced, pathIterator);
-          if (patternIndex < 0) {
-            continue;
-          }
-
-          if (shouldExcludeIt) {
-            if (accExclude == null) {
-              accExclude = true;
-            }
-            continue;
-          }
-
-          if (pattenItLength < patternLength[patternIndex]) {
-            accExclude = shouldExcludeIt;
-          } else if (!excludeSliced[patternIndex].includes('**')) {
-            accExclude = true;
-          }
+    for (const accPath of ExcludeRules.getAccumulatedPathComponents(directoryPath)) {
+      this.accumulatedPatternComponents.map((accumulatedPatterns, accumulatedIndex) => {
+        const [shouldExcludeIt, patternIndex] = ExcludeRules.evaluateFile(accumulatedPatterns, accPath);
+        if (patternIndex < 0) {
+          return;
         }
 
-        return [accExclude, pathIterator];
-      }, [null, '']);
+        if (shouldExcludeIt) {
+          if (_shouldExclude === null) {
+            _shouldExclude = true;
+          }
+        } else if (accumulatedIndex < this.patternComponents[patternIndex].length - 1) {
+          _shouldExclude = shouldExcludeIt;
+        } else if (!accumulatedPatterns[patternIndex].includes('**')) {
+          _shouldExclude = true;
+        }
+      });
+    }
 
     return _shouldExclude || false;
   }
