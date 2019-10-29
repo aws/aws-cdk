@@ -1,4 +1,5 @@
 import { NestedStack } from '@aws-cdk/aws-cloudformation';
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
@@ -16,7 +17,7 @@ export class ProviderStack extends NestedStack {
    */
   public static getOrCreate(scope: Construct, props: AsyncCustomResourceProps) {
     const stack = Stack.of(scope);
-    const id = props.uuid;
+    const id = 'AsyncCustomResourceProvider:' + props.uuid;
     const exists = stack.node.tryFindChild(id) as ProviderStack;
     if (exists) {
       return exists;
@@ -25,41 +26,49 @@ export class ProviderStack extends NestedStack {
     return new ProviderStack(stack, id, props);
   }
 
-  public readonly onEventHandler: lambda.Function;
+  public readonly onEventFunction: lambda.Function;
 
-  private readonly userOnEventHandler: string;
-  private readonly userIsCompleteHandler: string;
+  public readonly roles: iam.IRole[];
+
+  private readonly onEventUserHandlerName: string;
+  private readonly isCompleteUserHandlerName: string;
   private readonly userCodeLayer: lambda.LayerVersion;
 
   private constructor(scope: Construct, id: string, props: AsyncCustomResourceProps) {
     super(scope, id);
 
-    this.userOnEventHandler = props.onEventHandler || 'index.onEvent';
-    this.userIsCompleteHandler = props.isCompleteHandler || 'index.isComplete';
+    this.onEventUserHandlerName = props.onEventHandler || 'index.onEvent';
+    this.isCompleteUserHandlerName = props.isCompleteHandler || 'index.isComplete';
 
     this.userCodeLayer = new lambda.LayerVersion(this, 'user-layer', {
       description: 'async custom resource user code',
       code: props.handlerCode,
     });
 
-    const isCompleteTask = this.createTask('isCompleteHandler');
-    isCompleteTask.addCatch(this.createTask('timeoutHandler'));
+    const onEventFunction = this.createFunction('onEventHandler');
+    const isCompleteFunction = this.createFunction('isCompleteHandler');
+    const timeoutFunction = this.createFunction('timeoutHandler');
+
+    this.roles = [ isCompleteFunction, onEventFunction ].map(f => f.role!);
+
+    const isCompleteTask = this.createTask(isCompleteFunction);
+    isCompleteTask.addCatch(this.createTask(timeoutFunction));
     isCompleteTask.addRetry(calculateRetryPolicy(props));
 
     const waiterStateMachine = new sfn.StateMachine(this, 'waiter-state-machine', {
       definition: isCompleteTask
     });
 
-    this.onEventHandler = this.createHandler('onEventHandler');
-
     // the on-event entrypoint is going to start the execution of the waiter
-    this.onEventHandler.addEnvironment(consts.ENV_WAITER_STATE_MACHINE_ARN, waiterStateMachine.stateMachineArn);
-    waiterStateMachine.grantStartExecution(this.onEventHandler);
+    onEventFunction.addEnvironment(consts.ENV_WAITER_STATE_MACHINE_ARN, waiterStateMachine.stateMachineArn);
+    waiterStateMachine.grantStartExecution(onEventFunction);
+
+    this.onEventFunction = onEventFunction;
   }
 
-  private createHandler(entrypoint: string) {
-    const { file: onEventFile, func: onEventFunc } = parseHandler('onEvent', this.userOnEventHandler);
-    const { file: isCompleteFile, func: isCompleteFunc } = parseHandler('isComplete', this.userIsCompleteHandler);
+  private createFunction(entrypoint: string) {
+    const { file: onEventFile, func: onEventFunc } = parseHandler('onEvent', this.onEventUserHandlerName);
+    const { file: isCompleteFile, func: isCompleteFunc } = parseHandler('isComplete', this.isCompleteUserHandlerName);
 
     return new lambda.Function(this, `${entrypoint}-handler`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
@@ -75,9 +84,9 @@ export class ProviderStack extends NestedStack {
     });
   }
 
-  private createTask(entrypoint: string) {
-    return new sfn.Task(this, `${entrypoint}-task`, {
-      task: new tasks.InvokeFunction(this.createHandler(entrypoint)),
+  private createTask(handler: lambda.Function) {
+    return new sfn.Task(this, `${handler.node.id}-task`, {
+      task: new tasks.InvokeFunction(handler),
     });
   }
 }
@@ -89,5 +98,5 @@ function parseHandler(name: string, spec: string) {
   }
 
   const [ file, func ] = parts;
-  return { file, func };
+  return { file: `/opt/${file}.js`, func }; // `/opt` is where layers are mounted
 }

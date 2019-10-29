@@ -2,10 +2,11 @@
 // tslint:disable: max-line-length
 import { submitCloudFormationResponse } from './cfn-response';
 import consts = require('./consts');
-import { defaultStartWaiterSfnExecution } from './outbound';
+import { defaultAssumeRole, defaultStartExecution } from './outbound';
 import { failOnError, getEnv, log, requireUserHandler, Retry } from './util';
 
-export let startWaiterSfnExecution = defaultStartWaiterSfnExecution;
+export let startExecution = defaultStartExecution;
+export let assumeRoleAndMakeDefault = defaultAssumeRole;
 
 /**
  * The main runtime entrypoint of the async custom resource lambda function.
@@ -21,24 +22,57 @@ export async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomR
   await failOnError(cfnRequest, async () => {
     log('onEventHandler', cfnRequest);
 
+    cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
+
+    // if user resource property has $ExecutionRoleArn, assume this role and make it the default.
+    const executionRoleArn = cfnRequest.ResourceProperties[consts.PROP_EXECUTION_ROLE_ARN];
+    if (executionRoleArn) {
+      log('assuming execution iam role');
+
+      await assumeRoleAndMakeDefault({
+        RoleArn: executionRoleArn,
+        RoleSessionName: cfnRequest.RequestId
+      });
+    }
+
     validateCfnRequest(cfnRequest);
 
     const onEventResult = await executeOnEventUserHandler(cfnRequest);
 
-    // at this point, we should know the physical ID, for CREATE, it should be in the result
-    // of onEvent. In UPDATE/DELETE is should be in the input event itself.
-    validatePhysicalResourceId(cfnRequest, onEventResult);
+    //
+    // validate that onEventResult always includes a PhysicalResourceId
 
+    if (!onEventResult || !onEventResult.PhysicalResourceId) {
+      throw new Error(`onEvent response must include a PhysicalResourceId for all request types`);
+    }
+
+    // if we are in DELETE and physical ID was changed, it's an error.
+    if (cfnRequest.RequestType === 'Delete' && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
+      throw new Error(`DELETE: cannot change the physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}" during deletion`);
+    }
+
+    // if we are in UPDATE and physical ID was changed, it's a replacement (just log)
+    if (cfnRequest.RequestType === 'Update' && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
+      log(`UPDATE: changing physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}"`);
+    }
+
+    //
     // merge request event and result event (result prevails).
+
     const isCompleteEvent: AWSCDKAsyncCustomResource.IsCompleteRequest = {
       ...cfnRequest,
       ...onEventResult
     };
 
-    // now immediate invoke isComplete.
+    //
+    // immediately invoke isComplete (the sync case).
+
     if (await executeIsCompleteUserHandler(isCompleteEvent)) {
       return;
     }
+
+    //
+    // ok, we are not complete, so kick off the waiter workflow
 
     const waiter = {
       stateMachineArn: getEnv(consts.ENV_WAITER_STATE_MACHINE_ARN),
@@ -49,7 +83,7 @@ export async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomR
     log('starting waiter', waiter);
 
     // kick off waiter state machine
-    await startWaiterSfnExecution(waiter);
+    await startExecution(waiter);
     return;
   });
 }
@@ -96,6 +130,11 @@ async function executeIsCompleteUserHandler(isCompleteRequest: AWSCDKAsyncCustom
 
   // if we are not complete, reeturn false, and don't send a response back.
   if (!isCompleteResult.IsComplete) {
+
+    if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
+      throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
+    }
+
     return false;
   }
 
@@ -109,26 +148,6 @@ async function executeIsCompleteUserHandler(isCompleteRequest: AWSCDKAsyncCustom
 
   await submitCloudFormationResponse('SUCCESS', event);
   return true;
-}
-
-function validatePhysicalResourceId(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent, onEventResult: AWSCDKAsyncCustomResource.OnEventResponse = { }) {
-  onEventResult = onEventResult || { };
-  switch (cfnRequest.RequestType) {
-    case 'Create':
-      if (onEventResult.PhysicalResourceId == null) {
-        throw new Error(`CREATE: onEvent response must include a PhysicalResourceId for the new resource`);
-      }
-      break;
-    case 'Update':
-      if (onEventResult.PhysicalResourceId && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
-        console.info(`UPDATE: changing physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}"`);
-      }
-      break;
-    case 'Delete':
-      if (onEventResult.PhysicalResourceId && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
-        throw new Error(`DELETE: cannot change the physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}" during deletion`);
-      }
-  }
 }
 
 function validateCfnRequest(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {

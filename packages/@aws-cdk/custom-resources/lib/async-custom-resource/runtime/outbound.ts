@@ -17,11 +17,18 @@ export async function defaultHttpRequest(options: https.RequestOptions, response
 
 let sfn: AWS.StepFunctions;
 
-/* istanbul ignore next */
-export async function defaultStartWaiterSfnExecution(req: AWS.StepFunctions.StartExecutionInput): Promise<AWS.StepFunctions.StartExecutionOutput> {
+export async function defaultStartExecution(req: AWS.StepFunctions.StartExecutionInput): Promise<AWS.StepFunctions.StartExecutionOutput> {
   if (!sfn) {
     sfn = new AWS.StepFunctions();
   }
 
   return await sfn.startExecution(req).promise();
+}
+
+export async function defaultAssumeRole(req: AWS.STS.AssumeRoleRequest) {
+  AWS.config.update({
+    credentials: new AWS.ChainableTemporaryCredentials({
+      params: req
+    })
+  });
 }

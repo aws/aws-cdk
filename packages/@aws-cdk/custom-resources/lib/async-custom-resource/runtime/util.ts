@@ -14,11 +14,11 @@ export async function failOnError(event: CloudFormationEventContext, block: () =
 
     // this is an actual error, fail the activity altogether and exist.
     await submitCloudFormationResponse('FAILED', event, {
-      reason: e.message,
+      reason: e.stack,
     });
 
     return {
-      error: e.message
+      error: e.stack
     };
   }
 }

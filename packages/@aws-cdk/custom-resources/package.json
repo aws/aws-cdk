@@ -70,6 +70,7 @@
     "@aws-cdk/assert": "1.13.1",
     "@aws-cdk/aws-events": "1.13.1",
     "@aws-cdk/aws-ssm": "1.13.1",
+    "@aws-cdk/aws-s3": "1.13.1",
     "@types/aws-lambda": "^8.10.33",
     "@types/sinon": "^7.5.0",
     "aws-sdk": "^2.550.0",

@@ -50,19 +50,23 @@ export interface OnEventRequest extends AWSLambda.CloudFormationCustomResourceEv
 /**
  * The object returned from the user-defined `onEvent` handler.
  */
-export interface OnEventResponse {
+interface OnEventResponse {
   /**
    * A required custom resource provider-defined physical ID that is unique for
    * that provider.
    *
-   * - For `Create`, this must be returned. For `Update`, this value is
-   *   optional.
-   * - If `onEvent` returns a different value from the current physical ID, it
-   *   means the resource is going to be replaced. 
-   * - For `Delete`, this value is optional, and `onEvent` is not allowed to
-   *   return a value that is different from the current ID.
+   * In order to reduce the chance for mistakes, all event types MUST return
+   * with `PhysicalResourceId`.
+   *
+   * - For `Create`, this will be the user-defined or generated physical
+   *   resource ID.
+   * - For `Update`, if the returned PhysicalResourceId is different value from
+   *   the current one, it means that the old physical resource needs to be
+   *   deleted, and CloudFormation will immediately send a `Delete` event with
+   *   the old physical ID.
+   * - For `Delete`, this must be the same value received in the event.
    */
-  readonly PhysicalResourceId?: string;
+  readonly PhysicalResourceId: string;
 
   /**
    * Resource attributes to return.

@@ -1,6 +1,6 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
-import sdk = require('aws-sdk');
+import AWS = require('aws-sdk');
 import https = require('https');
 import path = require('path');
 import { parse as urlparse } from 'url';
@@ -24,7 +24,8 @@ const MOCK_SFN_ARN = 'arn:of:state:machine';
 const MOCK_PROPS = { Name : "Value", List: [ "1", "2", "3" ], ServiceToken: 'bla' };
 const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 
-let startStateMachineInput: sdk.StepFunctions.StartExecutionInput | undefined;
+let startStateMachineInput: AWS.StepFunctions.StartExecutionInput | undefined;
+let assumeRoleInput: AWS.STS.AssumeRoleRequest | undefined;
 
 // mock http requests
 let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
@@ -66,13 +67,18 @@ beforeEach(() => {
   userHandler.isComplete = () => { throw new Error('"isComplete" not implemented'); };
 
   startStateMachineInput = undefined;
-  handler.startWaiterSfnExecution = async (req: sdk.StepFunctions.StartExecutionInput) => {
+  handler.startExecution = async (req: AWS.StepFunctions.StartExecutionInput) => {
     startStateMachineInput = req;
     expect(req.stateMachineArn).toEqual(MOCK_SFN_ARN);
     return {
       executionArn: req.stateMachineArn + '/execution',
       startDate: new Date(),
     };
+  };
+
+  assumeRoleInput = undefined;
+  handler.assumeRoleAndMakeDefault = async (req: AWS.STS.AssumeRoleRequest) => {
+    assumeRoleInput = req;
   };
 });
 
@@ -82,6 +88,7 @@ afterEach(() => {
   delete process.env[consts.ENV_ON_EVENT_USER_HANDLER_FILE];
   delete process.env[consts.ENV_ON_EVENT_USER_HANDLER_FUNCTION];
   delete process.env[consts.ENV_WAITER_STATE_MACHINE_ARN];
+  delete process.env[consts.PROP_EXECUTION_ROLE_ARN];
 });
 
 test('synchronous flow (isComplete immediately returns true): waiter state machine is not triggered', async () => {
@@ -149,8 +156,15 @@ test('async flow: isComplete returns true only after 3 times', async () => {
     expect(event.PhysicalResourceId).toEqual(MOCK_PHYSICAL_ID); // physical ID returned from onEvent is passed to "isComplete"
     expect(event.Data).toStrictEqual(MOCK_ATTRS); // attributes are propagated between the calls
 
+    const isComplete = isCompleteCalls === 3;
+    if (!isComplete) {
+      return {
+        IsComplete: false
+      };
+    }
+
     return {
-      IsComplete: isCompleteCalls === 3,
+      IsComplete: true,
       Data: {
         Additional: 'attribute' // additional attributes can be returned from "isComplete"
       }
@@ -222,16 +236,46 @@ test('fails gracefully if "onEvent" throws an error', async () => {
 
 describe('Physical IDs', () => {
 
-  test('CREATE fails if "PhysicalResourceId" is not returned', async () => {
-    // WHEN
-    userHandler.onEvent = async () => ({ Data: { a: 123 } });
+  describe('must be returned from all operations', () => {
 
-    // THEN
-    await invokeMainHandler({
-      RequestType: 'Create'
+    test('CREATE', async () => {
+      // WHEN
+      userHandler.onEvent = async () => ({ Data: { a: 123 } } as any);
+
+      // THEN
+      await invokeMainHandler({
+        RequestType: 'Create'
+      });
+
+      expectCloudFormationFailed('onEvent response must include a PhysicalResourceId for all request types');
     });
 
-    expectCloudFormationFailed('CREATE: onEvent response must include a PhysicalResourceId for the new resource');
+    test('UPDATE', async () => {
+      // WHEN
+      userHandler.onEvent = async () => ({ Data: { a: 123 } } as any);
+
+      // THEN
+      await invokeMainHandler({
+        PhysicalResourceId: 'Boom',
+        RequestType: 'Update'
+      });
+
+      expectCloudFormationFailed('onEvent response must include a PhysicalResourceId for all request types');
+    });
+
+    test('DELETE', async () => {
+      // WHEN
+      userHandler.onEvent = async () => ({ Data: { a: 123 } } as any);
+
+      // THEN
+      await invokeMainHandler({
+        PhysicalResourceId: 'Boom',
+        RequestType: 'Delete'
+      });
+
+      expectCloudFormationFailed('onEvent response must include a PhysicalResourceId for all request types');
+    });
+
   });
 
   test('UPDATE: can change the physical ID by returning a new ID', async () => {
@@ -266,45 +310,6 @@ describe('Physical IDs', () => {
     // THEN
     expectNoWaiter();
     expectCloudFormationFailed('DELETE: cannot change the physical resource ID from "CurrentPhysicalId" to "NewPhysicalId" during deletion');
-  });
-
-  test('UPDATE: can omit PhysicalResourceId and the previous one will be sent in the response', async () => {
-    // GIVEN
-    userHandler.onEvent = async () => ({ Data: { Foo: 123 }});
-    userHandler.isComplete = async () => ({ IsComplete: true });
-
-    // WHEN
-    await invokeMainHandler({
-      RequestType: 'Update',
-      PhysicalResourceId: MOCK_PHYSICAL_ID
-    });
-
-    // THEN
-    expectNoWaiter();
-    expectCloudFormationSuccess({
-      PhysicalResourceId: MOCK_PHYSICAL_ID,
-      Data: {
-        Foo: 123
-      }
-    });
-  });
-
-  test('DELETE: can omit PhysicalResourceId and the previous one will be sent in the response', async () => {
-    // GIVEN
-    userHandler.onEvent = async () => undefined;
-    userHandler.isComplete = async () => ({ IsComplete: true });
-
-    // WHEN
-    await invokeMainHandler({
-      RequestType: 'Delete',
-      PhysicalResourceId: MOCK_PHYSICAL_ID
-    });
-
-    // THEN
-    expectNoWaiter();
-    expectCloudFormationSuccess({
-      PhysicalResourceId: MOCK_PHYSICAL_ID
-    });
   });
 
   test('main handler fails if UPDATE is called without a physical resource id', async () => {
@@ -356,7 +361,7 @@ describe('Physical IDs', () => {
 
 test('isComplete always returns "false" and then a timeout occurs', async () => {
   // GIVEN
-  userHandler.onEvent = async () => ({ Data: { Foo: 123 } });
+  userHandler.onEvent = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });
   userHandler.isComplete = async () => ({ IsComplete: false });
 
   // WHEN
@@ -375,12 +380,45 @@ test('isComplete always returns "false" and then a timeout occurs', async () => 
     LogicalResourceId: "MyTestResource",
     RequestType: "Update",
     PhysicalResourceId: "mock-physical-resource-id",
+    ResourceProperties: { },
     Data: {
       Foo: 123
     }
   });
 
   expectCloudFormationFailed(`Operation timed out`);
+});
+
+test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
+  // GIVEN
+  userHandler.onEvent = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });
+  userHandler.isComplete = async () => ({ IsComplete: false, Data: { Foo: 3333 } });
+
+  // WHEN
+  await invokeMainHandler({
+    RequestType: 'Update',
+    PhysicalResourceId: MOCK_PHYSICAL_ID
+  });
+
+  expectCloudFormationFailed(`"Data" is not allowed if "IsComplete" is "False"`);
+});
+
+test('if $ExecutionRoleArn is passed as a property, this role will be assumed and used as a default role for user handlers', async () => {
+  userHandler.onEvent = async () => ({ PhysicalResourceId: 'Foo' });
+  userHandler.isComplete = async () => ({ IsComplete: true });
+
+  const MOCK_ASSUME_ROLE_ARN = 'execution:role:arn';
+
+  await invokeMainHandler({
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Bla',
+      [consts.PROP_EXECUTION_ROLE_ARN]: MOCK_ASSUME_ROLE_ARN,
+    }
+  });
+
+  expect(assumeRoleInput && assumeRoleInput.RoleArn).toEqual(MOCK_ASSUME_ROLE_ARN);
+  expectCloudFormationSuccess();
 });
 
 // -----------------------------------------------------------------------------------------------------------------------

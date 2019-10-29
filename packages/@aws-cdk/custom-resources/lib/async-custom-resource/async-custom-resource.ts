@@ -1,7 +1,9 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { Construct, Duration, RemovalPolicy } from '@aws-cdk/core';
 import { ProviderStack } from './provider-stack';
+import consts = require('./runtime/consts');
 
 export interface AsyncCustomResourceProps {
   /**
@@ -55,6 +57,11 @@ export interface AsyncCustomResourceProps {
   readonly handlerCode: lambda.Code;
 
   /**
+   * The AWS Lambda runtime to use. Currently, only NodeJS runtimes are supported.
+   */
+  readonly runtime: lambda.Runtime;
+
+  /**
    * The JavaScript function to invoke for all resource lifecycle
    * operations (CREATE/UPDATE/DELETE).
    *
@@ -106,17 +113,47 @@ export interface AsyncCustomResourceProps {
    * @default Duration.minutes(30)
    */
   readonly totalTimeout?: Duration;
+
+  /**
+   * An IAM role to use when executing the custom resource handler logic.
+   *
+   * @default - automatically created, you can use `addToRolePolicy` to update.
+   */
+  readonly role?: iam.IRole;
 }
 
-export class AsyncCustomResource extends cfn.CustomResource {
+export class AsyncCustomResource extends cfn.CustomResource implements iam.IGrantable {
+
+  public readonly grantPrincipal: iam.IPrincipal;
+
   constructor(scope: Construct, id: string, props: AsyncCustomResourceProps) {
     const handlerStack = ProviderStack.getOrCreate(scope, props);
 
+    const role = props.role || new iam.Role(scope, `${id}:ExecutionRole`, {
+      assumedBy: new iam.ArnPrincipal(handlerStack.roles[0].roleArn)
+    });
+
+    if (role instanceof iam.Role && role.assumeRolePolicy) {
+      for (const functionRole of handlerStack.roles.slice(1)) {
+        role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: [ 'sts:AssumeRole' ],
+          principals: [ new iam.ArnPrincipal(functionRole.roleArn) ],
+        }));
+      }
+    }
+
     super(scope, id, {
-      provider: cfn.CustomResourceProvider.lambda(handlerStack.onEventHandler),
+      provider: cfn.CustomResourceProvider.lambda(handlerStack.onEventFunction),
       resourceType: props.resourceType,
-      properties: props.properties,
+      properties: {
+        [consts.PROP_EXECUTION_ROLE_ARN]: role.roleArn,
+        ...props.properties
+      },
       removalPolicy: props.removalPolicy
     });
+
+    this.grantPrincipal = role;
   }
+
 }
