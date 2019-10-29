@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-stepfunctions",
-  "version": "1.13.1",
+  "version": "1.15.0",
   "description": "The CDK Construct Library for AWS::StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,24 +63,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.1",
-    "cdk-build-tools": "^1.13.1",
-    "cdk-integ-tools": "^1.13.1",
-    "cfn2ts": "^1.13.1",
-    "pkglint": "^1.13.1"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.13.1",
-    "@aws-cdk/aws-events": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.13.1",
-    "@aws-cdk/aws-events": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -91,7 +91,17 @@
       "export:@aws-cdk/aws-stepfunctions.IActivity",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.WaitProps.duration",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT",
-      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
+      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.TaskInput.value",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.InputType.OBJECT",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.Data.isJsonPathString",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.Result.value",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.StateGraph.startState",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.TaskInput.type",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.InputType.TEXT",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.WaitTime",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.ActivityProps",
+      "docs-public-apis:@aws-cdk/aws-stepfunctions.IActivity"
     ]
   },
   "stability": "experimental"

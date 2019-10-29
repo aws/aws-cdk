@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-kms",
-  "version": "1.13.1",
+  "version": "1.15.0",
   "description": "CDK Constructs for AWS KMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,27 +63,31 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.1",
-    "cdk-build-tools": "^1.13.1",
-    "cdk-integ-tools": "^1.13.1",
-    "cfn2ts": "^1.13.1",
-    "pkglint": "^1.13.1"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kms.KeyProps"
+      "props-physical-name:@aws-cdk/aws-kms.KeyProps",
+      "docs-public-apis:@aws-cdk/aws-kms.Alias.fromAliasAttributes",
+      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes",
+      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasName",
+      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasTargetKey"
     ]
   },
   "stability": "stable"

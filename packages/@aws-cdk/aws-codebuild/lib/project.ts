@@ -617,6 +617,23 @@ export class Project extends ProjectBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Convert the environment variables map of string to {@link BuildEnvironmentVariable},
+   * which is the customer-facing type, to a list of {@link CfnProject.EnvironmentVariableProperty},
+   * which is the representation of environment variables in CloudFormation.
+   *
+   * @param environmentVariables the map of string to environment variables
+   * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
+   */
+  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
+      CfnProject.EnvironmentVariableProperty[] {
+    return Object.keys(environmentVariables).map(name => ({
+      name,
+      type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
+      value: environmentVariables[name].value,
+    }));
+  }
+
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
@@ -762,10 +779,6 @@ export class Project extends ProjectBase {
    * @param options additional options for the binding
    */
   public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
-    if (this.source.type !== CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
-      throw new Error('Only a PipelineProject can be added to a CodePipeline');
-    }
-
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
     if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
@@ -870,11 +883,7 @@ export class Project extends ProjectBase {
         : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
-      environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
-        name,
-        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
-        value: vars[name].value
-      }))
+      environmentVariables: hasEnvironmentVars ? Project.serializeEnvVariables(vars) : undefined,
     };
   }
 

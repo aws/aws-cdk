@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ses",
-  "version": "1.13.1",
+  "version": "1.15.0",
   "description": "The CDK Construct Library for AWS::SES",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,25 +63,39 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.1",
-    "cdk-build-tools": "^1.13.1",
-    "cdk-integ-tools": "^1.13.1",
-    "cfn2ts": "^1.13.1",
-    "pkglint": "^1.13.1"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/aws-lambda": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/aws-lambda": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.addHeaderAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.workmailAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.stopAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.snsAction",
+      "docs-public-apis:@aws-cdk/aws-ses.DropSpamReceiptRule.rule",
+      "docs-public-apis:@aws-cdk/aws-ses.ReceiptRule.fromReceiptRuleName",
+      "docs-public-apis:@aws-cdk/aws-ses.DropSpamReceiptRuleProps",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.s3Action",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.bounceAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction"
+    ]
+  }
 }

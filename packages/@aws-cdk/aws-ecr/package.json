@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ecr",
-  "version": "1.13.1",
+  "version": "1.15.0",
   "description": "The CDK Construct Library for AWS::ECR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -67,22 +67,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.1",
-    "cdk-build-tools": "^1.13.1",
-    "cdk-integ-tools": "^1.13.1",
-    "cfn2ts": "^1.13.1",
-    "pkglint": "^1.13.1"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -90,7 +90,16 @@
   "awslint": {
     "exclude": [
       "import:@aws-cdk/aws-ecr.Repository",
-      "construct-base-is-private:@aws-cdk/aws-ecr.RepositoryBase"
+      "construct-base-is-private:@aws-cdk/aws-ecr.RepositoryBase",
+      "docs-public-apis:@aws-cdk/aws-ecr.Repository.fromRepositoryArn",
+      "docs-public-apis:@aws-cdk/aws-ecr.Repository.fromRepositoryName",
+      "props-default-doc:@aws-cdk/aws-ecr.LifecycleRule.maxImageAge",
+      "props-default-doc:@aws-cdk/aws-ecr.LifecycleRule.maxImageCount",
+      "props-default-doc:@aws-cdk/aws-ecr.LifecycleRule.tagPrefixList",
+      "docs-public-apis:@aws-cdk/aws-ecr.RepositoryAttributes",
+      "docs-public-apis:@aws-cdk/aws-ecr.RepositoryAttributes.repositoryArn",
+      "docs-public-apis:@aws-cdk/aws-ecr.RepositoryAttributes.repositoryName",
+      "docs-public-apis:@aws-cdk/aws-ecr.RepositoryProps"
     ]
   },
   "stability": "stable"

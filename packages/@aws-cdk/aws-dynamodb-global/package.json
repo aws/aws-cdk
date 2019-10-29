@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dynamodb-global",
-  "version": "1.13.1",
+  "version": "1.15.0",
   "description": "Build a global dynamodb table",
   "license": "Apache-2.0",
   "homepage": "https://github.com/aws/aws-cdk",
@@ -47,25 +47,25 @@
     "global"
   ],
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.13.1",
-    "@aws-cdk/aws-dynamodb": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/aws-lambda": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-cloudformation": "1.15.0",
+    "@aws-cdk/aws-dynamodb": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.1",
-    "cdk-build-tools": "^1.13.1",
-    "cdk-integ-tools": "^1.13.1",
-    "cfn2ts": "^1.13.1",
-    "pkglint": "^1.13.1"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.13.1",
-    "@aws-cdk/aws-dynamodb": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/aws-lambda": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-cloudformation": "1.15.0",
+    "@aws-cdk/aws-dynamodb": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "scripts": {
     "build": "cdk-build",
