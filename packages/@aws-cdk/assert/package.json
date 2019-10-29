@@ -35,7 +35,7 @@
     "@aws-cdk/core": "1.15.0",
     "@aws-cdk/cx-api": "1.15.0",
     "jest": "^24.9.0",
-    "source-map-support": "^0.5.13"
+    "source-map-support": "^0.5.15"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
