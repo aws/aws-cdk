@@ -54,7 +54,8 @@ export = nodeunit.testCase({
       publicSubnetIds: ['sub-123456'],
       publicSubnetNames: ['Public'],
       publicSubnetRouteTableIds: ['rtb-123456'],
-      vpnGatewayId: 'gw-abcdef'
+      vpnGatewayId: 'gw-abcdef',
+      subnetGroups: undefined,
     });
 
     AWS.restore();
@@ -138,7 +139,8 @@ export = nodeunit.testCase({
       publicSubnetIds: ['sub-123456'],
       publicSubnetNames: ['Public'],
       publicSubnetRouteTableIds: ['rtb-123456'],
-      vpnGatewayId: 'gw-abcdef'
+      vpnGatewayId: 'gw-abcdef',
+      subnetGroups: undefined,
     });
 
     test.done();
@@ -199,6 +201,7 @@ export = nodeunit.testCase({
       publicSubnetNames: ['Public'],
       publicSubnetRouteTableIds: ['rtb-123456'],
       vpnGatewayId: undefined,
+      subnetGroups: undefined,
     });
 
     AWS.restore();

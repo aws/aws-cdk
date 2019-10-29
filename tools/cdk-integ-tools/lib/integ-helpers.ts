@@ -183,13 +183,32 @@ export const DEFAULT_SYNTH_OPTIONS = {
     "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
     "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
     "ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region": "{\"image_id\": \"ami-1234\"}",
-    "vpc-provider:account=12345678:filter.isDefault=true:region=test-region": {
+    "vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true": {
       vpcId: "vpc-60900905",
-      availabilityZones: [ "us-east-1a", "us-east-1b", "us-east-1c" ],
-      publicSubnetIds: ["subnet-e19455ca", "subnet-e0c24797", "subnet-ccd77395"],
-      publicSubnetRouteTableIds: ["rtb-e19455ca", "rtb-e0c24797", "rtb-ccd77395"],
-      publicSubnetNames: [ "Public" ]
-    }
+      subnetGroups: [
+        {
+          type: "Public",
+          name: "Public",
+          subnets: [
+            {
+              subnetId: "subnet-e19455ca",
+              availabilityZone: "us-east-1a",
+              routeTableId: "rtb-e19455ca",
+            },
+            {
+              subnetId: "subnet-e0c24797",
+              availabilityZone: "us-east-1b",
+              routeTableId: "rtb-e0c24797",
+            },
+            {
+              subnetId: "subnet-ccd77395",
+              availabilityZone: "us-east-1c",
+              routeTableId: "rtb-ccd77395",
+            },
+          ],
+        },
+      ],
+    },
   },
   env: {
     CDK_INTEG_ACCOUNT: "12345678",
