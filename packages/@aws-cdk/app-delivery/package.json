@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -41,21 +41,21 @@
     "build+test": "npm run build && npm test"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.14.0",
-    "@aws-cdk/aws-codebuild": "1.14.0",
-    "@aws-cdk/aws-codepipeline": "1.14.0",
-    "@aws-cdk/aws-codepipeline-actions": "1.14.0",
-    "@aws-cdk/aws-events": "1.14.0",
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/core": "1.14.0",
-    "@aws-cdk/cx-api": "1.14.0"
+    "@aws-cdk/aws-cloudformation": "1.15.0",
+    "@aws-cdk/aws-codebuild": "1.15.0",
+    "@aws-cdk/aws-codepipeline": "1.15.0",
+    "@aws-cdk/aws-codepipeline-actions": "1.15.0",
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0",
+    "@aws-cdk/cx-api": "1.15.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.14.0",
-    "@aws-cdk/aws-s3": "1.14.0",
+    "@aws-cdk/assert": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "fast-check": "^1.17.0",
+    "fast-check": "^1.18.1",
     "pkglint": "file:../../../tools/pkglint"
   },
   "repository": {
@@ -75,17 +75,26 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.14.0",
-    "@aws-cdk/aws-codebuild": "1.14.0",
-    "@aws-cdk/aws-codepipeline": "1.14.0",
-    "@aws-cdk/aws-codepipeline-actions": "1.14.0",
-    "@aws-cdk/aws-events": "1.14.0",
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/core": "1.14.0",
-    "@aws-cdk/cx-api": "1.14.0"
+    "@aws-cdk/aws-cloudformation": "1.15.0",
+    "@aws-cdk/aws-codebuild": "1.15.0",
+    "@aws-cdk/aws-codepipeline": "1.15.0",
+    "@aws-cdk/aws-codepipeline-actions": "1.15.0",
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0",
+    "@aws-cdk/cx-api": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.actionProperties",
+      "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.deploymentRole",
+      "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.bind",
+      "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.onStateChange",
+      "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackActionProps"
+    ]
+  }
 }

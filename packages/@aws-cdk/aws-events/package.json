@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-events",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "AWS CloudWatch Events Construct Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,19 +64,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.14.0",
+    "@aws-cdk/assert": "1.15.0",
     "cdk-build-tools": "file:../../../tools/cdk-build-tools",
     "cfn2ts": "file:../../../tools/cfn2ts",
     "pkglint": "file:../../../tools/pkglint"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/core": "1.14.0"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/core": "1.14.0"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -84,7 +84,22 @@
   "awslint": {
     "exclude": [
       "from-method:@aws-cdk/aws-events.Rule",
-      "no-unused-type:@aws-cdk/aws-events.OnEventOptions"
+      "no-unused-type:@aws-cdk/aws-events.OnEventOptions",
+      "docs-public-apis:@aws-cdk/aws-events.RuleProps",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputTemplate",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputPathsMap",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputPath",
+      "docs-public-apis:@aws-cdk/aws-events.EventField.displayHint",
+      "docs-public-apis:@aws-cdk/aws-events.EventField.path",
+      "docs-public-apis:@aws-cdk/aws-events.EventField.toJSON",
+      "docs-public-apis:@aws-cdk/aws-events.Rule.fromEventRuleArn",
+      "docs-public-apis:@aws-cdk/aws-events.IRule",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.input",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.ecsParameters",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.kinesisParameters",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.role",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.runCommandParameters",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.sqsParameters"
     ]
   },
   "stability": "stable"
