@@ -49,7 +49,7 @@
   },
   "cdk-build": {
     "pre": [
-      "cp -f node_modules/aws-sdk/apis/metadata.json lib/sdk-api-metadata.json"
+      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json"
     ]
   },
   "keywords": [
@@ -70,15 +70,15 @@
     "@aws-cdk/assert": "1.15.0",
     "@aws-cdk/aws-events": "1.15.0",
     "@aws-cdk/aws-ssm": "1.15.0",
-    "@types/aws-lambda": "^8.10.33",
+    "@types/aws-lambda": "^8.10.34",
     "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.556.0",
+    "aws-sdk": "^2.558.0",
     "aws-sdk-mock": "^4.5.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
     "nock": "^11.6.0",
-    "pkglint": "file:../../../tools/pkglint",
+    "pkglint": "^1.15.0",
     "sinon": "^7.5.0"
   },
   "dependencies": {

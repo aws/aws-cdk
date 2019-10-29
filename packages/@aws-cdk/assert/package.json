@@ -27,15 +27,15 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^24.0.19",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "pkglint": "file:../../../tools/pkglint"
+    "cdk-build-tools": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "1.15.0",
     "@aws-cdk/core": "1.15.0",
     "@aws-cdk/cx-api": "1.15.0",
     "jest": "^24.9.0",
-    "source-map-support": "^0.5.13"
+    "source-map-support": "^0.5.15"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
