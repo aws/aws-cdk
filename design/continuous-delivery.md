@@ -25,6 +25,7 @@ The only caveat is that **new environments** (account/region) will need to be bo
   - [Mutation](#mutation-1)
   - [Publishing](#publishing-1)
   - [Deployment](#deployment-1)
+- [Compatibility Plan](#compatibility-plan)
 
 ## Requirements
 
@@ -576,3 +577,59 @@ CodePipeline will use the regional replication buckets to transfer cdk.out to th
 
 That's it basically.
 
+# Compatibility Plan
+
+This section describes how we plan to implement this new model, while still supporting old CLIs, apps written with old frameworks and old bootstrap environments.
+
+This design requires disruptive changes to the following components:
+
+- **Bootstrap Stack**: the contents of the environment's bootstrap stack has changed. It now includes additional resources like an ECR repository and IAM role, and also uses conventional physical names.
+- **Assets (Framework)**: currently each asset synthesizes a set of CloudFormation parameter that is then assigned by the CLI during deployment, and assets are described as metadata in the cloud assembly manifest. This design stipulates that assets will always be published to well-known locations (based on the bootstrap stack conventions) and described in the `assets.json` manifest which is consumed by `cdk-assets`.
+- **Publishing (CLI)**: currently the CLI conflates both asset publishing and deployment into a single step. This design stipulates that `cdk-assets` manages all asset publishing and the CLI is only responsible for deployment.
+- **AdoptedRepository**: The new asset mechanism does not require Docker image assets to be backed by `AdoptedRepository` since the ECR repository in the new bootstrap stack will allow anyone to read from it.
+- **Deployment Roles**: In the new mode, the cloud assembly manifest also includes IAM roles for deployment. These only exist in the new model, and should cause the CLI to assume these roles during depoyment.
+
+## Goal
+
+Existing applications should continue to seamlessly work in any combination of CLI/framework without any forced modification when suppot for these new capabilities is introduced.
+
+Obvsiouly, if users wish to leverage the new CDK continuous delivery capabilities, they will have to upgrade all three components (bootstrap stack, framework, CLI). It's important that their experience will be guided (i.e. they will be promoted exactly what they need to do and not simply get cryptic error messages).
+
+## Approach
+
+The main implication is that both CLI and framework should continue to support the "legacy mode" which controls all relevant behavior: asset synthesis (including `AdoptedRepository`), deployment roles and any other aspect described in this design.
+
+The following table describes the desired behavior for each combination of CLI version, framework version and whether this is an existing app or a new app (the result of `cdk init` from a new CLI):
+
+| #  |      | CLI  | Framework | Bootstrap | App | Mode | Comments       
+|----|------|------|-----------|-----------|-----|------|----------------------
+| 0  | 0000 | OLD  | OLD       | OLD       | OLD | 1.0  | No change     
+| 1  | 0001 | OLD  | OLD       | OLD       | NEW | 1.0  | App created with old CLI
+| 2  | 0010 | OLD  | OLD       | NEW       | OLD | 1.0  | "Run `cdk bootstrap`"
+| 3  | 0011 | OLD  | OLD       | NEW       | NEW | 1.0  | new bootstrap stack is not detectable
+| 4  | 0100 | OLD  | NEW       | OLD       | OLD | 1.0  | Framework auto-detects old CLI
+| 5  | 0101 | OLD  | NEW       | OLD       | NEW | ERR  | "please upgrade your CLI and bootstrap"
+| 6  | 0110 | OLD  | NEW       | NEW       | OLD | 1.0  | "Run `cdk bootstrap`"
+| 7  | 0111 | OLD  | NEW       | NEW       | NEW | ERR  | "please upgrade your CLI"
+| 8  | 1000 | NEW  | OLD       | OLD       | OLD | 1.0  | CLI auto-detects old framework
+| 9  | 1001 | NEW  | OLD       | OLD       | NEW | 1.0  | CLI auto-detects old framework
+| 10 | 1010 | NEW  | OLD       | NEW       | OLD | 1.0  | <span style="color:red">can this work??</span>
+| 11 | 1011 | NEW  | OLD       | NEW       | NEW | 1.0  | Old framework doesn't respect feature flag
+| 12 | 1100 | NEW  | NEW       | OLD       | OLD | 1.0  | Can opt-in to 2.0
+| 13 | 1101 | NEW  | NEW       | OLD       | NEW | 2.0  | "Run `cdk bootstrap`"
+| 14 | 1110 | NEW  | NEW       | NEW       | OLD |      | <span style="color:red">can this work??</span>
+| 15 | 1111 | NEW  | NEW       | NEW       | NEW | 2.0  | Final state
+
+## Requirements
+
+The CLI must auto-detect the assembly format version of the synthesized app based on heuristics `assets.json` or asset metadata in manifest (perhaps we will just bump the assembly manifest version number). Based on this version it will execute either the legacy (1.0) code path or the new code path. If the old code path is required, the old bootstrap behavior will be expected. If the bootstrap stack
+
+The framework will use the CLI version information passed in through environment variable to detect an old CLI.
+
+A new feature flag `cloud-assembly-version` will be used to determine the cloud assembly format version the framework operates in. This flag will front all relevant code paths.
+
+In order to enable case #6 (new CLI + framework with old app), the default for `cloud-assembly-version` will be `1.0` (legacy). This means old apps that upgrade both CLI and framework to new version will continue to function without any change. If old apps wishes to use the new behavior, they will have to explicitly specify `cloud-assembly-version` in their `cdk.json` (or code).
+
+However, we still want new CDK apps created using `cdk init` to use the new behavior (case #9). To that end, when `cdk init` will be executed from a new CLI, the `cdk.json` it will generate will pass in `cloud-assembly-version: 2.0`. This basically means that new apps will automatically be opted-in to this new behavior.
+
+If old CLI is used and the app is configured to use 2.0 (#3), an error will be raised (we could technically fall back to 1.0 but there is probably no sufficient value).
