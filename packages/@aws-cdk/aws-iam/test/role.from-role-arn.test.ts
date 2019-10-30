@@ -191,8 +191,8 @@ describe('IAM Role.fromRoleArn', () => {
             addToPolicyResult = importedRole.addToPolicy(somePolicyStatement());
           });
 
-          test('returns false', () => {
-            expect(addToPolicyResult).toBe(false);
+          test('returns true', () => {
+            expect(addToPolicyResult).toBe(true);
           });
 
           test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
@@ -278,8 +278,8 @@ describe('IAM Role.fromRoleArn', () => {
           addToPolicyResult = importedRole.addToPolicy(somePolicyStatement());
         });
 
-        test('returns false', () => {
-          expect(addToPolicyResult).toBe(false);
+        test('returns true', () => {
+          expect(addToPolicyResult).toBe(true);
         });
 
         test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {

@@ -228,7 +228,8 @@ export class Role extends Resource implements IRole {
 
     class ImmutableImport extends Import {
       public addToPolicy(_statement: PolicyStatement): boolean {
-        return false;
+        // Not really added, but for the purposes of consumer code pretend that it was.
+        return true;
       }
 
       public addPolicy(i: string, props?: PolicyProps): IPolicy {

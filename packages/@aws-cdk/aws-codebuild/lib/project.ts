@@ -7,7 +7,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -964,8 +964,8 @@ export class Project extends ProjectBase {
     // add an explicit dependency between the VPC Policy and this Project -
     // otherwise, creating the Project fails,
     // as it requires these permissions to be already attached to the Project's Role
-    const cfnPolicy = policy.node.defaultChild as CfnResource;
-    project.addDependsOn(cfnPolicy);
+    // const cfnPolicy = policy.node.defaultChild as CfnResource;
+    project.node.addDependency(policy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {

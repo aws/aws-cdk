@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, not, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -293,6 +293,14 @@ export = {
     });
 
     expect(stack).to(countResources('AWS::IAM::Policy', 0));
+
+    // Check that the CodeBuild project does not have a DependsOn
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', (res: any) => {
+      if (res.DependsOn && res.DependsOn.length > 0) {
+        throw new Error(`CodeBuild project should have no DependsOn, but got: ${JSON.stringify(res, undefined, 2)}`);
+      }
+      return true;
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
