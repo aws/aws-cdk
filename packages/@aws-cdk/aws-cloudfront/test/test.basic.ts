@@ -1,9 +1,13 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import * as lambda from '@aws-cdk/aws-lambda';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
-import { CfnDistribution, CloudFrontWebDistribution, LambdaEdgeEventType, ViewerProtocolPolicy } from '../lib';
+import {
+  CfnDistribution, CloudFrontWebDistribution, LambdaEdgeEventType, SecurityPolicyProtocol, SSLMethod,
+  ViewerCertificate, ViewerProtocolPolicy
+} from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -473,6 +477,274 @@ export = {
 
     test.ok(distribution.node.defaultChild instanceof CfnDistribution);
     test.done();
+  },
+
+  'viewerCertificate': {
+    'acmCertificate': {
+      'base usage'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        const certificate = new certificatemanager.Certificate(stack, 'cert', {
+          domainName: 'example.com',
+        });
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": [],
+            "ViewerCertificate": {
+              "AcmCertificateArn": {
+                "Ref": "cert56CA94EB"
+              },
+              "SslSupportMethod": "sni-only"
+            }
+          }
+        }));
+
+        test.done();
+      },
+      'imported certificate fromCertificateArn'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        const certificate = certificatemanager.Certificate.fromCertificateArn(
+          stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+        );
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": [],
+            "ViewerCertificate": {
+              "AcmCertificateArn": "arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d",
+              "SslSupportMethod": "sni-only"
+            }
+          }
+        }));
+
+        test.done();
+      },
+      'advanced usage'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        const certificate = new certificatemanager.Certificate(stack, 'cert', {
+          domainName: 'example.com',
+        });
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate, {
+            securityPolicy: SecurityPolicyProtocol.SSL_V3,
+            sslMethod: SSLMethod.VIP,
+            aliases: ['example.com', 'www.example.com']
+          }),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": ["example.com", "www.example.com"],
+            "ViewerCertificate": {
+              "AcmCertificateArn": {
+                "Ref": "cert56CA94EB"
+              },
+              "MinimumProtocolVersion": "SSLv3",
+              "SslSupportMethod": "vip"
+            }
+          }
+        }));
+
+        test.done();
+      },
+    },
+    'iamCertificate': {
+      'base usage'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromIamCertificate('test'),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": [],
+            "ViewerCertificate": {
+              "IamCertificateId": "test",
+              "SslSupportMethod": "sni-only"
+            }
+          }
+        }));
+
+        test.done();
+      },
+      'advanced usage'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromIamCertificate('test', {
+            securityPolicy: SecurityPolicyProtocol.TLS_V1,
+            sslMethod: SSLMethod.VIP,
+            aliases: ['example.com']
+          }),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": ["example.com"],
+            "ViewerCertificate": {
+              "IamCertificateId": "test",
+              "MinimumProtocolVersion": "TLSv1",
+              "SslSupportMethod": "vip"
+            }
+          }
+        }));
+
+        test.done();
+      },
+    },
+    'cloudFrontDefaultCertificate': {
+      'base usage'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate(),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": [],
+            "ViewerCertificate": {
+              "CloudFrontDefaultCertificate": true
+            }
+          }
+        }));
+
+        test.done();
+      },
+      'aliases are set'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": ["example.com", "www.example.com"],
+            "ViewerCertificate": {
+              "CloudFrontDefaultCertificate": true
+            }
+          }
+        }));
+
+        test.done();
+      },
+    },
+    'errors': {
+      'throws if both deprecated aliasConfiguration and viewerCertificate'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        test.throws(() => {
+          new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+            originConfigs: [{
+              s3OriginSource: { s3BucketSource: sourceBucket },
+              behaviors: [{ isDefaultBehavior: true }]
+            }],
+            aliasConfiguration: {acmCertRef: 'test', names: ['ftp.example.com']},
+            viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
+          });
+        }, /You cannot set both aliasConfiguration and viewerCertificate properties/);
+
+        test.done();
+      },
+      'throws if invalid security policy for SSL method'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        test.throws(() => {
+          new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+            originConfigs: [{
+              s3OriginSource: { s3BucketSource: sourceBucket },
+              behaviors: [{ isDefaultBehavior: true }]
+            }],
+            viewerCertificate: ViewerCertificate.fromIamCertificate('test', {
+              securityPolicy: SecurityPolicyProtocol.TLS_V1_1_2016,
+              sslMethod: SSLMethod.VIP
+            }),
+          });
+        }, /TLSv1.1_2016 is not compabtible with sslMethod vip./);
+
+        test.done();
+      },
+      // FIXME https://github.com/aws/aws-cdk/issues/4724
+      'does not throw if acmCertificate explicitly not in us-east-1'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        const certificate = certificatemanager.Certificate.fromCertificateArn(
+          stack, 'cert', 'arn:aws:acm:eu-west-3:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+        );
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: { s3BucketSource: sourceBucket },
+            behaviors: [{ isDefaultBehavior: true }]
+          }],
+          viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+          "DistributionConfig": {
+            "Aliases": [],
+            "ViewerCertificate": {
+              "AcmCertificateArn": "arn:aws:acm:eu-west-3:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d",
+              "SslSupportMethod": "sni-only"
+            }
+          }
+        }));
+
+        test.done();
+      },
+    }
   },
 
 };

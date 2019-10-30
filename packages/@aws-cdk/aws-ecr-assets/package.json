@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ecr-assets",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Docker image assets deployed to ECR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -60,34 +60,34 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.14.0",
+    "@aws-cdk/assert": "1.15.0",
     "@types/proxyquire": "^1.3.28",
-    "aws-cdk": "1.14.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "pkglint": "file:../../../tools/pkglint",
+    "aws-cdk": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "pkglint": "^1.15.0",
     "proxyquire": "^2.1.3"
   },
   "dependencies": {
-    "@aws-cdk/assets": "1.14.0",
-    "@aws-cdk/aws-cloudformation": "1.14.0",
-    "@aws-cdk/aws-ecr": "1.14.0",
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/aws-lambda": "1.14.0",
-    "@aws-cdk/aws-s3": "1.14.0",
-    "@aws-cdk/core": "1.14.0",
-    "@aws-cdk/cx-api": "1.14.0"
+    "@aws-cdk/assets": "1.15.0",
+    "@aws-cdk/aws-cloudformation": "1.15.0",
+    "@aws-cdk/aws-ecr": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/core": "1.15.0",
+    "@aws-cdk/cx-api": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "1.14.0",
-    "@aws-cdk/aws-cloudformation": "1.14.0",
-    "@aws-cdk/aws-ecr": "1.14.0",
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/aws-lambda": "1.14.0",
-    "@aws-cdk/aws-s3": "1.14.0",
-    "@aws-cdk/core": "1.14.0",
-    "@aws-cdk/cx-api": "1.14.0"
+    "@aws-cdk/assets": "1.15.0",
+    "@aws-cdk/aws-cloudformation": "1.15.0",
+    "@aws-cdk/aws-ecr": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/core": "1.15.0",
+    "@aws-cdk/cx-api": "1.15.0"
   },
   "nyc": {
     "statements": 70
@@ -95,5 +95,10 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-ecr-assets.DockerImageAssetProps"
+    ]
+  }
 }

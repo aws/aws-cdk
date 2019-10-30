@@ -1,3 +1,4 @@
+import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -389,12 +390,98 @@ export enum LambdaEdgeEventType {
   VIEWER_RESPONSE = "viewer-response",
 }
 
+export interface ViewerCertificateOptions {
+  /**
+   * How CloudFront should serve HTTPS requests.
+   *
+   * See the notes on SSLMethod if you wish to use other SSL termination types.
+   *
+   * @default SSLMethod.SNI
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
+   */
+  readonly sslMethod?: SSLMethod;
+
+  /**
+   * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+   *
+   * CloudFront serves your objects only to browsers or devices that support at
+   * least the SSL version that you specify.
+   *
+   * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
+   */
+  readonly securityPolicy?: SecurityPolicyProtocol;
+
+  /**
+   * Domain names on the certificate (both main domain name and Subject Alternative names)
+   */
+  readonly aliases?: string[];
+}
+
+/**
+ * Viewer certificate configuration class
+ */
+export class ViewerCertificate {
+  /**
+   * Generate an AWS Certificate Manager (ACM) viewer certificate configuration
+   *
+   * @param certificate AWS Certificate Manager (ACM) certificate.
+   *                    Your certificate must be located in the us-east-1 (US East (N. Virginia)) region to be accessed by CloudFront
+   * @param options certificate configuration options
+   */
+  public static fromAcmCertificate(certificate: certificatemanager.ICertificate, options: ViewerCertificateOptions = {}) {
+    const {
+       sslMethod: sslSupportMethod = SSLMethod.SNI,
+       securityPolicy: minimumProtocolVersion,
+       aliases,
+    } = options;
+
+    return new ViewerCertificate({
+      acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion
+    }, aliases);
+  }
+
+  /**
+   * Generate an IAM viewer certificate configuration
+   *
+   * @param iamCertificateId Identifier of the IAM certificate
+   * @param options certificate configuration options
+   */
+  public static fromIamCertificate(iamCertificateId: string, options: ViewerCertificateOptions = {}) {
+    const {
+      sslMethod: sslSupportMethod = SSLMethod.SNI,
+      securityPolicy: minimumProtocolVersion,
+      aliases,
+    } = options;
+
+    return new ViewerCertificate({
+      iamCertificateId, sslSupportMethod, minimumProtocolVersion
+    }, aliases);
+  }
+
+  /**
+   * Generate a viewer certifcate configuration using
+   * the CloudFront default certificate (e.g. d111111abcdef8.cloudfront.net)
+   * and a {@link SecurityPolicyProtocol.TLS_V1} security policy.
+   *
+   * @param aliases Alternative CNAME aliases
+   *                You also must create a CNAME record with your DNS service to route queries
+   */
+  public static fromCloudFrontDefaultCertificate(...aliases: string[]) {
+    return new ViewerCertificate({ cloudFrontDefaultCertificate: true }, aliases);
+  }
+
+  private constructor(
+    public readonly props: CfnDistribution.ViewerCertificateProperty,
+    public readonly aliases: string[] = []) { }
+}
+
 export interface CloudFrontWebDistributionProps {
 
   /**
    * AliasConfiguration is used to configured CloudFront to respond to requests on custom domain names.
    *
    * @default - None.
+   * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
    */
   readonly aliasConfiguration?: AliasConfiguration;
 
@@ -472,6 +559,16 @@ export interface CloudFrontWebDistributionProps {
    */
   readonly webACLId?: string;
 
+  /**
+   * Specifies whether you want viewers to use HTTP or HTTPS to request your objects,
+   * whether you're using an alternate domain name with HTTPS, and if so,
+   * if you're using AWS Certificate Manager (ACM) or a third-party certificate authority.
+   *
+   * @default ViewerCertificate.fromCloudFrontDefaultCertificate()
+   *
+   * @see https://aws.amazon.com/premiumsupport/knowledge-center/custom-ssl-certificate-cloudfront/
+   */
+  readonly viewerCertificate?: ViewerCertificate;
 }
 
 /**
@@ -542,12 +639,12 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
   /**
    * Maps for which SecurityPolicyProtocol are available to which SSLMethods
    */
-  private readonly VALID_SSL_PROTOCOLS: { [key: string]: string[] } = {
-    "sni-only": [
+  private readonly VALID_SSL_PROTOCOLS: { [method in SSLMethod]: string[] } = {
+    [SSLMethod.SNI]: [
       SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
       SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018
     ],
-    "vip": [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
+    [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
 
   constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
@@ -651,27 +748,31 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
     distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors.length > 0 ? otherBehaviors : undefined };
 
+    if (props.aliasConfiguration && props.viewerCertificate) {
+      throw new Error([
+        'You cannot set both aliasConfiguration and viewerCertificate properties.',
+        'Please only use viewerCertificate, as aliasConfiguration is deprecated.'
+      ].join(' '));
+    }
+
+    let _viewerCertificate = props.viewerCertificate;
     if (props.aliasConfiguration) {
-      const minimumProtocolVersion = props.aliasConfiguration.securityPolicy;
-      const sslSupportMethod = props.aliasConfiguration.sslMethod || SSLMethod.SNI;
-      const acmCertificateArn = props.aliasConfiguration.acmCertRef;
+      const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
 
-      distributionConfig = {
-        ...distributionConfig,
-        aliases: props.aliasConfiguration.names,
-        viewerCertificate: {
-          acmCertificateArn,
-          sslSupportMethod,
-          minimumProtocolVersion
-        }
-      };
+      _viewerCertificate = ViewerCertificate.fromAcmCertificate(
+        certificatemanager.Certificate.fromCertificateArn(scope, 'AliasConfigurationCert', acmCertRef),
+        { securityPolicy, sslMethod, aliases }
+      );
+    }
 
-      if (minimumProtocolVersion !== undefined) {
-        const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod.toString()];
+    if (_viewerCertificate) {
+      const {props: viewerCertificate, aliases} = _viewerCertificate;
+      Object.assign(distributionConfig, {aliases, viewerCertificate});
 
-        if (validProtocols === undefined) {
-          throw new Error(`Invalid sslMethod. ${sslSupportMethod.toString()} is not fully implemented yet.`);
-        }
+      const {minimumProtocolVersion, sslSupportMethod} = viewerCertificate;
+
+      if (minimumProtocolVersion != null && sslSupportMethod != null) {
+        const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
           // tslint:disable-next-line:max-line-length
