@@ -42,6 +42,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The minimum value is 1
    *
    * @default 1
    */
@@ -196,8 +197,6 @@ export interface NetworkLoadBalancedTaskImageOptions {
 export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
-   *
-   * The minimum value is 1
    */
   public readonly desiredCount: number;
 
