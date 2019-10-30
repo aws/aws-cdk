@@ -326,7 +326,6 @@ If you already have a local repo and you want a fresh build, run `git clean -fdx
 Install and build:
 
 ```console
-$ ./install.sh
 $ ./build.sh
 ```
 
@@ -364,7 +363,7 @@ $ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
 In many cases, you don't really need to build the entire project. Say you want to work on the `@aws-cdk/aws-ec2` module:
 
 ```console
-$ ./install.sh
+$ ./build.sh
 $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
@@ -468,7 +467,7 @@ Cycle: @aws-cdk/aws-sns => @aws-cdk/aws-lambda => @aws-cdk/aws-codecommit => @aw
 To update all dependencies (without bumping major versions):
 
 1. Obtain a fresh clone from "master".
-2. Run `./install.sh`
+2. Run `./build.sh`
 3. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
 4. Submit a Pull Request.
 
