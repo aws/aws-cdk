@@ -1,5 +1,7 @@
 {
   "name": "aws-cdk",
+  "version": "1.15.0",
+  "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
   },
@@ -39,5 +41,20 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
-  "version": "1.14.0"
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "packages/@aws-cdk/*",
+      "packages/@aws-cdk/*/lambda-packages/*",
+      "tools/*"
+    ],
+    "nohoist": [
+      "**/jszip",
+      "**/jszip/**",
+      "@aws-cdk/assets/minimatch",
+      "@aws-cdk/assets/minimatch/**",
+      "@aws-cdk/cx-api/semver",
+      "@aws-cdk/cx-api/semver/**"
+    ]
+  }
 }

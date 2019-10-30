@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-autoscaling-common",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -59,24 +59,40 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.14.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
     "fast-check": "^1.18.1",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/core": "1.14.0"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.14.0",
-    "@aws-cdk/core": "1.14.0"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "awslint": {
     "exclude": [
-      "no-unused-type:@aws-cdk/aws-autoscaling-common.*"
+      "no-unused-type:@aws-cdk/aws-autoscaling-common.*",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.ArbitraryIntervals",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.IRandomGenerator.nextInt",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.IRandomGenerator.nextBoolean",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.IRandomGenerator",
+      "props-default-doc:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.change",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.Alarms",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.Alarms.lowerAlarmIntervalIndex",
+      "props-default-doc:@aws-cdk/aws-autoscaling-common.Alarms.lowerAlarmIntervalIndex",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.Alarms.upperAlarmIntervalIndex",
+      "props-default-doc:@aws-cdk/aws-autoscaling-common.Alarms.upperAlarmIntervalIndex",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.change",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.ArbitraryIntervals.absolute",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.ArbitraryIntervals.intervals",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.lower",
+      "docs-public-apis:@aws-cdk/aws-autoscaling-common.CompleteScalingInterval.upper"
     ]
   },
   "engines": {
