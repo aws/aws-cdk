@@ -2,6 +2,7 @@ import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert'
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
+import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
@@ -376,7 +377,7 @@ export = {
                     "Effect": "Allow",
                     "Resource": {
                       "Fn::GetAtt": [
-                        "MyLambdaDeadLetterQueue399EEA2D",
+                        "MyLambdaDeadLetterTopicD2E39CFA",
                         "Arn"
                       ]
                     }
@@ -392,7 +393,7 @@ export = {
               ]
             }
           },
-          "MyLambdaDeadLetterQueue399EEA2D": {
+          "MyLambdaDeadLetterTopicD2E39CFA": {
             "Type": "AWS::SQS::Queue",
             "Properties": {
               "MessageRetentionPeriod": 1209600
@@ -415,7 +416,7 @@ export = {
               "DeadLetterConfig": {
                 "TargetArn": {
                   "Fn::GetAtt": [
-                    "MyLambdaDeadLetterQueue399EEA2D",
+                    "MyLambdaDeadLetterTopicD2E39CFA",
                     "Arn"
                   ]
                 }
@@ -1457,7 +1458,484 @@ export = {
     }));
 
     test.done();
-  }
+  },
+  dlq: {
+    sqs: {
+      'default queue'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_8_10,
+          dlq: lambda.DeadLetterQueue.fromSqsQueue(),
+        });
+
+        // THEN
+        expect(stack).toMatch({
+          "Resources": {
+            "MyLambdaServiceRole4539ECB6": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sts:AssumeRole",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            },
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
+              "Type": "AWS::IAM::Policy",
+              "Properties": {
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sqs:SendMessage",
+                      "Effect": "Allow",
+                      "Resource": {
+                        "Fn::GetAtt": [
+                          "MyLambdaDeadLetterQueue399EEA2D",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "Roles": [
+                  {
+                    "Ref": "MyLambdaServiceRole4539ECB6"
+                  }
+                ]
+              }
+            },
+            "MyLambdaDeadLetterQueue399EEA2D": {
+              "Type": "AWS::SQS::Queue",
+              "Properties": {
+                "MessageRetentionPeriod": 1209600
+              }
+            },
+            "MyLambdaCCE802FB": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "ZipFile": "foo"
+                },
+                "Handler": "index.handler",
+                "Role": {
+                  "Fn::GetAtt": [
+                    "MyLambdaServiceRole4539ECB6",
+                    "Arn"
+                  ]
+                },
+                "Runtime": "nodejs8.10",
+                "DeadLetterConfig": {
+                  "TargetArn": {
+                    "Fn::GetAtt": [
+                      "MyLambdaDeadLetterQueue399EEA2D",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "DependsOn": [
+                "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "MyLambdaServiceRole4539ECB6"
+              ]
+            }
+          }
+        });
+
+        test.done();
+      },
+      'custom queue'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const queue = new sqs.Queue(stack, 'MyQueue', {
+          retentionPeriod: cdk.Duration.days(2),
+        });
+
+        // WHEN
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_8_10,
+          dlq: lambda.DeadLetterQueue.fromSqsQueue(queue),
+        });
+
+        // THEN
+        expect(stack).toMatch({
+          "Resources": {
+            "MyQueueE6CA6235": {
+              "Type": "AWS::SQS::Queue",
+              "Properties": {
+                "MessageRetentionPeriod": 172800
+              }
+            },
+            "MyLambdaServiceRole4539ECB6": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sts:AssumeRole",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            },
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
+              "Type": "AWS::IAM::Policy",
+              "Properties": {
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sqs:SendMessage",
+                      "Effect": "Allow",
+                      "Resource": {
+                        "Fn::GetAtt": [
+                          "MyQueueE6CA6235",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "Roles": [
+                  {
+                    "Ref": "MyLambdaServiceRole4539ECB6"
+                  }
+                ]
+              }
+            },
+            "MyLambdaCCE802FB": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "ZipFile": "foo"
+                },
+                "Handler": "index.handler",
+                "Role": {
+                  "Fn::GetAtt": [
+                    "MyLambdaServiceRole4539ECB6",
+                    "Arn"
+                  ]
+                },
+                "Runtime": "nodejs8.10",
+                "DeadLetterConfig": {
+                  "TargetArn": {
+                    "Fn::GetAtt": [
+                      "MyQueueE6CA6235",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "DependsOn": [
+                "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "MyLambdaServiceRole4539ECB6"
+              ]
+            }
+          }
+        });
+
+        test.done();
+      },
+    },
+    sns: {
+      'default topic'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_8_10,
+          dlq: lambda.DeadLetterQueue.fromSnsTopic(),
+        });
+
+        // THEN
+        expect(stack).toMatch({
+          "Resources": {
+            "MyLambdaServiceRole4539ECB6": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sts:AssumeRole",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            },
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
+              "Type": "AWS::IAM::Policy",
+              "Properties": {
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sns:Publish",
+                      "Effect": "Allow",
+                      "Resource": {
+                        "Ref": "MyLambdaDeadLetterTopicD2E39CFA"
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "Roles": [
+                  {
+                    "Ref": "MyLambdaServiceRole4539ECB6"
+                  }
+                ]
+              }
+            },
+            "MyLambdaDeadLetterTopicD2E39CFA": {
+              "Type": "AWS::SNS::Topic"
+            },
+            "MyLambdaCCE802FB": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "ZipFile": "foo"
+                },
+                "Handler": "index.handler",
+                "Role": {
+                  "Fn::GetAtt": [
+                    "MyLambdaServiceRole4539ECB6",
+                    "Arn"
+                  ]
+                },
+                "Runtime": "nodejs8.10",
+                "DeadLetterConfig": {
+                  "TargetArn": {
+                    "Ref": "MyLambdaDeadLetterTopicD2E39CFA"
+                  }
+                }
+              },
+              "DependsOn": [
+                "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "MyLambdaServiceRole4539ECB6"
+              ]
+            }
+          }
+        });
+
+        test.done();
+      },
+      'custom topic'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const topic = new sns.Topic(stack, 'MyTopic', {
+          displayName: 'My Topic'
+        });
+
+        // WHEN
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_8_10,
+          dlq: lambda.DeadLetterQueue.fromSnsTopic(topic),
+        });
+
+        // THEN
+        expect(stack).toMatch({
+          "Resources": {
+            "MyTopic86869434": {
+              "Type": "AWS::SNS::Topic",
+              "Properties": {
+                "DisplayName": "My Topic"
+              }
+            },
+            "MyLambdaServiceRole4539ECB6": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sts:AssumeRole",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            },
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
+              "Type": "AWS::IAM::Policy",
+              "Properties": {
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sns:Publish",
+                      "Effect": "Allow",
+                      "Resource": {
+                        "Ref": "MyTopic86869434"
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "Roles": [
+                  {
+                    "Ref": "MyLambdaServiceRole4539ECB6"
+                  }
+                ]
+              }
+            },
+            "MyLambdaCCE802FB": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "ZipFile": "foo"
+                },
+                "Handler": "index.handler",
+                "Role": {
+                  "Fn::GetAtt": [
+                    "MyLambdaServiceRole4539ECB6",
+                    "Arn"
+                  ]
+                },
+                "Runtime": "nodejs8.10",
+                "DeadLetterConfig": {
+                  "TargetArn": {
+                    "Ref": "MyTopic86869434"
+                  }
+                }
+              },
+              "DependsOn": [
+                "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                "MyLambdaServiceRole4539ECB6"
+              ]
+            }
+          }
+        });
+
+        test.done();
+      },
+    },
+    errors: {
+      'throws if both dlq and deadLetterQueue'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // THEN
+        test.throws(() =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_8_10,
+            dlq: lambda.DeadLetterQueue.fromSqsQueue(),
+            deadLetterQueue: new sqs.Queue(stack, 'queue'),
+          })
+          , /dlq cannot be used with deadLetterQueue or deadLetterQueueEnabled. Please only use dlq/);
+
+        test.done();
+      },
+      'throws if both dlq and deadLetterQueueEnabled'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // THEN
+        test.throws(() =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_8_10,
+            dlq: lambda.DeadLetterQueue.fromSqsQueue(),
+            deadLetterQueueEnabled: true,
+          })
+          , /dlq cannot be used with deadLetterQueue or deadLetterQueueEnabled. Please only use dlq/);
+
+        test.done();
+      },
+    },
+  },
 };
 
 function newTestLambda(scope: cdk.Construct) {

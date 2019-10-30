@@ -100,8 +100,13 @@ See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for m
 
 ### Lambda with DLQ
 
-A dead-letter queue can be automatically created for a Lambda function by
-setting the `deadLetterQueueEnabled: true` configuration.
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/dlq.html)
+to learn more about AWS Lambdas and DLQs.
+
+#### SQS
+
+An SQS dead-letter queue can be automatically created for a Lambda function by
+using the `DeadLetterQueue.fromSqsQueue()` method.
 
 ```ts
 import lambda = require('@aws-cdk/aws-lambda');
@@ -110,7 +115,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-    deadLetterQueueEnabled: true
+    dlq: lambda.DeadLetterQueue.fromSqsQueue(),
 });
 ```
 
@@ -120,17 +125,44 @@ It is also possible to provide a dead-letter queue instead of getting a new queu
 import lambda = require('@aws-cdk/aws-lambda');
 import sqs = require('@aws-cdk/aws-sqs');
 
-const dlq = new sqs.Queue(this, 'DLQ');
+const queue = new sqs.Queue(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-    deadLetterQueue: dlq
+    dlq: lambda.DeadLetterQueue.fromSqsQueue(queue),
 });
 ```
 
-See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/dlq.html)
-to learn more about AWS Lambdas and DLQs.
+#### SNS
+
+It is also possible create SNS notifications from dead Lambda events:
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NODEJS_8_10,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    dlq: lambda.DeadLetterQueue.fromSnsTopic(),
+});
+```
+
+Likewise, you can also provide an existing topic instead of creating one for your Lmabda function:
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+import sns = require('@aws-cdk/aws-sns');
+
+const topic = new sns.Topic(this, 'DeadLetterTopic');
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NODEJS_8_10,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    dlq: lambda.DeadLetterQueue.fromSnsTopic(topic),
+});
+```
 
 ### Lambda with X-Ray Tracing
 

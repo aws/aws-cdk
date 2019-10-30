@@ -2,6 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
+import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
 import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
@@ -31,6 +32,110 @@ export enum Tracing {
    * Lambda will not trace any request.
    */
   DISABLED = "Disabled"
+}
+
+/**
+ * Describes the type of resource to use as a Lambda dead-letter queue
+ *
+ * @internal
+ */
+export enum DeadLetterQueueType {
+  /**
+   * SQS DLQ
+   */
+  SQS = 'SQS',
+  /**
+   * SNS DLQ
+   */
+  SNS = 'SNS',
+}
+
+/**
+ * Resource to be used as a dead-letter queue
+ *
+ * @internal
+ */
+export interface DeadLetterQueueOptions {
+  /**
+   * SQS queue
+   *
+   * @default - no queue
+   */
+  readonly queue?: sqs.IQueue;
+  /**
+   * SNS topic
+   *
+   * @default - no topic
+   */
+  readonly topic?: sns.ITopic;
+}
+
+/**
+ * Dead-letter queue settings
+ */
+export class DeadLetterQueue {
+  /**
+   * Use a SQS queue as dead-letter queue
+   *
+   * @param queue The SQS queue to associate.
+   *              If not provided, a new SQS queue will be created with a 14 day retention period
+   */
+  public static fromSqsQueue(queue?: sqs.IQueue): DeadLetterQueue {
+    return new DeadLetterQueue(DeadLetterQueueType.SQS, { queue });
+  }
+
+  /**
+   * Use a SNS topic as dead-letter queue
+   *
+   * @param topic The SNS topic to associate.
+   *              If not provided, a new SNS topic will be created
+   */
+  public static fromSnsTopic(topic?: sns.ITopic): DeadLetterQueue {
+    return new DeadLetterQueue(DeadLetterQueueType.SNS, { topic });
+  }
+
+  /**
+   * Retrieve the ARN identifying the dead-letter queue resource
+   *
+   * @returns ARN of the DLQ
+   */
+  public get targetArn(): string {
+    if (!this.queue && !this.topic) {
+      throw new Error('never - bind(function) method should have been invoked first');
+    }
+
+    return this.queue ? this.queue.queueArn : this.topic!.topicArn;
+  }
+
+  private queue?: sqs.IQueue;
+  private topic?: sns.ITopic;
+  private constructor(public readonly type: DeadLetterQueueType, options: DeadLetterQueueOptions = {}) {
+    this.queue = options.queue;
+    this.topic = options.topic;
+  }
+
+  /**
+   * Creates the appropriate IAM policy required for the Lambda function to send its dead events.
+   *
+   * This method also generates the default resource (queue or topic) if it was not provided on construction
+   *
+   * @param fn The Lambda function to bind
+   */
+  public bind(fn: Function) {
+    switch (this.type) {
+      case DeadLetterQueueType.SQS:
+        this.queue = this.queue || new sqs.Queue(fn, 'DeadLetterQueue', { retentionPeriod: Duration.days(14) });
+        break;
+      case DeadLetterQueueType.SNS:
+        this.topic = this.topic || new sns.Topic(fn, 'DeadLetterTopic', {});
+        break;
+    }
+
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [this.queue ? 'sqs:SendMessage' : 'sns:Publish'],
+      resources: [this.targetArn]
+    }));
+  }
 }
 
 export interface FunctionProps {
@@ -165,10 +270,19 @@ export interface FunctionProps {
   readonly allowAllOutbound?: boolean;
 
   /**
+   * Dead-letter queue behavior
+   *
+   * @default - no dead-letter queue will be used or created
+   */
+  readonly dlq?: DeadLetterQueue;
+
+  /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
    * an SQS queue with default options will be defined for your Function.
    *
    * @default - false unless `deadLetterQueue` is set, which implies DLQ is enabled.
+   *
+   * @deprecated see {@link FunctionProps.dlq} with {@link DeadLetterQueue.fromSqsQueue}
    */
   readonly deadLetterQueueEnabled?: boolean;
 
@@ -176,6 +290,8 @@ export interface FunctionProps {
    * The SQS queue to use if DLQ is enabled.
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
+   *
+   * @deprecated see {@link FunctionProps.dlq} with {@link DeadLetterQueue.fromSqsQueue}
    */
   readonly deadLetterQueue?: sqs.IQueue;
 
@@ -598,25 +714,26 @@ export class Function extends FunctionBase {
   }
 
   private buildDeadLetterConfig(props: FunctionProps) {
-    if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
-      throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
+    if (props.dlq && (props.deadLetterQueue || props.deadLetterQueueEnabled)) {
+      throw Error('dlq cannot be used with deadLetterQueue or deadLetterQueueEnabled. Please only use dlq');
     }
 
-    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
+    let dlq = props.dlq;
+    if (props.deadLetterQueue || props.deadLetterQueueEnabled) {
+      if (props.deadLetterQueueEnabled === false) {
+        throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
+      }
+
+      dlq = DeadLetterQueue.fromSqsQueue(props.deadLetterQueue);
+    }
+
+    if (!dlq) {
       return undefined;
     }
 
-    const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14)
-    });
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn]
-    }));
-
+    dlq.bind(this);
     return {
-      targetArn: deadLetterQueue.queueArn
+      targetArn: dlq.targetArn,
     };
   }
 
