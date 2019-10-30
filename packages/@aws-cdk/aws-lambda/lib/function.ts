@@ -117,6 +117,7 @@ export class DeadLetterQueue {
    *
    * @param fn The Lambda function to bind
    */
+  // tslint:disable-next-line:ban-types
   public bind(fn: Function) {
     switch (this.type) {
       case DeadLetterQueueType.SQS:
