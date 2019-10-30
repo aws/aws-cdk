@@ -42,7 +42,7 @@
     "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^8.10.56",
+    "@types/node": "^8.10.57",
     "@types/request": "^2.48.3",
     "@types/semver": "^6.2.0",
     "@types/sinon": "^7.5.0",
