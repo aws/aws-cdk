@@ -3,7 +3,7 @@ import fs = require('fs');
 import path = require('path');
 import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
-import { shouldExclude, shouldFollow } from './utils';
+import { listFilesRecursively, shouldFollow } from './utils';
 
 const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';
@@ -38,40 +38,28 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()
     ? fileOrDirectory
     : path.dirname(fileOrDirectory);
-  const exclude = options.exclude || [];
-  _processFileOrDirectory(fileOrDirectory);
 
-  return hash.digest('hex');
+  for (const assetFile of listFilesRecursively(fileOrDirectory, {...options, follow}, rootDirectory)) {
+    const relativePath = path.relative(fileOrDirectory, assetFile.absolutePath);
 
-  function _processFileOrDirectory(symbolicPath: string, realPath = symbolicPath) {
-    if (shouldExclude(exclude, symbolicPath)) {
-      return;
-    }
-
-    const stat = fs.lstatSync(realPath);
-    const relativePath = path.relative(fileOrDirectory, symbolicPath);
-
-    if (stat.isSymbolicLink()) {
-      const linkTarget = fs.readlinkSync(realPath);
-      const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
-      if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
-        _processFileOrDirectory(symbolicPath, resolvedLinkTarget);
+    if (assetFile.isSymbolicLink) {
+      const resolvedLinkTarget = path.resolve(path.dirname(assetFile.absolutePath), assetFile.symlinkTarget);
+      if (!shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
+        _hashField(hash, `link:${relativePath}`, assetFile.symlinkTarget);
       } else {
-        _hashField(hash, `link:${relativePath}`, linkTarget);
+        _hashField(hash, `file:${relativePath}`, _contentFingerprint(assetFile.absolutePath, assetFile.size));
       }
-    } else if (stat.isFile()) {
-      _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, stat));
-    } else if (stat.isDirectory()) {
-      for (const item of fs.readdirSync(realPath).sort()) {
-        _processFileOrDirectory(path.join(symbolicPath, item), path.join(realPath, item));
-      }
-    } else {
-      throw new Error(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
+    } else if (assetFile.isFile) {
+      _hashField(hash, `file:${relativePath}`, _contentFingerprint(assetFile.absolutePath, assetFile.size));
+    } else if (!assetFile.isDirectory) {
+      throw new Error(`Unable to hash ${assetFile.absolutePath}: it is neither a file nor a directory`);
     }
   }
+
+  return hash.digest('hex');
 }
 
-function _contentFingerprint(file: string, stat: fs.Stats): string {
+function _contentFingerprint(file: string, size: number): string {
   const hash = crypto.createHash('sha256');
   const buffer = Buffer.alloc(BUFFER_SIZE);
   // tslint:disable-next-line: no-bitwise
@@ -85,7 +73,7 @@ function _contentFingerprint(file: string, stat: fs.Stats): string {
   } finally {
     fs.closeSync(fd);
   }
-  return `${stat.size}:${hash.digest('hex')}`;
+  return `${size}:${hash.digest('hex')}`;
 }
 
 function _hashField(hash: crypto.Hash, header: string, value: string | Buffer | DataView) {
