@@ -305,7 +305,7 @@ test('a notification destination can specify a set of dependencies that must be 
 });
 
 describe('CloudWatch Events', () => {
-  test('onPutItem contains the Bucket ARN itself when path is undefined', () => {
+  test('onCloudTrailPutObject contains the Bucket ARN itself when path is undefined', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
       bucketName: 'MyBucket',
@@ -347,7 +347,7 @@ describe('CloudWatch Events', () => {
     });
   });
 
-  test("onPutItem contains the path when it's provided", () => {
+  test("onCloudTrailPutObject contains the path when it's provided", () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
       bucketName: 'MyBucket',
@@ -387,6 +387,92 @@ describe('CloudWatch Events', () => {
         },
       },
       "State": "ENABLED",
+    });
+  });
+
+  test("onCloudTrailWriteObject matches on events CompleteMultipartUpload, CopyObject, and PutObject", () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
+      bucketName: 'MyBucket',
+    });
+    bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
+      target: {
+        bind: () => ({ arn: 'ARN', id: '' })
+      }
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+      "EventPattern": {
+        "source": [
+          "aws.s3",
+        ],
+        "detail": {
+          "eventName": [
+            "CompleteMultipartUpload",
+            "CopyObject",
+            "PutObject",
+          ],
+        },
+      },
+      "State": "ENABLED",
+    });
+  });
+
+  test('onCloudTrailWriteObject matches on the requestParameter bucketName when the path is not provided', () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
+      bucketName: 'MyBucket',
+    });
+    bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
+      target: {
+        bind: () => ({ arn: 'ARN', id: '' })
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+      "EventPattern": {
+        "source": [
+          "aws.s3",
+        ],
+        "detail": {
+          "requestParameters": {
+            "bucketName": [
+              bucket.bucketName,
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test("onCloudTrailWriteObject matches on the requestParameters bucketName and key when the path is provided", () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
+      bucketName: 'MyBucket',
+    });
+    bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
+      target: {
+        bind: () => ({ arn: 'ARN', id: '' })
+      },
+      paths: ['my/path.zip']
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+      "EventPattern": {
+        "source": [
+          "aws.s3",
+        ],
+        "detail": {
+          "requestParameters": {
+            "bucketName": [
+              bucket.bucketName,
+            ],
+            "key": [
+              "my/path.zip",
+            ],
+          },
+        },
+      },
     });
   });
 });
