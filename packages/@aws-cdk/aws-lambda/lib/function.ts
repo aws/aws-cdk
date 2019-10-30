@@ -36,8 +36,6 @@ export enum Tracing {
 
 /**
  * Describes the type of resource to use as a Lambda dead-letter queue
- *
- * @internal
  */
 export enum DeadLetterQueueType {
   /**
@@ -52,8 +50,6 @@ export enum DeadLetterQueueType {
 
 /**
  * Resource to be used as a dead-letter queue
- *
- * @internal
  */
 export interface DeadLetterQueueOptions {
   /**
