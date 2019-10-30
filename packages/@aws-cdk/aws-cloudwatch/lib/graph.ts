@@ -320,13 +320,7 @@ function metricJson(metric: IMetric, yAxis: string): any[] {
   }
 
   // Options
-  ret.push({
-    yAxis,
-    label: config.label,
-    color: config.color,
-    period: config.period,
-    stat: config.statistic,
-  });
+  ret.push({ yAxis, ...config.renderingProperties });
 
   return ret;
 }

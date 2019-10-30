@@ -22,6 +22,80 @@ export interface VpcContextQuery {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVpcs.html
    */
   readonly filter: {[key: string]: string};
+
+  /**
+   * Whether to populate the subnetGroups field of the {@link VpcContextResponse},
+   * which contains potentially asymmetric subnet groups.
+   *
+   * @default false
+   */
+  readonly returnAsymmetricSubnets?: boolean;
+
+  /**
+   * Optional tag for subnet group name.
+   * If not provided, we'll look at the aws-cdk:subnet-name tag.
+   * If the subnet does not have the specified tag,
+   * we'll use its type as the name.
+   *
+   * @default 'aws-cdk:subnet-name'
+   */
+  readonly subnetGroupNameTag?: string;
+}
+
+/**
+ * The type of subnet group.
+ * Same as SubnetType in the @aws-cdk/aws-ec2 package,
+ * but we can't use that because of cyclical dependencies.
+ */
+export enum VpcSubnetGroupType {
+  /** Public subnet group type. */
+  PUBLIC = 'Public',
+
+  /** Private subnet group type. */
+  PRIVATE = 'Private',
+
+  /** Isolated subnet group type. */
+  ISOLATED = 'Isolated',
+}
+
+/**
+ * A subnet representation that the VPC provider uses.
+ */
+export interface VpcSubnet {
+  /** The identifier of the subnet. */
+  readonly subnetId: string;
+
+  /**
+   * The code of the availability zone this subnet is in
+   * (for example, 'us-west-2a').
+   */
+  readonly availabilityZone: string;
+
+  /** The identifier of the route table for this subnet. */
+  readonly routeTableId: string;
+}
+
+/**
+ * A group of subnets returned by the VPC provider.
+ * The included subnets do NOT have to be symmetric!
+ */
+export interface VpcSubnetGroup {
+  /**
+   * The name of the subnet group,
+   * determined by looking at the tags of of the subnets
+   * that belong to it.
+   */
+  readonly name: string;
+
+  /** The type of the subnet group. */
+  readonly type: VpcSubnetGroupType;
+
+  /**
+   * The subnets that are part of this group.
+   * There is no condition that the subnets have to be symmetric
+   * in the group.
+   */
+  readonly subnets: VpcSubnet[];
 }
 
 /**
@@ -106,4 +180,15 @@ export interface VpcContextResponse {
    * The VPN gateway ID
    */
   readonly vpnGatewayId?: string;
+
+  /**
+   * The subnet groups discovered for the given VPC.
+   * Unlike the above properties, this will include asymmetric subnets,
+   * if the VPC has any.
+   * This property will only be populated if {@link VpcContextQuery.returnAsymmetricSubnets}
+   * is true.
+   *
+   * @default - no subnet groups will be returned unless {@link VpcContextQuery.returnAsymmetricSubnets} is true
+   */
+  readonly subnetGroups?: VpcSubnetGroup[];
 }

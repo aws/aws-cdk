@@ -112,6 +112,33 @@ export = {
     test.done();
   },
 
+  'Keys with undefined values are not serialized'(test: Test) {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+
+    // WHEN
+    const result = ContextProvider.getKey(stack, {
+      provider: 'provider',
+      props: {
+        p1: 42,
+        p2: undefined,
+      },
+    });
+
+    // THEN
+    test.deepEqual(result, {
+      key: 'provider:account=12345:p1=42:region=us-east-1',
+      props: {
+        account: '12345',
+        region: 'us-east-1',
+        p1: 42,
+        p2: undefined,
+      },
+    });
+
+    test.done();
+  },
+
   'context provider errors are attached to tree'(test: Test) {
     const contextProps = { provider: 'bloop' };
     const contextKey = 'bloop:account=12345:region=us-east-1';  // Depends on the mangling algo
