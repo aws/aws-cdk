@@ -414,6 +414,11 @@ export class ConstructNode {
     }
   }
 
+  /**
+   * Delete the child with the given name, if present.
+   *
+   * It is not an error if a child with the given name does not exist.
+   */
   public deleteChild(childName: string) {
     delete this._children[childName];
   }
