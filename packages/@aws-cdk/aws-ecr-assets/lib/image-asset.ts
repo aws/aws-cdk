@@ -99,6 +99,10 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     this.directory = staging.stagedPath;
     this.sourceHash = staging.sourceHash;
 
+    if (props.target) {
+      this.sourceHash += props.target;
+    }
+
     const imageNameParameter = new cdk.CfnParameter(this, 'ImageName', {
       type: 'String',
       description: `ECR repository name and tag asset "${this.node.path}"`,

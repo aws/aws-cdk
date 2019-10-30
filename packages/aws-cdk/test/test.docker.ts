@@ -77,7 +77,7 @@ export = {
       imageNameParameter: 'MyParameter',
       packaging: 'container-image',
       path: '/foo',
-      sourceHash: '1234567890abcdef',
+      sourceHash: '1234567890abcdefa-target',
       repositoryName: 'some-name',
       buildArgs: {
         a: 'b',
