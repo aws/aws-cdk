@@ -219,6 +219,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * The minimum value is 1
    */
   public readonly desiredCount: number;
 
@@ -258,7 +260,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    this.desiredCount = props.desiredCount != null ? props.desiredCount : 1;
+    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+      throw new Error('You must specify a desiredCount greater than 0');
+    }
+    this.desiredCount = props.desiredCount || 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
 
