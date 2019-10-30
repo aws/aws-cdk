@@ -72,9 +72,19 @@
     "pkglint": "1.17.1"
   },
   "dependencies": {
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/aws-kinesisfirehose": "1.17.1",
+    "@aws-cdk/aws-lambda": "1.17.1",
+    "@aws-cdk/aws-sns": "1.17.1",
+    "@aws-cdk/aws-sqs": "1.17.1",
     "@aws-cdk/core": "1.17.1"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/aws-kinesisfirehose": "1.17.1",
+    "@aws-cdk/aws-lambda": "1.17.1",
+    "@aws-cdk/aws-sns": "1.17.1",
+    "@aws-cdk/aws-sqs": "1.17.1",
     "@aws-cdk/core": "1.17.1"
   },
   "engines": {
