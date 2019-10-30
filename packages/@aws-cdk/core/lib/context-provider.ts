@@ -137,6 +137,11 @@ function propsToArray(props: {[key: string]: any}, keyPrefix = ''): string[] {
   const ret: string[] = [];
 
   for (const key of Object.keys(props)) {
+    // skip undefined values
+    if (props[key] === undefined) {
+      continue;
+    }
+
     switch (typeof props[key]) {
       case 'object': {
         ret.push(...propsToArray(props[key], `${keyPrefix}${key}.`));
