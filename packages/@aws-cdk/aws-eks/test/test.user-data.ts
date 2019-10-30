@@ -24,7 +24,7 @@ export = {
     test.done();
   },
 
-  '--use-max-pods'(test: Test) {
+  '--use-max-pods=true'(test: Test) {
     // GIVEN
     const { asg, stack } = newFixtures();
 
@@ -35,6 +35,20 @@ export = {
 
     // THEN
     test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods');
+    test.done();
+  },
+
+  '--use-max-pods=false'(test: Test) {
+    // GIVEN
+    const { asg, stack } = newFixtures();
+
+    // WHEN
+    const userData = stack.resolve(renderUserData('my-cluster-name', asg, {
+      useMaxPods: false
+    }));
+
+    // THEN
+    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods false');
     test.done();
   },
 
