@@ -52,6 +52,8 @@ export interface EbsDeviceOptionsBase {
    * you need at least 100 GiB storage on the volume.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   *
+   * @default - none, required for {@link EbsDeviceVolumeType.IO1}
    */
   readonly iops?: number;
 
@@ -99,6 +101,8 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
 export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
   /**
    * The snapshot ID of the volume to use
+   *
+   * @default - No snapshot will be used
    */
   readonly snapshotId?: string;
 }
@@ -141,7 +145,7 @@ export class BlockDeviceVolume {
     return new this(undefined, `ephemeral${volumeIndex}`);
   }
 
-  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
+  private constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
   }
 }
 
