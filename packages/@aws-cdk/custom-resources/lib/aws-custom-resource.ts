@@ -133,7 +133,7 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration
 }
 
-export class AwsCustomResource extends cdk.Construct implements iam.IGrantable, iam.IPrincipal {
+export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly customResource: CustomResource;
