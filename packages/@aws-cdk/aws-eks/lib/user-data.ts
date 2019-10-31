@@ -12,11 +12,7 @@ export function renderUserData(clusterName: string, autoScalingGroup: autoscalin
 
   const extraArgs = new Array<string>();
 
-  if (options.useMaxPods === true) {
-    extraArgs.push(`--use-max-pods`);
-  } else if (options.useMaxPods === false) {
-    extraArgs.push(`--use-max-pods ${options.useMaxPods}`);
-  }
+  extraArgs.push(`--use-max-pods ${options.useMaxPods === undefined ? true : options.useMaxPods}`);
 
   if (options.awsApiRetryAttempts) {
     extraArgs.push(`--aws-api-retry-attempts ${options.awsApiRetryAttempts}`);
