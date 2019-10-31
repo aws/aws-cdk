@@ -1075,7 +1075,7 @@
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-defaults --resource ClusterDefaultCapacityASG00CC9431 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-defaults --resource ClusterDefaultCapacityASG00CC9431 --region test-region"
               ]
             ]
           }

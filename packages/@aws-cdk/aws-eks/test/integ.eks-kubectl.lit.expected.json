@@ -990,7 +990,7 @@
                   {
                     "Ref": "cluster227BD1CB20"
                   },
-                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
+                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
                 ]
               ]
             }

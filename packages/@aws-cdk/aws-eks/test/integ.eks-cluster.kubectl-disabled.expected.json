@@ -860,7 +860,7 @@
                 {
                   "Ref": "EKSClusterBA6ECF8F"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-kubectl-disabled --resource EKSClusterNodesASGC2597E34 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-kubectl-disabled --resource EKSClusterNodesASGC2597E34 --region test-region"
               ]
             ]
           }
