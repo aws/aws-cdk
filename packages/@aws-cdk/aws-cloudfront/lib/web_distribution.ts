@@ -760,7 +760,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
-        certificatemanager.Certificate.fromCertificateArn(scope, 'AliasConfigurationCert', acmCertRef),
+        certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
         { securityPolicy, sslMethod, aliases }
       );
     }
