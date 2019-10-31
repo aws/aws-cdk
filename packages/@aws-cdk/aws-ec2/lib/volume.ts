@@ -145,6 +145,10 @@ export class BlockDeviceVolume {
     return new this(undefined, `ephemeral${volumeIndex}`);
   }
 
+  /**
+   * @param ebsDevice EBS device info
+   * @param virtualName Virtual device name
+   */
   private constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
   }
 }
