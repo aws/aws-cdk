@@ -190,5 +190,88 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'async proxy'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'my-api');
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    // WHEN
+    const integ = new apigateway.LambdaIntegration(handler, { asyncProxy: true });
+    api.root.addMethod('POST', integ);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationHttpMethod: 'POST',
+        Type: 'AWS_PROXY',
+        Uri: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition'
+              },
+              ':apigateway:',
+              {
+                Ref: 'AWS::Region'
+              },
+              ':lambda:path/2015-03-31/functions/',
+              {
+                'Fn::GetAtt': [
+                  'AsyncProxy9d748b003bcb4d8d9ff1906c16a98164AA3C2064',
+                  'Arn'
+                ]
+              },
+              '/invocations'
+            ]
+          ]
+        }
+      }
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'handlerE1533BD5',
+                'Arn'
+              ]
+            }
+          }
+        ],
+        Version: '2012-10-17'
+      },
+    }));
+
+    test.done();
+  },
+
+  'cannot use async proxy with proxy set to false'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    // THEN
+    test.throws(() => new apigateway.LambdaIntegration(handler, {
+      asyncProxy: true,
+      proxy: false,
+    }), /Cannot use `asyncProxy` when `proxy` is set to `false`/);
+    test.done();
+  },
 };
