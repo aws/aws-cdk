@@ -89,8 +89,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     const certs = props.certificates || [];
     const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
 
-    if ([Protocol.TCP, Protocol.TLS].indexOf(proto) === -1) {
-      throw new Error(`The protocol must be either ${Protocol.TCP} or ${Protocol.TLS}. Found ${props.protocol}`);
+    if (NLB_PROTOCOLS.indexOf(proto) === -1) {
+      throw new Error(`The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${props.protocol}`);
     }
 
     if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
@@ -220,3 +220,5 @@ export interface AddNetworkTargetsProps {
    */
   readonly healthCheck?: HealthCheck;
 }
+
+const NLB_PROTOCOLS = [Protocol.TCP, Protocol.TLS, Protocol.UDP, Protocol.TCP_UDP];

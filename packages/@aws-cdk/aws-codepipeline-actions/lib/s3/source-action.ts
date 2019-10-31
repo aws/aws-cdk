@@ -74,11 +74,16 @@ export class S3SourceAction extends Action {
   constructor(props: S3SourceActionProps) {
     super({
       ...props,
+      resource: props.bucket,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'S3',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
     });
+
+    if (props.bucketKey.length === 0) {
+      throw new Error('Property bucketKey cannot be an empty string');
+    }
 
     this.props = props;
   }
@@ -86,7 +91,12 @@ export class S3SourceAction extends Action {
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     if (this.props.trigger === S3Trigger.EVENTS) {
-      this.props.bucket.onCloudTrailPutObject(stage.pipeline.node.uniqueId + 'SourceEventRule', {
+      const id = stage.pipeline.node.uniqueId + 'SourceEventRule' + this.props.bucketKey;
+      if (this.props.bucket.node.tryFindChild(id)) {
+        // this means a duplicate path for the same bucket - error out
+        throw new Error(`S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
+      }
+      this.props.bucket.onCloudTrailWriteObject(id, {
         target: new targets.CodePipeline(stage.pipeline),
         paths: [this.props.bucketKey]
       });

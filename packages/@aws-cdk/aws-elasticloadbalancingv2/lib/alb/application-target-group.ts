@@ -3,9 +3,9 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Duration, IConstruct } from '@aws-cdk/core';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupBase, TargetGroupImportProps
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps
 } from '../shared/base-target-group';
-import { ApplicationProtocol, TargetType } from '../shared/enums';
+import { ApplicationProtocol, Protocol, TargetType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
@@ -70,8 +70,17 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Import an existing target group
    */
+  public static fromTargetGroupAttributes(scope: Construct, id: string, attrs: TargetGroupAttributes): IApplicationTargetGroup {
+    return new ImportedApplicationTargetGroup(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing target group
+   *
+   * @deprecated Use `fromTargetGroupAttributes` instead
+   */
   public static import(scope: Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
-    return new ImportedApplicationTargetGroup(scope, id, props);
+    return ApplicationTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];
@@ -309,6 +318,13 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         ret.push(`At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup`);
     }
 
+    if (this.healthCheck && this.healthCheck.protocol && !ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+      ret.push([
+        `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
+        `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`
+      ].join(''));
+    }
+
     return ret;
   }
 }
@@ -345,6 +361,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    * Don't call this directly. It will be called by load balancing targets.
    */
   registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port): void;
+
+  /**
+   * Add a load balancing target to this target group
+   */
+  addTarget(...targets: IApplicationLoadBalancerTarget[]): void;
 }
 
 /**
@@ -358,6 +379,16 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
     this.node.addWarning(`Cannot register connectable on imported target group -- security groups might need to be updated manually`);
+  }
+
+  public addTarget(...targets: IApplicationLoadBalancerTarget[]) {
+    for (const target of targets) {
+      const result = target.attachToApplicationTargetGroup(this);
+
+      if (result.targetJson !== undefined) {
+        throw new Error('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.');
+      }
+    }
   }
 }
 
@@ -373,3 +404,5 @@ export interface IApplicationLoadBalancerTarget {
    */
   attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps;
 }
+
+const ALB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];

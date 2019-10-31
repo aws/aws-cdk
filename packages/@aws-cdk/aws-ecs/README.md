@@ -37,11 +37,17 @@ cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   desiredCapacity: 3,
 });
 
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+
+taskDefinition.addContainer('DefaultContainer', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 512,
+});
+
 // Instantiate an Amazon ECS Service
 const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
-  memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskDefinition,
 });
 ```
 
@@ -122,6 +128,23 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 ```
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
+
+### Spot Instances
+
+To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
+
+```ts
+// Add an AutoScalingGroup with spot instances to the existing cluster
+cluster.addCapacity('AsgSpot', {
+  maxCapacity: 2,
+  minCapacity: 2,
+  desiredCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.xlarge'),
+  spotPrice: '0.0735',
+  // Enable the Automated Spot Draining support for Amazon ECS
+  spotInstanceDraining: true,
+});
+```
 
 ## Task definitions
 
@@ -253,13 +276,22 @@ const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
-const target = listener.addTargets('ECS', {
+const targetGroup1 = listener.addTargets('ECS1', {
   port: 80,
   targets: [service]
 });
+const targetGroup2 = listener.addTargets('ECS2', {
+  port: 80,
+  targets: [service.loadBalancerTarget({
+    containerName: 'MyContainer',
+    containerPort: 8080
+  })]
+});
 ```
 
-Note that in the example above, if you have multiple containers with multiple ports, then only the first essential container along with its first added container port will be registered as target. To have more control over which container and port to register as targets:
+Note that in the example above, the default `service` only allows you to register the first essential container or the first mapped port on the container as a target and add it to a new target group. To have more control over which container and port to register as targets, you can use `service.loadBalancerTarget()` to return a load balancing target for a specific container and port.
+
+Alternatively, you can also create all load balancer targets to be registered in this service, add them to target groups, and attach target groups to listeners accordingly.
 
 ```ts
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
@@ -268,14 +300,34 @@ const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
-const target = listener.addTargets('ECS', {
-  port: 80,
-  targets: [service.loadBalancerTarget({
-    containerName: 'MyContainer',
-    containerPort: 12345
-  })]
-});
+service.registerLoadBalancerTargets(
+  {
+    containerTarget: {
+      containerName: 'web',
+      containerPort: 80,
+    },
+    targetGroupId: 'ECS',
+    listener: ecs.ListenerConfig.applicationListener(listener, {
+      protocol: elbv2.ApplicationProtocol.HTTPS
+    }),
+  },
+);
 ```
+
+### Using a Load Balancer from a different Stack
+
+If you want to put your Load Balancer and the Service it is load balancing to in
+different stacks, you may not be able to use the convenience methods
+`loadBalancer.addListener()` and `listener.addTargets()`.
+
+The reason is that these methods will create resources in the same Stack as the
+object they're called on, which may lead to cyclic references between stacks.
+Instead, you will have to create an `ApplicationListener` in the service stack,
+or an empty `TargetGroup` in the load balancer stack that you attach your
+service to.
+
+See the [ecs/cross-stack-load-balancer example](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/ecs/cross-stack-load-balancer/)
+for the alternatives.
 
 ### Include a classic load balancer
 `Services` can also be directly attached to a classic load balancer as targets:
@@ -408,7 +460,7 @@ Currently Supported Log Drivers:
 - journald
 - json-file
 - splunk
-- syslog  
+- syslog
 
 ### awslogs Log Driver
 

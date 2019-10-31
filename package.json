@@ -1,5 +1,7 @@
 {
   "name": "aws-cdk",
+  "version": "1.15.0",
+  "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
   },
@@ -8,17 +10,18 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
-    "@types/node": "^8.10.54",
+    "@types/jest": "^24.0.19",
+    "@types/node": "^8.10.56",
     "@types/nodeunit": "^0.0.30",
-    "conventional-changelog-cli": "^2.0.23",
+    "conventional-changelog-cli": "^2.0.25",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
-    "jsii-diff": "^0.17.1",
-    "jsii-pacmak": "^0.17.1",
-    "lerna": "^3.16.4",
+    "jsii-diff": "^0.20.0",
+    "jsii-pacmak": "^0.20.0",
+    "lerna": "^3.18.3",
     "nodeunit": "^0.11.3",
     "nyc": "^14.1.1",
+    "standard-version": "^7.0.0",
     "ts-jest": "^24.1.0",
     "tslint": "^5.20.0",
     "typescript": "~3.6.3"
@@ -27,9 +30,32 @@
     "type": "git",
     "url": "git://github.com/aws/aws-cdk"
   },
+  "standard-version": {
+    "releaseCommitMessageFormat": "v{{currentTag}}",
+    "scripts": {
+      "prebump": "echo $(node -pe \"require('./lerna.json').version\")",
+      "precommit": "git add ."
+    }
+  },
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "packages/@aws-cdk/*",
+      "packages/@aws-cdk/*/lambda-packages/*",
+      "tools/*"
+    ],
+    "nohoist": [
+      "**/jszip",
+      "**/jszip/**",
+      "@aws-cdk/assets/minimatch",
+      "@aws-cdk/assets/minimatch/**",
+      "@aws-cdk/cx-api/semver",
+      "@aws-cdk/cx-api/semver/**"
+    ]
   }
 }

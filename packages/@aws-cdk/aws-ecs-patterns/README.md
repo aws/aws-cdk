@@ -3,14 +3,8 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -32,12 +26,14 @@ To define an Amazon ECS service that is behind an application load balancer, ins
 const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
-  image: ecs.ContainerImage.fromRegistry('test'),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+    },
+  },
   desiredCount: 2,
-  environment: {
-    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-  }
 });
 ```
 
@@ -48,7 +44,9 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 ```
 
@@ -67,12 +65,14 @@ To define an Amazon ECS service that is behind a network load balancer, instanti
 const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
-  image: ecs.ContainerImage.fromRegistry('test'),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+    },
+  },
   desiredCount: 2,
-  environment: {
-    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-  }
 });
 ```
 
@@ -83,7 +83,9 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
 });
 ```
 
@@ -139,11 +141,13 @@ To define a task that runs periodically, instantiate an `ScheduledEc2Task`:
 
 ```ts
 // Instantiate an Amazon EC2 Task to run at a scheduled interval
-const ecsScheduledTask = new ScheduledEc2Task(this, 'ScheduledTask', {
+const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
   cluster,
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  scheduleExpression: 'rate(1 minute)',
-  environment: [{ name: 'TRIGGER', value: 'CloudWatch Events' }],
-  memoryLimitMiB: 256
+  scheduledEc2TaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 256,
+    environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+  },
+  schedule: events.Schedule.expression('rate(1 minute)')
 });
 ```

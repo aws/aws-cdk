@@ -103,7 +103,8 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         memoryLimitMiB: props.memoryLimitMiB,
         cpu: props.cpu,
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
       });
 
       // Create log driver if logging is enabled
@@ -135,6 +136,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       healthCheckGracePeriod: props.healthCheckGracePeriod,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      cloudMapOptions: props.cloudMapOptions,
     });
     this.addServiceAsTarget(this.service);
   }

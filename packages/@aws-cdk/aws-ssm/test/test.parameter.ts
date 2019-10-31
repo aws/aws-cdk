@@ -1,6 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
+import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/core');
-import { App, Stack } from '@aws-cdk/core';
+import { App, CfnParameter, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import ssm = require('../lib');
 
@@ -121,7 +123,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter',
+        ':parameter/',
         { Ref: 'Parameter9E1B4FBA' }
       ]]
     });
@@ -144,7 +146,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameterMyParamName' ] ]
+        ':parameter/MyParamName' ] ]
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -179,11 +181,161 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameterMyParamName' ] ]
+        ':parameter/MyParamName' ] ]
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
     test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName:2}}');
+    test.done();
+  },
+
+  'StringParameter.fromSecureStringParameterAttributes'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
+      parameterName: 'MyParamName',
+      version: 2
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(param.parameterArn), {
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName' ] ]
+    });
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'SecureString');
+    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm-secure:MyParamName:2}}');
+    test.done();
+  },
+
+  'StringParameter.fromSecureStringParameterAttributes with encryption key creates the correct policy for grantRead'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const key = kms.Key.fromKeyArn(stack, 'CustomKey', 'arn:aws:kms:us-east-1:123456789012:key/xyz');
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+
+    // WHEN
+    const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
+      parameterName: 'MyParamName',
+      version: 2,
+      encryptionKey: key
+    });
+    param.grantRead(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz'
+          },
+          {
+            Action: [
+              'ssm:DescribeParameters',
+              'ssm:GetParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory'
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition'
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId'
+                  },
+                  ':parameter/MyParamName'
+                ]
+              ]
+            }
+          }
+        ],
+        Version: '2012-10-17'
+      },
+    }));
+
+    test.done();
+  },
+
+  'StringParameter.fromSecureStringParameterAttributes with encryption key creates the correct policy for grantWrite'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const key = kms.Key.fromKeyArn(stack, 'CustomKey', 'arn:aws:kms:us-east-1:123456789012:key/xyz');
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+
+    // WHEN
+    const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
+      parameterName: 'MyParamName',
+      version: 2,
+      encryptionKey: key
+    });
+    param.grantWrite(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*'
+            ],
+            Effect: 'Allow',
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz'
+          },
+          {
+            Action: 'ssm:PutParameter',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition'
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId'
+                  },
+                  ':parameter/MyParamName'
+                ]
+              ]
+            }
+          }
+        ],
+        Version: '2012-10-17'
+      },
+    }));
+
     test.done();
   },
 
@@ -203,7 +355,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameterMyParamName' ] ]
+        ':parameter/MyParamName' ] ]
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'StringList');
@@ -293,5 +445,43 @@ export = {
 
       test.done();
     },
+  },
+
+  'rendering of parameter arns'(test: Test) {
+    const stack = new Stack();
+    const param = new CfnParameter(stack, 'param');
+    const expectedA = { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam' ] ] };
+    const expectedB = { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' } ] ] };
+    let i = 0;
+
+    // WHEN
+    const case1 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, 'bam');
+    const case2 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, '/bam');
+    const case3 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, param.valueAsString);
+    const case4 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam' });
+    const case5 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam' });
+    const case6 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString });
+    const case7 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam', version: 10 });
+    const case8 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam', version: 10 });
+    const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 10 });
+    const case10 = new ssm.StringParameter(stack, `p${i++}`, { stringValue: 'value' });
+
+    // THEN
+    test.deepEqual(stack.resolve(case1.parameterArn), expectedA);
+    test.deepEqual(stack.resolve(case2.parameterArn), expectedA);
+    test.deepEqual(stack.resolve(case3.parameterArn), expectedB);
+    test.deepEqual(stack.resolve(case4.parameterArn), expectedA);
+    test.deepEqual(stack.resolve(case5.parameterArn), expectedA);
+    test.deepEqual(stack.resolve(case6.parameterArn), expectedB);
+    test.deepEqual(stack.resolve(case7.parameterArn), expectedA);
+    test.deepEqual(stack.resolve(case8.parameterArn), expectedA);
+    test.deepEqual(stack.resolve(case9.parameterArn), expectedB);
+    test.deepEqual(stack.resolve(case10.parameterArn), {
+      'Fn::Join': [ '', [
+        'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p97A508212' }
+      ]
+    ] });
+
+    test.done();
   }
 };

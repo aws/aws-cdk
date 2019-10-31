@@ -1,16 +1,16 @@
 {
   "Parameters": {
-    "SampleAssetS3BucketE6B2908E": {
+    "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-asset-file-test/SampleAsset\""
+      "Description": "S3 bucket for asset \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
     },
-    "SampleAssetS3VersionKey3E106D34": {
+    "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-asset-file-test/SampleAsset\""
+      "Description": "S3 key for asset version \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
     },
-    "SampleAssetArtifactHashE80944C9": {
+    "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-cdk-asset-file-test/SampleAsset\""
+      "Description": "Artifact hash for asset \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
     }
   },
   "Resources": {
@@ -40,7 +40,7 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "SampleAssetS3BucketE6B2908E"
+                        "Ref": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A"
                       }
                     ]
                   ]
@@ -55,23 +55,9 @@
                       },
                       ":s3:::",
                       {
-                        "Ref": "SampleAssetS3BucketE6B2908E"
+                        "Ref": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A"
                       },
-                      "/",
-                      {
-                        "Fn::Select": [
-                          0,
-                          {
-                            "Fn::Split": [
-                              "||",
-                              {
-                                "Ref": "SampleAssetS3VersionKey3E106D34"
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      "*"
+                      "/*"
                     ]
                   ]
                 }

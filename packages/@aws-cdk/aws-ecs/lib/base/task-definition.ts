@@ -258,7 +258,9 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
-
+    if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
+      throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
+    }
     if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
@@ -283,7 +285,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
-      networkMode: this.networkMode,
+      networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.anyValue({ produce: () =>
         !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
       }, { omitEmptyArray: true }),
@@ -335,7 +337,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
     }
-    if (this.networkMode === NetworkMode.BRIDGE) {
+    if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
     return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
@@ -437,6 +439,10 @@ export class TaskDefinition extends TaskDefinitionBase {
   private findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
   }
+
+  private renderNetworkMode(networkMode: NetworkMode): string | undefined {
+    return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
+  }
 }
 
 /**
@@ -470,6 +476,14 @@ export enum NetworkMode {
    * single container instance when port mappings are used.
    */
   HOST = 'host',
+
+  /**
+   * The task utilizes NAT network mode required by Windows containers.
+   *
+   * This is the only supported network mode for Windows containers. For more information, see
+   * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
+   */
+  NAT = 'nat'
 }
 
 /**

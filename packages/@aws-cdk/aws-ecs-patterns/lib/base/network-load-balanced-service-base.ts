@@ -1,5 +1,5 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
@@ -100,6 +100,13 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default false
    */
   readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The options for configuring an Amazon ECS service to use service discovery.
+   *
+   * @default - AWS Cloud Map service discovery is not enabled.
+   */
+  readonly cloudMapOptions?: CloudMapOptions;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
@@ -174,6 +181,13 @@ export interface NetworkLoadBalancedTaskImageOptions {
    * @default 80
    */
   readonly containerPort?: number;
+
+  /**
+   * The name of a family that this task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
 }
 
 /**

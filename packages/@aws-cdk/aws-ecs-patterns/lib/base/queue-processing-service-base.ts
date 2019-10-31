@@ -9,6 +9,13 @@ import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
  */
 export interface QueueProcessingServiceBaseProps {
   /**
+   * The name of the service.
+   *
+   * @default - CloudFormation-generated name.
+   */
+  readonly serviceName?: string;
+
+  /**
    * The name of the cluster that hosts the service.
    *
    * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
@@ -118,6 +125,13 @@ export interface QueueProcessingServiceBaseProps {
    * @default false
    */
   readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The name of a family that the task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
 }
 
 /**

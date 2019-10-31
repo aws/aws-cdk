@@ -597,7 +597,7 @@ export = {
       test.done();
     },
 
-    'generates an event bus target in the source rule, and a separate rule with an identical target in the target stack'(test: Test) {
+    'generates the correct rules in the source and target stacks when eventPattern is passed in the constructor'(test: Test) {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
@@ -684,6 +684,51 @@ export = {
         "Action": "events:PutEvents",
         "StatementId": "MySid",
         "Principal": sourceAccount,
+      }));
+
+      test.done();
+    },
+
+    'generates the correct rule in the target stack when addEventPattern in the source rule is used'(test: Test) {
+      const app = new cdk.App();
+
+      const sourceAccount = '123456789012';
+      const sourceStack = new cdk.Stack(app, 'SourceStack', {
+        env: {
+          account: sourceAccount,
+          region: 'us-west-2',
+        },
+      });
+      const rule = new Rule(sourceStack, 'Rule');
+
+      const targetAccount = '234567890123';
+      const targetStack = new cdk.Stack(app, 'TargetStack', {
+        env: {
+          account: targetAccount,
+          region: 'us-west-2',
+        },
+      });
+      const resource = new cdk.Construct(targetStack, 'Resource1');
+
+      rule.addTarget(new SomeTarget('T', resource));
+
+      rule.addEventPattern({
+        source: ['some-event'],
+      });
+
+      expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "some-event",
+          ],
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Id": "T",
+            "Arn": "ARN1",
+          },
+        ],
       }));
 
       test.done();

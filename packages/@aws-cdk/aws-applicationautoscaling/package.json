@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-applicationautoscaling",
-  "version": "1.11.0",
+  "version": "1.15.0",
   "description": "The CDK Construct Library for AWS::ApplicationAutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,31 +63,53 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.11.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "fast-check": "^1.17.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "fast-check": "^1.18.1",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-common": "^1.11.0",
-    "@aws-cdk/aws-cloudwatch": "^1.11.0",
-    "@aws-cdk/aws-iam": "^1.11.0",
-    "@aws-cdk/core": "^1.11.0"
+    "@aws-cdk/aws-autoscaling-common": "1.15.0",
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling-common": "^1.11.0",
-    "@aws-cdk/aws-cloudwatch": "^1.11.0",
-    "@aws-cdk/aws-iam": "^1.11.0",
-    "@aws-cdk/core": "^1.11.0"
+    "@aws-cdk/aws-autoscaling-common": "1.15.0",
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-applicationautoscaling.ScalableTargetProps"
+      "props-physical-name:@aws-cdk/aws-applicationautoscaling.ScalableTargetProps",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicyProps.scalingTarget",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.ScalableTarget.fromScalableTargetId",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.StepScalingPolicy.lowerAction",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.StepScalingPolicy.lowerAlarm",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.StepScalingPolicy.upperAction",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.StepScalingPolicy.upperAlarm",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.BasicStepScalingPolicyProps",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.IScalableTarget",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.IScalableTarget.scalableTargetId",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.StepScalingPolicyProps",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_CPU_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYNAMODB_READ_CAPACITY_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.RDS_READER_AVERAGE_CPU_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.RDS_READER_AVERAGE_DATABASE_CONNECTIONS",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE"
     ]
   },
   "stability": "stable"

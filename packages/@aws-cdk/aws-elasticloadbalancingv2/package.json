@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticloadbalancingv2",
-  "version": "1.11.0",
+  "version": "1.15.0",
   "description": "The CDK Construct Library for AWS::ElasticLoadBalancingV2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,30 +63,30 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.11.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "^1.11.0",
-    "@aws-cdk/aws-cloudwatch": "^1.11.0",
-    "@aws-cdk/aws-ec2": "^1.11.0",
-    "@aws-cdk/aws-iam": "^1.11.0",
-    "@aws-cdk/aws-lambda": "^1.11.0",
-    "@aws-cdk/aws-s3": "^1.11.0",
-    "@aws-cdk/core": "^1.11.0"
+    "@aws-cdk/aws-certificatemanager": "1.15.0",
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-ec2": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "^1.11.0",
-    "@aws-cdk/aws-cloudwatch": "^1.11.0",
-    "@aws-cdk/aws-ec2": "^1.11.0",
-    "@aws-cdk/aws-iam": "^1.11.0",
-    "@aws-cdk/aws-lambda": "^1.11.0",
-    "@aws-cdk/aws-s3": "^1.11.0",
-    "@aws-cdk/core": "^1.11.0"
+    "@aws-cdk/aws-certificatemanager": "1.15.0",
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-ec2": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -97,7 +97,28 @@
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.<initializer>",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>",
       "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerProps",
-      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.NetworkListenerProps"
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.NetworkListenerProps",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerAttributes.defaultPort",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.APPLICATION_JSON",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.APPLICATION_JAVASCRIPT",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.TEXT_HTML",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.TEXT_CSS",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.connections",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.BaseListener.listenerArn",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.loadBalancerSecurityGroups",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.healthCheck",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.AddApplicationTargetsProps.targets",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.AddNetworkTargetsProps.targets",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.TEXT_PLAIN",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerAttributes.securityGroup",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerAttributes.securityGroupId",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.HealthCheck.healthyHttpCodes",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ILoadBalancerV2",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.LoadBalancerTargetProps.targetJson",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupImportProps.loadBalancerArns",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupAttributes.defaultPort",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupAttributes.loadBalancerArns"
     ]
   },
   "stability": "stable"

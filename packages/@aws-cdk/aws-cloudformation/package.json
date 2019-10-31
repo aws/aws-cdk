@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
-  "version": "1.11.0",
+  "version": "1.15.0",
   "description": "CDK Constructs for AWS CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,27 +63,34 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.11.0",
-    "@aws-cdk/aws-events": "^1.11.0",
-    "@aws-cdk/aws-ssm": "^1.11.0",
-    "@types/aws-lambda": "^8.10.33",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.15.0",
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-s3-assets": "1.15.0",
+    "@aws-cdk/aws-sns-subscriptions": "1.15.0",
+    "@aws-cdk/aws-sqs": "1.15.0",
+    "@aws-cdk/aws-ssm": "1.15.0",
+    "@types/aws-lambda": "^8.10.34",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.11.0",
-    "@aws-cdk/aws-lambda": "^1.11.0",
-    "@aws-cdk/aws-sns": "^1.11.0",
-    "@aws-cdk/core": "^1.11.0"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/aws-sns": "1.15.0",
+    "@aws-cdk/core": "1.15.0",
+    "@aws-cdk/cx-api": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.11.0",
-    "@aws-cdk/aws-lambda": "^1.11.0",
-    "@aws-cdk/aws-sns": "^1.11.0",
-    "@aws-cdk/core": "^1.11.0"
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/aws-sns": "1.15.0",
+    "@aws-cdk/core": "1.15.0",
+    "@aws-cdk/cx-api": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -94,7 +101,10 @@
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
       "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource",
       "no-unused-type:@aws-cdk/aws-cloudformation.CloudFormationCapabilities",
-      "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps"
+      "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.CustomResourceProvider",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.CustomResourceProvider.serviceToken",
+      "docs-public-apis:@aws-cdk/aws-cloudformation.NestedStackProps"
     ]
   },
   "stability": "stable"

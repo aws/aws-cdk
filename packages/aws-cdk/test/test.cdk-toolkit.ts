@@ -25,6 +25,27 @@ export = nodeunit.testCase({
         // THEN
         test.done();
       },
+      'with sns notification arns'(test: nodeunit.Test) {
+        // GIVEN
+        const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
+        const toolkit = new CdkToolkit({
+          appStacks: new TestAppStacks(test),
+          provisioner: new TestProvisioner(test, {
+            'Test-Stack-A': { Foo: 'Bar' },
+            'Test-Stack-B': { Baz: 'Zinga!' },
+          }, notificationArns),
+        });
+
+        // WHEN
+        toolkit.deploy({
+          stackNames: ['Test-Stack-A', 'Test-Stack-B'],
+          notificationArns,
+          sdk: new SDK()
+        });
+
+        // THEN
+        test.done();
+      },
     },
   },
 });
@@ -89,16 +110,21 @@ class TestAppStacks extends AppStacks {
 }
 
 class TestProvisioner implements IDeploymentTarget {
-  private readonly expectedTags: { [sytackName: string]: Tag[] } = {};
+  private readonly expectedTags: { [stackName: string]: Tag[] } = {};
+  private readonly expectedNotificationArns?: string[];
 
   constructor(
     private readonly test: nodeunit.Test,
-    expectedTags: { [sytackName: string]: { [kay: string]: string } } = {},
+    expectedTags: { [stackName: string]: { [key: string]: string } } = {},
+    expectedNotificationArns?: string[],
   ) {
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
         Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
           .sort((l, r) =>  l.Key.localeCompare(r.Key));
+    }
+    if (expectedNotificationArns) {
+      this.expectedNotificationArns = expectedNotificationArns;
     }
   }
 
@@ -108,6 +134,7 @@ class TestProvisioner implements IDeploymentTarget {
       `Not an expected mock stack: ${options.stack.name}`
     );
     this.test.deepEqual(options.tags, this.expectedTags[options.stack.name]);
+    this.test.deepEqual(options.notificationArns, this.expectedNotificationArns);
     return Promise.resolve({
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.name}/MockedOut`,
       noOp: false,

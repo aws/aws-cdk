@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "HandlerCodeS3Bucket8DD11ED9"
+            "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "HandlerCodeS3VersionKey0BB5191E"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "HandlerCodeS3VersionKey0BB5191E"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -121,7 +121,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "CallbackHandlerCodeS3Bucket806D7490"
+            "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
           },
           "S3Key": {
             "Fn::Join": [
@@ -134,7 +134,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "CallbackHandlerCodeS3VersionKeyDD40A461"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -147,7 +147,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "CallbackHandlerCodeS3VersionKeyDD40A461"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -252,7 +252,11 @@
               {
                 "Ref": "CallbackHandler4434C38D"
               },
-              "\",\"Payload\":{\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::lambda:invoke.waitForTaskToken\",\"ResultPath\":\"$.status\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              "\",\"Payload\":{\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\",\"Resource\":\"arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":states:::lambda:invoke.waitForTaskToken\",\"ResultPath\":\"$.status\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
             ]
           ]
         },
@@ -266,29 +270,17 @@
     }
   },
   "Parameters": {
-    "HandlerCodeS3Bucket8DD11ED9": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-stepfunctions-integ/Handler/Code\""
+      "Description": "S3 bucket for asset \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     },
-    "HandlerCodeS3VersionKey0BB5191E": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-stepfunctions-integ/Handler/Code\""
+      "Description": "S3 key for asset version \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     },
-    "HandlerCodeArtifactHashD7814EF8": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232ArtifactHashFA16AACF": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-stepfunctions-integ/Handler/Code\""
-    },
-    "CallbackHandlerCodeS3Bucket806D7490": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"aws-stepfunctions-integ/CallbackHandler/Code\""
-    },
-    "CallbackHandlerCodeS3VersionKeyDD40A461": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"aws-stepfunctions-integ/CallbackHandler/Code\""
-    },
-    "CallbackHandlerCodeArtifactHash2D279BFF": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"aws-stepfunctions-integ/CallbackHandler/Code\""
+      "Description": "Artifact hash for asset \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     }
   }
 }

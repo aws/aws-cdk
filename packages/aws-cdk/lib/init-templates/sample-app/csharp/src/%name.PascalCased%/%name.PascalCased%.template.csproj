@@ -2,15 +2,19 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- CDK Construct Library dependencies -->
     <PackageReference Include="Amazon.CDK" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.SNS.Subscriptions" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
+
+    <!-- Roslyn Analyzers for JSII libraries will provide compile-time errors about un-set required fields -->
+    <PackageReference Include="Amazon.JSII.Analyzers" Version="*" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
