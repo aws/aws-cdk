@@ -48,7 +48,7 @@ Array [
 
 exports[`empty assembly 1`] = `
 Object {
-  "version": "0.36.0",
+  "version": "1.16.0",
 }
 `;
 

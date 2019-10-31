@@ -2,6 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
+import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
 import { Integration } from './integration';
@@ -202,7 +203,7 @@ export class RestApi extends Resource implements IRestApi {
    * If `deploy` is disabled, you will need to explicitly assign this value in order to
    * set up integrations.
    */
-  public deploymentStage: Stage;
+  public deploymentStage!: Stage;
 
   /**
    * The domain name mapped to this API, if defined through the `domainName`
@@ -230,6 +231,7 @@ export class RestApi extends Resource implements IRestApi {
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters
     });
+    this.node.defaultChild = resource;
 
     this.restApiId = resource.ref;
 
@@ -241,6 +243,7 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     this.root = new RootResource(this, props, resource.attrRootResourceId);
+    this.restApiRootResourceId = resource.attrRootResourceId;
 
     if (props.domainName) {
       this.domainName = this.addDomainName('CustomDomain', props.domainName);
@@ -315,7 +318,7 @@ export class RestApi extends Resource implements IRestApi {
   }
 
   /**
-   * Adds a new model.
+   * Adds a new request validator.
    */
   public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
     return new RequestValidator(this, id, {
@@ -447,6 +450,7 @@ class RootResource extends ResourceBase {
   public readonly path: string;
   public readonly defaultIntegration?: Integration | undefined;
   public readonly defaultMethodOptions?: MethodOptions | undefined;
+  public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
   constructor(api: RestApi, props: RestApiProps, resourceId: string) {
     super(api, 'Default');
@@ -454,8 +458,13 @@ class RootResource extends ResourceBase {
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
     this.defaultMethodOptions = props.defaultMethodOptions;
+    this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions;
     this.restApi = api;
     this.resourceId = resourceId;
     this.path = '/';
+
+    if (this.defaultCorsPreflightOptions) {
+      this.addCorsPreflight(this.defaultCorsPreflightOptions);
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
 
@@ -8,6 +8,13 @@ import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
  */
 export interface QueueProcessingServiceBaseProps {
+  /**
+   * The name of the service.
+   *
+   * @default - CloudFormation-generated name.
+   */
+  readonly serviceName?: string;
+
   /**
    * The name of the cluster that hosts the service.
    *
@@ -72,8 +79,8 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * A queue for which to process items from.
    *
-   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'.
-   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html
+   * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'. See
+   * [CreateQueue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html)
    *
    * @default 'SQSQueue with CloudFormation-generated name'
    */
@@ -89,8 +96,8 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
    *
-   * Maps a range of metric values to a particular scaling behavior.
-   * https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html
+   * Maps a range of metric values to a particular scaling behavior. See
+   * [Simple and Step Scaling Policies for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html)
    *
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
@@ -102,6 +109,29 @@ export interface QueueProcessingServiceBaseProps {
    * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default - none
+   */
+  readonly propagateTags?: PropagatedTagSource;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default false
+   */
+  readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The name of a family that the task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
 }
 
 /**
@@ -204,6 +234,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
     });
   }
 
+  /**
+   * Returns the default cluster.
+   */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;

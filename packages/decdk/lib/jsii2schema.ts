@@ -433,7 +433,7 @@ export function isDataType(t: jsiiReflect.Type | undefined): t is jsiiReflect.In
   if (!t) {
     return false;
   }
-  return t instanceof jsiiReflect.InterfaceType && (t as any).interfaceSpec.datatype;
+  return t instanceof jsiiReflect.InterfaceType && (t as any).spec.datatype;
 }
 
 // Must only have properties, all of which are scalars,

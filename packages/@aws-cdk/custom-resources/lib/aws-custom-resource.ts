@@ -42,7 +42,7 @@ export interface AwsSdkCall {
    * resource id. Either `physicalResourceId` or `physicalResourceIdPath`
    * must be specified for onCreate or onUpdate calls.
    *
-   * @default no path
+   * @default - no path
    */
   readonly physicalResourceIdPath?: string;
 
@@ -51,7 +51,7 @@ export interface AwsSdkCall {
    * `physicalResourceId` or `physicalResourceIdPath` must be specified for
    * onCreate or onUpdate calls.
    *
-   * @default no physical resource id
+   * @default - no physical resource id
    */
   readonly physicalResourceId?: string;
 
@@ -60,7 +60,7 @@ export interface AwsSdkCall {
    * `Error` object will be tested against this pattern. If there is a match an
    * error will not be thrown.
    *
-   * @default do not catch errors
+   * @default - do not catch errors
    */
   readonly catchErrorPattern?: string;
 
@@ -68,9 +68,18 @@ export interface AwsSdkCall {
    * API version to use for the service
    *
    * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html
-   * @default use latest available API version
+   * @default - use latest available API version
    */
   readonly apiVersion?: string;
+
+  /**
+   * The region to send service requests to.
+   * **Note: Cross-region operations are generally considered an anti-pattern.**
+   * **Consider first deploying a stack in that region.**
+   *
+   * @default - the region where this custom resource is deployed
+   */
+  readonly region?: string;
 
   /**
    * Restrict the data returned by the custom resource to a specific path in
@@ -115,6 +124,13 @@ export interface AwsCustomResourceProps {
    * @default extract the permissions from the calls
    */
   readonly policyStatements?: iam.PolicyStatement[];
+
+  /**
+   * The timeout for the Lambda function implementing this custom resource.
+   *
+   * @default Duration.seconds(30)
+   */
+  readonly timeout?: cdk.Duration
 }
 
 export class AwsCustomResource extends cdk.Construct {
@@ -138,7 +154,8 @@ export class AwsCustomResource extends cdk.Construct {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
-      lambdaPurpose: 'AWS'
+      lambdaPurpose: 'AWS',
+      timeout: props.timeout || cdk.Duration.seconds(30),
     });
 
     if (props.policyStatements) {

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codecommit",
-  "version": "1.9.0",
+  "version": "1.15.0",
   "description": "CDK Constructs for AWS CodeCommit",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -68,27 +68,42 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.9.0",
-    "@aws-cdk/aws-sns": "^1.9.0",
-    "aws-sdk": "^2.534.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.15.0",
+    "@aws-cdk/aws-sns": "1.15.0",
+    "aws-sdk": "^2.558.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^1.9.0",
-    "@aws-cdk/aws-iam": "^1.9.0",
-    "@aws-cdk/core": "^1.9.0"
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "^1.9.0",
-    "@aws-cdk/aws-iam": "^1.9.0",
-    "@aws-cdk/core": "^1.9.0"
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awslint": {
+    "exclude": [
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.events",
+      "docs-public-apis:@aws-cdk/aws-codecommit.Repository.fromRepositoryName",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryProps",
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.branches",
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.customData",
+      "docs-public-apis:@aws-cdk/aws-codecommit.IRepository",
+      "props-default-doc:@aws-cdk/aws-codecommit.RepositoryTriggerOptions.name",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.ALL",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.UPDATE_REF",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.CREATE_REF",
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.DELETE_REF"
+    ]
+  }
 }

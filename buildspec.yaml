@@ -5,7 +5,9 @@ version: 0.2
 phases:
   install:
     commands:
-      - /bin/bash ./install.sh
+      # Install yarn if it wasn't already present in the image
+      - yarn --version || npm -g install yarn
+      - yarn install --frozen-lockfile
   pre_build:
     commands:
       - /bin/bash ./fetch-dotnet-snk.sh
