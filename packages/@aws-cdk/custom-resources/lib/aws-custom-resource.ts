@@ -89,7 +89,7 @@ export interface AwsSdkCall {
    *
    * Example for ECS / updateService: 'service.deploymentConfiguration.maximumPercent'
    *
-   * @default return all data
+   * @default - return all data
    */
   readonly outputPath?: string;
 }
@@ -99,21 +99,21 @@ export interface AwsCustomResourceProps {
    * The AWS SDK call to make when the resource is created.
    * At least onCreate, onUpdate or onDelete must be specified.
    *
-   * @default the call when the resource is updated
+   * @default - the call when the resource is updated
    */
   readonly onCreate?: AwsSdkCall;
 
   /**
    * The AWS SDK call to make when the resource is updated
    *
-   * @default no call
+   * @default - no call
    */
   readonly onUpdate?: AwsSdkCall;
 
   /**
    * The AWS SDK call to make when the resource is deleted
    *
-   * @default no call
+   * @default - no call
    */
   readonly onDelete?: AwsSdkCall;
 
@@ -121,7 +121,14 @@ export interface AwsCustomResourceProps {
    * The IAM policy statements to allow the different calls. Use only if
    * resource restriction is needed.
    *
-   * @default extract the permissions from the calls
+   * The custom resource also implements `iam.IGrantable`, making it possible
+   * to use the `grantXxx()` methods.
+   *
+   * As this custom resource uses a singleton Lambda function, it's important
+   * to note the that function's role will eventually accumulate the
+   * permissions/grants from all resources.
+   *
+   * @default - extract the permissions from the calls
    */
   readonly policyStatements?: iam.PolicyStatement[];
 
