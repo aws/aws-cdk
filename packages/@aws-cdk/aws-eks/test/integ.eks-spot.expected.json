@@ -929,7 +929,7 @@
                 {
                   "Ref": "myClusterE51CD07F"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterDefaultCapacityASGF3FE3A19 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterDefaultCapacityASGF3FE3A19 --region test-region"
               ]
             ]
           }
@@ -1251,7 +1251,7 @@
                 {
                   "Ref": "myClusterE51CD07F"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterspotASG5D95FD2F --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --use-max-pods true --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterspotASG5D95FD2F --region test-region"
               ]
             ]
           }
