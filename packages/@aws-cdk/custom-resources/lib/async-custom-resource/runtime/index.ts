@@ -1,11 +1,10 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
+import { IsCompleteResponse, OnEventResponse } from '../types';
 import { submitCloudFormationResponse } from './cfn-response';
 import consts = require('./consts');
-import { defaultStartExecution } from './outbound';
-import { failOnError, getEnv, log, requireUserHandler, Retry } from './util';
-
-export let startExecution = defaultStartExecution;
+import { invokeFunction, startExecution } from './outbound';
+import { failOnError, getEnv, log, Retry } from './util';
 
 /**
  * The main runtime entrypoint of the async custom resource lambda function.
@@ -96,15 +95,45 @@ export async function timeoutHandler(timeoutEvent: any) {
   });
 }
 
+async function invokeUserFunction(arnEnvironment: string, payload: any) {
+  const arn = getEnv(arnEnvironment);
+  log(`executing user function ${arnEnvironment} with payload`, payload);
+  const resp = await invokeFunction({ FunctionName: arn, Payload: JSON.stringify(payload) });
+
+  log('user function response:', resp, typeof(resp));
+
+  const jsonPayload = parseJsonPayload(resp.Payload);
+  if (resp.FunctionError) {
+    log('user function threw an error:', resp.FunctionError);
+    const errorMessage = jsonPayload.errorMessage || 'error';
+    const trace = jsonPayload.trace ? `\nRemote function error: ` + jsonPayload.trace.join('\n') : '';
+
+    const e = new Error(errorMessage);
+    e.stack += trace;
+    throw e;
+  }
+
+  return jsonPayload;
+}
+
+function parseJsonPayload(payload: any): any {
+  if (!payload) { return { }; }
+  const text = payload.toString();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    log('parse error:', e);
+    return { text };
+  }
+}
+
 /**
  * Invokes the user-defined "onEvent" handler.
  */
 async function executeOnEventUserHandler(onEventRequest: AWSCDKAsyncCustomResource.OnEventRequest) {
-  log('executing user onEvent:', onEventRequest);
-  const userHandler = await requireUserHandler(consts.ENV_ON_EVENT_USER_HANDLER_FILE, consts.ENV_ON_EVENT_USER_HANDLER_FUNCTION) as AWSCDKAsyncCustomResource.OnEventHandler;
-  const resp = await userHandler(onEventRequest);
-  log('onEvent returned:', resp);
-  return resp;
+  const onEventResult = await invokeUserFunction(consts.ENV_USER_ON_EVENT_FUNCTION_ARN, onEventRequest) as OnEventResponse;
+  log('onEvent returned:', onEventResult);
+  return onEventResult;
 }
 
 /**
@@ -112,8 +141,7 @@ async function executeOnEventUserHandler(onEventRequest: AWSCDKAsyncCustomResour
  */
 async function executeIsCompleteUserHandler(isCompleteRequest: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<boolean> {
   log('executing user isComplete:', isCompleteRequest);
-  const userHandler = await requireUserHandler(consts.ENV_IS_COMPLETE_USER_HANDLER_FILE, consts.ENV_IS_COMPLETE_USER_HANDLER_FUNCTION) as AWSCDKAsyncCustomResource.IsCompleteHandler;
-  const isCompleteResult = await userHandler(isCompleteRequest);
+  const isCompleteResult = await invokeUserFunction(consts.ENV_USER_IS_COMPLETE_FUNCTION_ARN, isCompleteRequest) as IsCompleteResponse;
   log('isComplete returned:', isCompleteResult);
 
   // if we are not complete, reeturn false, and don't send a response back.

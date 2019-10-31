@@ -42,7 +42,7 @@ class S3File extends Construct {
 
     const resource = new AsyncCustomResource(this, 'Resource', {
       uuid: '53510EEE-B419-46DA-B5F1-A9594E2C7FED',
-      handlerCode: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
       runtime: lambda.Runtime.NODEJS_10_X,
       resourceType: 'Custom::S3File',
       properties: {
@@ -53,7 +53,7 @@ class S3File extends Construct {
       }
     });
 
-    props.bucket.grantWrite(resource);
+    props.bucket.grantWrite(resource.userExecutionPrincipal);
 
     this.objectKey = Token.asString(resource.getAtt(api.ATTR_OBJECT_KEY));
     this.url = Token.asString(resource.getAtt(api.ATTR_URL));
@@ -70,7 +70,7 @@ class TestStack extends Stack {
     const file1 = new S3File(this, 'file1', {
       bucket,
       objectKey: 'second.txt',
-      contents: 'Hello, world, changed!',
+      contents: 'Hello, world, 1922!',
       public: true,
     });
 

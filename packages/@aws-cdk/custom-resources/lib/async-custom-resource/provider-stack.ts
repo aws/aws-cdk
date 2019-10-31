@@ -26,30 +26,31 @@ export class ProviderStack extends NestedStack {
     return new ProviderStack(stack, id, props);
   }
 
-  public readonly onEventFunction: lambda.Function;
-
-  public readonly roles: iam.IRole[];
-
-  private readonly onEventUserHandlerName: string;
-  private readonly isCompleteUserHandlerName: string;
-  private readonly userCodeLayer: lambda.LayerVersion;
+  public readonly entrypoint: lambda.Function;
+  public readonly userOnEventFunction: lambda.Function;
+  public readonly userIsCompleteFunction: lambda.Function;
 
   private constructor(scope: Construct, id: string, props: AsyncCustomResourceProps) {
     super(scope, id);
 
-    this.onEventUserHandlerName = props.onEventHandler || 'index.onEvent';
-    this.isCompleteUserHandlerName = props.isCompleteHandler || 'index.isComplete';
+    const onEventUserHandlerName = props.onEventHandler || 'index.onEvent';
+    const isCompleteUserHandlerName = props.isCompleteHandler || 'index.isComplete';
 
-    this.userCodeLayer = new lambda.LayerVersion(this, 'user-layer', {
-      description: 'async custom resource user code',
-      code: props.handlerCode,
+    this.userOnEventFunction = new lambda.Function(this, 'user-on-event-function', {
+      code: props.code,
+      runtime: props.runtime,
+      handler: onEventUserHandlerName,
+    });
+
+    this.userIsCompleteFunction = new lambda.Function(this, 'user-is-complete-function', {
+      code: props.code,
+      runtime: props.runtime,
+      handler: isCompleteUserHandlerName
     });
 
     const onEventFunction = this.createFunction('onEventHandler');
     const isCompleteFunction = this.createFunction('isCompleteHandler');
     const timeoutFunction = this.createFunction('timeoutHandler');
-
-    this.roles = [ isCompleteFunction, onEventFunction ].map(f => f.role!);
 
     const isCompleteTask = this.createTask(isCompleteFunction);
     isCompleteTask.addCatch(this.createTask(timeoutFunction));
@@ -63,25 +64,24 @@ export class ProviderStack extends NestedStack {
     onEventFunction.addEnvironment(consts.ENV_WAITER_STATE_MACHINE_ARN, waiterStateMachine.stateMachineArn);
     waiterStateMachine.grantStartExecution(onEventFunction);
 
-    this.onEventFunction = onEventFunction;
+    this.entrypoint = onEventFunction;
   }
 
   private createFunction(entrypoint: string) {
-    const { file: onEventFile, func: onEventFunc } = parseHandler('onEvent', this.onEventUserHandlerName);
-    const { file: isCompleteFile, func: isCompleteFunc } = parseHandler('isComplete', this.isCompleteUserHandlerName);
-
-    return new lambda.Function(this, `${entrypoint}-handler`, {
+    const fn = new lambda.Function(this, `${entrypoint}-handler`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: `index.${entrypoint}`,
-      layers: [ this.userCodeLayer ],
       environment: {
-        [consts.ENV_IS_COMPLETE_USER_HANDLER_FILE]: isCompleteFile,
-        [consts.ENV_IS_COMPLETE_USER_HANDLER_FUNCTION]: isCompleteFunc,
-        [consts.ENV_ON_EVENT_USER_HANDLER_FILE]: onEventFile,
-        [consts.ENV_ON_EVENT_USER_HANDLER_FUNCTION]: onEventFunc
+        [consts.ENV_USER_IS_COMPLETE_FUNCTION_ARN]: this.userIsCompleteFunction.functionArn,
+        [consts.ENV_USER_ON_EVENT_FUNCTION_ARN]: this.userOnEventFunction.functionArn,
       }
     });
+
+    this.userIsCompleteFunction.grantInvoke(fn);
+    this.userOnEventFunction.grantInvoke(fn);
+
+    return fn;
   }
 
   private createTask(handler: lambda.Function) {
@@ -89,14 +89,4 @@ export class ProviderStack extends NestedStack {
       task: new tasks.InvokeFunction(handler),
     });
   }
-}
-
-function parseHandler(name: string, spec: string) {
-  const parts = spec.split('.');
-  if (parts.length !== 2) {
-    throw new Error(`Invalid handler specification for ${name} ("${spec}"). Format is "<filename>.<export-function>"`);
-  }
-
-  const [ file, func ] = parts;
-  return { file: `/opt/${file}.js`, func }; // `/opt` is where layers are mounted
 }

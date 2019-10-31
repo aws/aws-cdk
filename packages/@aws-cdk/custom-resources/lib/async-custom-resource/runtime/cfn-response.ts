@@ -1,11 +1,8 @@
 // tslint:disable: max-line-length
 // tslint:disable: no-console
 import url = require('url');
-import { defaultHttpRequest } from './outbound';
+import { httpRequest } from './outbound';
 import { log } from './util';
-
-// allow mocking for unit-tests
-export let httpRequest = defaultHttpRequest;
 
 export interface CloudFormationResponseOptions {
   readonly reason?: string;

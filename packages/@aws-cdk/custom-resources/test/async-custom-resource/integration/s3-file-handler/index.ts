@@ -16,7 +16,6 @@ export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest): 
 }
 
 export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
-
   const bucketName = event.ResourceProperties[api.PROP_BUCKET_NAME];
   if (!bucketName) { throw new Error(`"BucketName" is required`); }
 

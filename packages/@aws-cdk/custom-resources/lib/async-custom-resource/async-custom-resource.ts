@@ -12,7 +12,9 @@ export interface AsyncCustomResourceProps {
   readonly uuid: string;
 
   /**
-   * Properties to pass to the Lambda
+   * Properties to pass to the provider handler. Properties will be available
+   * under `ResourceProperties` (and `OldResourceProperties`) in the calls to
+   * `onEvent` and `isComplete`.
    *
    * @default - No properties.
    */
@@ -53,7 +55,7 @@ export interface AsyncCustomResourceProps {
    * Must contain the handler files with the approriate exports as defined by `onEventHandler`
    * and `isCompleteHandler`. The defaults are `index.onEvent` and `index.isComplete`.
    */
-  readonly handlerCode: lambda.Code;
+  readonly code: lambda.Code;
 
   /**
    * The AWS Lambda runtime to use. Currently, only NodeJS runtimes are supported.
@@ -112,44 +114,51 @@ export interface AsyncCustomResourceProps {
    * @default Duration.minutes(30)
    */
   readonly totalTimeout?: Duration;
-
-  /**
-   * An IAM role to use when executing the custom resource handler logic.
-   *
-   * @default - automatically created, you can use `addToRolePolicy` to update.
-   */
-  readonly role?: iam.IRole;
 }
 
-export class AsyncCustomResource extends cfn.CustomResource implements iam.IGrantable {
+export class AsyncCustomResource extends cfn.CustomResource {
 
-  public readonly grantPrincipal: iam.IPrincipal;
+  /**
+   * A principal that represents the roles used when executing the user-defined
+   * custom resource handlers (`onEvent` and `isComplete`). You can grant permissions
+   * to this principal.
+   *
+   * Bear in mind that we maintain a single instance of the provider in each stack. This means
+   * that if multiple
+   */
+  public readonly userExecutionPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string, props: AsyncCustomResourceProps) {
-    const handlerStack = ProviderStack.getOrCreate(scope, props);
-
-    const role = props.role || new iam.Role(scope, `${id}:ExecutionRole`, {
-      assumedBy: new iam.ArnPrincipal(handlerStack.roles[0].roleArn)
-    });
-
-    if (role instanceof iam.Role && role.assumeRolePolicy) {
-      for (const functionRole of handlerStack.roles.slice(1)) {
-        role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: [ 'sts:AssumeRole' ],
-          principals: [ new iam.ArnPrincipal(functionRole.roleArn) ],
-        }));
-      }
-    }
+    const providerStack = ProviderStack.getOrCreate(scope, props);
 
     super(scope, id, {
-      provider: cfn.CustomResourceProvider.lambda(handlerStack.onEventFunction),
+      provider: cfn.CustomResourceProvider.lambda(providerStack.entrypoint),
       resourceType: props.resourceType,
       properties: props.properties,
       removalPolicy: props.removalPolicy
     });
 
-    this.grantPrincipal = role;
+    this.userExecutionPrincipal = new MultipleRoles([
+      providerStack.userOnEventFunction.role!,
+      providerStack.userIsCompleteFunction.role!
+    ]);
+  }
+}
+
+class MultipleRoles implements iam.IPrincipal {
+  public readonly grantPrincipal = this;
+
+  constructor(private readonly roles: iam.IRole[]) { }
+
+  public get assumeRoleAction(): string { throw new Error('not supported'); }
+  public get policyFragment(): iam.PrincipalPolicyFragment { throw new Error('not supported'); }
+
+  public addToPolicy(statement: iam.PolicyStatement): boolean {
+    for (const role of this.roles) {
+      role.addToPolicy(statement);
+    }
+
+    return true;
   }
 
 }
