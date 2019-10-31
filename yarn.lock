@@ -4818,21 +4818,28 @@ jsii-spec@^0.19.0:
   dependencies:
     jsonschema "^1.2.4"
 
-jsii@^0.19.0:
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.19.0.tgz#844a115ddeb8b555de0777481c10e5b1feeacd12"
-  integrity sha512-31xrDZSzqgwnFZgMJfZ4d/O9LB/cfrEks6lzAfsTv2JaNpMIpSB/jiu0VkhOilYGlOMA7joeN7aePjMEq4d+Mg==
+jsii-spec@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.0.tgz#6dce992c6885959eba120a793775bed61ddc1786"
+  integrity sha512-co4EgYRzDRWDr03xLLWeCkDqvfOwr3bhsUKfqdxgC4d3OxRZN4HyITGYmgDb4DMwBnioIk60rQ4uF1V1hwEdOA==
+  dependencies:
+    jsonschema "^1.2.4"
+
+jsii@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.20.0.tgz#1288e760f4288671dbb17e71a160b9e58f1ee2af"
+  integrity sha512-gsCA7uVMG2h+mxmGhAdKr4ANfVID3ySCcsnsnkQb08JL38wzSqHHEbqR8lgqQjhRPzb4UpqYUl7BElJKQ4BF7A==
   dependencies:
     case "^1.6.2"
     colors "^1.4.0"
     deep-equal "^1.1.0"
     fs-extra "^8.1.0"
-    jsii-spec "^0.19.0"
-    log4js "^5.2.1"
+    jsii-spec "^0.20.0"
+    log4js "^5.3.0"
     semver "^6.3.0"
     sort-json "^2.0.0"
     spdx-license-list "^6.1.0"
-    typescript "~3.6.3"
+    typescript "~3.6.4"
     yargs "^14.2.0"
 
 json-diff@^0.5.4:
@@ -5152,10 +5159,10 @@ log-driver@^1.2.7:
   resolved "https://registry.yarnpkg.com/log-driver/-/log-driver-1.2.7.tgz#63b95021f0702fedfa2c9bb0a24e7797d71871d8"
   integrity sha512-U7KCmLdqsGHBLeWqYlFA0V0Sl6P08EE1ZrmA9cxjUE0WVqT9qnyVDPz1kzpFEP0jdJuFnasWIfSd7fsaNXkpbg==
 
-log4js@^5.2.1:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/log4js/-/log4js-5.2.2.tgz#35b750416f22913dd6905d49335752d9b240f47c"
-  integrity sha512-Iw4ZjbYTMxSTh1jnXM2brpRIr+psM8/nkUiOHu2gFfd0saoX2NdRB69buMWJJuoIJfU/eTzqKy9rVBr0zQwSGQ==
+log4js@^5.2.1, log4js@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/log4js/-/log4js-5.3.0.tgz#7e43fa49f516c2d11c71ae28eddffd508eef2ba8"
+  integrity sha512-PZHXaXJKMKEscvQxSnTjM4UosQalSDlNpMw63eCKW+/DiAFKIZPW1jGyIPXZDjiEYFusMfiI7zzvnxeGozUcAw==
   dependencies:
     date-format "^2.1.0"
     debug "^4.1.1"
@@ -7799,10 +7806,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.3.3, typescript@~3.6.2, typescript@~3.6.3:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
-  integrity "sha1-/qlC+rsg9+HKcWT/Ym8anz9wtNo= sha512-N7bceJL1CtRQ2RiG0AQME13ksR7DiuQh/QehubYcghzv20tnh+MQnQIuJddTmsbqYj+dztchykemz0zFzlvdQw=="
+typescript@^3.3.3, typescript@~3.6.2, typescript@~3.6.3, typescript@~3.6.4:
+  version "3.6.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.4.tgz#b18752bb3792bc1a0281335f7f6ebf1bbfc5b91d"
+  integrity sha512-unoCll1+l+YK4i4F8f22TaNVPRHcD9PA3yCuZ8g5e0qGqlVlJ/8FSateOLLSagn+Yg5+ZwuPkL8LFUc0Jcvksg==
 
 uglify-js@^3.1.4:
   version "3.6.2"
