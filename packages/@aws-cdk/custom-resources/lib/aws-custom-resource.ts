@@ -133,7 +133,9 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration
 }
 
-export class AwsCustomResource extends cdk.Construct {
+export class AwsCustomResource extends cdk.Construct implements iam.IGrantable, iam.IPrincipal {
+  public readonly grantPrincipal: iam.IPrincipal;
+
   private readonly customResource: CustomResource;
 
   constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
@@ -157,6 +159,7 @@ export class AwsCustomResource extends cdk.Construct {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.seconds(30),
     });
+    this.grantPrincipal = provider.grantPrincipal;
 
     if (props.policyStatements) {
       for (const statement of props.policyStatements) {
