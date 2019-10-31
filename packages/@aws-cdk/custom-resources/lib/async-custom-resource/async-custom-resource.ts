@@ -3,7 +3,6 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { Construct, Duration, RemovalPolicy } from '@aws-cdk/core';
 import { ProviderStack } from './provider-stack';
-import consts = require('./runtime/consts');
 
 export interface AsyncCustomResourceProps {
   /**
@@ -146,10 +145,7 @@ export class AsyncCustomResource extends cfn.CustomResource implements iam.IGran
     super(scope, id, {
       provider: cfn.CustomResourceProvider.lambda(handlerStack.onEventFunction),
       resourceType: props.resourceType,
-      properties: {
-        [consts.PROP_EXECUTION_ROLE_ARN]: role.roleArn,
-        ...props.properties
-      },
+      properties: props.properties,
       removalPolicy: props.removalPolicy
     });
 

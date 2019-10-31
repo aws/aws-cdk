@@ -5,6 +5,8 @@ import { CloudFormationEventContext, submitCloudFormationResponse } from './cfn-
 
 const exists = promisify(fs.exists);
 
+export let includeStackTraces = true; // for unit tests
+
 export async function failOnError(event: CloudFormationEventContext, block: () => Promise<any>) {
   try {
     return await block();
@@ -14,7 +16,7 @@ export async function failOnError(event: CloudFormationEventContext, block: () =
 
     // this is an actual error, fail the activity altogether and exist.
     await submitCloudFormationResponse('FAILED', event, {
-      reason: e.stack,
+      reason: includeStackTraces ? e.stack : e.message,
     });
 
     return {

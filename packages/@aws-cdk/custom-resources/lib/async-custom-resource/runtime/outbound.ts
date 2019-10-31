@@ -24,11 +24,3 @@ export async function defaultStartExecution(req: AWS.StepFunctions.StartExecutio
 
   return await sfn.startExecution(req).promise();
 }
-
-export async function defaultAssumeRole(req: AWS.STS.AssumeRoleRequest) {
-  AWS.config.update({
-    credentials: new AWS.ChainableTemporaryCredentials({
-      params: req
-    })
-  });
-}

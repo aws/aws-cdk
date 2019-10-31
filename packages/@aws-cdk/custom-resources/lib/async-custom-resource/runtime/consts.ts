@@ -12,9 +12,3 @@ export const ENV_IS_COMPLETE_USER_HANDLER_FUNCTION = 'USER_IS_COMPLETE_FUNCTION'
  * The ARN of the waiter state machine
  */
 export const ENV_WAITER_STATE_MACHINE_ARN = 'WAITER_STATE_MACHINE_ARN';
-
-/**
- * A resource property that defines the role to assume when executing this handler.
- * The role is created for each resource *instance*.
- */
-export const PROP_EXECUTION_ROLE_ARN = '$ExecutionRoleArn';

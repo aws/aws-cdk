@@ -7,8 +7,11 @@ import { parse as urlparse } from 'url';
 import response = require('../../lib/async-custom-resource/runtime/cfn-response');
 import consts = require('../../lib/async-custom-resource/runtime/consts');
 import handler = require('../../lib/async-custom-resource/runtime/index');
+import util = require('../../lib/async-custom-resource/runtime/util');
 import { Retry } from '../../lib/async-custom-resource/runtime/util';
 import userHandler = require('./fixtures/mock-handler');
+
+util.includeStackTraces = false;
 
 const MOCK_HANDLER_FILE = path.join(__dirname, 'fixtures', 'mock-handler.js');
 
@@ -25,7 +28,6 @@ const MOCK_PROPS = { Name : "Value", List: [ "1", "2", "3" ], ServiceToken: 'bla
 const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 
 let startStateMachineInput: AWS.StepFunctions.StartExecutionInput | undefined;
-let assumeRoleInput: AWS.STS.AssumeRoleRequest | undefined;
 
 // mock http requests
 let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
@@ -75,11 +77,6 @@ beforeEach(() => {
       startDate: new Date(),
     };
   };
-
-  assumeRoleInput = undefined;
-  handler.assumeRoleAndMakeDefault = async (req: AWS.STS.AssumeRoleRequest) => {
-    assumeRoleInput = req;
-  };
 });
 
 afterEach(() => {
@@ -88,7 +85,6 @@ afterEach(() => {
   delete process.env[consts.ENV_ON_EVENT_USER_HANDLER_FILE];
   delete process.env[consts.ENV_ON_EVENT_USER_HANDLER_FUNCTION];
   delete process.env[consts.ENV_WAITER_STATE_MACHINE_ARN];
-  delete process.env[consts.PROP_EXECUTION_ROLE_ARN];
 });
 
 test('synchronous flow (isComplete immediately returns true): waiter state machine is not triggered', async () => {
@@ -401,28 +397,6 @@ test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
   });
 
   expectCloudFormationFailed(`"Data" is not allowed if "IsComplete" is "False"`);
-});
-
-test('if $ExecutionRoleArn is passed as a property, this role will be assumed and used as a default role for user handlers', async () => {
-  userHandler.onEvent = async () => ({ PhysicalResourceId: 'Foo' });
-  userHandler.isComplete = async () => ({ IsComplete: true });
-
-  const MOCK_ASSUME_ROLE_ARN = 'execution:role:arn';
-
-  await invokeMainHandler({
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'Bla',
-      [consts.PROP_EXECUTION_ROLE_ARN]: MOCK_ASSUME_ROLE_ARN,
-    }
-  });
-
-  expect(assumeRoleInput && assumeRoleInput.RoleArn).toEqual(MOCK_ASSUME_ROLE_ARN);
-  expectCloudFormationSuccess();
-});
-
-test('$ExecutionRoleArn is not used to start the waiter state machine', async () => {
-  fail('boom');
 });
 
 // -----------------------------------------------------------------------------------------------------------------------

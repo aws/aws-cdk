@@ -2,11 +2,10 @@
 // tslint:disable: max-line-length
 import { submitCloudFormationResponse } from './cfn-response';
 import consts = require('./consts');
-import { defaultAssumeRole, defaultStartExecution } from './outbound';
+import { defaultStartExecution } from './outbound';
 import { failOnError, getEnv, log, requireUserHandler, Retry } from './util';
 
 export let startExecution = defaultStartExecution;
-export let assumeRoleAndMakeDefault = defaultAssumeRole;
 
 /**
  * The main runtime entrypoint of the async custom resource lambda function.
@@ -23,17 +22,6 @@ export async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomR
     log('onEventHandler', cfnRequest);
 
     cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
-
-    // if user resource property has $ExecutionRoleArn, assume this role and make it the default.
-    const executionRoleArn = cfnRequest.ResourceProperties[consts.PROP_EXECUTION_ROLE_ARN];
-    if (executionRoleArn) {
-      log('assuming execution iam role');
-
-      await assumeRoleAndMakeDefault({
-        RoleArn: executionRoleArn,
-        RoleSessionName: cfnRequest.RequestId
-      });
-    }
 
     validateCfnRequest(cfnRequest);
 
