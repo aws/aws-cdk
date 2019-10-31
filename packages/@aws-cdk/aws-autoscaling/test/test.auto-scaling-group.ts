@@ -709,23 +709,23 @@ export = {
       blockDevices: [{
         deviceName: 'ebs',
         mappingEnabled: true,
-        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+        volume: ec2.BlockDeviceVolume.ebs(15, {
           deleteOnTermination: true,
           encrypted: true,
-          volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+          volumeType: ec2.EbsDeviceVolumeType.IO1,
           iops: 5000,
         })
       }, {
         deviceName: 'ebs-snapshot',
         mappingEnabled: false,
-        volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+        volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
           volumeSize: 500,
           deleteOnTermination: false,
-          volumeType: autoscaling.EbsDeviceVolumeType.SC1,
+          volumeType: ec2.EbsDeviceVolumeType.SC1,
         })
       }, {
         deviceName: 'ephemeral',
-        volume: autoscaling.BlockDeviceVolume.ephemeral(0)
+        volume: ec2.BlockDeviceVolume.ephemeral(0)
       }]
     });
 
@@ -755,7 +755,8 @@ export = {
         },
         {
           DeviceName: "ephemeral",
-          VirtualName: "ephemeral0"
+          VirtualName: "ephemeral0",
+          NoDevice: false
         }
       ]
     }));
@@ -776,7 +777,7 @@ export = {
         vpc,
         blockDevices: [{
           deviceName: 'ephemeral',
-          volume: autoscaling.BlockDeviceVolume.ephemeral(-1)
+          volume: ec2.BlockDeviceVolume.ephemeral(-1)
         }]
       });
     }, /volumeIndex must be a number starting from 0/);
@@ -797,10 +798,10 @@ export = {
         vpc,
         blockDevices: [{
           deviceName: 'ebs',
-          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          volume: ec2.BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
-            volumeType: autoscaling.EbsDeviceVolumeType.IO1,
+            volumeType: ec2.EbsDeviceVolumeType.IO1,
           })
         }]
       });
@@ -820,7 +821,7 @@ export = {
       vpc,
       blockDevices: [{
         deviceName: 'ebs',
-        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+        volume: ec2.BlockDeviceVolume.ebs(15, {
           deleteOnTermination: true,
           encrypted: true,
           iops: 5000,
@@ -846,10 +847,10 @@ export = {
       vpc,
       blockDevices: [{
         deviceName: 'ebs',
-        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+        volume: ec2.BlockDeviceVolume.ebs(15, {
           deleteOnTermination: true,
           encrypted: true,
-          volumeType: autoscaling.EbsDeviceVolumeType.GP2,
+          volumeType: ec2.EbsDeviceVolumeType.GP2,
           iops: 5000,
         })
       }]
