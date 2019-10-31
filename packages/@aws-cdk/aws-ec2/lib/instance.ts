@@ -8,6 +8,7 @@ import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
+import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 
 /**
@@ -168,6 +169,20 @@ export interface InstanceProps {
    * @default true
    */
   readonly sourceDestCheck?: boolean;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
 }
 
 /**
@@ -285,6 +300,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
+      blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
     });
     this.instance.node.addDependency(this.role);
 
