@@ -96,7 +96,7 @@ export class S3SourceAction extends Action {
         // this means a duplicate path for the same bucket - error out
         throw new Error(`S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
       }
-      this.props.bucket.onCloudTrailPutObject(id, {
+      this.props.bucket.onCloudTrailWriteObject(id, {
         target: new targets.CodePipeline(stage.pipeline),
         paths: [this.props.bucketKey]
       });
