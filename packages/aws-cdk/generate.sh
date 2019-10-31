@@ -11,6 +11,7 @@ fi
 cat > build-info.json <<HERE
 {
   "comment": "Generated at $(date -u +"%Y-%m-%dT%H:%M:%SZ") by generate.sh",
-  "commit": "${commit:0:7}"
+  "commit": "${commit:0:7}",
+  "jsii-pacmak": "$(node -p "require('jsii-pacmak/package.json').version")"
 }
 HERE

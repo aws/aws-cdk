@@ -69,7 +69,6 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
     "json-diff": "^0.5.4",
-    "@aws-cdk/jsii-pacmak-version": "1.15.0",
     "minimatch": ">=3.0",
     "promptly": "^3.0.3",
     "proxy-agent": "^3.1.1",

@@ -1,4 +1,3 @@
-import { JsiiPacmak } from '@aws-cdk/jsii-pacmak-version';
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
@@ -154,6 +153,7 @@ export class InitTemplate {
   private expand(template: string, project: ProjectInfo) {
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
+    const pacmakVersion = require('../build-info.json')['jsii-pacmak'];
     return template.replace(/%name%/g, project.name)
              .replace(/%name\.camelCased%/g, camelCase(project.name))
              .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
@@ -162,7 +162,7 @@ export class InitTemplate {
              .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
              .replace(/%python-executable%/g, pythonExecutable())
              .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'))
-             .replace(/%jsii-pacmak-version%/g, JsiiPacmak.VERSION);
+             .replace(/%jsii-pacmak-version%/g, pacmakVersion);
   }
 }
 
