@@ -27,3 +27,11 @@ incompatible-argument:@aws-cdk/aws-servicediscovery.Service.fromServiceAttribute
 removed:@aws-cdk/core.ConstructNode.addReference
 removed:@aws-cdk/core.ConstructNode.references
 removed:@aws-cdk/core.OutgoingReference
+incompatible-argument:@aws-cdk/aws-autoscaling.AutoScalingGroup.<initializer>
+removed:@aws-cdk/aws-autoscaling.BlockDeviceVolume
+removed:@aws-cdk/aws-autoscaling.BlockDevice
+removed:@aws-cdk/aws-autoscaling.EbsDeviceOptions
+removed:@aws-cdk/aws-autoscaling.EbsDeviceOptionsBase
+removed:@aws-cdk/aws-autoscaling.EbsDeviceProps
+removed:@aws-cdk/aws-autoscaling.EbsDeviceSnapshotOptions
+removed:@aws-cdk/aws-autoscaling.EbsDeviceVolumeType
