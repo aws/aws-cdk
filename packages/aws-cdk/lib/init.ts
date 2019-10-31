@@ -1,3 +1,4 @@
+import { JsiiPacmak } from '@aws-cdk/jsii-pacmak-version';
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
@@ -160,7 +161,8 @@ export class InitTemplate {
              .replace(/%cdk-home%/g, CDK_HOME)
              .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
              .replace(/%python-executable%/g, pythonExecutable())
-             .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+             .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'))
+             .replace(/%jsii-pacmak-version%/g, JsiiPacmak.VERSION);
   }
 }
 

@@ -1,0 +1,10 @@
+*.generated.ts
+*.d.ts
+*.js
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+.jsii
+tsconfig.json
+*.tsbuildinfo
