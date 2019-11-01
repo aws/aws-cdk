@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/core');
 import path = require('path');
 
 /**
- * Properties for EvalTask
+ * Properties for EvaluateExpression
  *
  * @experimental
  */
