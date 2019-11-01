@@ -789,7 +789,18 @@ export = {
               "Type": "S3",
               "Location": "replicationstackeplicationbucket2464cd5c33b386483b66",
               "EncryptionKey": {
-                "Id": "alias/replicationstacktencryptionalias043cb2f8ceac9da9c07c",
+                "Id": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":kms:us-west-1:123456789012:alias/ionstacktencryptionalias043cb2f8ceac9da9c07c",
+                    ],
+                  ],
+                },
                 "Type": "KMS"
               },
             },

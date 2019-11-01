@@ -73,6 +73,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
+      family: props.family
     });
     this.taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
@@ -88,6 +89,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
+      serviceName: props.serviceName,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
     });
