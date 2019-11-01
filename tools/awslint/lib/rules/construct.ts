@@ -262,23 +262,6 @@ constructLinter.add({
 });
 
 constructLinter.add({
-  code: 'props-default-doc',
-  message: 'All optional props must have @default documentation',
-  eval: e => {
-    if (!e.ctx.propsType) { return; }
-    if (!e.ctx.hasPropsArgument) { return; }
-
-    // this rule does not apply to L1 constructs
-    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
-
-    for (const property of e.ctx.propsType.allProperties) {
-      if (!property.optional) { continue; }
-      e.assert(property.docs.docs.default !== undefined, `${e.ctx.propsFqn}.${property.name}`);
-    }
-  }
-  });
-
-constructLinter.add({
   code: 'props-no-any',
   message: 'props must not use Typescript "any" type',
   eval: e => {

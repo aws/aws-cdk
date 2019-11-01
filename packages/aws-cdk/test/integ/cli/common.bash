@@ -3,8 +3,11 @@ scriptdir=$(cd $(dirname $0) && pwd)
 cd ${scriptdir}
 
 if [[ -z "${CREDS_SET:-}" ]]; then
-    # Check that credentials are configured
-    aws sts get-caller-identity > /dev/null
+    # Check that credentials are configured (will error & abort if not)
+    creds=$(aws sts get-caller-identity)
+
+    export TEST_ACCOUNT=$(node -p "($creds).Account")
+    export TEST_REGION=${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}
     export CREDS_SET=1
 fi
 

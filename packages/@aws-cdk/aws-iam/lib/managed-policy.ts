@@ -203,11 +203,12 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       props.statements.forEach(p => this.addStatements(p));
     }
 
-    this.managedPolicyName = this.getResourceNameAttribute(resource.ref);
+    // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
+    this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).parseArn(resource.ref, '/').resourceName!);
     this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
       region: '', // IAM is global in each partition
       service: 'iam',
-      resource: 'role',
+      resource: 'policy',
       resourceName: this.physicalName,
     });
   }

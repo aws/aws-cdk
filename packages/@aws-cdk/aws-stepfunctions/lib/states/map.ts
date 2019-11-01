@@ -71,6 +71,19 @@ export interface MapProps {
 }
 
 /**
+ * Returns true if the value passed is a positive integer
+ * @param value the value ti validate
+ */
+
+export const isPositiveInteger = (value: number) => {
+    const isFloat = Math.floor(value) !== value;
+
+    const isNotPositiveInteger = value < 0 || value > Number.MAX_SAFE_INTEGER;
+
+    return !isFloat && !isNotPositiveInteger;
+};
+
+/**
  * Define a Map state in the state machine
  *
  * A Map state can be used to dynamically process elements of an array through sub state machines
@@ -80,7 +93,7 @@ export interface MapProps {
 export class Map extends State implements INextable {
     public readonly endStates: INextable[];
 
-    private readonly maxConcurrency?: number;
+    private readonly maxConcurrency: number | undefined;
     private readonly itemsPath?: string;
 
     constructor(scope: cdk.Construct, id: string, props: MapProps = {}) {
@@ -150,10 +163,17 @@ export class Map extends State implements INextable {
      * Validate this state
      */
     protected validate(): string[] {
-        if (!!this.iterator) {
-            return ['Map state must have a non-empty iterator'];
+        const errors: string[] = [];
+
+        if (this.iteration === undefined) {
+            errors.push('Map state must have a non-empty iterator');
         }
-        return [];
+
+        if (this.maxConcurrency !== undefined && !isPositiveInteger(this.maxConcurrency)) {
+            errors.push('maxConcurrency has to be a positive integer');
+        }
+
+        return errors;
     }
 
     private renderItemsPath(): any {
