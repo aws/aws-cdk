@@ -9,6 +9,7 @@ import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
+import { VpcFlowLog, VpcFlowLogOptions } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
@@ -119,6 +120,11 @@ export interface IVpc extends IResource {
    * Adds a new interface endpoint to this VPC
    */
   addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
+
+  /**
+   * Adds a new Flow Log to this VPC
+   */
+  addFlowLog(id: string, options: VpcFlowLogOptions): VpcFlowLog
 }
 
 /**
@@ -356,6 +362,18 @@ abstract class VpcBase extends Resource implements IVpc {
   public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       vpc: this,
+      ...options
+    });
+  }
+
+  /**
+   * Adds a new flow log to this VPC
+   */
+  public addFlowLog(id: string, options: VpcFlowLogOptions): VpcFlowLog {
+    return new VpcFlowLog(this, id, {
+      resourceType: {
+        vpc: this
+      },
       ...options
     });
   }
@@ -734,6 +752,13 @@ export interface VpcProps {
    * @default - None.
    */
   readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions }
+
+  /**
+   * Flow logs to add to this VPC.
+   *
+   * @default - No flow logs.
+   */
+  readonly flowLogs?: { [id: string]: VpcFlowLogOptions }
 }
 
 /**
@@ -1107,6 +1132,14 @@ export class Vpc extends VpcBase {
       const gatewayEndpoints = props.gatewayEndpoints || {};
       for (const [endpointId, endpoint] of Object.entries(gatewayEndpoints)) {
         this.addGatewayEndpoint(endpointId, endpoint);
+      }
+    }
+
+    // Add flow logs to the VPC
+    if (props.flowLogs) {
+      const flowLogs = props.flowLogs || {};
+      for (const [flowLogId, flowLog] of Object.entries(flowLogs)) {
+        this.addFlowLog(flowLogId, flowLog);
       }
     }
   }
