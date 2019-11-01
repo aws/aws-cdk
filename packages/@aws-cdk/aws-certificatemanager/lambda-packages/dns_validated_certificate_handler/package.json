@@ -27,9 +27,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-sdk": "^2.540.0",
+    "aws-sdk": "^2.562.0",
     "aws-sdk-mock": "^4.5.0",
-    "eslint": "^6.5.1",
+    "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
@@ -37,7 +37,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^24.9.0",
     "lambda-tester": "^3.6.0",
-    "nock": "^11.3.5",
+    "nock": "^11.7.0",
     "ts-jest": "^24.1.0"
   }
 }
