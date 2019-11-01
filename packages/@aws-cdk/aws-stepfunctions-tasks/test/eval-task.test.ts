@@ -11,7 +11,7 @@ beforeEach(() => {
 test('Eval with Node.js', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EvalTask({
+    task: new tasks.EvaluateExpression({
       expression: '$.a + $.b',
     })
   });
@@ -46,7 +46,7 @@ test('Eval with Node.js', () => {
 test('Throws when expression does not contain paths', () => {
   // WHEN
   expect(() => new sfn.Task(stack, 'Task', {
-    task: new tasks.EvalTask({
+    task: new tasks.EvaluateExpression({
       expression: '2 + 2',
     })
   })).toThrow(/No paths found in expression/);

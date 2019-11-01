@@ -133,7 +133,7 @@ couple of the tasks available are:
 * `tasks.SagemakerTrainTask` -- run a SageMaker training job
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
-* `tasks.EvalTask` -- evaluate an expression referencing state paths
+* `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
 
 Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
@@ -331,19 +331,22 @@ new sfn.StateMachine(stack, 'ParentStateMachine', {
 ```
 
 #### Eval example
-Use the `EvalTask` to perform simple operations referencing state paths. The
-`expression` referenced in the task will be evaluated in a Lambda function
-(`eval()`). This allows to write less Lambda runtime code for simple operations.
 
-Example: convert a wait time from milliseconds to seconds, concat this in a message and wait
+Use the `EvaluateExpression` to perform simple operations referencing state paths. The
+`expression` referenced in the task will be evaluated in a Lambda function
+(`eval()`). This allows you to not have to write Lambda code for simple operations.
+
+Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
+
 ```ts
 const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
-  task: new tasks.EvalTask({ expression: '$.waitMilliseconds / 1000' }),
+  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
   resultPath: '$.waitSeconds'
 });
 
 const createMessage = new sfn.Task(this, 'Create message', {
-  task: new tasks.EvalTask({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
+  // Note: this is a string inside a string.
+  task: new tasks.EvaluateExpression({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
   resultPath: '$.message'
 });
 
@@ -366,9 +369,9 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
-The `EvalTask` supports a `runtime` prop to specify the Lambda runtime to use
-to evaluate the expression. Currently, the only runtime supported is
-`lambda.Runtime.NODEJS_10_X`.
+The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
+runtime to use to evaluate the expression. Currently, the only runtime
+supported is `lambda.Runtime.NODEJS_10_X`.
 
 
 ### Pass

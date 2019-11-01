@@ -6,14 +6,14 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const sum = new sfn.Task(stack, 'Sum', {
-  task: new tasks.EvalTask({
+  task: new tasks.EvaluateExpression({
     expression: '$.a + $.b',
   }),
   resultPath: '$.c'
 });
 
 const multiply = new sfn.Task(stack, 'Multiply', {
-  task: new tasks.EvalTask({
+  task: new tasks.EvaluateExpression({
     expression: '$.c * 2'
   }),
   resultPath: '$.waitSeconds'

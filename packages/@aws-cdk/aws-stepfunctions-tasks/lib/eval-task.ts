@@ -6,8 +6,10 @@ import path = require('path');
 
 /**
  * Properties for EvalTask
+ *
+ * @experimental
  */
-export interface EvalTaskProps {
+export interface EvaluateExpressionProps {
   /**
    * The expression to evaluate. It must contain state paths.
    *
@@ -44,9 +46,11 @@ export interface Event {
  * A Step Functions Task to evaluate an expression
  *
  * OUTPUT: the output of this task is the evaluated expression.
+ *
+ * @experimental
  */
-export class EvalTask implements sfn.IStepFunctionsTask {
-  constructor(private readonly props: EvalTaskProps) {
+export class EvaluateExpression implements sfn.IStepFunctionsTask {
+  constructor(private readonly props: EvaluateExpressionProps) {
   }
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
