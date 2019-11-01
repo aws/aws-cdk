@@ -72,6 +72,8 @@
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "1.15.0",
     "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-logs": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
     "@aws-cdk/aws-ssm": "1.15.0",
     "@aws-cdk/core": "1.15.0",
     "@aws-cdk/cx-api": "1.15.0"
@@ -82,7 +84,9 @@
     "@aws-cdk/aws-iam": "1.15.0",
     "@aws-cdk/aws-ssm": "1.15.0",
     "@aws-cdk/core": "1.15.0",
-    "@aws-cdk/cx-api": "1.15.0"
+    "@aws-cdk/cx-api": "1.15.0",
+    "@aws-cdk/aws-logs": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"

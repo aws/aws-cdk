@@ -433,3 +433,28 @@ host.allowSshAccessFrom(Peer.ipv4('1.2.3.4/32'));
 
 As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
 with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
+
+## VPC Flow Logs
+VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html).
+
+By default a flow log will be created with CloudWatch Logs as the destination.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLog', {});
+```
+
+You can also add multiple flow logs with different destinations.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLogS3', {
+  destinationType: ec2.VpcFlowLogDestinationType.S3
+});
+
+vpc.addFlowLog('FlowLogCloudWatch', {
+  trafficType: ec2.VpcFlowLogTrafficType.REJECT
+});
+```
