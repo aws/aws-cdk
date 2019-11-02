@@ -80,6 +80,15 @@ export interface IRepository extends IResource {
    * @param options Options for adding the rule
    */
   onCloudTrailImagePushed(id: string, options?: OnCloudTrailImagePushedOptions): events.Rule;
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when the image scan is completed
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onImageScanCompleted(id: string, options?: OnImageScanCompletedOptions): events.Rule;
 }
 
 /**
@@ -170,7 +179,27 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     });
     return rule;
   }
-
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image scan is completed
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onImageScanCompleted(id: string, options: OnImageScanCompletedOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecr'],
+      detailType: ['ECR Image Scan'],
+      detail: {
+        repositoryName: [this.repositoryName],
+        scanStatus: ['COMPLETE'],
+        imageTags: options.imageTags ? options.imageTags : undefined
+      }
+    });
+    return rule;
+  }
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
@@ -223,6 +252,16 @@ export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
    * @default - Watch changes to all tags
    */
   readonly imageTag?: string;
+}
+
+export interface OnImageScanCompletedOptions extends events.OnEventOptions {
+  /**
+   * Only watch changes to the image tags spedified.
+   * Leave it undefined to watch the full repository.
+   *
+   * @default undefined
+   */
+  readonly imageTags?: string[];
 }
 
 export interface RepositoryProps {

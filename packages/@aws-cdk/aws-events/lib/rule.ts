@@ -91,12 +91,12 @@ export class Rule extends Resource implements IRule {
   public readonly ruleName: string;
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
-  private readonly eventPattern: EventPattern = { };
+  private readonly eventPattern: EventPattern = {};
   private readonly scheduleExpression?: string;
   private readonly description?: string;
   private readonly accountEventBusTargets: { [account: string]: boolean } = {};
 
-  constructor(scope: Construct, id: string, props: RuleProps = { }) {
+  constructor(scope: Construct, id: string, props: RuleProps = {}) {
     super(scope, id, {
       physicalName: props.ruleName,
     });
@@ -341,15 +341,34 @@ export class Rule extends Resource implements IRule {
       out[key] = value;
     }
 
+    // rename keys in the 'detail' map
+    const origdetail = out.detail;
+    const detailout: any = {};
+    for (let key of Object.keys(origdetail)) {
+      const value = (origdetail as any)[key];
+      if (key === 'repositoryName') {
+        key = 'repository-name';
+      }
+      if (key === 'scanStatus') {
+        key = 'scan-status';
+      }
+      if (key === 'imageTags') {
+        key = 'image-tags';
+      }
+      detailout[key] = value;
+    }
+
+    out.detail = detailout;
+
     return out;
   }
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [ `Either 'eventPattern' or 'schedule' must be defined` ];
+      return [`Either 'eventPattern' or 'schedule' must be defined`];
     }
 
-    return [ ];
+    return [];
   }
 
   private renderTargets() {
