@@ -342,24 +342,24 @@ export class Rule extends Resource implements IRule {
     }
 
     // rename keys in the 'detail' map
-    const origdetail = out.detail;
-    const detailout: any = {};
-    for (let key of Object.keys(origdetail)) {
-      const value = (origdetail as any)[key];
-      if (key === 'repositoryName') {
-        key = 'repository-name';
+    if (out.detail && Object.keys(out.detail).length > 0) {
+      const origdetail = out.detail;
+      const detailout: any = {};
+      for (let key of Object.keys(origdetail)) {
+        const value = (origdetail as any)[key];
+        if (key === 'repositoryName') {
+          key = 'repository-name';
+        }
+        if (key === 'scanStatus') {
+          key = 'scan-status';
+        }
+        if (key === 'imageTags') {
+          key = 'image-tags';
+        }
+        detailout[key] = value;
       }
-      if (key === 'scanStatus') {
-        key = 'scan-status';
-      }
-      if (key === 'imageTags') {
-        key = 'image-tags';
-      }
-      detailout[key] = value;
+      out.detail = detailout;
     }
-
-    out.detail = detailout;
-
     return out;
   }
 
