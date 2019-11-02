@@ -70,7 +70,8 @@ async function parseCommandLineArguments() {
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
-      .option('list', { type: 'boolean', desc: 'List the available templates' }))
+      .option('list', { type: 'boolean', desc: 'List the available templates' })
+      .option('package-manager', { type: 'string', default: 'npm', desc: 'The Node.js package manager to use, e.g. "npm", "yarn", "pnpm". To be used with --language=typescript|javascript'}))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
@@ -225,10 +226,11 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
+        const packageManager = configuration.settings.get(['package-manager']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language);
+          return await cliInit(args.TEMPLATE, language, undefined, packageManager);
         }
       case 'version':
         return print(version.DISPLAY_VERSION);

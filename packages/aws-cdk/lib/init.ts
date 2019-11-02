@@ -18,7 +18,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean, packageManager?: string) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -39,7 +39,12 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
+
+  if (packageManager && !['typescript', 'javascript'].includes(language)) {
+    throw new Error(`The --package-manager option is only supported with --language=typescript|javascript, got ${language}`);
+  }
+
+  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true, packageManager);
 }
 
 /**
@@ -211,12 +216,12 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, packageManager?: string) {
   await assertIsEmptyDirectory();
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, process.cwd());
   await initializeGitRepository();
-  await postInstall(language, canUseNetwork);
+  await postInstall(language, canUseNetwork, packageManager);
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
@@ -243,12 +248,12 @@ async function initializeGitRepository() {
   }
 }
 
-async function postInstall(language: string, canUseNetwork: boolean) {
+async function postInstall(language: string, canUseNetwork: boolean, packageManager?: string) {
   switch (language) {
   case 'javascript':
-    return await postInstallJavascript(canUseNetwork);
+    return await postInstallJavascript(canUseNetwork, packageManager);
   case 'typescript':
-    return await postInstallTypescript(canUseNetwork);
+    return await postInstallTypescript(canUseNetwork, packageManager);
   case 'java':
     return await postInstallJava(canUseNetwork);
   case 'python':
@@ -256,12 +261,12 @@ async function postInstall(language: string, canUseNetwork: boolean) {
   }
 }
 
-async function postInstallJavascript(canUseNetwork: boolean) {
-  return postInstallTypescript(canUseNetwork);
+async function postInstallJavascript(canUseNetwork: boolean, packageManager?: string) {
+  return postInstallTypescript(canUseNetwork, packageManager);
 }
 
-async function postInstallTypescript(canUseNetwork: boolean) {
-  const command = await isYarnGlobal() ? 'yarn' : 'npm';
+async function postInstallTypescript(canUseNetwork: boolean, packageManager?: string) {
+  const command = packageManager || (await isYarnGlobal() ? 'yarn' : 'npm');
 
   if (!canUseNetwork) {
     print(`Please run ${colors.green(`${command} install`)}!`);
