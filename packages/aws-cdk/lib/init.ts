@@ -261,7 +261,7 @@ async function postInstallJavascript(canUseNetwork: boolean) {
 }
 
 async function postInstallTypescript(canUseNetwork: boolean) {
-  const command = 'npm';
+  const command = await isYarnGlobal() ? 'yarn' : 'npm';
 
   if (!canUseNetwork) {
     print(`Please run ${colors.green(`${command} install`)}!`);
@@ -315,6 +315,15 @@ async function isInGitRepository(dir: string) {
  */
 function isRoot(dir: string) {
   return path.dirname(dir) === dir;
+}
+
+/**
+ * @returns true if current command was executed with yarn global package
+ */
+async function isYarnGlobal(): Promise<boolean> {
+  const {stdout: binPath} = childProcess.spawnSync('yarn', 'global bin'.split(' '), {encoding: 'utf8'});
+
+  return !!binPath && await fs.pathExists(path.join(binPath.trim(), 'cdk'));
 }
 
 /**
