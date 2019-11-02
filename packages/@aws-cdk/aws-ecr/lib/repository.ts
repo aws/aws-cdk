@@ -89,6 +89,12 @@ export interface IRepository extends IResource {
    * @param options Options for adding the rule
    */
   onImageScanCompleted(id: string, options?: OnImageScanCompletedOptions): events.Rule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers for repository events. Use
+   * `rule.addEventPattern(pattern)` to specify a filter.
+   */
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
@@ -200,6 +206,20 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     });
     return rule;
   }
+
+  /**
+   * Defines a CloudWatch event rule which triggers for repository events. Use
+   * `rule.addEventPattern(pattern)` to specify a filter.
+   */
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.ecr'],
+      resources: [this.repositoryArn]
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
@@ -254,6 +274,9 @@ export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
   readonly imageTag?: string;
 }
 
+/**
+ * Options for the OnImageScanCompleted method
+ */
 export interface OnImageScanCompletedOptions extends events.OnEventOptions {
   /**
    * Only watch changes to the image tags spedified.
