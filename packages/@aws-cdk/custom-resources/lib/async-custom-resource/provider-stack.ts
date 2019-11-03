@@ -1,5 +1,4 @@
 import { NestedStack } from '@aws-cdk/aws-cloudformation';
-import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
@@ -33,19 +32,16 @@ export class ProviderStack extends NestedStack {
   private constructor(scope: Construct, id: string, props: AsyncCustomResourceProps) {
     super(scope, id);
 
-    const onEventUserHandlerName = props.onEventHandler || 'index.onEvent';
-    const isCompleteUserHandlerName = props.isCompleteHandler || 'index.isComplete';
-
     this.userOnEventFunction = new lambda.Function(this, 'user-on-event-function', {
       code: props.code,
       runtime: props.runtime,
-      handler: onEventUserHandlerName,
+      handler: props.onEventHandler,
     });
 
     this.userIsCompleteFunction = new lambda.Function(this, 'user-is-complete-function', {
       code: props.code,
       runtime: props.runtime,
-      handler: isCompleteUserHandlerName
+      handler: props.isCompleteHandler
     });
 
     const onEventFunction = this.createFunction('onEventHandler');

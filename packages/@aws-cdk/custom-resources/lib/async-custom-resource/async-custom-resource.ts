@@ -63,36 +63,26 @@ export interface AsyncCustomResourceProps {
   readonly runtime: lambda.Runtime;
 
   /**
-   * The JavaScript function to invoke for all resource lifecycle
-   * operations (CREATE/UPDATE/DELETE).
-   *
-   * The syntax is `<file>.<function>` (similar to the AWS Lambda API for
-   * JavaScript).
+   * The function to invoke for all resource lifecycle operations
+   * (CREATE/UPDATE/DELETE).
    *
    * This function is responsible to begin the requested resource operation
    * (CREATE/UPDATE/DELETE) and return any additional properties to add to the
    * event, which will later be passed to `isComplete`. The `PhysicalResourceId`
    * property must be included in the response.
-   *
-   * @default "index.onEvent"
    */
-  readonly onEventHandler?: string;
+  readonly onEventHandler: string;
 
   /**
-   * The JavaScript function to invoke in order to determine if the operation is
+   * The function to invoke in order to determine if the operation is
    * complete.
-   *
-   * The syntax is `<file>.<function>` (similar to the AWS Lambda API for
-   * JavaScript).
    *
    * This function will be called immediately after `onEvent` and then
    * periodically based on the configured query interval as long as it returns
    * `false`. If the function still returns `false` and the alloted timeout has
    * passed, the operation will fail.
-   *
-   * @default "index.isComplete"
    */
-  readonly isCompleteHandler?: string;
+  readonly isCompleteHandler: string;
 
   /**
    * Time between calls to the `isComplete` handler which determines if the
@@ -138,14 +128,19 @@ export class AsyncCustomResource extends cfn.CustomResource {
       removalPolicy: props.removalPolicy
     });
 
-    this.userExecutionPrincipal = new MultipleRoles([
+    this.userExecutionPrincipal = new MultiRole([
       providerStack.userOnEventFunction.role!,
       providerStack.userIsCompleteFunction.role!
     ]);
   }
 }
 
-class MultipleRoles implements iam.IPrincipal {
+/**
+ * An IAM principal that represents multiple roles with the same policy.
+ *
+ * `assumeRoleAction` or `policyFragment` are not supported.
+ */
+class MultiRole implements iam.IPrincipal {
   public readonly grantPrincipal = this;
 
   constructor(private readonly roles: iam.IRole[]) { }
@@ -160,5 +155,4 @@ class MultipleRoles implements iam.IPrincipal {
 
     return true;
   }
-
 }

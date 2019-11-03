@@ -1,6 +1,6 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
-import { IsCompleteResponse, OnEventResponse } from '../types';
+import { IsCompleteRequest, IsCompleteResponse, OnEventResponse } from '../types';
 import { submitCloudFormationResponse } from './cfn-response';
 import consts = require('./consts');
 import { invokeFunction, startExecution } from './outbound';
@@ -63,7 +63,7 @@ export async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomR
 
     const waiter = {
       stateMachineArn: getEnv(consts.ENV_WAITER_STATE_MACHINE_ARN),
-      name: `${isCompleteEvent.RequestType}:${isCompleteEvent.PhysicalResourceId}`,
+      name: isCompleteEvent.RequestId,
       input: JSON.stringify(isCompleteEvent),
     };
 

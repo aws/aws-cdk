@@ -452,7 +452,7 @@ async function simulateWaiterAndExpect(expectedInput: any) {
 
   expectWaiterStarted({
     input: JSON.stringify(expectedInput),
-    name: `${expectedInput.RequestType}:${MOCK_PHYSICAL_ID}`,
+    name: MOCK_REQUEST.RequestId,
     stateMachineArn: MOCK_SFN_ARN,
   });
 
