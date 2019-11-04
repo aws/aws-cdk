@@ -250,8 +250,8 @@ async function main() {
     // bootstrap and build the package and all deps to ensure integrity
     const lerna = path.join(path.dirname(require.resolve('lerna/package.json')), 'cli.js');
     await exec(`${lerna} bootstrap`);
-    await exec(`${lerna} run --include-filtered-dependencies --progress pkglint --scope ${packageName}`);
-    await exec(`${lerna} run --include-filtered-dependencies --progress build --scope ${packageName}`);
+    await exec(`${lerna} run --include-dependencies --progress pkglint --scope ${packageName}`);
+    await exec(`${lerna} run --include-dependencies --progress build --scope ${packageName}`);
   }
 }
 
