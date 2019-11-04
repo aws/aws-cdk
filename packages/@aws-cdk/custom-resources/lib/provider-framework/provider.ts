@@ -9,6 +9,9 @@ import { calculateRetryPolicy } from './util';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 
+/**
+ * Initialization properties for the `Provider` construct.
+ */
 export interface ProviderProps {
   /**
    * The handler JavaScript code for the custom resource (Node.js 10.x).

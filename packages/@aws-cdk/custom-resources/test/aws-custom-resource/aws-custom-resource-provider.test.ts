@@ -5,6 +5,8 @@ import sinon = require('sinon');
 import { AwsSdkCall } from '../../lib';
 import { handler } from '../../lib/aws-custom-resource/runtime';
 
+AWS.setSDK(require.resolve('aws-sdk'));
+
 const eventCommon = {
   ServiceToken: 'token',
   ResponseURL: 'https://localhost',
@@ -20,7 +22,7 @@ function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResou
     .reply(200);
 }
 
-beforeEach(() => {
+afterEach(() => {
   AWS.restore();
   nock.cleanAll();
 });
