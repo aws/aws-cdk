@@ -1,3 +1,5 @@
+// tslint:disable: max-line-length
+
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
@@ -36,7 +38,7 @@ export = {
 
     // THEN
     test.throws(() => new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', stringValue: 'FooBar' }),
-                /does not match the specified allowedPattern/);
+      /does not match the specified allowedPattern/);
     test.done();
   },
 
@@ -46,9 +48,9 @@ export = {
 
     // THEN
     test.doesNotThrow(() => {
-       new ssm.StringParameter(stack, 'Parameter', {
-         allowedPattern: '^Bar$',
-         stringValue: cdk.Lazy.stringValue({ produce: () => 'Foo!' }),
+      new ssm.StringParameter(stack, 'Parameter', {
+        allowedPattern: '^Bar$',
+        stringValue: cdk.Lazy.stringValue({ produce: () => 'Foo!' }),
       });
     });
     test.done();
@@ -83,7 +85,7 @@ export = {
 
     // THEN
     test.throws(() => new ssm.StringListParameter(stack, 'Parameter', { stringListValue: ['Foo,Bar'] }),
-                /cannot contain the ',' character/);
+      /cannot contain the ',' character/);
     test.done();
   },
 
@@ -93,7 +95,7 @@ export = {
 
     // THEN
     test.throws(() => new ssm.StringListParameter(stack, 'Parameter', { allowedPattern: '^(Foo|Bar)$', stringListValue: ['Foo', 'FooBar'] }),
-                /does not match the specified allowedPattern/);
+      /does not match the specified allowedPattern/);
     test.done();
   },
 
@@ -130,6 +132,24 @@ export = {
     test.done();
   },
 
+  'parameterName that includes a "/" must be fully qualified (i.e. begin with "/") as well'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new ssm.StringParameter(stack, 'myParam', {
+      stringValue: 'myValue',
+      parameterName: 'path/to/parameter',
+    }), /Parameter names must be fully qualified/);
+
+    test.throws(() => new ssm.StringListParameter(stack, 'myParam2', {
+      stringListValue: [ 'foo', 'bar' ],
+      parameterName: 'path/to/parameter2'
+    }), /Parameter names must be fully qualified \(if they include \"\/\" they must also begin with a \"\/\"\)\: path\/to\/parameter2/);
+
+    test.done();
+  },
+
   'StringParameter.fromStringParameterName'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -139,14 +159,14 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(param.parameterArn), {
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':ssm:',
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName' ] ]
+        ':parameter/MyParamName']]
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -174,14 +194,14 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(param.parameterArn), {
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':ssm:',
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName' ] ]
+        ':parameter/MyParamName']]
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -201,14 +221,14 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(param.parameterArn), {
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':ssm:',
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName' ] ]
+        ':parameter/MyParamName']]
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'SecureString');
@@ -348,25 +368,25 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(param.parameterArn), {
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':ssm:',
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName' ] ]
+        ':parameter/MyParamName']]
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'StringList');
-    test.deepEqual(stack.resolve(param.stringListValue), { 'Fn::Split': [ ',', '{{resolve:ssm:MyParamName}}' ] });
+    test.deepEqual(stack.resolve(param.stringListValue), { 'Fn::Split': [',', '{{resolve:ssm:MyParamName}}'] });
     test.done();
   },
 
   'fromLookup will use the SSM context provider to read value during synthesis'(test: Test) {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' }});
+    const stack = new Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
     // WHEN
     const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name');
@@ -450,8 +470,16 @@ export = {
   'rendering of parameter arns'(test: Test) {
     const stack = new Stack();
     const param = new CfnParameter(stack, 'param');
-    const expectedA = { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam' ] ] };
-    const expectedB = { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' } ] ] };
+    const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam']] };
+    const expectedB = (conditionName: string) => ({
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', {
+        'Fn::If': [
+          conditionName,
+          { Ref: 'param' },
+          { 'Fn::Join': ['', ['/', { Ref: 'param' }]] }
+        ]
+      }]]
+    });
     let i = 0;
 
     // WHEN
@@ -464,23 +492,36 @@ export = {
     const case7 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam', version: 10 });
     const case8 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam', version: 10 });
     const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 10 });
+
+    // auto-generated name is always generated as a "simple name" (not/a/path)
     const case10 = new ssm.StringParameter(stack, `p${i++}`, { stringValue: 'value' });
+
+    // explicitly named physical name gives us a hint on how to render the ARN
+    const case11 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: '/foo/bar', stringValue: 'hello' });
+    const case12 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: 'simple-name', stringValue: 'hello' });
+
+    const case13 = new ssm.StringListParameter(stack, `p${i++}`, { stringListValue: [ 'hello', 'world' ] });
+    const case14 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: '/not/simple', stringListValue: [ 'hello', 'world' ] });
+    const case15 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: 'simple', stringListValue: [ 'hello', 'world' ] });
 
     // THEN
     test.deepEqual(stack.resolve(case1.parameterArn), expectedA);
     test.deepEqual(stack.resolve(case2.parameterArn), expectedA);
-    test.deepEqual(stack.resolve(case3.parameterArn), expectedB);
+    test.deepEqual(stack.resolve(case3.parameterArn), expectedB('p2AWSCDKStartsWith63AFB06B'));
     test.deepEqual(stack.resolve(case4.parameterArn), expectedA);
     test.deepEqual(stack.resolve(case5.parameterArn), expectedA);
-    test.deepEqual(stack.resolve(case6.parameterArn), expectedB);
+    test.deepEqual(stack.resolve(case6.parameterArn), expectedB('p5AWSCDKStartsWith33AD432E'));
     test.deepEqual(stack.resolve(case7.parameterArn), expectedA);
     test.deepEqual(stack.resolve(case8.parameterArn), expectedA);
-    test.deepEqual(stack.resolve(case9.parameterArn), expectedB);
-    test.deepEqual(stack.resolve(case10.parameterArn), {
-      'Fn::Join': [ '', [
-        'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p97A508212' }
-      ]
-    ] });
+    test.deepEqual(stack.resolve(case9.parameterArn), expectedB('p8AWSCDKStartsWith7339C979'));
+
+    // new ssm.Parameters determine if "/" is needed based on the posture of `parameterName`.
+    test.deepEqual(stack.resolve(case10.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p97A508212' } ] ] });
+    test.deepEqual(stack.resolve(case11.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p107D6B8AB0' } ] ] });
+    test.deepEqual(stack.resolve(case12.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p118A9CB02C' } ] ] });
+    test.deepEqual(stack.resolve(case13.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p129BE4CE91' } ] ] });
+    test.deepEqual(stack.resolve(case14.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p1326A2AEC4' } ] ] });
+    test.deepEqual(stack.resolve(case15.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p14C90B4AB7' } ] ] });
 
     test.done();
   }

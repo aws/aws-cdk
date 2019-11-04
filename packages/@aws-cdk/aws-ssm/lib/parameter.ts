@@ -2,10 +2,11 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IConstruct, IResource, Resource, Stack, Token
+  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token
 } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
+import { arnForParameterName } from './util';
 
 /**
  * An SSM Parameter reference.
@@ -186,9 +187,24 @@ export enum ParameterType {
 
 export interface StringParameterAttributes {
   /**
-   * The name of the parameter store value
+   * The name of the parameter store value.
+   *
+   * This value can be a token or a concrete string. If it is a concrete string
+   * and includes "/" it must also be prefixed with a "/" (fully-qualified).
    */
   readonly parameterName: string;
+
+  /**
+   * Determines the separator used to render the ARN for the SSM parameter.
+   * Valid values are `"/"` or `""`.
+   *
+   * If `parameterName` is a path (i.e. begins with "/"), the separator must be
+   * `""`. Otherwise, it must be `"/"`.
+   *
+   * @default - automatically determined based on the value of `parameterName`
+   * unless it is a token, in which case this field is required.
+   */
+  readonly parameterArnSeparator?: string;
 
   /**
    * The version number of the value you wish to retrieve.
@@ -253,7 +269,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
-      public readonly parameterArn = arnForParameterName(this, this.parameterName);
+      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, undefined);
       public readonly parameterType = type;
       public readonly stringValue = stringValue;
     }
@@ -269,7 +285,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
-      public readonly parameterArn = arnForParameterName(this, this.parameterName);
+      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, undefined);
       public readonly parameterType = ParameterType.SECURE_STRING;
       public readonly stringValue = stringValue;
       public readonly encryptionKey = attrs.encryptionKey;
@@ -360,7 +376,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     });
 
     this.parameterName = this.getResourceNameAttribute(resource.ref);
-    this.parameterArn = arnForParameterName(this, this.parameterName);
+    this.parameterArn = arnForParameterName(this, this.parameterName, props.parameterName || 'autogen');
 
     this.parameterType = resource.attrType;
     this.stringValue = resource.attrValue;
@@ -413,7 +429,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       value: props.stringListValue.join(','),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);
-    this.parameterArn = arnForParameterName(this, this.parameterName);
+    this.parameterArn = arnForParameterName(this, this.parameterName, props.parameterName || 'autogen');
 
     this.parameterType = resource.attrType;
     this.stringListValue = Fn.split(',', resource.attrValue);
@@ -441,21 +457,4 @@ function _assertValidValue(value: string, allowedPattern: string): void {
 
 function makeIdentityForImportedValue(parameterName: string) {
   return `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
-}
-
-function arnForParameterName(scope: IConstruct, parameterName: string): string {
-
-  // remove trailing "/" if we can resolve parameter name.
-  if (!Token.isUnresolved(parameterName)) {
-    if (parameterName.startsWith('/')) {
-      parameterName = parameterName.substr(1);
-    }
-  }
-
-  return Stack.of(scope).formatArn({
-    service: 'ssm',
-    resource: 'parameter',
-    sep: '/', // Sep is empty because this.parameterName starts with a / already!
-    resourceName: parameterName,
-  });
 }
