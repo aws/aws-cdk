@@ -129,6 +129,20 @@ export interface ContainerDefinitionOptions {
   readonly secrets?: { [key: string]: Secret };
 
   /**
+   * Time duration (in seconds) to wait before giving up on resolving dependencies for a container.
+   *
+   * @default - none
+   */
+  readonly startTimeout?: cdk.Duration;
+
+  /**
+   * Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.
+   *
+   * @default - none
+   */
+  readonly stopTimeout?: cdk.Duration;
+
+  /**
    * Specifies whether the container is marked essential.
    *
    * If the essential parameter of a container is marked as true, and that container fails
@@ -402,7 +416,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.portMappings.push(...portMappings.map(pm => {
       if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
-          throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
+          throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
         }
       }
 
@@ -522,6 +536,8 @@ export class ContainerDefinition extends cdk.Construct {
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
+      startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
+      stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
       ulimits: cdk.Lazy.anyValue({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
       volumesFrom: cdk.Lazy.anyValue({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),

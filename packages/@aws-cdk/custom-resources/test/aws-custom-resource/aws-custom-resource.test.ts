@@ -204,3 +204,42 @@ test('encodes booleans', () => {
     },
   });
 });
+
+test('timeout defaults to 30 seconds', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: 'id'
+    }
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Timeout: 30
+  });
+});
+
+test('can specify timeout', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: 'id'
+    },
+    timeout: cdk.Duration.minutes(15)
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Timeout: 900
+  });
+});
