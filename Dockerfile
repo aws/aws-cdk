@@ -22,7 +22,10 @@ RUN yum -y --security update \
   && grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
   && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
-  && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt
+  && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt \
+  && curl -fsSLO "https://yarnpkg.com/latest.tar.gz" \
+  && tar zvxf latest.tar.gz -C /usr/local --strip-components=1 --no-same-owner \
+  && rm latest.tar.gz
 
 COPY . .
 
