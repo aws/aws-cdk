@@ -153,6 +153,7 @@ export = {
     new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
       cluster,
       desiredTaskCount: 0,
+      maxScalingCapacity: 2,
       memoryLimitMiB: 512,
       image: ecs.ContainerImage.fromRegistry('test')
     });
@@ -162,6 +163,26 @@ export = {
       DesiredCount: 0,
       LaunchType: "EC2",
     }));
+
+    test.done();
+  },
+
+  'throws if desiredTaskCount and maxScalingCapacity are 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // THEN
+    test.throws(() =>
+      new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+        cluster,
+        desiredTaskCount: 0,
+        memoryLimitMiB: 512,
+        image: ecs.ContainerImage.fromRegistry('test')
+      })
+    , /maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
 
     test.done();
   },
