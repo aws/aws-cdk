@@ -1,5 +1,5 @@
 import { Duration } from '@aws-cdk/core';
-import util = require('../../lib/async-custom-resource/util');
+import util = require('../../lib/provider-framework/util');
 
 describe('retry policy', () => {
     it('default is 30 minutes timeout in 5 second intervals', () => {

@@ -12,7 +12,7 @@ class TestStack extends Stack {
     const file1 = new S3File(this, 'file1', {
       bucket,
       objectKey: 'second.txt',
-      contents: 'Hello, world, 2000!',
+      contents: 'Hello, world, 1980!',
       public: true,
     });
 
@@ -24,7 +24,7 @@ class TestStack extends Stack {
     new S3Assert(this, 'assert-file', {
       bucket,
       objectKey: 'second.txt',
-      expectedContent: 'Hello, world, 1922!'
+      expectedContent: 'Hello, world, 1980!'
     });
 
     // to delay file1's creation (and test the async assertions), we will make sure
@@ -37,5 +37,5 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'async-custom-resource-integration-tests-3');
+new TestStack(app, 'integ-provider-framework');
 app.synth();

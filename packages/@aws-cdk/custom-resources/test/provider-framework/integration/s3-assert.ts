@@ -1,8 +1,7 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import cfn = require('@aws-cdk/aws-cloudformation');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Duration } from '@aws-cdk/core';
-import path = require('path');
-import { AsyncCustomResource } from '../../../lib';
+import { Construct } from '@aws-cdk/core';
+import { Providers } from './providers';
 
 export interface S3AssertProps {
   /**
@@ -19,11 +18,6 @@ export interface S3AssertProps {
    * The expected contents.
    */
   readonly expectedContent: string;
-
-  /**
-   * @default Duration.minutes(10)
-   */
-  readonly timeout?: Duration;
 }
 
 /**
@@ -37,21 +31,16 @@ export class S3Assert extends Construct {
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
-    const resource = new AsyncCustomResource(this, 'Resource', {
-      uuid: '9F0E1249-7CD8-4E1F-BC21-797F444C753F',
-      code: lambda.Code.fromAsset(path.join(__dirname, 's3-assert-handler')),
-      runtime: lambda.Runtime.PYTHON_3_7,
+    const provider = Providers.getOrCreate(this).s3AssertProvider;
+
+    new cfn.CustomResource(this, 'Resource', {
+      provider: cfn.CustomResourceProvider.lambda(provider.entrypoint),
       resourceType: 'Custom::S3Assert',
-      onEventHandler: 'index.on_event',
-      isCompleteHandler: 'index.is_complete',
       properties: {
         BucketName: props.bucket.bucketName,
         ObjectKey: props.objectKey,
         ExpectedContent: props.expectedContent,
       },
-      totalTimeout: props.timeout || Duration.minutes(5),
     });
-
-    props.bucket.grantRead(resource.userExecutionPrincipal);
   }
 }

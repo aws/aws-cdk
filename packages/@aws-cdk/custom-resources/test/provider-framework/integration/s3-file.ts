@@ -1,8 +1,7 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import cfn = require('@aws-cdk/aws-cloudformation');
 import s3 = require('@aws-cdk/aws-s3');
 import { Construct, Token } from '@aws-cdk/core';
-import path = require('path');
-import { AsyncCustomResource } from '../../../lib';
+import { Providers } from './providers';
 import api = require('./s3-file-handler/api');
 
 interface S3FileProps {
@@ -39,12 +38,10 @@ export class S3File extends Construct {
   constructor(scope: Construct, id: string, props: S3FileProps) {
     super(scope, id);
 
-    const resource = new AsyncCustomResource(this, 'Resource', {
-      uuid: '53510EEE-B419-46DA-B5F1-A9594E2C7FED',
-      code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
-      runtime: lambda.Runtime.NODEJS_10_X,
-      onEventHandler: 'index.onEvent',
-      isCompleteHandler: 'index.isComplete',
+    const provider = Providers.getOrCreate(this).s3FileProvider;
+
+    const resource = new cfn.CustomResource(this, 'Resource', {
+      provider: cfn.CustomResourceProvider.lambda(provider.entrypoint),
       resourceType: 'Custom::S3File',
       properties: {
         [api.PROP_BUCKET_NAME]: props.bucket.bucketName,
@@ -54,7 +51,9 @@ export class S3File extends Construct {
       }
     });
 
-    props.bucket.grantWrite(resource.userExecutionPrincipal);
+    // this will cause our provider's role to accumulate grants
+    // for all buckets needed by this specific app.
+    props.bucket.grantWrite(provider);
 
     this.objectKey = Token.asString(resource.getAtt(api.ATTR_OBJECT_KEY));
     this.url = Token.asString(resource.getAtt(api.ATTR_URL));

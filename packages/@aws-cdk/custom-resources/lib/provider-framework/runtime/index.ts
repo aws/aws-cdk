@@ -1,6 +1,6 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
-import { IsCompleteRequest, IsCompleteResponse, OnEventResponse } from '../types';
+import { IsCompleteResponse, OnEventResponse } from '../types';
 import { submitCloudFormationResponse } from './cfn-response';
 import consts = require('./consts');
 import { invokeFunction, startExecution } from './outbound';

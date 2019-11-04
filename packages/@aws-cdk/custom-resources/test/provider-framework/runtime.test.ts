@@ -3,11 +3,11 @@
 import AWS = require('aws-sdk');
 import https = require('https');
 import { parse as urlparse } from 'url';
-import consts = require('../../lib/async-custom-resource/runtime/consts');
-import handler = require('../../lib/async-custom-resource/runtime/index');
-import outbound = require('../../lib/async-custom-resource/runtime/outbound');
-import util = require('../../lib/async-custom-resource/runtime/util');
-import { Retry } from '../../lib/async-custom-resource/runtime/util';
+import consts = require('../../lib/provider-framework/runtime/consts');
+import handler = require('../../lib/provider-framework/runtime/index');
+import outbound = require('../../lib/provider-framework/runtime/outbound');
+import util = require('../../lib/provider-framework/runtime/util');
+import { Retry } from '../../lib/provider-framework/runtime/util';
 
 util.includeStackTraces = false;
 
