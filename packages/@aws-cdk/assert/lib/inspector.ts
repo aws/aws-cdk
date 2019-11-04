@@ -1,6 +1,5 @@
 import api = require('@aws-cdk/cx-api');
-import { Assertion } from './assertion';
-import { not } from './assertion';
+import { Assertion, not } from './assertion';
 import { MatchStyle, matchTemplate } from './assertions/match-template';
 
 export abstract class Inspector {
