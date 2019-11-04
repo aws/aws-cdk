@@ -117,7 +117,6 @@ export class InitTemplate {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        console.log(file);
         await this.installProcessed(fromFile, path.join(targetDirectory, "tmp", file), project);
         continue;
       } else {
