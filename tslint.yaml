@@ -53,3 +53,5 @@ rules:
     # We require empty interfaces for AWS construct guideline compliance
     no-empty-interface: false
 
+    # Cleaner imports
+    no-duplicate-imports: error

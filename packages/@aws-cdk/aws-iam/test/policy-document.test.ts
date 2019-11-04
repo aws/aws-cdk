@@ -1,7 +1,9 @@
 import '@aws-cdk/assert/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
-import { Anyone, AnyPrincipal, CanonicalUserPrincipal, Effect, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
+import {
+  Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect, FederatedPrincipal,
+  IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal
+} from '../lib';
 
 describe('IAM polocy document', () => {
   test('the Permission class is a programming model for iam', () => {

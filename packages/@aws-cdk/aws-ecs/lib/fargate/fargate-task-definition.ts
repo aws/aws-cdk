@@ -1,5 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/core';
-import { Tokenization } from '@aws-cdk/core';
+import { Construct, Resource, Tokenization } from '@aws-cdk/core';
 import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
 
 /**

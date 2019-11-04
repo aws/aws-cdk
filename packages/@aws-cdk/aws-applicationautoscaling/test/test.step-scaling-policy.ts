@@ -1,12 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/core');
 import fc = require('fast-check');
 import { Test } from 'nodeunit';
 import appscaling = require('../lib');
-import { arbitrary_input_intervals } from './util';
-import { createScalableTarget } from './util';
+import { arbitrary_input_intervals, createScalableTarget } from './util';
 
 export = {
   'alarm thresholds are valid numbers'(test: Test) {
