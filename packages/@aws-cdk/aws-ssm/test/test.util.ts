@@ -65,7 +65,7 @@ export = {
 
     'fails if explicit separator is not defined and parameterName is a token'(test: Test) {
       const stack = new Stack();
-      test.throws(() => arnForParameterName(stack, Token.asString({ Ref: 'Boom' })), /foo/);
+      test.throws(() => arnForParameterName(stack, Token.asString({ Ref: 'Boom' })), /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "parameterArnSeparator" explicitly/);
       test.done();
     }
 

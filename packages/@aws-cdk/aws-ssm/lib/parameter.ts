@@ -197,6 +197,9 @@ export enum ParameterType {
   AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
 }
 
+/**
+ * Common attributes for string parameters.
+ */
 export interface CommonStringParameterAttributes {
   /**
    * The name of the parameter store value.
