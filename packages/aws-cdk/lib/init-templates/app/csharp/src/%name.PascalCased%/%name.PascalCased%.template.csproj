@@ -14,7 +14,7 @@
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
 
     <!-- Roslyn Analyzers for JSII libraries will provide compile-time errors about un-set required fields -->
-    <PackageReference Include="Amazon.JSII.Analyzers" Version="%jsii-pacmak-version%" PrivateAssets="All" />
+    <PackageReference Include="Amazon.JSII.Analyzers" Version="[%jsii-pacmak-version%]" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
