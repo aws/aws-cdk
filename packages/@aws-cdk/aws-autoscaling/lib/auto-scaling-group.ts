@@ -7,9 +7,8 @@ import sns = require('@aws-cdk/aws-sns');
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, withResolved
+  Tag, Tokenization, withResolved
 } from '@aws-cdk/core';
-import { Tokenization } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
