@@ -243,3 +243,44 @@ test('can specify timeout', () => {
     Timeout: 900
   });
 });
+
+test('implements IGrantable', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+  });
+  const customResource = new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: 'id'
+    }
+  });
+
+  // WHEN
+  role.grantPassRole(customResource.grantPrincipal);
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'service:Action',
+          Effect: 'Allow',
+          Resource: '*'
+        },
+        {
+          Action: 'iam:PassRole',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'Role1ABCC5F0',
+              'Arn'
+            ]
+          }
+        }
+      ],
+      Version: '2012-10-17'
+    }
+  });
+});
