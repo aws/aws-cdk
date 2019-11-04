@@ -19,10 +19,14 @@ public class HelloStackTest {
         App app = new App();
         HelloStack stack = new HelloStack(app, "test");
 
+        final CloudAssembly synth = app.synth();
+        final File actualTemplateFile = new File(synth.getDirectory() + File.separator + synth.getStack(stack.getStackName()).getTemplateFile());
         // synthesize the stack to a CloudFormation template and compare against
         // a checked-in JSON file.
-        JsonNode actual = JSON.valueToTree(app.synth().getStack(stack.getStackName()).getTemplate());
-        JsonNode expected = JSON.readTree(getClass().getResource("expected.cfn.json"));
-        assertEquals(expected, actual);
+        try (final Reader reader = new FileReader(actualTemplateFile)) {
+            JsonNode actual = JSON.valueToTree(JSON.readTree(reader));
+            JsonNode expected = JSON.readTree(getClass().getResource("expected.cfn.json"));
+            assertEquals(expected, actual);
+        }
     }
 }
