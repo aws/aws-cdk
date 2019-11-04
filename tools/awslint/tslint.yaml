@@ -51,3 +51,6 @@ rules:
     no-floating-promises: true
 
     no-console: false
+
+    # Cleaner imports
+    no-duplicate-imports: error
