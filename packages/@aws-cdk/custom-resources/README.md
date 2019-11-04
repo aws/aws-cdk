@@ -78,7 +78,12 @@ getParameter.getData('Parameter.Value')
 IAM policy statements required to make the API calls are derived from the calls
 and allow by default the actions to be made on all resources (`*`). You can
 restrict the permissions by specifying your own list of statements with the
-`policyStatements` prop.
+`policyStatements` prop. The custom resource also implements `iam.IGrantable`,
+making it possible to use the `grantXxx()` methods.
+
+As this custom resource uses a singleton Lambda function, it's important to note
+that the function's role will eventually accumulate the permissions/grants from all
+resources.
 
 Chained API calls can be achieved by creating dependencies:
 ```ts
