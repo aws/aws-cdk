@@ -1,4 +1,9 @@
-import { CfnCondition, Construct, Fn, IConstruct, Stack, Token } from "@aws-cdk/core";
+import { IConstruct, Stack, Token } from "@aws-cdk/core";
+
+export interface ArnForParameterNameOptions {
+  readonly physicalName?: string;
+  readonly parameterArnSeparator?: string;
+}
 
 /**
  * Renders an ARN for an SSM parameter given a parameter name.
@@ -6,66 +11,53 @@ import { CfnCondition, Construct, Fn, IConstruct, Stack, Token } from "@aws-cdk/
  * @param parameterName the parameter name to include in the ARN
  * @param physicalName optional physical name specified by the user (to auto-detect separator)
  */
-export function arnForParameterName(scope: IConstruct, parameterName: string, physicalName?: string): string {
-  const { sep, resourceName } = determineSepAndResourceName();
+export function arnForParameterName(scope: IConstruct, parameterName: string, options: ArnForParameterNameOptions = { }): string {
+  const physicalName = options.physicalName;
+  const nameToValidate = physicalName || parameterName;
 
-  validateParameterName(physicalName || parameterName);
+  // validate "parameterArnSeparator" (if defined).
+  if (options.parameterArnSeparator !== undefined) {
+    if (options.parameterArnSeparator !== '/' && options.parameterArnSeparator !== '') {
+      throw new Error(`parameterArnSeparator must be either "/" or "". got "${options.parameterArnSeparator}"`);
+    }
+  }
+
+  if (!Token.isUnresolved(nameToValidate) && nameToValidate.includes('/') && !nameToValidate.startsWith('/')) {
+    throw new Error(`Parameter names must be fully qualified (if they include "/" they must also begin with a "/"): ${nameToValidate}`);
+  }
 
   return Stack.of(scope).formatArn({
     service: 'ssm',
     resource: 'parameter',
-    sep,
-    resourceName,
+    sep: determineSeperator(),
+    resourceName: parameterName,
   });
 
-  function validateParameterName(concreteName: string) {
-    // can't validate tokens
-    if (Token.isUnresolved(concreteName)) {
-      return;
-    }
+  /**
+   * Determines the ARN separator for this parameter: if we have a concrete
+   * parameter name (or explicitly defined physical name), we will parse them
+   * and decide whether a "/" is needed or not. Otherwise, users will have to
+   * explicitly specify `parameterArnSeparator` when they import the ARN.
+   */
+  function determineSeperator() {
+    // look for a concrete name as a hint for determining the separator
+    const concreteName = !Token.isUnresolved(parameterName) ? parameterName : physicalName;
+    if (!concreteName || Token.isUnresolved(concreteName)) {
 
-    if (concreteName.includes('/') && !concreteName.startsWith('/')) {
-      throw new Error(`Parameter names must be fully qualified (if they include "/" they must also begin with a "/"): ${concreteName}`);
-    }
-  }
-
-  function determineSepAndResourceName() {
-    // if the parameter name is a token
-    if (Token.isUnresolved(parameterName)) {
-
-      // if we have a concrete physical name, we can use it to determine the separator
-      if (physicalName && !Token.isUnresolved(physicalName)) {
-        return {
-          sep: physicalName.startsWith('/') ? '' : '/',
-          resourceName: parameterName
-        };
+      if (options.parameterArnSeparator === undefined) {
+        throw new Error(`Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "parameterArnSeparator" explicitly`);
       }
 
-      // parameterName is a token and physical name is not helping us (either missing or a token itself)
-      // in this use case we will need to synthesize a CloudFormation condition that will be used to determine
-      // if the name has a "/" prefix or not.
-      const startsWithSlash = startsWithCondition(scope as Construct, parameterName, "/");
-      return {
-        sep: '',
-        resourceName: Token.asString(Fn.conditionIf(startsWithSlash.logicalId, parameterName, `/${parameterName}`))
-      };
+      return options.parameterArnSeparator;
     }
 
-    // parameterName is concrete, use it to determine the token
-    return {
-      sep: parameterName.startsWith('/') ? '' : '/',
-      resourceName: parameterName
-    };
-  }
-}
+    const calculatedSep = concreteName.startsWith('/') ? '' : '/';
 
-/**
- * Gets or creates a CloudFormation condition that evaluates to "TRUE" if `parameterName` (treated as an opaque token)
- * starts with a "/".
- */
-function startsWithCondition(scope: Construct, value: string, startsWith: string) {
-  const id = `AWS::CDK::StartsWith(${startsWith})`;
-  return scope.node.tryFindChild(id) as CfnCondition || new CfnCondition(scope, id, {
-    expression: Fn.conditionEquals(Fn.select(0, Fn.split(startsWith, value)), "")
-  });
+    // if users explicitly specify the separator and it conflicts with the one we need, it's an error.
+    if (options.parameterArnSeparator !== undefined && options.parameterArnSeparator !== calculatedSep) {
+      throw new Error(`parameterArnSeparator "${options.parameterArnSeparator}" is invalid for SSM parameter with name "${concreteName}". It should be "${calculatedSep}"`);
+    }
+
+    return calculatedSep;
+  }
 }

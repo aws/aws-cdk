@@ -470,28 +470,20 @@ export = {
   'rendering of parameter arns'(test: Test) {
     const stack = new Stack();
     const param = new CfnParameter(stack, 'param');
-    const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam']] };
-    const expectedB = (conditionName: string) => ({
-      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', {
-        'Fn::If': [
-          conditionName,
-          { Ref: 'param' },
-          { 'Fn::Join': ['', ['/', { Ref: 'param' }]] }
-        ]
-      }]]
-    });
+    const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam'] ] };
+    const expectedB = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' } ] ] };
+    const expectedC = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'param' } ] ] };
     let i = 0;
 
     // WHEN
     const case1 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, 'bam');
     const case2 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, '/bam');
-    const case3 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, param.valueAsString);
     const case4 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam' });
     const case5 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam' });
-    const case6 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString });
+    const case6 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, parameterArnSeparator: '/' });
     const case7 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam', version: 10 });
     const case8 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam', version: 10 });
-    const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 10 });
+    const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 10, parameterArnSeparator: '' });
 
     // auto-generated name is always generated as a "simple name" (not/a/path)
     const case10 = new ssm.StringParameter(stack, `p${i++}`, { stringValue: 'value' });
@@ -507,22 +499,77 @@ export = {
     // THEN
     test.deepEqual(stack.resolve(case1.parameterArn), expectedA);
     test.deepEqual(stack.resolve(case2.parameterArn), expectedA);
-    test.deepEqual(stack.resolve(case3.parameterArn), expectedB('p2AWSCDKStartsWith63AFB06B'));
     test.deepEqual(stack.resolve(case4.parameterArn), expectedA);
     test.deepEqual(stack.resolve(case5.parameterArn), expectedA);
-    test.deepEqual(stack.resolve(case6.parameterArn), expectedB('p5AWSCDKStartsWith33AD432E'));
+    test.deepEqual(stack.resolve(case6.parameterArn), expectedB);
     test.deepEqual(stack.resolve(case7.parameterArn), expectedA);
     test.deepEqual(stack.resolve(case8.parameterArn), expectedA);
-    test.deepEqual(stack.resolve(case9.parameterArn), expectedB('p8AWSCDKStartsWith7339C979'));
+    test.deepEqual(stack.resolve(case9.parameterArn), expectedC);
 
     // new ssm.Parameters determine if "/" is needed based on the posture of `parameterName`.
-    test.deepEqual(stack.resolve(case10.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p97A508212' } ] ] });
-    test.deepEqual(stack.resolve(case11.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p107D6B8AB0' } ] ] });
-    test.deepEqual(stack.resolve(case12.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p118A9CB02C' } ] ] });
-    test.deepEqual(stack.resolve(case13.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p129BE4CE91' } ] ] });
-    test.deepEqual(stack.resolve(case14.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p1326A2AEC4' } ] ] });
-    test.deepEqual(stack.resolve(case15.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p14C90B4AB7' } ] ] });
+    test.deepEqual(stack.resolve(case10.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p81BB0F6FE' } ] ] });
+    test.deepEqual(stack.resolve(case11.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p97A508212' } ] ] });
+    test.deepEqual(stack.resolve(case12.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p107D6B8AB0' } ] ] });
+    test.deepEqual(stack.resolve(case13.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p118A9CB02C' } ] ] });
+    test.deepEqual(stack.resolve(case14.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p129BE4CE91' } ] ] });
+    test.deepEqual(stack.resolve(case15.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p1326A2AEC4' } ] ] });
 
+    test.done();
+  },
+
+  'if parameterName is a token separator must be specified'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const param = new CfnParameter(stack, 'param');
+    let i = 0;
+
+    // WHEN
+    const p1 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', parameterArnSeparator: '/' });
+    const p2 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', parameterArnSeparator: '' });
+    const p3 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringListValue: [ 'foo' ], parameterArnSeparator: '' });
+
+    // THEN
+    test.deepEqual(stack.resolve(p1.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p0B02A8F65' } ] ] });
+    test.deepEqual(stack.resolve(p2.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p1E43AD5AC' } ] ] });
+    test.deepEqual(stack.resolve(p3.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p2C1903AEB' } ] ] });
+
+    test.done();
+  },
+
+  'fails if name is a token and no explicit separator'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const param = new CfnParameter(stack, 'param');
+    let i = 0;
+
+    // THEN
+    const expected = /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "parameterArnSeparator" explicitly/;
+    test.throws(() => ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, param.valueAsString), expected);
+    test.throws(() => ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 1 }), expected);
+    test.throws(() => new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo' }), expected);
+    test.throws(() => new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo' }), expected);
+    test.done();
+  },
+
+  'fails if parameterArnSeparator is wrong based on a concrete physical name'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    let i = 0;
+
+    // THEN
+    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'simple', parameterArnSeparator: '' }), /parameterArnSeparator "" is invalid for SSM parameter with name "simple". It should be "\/"/);
+    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/foo/bar', parameterArnSeparator: '/' }), /parameterArnSeparator "\/" is invalid for SSM parameter with name \"\/foo\/bar\"\. It should be \"\"/);
+    test.done();
+  },
+
+  'fails if parameterArnSeparator is not "/" or ""'(test: Test) {
+    const stack = new Stack();
+    const param = new CfnParameter(stack, 'param');
+    let i = 0;
+
+    // THEN
+    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, parameterArnSeparator: 'x' }), /parameterArnSeparator must be either "\/" or ""\. got "x"/);
+    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, parameterArnSeparator: 'boom' }), /parameterArnSeparator must be either "\/" or ""\. got "boom"/);
     test.done();
   }
 };

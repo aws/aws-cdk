@@ -1,4 +1,10 @@
 {
+  "Parameters": {
+    "ParameterNameParameter": {
+      "Type": "String",
+      "Default": "myParamName"
+    }
+  },
   "Resources": {
     "StringAutogenE7E896E4": {
       "Type": "AWS::SSM::Parameter",
@@ -44,6 +50,16 @@
         "Type": "StringList",
         "Value": "hello,world",
         "Name": "/list/path/name"
+      }
+    },
+    "Parameterized6DC5E5E5": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "hello, world",
+        "Name": {
+          "Ref": "ParameterNameParameter"
+        }
       }
     }
   },
@@ -193,6 +209,31 @@
             ":parameter",
             {
               "Ref": "ListPath120D6FAB"
+            }
+          ]
+        ]
+      }
+    },
+    "ParameterizedArn": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              "Ref": "AWS::Partition"
+            },
+            ":ssm:",
+            {
+              "Ref": "AWS::Region"
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":parameter/",
+            {
+              "Ref": "Parameterized6DC5E5E5"
             }
           ]
         ]

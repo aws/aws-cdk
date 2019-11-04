@@ -1,6 +1,5 @@
 // tslint:disable: max-line-length
 
-import { expect } from '@aws-cdk/assert';
 import { Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { arnForParameterName } from '../lib/util';
@@ -20,11 +19,19 @@ export = {
 
       'token parameterName and concrete physical name (no additional "/")'(test: Test) {
         const stack = new Stack();
-        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), 'myParam')), {
+        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { physicalName: 'myParam' })), {
           'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'Boom' }]]
         });
         test.done();
       },
+
+      'token parameterName, explicit "/" separator'(test: Test) {
+        const stack = new Stack();
+        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { parameterArnSeparator: '/' })), {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'Boom' }]]
+        });
+        test.done();
+      }
 
     },
 
@@ -40,46 +47,25 @@ export = {
 
       'token parameterName and concrete physical name (no sep)'(test: Test) {
         const stack = new Stack();
-        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), '/foo/bar')), {
+        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { physicalName: '/foo/bar' })), {
           'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'Boom' }]]
         });
         test.done();
       },
 
+      'token parameterName, explicit "" separator'(test: Test) {
+        const stack = new Stack();
+        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { parameterArnSeparator: '' })), {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'Boom' }]]
+        });
+        test.done();
+      }
+
     },
 
-    'token parameterName and no physical name (Fn::If expression)'(test: Test) {
+    'fails if explicit separator is not defined and parameterName is a token'(test: Test) {
       const stack = new Stack();
-
-      test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), undefined)), {
-        'Fn::Join':
-          ['',
-            ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':ssm:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':parameter',
-              {
-                'Fn::If':
-                  ['AWSCDKStartsWith',
-                    { Ref: 'Boom' },
-                    { 'Fn::Join': ['', ['/', { Ref: 'Boom' }]] }]
-              }]]
-      });
-
-      expect(stack).toMatch({
-        Conditions: {
-          AWSCDKStartsWith: {
-            "Fn::Equals": [
-              { "Fn::Select": [ 0, { "Fn::Split": [ "/", { Ref: "Boom" } ] } ] },
-              ""
-            ]
-          }
-        }
-      });
-
+      test.throws(() => arnForParameterName(stack, Token.asString({ Ref: 'Boom' })), /foo/);
       test.done();
     }
 

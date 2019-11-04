@@ -8,11 +8,13 @@
 //   "StringSimpleArn": "arn:aws:ssm:us-east-1:585695036304:parameter/simple-name",
 // }
 
-import { App, CfnOutput, Stack } from "@aws-cdk/core";
+import { App, CfnOutput, CfnParameter, Stack } from "@aws-cdk/core";
 import ssm = require('../lib');
 
 const app = new App();
 const stack = new Stack(app, 'integ-parameter-arns');
+
+const input = new CfnParameter(stack, 'ParameterNameParameter', { type: 'String', default: 'myParamName' });
 
 const params = [
   new ssm.StringParameter(stack, 'StringAutogen', { stringValue: 'hello, world' }),
@@ -21,6 +23,7 @@ const params = [
   new ssm.StringListParameter(stack, 'ListAutogen', { stringListValue: [ 'hello', 'world' ] }),
   new ssm.StringListParameter(stack, 'ListSimple', { stringListValue: [ 'hello', 'world' ], parameterName: 'list-simple-name' }),
   new ssm.StringListParameter(stack, 'ListPath', { stringListValue: [ 'hello', 'world' ], parameterName: '/list/path/name' }),
+  new ssm.StringParameter(stack, 'Parameterized', { stringValue: 'hello, world', parameterName: input.valueAsString, parameterArnSeparator: '/' })
 ];
 
 for (const p of params) {
