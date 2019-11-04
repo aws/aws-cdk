@@ -729,4 +729,48 @@ export = {
 
     test.done();
   },
+
+  'ALB - throws if desiredTaskCount is 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // THEN
+    test.throws(() =>
+      new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+        cluster,
+        memoryLimitMiB: 1024,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        desiredCount: 0,
+      })
+    , /You must specify a desiredCount greater than 0/);
+
+    test.done();
+  },
+
+  'NLB - throws if desiredTaskCount is 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // THEN
+    test.throws(() =>
+      new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+        cluster,
+        memoryLimitMiB: 1024,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        desiredCount: 0,
+      })
+    , /You must specify a desiredCount greater than 0/);
+
+    test.done();
+  },
 };

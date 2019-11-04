@@ -232,4 +232,29 @@ export = {
 
     test.done();
   },
+
+  "throws if desiredTaskCount is 0"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro')
+    });
+
+    // THEN
+    test.throws(() =>
+      new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+        cluster,
+        scheduledEc2TaskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('henk'),
+          memoryLimitMiB: 512,
+        },
+        schedule: events.Schedule.expression('rate(1 minute)'),
+        desiredTaskCount: 0,
+      }),
+    /You must specify a desiredTaskCount greater than 0/);
+
+    test.done();
+  },
 };
