@@ -171,6 +171,43 @@ export = {
         }));
 
         test.done();
+    },
+
+    'Pass should render InputPath / Parameters / OutputPath correctly'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const task = new stepfunctions.Pass(stack, 'Pass', {
+            inputPath: "$",
+            outputPath: "$.state",
+            parameters: {
+                "input.$": "$",
+                "stringArgument": "inital-task",
+                "numberArgument": 123,
+                "booleanArgument": true,
+                "arrayArgument": ["a", "b", "c"]
+            }
+        });
+
+        // WHEN
+        const taskState = task.toStateJson();
+
+        // THEN
+        test.deepEqual(taskState, { End: true,
+            InputPath: '$',
+            OutputPath: '$.state',
+            Parameters:
+             { 'input.$': '$',
+               'stringArgument': 'inital-task',
+               'numberArgument': 123,
+               'booleanArgument': true,
+               'arrayArgument': [ 'a', 'b', 'c' ] },
+            Type: 'Pass',
+            Comment: undefined,
+            Result: undefined,
+            ResultPath: undefined,
+        });
+
+        test.done();
     }
 
 };
