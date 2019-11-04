@@ -199,9 +199,9 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       source: ['aws.ecr'],
       detailType: ['ECR Image Scan'],
       detail: {
-        repositoryName: [this.repositoryName],
-        scanStatus: ['COMPLETE'],
-        imageTags: options.imageTags ? options.imageTags : undefined
+        'repository-name': [this.repositoryName],
+        'scan-status': ['COMPLETE'],
+        'image-tags': options.imageTags ? options.imageTags : undefined
       }
     });
     return rule;
@@ -282,7 +282,7 @@ export interface OnImageScanCompletedOptions extends events.OnEventOptions {
    * Only watch changes to the image tags spedified.
    * Leave it undefined to watch the full repository.
    *
-   * @default undefined
+   * @default - Watch the changes to the repository with all image tags
    */
   readonly imageTags?: string[];
 }
