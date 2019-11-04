@@ -11,3 +11,4 @@ export * from './sagemaker-task-base-types';
 export * from './sagemaker-train-task';
 export * from './sagemaker-transform-task';
 export * from './start-execution';
+export * from './evaluate-expression';
