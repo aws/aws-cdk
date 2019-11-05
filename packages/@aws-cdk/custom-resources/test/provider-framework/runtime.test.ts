@@ -1,144 +1,30 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
 import AWS = require('aws-sdk');
-import https = require('https');
-import { parse as urlparse } from 'url';
 import consts = require('../../lib/provider-framework/runtime/consts');
-import handler = require('../../lib/provider-framework/runtime/index');
+import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 import util = require('../../lib/provider-framework/runtime/util');
 import { Retry } from '../../lib/provider-framework/runtime/util';
+import mocks = require('./mocks');
 
 util.includeStackTraces = false;
 
-const MOCK_ON_EVENT_FUNCTION_ARN = 'arn:lambda:user:on:event';
-const MOCK_IS_COMPLETE_FUNCTION_ARN = 'arn:lambda:user:is:complete';
-
-const MOCK_REQUEST = {
-  ResponseURL: "http://pre-signed-S3-url-for-response/path/in/bucket",
-  LogicalResourceId: 'MyTestResource',
-  RequestId: "uniqueid-for-this-create-request",
-  StackId: 'arn:aws:cloudformation:us-west-2:123456789012:stack/stack-name/guid',
-};
-
 const MOCK_PHYSICAL_ID = 'mock-physical-resource-id';
-const MOCK_SFN_ARN = 'arn:of:state:machine';
 const MOCK_PROPS = { Name: "Value", List: ["1", "2", "3"], ServiceToken: 'bla' };
 const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 
-let onEventMock: AWSCDKAsyncCustomResource.OnEventHandler;
-let isCompleteMock: AWSCDKAsyncCustomResource.IsCompleteHandler;
-let startStateMachineInput: AWS.StepFunctions.StartExecutionInput | undefined;
+outbound.httpRequest = mocks.httpRequestMock;
+outbound.invokeFunction = mocks.invokeFunctionMock;
+outbound.startExecution = mocks.startExecutionMock;
 
-// mock http requests
-let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
-outbound.httpRequest = async (options: https.RequestOptions, body: string) => {
-  const responseUrl = urlparse(MOCK_REQUEST.ResponseURL);
-
-  expect(options.method).toEqual('PUT');
-  expect(options.path).toEqual(responseUrl.path);
-  expect(options.hostname).toEqual(responseUrl.hostname);
-  const headers = options.headers || {};
-  expect(headers['content-length']).toEqual(body.length);
-  expect(headers['content-type']).toStrictEqual("");
-  cfnResponse = JSON.parse(body);
-
-  if (!cfnResponse) { throw new Error('unexpected'); }
-
-  // we always expect a physical resource id
-  expect(cfnResponse.PhysicalResourceId).toBeTruthy();
-
-  // we always expect a reason
-  expect(cfnResponse.Reason).toBeTruthy();
-
-  expect(cfnResponse.LogicalResourceId).toEqual(MOCK_REQUEST.LogicalResourceId);
-  expect(cfnResponse.RequestId).toEqual(MOCK_REQUEST.RequestId);
-  expect(cfnResponse.StackId).toEqual(MOCK_REQUEST.StackId);
-  expect(cfnResponse.Status === 'FAILED' || cfnResponse.Status === 'SUCCESS').toBeTruthy();
-};
-
-outbound.invokeFunction = async (req: AWS.Lambda.InvocationRequest): Promise<AWS.Lambda.InvocationResponse> => {
-  if (!req.Payload || typeof (req.Payload) !== 'string') {
-    throw new Error(`invalid payload of type ${typeof (req.Payload)}}`);
-  }
-
-  const input = JSON.parse(req.Payload);
-
-  try {
-
-    let ret;
-    switch (req.FunctionName) {
-      case MOCK_ON_EVENT_FUNCTION_ARN:
-        ret = await onEventMock(input as AWSCDKAsyncCustomResource.OnEventRequest);
-        break;
-
-      case MOCK_IS_COMPLETE_FUNCTION_ARN:
-        ret = await isCompleteMock(input as AWSCDKAsyncCustomResource.IsCompleteRequest);
-        break;
-
-      default:
-        throw new Error(`unknown mock function`);
-    }
-
-    return {
-      Payload: JSON.stringify(ret)
-    };
-  } catch (e) {
-    return {
-      FunctionError: 'Unhandled',
-      Payload: JSON.stringify({
-        errorType: e.name,
-        errorMessage: e.message,
-        trace: [
-          "AccessDenied: Access Denied",
-          "    at Request.extractError (/var/runtime/node_modules/aws-sdk/lib/services/s3.js:585:35)",
-          "    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:106:20)",
-          "    at Request.emit (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:78:10)",
-          "    at Request.emit (/var/runtime/node_modules/aws-sdk/lib/request.js:683:14)",
-          "    at Request.transition (/var/runtime/node_modules/aws-sdk/lib/request.js:22:10)",
-          "    at AcceptorStateMachine.runTo (/var/runtime/node_modules/aws-sdk/lib/state_machine.js:14:12)",
-          "    at /var/runtime/node_modules/aws-sdk/lib/state_machine.js:26:10",
-          "    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:38:9)",
-          "    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:685:12)",
-          "    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:116:18)"
-        ]
-      })
-    };
-  }
-};
-
-beforeEach(() => {
-  cfnResponse = {} as any;
-
-  process.env[consts.ENV_USER_IS_COMPLETE_FUNCTION_ARN] = MOCK_IS_COMPLETE_FUNCTION_ARN;
-  process.env[consts.ENV_USER_ON_EVENT_FUNCTION_ARN] = MOCK_ON_EVENT_FUNCTION_ARN;
-  process.env[consts.ENV_WAITER_STATE_MACHINE_ARN] = MOCK_SFN_ARN;
-
-  onEventMock = () => { throw new Error('"onEvent" not implemented'); };
-  isCompleteMock = () => { throw new Error('"isComplete" not implemented'); };
-
-  startStateMachineInput = undefined;
-  outbound.startExecution = async (req: AWS.StepFunctions.StartExecutionInput) => {
-    startStateMachineInput = req;
-    expect(req.stateMachineArn).toEqual(MOCK_SFN_ARN);
-    return {
-      executionArn: req.stateMachineArn + '/execution',
-      startDate: new Date(),
-    };
-  };
-});
-
-afterEach(() => {
-  delete process.env[consts.ENV_USER_IS_COMPLETE_FUNCTION_ARN];
-  delete process.env[consts.ENV_USER_ON_EVENT_FUNCTION_ARN];
-  delete process.env[consts.ENV_WAITER_STATE_MACHINE_ARN];
-});
+beforeEach(() => mocks.setup());
 
 test('synchronous flow (isComplete immediately returns true): waiter state machine is not triggered', async () => {
   // GIVEN
   let isCompleteCalls = 0;
 
-  onEventMock = async event => {
+  mocks.onEventImplMock = async event => {
     expect(event.RequestType).toEqual('Create');
     expect(event.ResourceProperties).toStrictEqual(MOCK_PROPS);
     expect(event.PhysicalResourceId).toBeUndefined(); // physical ID in CREATE
@@ -149,7 +35,7 @@ test('synchronous flow (isComplete immediately returns true): waiter state machi
     };
   };
 
-  isCompleteMock = async event => {
+  mocks.isCompleteImplMock = async event => {
     isCompleteCalls++;
     expect(event.PhysicalResourceId).toEqual(MOCK_PHYSICAL_ID); // physical ID returned from onEvent is passed to "isComplete"
     expect(event.Data).toStrictEqual(MOCK_ATTRS); // attributes are propagated between the calls
@@ -183,7 +69,7 @@ test('synchronous flow (isComplete immediately returns true): waiter state machi
 test('async flow: isComplete returns true only after 3 times', async () => {
   let isCompleteCalls = 0;
 
-  onEventMock = async event => {
+  mocks.onEventImplMock = async event => {
     expect(event.RequestType).toEqual('Create');
     expect(event.ResourceProperties).toStrictEqual(MOCK_PROPS);
     expect(event.PhysicalResourceId).toBeUndefined(); // physical ID in CREATE
@@ -194,7 +80,7 @@ test('async flow: isComplete returns true only after 3 times', async () => {
     };
   };
 
-  isCompleteMock = async event => {
+  mocks.isCompleteImplMock = async event => {
     isCompleteCalls++;
     expect(event.PhysicalResourceId).toEqual(MOCK_PHYSICAL_ID); // physical ID returned from onEvent is passed to "isComplete"
     expect(event.Data).toStrictEqual(MOCK_ATTRS); // attributes are propagated between the calls
@@ -249,8 +135,8 @@ test('async flow: isComplete returns true only after 3 times', async () => {
 
 test('isComplete throws synchronously (in the first invocation)', async () => {
   // GIVEN
-  onEventMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID, });
-  isCompleteMock = async () => { throw new Error('Some failure'); };
+  mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID, });
+  mocks.isCompleteImplMock = async () => { throw new Error('Some failure'); };
 
   // WHEN
   await invokeMainHandler({
@@ -264,8 +150,8 @@ test('isComplete throws synchronously (in the first invocation)', async () => {
 
 test('fails gracefully if "onEvent" throws an error', async () => {
   // GIVEN
-  onEventMock = async () => { throw new Error('error thrown during onEvent'); };
-  isCompleteMock = async () => ({ IsComplete: true });
+  mocks.onEventImplMock = async () => { throw new Error('error thrown during onEvent'); };
+  mocks.isCompleteImplMock = async () => ({ IsComplete: true });
 
   // WHEN
   await invokeMainHandler({
@@ -283,7 +169,7 @@ describe('Physical IDs', () => {
 
     test('CREATE', async () => {
       // WHEN
-      onEventMock = async () => ({ Data: { a: 123 } } as any);
+      mocks.onEventImplMock = async () => ({ Data: { a: 123 } } as any);
 
       // THEN
       await invokeMainHandler({
@@ -295,7 +181,7 @@ describe('Physical IDs', () => {
 
     test('UPDATE', async () => {
       // WHEN
-      onEventMock = async () => ({ Data: { a: 123 } } as any);
+      mocks.onEventImplMock = async () => ({ Data: { a: 123 } } as any);
 
       // THEN
       await invokeMainHandler({
@@ -308,7 +194,7 @@ describe('Physical IDs', () => {
 
     test('DELETE', async () => {
       // WHEN
-      onEventMock = async () => ({ Data: { a: 123 } } as any);
+      mocks.onEventImplMock = async () => ({ Data: { a: 123 } } as any);
 
       // THEN
       await invokeMainHandler({
@@ -323,8 +209,8 @@ describe('Physical IDs', () => {
 
   test('UPDATE: can change the physical ID by returning a new ID', async () => {
     // GIVEN
-    onEventMock = async () => ({ PhysicalResourceId: 'NewPhysicalId' });
-    isCompleteMock = async () => ({ IsComplete: true });
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'NewPhysicalId' });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
 
     // WHEN
     await invokeMainHandler({
@@ -341,8 +227,8 @@ describe('Physical IDs', () => {
 
   test('DELETE: cannot change the physical resource ID during a delete', async () => {
     // GIVEN
-    onEventMock = async () => ({ PhysicalResourceId: 'NewPhysicalId' });
-    isCompleteMock = async () => ({ IsComplete: true });
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'NewPhysicalId' });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
 
     // WHEN
     await invokeMainHandler({
@@ -357,8 +243,8 @@ describe('Physical IDs', () => {
 
   test('main handler fails if UPDATE is called without a physical resource id', async () => {
     // GIVEN
-    onEventMock = async () => undefined;
-    isCompleteMock = async () => ({ IsComplete: false });
+    mocks.onEventImplMock = async () => undefined;
+    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
 
     // WHEN
     await invokeMainHandler({
@@ -372,8 +258,8 @@ describe('Physical IDs', () => {
 
   test('main handler fails if DELETE is called without a physical resource id', async () => {
     // GIVEN
-    onEventMock = async () => undefined;
-    isCompleteMock = async () => ({ IsComplete: false });
+    mocks.onEventImplMock = async () => undefined;
+    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
 
     // WHEN
     await invokeMainHandler({
@@ -387,8 +273,8 @@ describe('Physical IDs', () => {
 
   test('main handler fails if CREATE is called *with* a physical resource id', async () => {
     // GIVEN
-    onEventMock = async () => undefined;
-    isCompleteMock = async () => ({ IsComplete: false });
+    mocks.onEventImplMock = async () => undefined;
+    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
 
     // WHEN
     await invokeMainHandler({
@@ -404,8 +290,8 @@ describe('Physical IDs', () => {
 
 test('isComplete always returns "false" and then a timeout occurs', async () => {
   // GIVEN
-  onEventMock = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });
-  isCompleteMock = async () => ({ IsComplete: false });
+  mocks.onEventImplMock = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => ({ IsComplete: false });
 
   // WHEN
   await invokeMainHandler({
@@ -434,8 +320,8 @@ test('isComplete always returns "false" and then a timeout occurs', async () => 
 
 test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
   // GIVEN
-  onEventMock = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });
-  isCompleteMock = async () => ({ IsComplete: false, Data: { Foo: 3333 } });
+  mocks.onEventImplMock = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => ({ IsComplete: false, Data: { Foo: 3333 } });
 
   // WHEN
   await invokeMainHandler({
@@ -446,27 +332,45 @@ test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
   expectCloudFormationFailed(`"Data" is not allowed if "IsComplete" is "False"`);
 });
 
+test('if there is no user-defined "isComplete", the waiter will not be triggered or needed', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+
+  // WHEN
+  delete process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV];
+  delete process.env[consts.WAITER_STATE_MACHINE_ARN_ENV];
+  // ...onEvent is already defined
+
+  await invokeMainHandler({
+    RequestType: 'Create',
+  });
+
+  // THEN
+  expectNoWaiter();
+  expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+});
+
 // -----------------------------------------------------------------------------------------------------------------------
 
 async function simulateWaiterAndExpect(expectedInput: any) {
 
   expectWaiterStarted({
     input: JSON.stringify(expectedInput),
-    name: MOCK_REQUEST.RequestId,
-    stateMachineArn: MOCK_SFN_ARN,
+    name: mocks.MOCK_REQUEST.RequestId,
+    stateMachineArn: mocks.MOCK_SFN_ARN,
   });
 
   let retry = true;
   let count = 5;
   while (retry) {
     try {
-      await handler.isCompleteHandler(expectedInput);
+      await framework.isComplete(expectedInput);
       retry = false;
     } catch (e) {
       if (e instanceof Retry) {
 
         if (count-- === 0) {
-          await handler.timeoutHandler({ Cause: JSON.stringify({ errorMessage: e.message }) });
+          await framework.onTimeout({ Cause: JSON.stringify({ errorMessage: e.message }) });
           retry = false;
         } else {
           retry = true;
@@ -482,15 +386,15 @@ async function simulateWaiterAndExpect(expectedInput: any) {
 async function invokeMainHandler(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
   const x = {
     ServiceToken: 'SERVICE-TOKEN',
-    ResponseURL: MOCK_REQUEST.ResponseURL,
-    StackId: MOCK_REQUEST.StackId,
-    RequestId: MOCK_REQUEST.RequestId,
+    ResponseURL: mocks.MOCK_REQUEST.ResponseURL,
+    StackId: mocks.MOCK_REQUEST.StackId,
+    RequestId: mocks.MOCK_REQUEST.RequestId,
     ResourceType: 'Custom::TestResource',
-    LogicalResourceId: MOCK_REQUEST.LogicalResourceId,
+    LogicalResourceId: mocks.MOCK_REQUEST.LogicalResourceId,
     ...req
   };
 
-  return await handler.onEventHandler(x as AWSLambda.CloudFormationCustomResourceEvent);
+  return await framework.onEvent(x as AWSLambda.CloudFormationCustomResourceEvent);
 }
 
 function expectCloudFormationFailed(expectedReason: string) {
@@ -501,8 +405,8 @@ function expectCloudFormationFailed(expectedReason: string) {
 }
 
 function expectCloudFormationSuccess(resp?: Partial<AWSLambda.CloudFormationCustomResourceResponse>) {
-  if (cfnResponse.Status !== 'SUCCESS') {
-    console.error(cfnResponse.Reason || '<NO REASON>');
+  if (mocks.cfnResponse.Status !== 'SUCCESS') {
+    console.error(mocks.cfnResponse.Reason || '<NO REASON>');
   }
 
   expectCloudFormationResponse({ Status: 'SUCCESS', ...resp });
@@ -510,15 +414,15 @@ function expectCloudFormationSuccess(resp?: Partial<AWSLambda.CloudFormationCust
 
 function expectCloudFormationResponse(resp: Partial<AWSLambda.CloudFormationCustomResourceResponse> = {}) {
   for (const [key, expected] of Object.entries(resp)) {
-    const actual = (cfnResponse as any)[key];
+    const actual = (mocks.cfnResponse as any)[key];
     expect(actual).toStrictEqual(expected as any);
   }
 }
 
 function expectNoWaiter() {
-  expect(startStateMachineInput).toBeUndefined();
+  expect(mocks.startStateMachineInput).toBeUndefined();
 }
 
 function expectWaiterStarted(expected: AWS.StepFunctions.StartExecutionInput) {
-  expect(startStateMachineInput).toStrictEqual(expected);
+  expect(mocks.startStateMachineInput).toStrictEqual(expected);
 }

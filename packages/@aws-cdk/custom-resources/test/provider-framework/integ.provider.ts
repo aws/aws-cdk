@@ -1,7 +1,10 @@
+/// !cdk-integ *
+
 import s3 = require('@aws-cdk/aws-s3');
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
-import { S3Assert } from './s3-assert';
-import { S3File } from './s3-file';
+import { ProvidersStack } from './integration-test-fixtures/providers';
+import { S3Assert } from './integration-test-fixtures/s3-assert';
+import { S3File } from './integration-test-fixtures/s3-file';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -37,5 +40,11 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'integ-provider-framework');
+
+const providersStack = new ProvidersStack(app, 'integ-provider-framework-providers');
+const testStack = new TestStack(app, 'integ-provider-framework');
+
+// ensure we first deploy the providers before we use them
+testStack.addDependency(providersStack);
+
 app.synth();

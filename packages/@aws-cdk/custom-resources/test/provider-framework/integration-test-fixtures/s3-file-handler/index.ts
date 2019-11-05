@@ -74,10 +74,3 @@ export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventReque
     PhysicalResourceId: objectKey
   };
 }
-
-/**
- * Always return `true` because this resource finishes asynchrnously.
- */
-export async function isComplete(_: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> {
-  return { IsComplete: true };
-}

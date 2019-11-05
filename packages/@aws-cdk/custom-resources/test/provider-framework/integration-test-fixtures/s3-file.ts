@@ -1,7 +1,7 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
 import s3 = require('@aws-cdk/aws-s3');
 import { Construct, Token } from '@aws-cdk/core';
-import { Providers } from './providers';
+import { ProvidersStack } from './providers';
 import api = require('./s3-file-handler/api');
 
 interface S3FileProps {
@@ -38,10 +38,8 @@ export class S3File extends Construct {
   constructor(scope: Construct, id: string, props: S3FileProps) {
     super(scope, id);
 
-    const provider = Providers.getOrCreate(this).s3FileProvider;
-
     const resource = new cfn.CustomResource(this, 'Resource', {
-      provider: cfn.CustomResourceProvider.lambda(provider.entrypoint),
+      provider: ProvidersStack.importS3FileResourceProvider(this),
       resourceType: 'Custom::S3File',
       properties: {
         [api.PROP_BUCKET_NAME]: props.bucket.bucketName,
@@ -50,10 +48,6 @@ export class S3File extends Construct {
         [api.PROP_PUBLIC]: props.public
       }
     });
-
-    // this will cause our provider's role to accumulate grants
-    // for all buckets needed by this specific app.
-    props.bucket.grantWrite(provider);
 
     this.objectKey = Token.asString(resource.getAtt(api.ATTR_OBJECT_KEY));
     this.url = Token.asString(resource.getAtt(api.ATTR_URL));

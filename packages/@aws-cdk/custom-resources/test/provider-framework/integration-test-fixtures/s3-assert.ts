@@ -1,7 +1,7 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
 import s3 = require('@aws-cdk/aws-s3');
 import { Construct } from '@aws-cdk/core';
-import { Providers } from './providers';
+import { ProvidersStack } from './providers';
 
 export interface S3AssertProps {
   /**
@@ -31,10 +31,8 @@ export class S3Assert extends Construct {
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
-    const provider = Providers.getOrCreate(this).s3AssertProvider;
-
     new cfn.CustomResource(this, 'Resource', {
-      provider: cfn.CustomResourceProvider.lambda(provider.entrypoint),
+      provider: ProvidersStack.importS3AssertResourceProvider(this),
       resourceType: 'Custom::S3Assert',
       properties: {
         BucketName: props.bucket.bucketName,

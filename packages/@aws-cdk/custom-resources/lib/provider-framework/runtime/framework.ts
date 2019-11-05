@@ -6,6 +6,13 @@ import consts = require('./consts');
 import { invokeFunction, startExecution } from './outbound';
 import { failOnError, getEnv, log, Retry } from './util';
 
+// use consts for handler names to compiler-enforce the coupling with construction code.
+export = {
+  [consts.FRAMEWORK_ON_EVENT_HANDLER_NAME]: onEvent,
+  [consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME]: isComplete,
+  [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout
+};
+
 /**
  * The main runtime entrypoint of the async custom resource lambda function.
  *
@@ -16,55 +23,40 @@ import { failOnError, getEnv, log, Retry } from './util';
  *
  * @param cfnRequest The cloudformation custom resource event.
  */
-export async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
+async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
   await failOnError(cfnRequest, async () => {
     log('onEventHandler', cfnRequest);
 
     cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
 
+    // validate incoming request
     validateCfnRequest(cfnRequest);
 
-    const onEventResult = await executeOnEventUserHandler(cfnRequest);
+    const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, cfnRequest) as OnEventResponse;
+    log('onEvent returned:', onEventResult);
 
-    //
-    // validate that onEventResult always includes a PhysicalResourceId
+    // merge the request and the result from onEvent to form the complete resource event
+    // this also performs validation.
+    const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
+    log('event:', onEventResult);
 
-    if (!onEventResult || !onEventResult.PhysicalResourceId) {
-      throw new Error(`onEvent response must include a PhysicalResourceId for all request types`);
-    }
-
-    // if we are in DELETE and physical ID was changed, it's an error.
-    if (cfnRequest.RequestType === 'Delete' && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
-      throw new Error(`DELETE: cannot change the physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}" during deletion`);
-    }
-
-    // if we are in UPDATE and physical ID was changed, it's a replacement (just log)
-    if (cfnRequest.RequestType === 'Update' && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
-      log(`UPDATE: changing physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}"`);
-    }
-
-    //
-    // merge request event and result event (result prevails).
-
-    const isCompleteEvent: AWSCDKAsyncCustomResource.IsCompleteRequest = {
-      ...cfnRequest,
-      ...onEventResult
-    };
-
-    //
-    // immediately invoke isComplete (the sync case).
-
-    if (await executeIsCompleteUserHandler(isCompleteEvent)) {
+    // determine if this is an async provider based on whether we have an isComplete handler defined.
+    // if it is not defined, then we are basically ready to return a positive response.
+    if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
+      await submitCloudFormationResponse('SUCCESS', resourceEvent);
       return;
     }
 
-    //
-    // ok, we are not complete, so kick off the waiter workflow
+    // immediately invoke isComplete (the sync case).
+    if (await invokeIsCompleteUserHandler(resourceEvent)) {
+      return;
+    }
 
+    // ok, we are not complete, so kick off the waiter workflow
     const waiter = {
-      stateMachineArn: getEnv(consts.ENV_WAITER_STATE_MACHINE_ARN),
-      name: isCompleteEvent.RequestId,
-      input: JSON.stringify(isCompleteEvent),
+      stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
+      name: resourceEvent.RequestId,
+      input: JSON.stringify(resourceEvent),
     };
 
     log('starting waiter', waiter);
@@ -76,17 +68,17 @@ export async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomR
 }
 
 // invoked a few times until `complete` is true or until it times out.
-export async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
+async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   return await failOnError(event, async () => {
     log('isCompleteHandler', event);
-    if (!await executeIsCompleteUserHandler(event)) {
+    if (!await invokeIsCompleteUserHandler(event)) {
       throw new Retry(JSON.stringify(event));
     }
   });
 }
 
 // invoked when completion retries are exhaused.
-export async function timeoutHandler(timeoutEvent: any) {
+async function onTimeout(timeoutEvent: any) {
   log('timeoutHandler', timeoutEvent);
 
   const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
@@ -128,20 +120,11 @@ function parseJsonPayload(payload: any): any {
 }
 
 /**
- * Invokes the user-defined "onEvent" handler.
- */
-async function executeOnEventUserHandler(onEventRequest: AWSCDKAsyncCustomResource.OnEventRequest) {
-  const onEventResult = await invokeUserFunction(consts.ENV_USER_ON_EVENT_FUNCTION_ARN, onEventRequest) as OnEventResponse;
-  log('onEvent returned:', onEventResult);
-  return onEventResult;
-}
-
-/**
  * Invokes the user-defined "isComplete" handler.
  */
-async function executeIsCompleteUserHandler(isCompleteRequest: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<boolean> {
+async function invokeIsCompleteUserHandler(isCompleteRequest: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<boolean> {
   log('executing user isComplete:', isCompleteRequest);
-  const isCompleteResult = await invokeUserFunction(consts.ENV_USER_IS_COMPLETE_FUNCTION_ARN, isCompleteRequest) as IsCompleteResponse;
+  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, isCompleteRequest) as IsCompleteResponse;
   log('isComplete returned:', isCompleteResult);
 
   // if we are not complete, reeturn false, and don't send a response back.
@@ -182,4 +165,29 @@ function validateCfnRequest(cfnRequest: AWSLambda.CloudFormationCustomResourceEv
   if ((cfnRequest.RequestType === 'Update' || cfnRequest.RequestType === 'Delete') && !cfnRequest.PhysicalResourceId) {
     throw new Error(`${errorPrefix} PhysicalResourceId is required for "Update" and "Delete" events`);
   }
+}
+
+function createResponseEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent, onEventResult: OnEventResponse): AWSCDKAsyncCustomResource.IsCompleteRequest {
+  //
+  // validate that onEventResult always includes a PhysicalResourceId
+
+  if (!onEventResult || !onEventResult.PhysicalResourceId) {
+    throw new Error(`onEvent response must include a PhysicalResourceId for all request types`);
+  }
+
+  // if we are in DELETE and physical ID was changed, it's an error.
+  if (cfnRequest.RequestType === 'Delete' && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
+    throw new Error(`DELETE: cannot change the physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}" during deletion`);
+  }
+
+  // if we are in UPDATE and physical ID was changed, it's a replacement (just log)
+  if (cfnRequest.RequestType === 'Update' && onEventResult.PhysicalResourceId !== cfnRequest.PhysicalResourceId) {
+    log(`UPDATE: changing physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}"`);
+  }
+
+  // merge request event and result event (result prevails).
+  return {
+    ...cfnRequest,
+    ...onEventResult
+  };
 }
