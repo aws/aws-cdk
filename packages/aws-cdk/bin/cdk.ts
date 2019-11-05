@@ -71,7 +71,7 @@ async function parseCommandLineArguments() {
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
-      .option('package-manager', { type: 'string', default: 'npm', desc: 'The Node.js package manager to use, e.g. "npm", "yarn", "pnpm". To be used with --language=typescript|javascript'}))
+      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, the dependencies will not be automatically installed'}))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help

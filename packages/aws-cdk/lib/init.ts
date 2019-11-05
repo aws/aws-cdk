@@ -18,7 +18,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean, packageManager?: string) {
+export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean, generateOnly = false) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -40,11 +40,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     throw new Error('No language was selected');
   }
 
-  if (packageManager && !['typescript', 'javascript'].includes(language)) {
-    throw new Error(`The --package-manager option is only supported with --language=typescript|javascript, got ${language}`);
-  }
-
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true, packageManager);
+  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true, generateOnly);
 }
 
 /**
@@ -216,12 +212,12 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, packageManager?: string) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean) {
   await assertIsEmptyDirectory();
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, process.cwd());
   await initializeGitRepository();
-  await postInstall(language, canUseNetwork, packageManager);
+  await postInstall(language, canUseNetwork, generateOnly);
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
@@ -248,28 +244,33 @@ async function initializeGitRepository() {
   }
 }
 
-async function postInstall(language: string, canUseNetwork: boolean, packageManager?: string) {
+async function postInstall(language: string, canUseNetwork: boolean, generateOnly: boolean) {
   switch (language) {
   case 'javascript':
-    return await postInstallJavascript(canUseNetwork, packageManager);
+    return await postInstallJavascript(canUseNetwork, generateOnly);
   case 'typescript':
-    return await postInstallTypescript(canUseNetwork, packageManager);
+    return await postInstallTypescript(canUseNetwork, generateOnly);
   case 'java':
-    return await postInstallJava(canUseNetwork);
+    return await postInstallJava(canUseNetwork, generateOnly);
   case 'python':
     return await postInstallPython();
   }
 }
 
-async function postInstallJavascript(canUseNetwork: boolean, packageManager?: string) {
-  return postInstallTypescript(canUseNetwork, packageManager);
+async function postInstallJavascript(canUseNetwork: boolean, generateOnly: boolean) {
+  return postInstallTypescript(canUseNetwork, generateOnly);
 }
 
-async function postInstallTypescript(canUseNetwork: boolean, packageManager?: string) {
-  const command = packageManager || (await isYarnGlobal() ? 'yarn' : 'npm');
+async function postInstallTypescript(canUseNetwork: boolean, generateOnly: boolean) {
+  const command = 'npm';
 
   if (!canUseNetwork) {
     print(`Please run ${colors.green(`${command} install`)}!`);
+    return;
+  }
+
+  if (generateOnly) {
+    print(`Please install your dependencies manually, e.g. ${colors.green(`${command} install`)}`);
     return;
   }
 
@@ -281,9 +282,14 @@ async function postInstallTypescript(canUseNetwork: boolean, packageManager?: st
   }
 }
 
-async function postInstallJava(canUseNetwork: boolean) {
+async function postInstallJava(canUseNetwork: boolean, generateOnly: boolean) {
   if (!canUseNetwork) {
     print(`Please run ${colors.green(`mvn package`)}!`);
+    return;
+  }
+
+  if (generateOnly) {
+    print(`Please compile your application manually, e.g. ${colors.green(`mvn package`)}`);
     return;
   }
 
@@ -320,15 +326,6 @@ async function isInGitRepository(dir: string) {
  */
 function isRoot(dir: string) {
   return path.dirname(dir) === dir;
-}
-
-/**
- * @returns true if current command was executed with yarn global package
- */
-async function isYarnGlobal(): Promise<boolean> {
-  const {stdout: binPath} = childProcess.spawnSync('yarn', 'global bin'.split(' '), {encoding: 'utf8'});
-
-  return !!binPath && await fs.pathExists(path.join(binPath.trim(), 'cdk'));
 }
 
 /**
