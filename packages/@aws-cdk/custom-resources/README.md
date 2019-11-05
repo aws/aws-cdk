@@ -37,7 +37,7 @@ The `@aws-cdk/custom-resources.Provider` is a "mini-framework" for
 implementing providers for AWS CloudFormation [custom
 resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
 It offers a high-level API which makes it easier to implement robust and
-powerful custom resources and includes the folowing capabilities:
+powerful custom resources and includes the following capabilities:
 
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
