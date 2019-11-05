@@ -89,7 +89,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   /**
    * Listener port of the network load balancer that will serve traffic to the service.
    *
-   * @default - 80
+   * @default 80
    */
   readonly listenerPort?: number;
 
