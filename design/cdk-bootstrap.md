@@ -65,42 +65,11 @@ We will add a new command-line option called `--trust` to the `bootstrap` comman
 Its value is a list of AWS account IDs:
 
 ```shell
-$ cdk bootstrap [--trust accountId[,otherAccountId]...] aws://account/region
+$ cdk bootstrap \
+    [--trust accountId[,otherAccountId]...] \
+    [--cloudformation-execution-policies policyName[,otherPolicyName]...] \
+    aws://account/region
 ```
-
-If the `--trust` option has been passed on the CLI,
-the tool will present the user with the following "menu":
-
-```shell
-This will create a new IAM Role, trusting the CloudFormation service principal,
-that will be used for deploying your CloudFormation stacks in this environment.
-Please choose the Managed Policy or Policies to attach to the Role
-that contain the permissions required to perform those deployments:
-
-[1]  AdministratorAccess
-[2]  AmazonDynamoDBFullAccess
-[3]  AmazonEC2FullAccess
-[4]  AmazonECS_FullAccess
-[5]  AmazonS3FullAccess
-[6]  AmazonSageMakerFullAccess
-[7]  AmazonSESFullAccess
-[8]  AmazonSNSFullAccess
-[9]  AmazonSQSFullAccess
-[10] AWSLambdaFullAccess
-[11] SimpleWorkflowFullAccess
-...
-
-Please input the number of the chosen Policy from the above list,
-or provide a fully qualified ARN of a different Managed Policy.
-You can input multiple numbers and/or ARNs (up to 10),
-separated by commas.
-
->
-```
-
-After the user has made their choice,
-or if the `--trust` option has not been passed,
-bootstrapping will proceed.
 
 If a user wants to add new trusted account(s) to an existing bootstrap stack,
 they have to specify all of the accounts they want to trust in the `--trust` option,
@@ -109,8 +78,8 @@ otherwise, the previously trusted account(s) will be removed.
 
 We will also add a another option,
 `--cloudformation-execution-policies`,
-that allows you to pass a list of managed policy ARNs on the command line,
-so that the `bootstrap` command can also be executed in non-interactive mode.
+that allows you to pass a list of managed policy ARNs on the command line to attach to the
+**CloudFormation Execution Role**.
 
 ### Removing existing customization options
 
@@ -148,10 +117,9 @@ These are the new options:
   for deployment from a Continuous Delivery CDK pipeline to work.
 
 * `--cloudformation-execution-policies`: allows specifying the ManagedPolicy ARN(s)
-  that should be attached to the **CloudFormation Execution Role**
-  instead of choosing them from a menu interactively.
+  that should be attached to the **CloudFormation Execution Role**.
 
-## Updating bootstrap resources
+## Bootstrap resources version
 
 Because we already have a bootstrap solution in place,
 and it's possible we will need to add more bootstrap resources as time goes by,
@@ -212,26 +180,148 @@ The particular components are:
 * Init template: the version of the `aws-cdk` package that was used to run the `cdk init` command
   that generated the current CDK application.
 
- CLI  | Framework | Bootstrap | Init template | Result
-------|-----------|-----------|---------------|-------
- old  |    old    |    old    |      old      | current situation    
- old  |    old    |    old    |      new      | should work the same as currently (init template should be backwards compatible)
- old  |    old    |    new    |      old      | should work the same as currently (`cdk bootstrap` should be backwards compatible)
- old  |    new    |    old    |      old      | should work the same as currently (framework auto-detects old CLI)
- new  |    old    |    old    |      old      | should work the same as currently (CLI auto-detects old framework)
-      |           |           |               |
- old  |    old    |    new    |      new      | should work (`cdk bootstrap` should be backwards compatible)
- old  |    new    |    old    |      new      | error out: "please upgrade your CLI"
- new  |    old    |    old    |      new      | should work the same as currently (CLI auto-detects old framework)
- old  |    new    |    new    |      old      | should work the same as currently (framework auto-detects old CLI, `cdk bootstrap` is backwards compatible)
- new  |    old    |    new    |      old      | should work the same as currently (CLI auto-detects old framework, `cdk bootstrap` is backwards compatible)
- new  |    new    |    old    |      old      | error out: "please run `cdk bootstrap`"
-      |           |           |               |
- old  |    new    |    new    |      new      | error out: "please upgrade your CLI"
- new  |    old    |    new    |      new      | should work the same as currently (CLI auto-detects old framework, `cdk bootstrap` is backwards compatible)
- new  |    new    |    old    |      new      | error out: "please run `cdk bootstrap`"
- new  |    new    |    new    |      old      | should work the same as currently (feature flag is not set: old assets behavior, `cdk bootstrap` is backwards compatible)
- new  |    new    |    new    |      new      | final state
+Let's go through each of the scenarios:
+
+### CLI: old, framework: old, bootstrap: old, init template: old
+
+This is the current situation
+(before any of the changes needed for "CI/CD for CDK apps" are implemented).
+
+### CLI: old, framework: old, bootstrap: old, init template: new
+
+The new template will differ from the old one in only one aspect:
+it will contain a setting in the `cdk.json` file that activates the new assets behavior.
+
+The old code will simply ignore this setting
+(as it doesn't have any knowledge of it),
+so everything should work exactly as it does currently.
+
+### CLI: old, framework: old, bootstrap: new, init template: old
+
+To make this scenario work, we will need the outputs in the new bootstrap template to be preserved,
+with exactly the same names as in the old bootstrap template.
+The current [code reads them using the CFN API](https://github.com/aws/aws-cdk/blob/45f0e02735f6e12becccc606447607c2dda9c3a5/packages/aws-cdk/lib/api/toolkit-info.ts#L220-L233),
+so the specific names of the bucket are immaterial
+(it doesn't matter that the new bootstrap template uses physical names).
+
+The one danger I see here is that,
+if we want to always add the KMS key to the new bootstrap resources,
+the role putting assets into the bucket needs permissions to the used key,
+which wasn't true before.
+
+### CLI: old, framework: new, bootstrap: old, init template: old
+
+In this scenario, because the feature flag in the init template is not set,
+the framework should use the current assets behavior
+(use parameters instead of hard-coding the paths),
+and so the old bootstrapping is fine.
+
+### CLI: new, framework: old, bootstrap: old, init template: old
+
+In this scenario, the CLI should auto-detect that it's running with an old version of the framework,
+and use the current assets behavior
+(use parameters instead of hard-coding the paths),
+and so the old bootstrapping is fine.
+
+### CLI: old, framework: old, bootstrap: new, init template: new
+
+This is similar to the "old, old, new, old" scenario above -
+to make it work, we need to preserve the outputs from the old bootstrap template in the new bootstrap template.
+
+The flag set in `cdk.json` by the init template will be ignored by the old code,
+so the asset behavior will be unchanged.
+
+### CLI: old, framework: new, bootstrap: old, init template: new
+
+This is a tricky one.
+I believe in this case, we need to error out in the framework,
+and prompt the user to update their CLI version,
+as it won't be able to handle the new asset behavior
+(which will be triggered by the flag set in `cdk.json` by the new init template).
+
+### CLI: new, framework: old, bootstrap: old, init template: new
+
+This is similar to the "new, old, old, old" scenario -
+the CLI should detect it's running with an old version of the framework,
+and use the current assets behavior.
+
+### CLI: old, framework: new, bootstrap: new, init template: old
+
+Since the flag in `cdk.json` is not set by the old init template,
+the asset behavior is the same as the current one,
+so as long as the new bootstrap template preserves the outputs,
+everything should work like it does now.
+
+### CLI: new, framework: new, bootstrap: old, init template: old
+
+Since the flag in `cdk.json` is not set by the old init template,
+the asset behavior is the same as the current one,
+so the old bootstrapping is fine.
+
+### CLI: old, framework: new, bootstrap: new, init template: new
+
+This is similar to the "old, new, old, new" scenario above:
+we need to error out in the framework,
+and prompt the user to update their CLI version,
+as it won't be able to handle the new asset behavior
+(which will be triggered by the flag set in `cdk.json` by the new init template).
+
+### CLI: new, framework: old, bootstrap: new, init template: new
+
+This is similar to the "new, old, old, old" scenario -
+the CLI should detect it's running with an old version of the framework,
+and use the current assets behavior.
+Bootstrapping needs to preserve the outputs of the stack in order to support this scenario.
+
+### CLI: new, framework: new, bootstrap: old, init template: new
+
+This is an interesting case.
+At `synth` time, the template will be invalid:
+pointing to S3 paths that don't exist
+(because of the old bootstrap stack).
+However, when any command that has AWS credentials runs
+(like `cdk deploy`, or `cdk publish`),
+it should do a verification using the `AwsCdkBootstrapVersion` export described above,
+and fail, telling the customer to run `cdk bootstrap` again.
+
+We can also do deeper checks: for example,
+we can verify that the bucket the file assets point to actually exists.
+If it doesn't, it's probable that the name was overridden in either the stack definition,
+or during bootstrapping - and it needs to be done in both of those places to work,
+so we can display a helpful error message to the user.
+
+### CLI: new, framework: new, bootstrap: new, init template: old
+
+Pretty much identical to the "old, new, new, old" scenario above
+(since the flag in `cdk.json` is not set by the old init template,
+the asset behavior is the same as the current one,
+so as long as the new bootstrap template preserves the outputs,
+everything should work like it does now).
+
+### CLI: new, framework: new, bootstrap: new, init template: new
+
+The desired final state.
+
+## Updating the existing bootstrap stack
+
+As all current CDK customers already have a bootstrap stack defined,
+we have to make sure that running the `cdk bootstrap` command in the new version works correctly for that case
+(and not only for the case when the bootstrap stack didn't exist in a given environment).
+
+We already saw that, to preserve backwards compatibility in many cases,
+we need to use the same stack name in the new bootstrapping as in the old one.
+Which means running `cdk bootstrap` will result in a CFN stack update.
+
+The tricky part is the existing assets bucket.
+Non-empty buckets cannot be removed by CloudFormation,
+so if we don't have a resource with that logical ID in the template,
+CloudFormation will try to remove it, and fail -
+so, the entire bootstrap command will fail!
+
+To combat that, I think we have to give the S3 assets bucket in the new template the same logical ID as in the old one.
+We will set its `UpdateReplacePolicy` to `Retain`,
+so that assigning it our custom physical name will leave the old one orphaned.
+This should make sure the CFN update succeeds.
 
 ## Bootstrap template
 
@@ -308,7 +398,7 @@ Here is the JSON of the bootstrap CloudFormation template:
         }
       }
     },
-    "FileAssetsBucket": {
+    "StagingBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
@@ -331,7 +421,8 @@ Here is the JSON of the bootstrap CloudFormation template:
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true
         }
-      }
+      },
+      "UpdateReplacePolicy": "Retain"
     },
     "ContainerAssetsRepository": {
       "Type": "AWS::ECR::Repository",
@@ -351,13 +442,32 @@ Here is the JSON of the bootstrap CloudFormation template:
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Ref": "TrustedPrincipals"
+                  "Ref": "AWS::AccountId"
                 }
               }
+            },
+            {
+              "Fn::If": [
+                "HasTrustedPrincipals",
+                {
+                  "Action": "sts:AssumeRole",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "AWS": {
+                      "Ref": "TrustedPrincipals"
+                    }
+                  }
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
             }
           ]
         },
-        "RoleName": "cdk-bootstrap-hnb659fds-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        "RoleName": {
+          "Fn::Sub": "cdk-bootstrap-hnb659fds-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
       }
     },
     "PublishingRoleDefaultPolicy": {
@@ -372,10 +482,10 @@ Here is the JSON of the bootstrap CloudFormation template:
               ],
               "Resource": [
                 {
-                  "Fn::Sub": "${FileAssetsBucket.Arn}"
+                  "Fn::Sub": "${StagingBucket.Arn}"
                 },
                 {
-                  "Fn::Sub": "${FileAssetsBucket.Arn}/*"
+                  "Fn::Sub": "${StagingBucket.Arn}/*"
                 }
               ]
             },
@@ -404,7 +514,9 @@ Here is the JSON of the bootstrap CloudFormation template:
         "Roles": [{
           "Ref": "PublishingRole"
         }],
-        "PolicyName": "cdk-bootstrap-hnb659fds-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}"
+        "PolicyName": {
+          "Fn::Sub": "cdk-bootstrap-hnb659fds-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}"
+        }
       }
     },
     "DeploymentActionRole": {
@@ -417,9 +529,26 @@ Here is the JSON of the bootstrap CloudFormation template:
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Ref": "TrustedPrincipals"
+                  "Ref": "AWS::AccountId"
                 }
               }
+            },
+            {
+              "Fn::If": [
+                "HasTrustedPrincipals",
+                {
+                  "Action": "sts:AssumeRole",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "AWS": {
+                      "Ref": "TrustedPrincipals"
+                    }
+                  }
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
             }
           ]
         },
@@ -484,14 +613,14 @@ Here is the JSON of the bootstrap CloudFormation template:
   "Outputs": {
     "BucketName": {
       "Description": "The name of the S3 bucket owned by the CDK toolkit stack",
-      "Value": { "Fn::Sub":  "${FileAssetsBucket.Arn}" },
+      "Value": { "Fn::Sub":  "${StagingBucket.Arn}" },
       "Export": {
         "Name": { "Fn::Sub": "${AWS::StackName}:BucketName" }
       }
     },
     "BucketDomainName": {
       "Description": "The domain name of the S3 bucket owned by the CDK toolkit stack",
-      "Value": { "Fn::Sub":  "${FileAssetsBucket.RegionalDomainName}" },
+      "Value": { "Fn::Sub":  "${StagingBucket.RegionalDomainName}" },
       "Export": {
         "Name": { "Fn::Sub": "${AWS::StackName}:BucketDomainName" }
       }
