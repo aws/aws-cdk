@@ -17,3 +17,9 @@ function header() {
   log $@
   log "============================================================================================"
 }
+
+function assert_no_hook_files() {
+  compgen "\*.hook.\*" || return 0
+  echo "'cdk init' left hook files in the template directory!" >&2
+  exit 1
+}
