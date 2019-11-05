@@ -51,17 +51,17 @@ export class GlobalTable extends cdk.Construct {
       stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     };
 
+    this.lambdaGlobalTableCoordinator = new GlobalTableCoordinator(scope, id + "-CustomResource", props);
+
     // here we loop through the configured regions.
     // in each region we'll deploy a separate stack with a DynamoDB Table with identical properties in the individual stacks
     for (const reg of props.regions) {
       const regionalStack = new cdk.Stack(this, id + "-" + reg, { env: { region: reg } });
       const regionalTable = new dynamodb.Table(regionalStack, `${id}-GlobalTable-${reg}`, regionalTableProps);
       this._regionalTables.push(regionalTable);
-    }
 
-    this.lambdaGlobalTableCoordinator = new GlobalTableCoordinator(scope, id + "-CustomResource", props);
-    for (const table of this._regionalTables) {
-      this.lambdaGlobalTableCoordinator.node.addDependency(table);
+      // deploy the regional stack before the Lambda coordinator stack
+      this.lambdaGlobalTableCoordinator.addDependency(regionalStack);
     }
   }
 
