@@ -16,4 +16,4 @@ coverage
 .LAST_PACKAGE
 *.snk
 
-lib/sdk-api-metadata.json
+lib/aws-custom-resource/sdk-api-metadata.json
