@@ -8,7 +8,7 @@ import sns = require('@aws-cdk/aws-sns');
 import { synthesizeBlockDeviceMappings } from '@aws-cdk/aws-ec2';
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Token, withResolved
+  Tag, Token, Tokenization, withResolved
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -480,9 +480,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
-      minSize: stringifyNumber(minCapacity),
-      maxSize: stringifyNumber(maxCapacity),
-      desiredCapacity: stringifyNumber(desiredCapacity),
+      minSize: Tokenization.stringifyNumber(minCapacity),
+      maxSize: Tokenization.stringifyNumber(maxCapacity),
+      desiredCapacity: Tokenization.stringifyNumber(desiredCapacity),
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),

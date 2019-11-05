@@ -1,5 +1,4 @@
-import { IResolvable } from "../resolvable";
-import { IFragmentConcatenator } from "../resolvable";
+import { IFragmentConcatenator, IResolvable } from "../resolvable";
 import { TokenizedStringFragments } from "../string-fragments";
 import { isResolvableObject } from "../token";
 
