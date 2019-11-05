@@ -1,13 +1,13 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
     IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
-import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
-import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
+import {
+  CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
-import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpcLookupOptions } from './vpc-lookup';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
@@ -118,10 +118,10 @@ export interface IVpc extends IResource {
  */
 export enum SubnetType {
   /**
-   * Isolated Subnets do not route Outbound traffic
+   * Isolated Subnets do not route traffic to the Internet (in this VPC).
    *
-   * This can be good for subnets with RDS or
-   * Elasticache endpoints
+   * This can be good for subnets with RDS or Elasticache instances,
+   * or which route Internet traffic through a peer VPC.
    */
   ISOLATED = 'Isolated',
 
@@ -129,13 +129,12 @@ export enum SubnetType {
    * Subnet that routes to the internet, but not vice versa.
    *
    * Instances in a private subnet can connect to the Internet, but will not
-   * allow connections to be initiated from the Internet.
+   * allow connections to be initiated from the Internet. Internet traffic will
+   * be routed via a NAT Gateway.
    *
-   * Outbound traffic will be routed via a NAT Gateway. Preference being in
-   * the same AZ, but if not available will use another AZ (control by
-   * specifing `maxGateways` on Vpc). This might be used for
-   * experimental cost conscious accounts or accounts where HA outbound
-   * traffic is not needed.
+   * Normally a Private subnet will use a NAT gateway in the same AZ, but
+   * if `natGateways` is used to reduce the number of NAT gateways, a NAT
+   * gateway from another AZ will be used instead.
    */
   PRIVATE = 'Private',
 
@@ -166,7 +165,7 @@ export interface SubnetSelection {
    *
    * At most one of `subnetType` and `subnetGroupName` can be supplied.
    *
-   * @default SubnetType.PRIVATE
+   * @default SubnetType.PRIVATE (or ISOLATED or PUBLIC if there are no PRIVATE subnets)
    */
   readonly subnetType?: SubnetType;
 
@@ -205,6 +204,19 @@ export interface SubnetSelection {
    * @default false
    */
   readonly onePerAz?: boolean;
+
+  /**
+   * Explicitly select individual subnets
+   *
+   * Use this if you don't want to automatically use all subnets in
+   * a group, but have a need to control selection down to
+   * individual subnets.
+   *
+   * Cannot be specified together with `subnetType` or `subnetGroupName`.
+   *
+   * @default - Use all subnets in a selected group (all private subnets by default)
+   */
+  readonly subnets?: ISubnet[]
 }
 
 /**
@@ -337,9 +349,12 @@ abstract class VpcBase extends Resource implements IVpc {
    * Return the subnets appropriate for the placement strategy
    */
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
-    selection = reifySelectionDefaults(selection);
+    selection = this.reifySelectionDefaults(selection);
 
-    if (selection.subnetGroupName !== undefined) { // Select by name
+    if (selection.subnets !== undefined) {
+      return selection.subnets;
+
+    } else if (selection.subnetGroupName !== undefined) { // Select by name
       return this.selectSubnetObjectsByName(selection.subnetGroupName);
 
     } else {
@@ -383,6 +398,36 @@ abstract class VpcBase extends Resource implements IVpc {
     }
 
     return subnets;
+  }
+
+  /**
+   * Validate the fields in a SubnetSelection object, and reify defaults if necessary
+   *
+   * In case of default selection, select the first type of PRIVATE, ISOLATED,
+   * PUBLIC (in that order) that has any subnets.
+   */
+  private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
+    if (placement.subnetName !== undefined) {
+      if (placement.subnetGroupName !== undefined) {
+        throw new Error(`Please use only 'subnetGroupName' ('subnetName' is deprecated and has the same behavior)`);
+      }
+      placement = {...placement, subnetGroupName: placement.subnetName };
+    }
+
+    const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
+    const providedSelections = exclusiveSelections.filter(key => placement[key] !== undefined);
+    if (providedSelections.length > 1) {
+      throw new Error(`Only one of '${providedSelections}' can be supplied to subnet selection.`);
+    }
+
+    if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
+      // Return default subnet type based on subnets that actually exist
+      if (this.privateSubnets.length > 0) { return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz }; }
+      if (this.isolatedSubnets.length > 0) { return { subnetType: SubnetType.ISOLATED, onePerAz: placement.onePerAz }; }
+      return { subnetType: SubnetType.PUBLIC, onePerAz: placement.onePerAz };
+    }
+
+    return placement;
   }
 }
 
@@ -563,8 +608,9 @@ export interface VpcProps {
   /**
    * The number of NAT Gateways to create.
    *
-   * For example, if set this to 1 and your subnet configuration is for 3 Public subnets then only
-   * one of the Public subnets will have a gateway and all Private subnets will route to this NAT Gateway.
+   * You can set this number lower than the number of Availability Zones in your
+   * VPC in order to save on NAT gateway cost. Be aware you may be charged for
+   * cross-AZ data traffic instead.
    *
    * @default - One NAT gateway per Availability Zone
    */
@@ -801,13 +847,17 @@ export class Vpc extends VpcBase {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
 
-    const attributes = ContextProvider.getValue(scope, {
+    const attributes: cxapi.VpcContextResponse = ContextProvider.getValue(scope, {
       provider: cxapi.VPC_PROVIDER,
-      props: { filter } as cxapi.VpcContextQuery,
-      dummyValue: undefined
+      props: {
+        filter,
+        returnAsymmetricSubnets: true,
+        subnetGroupNameTag: options.subnetGroupNameTag,
+      } as cxapi.VpcContextQuery,
+      dummyValue: undefined,
     }).value;
 
-    return new ImportedVpc(scope, id, attributes || DUMMY_VPC_PROPS, attributes === undefined);
+    return new LookedUpVpc(scope, id, attributes || DUMMY_VPC_PROPS, attributes === undefined);
 
     /**
      * Prefixes all keys in the argument with `tag:`.`
@@ -952,7 +1002,11 @@ export class Vpc extends VpcBase {
     this.vpcId = this.resource.ref;
 
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
-    // subnetConfiguration and natGateways must be set before calling createSubnets
+
+    const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
+    const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+
+    // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();
 
     const allowOutbound = this.subnetConfiguration.filter(
@@ -973,17 +1027,19 @@ export class Vpc extends VpcBase {
       });
 
       // if gateways are needed create them
-      this.createNatGateways(props.natGateways, props.natGatewaySubnets);
+      if (natGatewayCount > 0) {
+        this.createNatGateways(natGatewayCount, natGatewayPlacement);
 
-      (this.privateSubnets as PrivateSubnet[]).forEach((privateSubnet, i) => {
-        let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
-        if (ngwId === undefined) {
-          const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
-          // round robin the available NatGW since one is not in your AZ
-          ngwId = ngwArray[i % ngwArray.length];
-        }
-        privateSubnet.addDefaultNatRoute(ngwId);
-      });
+        (this.privateSubnets as PrivateSubnet[]).forEach((privateSubnet, i) => {
+          let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
+          if (ngwId === undefined) {
+            const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
+            // round robin the available NatGW since one is not in your AZ
+            ngwId = ngwArray[i % ngwArray.length];
+          }
+          privateSubnet.addDefaultNatRoute(ngwId);
+        });
+      }
     }
 
     if ((props.vpnConnections || props.vpnGatewayAsn) && props.vpnGateway === false) {
@@ -1059,24 +1115,12 @@ export class Vpc extends VpcBase {
     });
   }
 
-  private createNatGateways(gateways?: number, placement?: SubnetSelection): void {
-    const useNatGateway = this.subnetConfiguration.filter(
-      subnet => (subnet.subnetType === SubnetType.PRIVATE)).length > 0;
-
-    const natCount = ifUndefined(gateways,
-      useNatGateway ? this.availabilityZones.length : 0);
-
-    let natSubnets: PublicSubnet[];
-    if (placement) {
-      const subnets = this.selectSubnetObjects(placement);
-      for (const sub of subnets) {
-        if (this.publicSubnets.indexOf(sub) === -1) {
-          throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
-        }
+  private createNatGateways(natCount: number, placement: SubnetSelection): void {
+    let natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
+    for (const sub of natSubnets) {
+      if (this.publicSubnets.indexOf(sub) === -1) {
+        throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
       }
-      natSubnets = subnets as PublicSubnet[];
-    } else {
-      natSubnets =  this.publicSubnets as PublicSubnet[];
     }
 
     natSubnets = natSubnets.slice(0, natCount);
@@ -1446,29 +1490,59 @@ class ImportedVpc extends VpcBase {
   }
 }
 
-/**
- * If the placement strategy is completely "default", reify the defaults so
- * consuming code doesn't have to reimplement the same analysis every time.
- *
- * Returns "private subnets" by default.
- */
-function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-  if (placement.subnetName !== undefined) {
-    if (placement.subnetGroupName !== undefined) {
-      throw new Error(`Please use only 'subnetGroupName' ('subnetName' is deprecated and has the same behavior)`);
+class LookedUpVpc extends VpcBase {
+  public readonly vpcId: string;
+  public readonly vpnGatewayId?: string;
+  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly availabilityZones: string[];
+  public readonly publicSubnets: ISubnet[];
+  public readonly privateSubnets: ISubnet[];
+  public readonly isolatedSubnets: ISubnet[];
+
+  constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
+    super(scope, id);
+
+    this.vpcId = props.vpcId;
+    this.vpnGatewayId = props.vpnGatewayId;
+    this.incompleteSubnetDefinition = isIncomplete;
+
+    const subnetGroups = props.subnetGroups || [];
+    const availabilityZones = Array.from(new Set<string>(flatMap(subnetGroups, subnetGroup => {
+      return subnetGroup.subnets.map(subnet => subnet.availabilityZone);
+    })));
+    availabilityZones.sort((az1, az2) => az1.localeCompare(az2));
+    this.availabilityZones = availabilityZones;
+
+    this.publicSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PUBLIC);
+    this.privateSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PRIVATE);
+    this.isolatedSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.ISOLATED);
+  }
+
+  private extractSubnetsOfType(subnetGroups: cxapi.VpcSubnetGroup[], subnetGroupType: cxapi.VpcSubnetGroupType): ISubnet[] {
+    return flatMap(subnetGroups.filter(subnetGroup => subnetGroup.type === subnetGroupType),
+        subnetGroup => this.subnetGroupToSubnets(subnetGroup));
+  }
+
+  private subnetGroupToSubnets(subnetGroup: cxapi.VpcSubnetGroup): ISubnet[] {
+    const ret = new Array<ISubnet>();
+    for (let i = 0; i < subnetGroup.subnets.length; i++) {
+      const vpcSubnet = subnetGroup.subnets[i];
+      ret.push(Subnet.fromSubnetAttributes(this, `${subnetGroup.name}Subnet${i + 1}`, {
+        availabilityZone: vpcSubnet.availabilityZone,
+        subnetId: vpcSubnet.subnetId,
+        routeTableId: vpcSubnet.routeTableId,
+      }));
     }
-    placement = {...placement, subnetGroupName: placement.subnetName };
+    return ret;
   }
+}
 
-  if (placement.subnetType !== undefined && placement.subnetGroupName !== undefined) {
-    throw new Error(`Only one of 'subnetType' and 'subnetGroupName' can be supplied`);
+function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
+  const ret = new Array<U>();
+  for (const x of xs) {
+    ret.push(...fn(x));
   }
-
-  if (placement.subnetType === undefined && placement.subnetGroupName === undefined) {
-    return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz };
-  }
-
-  return placement;
+  return ret;
 }
 
 class CompositeDependable implements IDependable {
@@ -1539,15 +1613,84 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 }
 
 /**
+ * Determine (and validate) the NAT gateway count w.r.t. the rest of the subnet configuration
+ *
+ * We have the following requirements:
+ *
+ * - NatGatewayCount = 0 ==> there are no private subnets
+ * - NatGatewayCount > 0 ==> there must be public subnets
+ *
+ * Do we want to require that there are private subnets if there are NatGateways?
+ * They seem pointless but I see no reason to prevent it.
+ */
+function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
+  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE);
+  const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
+
+  const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
+
+  if (count === 0 && hasPrivateSubnets) {
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`If you do not want NAT gateways (natGateways=0), make sure you don't configure any PRIVATE subnets in 'subnetConfiguration' (make them PUBLIC or ISOLATED instead)`);
+  }
+
+  if (count > 0 && !hasPublicSubnets) {
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
+  }
+
+  return count;
+}
+
+/**
  * There are returned when the provider has not supplied props yet
  *
  * It's only used for testing and on the first run-through.
  */
 const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
-  availabilityZones: ['dummy-1a', 'dummy-1b'],
+  availabilityZones: [],
+  isolatedSubnetIds: undefined,
+  isolatedSubnetNames: undefined,
+  isolatedSubnetRouteTableIds: undefined,
+  privateSubnetIds: undefined,
+  privateSubnetNames: undefined,
+  privateSubnetRouteTableIds: undefined,
+  publicSubnetIds: undefined,
+  publicSubnetNames: undefined,
+  publicSubnetRouteTableIds: undefined,
+  subnetGroups: [
+    {
+      name: 'Public',
+      type: cxapi.VpcSubnetGroupType.PUBLIC,
+      subnets: [
+        {
+          availabilityZone: 'dummy-1a',
+          subnetId: 's-12345',
+          routeTableId: 'rtb-12345s',
+        },
+        {
+          availabilityZone: 'dummy-1b',
+          subnetId: 's-67890',
+          routeTableId: 'rtb-67890s',
+        },
+      ],
+    },
+    {
+      name: 'Private',
+      type: cxapi.VpcSubnetGroupType.PRIVATE,
+      subnets: [
+        {
+          availabilityZone: 'dummy-1a',
+          subnetId: 'p-12345',
+          routeTableId: 'rtb-12345p',
+        },
+        {
+          availabilityZone: 'dummy-1b',
+          subnetId: 'p-67890',
+          routeTableId: 'rtb-57890p',
+        },
+      ],
+    },
+  ],
   vpcId: 'vpc-12345',
-  publicSubnetIds: ['s-12345', 's-67890'],
-  publicSubnetRouteTableIds: ['rtb-12345s', 'rtb-67890s'],
-  privateSubnetIds: ['p-12345', 'p-67890'],
-  privateSubnetRouteTableIds: ['rtb-12345p', 'rtb-57890p'],
 };

@@ -7,7 +7,7 @@ import sns = require('@aws-cdk/aws-sns');
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Token, withResolved
+  Tag, Tokenization, withResolved
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -348,7 +348,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget {
+  elbv2.INetworkLoadBalancerTarget,
+  iam.IGrantable {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
@@ -377,6 +378,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * The IAM role assumed by instances of this fleet.
    */
   public readonly role: iam.IRole;
+
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Name of the AutoScalingGroup
@@ -420,6 +426,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+
+    this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [ this.role.roleName ]
@@ -488,9 +496,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
-      minSize: stringifyNumber(minCapacity),
-      maxSize: stringifyNumber(maxCapacity),
-      desiredCapacity: stringifyNumber(desiredCapacity),
+      minSize: Tokenization.stringifyNumber(minCapacity),
+      maxSize: Tokenization.stringifyNumber(maxCapacity),
+      desiredCapacity: Tokenization.stringifyNumber(desiredCapacity),
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
@@ -1084,15 +1092,4 @@ export enum EbsDeviceVolumeType {
    * Cold HDD
    */
   SC1 = 'sc1',
-}
-
-/**
- * Stringify a number directly or lazily if it's a Token
- */
-function stringifyNumber(x: number) {
-  if (Token.isUnresolved(x)) {
-    return Lazy.stringValue({ produce: context => `${context.resolve(x)}` });
-  } else {
-    return `${x}`;
-  }
 }
