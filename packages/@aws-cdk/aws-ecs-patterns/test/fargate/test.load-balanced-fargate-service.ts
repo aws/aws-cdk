@@ -29,6 +29,35 @@ export = {
     test.done();
   },
 
+  'setting public-facing NLB with fargate with assignPublicIp creates securigy group allow all'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      publicLoadBalancer: true,
+      assignPublicIp: true,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow all outbound traffic by default",
+          IpProtocol: "-1"
+        }
+      ],
+    }));
+    test.done();
+  },
+
   'setting vpc and cluster throws error'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -72,7 +101,7 @@ export = {
 
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
-    test.deepEqual(serviceTaskDefinition.Properties.ExecutionRoleArn, { 'Fn::GetAtt': [ 'ExecutionRole605A040B', 'Arn' ] });
+    test.deepEqual(serviceTaskDefinition.Properties.ExecutionRoleArn, { 'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'] });
     test.done();
   },
 
@@ -100,7 +129,7 @@ export = {
 
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
-    test.deepEqual(serviceTaskDefinition.Properties.TaskRoleArn, { 'Fn::GetAtt': [ 'taskRoleTest9DA66B6E', 'Arn' ] });
+    test.deepEqual(serviceTaskDefinition.Properties.TaskRoleArn, { 'Fn::GetAtt': ['taskRoleTest9DA66B6E', 'Arn'] });
     test.done();
   },
 

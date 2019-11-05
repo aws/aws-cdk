@@ -1,3 +1,4 @@
+import { Port } from '@aws-cdk/aws-ec2';
 import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
@@ -106,8 +107,8 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
       const logDriver = taskImageOptions.logDriver !== undefined
-                          ? taskImageOptions.logDriver : enableLogging
-                            ? this.createAWSLogDriver(this.node.id) : undefined;
+        ? taskImageOptions.logDriver : enableLogging
+          ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
       const container = this.taskDefinition.addContainer(containerName, {
@@ -123,6 +124,10 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
+    // Determine the ingress container port
+    const containerPort = props.taskImageOptions ? props.taskImageOptions.containerPort || 80 :
+      props.taskDefinition ? props.taskDefinition.defaultContainer!.ingressPort : 80;
+
     this.service = new FargateService(this, "Service", {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
@@ -135,5 +140,10 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       cloudMapOptions: props.cloudMapOptions,
     });
     this.addServiceAsTarget(this.service);
+    // All public-facing NLB fronted fargate service with assignPublicIp by defaults allow from any IPv4 traffic
+    const publicNLB = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
+    if (publicNLB && props.assignPublicIp) {
+      this.service.connections.connections.allowFromAnyIpv4(Port.tcp(containerPort));
+    }
   }
 }
