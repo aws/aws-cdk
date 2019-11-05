@@ -401,7 +401,15 @@
       }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHook2AE13680": {
       "Type": "AWS::AutoScaling::LifecycleHook",

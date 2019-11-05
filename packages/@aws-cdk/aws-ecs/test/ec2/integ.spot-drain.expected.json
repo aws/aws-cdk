@@ -758,7 +758,15 @@
       }
     },
     "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
+          }
+        ]
+      }
     },
     "EcsClusterasgSpotLifecycleHookDrainHook91178D34": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -1195,7 +1203,15 @@
       }
     },
     "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
+          }
+        ]
+      }
     },
     "EcsClusterasgOdLifecycleHookDrainHook03AC5A9E": {
       "Type": "AWS::AutoScaling::LifecycleHook",

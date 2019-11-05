@@ -778,7 +778,15 @@
       }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -866,6 +874,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "EC2",
         "LoadBalancers": [
@@ -877,8 +886,7 @@
             }
           }
         ],
-        "SchedulingStrategy": "REPLICA",
-        "EnableECSManagedTags": false
+        "SchedulingStrategy": "REPLICA"
       },
       "DependsOn": [
         "LBPublicListenerECSGroupD6A32205",
