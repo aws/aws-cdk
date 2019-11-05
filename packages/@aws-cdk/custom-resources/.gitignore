@@ -3,7 +3,6 @@ tsconfig.json
 tslint.json
 *.js.map
 *.d.ts
-!lib/provider-framework/types.d.ts
 *.generated.ts
 dist
 lib/generated/resources.ts
