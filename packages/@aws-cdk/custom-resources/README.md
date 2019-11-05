@@ -302,7 +302,7 @@ function getCreateProvider(scope: Construct) {
 #### Sharing providers across apps
 
 If a team manages multiple CDK apps within the same AWS environment
-(account/region), they might want to deploy their custom resource provider/s once
+(account/region), they might want to deploy their custom resource provider's once
 into this environment and consume them from multiple apps.
 
 This can be achieved by deploying providers through a separate CDK app and
