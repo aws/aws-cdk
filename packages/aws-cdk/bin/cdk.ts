@@ -226,11 +226,11 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
-        const packageManager = configuration.settings.get(['package-manager']);
+        const generateOnly = configuration.settings.get(['generate-only']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language, undefined, packageManager);
+          return await cliInit(args.TEMPLATE, language, undefined, generateOnly);
         }
       case 'version':
         return print(version.DISPLAY_VERSION);
