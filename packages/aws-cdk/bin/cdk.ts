@@ -59,6 +59,7 @@ async function parseCommandLineArguments() {
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
       .option('notification-arns', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true }))
+      .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet or not (--no-execute will NOT execute the ChangeSet)', default: true})
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -205,6 +206,7 @@ async function initCommandLine() {
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           sdk: aws,
+          execute: args.execute
         });
 
       case 'destroy':

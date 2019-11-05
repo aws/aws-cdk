@@ -307,6 +307,11 @@ export interface DeployOptions {
    * AWS SDK
    */
   sdk: ISDK;
+
+  /**
+   * Whether to execute or not the ChangeSet
+   */
+  execute?: boolean;
 }
 
 export interface DestroyOptions {
