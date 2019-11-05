@@ -88,9 +88,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   /**
    * Listener port of the network load balancer that will serve traffic to the service.
    *
-   * [disable-awslint:ref-via-interface]
-   *
-   * @default - 80
+   * @default - defaults to 80 if not specified
    */
   readonly listenerPort?: number;
 
