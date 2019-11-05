@@ -10,7 +10,7 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^24.0.21",
     "@types/node": "^8.10.56",
     "@types/nodeunit": "^0.0.30",
     "conventional-changelog-cli": "^2.0.25",
