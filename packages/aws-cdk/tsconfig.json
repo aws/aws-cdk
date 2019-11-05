@@ -18,14 +18,11 @@
       },
     "include": [
         "**/*.ts",
-        "**/*.d.ts"
+        "**/*.d.ts",
+        "lib/init-templates/*/*/add-project.hook.ts"
     ],
     "exclude": [
-        "lib/init-templates/**/*"
-    ],
-    "files": [
-        "lib/init-templates/app/csharp/add-project.hook.ts",
-        "lib/init-templates/app/fsharp/add-project.hook.ts"
+        "lib/init-templates/*/typescript/**/*.ts"
     ]
 }
 
