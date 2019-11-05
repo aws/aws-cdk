@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC"
           }
         ]
       }
@@ -18,7 +18,7 @@
     "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.0.0/18",
+        "CidrBlock": "10.0.0.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
@@ -27,7 +27,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet1"
           }
         ]
       }
@@ -101,7 +101,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet1"
           }
         ]
       }
@@ -109,7 +109,7 @@
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.64.0/18",
+        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
@@ -118,7 +118,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -140,7 +140,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet2"
           }
         ]
       }
@@ -192,7 +192,98 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "VPCPublicSubnet3Subnet631C5E25": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/19",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "AvailabilityZone": "test-region-1c",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet3"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      }
+    },
+    "VPCPublicSubnet3RouteTable98AE0E14": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "VPCPublicSubnet3RouteTableAssociation427FE0C6": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet3Subnet631C5E25"
+        }
+      }
+    },
+    "VPCPublicSubnet3DefaultRouteA0D29D46": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
+    },
+    "VPCPublicSubnet3EIPAD4BC883": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "VPCPublicSubnet3NATGatewayD3048F5C": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "VPCPublicSubnet3EIPAD4BC883",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet3Subnet631C5E25"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PublicSubnet3"
           }
         ]
       }
@@ -200,7 +291,7 @@
     "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/18",
+        "CidrBlock": "10.0.96.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
@@ -209,7 +300,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PrivateSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -231,7 +322,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -262,7 +353,7 @@
     "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.192.0/18",
+        "CidrBlock": "10.0.128.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
@@ -271,7 +362,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PrivateSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -293,7 +384,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -321,13 +412,75 @@
         }
       }
     },
+    "VPCPrivateSubnet3Subnet3EDCD457": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.160.0/19",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "AvailabilityZone": "test-region-1c",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PrivateSubnet3"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      }
+    },
+    "VPCPrivateSubnet3RouteTable192186F8": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC/PrivateSubnet3"
+          }
+        ]
+      }
+    },
+    "VPCPrivateSubnet3RouteTableAssociationC28D144E": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet3RouteTable192186F8"
+        },
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
+        }
+      }
+    },
+    "VPCPrivateSubnet3DefaultRoute27F311AE": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet3RouteTable192186F8"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VPCPublicSubnet3NATGatewayD3048F5C"
+        }
+      }
+    },
     "VPCIGWB7E252D3": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-elbv2-integ/VPC"
+            "Value": "aws-cdk-interface-vpc-endpoint/VPC"
           }
         ]
       }
@@ -343,44 +496,15 @@
         }
       }
     },
-    "LB8A12904C": {
-      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-      "Properties": {
-        "Scheme": "internet-facing",
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "LBSecurityGroup8A41EA2B",
-              "GroupId"
-            ]
-          }
-        ],
-        "Subnets": [
-          {
-            "Ref": "VPCPublicSubnet1SubnetB4246D30"
-          },
-          {
-            "Ref": "VPCPublicSubnet2Subnet74179F39"
-          }
-        ],
-        "Type": "application"
-      },
-      "DependsOn": [
-        "VPCPublicSubnet1DefaultRoute91CEF279",
-        "VPCPublicSubnet2DefaultRouteB7481BBA"
-      ]
-    },
-    "LBSecurityGroup8A41EA2B": {
+    "InterfaceEndpointSecurityGroup4F1CBAD1": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integLB9950B1E4",
+        "GroupDescription": "aws-cdk-interface-vpc-endpoint/InterfaceEndpoint/SecurityGroup",
         "SecurityGroupEgress": [
           {
-            "CidrIp": "255.255.255.255/32",
-            "Description": "Disallow all traffic",
-            "FromPort": 252,
-            "IpProtocol": "icmp",
-            "ToPort": 86
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
           }
         ],
         "VpcId": {
@@ -388,33 +512,103 @@
         }
       }
     },
-    "HostedZoneDB99F866": {
-      "Type": "AWS::Route53::HostedZone",
+    "InterfaceEndpoint12DE6E71": {
+      "Type": "AWS::EC2::VPCEndpoint",
       "Properties": {
-        "Name": "test.public."
+        "ServiceName": "com.amazonaws.vpce.us-west-2.vpce-svc-03162d96b85b68369",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "PrivateDnsEnabled": false,
+        "SecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "InterfaceEndpointSecurityGroup4F1CBAD1",
+              "GroupId"
+            ]
+          }
+        ],
+        "SubnetIds": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          },
+          {
+            "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
+          }
+        ],
+        "VpcEndpointType": "Interface"
       }
     },
-    "HostedZoneAlias40D2E006": {
+    "PrivateZone27242E85": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "Name": "test.aws.cdk.com.",
+        "VPCs": [
+          {
+            "VPCId": {
+              "Ref": "VPCB9E5F0B4"
+            },
+            "VPCRegion": {
+              "Ref": "AWS::Region"
+            }
+          }
+        ]
+      }
+    },
+    "AliasEndpointRecord40E9201F": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
-        "Name": "_foo.test.public.",
+        "Name": "foo.test.aws.cdk.com.",
         "Type": "A",
         "AliasTarget": {
           "DNSName": {
-            "Fn::GetAtt": [
-              "LB8A12904C",
-              "DNSName"
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  ":",
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::GetAtt": [
+                          "InterfaceEndpoint12DE6E71",
+                          "DnsEntries"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
           },
           "HostedZoneId": {
-            "Fn::GetAtt": [
-              "LB8A12904C",
-              "CanonicalHostedZoneID"
+            "Fn::Select": [
+              0,
+              {
+                "Fn::Split": [
+                  ":",
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::GetAtt": [
+                          "InterfaceEndpoint12DE6E71",
+                          "DnsEntries"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
           }
         },
         "HostedZoneId": {
-          "Ref": "HostedZoneDB99F866"
+          "Ref": "PrivateZone27242E85"
         }
       }
     }
