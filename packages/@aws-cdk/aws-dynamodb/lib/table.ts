@@ -657,6 +657,7 @@ export class Table extends Resource {
     // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
     return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
       service: 'iam',
+      region: '',
       resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
     }));
