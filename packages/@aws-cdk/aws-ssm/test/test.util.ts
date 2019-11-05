@@ -27,7 +27,7 @@ export = {
 
       'token parameterName, explicit "/" separator'(test: Test) {
         const stack = new Stack();
-        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { parameterArnSeparator: '/' })), {
+        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { simpleName: true })), {
           'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'Boom' }]]
         });
         test.done();
@@ -55,7 +55,7 @@ export = {
 
       'token parameterName, explicit "" separator'(test: Test) {
         const stack = new Stack();
-        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { parameterArnSeparator: '' })), {
+        test.deepEqual(stack.resolve(arnForParameterName(stack, Token.asString({ Ref: 'Boom' }), { simpleName: false })), {
           'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'Boom' }]]
         });
         test.done();
@@ -65,7 +65,7 @@ export = {
 
     'fails if explicit separator is not defined and parameterName is a token'(test: Test) {
       const stack = new Stack();
-      test.throws(() => arnForParameterName(stack, Token.asString({ Ref: 'Boom' })), /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "parameterArnSeparator" explicitly/);
+      test.throws(() => arnForParameterName(stack, Token.asString({ Ref: 'Boom' })), /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly/);
       test.done();
     }
 

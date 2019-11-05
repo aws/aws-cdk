@@ -480,10 +480,10 @@ export = {
     const case2 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, '/bam');
     const case4 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam' });
     const case5 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam' });
-    const case6 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, parameterArnSeparator: '/' });
+    const case6 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, simpleName: true });
     const case7 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam', version: 10 });
     const case8 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam', version: 10 });
-    const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 10, parameterArnSeparator: '' });
+    const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 10, simpleName: false });
 
     // auto-generated name is always generated as a "simple name" (not/a/path)
     const case10 = new ssm.StringParameter(stack, `p${i++}`, { stringValue: 'value' });
@@ -524,9 +524,9 @@ export = {
     let i = 0;
 
     // WHEN
-    const p1 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', parameterArnSeparator: '/' });
-    const p2 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', parameterArnSeparator: '' });
-    const p3 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringListValue: [ 'foo' ], parameterArnSeparator: '' });
+    const p1 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', simpleName: true });
+    const p2 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', simpleName: false });
+    const p3 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringListValue: [ 'foo' ], simpleName: false });
 
     // THEN
     test.deepEqual(stack.resolve(p1.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p0B02A8F65' } ] ] });
@@ -543,7 +543,7 @@ export = {
     let i = 0;
 
     // THEN
-    const expected = /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "parameterArnSeparator" explicitly/;
+    const expected = /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly/;
     test.throws(() => ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, param.valueAsString), expected);
     test.throws(() => ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 1 }), expected);
     test.throws(() => new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo' }), expected);
@@ -551,25 +551,23 @@ export = {
     test.done();
   },
 
-  'fails if parameterArnSeparator is wrong based on a concrete physical name'(test: Test) {
+  'fails if simpleName is wrong based on a concrete physical name'(test: Test) {
     // GIVEN
     const stack = new Stack();
     let i = 0;
 
     // THEN
-    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'simple', parameterArnSeparator: '' }), /parameterArnSeparator "" is invalid for SSM parameter with name "simple". It should be "\/"/);
-    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/foo/bar', parameterArnSeparator: '/' }), /parameterArnSeparator "\/" is invalid for SSM parameter with name \"\/foo\/bar\"\. It should be \"\"/);
+    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'simple', simpleName: false }), /Parameter name "simple" is a simple name, but "simpleName" was explicitly set to false. Either omit it or set it to true/);
+    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/foo/bar', simpleName: true }), /Parameter name "\/foo\/bar" is not a simple name, but "simpleName" was explicitly set to true. Either omit it or set it to false/);
     test.done();
   },
 
-  'fails if parameterArnSeparator is not "/" or ""'(test: Test) {
+  'fails if parameterName is undefined and simpleName is "false"'(test: Test) {
+    // GIVEN
     const stack = new Stack();
-    const param = new CfnParameter(stack, 'param');
-    let i = 0;
 
     // THEN
-    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, parameterArnSeparator: 'x' }), /parameterArnSeparator must be either "\/" or ""\. got "x"/);
-    test.throws(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, parameterArnSeparator: 'boom' }), /parameterArnSeparator must be either "\/" or ""\. got "boom"/);
+    test.throws(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' }), /If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
     test.done();
   }
 };

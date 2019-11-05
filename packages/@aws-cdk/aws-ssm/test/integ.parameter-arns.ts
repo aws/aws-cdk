@@ -1,13 +1,4 @@
-// expected:
-// {
-//   "ListAutogenArn": "arn:aws:ssm:us-east-1:585695036304:parameter/CFN-ListAutogenC5DA1CAE-QmGaUkqhh6Au",
-//   "ListPathArn": "arn:aws:ssm:us-east-1:585695036304:parameter/list/path/name",
-//   "ListSimpleArn": "arn:aws:ssm:us-east-1:585695036304:parameter/list-simple-name",
-//   "StringAutogenArn": "arn:aws:ssm:us-east-1:585695036304:parameter/CFN-StringAutogenE7E896E4-L0BHbfLgtgJT",
-//   "StringPathArn": "arn:aws:ssm:us-east-1:585695036304:parameter/path/name/foo/bar",
-//   "StringSimpleArn": "arn:aws:ssm:us-east-1:585695036304:parameter/simple-name",
-// }
-
+// tslint:disable: max-line-length
 import { App, CfnOutput, CfnParameter, Stack } from "@aws-cdk/core";
 import ssm = require('../lib');
 
@@ -23,7 +14,8 @@ const params = [
   new ssm.StringListParameter(stack, 'ListAutogen', { stringListValue: [ 'hello', 'world' ] }),
   new ssm.StringListParameter(stack, 'ListSimple', { stringListValue: [ 'hello', 'world' ], parameterName: 'list-simple-name' }),
   new ssm.StringListParameter(stack, 'ListPath', { stringListValue: [ 'hello', 'world' ], parameterName: '/list/path/name' }),
-  new ssm.StringParameter(stack, 'Parameterized', { stringValue: 'hello, world', parameterName: input.valueAsString, parameterArnSeparator: '/' })
+  new ssm.StringParameter(stack, 'ParameterizedSimple', { stringValue: 'hello, world', parameterName: input.valueAsString, simpleName: true }),
+  new ssm.StringParameter(stack, 'ParameterizedNonSimple', { stringValue: 'hello, world', parameterName: `/${input.valueAsString}/non/simple`, simpleName: false }),
 ];
 
 for (const p of params) {

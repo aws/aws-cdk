@@ -1,8 +1,10 @@
 import { IConstruct, Stack, Token } from "@aws-cdk/core";
 
+export const AUTOGEN_MARKER = '$$autogen$$';
+
 export interface ArnForParameterNameOptions {
   readonly physicalName?: string;
-  readonly parameterArnSeparator?: string;
+  readonly simpleName?: boolean;
 }
 
 /**
@@ -15,13 +17,6 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
   const physicalName = options.physicalName;
   const nameToValidate = physicalName || parameterName;
 
-  // validate "parameterArnSeparator" (if defined).
-  if (options.parameterArnSeparator !== undefined) {
-    if (options.parameterArnSeparator !== '/' && options.parameterArnSeparator !== '') {
-      throw new Error(`parameterArnSeparator must be either "/" or "". got "${options.parameterArnSeparator}"`);
-    }
-  }
-
   if (!Token.isUnresolved(nameToValidate) && nameToValidate.includes('/') && !nameToValidate.startsWith('/')) {
     throw new Error(`Parameter names must be fully qualified (if they include "/" they must also begin with a "/"): ${nameToValidate}`);
   }
@@ -29,7 +24,7 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
   return Stack.of(scope).formatArn({
     service: 'ssm',
     resource: 'parameter',
-    sep: determineSeperator(),
+    sep: isSimpleName() ? '/' : '',
     resourceName: parameterName,
   });
 
@@ -37,27 +32,32 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
    * Determines the ARN separator for this parameter: if we have a concrete
    * parameter name (or explicitly defined physical name), we will parse them
    * and decide whether a "/" is needed or not. Otherwise, users will have to
-   * explicitly specify `parameterArnSeparator` when they import the ARN.
+   * explicitly specify `simpleName` when they import the ARN.
    */
-  function determineSeperator() {
+  function isSimpleName(): boolean {
     // look for a concrete name as a hint for determining the separator
     const concreteName = !Token.isUnresolved(parameterName) ? parameterName : physicalName;
     if (!concreteName || Token.isUnresolved(concreteName)) {
 
-      if (options.parameterArnSeparator === undefined) {
-        throw new Error(`Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "parameterArnSeparator" explicitly`);
+      if (options.simpleName === undefined) {
+        throw new Error(`Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly`);
       }
 
-      return options.parameterArnSeparator;
+      return options.simpleName;
     }
 
-    const calculatedSep = concreteName.startsWith('/') ? '' : '/';
+    const result = !concreteName.startsWith('/');
 
     // if users explicitly specify the separator and it conflicts with the one we need, it's an error.
-    if (options.parameterArnSeparator !== undefined && options.parameterArnSeparator !== calculatedSep) {
-      throw new Error(`parameterArnSeparator "${options.parameterArnSeparator}" is invalid for SSM parameter with name "${concreteName}". It should be "${calculatedSep}"`);
+    if (options.simpleName !== undefined && options.simpleName !== result) {
+
+      if (concreteName === AUTOGEN_MARKER) {
+        throw new Error(`If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names`);
+      }
+
+      throw new Error(`Parameter name "${concreteName}" is ${result ? 'a simple name' : 'not a simple name'}, but "simpleName" was explicitly set to ${options.simpleName}. Either omit it or set it to ${result}`);
     }
 
-    return calculatedSep;
+    return result;
   }
 }

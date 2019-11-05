@@ -52,13 +52,32 @@
         "Name": "/list/path/name"
       }
     },
-    "Parameterized6DC5E5E5": {
+    "ParameterizedSimpleB6311859": {
       "Type": "AWS::SSM::Parameter",
       "Properties": {
         "Type": "String",
         "Value": "hello, world",
         "Name": {
           "Ref": "ParameterNameParameter"
+        }
+      }
+    },
+    "ParameterizedNonSimple23C44BF6": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "hello, world",
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              "/",
+              {
+                "Ref": "ParameterNameParameter"
+              },
+              "/non/simple"
+            ]
+          ]
         }
       }
     }
@@ -214,7 +233,7 @@
         ]
       }
     },
-    "ParameterizedArn": {
+    "ParameterizedSimpleArn": {
       "Value": {
         "Fn::Join": [
           "",
@@ -233,7 +252,32 @@
             },
             ":parameter/",
             {
-              "Ref": "Parameterized6DC5E5E5"
+              "Ref": "ParameterizedSimpleB6311859"
+            }
+          ]
+        ]
+      }
+    },
+    "ParameterizedNonSimpleArn": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              "Ref": "AWS::Partition"
+            },
+            ":ssm:",
+            {
+              "Ref": "AWS::Region"
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":parameter",
+            {
+              "Ref": "ParameterizedNonSimple23C44BF6"
             }
           ]
         ]
