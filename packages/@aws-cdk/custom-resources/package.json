@@ -49,7 +49,7 @@
   },
   "cdk-build": {
     "pre": [
-      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json"
+      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json"
     ]
   },
   "keywords": [
@@ -96,6 +96,17 @@
     "@aws-cdk/aws-sns": "1.15.0",
     "@aws-cdk/core": "1.15.0"
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 80
+      }
+    }
+  },  
   "engines": {
     "node": ">= 10.3.0"
   },
