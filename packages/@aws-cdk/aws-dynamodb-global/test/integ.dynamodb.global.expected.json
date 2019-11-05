@@ -1,5 +1,7 @@
 [
   {
+  },
+  {
     "Resources": {
       "globdynamodbintegGlobalTableuseast162596384": {
         "Type": "AWS::DynamoDB::Table",
