@@ -285,7 +285,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     }
     const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
-    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
+    const listenerPort = props.listenerPort;
 
     const targetProps = {
       port: listenerPort,
