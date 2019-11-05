@@ -18,7 +18,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean, generateOnly = false) {
+export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -40,7 +40,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true, generateOnly);
+  await initializeProject(template, language, canUseNetwork, generateOnly);
 }
 
 /**
