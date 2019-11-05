@@ -111,7 +111,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
    *
-   * @default - defaults to 80 if not specified
+   * @default - 80
    */
   readonly listenerPort?: number;
 
