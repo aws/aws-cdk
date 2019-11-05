@@ -64,10 +64,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "1.15.0",
@@ -82,6 +82,7 @@
     "exclude": [
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period",
+      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.period",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.NONE",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.COUNT_PER_SECOND",
@@ -118,8 +119,12 @@
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.color",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.dimensions",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.label",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.statistic",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.unit",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.color",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.label",
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.stat",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricWidgetProps.title",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.Unit.GIGABITS_PER_SECOND",
       "docs-public-apis:@aws-cdk/aws-cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD",

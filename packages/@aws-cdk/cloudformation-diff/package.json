@@ -31,16 +31,16 @@
     "colors": "^1.4.0",
     "diff": "^4.0.1",
     "fast-deep-equal": "^2.0.1",
-    "source-map-support": "^0.5.13",
+    "source-map-support": "^0.5.15",
     "string-width": "^4.1.0",
     "table": "^5.4.6"
   },
   "devDependencies": {
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-build-tools": "^1.15.0",
     "fast-check": "^1.18.1",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "^1.15.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

@@ -1,13 +1,13 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
     IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
-import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
-import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
+import {
+  CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
-import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpcLookupOptions } from './vpc-lookup';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
@@ -847,13 +847,17 @@ export class Vpc extends VpcBase {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
 
-    const attributes = ContextProvider.getValue(scope, {
+    const attributes: cxapi.VpcContextResponse = ContextProvider.getValue(scope, {
       provider: cxapi.VPC_PROVIDER,
-      props: { filter } as cxapi.VpcContextQuery,
-      dummyValue: undefined
+      props: {
+        filter,
+        returnAsymmetricSubnets: true,
+        subnetGroupNameTag: options.subnetGroupNameTag,
+      } as cxapi.VpcContextQuery,
+      dummyValue: undefined,
     }).value;
 
-    return new ImportedVpc(scope, id, attributes || DUMMY_VPC_PROPS, attributes === undefined);
+    return new LookedUpVpc(scope, id, attributes || DUMMY_VPC_PROPS, attributes === undefined);
 
     /**
      * Prefixes all keys in the argument with `tag:`.`
@@ -1486,6 +1490,61 @@ class ImportedVpc extends VpcBase {
   }
 }
 
+class LookedUpVpc extends VpcBase {
+  public readonly vpcId: string;
+  public readonly vpnGatewayId?: string;
+  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly availabilityZones: string[];
+  public readonly publicSubnets: ISubnet[];
+  public readonly privateSubnets: ISubnet[];
+  public readonly isolatedSubnets: ISubnet[];
+
+  constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
+    super(scope, id);
+
+    this.vpcId = props.vpcId;
+    this.vpnGatewayId = props.vpnGatewayId;
+    this.incompleteSubnetDefinition = isIncomplete;
+
+    const subnetGroups = props.subnetGroups || [];
+    const availabilityZones = Array.from(new Set<string>(flatMap(subnetGroups, subnetGroup => {
+      return subnetGroup.subnets.map(subnet => subnet.availabilityZone);
+    })));
+    availabilityZones.sort((az1, az2) => az1.localeCompare(az2));
+    this.availabilityZones = availabilityZones;
+
+    this.publicSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PUBLIC);
+    this.privateSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PRIVATE);
+    this.isolatedSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.ISOLATED);
+  }
+
+  private extractSubnetsOfType(subnetGroups: cxapi.VpcSubnetGroup[], subnetGroupType: cxapi.VpcSubnetGroupType): ISubnet[] {
+    return flatMap(subnetGroups.filter(subnetGroup => subnetGroup.type === subnetGroupType),
+        subnetGroup => this.subnetGroupToSubnets(subnetGroup));
+  }
+
+  private subnetGroupToSubnets(subnetGroup: cxapi.VpcSubnetGroup): ISubnet[] {
+    const ret = new Array<ISubnet>();
+    for (let i = 0; i < subnetGroup.subnets.length; i++) {
+      const vpcSubnet = subnetGroup.subnets[i];
+      ret.push(Subnet.fromSubnetAttributes(this, `${subnetGroup.name}Subnet${i + 1}`, {
+        availabilityZone: vpcSubnet.availabilityZone,
+        subnetId: vpcSubnet.subnetId,
+        routeTableId: vpcSubnet.routeTableId,
+      }));
+    }
+    return ret;
+  }
+}
+
+function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
+  const ret = new Array<U>();
+  for (const x of xs) {
+    ret.push(...fn(x));
+  }
+  return ret;
+}
+
 class CompositeDependable implements IDependable {
   private readonly dependables = new Array<IDependable>();
 
@@ -1589,10 +1648,49 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
  * It's only used for testing and on the first run-through.
  */
 const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
-  availabilityZones: ['dummy-1a', 'dummy-1b'],
+  availabilityZones: [],
+  isolatedSubnetIds: undefined,
+  isolatedSubnetNames: undefined,
+  isolatedSubnetRouteTableIds: undefined,
+  privateSubnetIds: undefined,
+  privateSubnetNames: undefined,
+  privateSubnetRouteTableIds: undefined,
+  publicSubnetIds: undefined,
+  publicSubnetNames: undefined,
+  publicSubnetRouteTableIds: undefined,
+  subnetGroups: [
+    {
+      name: 'Public',
+      type: cxapi.VpcSubnetGroupType.PUBLIC,
+      subnets: [
+        {
+          availabilityZone: 'dummy-1a',
+          subnetId: 's-12345',
+          routeTableId: 'rtb-12345s',
+        },
+        {
+          availabilityZone: 'dummy-1b',
+          subnetId: 's-67890',
+          routeTableId: 'rtb-67890s',
+        },
+      ],
+    },
+    {
+      name: 'Private',
+      type: cxapi.VpcSubnetGroupType.PRIVATE,
+      subnets: [
+        {
+          availabilityZone: 'dummy-1a',
+          subnetId: 'p-12345',
+          routeTableId: 'rtb-12345p',
+        },
+        {
+          availabilityZone: 'dummy-1b',
+          subnetId: 'p-67890',
+          routeTableId: 'rtb-57890p',
+        },
+      ],
+    },
+  ],
   vpcId: 'vpc-12345',
-  publicSubnetIds: ['s-12345', 's-67890'],
-  publicSubnetRouteTableIds: ['rtb-12345s', 'rtb-67890s'],
-  privateSubnetIds: ['p-12345', 'p-67890'],
-  privateSubnetRouteTableIds: ['rtb-12345p', 'rtb-57890p'],
 };
