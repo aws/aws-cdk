@@ -81,6 +81,8 @@
   },
   "awslint": {
     "exclude": [
+      "props-struct-name:@aws-cdk/aws-cloudwatch.IAlarm",
+      "no-unused-type:@aws-cdk/aws-cloudwatch.MetricRenderingProperties",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.period",

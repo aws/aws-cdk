@@ -2,7 +2,7 @@ import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { CreateAlarmOptions } from './metric';
+import {BaseAlarmProps, CreateAlarmOptions} from "./metric";
 import { IMetric } from './metric-types';
 import { parseStatistic } from './util.statistic';
 
@@ -19,9 +19,19 @@ export interface IAlarm extends IResource {
 }
 
 /**
+ * TODO
+ */
+export interface ComplexAlarmProps extends BaseAlarmProps {
+  /**
+   * TODO
+   */
+  readonly metrics: CfnAlarm.MetricDataQueryProperty[]
+}
+
+/**
  * Properties for Alarms
  */
-export interface AlarmProps extends CreateAlarmOptions {
+export interface SimpleAlarmProps extends CreateAlarmOptions {
   /**
    * The metric to add the alarm on
    *
@@ -30,6 +40,8 @@ export interface AlarmProps extends CreateAlarmOptions {
    */
   readonly metric: IMetric;
 }
+
+export type AlarmProps = SimpleAlarmProps | ComplexAlarmProps;
 
 /**
  * Comparison operator for evaluating alarms
@@ -73,6 +85,10 @@ export enum TreatMissingData {
   MISSING = 'missing'
 }
 
+function isComplexAlarm(props: ComplexAlarmProps | SimpleAlarmProps): props is ComplexAlarmProps {
+  return (props as ComplexAlarmProps).metrics !== undefined;
+}
+
 /**
  * An alarm on a CloudWatch metric
  */
@@ -103,7 +119,12 @@ export class Alarm extends Resource implements IAlarm {
   /**
    * The metric object this alarm was based on
    */
-  public readonly metric: IMetric;
+  public readonly metric?: IMetric;
+
+  /**
+   * The list of metrics. Used if the alarms requires more than one metric.
+   */
+  public readonly metrics?: CfnAlarm.MetricDataQueryProperty[];
 
   private alarmActionArns?: string[];
   private insufficientDataActionArns?: string[];
@@ -121,7 +142,26 @@ export class Alarm extends Resource implements IAlarm {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
-    const config = props.metric.toAlarmConfig();
+    let config;
+    let label;
+    if (isComplexAlarm(props)) {
+      config = dropUndef(props);
+      label = '';
+    } else {
+      this.metric = props.metric;
+      const alarmConfig = props.metric.toAlarmConfig();
+      config = {
+        ...dropUndef(alarmConfig),
+        // Alarm overrides
+        ...dropUndef({
+          period: props.period && props.period.toSeconds(),
+          statistic: renderIfSimpleStatistic(props.statistic),
+          extendedStatistic: renderIfExtendedStatistic(props.statistic)
+        })
+      };
+      // tslint:disable-next-line:max-line-length
+      label = `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * alarmConfig.period)}`;
+    }
 
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
@@ -142,14 +182,7 @@ export class Alarm extends Resource implements IAlarm {
       insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
-      // Metric
-      ...dropUndef(config),
-      ...dropUndef({
-        // Alarm overrides
-        period: props.period && props.period.toSeconds(),
-        statistic: renderIfSimpleStatistic(props.statistic),
-        extendedStatistic: renderIfExtendedStatistic(props.statistic),
-      })
+      ...config
     });
 
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
@@ -160,10 +193,8 @@ export class Alarm extends Resource implements IAlarm {
     });
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
-    this.metric = props.metric;
     this.annotation = {
-      // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * config.period)}`,
+      label,
       value: props.threshold,
     };
   }

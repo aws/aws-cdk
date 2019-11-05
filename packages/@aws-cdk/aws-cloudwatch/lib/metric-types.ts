@@ -1,17 +1,13 @@
+import {ITimeSeries} from "./timeseries";
 
 /**
  * Interface for metrics
  */
-export interface IMetric {
+export interface IMetric extends ITimeSeries {
   /**
    * Turn this metric object into an alarm configuration
    */
   toAlarmConfig(): MetricAlarmConfig;
-
-  /**
-   * Turn this metric object into a graph configuration
-   */
-  toGraphConfig(): MetricGraphConfig;
 }
 
 /**
@@ -113,65 +109,70 @@ export interface MetricAlarmConfig {
   readonly unit?: Unit;
 }
 
+// /**
+//  * Properties used to construct the Metric identifying part of a Graph
+//  */
+// export interface MetricGraphConfig {
+//   /**
+//    * The dimensions to apply to the alarm
+//    */
+//   readonly dimensions?: Dimension[];
+//
+//   /**
+//    * Namespace of the metric
+//    */
+//   readonly namespace: string;
+//
+//   /**
+//    * Name of the metric
+//    */
+//   readonly metricName: string;
+//
+//   /**
+//    * Rendering properties override yAxis parameter of the widget object
+//    */
+//   readonly renderingProperties: MetricRenderingProperties;
+//
+//   /**
+//    * How many seconds to aggregate over
+//    *
+//    * @deprecated Use `period` in `renderingProperties`
+//    */
+//   readonly period: number;
+//
+//   /**
+//    * Label for the metric
+//    *
+//    * @deprecated Use `label` in `renderingProperties`
+//    */
+//   readonly label?: string;
+//
+//   /**
+//    * Color for the graph line
+//    *
+//    * @deprecated Use `color` in `renderingProperties`
+//    */
+//   readonly color?: string;
+//
+//   /**
+//    * Aggregation function to use (can be either simple or a percentile)
+//    *
+//    * @deprecated Use `stat` in `renderingProperties`
+//    */
+//   readonly statistic?: string;
+//
+//   /**
+//    * The unit of the alarm
+//    *
+//    * @deprecated not used in dashboard widgets
+//    */
+//   readonly unit?: Unit;
+// }
+
 /**
- * Properties used to construct the Metric identifying part of a Graph
+ * TODO
  */
-export interface MetricGraphConfig {
-  /**
-   * The dimensions to apply to the alarm
-   */
-  readonly dimensions?: Dimension[];
-
-  /**
-   * Namespace of the metric
-   */
-  readonly namespace: string;
-
-  /**
-   * Name of the metric
-   */
-  readonly metricName: string;
-
-  /**
-   * Rendering properties override yAxis parameter of the widget object
-   */
-  readonly renderingProperties: MetricRenderingProperties;
-
-  /**
-   * How many seconds to aggregate over
-   *
-   * @deprecated Use `period` in `renderingProperties`
-   */
-  readonly period: number;
-
-  /**
-   * Label for the metric
-   *
-   * @deprecated Use `label` in `renderingProperties`
-   */
-  readonly label?: string;
-
-  /**
-   * Color for the graph line
-   *
-   * @deprecated Use `color` in `renderingProperties`
-   */
-  readonly color?: string;
-
-  /**
-   * Aggregation function to use (can be either simple or a percentile)
-   *
-   * @deprecated Use `stat` in `renderingProperties`
-   */
-  readonly statistic?: string;
-
-  /**
-   * The unit of the alarm
-   *
-   * @deprecated not used in dashboard widgets
-   */
-  readonly unit?: Unit;
-}
+export type yAxisType = "left" | "right";
 
 /**
  * Custom rendering properties that override the default rendering properties specified in the yAxis parameter of the widget object.
@@ -196,4 +197,22 @@ export interface MetricRenderingProperties {
    * Aggregation function to use (can be either simple or a percentile)
    */
   readonly stat?: string;
+
+  /**
+   * TODO
+   * @default TODO
+   */
+  readonly visible?: boolean,
+
+  /**
+   * TODO
+   * @default "left"
+   */
+  readonly yAxis: yAxisType
+
+  /**
+   * TODO
+   * @default todo
+   */
+  readonly id?: string
 }

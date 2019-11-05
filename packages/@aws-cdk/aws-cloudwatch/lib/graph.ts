@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/core');
 import { IAlarm } from "./alarm";
-import { IMetric } from "./metric-types";
+import {TimeSeriesJson} from "./timeseries";
 import { ConcreteWidget } from "./widget";
 
 /**
@@ -120,14 +120,10 @@ export class AlarmWidget extends ConcreteWidget {
  */
 export interface GraphWidgetProps extends MetricWidgetProps {
   /**
-   * Metrics to display on left Y axis
+   * Time series to display
+   * @default no time series will be displayed
    */
-  readonly left?: IMetric[];
-
-  /**
-   * Metrics to display on right Y axis
-   */
-  readonly right?: IMetric[];
+  readonly timeSeries?: TimeSeriesJson[];
 
   /**
    * Annotations for the left Y axis
@@ -169,8 +165,7 @@ export class GraphWidget extends ConcreteWidget {
   public toJson(): any[] {
     const horizontalAnnoations =  (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
       (this.props.rightAnnotations || []).map(mapAnnotation('right')));
-    const metrics = (this.props.left || []).map(m => metricJson(m, 'left')).concat(
-      (this.props.right || []).map(m => metricJson(m, 'right')));
+
     return [{
       type: 'metric',
       width: this.width,
@@ -182,7 +177,7 @@ export class GraphWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
-        metrics: metrics.length > 0 ? metrics : undefined,
+        metrics: this.props.timeSeries,
         annotations: horizontalAnnoations.length > 0 ? { horizontal: horizontalAnnoations } : undefined,
         yAxis: {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
@@ -198,9 +193,9 @@ export class GraphWidget extends ConcreteWidget {
  */
 export interface SingleValueWidgetProps extends MetricWidgetProps {
   /**
-   * Metrics to display
+   * Time series to display
    */
-  readonly metrics: IMetric[];
+  readonly timeSeries: TimeSeriesJson[];
 
   /**
    * Whether to show the value from the entire time range.
@@ -232,7 +227,7 @@ export class SingleValueWidget extends ConcreteWidget {
         view: 'singleValue',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
-        metrics: this.props.metrics.map(m => metricJson(m, 'left')),
+        metrics: this.props.timeSeries,
         setPeriodToTimeRange: this.props.setPeriodToTimeRange
       }
     }];
@@ -298,29 +293,4 @@ function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
   return (a: HorizontalAnnotation) => {
     return { ...a, yAxis };
   };
-}
-
-/**
- * Return the JSON structure which represents this metric in a graph
- *
- * This will be called by GraphWidget, no need for clients to call this.
- */
-function metricJson(metric: IMetric, yAxis: string): any[] {
-  const config = metric.toGraphConfig();
-
-  // Namespace and metric Name
-  const ret: any[] = [
-    config.namespace,
-    config.metricName,
-  ];
-
-  // Dimensions
-  for (const dim of (config.dimensions || [])) {
-    ret.push(dim.name, dim.value);
-  }
-
-  // Options
-  ret.push({ yAxis, ...config.renderingProperties });
-
-  return ret;
 }

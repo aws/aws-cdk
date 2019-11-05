@@ -7,6 +7,8 @@ export * from './metric';
 export * from './metric-types';
 export * from './text';
 export * from './widget';
+export * from './timeseries';
+export * from './expression';
 
 // AWS::CloudWatch CloudFormation Resources:
 export * from './cloudwatch.generated';

@@ -20,10 +20,11 @@ const metric = new cloudwatch.Metric({
   dimensions: { QueueName: queue.getAtt('QueueName') }
 });
 
-const alarm = metric.createAlarm(stack, 'Alarm', {
+const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
+  metric,
   threshold: 100,
   evaluationPeriods: 3,
-  datapointsToAlarm: 2,
+  datapointsToAlarm: 2
 });
 
 const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
@@ -42,12 +43,12 @@ dashboard.addWidgets(new cloudwatch.AlarmWidget({
 }));
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',
-  left: [metric],
+  timeSeries: [metric.toJson()],
   leftAnnotations: [alarm.toAnnotation()]
 }));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current messages in queue',
-  metrics: [metric]
+  timeSeries: [metric.toJson()]
 }));
 
 app.synth();

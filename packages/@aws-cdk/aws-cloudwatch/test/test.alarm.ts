@@ -1,11 +1,16 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
+import {Alarm, Expression, IAlarm, IAlarmAction, Metric} from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
   metricName: 'Metric',
+});
+
+const testExpression = new Expression({
+  id: 'e1',
+  expression: 'SUM(METRICS())'
 });
 
 export = {
@@ -169,11 +174,12 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.createAlarm(stack, 'Alarm', {
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'min',
-      period: Duration.seconds(10),
+      period: Duration.seconds(10)
     });
 
     // THEN
@@ -195,7 +201,8 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.createAlarm(stack, 'Alarm', {
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'p99.9'
@@ -204,6 +211,43 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ExtendedStatistic: 'p99.9',
+    }));
+
+    test.done();
+  },
+
+  'can create an alarm with a metric and an expression'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metricDataQueryList = [testMetric, testExpression].map(ts => ts.toAlarmTimeSeries());
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metrics: metricDataQueryList,
+      threshold: 1000,
+      evaluationPeriods: 2
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      Metrics: [
+        {
+          Id: "metric",
+          MetricStat: {
+            Metric: {
+              Dimensions: [],
+              MetricName: "Metric",
+              Namespace: "CDK/Test"
+            },
+            Period: 300,
+            Stat: "Average"
+          }
+        },
+        {
+          Expression: "SUM(METRICS())",
+          Id: "e1"
+        }
+      ]
     }));
 
     test.done();

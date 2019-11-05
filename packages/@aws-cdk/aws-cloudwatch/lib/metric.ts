@@ -1,7 +1,9 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
-import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { Dimension, IMetric, MetricAlarmConfig, MetricGraphConfig, Unit } from './metric-types';
+import { ComparisonOperator, TreatMissingData } from './alarm';
+import { CfnAlarm } from './cloudwatch.generated';
+import { Dimension, IMetric, MetricAlarmConfig, Unit } from './metric-types';
+import {AlarmTimeSeriesProps, MetricJson, TimeSeriesJson, ToJsonProps} from "./timeseries";
 import { normalizeStatistic, parseStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
@@ -54,6 +56,12 @@ export interface CommonMetricOptions {
    * Color for this metric when added to a Graph in a Dashboard
    */
   readonly color?: string;
+
+  /**
+   * TODO
+   * @default todo
+   */
+  readonly id?: string;
 }
 
 /**
@@ -69,12 +77,6 @@ export interface MetricProps extends CommonMetricOptions {
    * Name of the metric.
    */
   readonly metricName: string;
-}
-
-/**
- * Properties of a metric that can be changed
- */
-export interface MetricOptions extends CommonMetricOptions {
 }
 
 /**
@@ -113,6 +115,10 @@ export class Metric implements IMetric {
   public readonly unit?: Unit;
   public readonly label?: string;
   public readonly color?: string;
+  /**
+   * TODO
+   */
+  public readonly id: string;
 
   constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
@@ -129,50 +135,47 @@ export class Metric implements IMetric {
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
+    this.id = props.id || this.metricName.toLowerCase();
   }
 
-  /**
-   * Return a copy of Metric with properties changed.
-   *
-   * All properties except namespace and metricName can be changed.
-   *
-   * @param props The set of properties to change.
-   */
-  public with(props: MetricOptions): Metric {
-    return new Metric({
-      dimensions: ifUndefined(props.dimensions, this.dimensions),
-      namespace: this.namespace,
-      metricName: this.metricName,
-      period: ifUndefined(props.period, this.period),
-      statistic: ifUndefined(props.statistic, this.statistic),
-      unit: ifUndefined(props.unit, this.unit),
-      label: ifUndefined(props.label, this.label),
-      color: ifUndefined(props.color, this.color)
-    });
+  public toAlarmTimeSeries(props: AlarmTimeSeriesProps = {}): CfnAlarm.MetricDataQueryProperty {
+    return {
+      metricStat: {
+        metric: {
+          dimensions: this.dimensionsAsList(),
+          metricName: this.metricName,
+          namespace: this.namespace,
+        },
+        period: this.period.toSeconds(),
+        stat: this.statistic,
+        unit: this.unit
+      },
+      id: this.id,
+      returnData: props.returnData
+    };
   }
 
-  /**
-   * Make a new Alarm for this metric
-   *
-   * Combines both properties that may adjust the metric (aggregation) as well
-   * as alarm properties.
-   */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
-    return new Alarm(scope, id, {
-      metric: this.with({
-        statistic: props.statistic,
-        period: props.period,
-      }),
-      alarmName: props.alarmName,
-      alarmDescription: props.alarmDescription,
-      comparisonOperator: props.comparisonOperator,
-      datapointsToAlarm: props.datapointsToAlarm,
-      threshold: props.threshold,
-      evaluationPeriods: props.evaluationPeriods,
-      evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
-      treatMissingData: props.treatMissingData,
-      actionsEnabled: props.actionsEnabled,
+  public toJson(props: ToJsonProps = {}): TimeSeriesJson {
+    const dimensions = this.dimensionsAsList().map(d => [d.name, d.value]);
+    const ms: string[] = ([] as string[]).concat(...dimensions);
+
+    // TODO: fix error, ...ms fails
+    const array: MetricJson = [
+      this.namespace,
+      this.metricName,
+    ];
+
+    array.push(...ms, {
+      color: this.color,
+      label: this.label,
+      period: this.period.toSeconds(),
+      stat: this.statistic,
+      visible: props.visible,
+      yAxis: props.yAxis || "left",
+      id: this.id
     });
+
+    return array;
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
@@ -190,26 +193,6 @@ export class Metric implements IMetric {
     };
   }
 
-  public toGraphConfig(): MetricGraphConfig {
-    return {
-      dimensions: this.dimensionsAsList(),
-      namespace: this.namespace,
-      metricName: this.metricName,
-      renderingProperties: {
-        period: this.period.toSeconds(),
-        stat: this.statistic,
-        color: this.color,
-        label: this.label,
-      },
-      // deprecated properties for backwards compatibility
-      period: this.period.toSeconds(),
-      statistic: this.statistic,
-      unit: this.unit,
-      color: this.color,
-      label: this.label,
-    };
-  }
-
   public toString() {
     return this.label || this.metricName;
   }
@@ -224,39 +207,14 @@ export class Metric implements IMetric {
       return [];
     }
 
-    const list = Object.keys(dims).map(key => ({ name: key, value: dims[key] }));
-
-    return list;
+    return Object.keys(dims).map(key => ({ name: key, value: dims[key] }));
   }
 }
 
 /**
- * Properties needed to make an alarm from a metric
+ * TODO
  */
-export interface CreateAlarmOptions {
-  /**
-   * The period over which the specified statistic is applied.
-   *
-   * @default Duration.minutes(5)
-   */
-  readonly period?: cdk.Duration;
-
-  /**
-   * What function to use for aggregating.
-   *
-   * Can be one of the following:
-   *
-   * - "Minimum" | "min"
-   * - "Maximum" | "max"
-   * - "Average" | "avg"
-   * - "Sum" | "sum"
-   * - "SampleCount | "n"
-   * - "pNN.NN"
-   *
-   * @default Average
-   */
-  readonly statistic?: string;
-
+export interface BaseAlarmProps {
   /**
    * Name of the alarm
    *
@@ -270,6 +228,13 @@ export interface CreateAlarmOptions {
    * @default No description
    */
   readonly alarmDescription?: string;
+
+  /**
+   * Sets how this alarm is to handle missing data points.
+   *
+   * @default TreatMissingData.Missing
+   */
+  readonly treatMissingData?: TreatMissingData;
 
   /**
    * Comparison to use to check if metric is breaching
@@ -298,13 +263,6 @@ export interface CreateAlarmOptions {
   readonly evaluateLowSampleCountPercentile?: string;
 
   /**
-   * Sets how this alarm is to handle missing data points.
-   *
-   * @default TreatMissingData.Missing
-   */
-  readonly treatMissingData?: TreatMissingData;
-
-  /**
    * Whether the actions for this alarm are enabled
    *
    * @default true
@@ -323,9 +281,30 @@ export interface CreateAlarmOptions {
   readonly datapointsToAlarm?: number;
 }
 
-function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
-  if (x !== undefined) {
-    return x;
-  }
-  return def;
+/**
+ * Properties needed to make an alarm from a metric
+ */
+export interface CreateAlarmOptions extends BaseAlarmProps {
+  /**
+   * The period over which the specified statistic is applied.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * What function to use for aggregating.
+   *
+   * Can be one of the following:
+   *
+   * - "Minimum" | "min"
+   * - "Maximum" | "max"
+   * - "Average" | "avg"
+   * - "Sum" | "sum"
+   * - "SampleCount | "n"
+   * - "pNN.NN"
+   *
+   * @default Average
+   */
+  readonly statistic?: string;
 }
