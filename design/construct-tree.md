@@ -64,13 +64,11 @@ In this scenario, these are some details that are not intuitive without diving d
 >2. What properties were the resources initialized with? Can they be changed?
 >3. Is the relationship between these constructs captured in the cloud assembly correctly?
 
-
 When deployments fail, or provisioned resources don’t hold the properties that one might expect, developers can’t figure out what properties that resources such as `NatGateway, AutoScalingGroup, Subnets, Route Tables` were configured with without dropping into the generated CloudFormation template. It can take a good amount of clicking and digging before developers can figure out what happened and almost certainly needs them to get away from their favourite IDE and switch context to find out.
 
 The recurring theme is that intent based constructs are easy to get started with, take a lot of complexity away from the developer. The flip-side of this experience is that debugging and figuring out what the CDK did on your behalf can become challenging as applications come more complex. This problem will proliferate as more third-party constructs become available for consumption.
 
  Exposing the construct tree will enrich the developer experience for CDK application construction by exposing the construct tree explicitly.
-
 
 Let’s take another look at an example of what a construct tree might look like:
 
@@ -121,11 +119,11 @@ The construct tree will be a list of paths that are indexed into a map of constr
 
 ### Construct properties
 
-|Property   |Type             |Required     |Source                     | Description  |
-|---        |---              |---          |---                        | ---          |
-|path       |string           |Required     |`construct.node.path`      | Full, absolute path of the construct within the tree |
-|children   |Array<Path>      |Not Required |`construct.node.children`  | All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
-|metadata   |Array<Metadata>  |Not Required |`construct.node.metadata`  | Metadata describing all constructs/resources that are encapsulated by the construct  |
+|Property       |Type             |Required     |Source                     | Description  |
+|---            |---              |---          |---                        | ---          |
+|path           |string           |Required     |`construct.node.path`      | Full, absolute path of the construct within the tree |
+|children       |Array            |Not Required |`construct.node.children`  | All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
+|attributes     |Array            |Not Required |`construct.node.attributes`  | Attributes describing all constructs/resources/properties that are encapsulated by the construct  |
 
 ### Metadata Properties
 
@@ -133,129 +131,50 @@ The following metadata properties will be included by the construct that produce
 
 |Property       |Type             |Required     | Description    |
 |---            |---              |---          | ---            |
-|sourceLocation |string           |Required     | location in source code where the construct is defined |
-|description    |string           |Not Required | description of the construct |
-|properties     |Array<Metadata>  |Not Required | constructs can fill in arbitrary metadata such as configuration. CloudFormation agnostic. CFN constructs will include the properties in `this.toCloudFormation()` |
+|attributes     |Array            |Not Required | constructs can fill in arbitrary metadata such as configuration, type, properties, etc |
 
-**TODO** - add detail and a more concrete walkthrough with samples of all the attributes referenced in construct and metadata properties.
+Attributes are an extensible list and their keys should be namespaced by convention to avoid conflicts.
 
+As an example, L1 CloudFormation resources would use the following convention within the bag of attributes:
+
+`aws:cdk:cloudformation:type` - CloudFormation resource that this construct represents
+`aws:cdk:cloudformation:properties` - properties of the CloudFormation resource
+
+The example below is a sample tree with a stack that has 2 resources within it. The resources have attributes in their bag that are named by convention.
 ```json
 {
-  "version": "1.0-experimental",
+  "version": "tree-0.1",
   "tree": {
-    "App": {
-      "path": "/",
-      "metadata": {
-        "sourceLocation": ""
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "path": "Tree"
       },
-      "children": {
-        "CdkWorkshopStack": {
-          "path": "CdkWorkshopStack",
-          "metadata": [
-            {
-              "sourceLocation": "/lib/cdkworkshop-stack.ts:8:22",
-              "description": "Construct for a CloudFormation Stack",
-              "properties": {
-                "notificationArn": "sample-notification-arn",
-                "retentionPolicy": "RETAIN",
-                "role-arn": "sample-role-arn"
-              },
-              "warnings": [
-                {
-                  "deprecatedParameter": "`transform` is deprecated, use `transforms` instead"
+      "mystack": {
+        "path": "mystack",
+        "children": {
+          "mycfnresource": {
+            "path": "mystack/mycfnresource",
+            "attributes": {
+              "aws:cdk:props": {
+                "mystringpropkey": "mystringpropval",
+                "mylistpropkey": [
+                  "listitem1"
+                ],
+                "mystructpropkey": {
+                  "myboolpropkey": true,
+                  "mynumpropkey": 50
                 }
-              ]
+              }
             }
-          ],
-          "children": {
-            "HelloHandler": {
-              "path": "CdkWorkshopStack/HelloHandler",
-              "metadata": [
-                {
-                  "sourceLocation": "sample-source-location",
-                  "properties": {
-                    "memorySize": "128MB",
-                    "Role": "sample-role",
-                    "Tags": [
-                      {
-                        "sample-tag": "yay-cdk",
-                        "safe-to-delete": "yup"
-                      }
-                    ]
-                  }
-                }
-              ],
-              "children": {
-                "ServiceRole": {
-                  "path": "CdkWorkshopStack/HelloHandler/ServiceRole",
-                  "metadata": [
-                    {
-                      "sourceLocation": "sample-source-location",
-                      "properties": {
-                        "something-cool": "about-this-role"
-                      }
-                    }
-                  ]
-                },
-                "Resource": {
-                  "path": "CdkWorkshopStack/HelloHandler/Resource",
-                  "metadata": [
-                    {
-                      "sourceLocation": "sample-source-location",
-                      "properties": {
-                        "logicalId": "HelloHandler2E4FBA4D"
-                      }
-                    }
-                  ]
-                },
-                "Code": {
-                  "path": "CdkWorkshopStack/HelloHandler/Code",
-                  "metadata": [
-                    {
-                      "sourceLocation": "sample-source-location"
-                    }
-                  ],
-                  "children": {
-                    "S3Bucket": {
-                      "path": "CdkWorkshopStack/HelloHandler/Code/S3Bucket",
-                      "resourecType": "AWS::S3::Bucket",
-                      "metadata": [
-                        {
-                          "sourceLocation": "sample-source-location"
-                        }
-                      ]
-                    },
-                    "S3VersionKey": {
-                      "path": "CdkWorkshopStack/HelloHandler/Code/S3VersionKey",
-                      "metadata": [
-                        {
-                          "sourceLocation": "sample-source-location"
-                        }
-                      ]
-                    },
-                    "AssetBucket": {
-                      "path": "CdkWorkshopStack/HelloHandler/Code/AssetBucket",
-                      "metadata": [
-                        {
-                          "sourceLocation": "sample-source-location"
-                        }
-                      ],
-                      "children": {
-                        "Resource": {
-                          "path": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
-                          "metadata": [
-                            {
-                              "sourceLocation": "sample-source-location",
-                              "properties": {
-                                "logicalId": "HelloHandlerServiceRole11EF7C63"
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
+          },
+          "mytopic": {
+            "path": "mystack/mytopic",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+              "aws:cdk:cloudformation:properties": {
+                "DisplayName": "MyTopic"
               }
             }
           }
@@ -278,21 +197,12 @@ that have additional information to contribute to the construct tree :
 
 ```typescript
 /***
- * Displayable information that a construct will contribute towards the context tree*
+ * Information that a construct will contribute towards the construct tree*
  * such as dependencies, properties, links, documentation, etc
  */
-export interface IDisplayable {
-
-  // id of the construct within the current scope
-  readonly displayName: string
-
-  // Other displayable attributes
+export interface ITreeAttributes {
+  // attributes will be added to the construct tree
   readonly attributes: [key: string]: string;
-
-  /* method that supports extensibility on what can be displayed without
-   * adding more methods/properties on IDisplayable
-   */
-  inspect(display: IDisplayer): void
 }
 ```
 
