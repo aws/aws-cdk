@@ -45,7 +45,7 @@ powerful custom resources and includes the following capabilities:
 * Supports asynchronous handlers to allow long operations which can exceed the AWS Lambda timeout
 * Supports all AWS Lambda language runtimes
 
-This guide provides an reference for authoring custom resources using the
+This guide provides a reference for authoring custom resources using the
 provider framework.
 
 ### User-defined Handlers
