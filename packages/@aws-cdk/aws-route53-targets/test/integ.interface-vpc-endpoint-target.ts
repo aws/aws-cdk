@@ -27,7 +27,7 @@ const zone = new r53.PrivateHostedZone(stack, 'PrivateZone', {
 new r53.ARecord(stack, "AliasEndpointRecord", {
   zone,
   recordName: 'foo',
-  target: r53.AddressRecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
+  target: r53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
 });
 
 app.synth();

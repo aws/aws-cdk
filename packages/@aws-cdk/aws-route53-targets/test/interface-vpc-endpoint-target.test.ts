@@ -25,7 +25,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
   new r53.ARecord(stack, "AliasEndpointRecord", {
     zone,
     recordName: 'foo',
-    target: r53.AddressRecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
+    target: r53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
   });
 
   // THEN

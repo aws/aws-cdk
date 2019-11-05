@@ -41,6 +41,13 @@ This library contains Route53 Alias Record targets for:
     // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
   });
   ```
+* InterfaceVpcEndpoints
+  ```ts
+  new route53.ARecord(stack, "AliasRecord", {
+    zone,
+    target: route53.RecordTarget.fromAlias(new alias.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
+  });
+  ```
 * S3 Bucket WebSite:
 
 **Important:** The Bucket name must strictly match the full DNS name. 
