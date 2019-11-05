@@ -103,6 +103,10 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
   }
 }
 
+export function resetStartExecutionMock() {
+  startStateMachineInput = undefined;
+}
+
 export async function startExecutionMock(req: AWS.StepFunctions.StartExecutionInput) {
   startStateMachineInput = req;
   expect(req.stateMachineArn).toEqual(MOCK_SFN_ARN);

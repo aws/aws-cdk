@@ -32,10 +32,5 @@ export function getEnv(name: string): string {
 }
 
 export function log(title: any, ...args: any[]) {
-  console.log([
-    title,
-    '============================',
-  ].join('\n') + '\n', ...args.map(x => {
-    if (typeof(x) === 'object') { return JSON.stringify(x, undefined, 2); } else { return x; }
-  }));
+  console.log('[provider-framework]', title, ...args.map(x => typeof(x) === 'object' ? JSON.stringify(x, undefined, 2) : x));
 }

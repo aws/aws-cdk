@@ -47,11 +47,6 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
       return;
     }
 
-    // immediately invoke isComplete (the sync case).
-    if (await invokeIsCompleteUserHandler(resourceEvent)) {
-      return;
-    }
-
     // ok, we are not complete, so kick off the waiter workflow
     const waiter = {
       stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
@@ -70,10 +65,29 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
 // invoked a few times until `complete` is true or until it times out.
 async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   return await failOnError(event, async () => {
-    log('isCompleteHandler', event);
-    if (!await invokeIsCompleteUserHandler(event)) {
+    log('isComplete', event);
+
+    const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, event) as IsCompleteResponse;
+    log('user isComplete returned:', isCompleteResult);
+
+    // if we are not complete, reeturn false, and don't send a response back.
+    if (!isCompleteResult.IsComplete) {
+      if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
+        throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
+      }
+
       throw new Retry(JSON.stringify(event));
     }
+
+    const response = {
+      ...event,
+      Data: {
+        ...event.Data,
+        ...isCompleteResult.Data
+      }
+    };
+
+    await submitCloudFormationResponse('SUCCESS', response);
   });
 }
 
@@ -117,36 +131,6 @@ function parseJsonPayload(payload: any): any {
     log('parse error:', e);
     return { text };
   }
-}
-
-/**
- * Invokes the user-defined "isComplete" handler.
- */
-async function invokeIsCompleteUserHandler(isCompleteRequest: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<boolean> {
-  log('executing user isComplete:', isCompleteRequest);
-  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, isCompleteRequest) as IsCompleteResponse;
-  log('isComplete returned:', isCompleteResult);
-
-  // if we are not complete, reeturn false, and don't send a response back.
-  if (!isCompleteResult.IsComplete) {
-
-    if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
-      throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
-    }
-
-    return false;
-  }
-
-  const event = {
-    ...isCompleteRequest,
-    Data: {
-      ...isCompleteRequest.Data,
-      ...isCompleteResult.Data
-    }
-  };
-
-  await submitCloudFormationResponse('SUCCESS', event);
-  return true;
 }
 
 function validateCfnRequest(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
