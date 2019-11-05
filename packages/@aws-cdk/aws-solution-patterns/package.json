@@ -1,0 +1,106 @@
+{
+  "name": "@aws-cdk/aws-solution-patterns",
+  "version": "1.15.0",
+  "description": "Higher-level multi-service CDK Constructs",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.solution.patterns",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "solution-patterns",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.solution.Patterns",
+        "packageId": "Amazon.CDK.AWS.solution.Patterns",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-solution-patterns",
+        "module": "aws_cdk.aws_solution_patterns"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-solution-patterns"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "solution",
+    "solution-patterns"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    }
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "jest": "^24.9.0",
+    "pkglint": "^1.15.0",
+    "deepmerge": "^4.2.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-dynamodb": "1.15.0",
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-dynamodb": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
+  },
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-solution-patterns.LambdaToDynamoDB",
+      "docs-public-apis:@aws-cdk/aws-solution-patterns.LambdaToDynamoDB.dynamoTable",
+      "docs-public-apis:@aws-cdk/aws-solution-patterns.LambdaToDynamoDB.lambdaFunction",
+      "docs-public-apis:@aws-cdk/aws-solution-patterns.LambdaToDynamoDBProps"
+    ]
+  }
+}

@@ -1,0 +1,322 @@
+{
+  "Resources": {
+    "testlambdadynamodbstackDynamoTable8138E93B": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "testlambdadynamodbstackLambdaFunctionServiceRole226532E1": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "testlambdadynamodbstackLambdaFunctionServiceRoleDefaultPolicyF537063F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "testlambdadynamodbstackDynamoTable8138E93B",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "testlambdadynamodbstackLambdaFunctionServiceRoleDefaultPolicyF537063F",
+        "Roles": [
+          {
+            "Ref": "testlambdadynamodbstackLambdaFunctionServiceRole226532E1"
+          }
+        ]
+      }
+    },
+    "testlambdadynamodbstackLambdaFunction5DDB3E8D": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9bS3Bucket8D2850DA"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9bS3VersionKeyB5B23FDF"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9bS3VersionKeyB5B23FDF"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "testlambdadynamodbstackLambdaFunctionServiceRole226532E1",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Environment": {
+          "Variables": {
+            "LOGLEVEL": "INFO",
+            "DDB_TABLE_NAME": {
+              "Ref": "testlambdadynamodbstackDynamoTable8138E93B"
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "testlambdadynamodbstackLambdaFunctionServiceRoleDefaultPolicyF537063F",
+        "testlambdadynamodbstackLambdaFunctionServiceRole226532E1"
+      ]
+    },
+    "testlambdadynamodbstackLambdaFunctionLogRetention4724F084": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "testlambdadynamodbstackLambdaFunction5DDB3E8D"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 90
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": [
+          {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ]
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x"
+      },
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParameters78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9bS3Bucket8D2850DA": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9b\""
+    },
+    "AssetParameters78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9bS3VersionKeyB5B23FDF": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9b\""
+    },
+    "AssetParameters78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9bArtifactHashBE359D28": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"78e4557b6af07a75c658312f6045a0bb11a8ed0ed528857b3c0687477658ec9b\""
+    },
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""
+    },
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""
+    },
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42ArtifactHashD6C3B3DD": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""
+    }
+  }
+}

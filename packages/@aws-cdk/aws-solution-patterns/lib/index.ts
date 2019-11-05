@@ -1,0 +1,1 @@
+export * from './lambda-dynamodb/index';
