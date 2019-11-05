@@ -42,6 +42,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The minimum value is 1
    *
    * @default 1
    */
@@ -230,6 +231,9 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
+    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+      throw new Error('You must specify a desiredCount greater than 0');
+    }
     this.desiredCount = props.desiredCount || 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
