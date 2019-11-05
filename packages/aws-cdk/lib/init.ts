@@ -216,8 +216,8 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   await assertIsEmptyDirectory();
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, process.cwd());
-  await initializeGitRepository();
   if (!generateOnly) {
+    await initializeGitRepository();
     await postInstall(language, canUseNetwork);
   }
   if (await fs.pathExists('README.md')) {
