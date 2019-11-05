@@ -37,6 +37,7 @@ export interface DeployStackOptions {
   ci?: boolean;
   reuseAssets?: string[];
   tags?: Tag[];
+  execute?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -92,14 +93,20 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
   }
 
-  debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
-  await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-  // tslint:disable-next-line:max-line-length
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
-  debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
-  await waitForStack(cfn, deployName);
-  if (monitor) { await monitor.stop(); }
-  debug('Stack %s has completed updating', deployName);
+  if (options.execute) {
+    debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
+    await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
+    // tslint:disable-next-line:max-line-length
+    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
+    debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
+    await waitForStack(cfn, deployName);
+    if (monitor) {
+      await monitor.stop();
+    }
+    debug('Stack %s has completed updating', deployName);
+  } else {
+    cfn.executeChangeSet();
+  }
   return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
 
