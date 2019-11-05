@@ -65,7 +65,7 @@ We will add a new command-line option called `--trust` to the `bootstrap` comman
 Its value is a list of AWS account IDs:
 
 ```shell
-$ cdk bootstrap [--trust accountId[,otherAccountId]...] aws:://account/region
+$ cdk bootstrap [--trust accountId[,otherAccountId]...] aws://account/region
 ```
 
 If the `--trust` option has been passed on the CLI,
@@ -102,8 +102,13 @@ After the user has made their choice,
 or if the `--trust` option has not been passed,
 bootstrapping will proceed.
 
+If a user wants to add new trusted account(s) to an existing bootstrap stack,
+they have to specify all of the accounts they want to trust in the `--trust` option,
+not only the one being newly added -
+otherwise, the previously trusted account(s) will be removed.
+
 We will also add a another option,
-`--cfn-deployment-role-policies`,
+`--cloudformation-execution-policies`,
 that allows you to pass a list of managed policy ARNs on the command line,
 so that the `bootstrap` command can also be executed in non-interactive mode.
 
@@ -116,12 +121,6 @@ based on the default one the CDK provides,
 and then change the default options when creating instances of the `Stack`
 class to match the names used in the custom template.
 
-### `--show-template`
-
-To help with the customization case,
-we will add a command that outputs the template we're using for bootstrapping to standard output.
-This way, it can serve as a base for anyone who wants customize the bootstrapping behavior.
-
 ### CLI options in detail
 
 These options are inherited from the current CLI experience,
@@ -129,7 +128,7 @@ and need to be kept for backwards compatibility reasons:
 
 * `--profile`: use the given local AWS credentials profile when interacting with the target environment.
 
-* `--toolkit-stack-name`: allows you to explicitly name the CloudFormation bootstrap stack
+* `--toolkit-stack-name`, `--stack-name`: allows you to explicitly name the CloudFormation bootstrap stack
   (instead of relying on the default naming scheme).
 
 * `--tags`, `-t`: a list of key=value pairs to add as tags to add to the bootstrap stack.
@@ -148,12 +147,9 @@ These are the new options:
   This will be required to be passed as the pipeline account,
   for deployment from a Continuous Delivery CDK pipeline to work.
 
-* `--cfn-deployment-role-policies`: allows specifying the ManagedPolicy ARN(s)
+* `--cloudformation-execution-policies`: allows specifying the ManagedPolicy ARN(s)
   that should be attached to the **CloudFormation Execution Role**
   instead of choosing them from a menu interactively.
-
-* `--show-template`: outputs the bootstrap CloudFormation template
-  (see below) to standard output.
 
 ## Updating bootstrap resources
 
@@ -200,6 +196,42 @@ Depending on the value retrieved, it will then:
   In this case, I think it's correct to proceed with carrying out the operation;
   perhaps print a warning that the user should consider updating their CLI version
   if they encounter any errors.
+
+## Backwards compatibility
+
+This section outlines how does the backwards compatibility with the existing `cdk bootstrap` functionality work.
+In the below template, "old" means the current behavior,
+and "new" means "a version released including the changes needed for the CI/CD story".
+
+The particular components are:
+
+* CLI: the version of the `aws-cdk` package used to invoke various CDK commands,
+  like `synth` and `deploy`.
+* Framework: the version of the CDK libraries that the CDK application uses.
+* Bootstrap: the version of the bootstrap stack that is installed in the target environment.
+* Init template: the version of the `aws-cdk` package that was used to run the `cdk init` command
+  that generated the current CDK application.
+
+ CLI  | Framework | Bootstrap | Init template | Result
+------|-----------|-----------|---------------|-------
+ old  |    old    |    old    |      old      | current situation    
+ old  |    old    |    old    |      new      | should work the same as currently (init template should be backwards compatible)
+ old  |    old    |    new    |      old      | should work the same as currently (`cdk bootstrap` should be backwards compatible)
+ old  |    new    |    old    |      old      | should work the same as currently (framework auto-detects old CLI)
+ new  |    old    |    old    |      old      | should work the same as currently (CLI auto-detects old framework)
+      |           |           |               |
+ old  |    old    |    new    |      new      | should work (`cdk bootstrap` should be backwards compatible)
+ old  |    new    |    old    |      new      | error out: "please upgrade your CLI"
+ new  |    old    |    old    |      new      | should work the same as currently (CLI auto-detects old framework)
+ old  |    new    |    new    |      old      | should work the same as currently (framework auto-detects old CLI, `cdk bootstrap` is backwards compatible)
+ new  |    old    |    new    |      old      | should work the same as currently (CLI auto-detects old framework, `cdk bootstrap` is backwards compatible)
+ new  |    new    |    old    |      old      | error out: "please run `cdk bootstrap`"
+      |           |           |               |
+ old  |    new    |    new    |      new      | error out: "please upgrade your CLI"
+ new  |    old    |    new    |      new      | should work the same as currently (CLI auto-detects old framework, `cdk bootstrap` is backwards compatible)
+ new  |    new    |    old    |      new      | error out: "please run `cdk bootstrap`"
+ new  |    new    |    new    |      old      | should work the same as currently (feature flag is not set: old assets behavior, `cdk bootstrap` is backwards compatible)
+ new  |    new    |    new    |      new      | final state
 
 ## Bootstrap template
 
@@ -410,7 +442,7 @@ Here is the JSON of the bootstrap CloudFormation template:
                 {
                   "Action": "iam:PassRole",
                   "Resource": {
-                    "Fn::Sub": "${CloudformationExecutionRole.Arn}"
+                    "Fn::Sub": "${CloudFormationExecutionRole.Arn}"
                   }
                 }
               ],
@@ -425,7 +457,7 @@ Here is the JSON of the bootstrap CloudFormation template:
         "Condition": "HasTrustedPrincipals"
       }
     },
-    "CloudformationExecutionRole": {
+    "CloudFormationExecutionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
