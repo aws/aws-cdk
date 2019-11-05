@@ -217,7 +217,9 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, process.cwd());
   await initializeGitRepository();
-  await postInstall(language, canUseNetwork, generateOnly);
+  if (!generateOnly) {
+    await postInstall(language, canUseNetwork);
+  }
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
@@ -244,33 +246,28 @@ async function initializeGitRepository() {
   }
 }
 
-async function postInstall(language: string, canUseNetwork: boolean, generateOnly: boolean) {
+async function postInstall(language: string, canUseNetwork: boolean) {
   switch (language) {
   case 'javascript':
-    return await postInstallJavascript(canUseNetwork, generateOnly);
+    return await postInstallJavascript(canUseNetwork);
   case 'typescript':
-    return await postInstallTypescript(canUseNetwork, generateOnly);
+    return await postInstallTypescript(canUseNetwork);
   case 'java':
-    return await postInstallJava(canUseNetwork, generateOnly);
+    return await postInstallJava(canUseNetwork);
   case 'python':
     return await postInstallPython();
   }
 }
 
-async function postInstallJavascript(canUseNetwork: boolean, generateOnly: boolean) {
-  return postInstallTypescript(canUseNetwork, generateOnly);
+async function postInstallJavascript(canUseNetwork: boolean) {
+  return postInstallTypescript(canUseNetwork);
 }
 
-async function postInstallTypescript(canUseNetwork: boolean, generateOnly: boolean) {
+async function postInstallTypescript(canUseNetwork: boolean) {
   const command = 'npm';
 
   if (!canUseNetwork) {
     print(`Please run ${colors.green(`${command} install`)}!`);
-    return;
-  }
-
-  if (generateOnly) {
-    print(`Please install your dependencies manually, e.g. ${colors.green(`${command} install`)}`);
     return;
   }
 
@@ -282,14 +279,9 @@ async function postInstallTypescript(canUseNetwork: boolean, generateOnly: boole
   }
 }
 
-async function postInstallJava(canUseNetwork: boolean, generateOnly: boolean) {
+async function postInstallJava(canUseNetwork: boolean) {
   if (!canUseNetwork) {
     print(`Please run ${colors.green(`mvn package`)}!`);
-    return;
-  }
-
-  if (generateOnly) {
-    print(`Please compile your application manually, e.g. ${colors.green(`mvn package`)}`);
     return;
   }
 
