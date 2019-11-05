@@ -102,7 +102,7 @@ export class Provider extends Construct implements iam.IGrantable {
    *    const provider = new cr.Provider(this, 'MyProvider', { ... })
    *
    *    new cfn.CustomResource(this, 'MyResource', {
-   *      provider: cfn.CustomResourceProvider.fromLambda(provider)
+   *      provider: cfn.CustomResourceProvider.lambda(provider.entrypoint)
    *    });
    */
   public readonly entrypoint: lambda.Function;
