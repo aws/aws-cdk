@@ -12,7 +12,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
   const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpoint', {
     vpc,
     service: {
-      name: 'com.amazonaws.vpce.us-west-2.vpce-svc-03162d96b85b68369',
+      name: 'com.amazonaws.vpce.us-west-2.vpce-svc-0123456789',
       port: 80
     }
   });

@@ -515,7 +515,7 @@
     "InterfaceEndpoint12DE6E71": {
       "Type": "AWS::EC2::VPCEndpoint",
       "Properties": {
-        "ServiceName": "com.amazonaws.vpce.us-west-2.vpce-svc-03162d96b85b68369",
+        "ServiceName": "com.amazonaws.vpce.us-west-2.vpce-svc-01234567890987654",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },

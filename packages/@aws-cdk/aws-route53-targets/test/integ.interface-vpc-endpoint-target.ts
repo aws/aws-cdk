@@ -11,7 +11,7 @@ const vpc = new ec2.Vpc(stack, 'VPC');
 const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpoint', {
   vpc,
   service: {
-    name: 'com.amazonaws.vpce.us-west-2.vpce-svc-03162d96b85b68369',
+    name: 'com.amazonaws.vpce.us-west-2.vpce-svc-01234567890987654',
     port: 80
   },
   privateDnsEnabled: false,
