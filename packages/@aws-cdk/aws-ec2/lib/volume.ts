@@ -108,7 +108,7 @@ export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
 }
 
 /**
- * Describes a block device mapping for an Auto Scaling group.
+ * Describes a block device mapping for an EC2 instance or Auto Scaling group.
  */
 export class BlockDeviceVolume {
   /**
@@ -149,7 +149,7 @@ export class BlockDeviceVolume {
    * @param ebsDevice EBS device info
    * @param virtualName Virtual device name
    */
-  private constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
+  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
   }
 }
 
@@ -183,7 +183,7 @@ export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices
 }
 
 /**
- * Supported EBS volume types for {@link AutoScalingGroupProps.blockDevices}
+ * Supported EBS volume types for blockDevices
  */
 export enum EbsDeviceVolumeType {
   /**

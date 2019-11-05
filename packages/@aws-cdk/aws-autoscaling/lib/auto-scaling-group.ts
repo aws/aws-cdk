@@ -5,10 +5,9 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { synthesizeBlockDeviceMappings } from '@aws-cdk/aws-ec2';
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Token, Tokenization, withResolved
+  Tag, Tokenization, withResolved
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -225,7 +224,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - Uses the block device mapping of the AMI
    */
-  readonly blockDevices?: ec2.BlockDevice[];
+  readonly blockDevices?: BlockDevice[];
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
@@ -450,7 +449,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
       blockDeviceMappings: (props.blockDevices !== undefined ?
-        synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+        ec2.synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
           ({ deviceName, ebs, virtualName, noDevice }) => ({
             deviceName, ebs, virtualName, noDevice: noDevice ? true : false
           })
@@ -922,13 +921,34 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
   readonly targetValue: number;
 }
 
+export class BlockDeviceVolume extends ec2.BlockDeviceVolume {}
+export interface BlockDevice extends ec2.BlockDevice {}
+export interface EbsDeviceOptions extends ec2.EbsDeviceOptions {}
+export interface EbsDeviceOptionsBase extends ec2.EbsDeviceOptionsBase {}
+export interface EbsDeviceProps extends ec2.EbsDeviceProps {}
+export interface EbsDeviceSnapshotOptions extends ec2.EbsDeviceSnapshotOptions {}
 /**
- * Stringify a number directly or lazily if it's a Token
+ * Supported EBS volume types for blockDevices
  */
-function stringifyNumber(x: number) {
-  if (Token.isUnresolved(x)) {
-    return Lazy.stringValue({ produce: context => `${context.resolve(x)}` });
-  } else {
-    return `${x}`;
-  }
+export enum EbsDeviceVolumeType {
+  /**
+   * Magnetic
+   */
+  STANDARD = "standard",
+  /**
+   *  Provisioned IOPS SSD
+   */
+  IO1 = "io1",
+  /**
+   * General Purpose SSD
+   */
+  GP2 = "gp2",
+  /**
+   * Throughput Optimized HDD
+   */
+  ST1 = "st1",
+  /**
+   * Cold HDD
+   */
+  SC1 = "sc1"
 }
