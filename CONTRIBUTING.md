@@ -317,7 +317,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -341,7 +341,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
