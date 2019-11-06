@@ -4,7 +4,7 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/core');
 import { CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
+import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -487,6 +487,43 @@ export = {
         }
       ]
     }));
+    test.done();
+  },
+
+  'associate rule with event bus'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // WHEN
+    new Rule(stack, 'MyRule', {
+      eventPattern: {
+        detail: ['detail']
+      },
+      eventBus,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventBusName: {
+        Ref: 'EventBus7B8748AA'
+      }
+    }));
+
+    test.done();
+  },
+
+  'throws with eventBus and schedule'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // THEN
+    test.throws(() => new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      eventBus,
+    }), /Cannot associate rule with 'eventBus' when using 'schedule'/);
     test.done();
   },
 
