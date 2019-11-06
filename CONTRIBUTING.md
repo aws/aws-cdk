@@ -45,7 +45,7 @@ For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https:
 with [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install) should be sufficient.
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 $ ./build.sh
 ```
@@ -317,7 +317,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -341,7 +341,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
