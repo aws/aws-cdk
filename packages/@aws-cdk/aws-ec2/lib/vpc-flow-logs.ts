@@ -1,88 +1,157 @@
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import s3 = require('@aws-cdk/aws-s3');
-import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { CfnFlowLog } from './ec2.generated';
-import { ISubnet, IVpc } from './vpc';
+import iam = require("@aws-cdk/aws-iam");
+import logs = require("@aws-cdk/aws-logs");
+import s3 = require("@aws-cdk/aws-s3");
+import { Construct, IResource, PhysicalName, Resource } from "@aws-cdk/core";
+import { CfnFlowLog } from "./ec2.generated";
+import { ISubnet, IVpc } from "./vpc";
 
-export interface IVpcFlowLog extends IResource {
+/**
+ * A FlowLog
+ *
+ * @experimental
+ */
+export interface IFlowLog extends IResource {
   /**
    * The Id of the VPC Flow Log
+   *
+   * @attribute
    */
   readonly flowLogId: string;
 }
 
 /**
  * The type of VPC traffic to log
+ *
+ * @experimental
  */
-export enum VpcFlowLogTrafficType {
+export enum FlowLogTrafficType {
   /**
    * Only log accepts
    */
-  ACCEPT = 'ACCEPT',
+  ACCEPT = "ACCEPT",
 
   /**
    * Log all requests
    */
-  ALL = 'ALL',
+  ALL = "ALL",
 
   /**
    * Only log rejects
    */
-  REJECT = 'REJECT'
+  REJECT = "REJECT"
 }
 
 /**
  * The type of resource to create the flow log for
+ *
+ * @experimental
  */
-enum VpcFlowLogResourceType {
-  NETWORK_INTERFACE = 'NetworkInterface',
-  SUBNET = 'Subnet',
-  VPC = 'VPC'
+export abstract class FlowLogResourceType {
+  /**
+   * The subnet to attach the Flow Log to
+   */
+  public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
+    return {
+      resourceType: "Subnet",
+      resourceId: subnet.subnetId
+    };
+  }
+
+  /**
+   * The VPC to attach the Flow Log to
+   */
+  public static fromVpc(vpc: IVpc): FlowLogResourceType {
+    return {
+      resourceType: "VPC",
+      resourceId: vpc.vpcId
+    };
+  }
+
+  /**
+   * The Network Interface to attach the Flow Log to
+   */
+  public static fromNetworkInterfaceId(id: string): FlowLogResourceType {
+    return {
+      resourceType: "NetworkInterface",
+      resourceId: id
+    };
+  }
+
+  public abstract resourceType: string;
+  public abstract resourceId: string;
 }
 
 /**
  * The destination type for the flow log
+ *
+ * @experimental
  */
-export enum VpcFlowLogDestinationType {
+export abstract class FlowLogDestination {
   /**
-   * CloudWatch logs destination
+   * Use CloudWatch logs as the destination
    */
-  CLOUD_WATCH_LOGS = 'cloud-watch-logs',
+  public static toCloudWatchLogs(iamRole?: iam.IRole): FlowLogDestination {
+    return new FlowLogDestinationImpl({
+      logDestinationType: "cloud-watch-logs",
+      iamRole
+    });
+  }
 
   /**
-   * S3 destination
+   * Use S3 as the destination
    */
-  S3 = 's3'
+  public static toS3(bucket?: s3.IBucket): FlowLogDestination {
+    return new FlowLogDestinationImpl({
+      logDestinationType: "s3",
+      s3Bucket: bucket
+    });
+  }
+
+  public abstract toDestination(): FlowLogDestinationConfig;
 }
 
 /**
- * Options for the type of resource you
- * are creating the flow log for
+ * Flow Log Destination configuration
+ *
+ * @experimental
  */
-export interface ResourceTypeOptions {
+export interface FlowLogDestinationConfig {
   /**
-   * The network interface Id that you want to
-   * create the flow log for
+   * The type of destination to publish the flow logs to.
    */
-  readonly networkInterface?: string;
+  readonly logDestinationType: string;
 
   /**
-   * The VPC Subnet that you want to create the
-   * flow log for
+   * S3 bucket to publish the flow logs to
+   *
+   * @default - undefined
    */
-  readonly subnet?: ISubnet;
+  readonly s3Bucket?: s3.IBucket;
 
   /**
-   * The VPC that you want to create the flow log for
+   * The IAM Role that has access to publish to CloudWatch logs
+   *
+   * @default - undefined
    */
-  readonly vpc?: IVpc;
+  readonly iamRole?: iam.IRole;
+}
+
+class FlowLogDestinationImpl extends FlowLogDestination {
+  constructor(private readonly config: FlowLogDestinationConfig) {
+    super();
+  }
+
+  public toDestination(): FlowLogDestinationConfig {
+    return this.config;
+  }
 }
 
 /**
  * Options to add a flow log to a VPC
+ *
+ * @experimental
  */
-export interface VpcFlowLogOptions {
+export interface FlowLogOptions {
   /**
    * The options for creating a CloudWatch log group
    *
@@ -95,54 +164,74 @@ export interface VpcFlowLogOptions {
    *
    * @default ALL
    */
-  readonly trafficType?: VpcFlowLogTrafficType;
+  readonly trafficType?: FlowLogTrafficType;
 
   /**
-   * S3 bucket to publish the flow logs to
-   *
-   * @default - if destinationType is S3 then and this is not
-   * provided then it will create a bucket for you. 
-   *
-   * Should not be provided if destinationType is CLOUD_WATCH_LOGS
-   */
-  readonly s3Bucket?: s3.IBucket;
-
-  /**
-   * Specifies the type of destination to which the flow log data is to be published. 
+   * Specifies the type of destination to which the flow log data is to be published.
    * Flow log data can be published to CloudWatch Logs or Amazon S3
    *
-   * @default VpcFlowLogDestinationType.CLOUD_WATCH_LOGS
+   * @default FlowLogDestinationType.toCloudWatchLogs
    */
-  readonly destinationType?: VpcFlowLogDestinationType;
-
-  /**
-   *
-   * @default - if destinationType is CLOUD_WATCH_LOGS then the iam
-   * role will be created for you. 
-   *
-   * Should not be provided if desinationType is S3
-   */
-  readonly iamRole?: iam.IRole;
-
+  readonly destination?: FlowLogDestination;
 }
 
 /**
  * Properties of a VPC Flow Log
+ *
+ * @experimental
  */
-export interface VpcFlowLogProps  extends VpcFlowLogOptions {
+export interface FlowLogProps extends FlowLogOptions {
+  /**
+   * The name of the FlowLog
+   *
+   * It is not recommended to use an explicit name.
+   *
+   * @default If you don't specify a flowLogName, AWS CloudFormation generates a
+   * unique physical ID and uses that ID for the group name.
+   */
+  readonly flowLogName?: string;
+
   /**
    * The type of resource for which to create the flow log
    */
-  readonly resourceType: ResourceTypeOptions;
-
+  readonly resourceType: FlowLogResourceType;
 }
 
+/**
+ * The base class for a Flow Log
+ *
+ * @experimental
+ */
+abstract class FlowLogBase extends Resource implements IFlowLog {
+  /**
+   * The Id of the VPC Flow Log
+   *
+   * @attribute
+   */
+  public abstract readonly flowLogId: string;
+}
 
 /**
  * A VPC flow log.
  * @resource AWS::EC2::FlowLog
+ *
+ * @experimental
  */
-export class VpcFlowLog extends Resource implements IVpcFlowLog {
+export class FlowLog extends FlowLogBase {
+  /**
+   * Import a Flow Log by it's Id
+   */
+  public static fromFlowLogId(
+    scope: Construct,
+    id: string,
+    flowLogId: string
+  ): IFlowLog {
+    class Import extends FlowLogBase {
+      public flowLogId = flowLogId;
+    }
+
+    return new Import(scope, id);
+  }
 
   /**
    * The Id of the VPC Flow Log
@@ -150,6 +239,7 @@ export class VpcFlowLog extends Resource implements IVpcFlowLog {
    * @attribute
    */
   public readonly flowLogId: string;
+
   /**
    * The S3 bucket to publish flow logs to
    */
@@ -165,31 +255,34 @@ export class VpcFlowLog extends Resource implements IVpcFlowLog {
    */
   public readonly logGroup?: logs.ILogGroup;
 
-  constructor(scope: Construct, id: string, props: VpcFlowLogProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: FlowLogProps) {
+    super(scope, id, {
+      physicalName: props.flowLogName
+    });
 
-    if (!props.resourceType.networkInterface && !props.resourceType.vpc && !props.resourceType.subnet) {
-      throw new Error("Must specify either networkInterface, vpc, or subnet in property resourceType");
-    }
-
-    if (props.s3Bucket && props.iamRole) {
-      throw new Error("IAM role should not be provided if s3Bucket is provided")
-    }
-
-    if (props.s3Bucket && props.destinationType !== VpcFlowLogDestinationType.S3) {
-      throw new Error("destinationType must be set to S3 if s3Bucket is provided")
-    }
-
-    if (props.destinationType === VpcFlowLogDestinationType.S3) {
-      this.bucket = props.s3Bucket || new s3.Bucket(this, 'S3Bucket', {encryption: s3.BucketEncryption.UNENCRYPTED});
-    } else {
-      // only create an iam role if the destination is cloudwatch logs and
-      // an iam role is not provided
-      this.iamRole = props.iamRole || new iam.Role(this, 'IAMRole', {
-        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
+    const destination =
+      props.destination ||
+      new FlowLogDestinationImpl({
+        logDestinationType: "cloud-watch-logs"
       });
-      this.logGroup = new logs.LogGroup(this, 'LogGroup', props.logGroupOptions);
-      new iam.Policy(this, 'Policy', {
+
+    const destinationConfig = destination.toDestination();
+
+    if (destinationConfig.logDestinationType === "cloud-watch-logs") {
+      this.iamRole =
+        destinationConfig.iamRole ||
+        new iam.Role(this, "IAMRole", {
+          roleName: PhysicalName.GENERATE_IF_NEEDED,
+          assumedBy: new iam.ServicePrincipal("vpc-flow-logs.amazonaws.com")
+        });
+
+      this.logGroup = new logs.LogGroup(
+        this,
+        "LogGroup",
+        props.logGroupOptions
+      );
+
+      new iam.Policy(this, "Policy", {
         roles: [this.iamRole],
         statements: [
           new iam.PolicyStatement({
@@ -202,36 +295,29 @@ export class VpcFlowLog extends Resource implements IVpcFlowLog {
             resources: [this.logGroup.logGroupArn]
           }),
           new iam.PolicyStatement({
-            actions: [
-              'iam:PassRole',
-            ],
+            actions: ["iam:PassRole"],
             effect: iam.Effect.ALLOW,
             resources: [this.iamRole.roleArn]
-          }),
+          })
         ]
       });
+    } else {
+      this.bucket =
+        destinationConfig.s3Bucket ||
+        new s3.Bucket(this, "S3Bucket", {
+          encryption: s3.BucketEncryption.UNENCRYPTED
+        });
     }
 
-    let resource = '';
-    let rType =  '';
-    if (props.resourceType.vpc) {
-      resource = props.resourceType.vpc.vpcId;
-      rType = VpcFlowLogResourceType.VPC;
-    } else if (props.resourceType.subnet) {
-      resource = props.resourceType.subnet.subnetId;
-      rType = VpcFlowLogResourceType.SUBNET;
-    } else if (props.resourceType.networkInterface) {
-      resource = props.resourceType.networkInterface;
-      rType = VpcFlowLogResourceType.NETWORK_INTERFACE;
-    }
-
-    const flowLog = new CfnFlowLog(this, 'FlowLog', {
+    const flowLog = new CfnFlowLog(this, "FlowLog", {
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
-      logDestinationType: props.destinationType,
+      logDestinationType: destinationConfig.logDestinationType,
       logGroupName: this.logGroup ? this.logGroup.logGroupName : undefined,
-      resourceId: resource,
-      resourceType: rType,
-      trafficType: props.trafficType ? props.trafficType : VpcFlowLogTrafficType.ALL,
+      resourceId: props.resourceType.resourceId,
+      resourceType: props.resourceType.resourceType,
+      trafficType: props.trafficType
+        ? props.trafficType
+        : FlowLogTrafficType.ALL,
       logDestination: this.bucket ? this.bucket.bucketArn : undefined
     });
 
