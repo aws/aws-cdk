@@ -159,8 +159,10 @@ export interface RestApiProps extends ResourceOptions {
 
   /**
    * Export name for the CfnOutput containing the API endpoint
+   *
+   * @default - when no export name is given, output will be created without export
    */
-  readonly exportName?: string;
+  readonly endpointExportName?: string;
 }
 
 /**
@@ -397,9 +399,8 @@ export class RestApi extends Resource implements IRestApi {
         ...props.deployOptions
       });
 
-      const customExportName = props.exportName === undefined ? false : props.exportName;
-      if (customExportName) {
-        new CfnOutput(this, 'Endpoint', { exportName: customExportName, value: this.urlForPath() });
+      if (!!props.endpointExportName) {
+        new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
       } else {
         new CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
       }
