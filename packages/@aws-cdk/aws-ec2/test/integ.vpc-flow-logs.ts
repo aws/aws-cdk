@@ -10,14 +10,12 @@ class TestStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC');
 
-    new ec2.VpcFlowLog(this, 'FlowLogsCW', {
-      resourceType: {
-        vpc: vpc
-      }
+    new ec2.FlowLog(this, 'FlowLogsCW', {
+      resourceType: ec2.FlowLogResourceType.fromVpc(vpc)
     });
 
     vpc.addFlowLog('FlowLogsS3', {
-      destinationType: ec2.VpcFlowLogDestinationType.S3,
+      destination: ec2.FlowLogDestination.toS3(),
     });
   }
 }

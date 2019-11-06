@@ -605,6 +605,7 @@
             "Arn"
           ]
         },
+        "LogDestinationType": "cloud-watch-logs",
         "LogGroupName": {
           "Ref": "FlowLogsCWLogGroup0398E8F8"
         }

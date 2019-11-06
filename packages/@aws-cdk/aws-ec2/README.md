@@ -439,10 +439,19 @@ VPC Flow Logs is a feature that enables you to capture information about the IP 
 
 By default a flow log will be created with CloudWatch Logs as the destination.
 
+You can create a flow log like this:
+
+```ts
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc)
+})
+```
+Or you can add a Flow Log to a VPC by using the addFlowLog method like this:
+
 ```ts
 const vpc = new ec2.Vpc(this, 'Vpc');
 
-vpc.addFlowLog('FlowLog', {});
+vpc.addFlowLog('FlowLog');
 ```
 
 You can also add multiple flow logs with different destinations.
@@ -451,10 +460,10 @@ You can also add multiple flow logs with different destinations.
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 vpc.addFlowLog('FlowLogS3', {
-  destinationType: ec2.VpcFlowLogDestinationType.S3
+  destination: ec2.FlowLogDestination.toS3()
 });
 
 vpc.addFlowLog('FlowLogCloudWatch', {
-  trafficType: ec2.VpcFlowLogTrafficType.REJECT
+  trafficType: ec2.FlowLogTrafficType.REJECT
 });
 ```
