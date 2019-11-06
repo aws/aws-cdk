@@ -408,6 +408,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
@@ -439,8 +440,7 @@
               }
             ]
           }
-        },
-        "EnableECSManagedTags": false
+        }
       },
       "DependsOn": [
         "LBPublicListenerFargateGroup5EE2FBAF",
