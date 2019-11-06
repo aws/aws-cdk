@@ -77,7 +77,7 @@
     "cdk-build-tools": "^1.15.0",
     "cdk-integ-tools": "^1.15.0",
     "cfn2ts": "^1.15.0",
-    "nock": "^11.6.0",
+    "nock": "^11.7.0",
     "pkglint": "^1.15.0",
     "sinon": "^7.5.0"
   },
