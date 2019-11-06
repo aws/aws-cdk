@@ -143,6 +143,14 @@ export class ToolkitInfo {
       lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
     }).promise();
 
+    // Activate image scanning on push (helps in identifying software vulnerabilities, no additional charge)
+    await ecr.putImageScanningConfiguration({
+      repositoryName,
+      imageScanningConfiguration: {
+        scanOnPush: true
+      }
+    }).promise();
+
     return {
       repositoryUri: repository.repositoryUri!,
       repositoryName
@@ -244,7 +252,7 @@ function getOutputValue(stack: aws.CloudFormation.Stack, output: string): string
   return result;
 }
 
-const DEFAULT_REPO_LIFECYCLE = {
+export const DEFAULT_REPO_LIFECYCLE = {
   rules: [
     {
       rulePriority: 100,
