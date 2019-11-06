@@ -19,6 +19,7 @@
   - [Handling Lifecycle Events: onEvent](#handling-lifecycle-events-onevent)
   - [Asynchronous Providers: isComplete](#asynchronous-providers-iscomplete)
   - [Physical Resource IDs](#physical-resource-ids)
+  - [Error Handling](#error-handling)
   - [Execution Policy](#execution-policy)
   - [Timeouts](#timeouts)
   - [Examples](#examples)
@@ -81,12 +82,14 @@ The user-defined `onEvent` AWS Lambda function is invoked whenever a resource
 lifecycle event occurs. The function is expected to handle the event and return
 a response to the framework that, at least, includes the physical resource ID.
 
-If `onEvent` returns successfully, the framework will submit a success response
+If `onEvent` returns successfully, the framework will submit a "SUCCESS" response
 to AWS CloudFormation for this resource operation.  If the provider is
 [asynchronous](#asynchronous-providers-iscomplete) (`isCompleteHandler` is
 defined), the framework will only submit a response based on the result of
-`isComplete`. If `onEvent` throws an error, the framework will submit a failure
-response to AWS CloudFormation.
+`isComplete`. 
+
+If `onEvent` throws an error, the framework will submit a "FAILED" response to
+AWS CloudFormation.
 
 The input event includes the following fields derived from the [Custom Resource
 Provider Request]:
@@ -120,15 +123,17 @@ need to "wait" until the resource stabilizes.
 The provider framework makes it easy to implement "waiters" by allowing users to
 specify an additional AWS Lambda function in `isCompleteHandler`. 
 
-The framework will repeatedly invoke the handler every `queryInterval` and until
-it either returns `IsComplete: true`, throws an exception or the `totalTimeout`
-expires. 
+The framework will repeatedly invoke the handler every `queryInterval`. When
+`isComplete` returns with `IsComplete: true`, the framework will submit a
+"SUCCESS" response to AWS CloudFormation. If `totalTimeout` expires and the
+operation has not yet completed, the framework will submit a "FAILED" response
+with the message "Operation timed out".
 
-If an error is thrown or the timeout expires, the framework will submit a
-failure response to AWS CloudFormation.
+If an error is thrown, the framework will submit a "FAILED" response to AWS
+CloudFormation.
 
-The input event to `isComplete` is similar to `onEvent`, with an additional
-guarantee that `PhysicalResourceId` is defines and contains the value returned
+The input event to `isComplete` is similar to [`onEvent`](#handling-lifecycle-events-onevent), 
+with an additional guarantee that `PhysicalResourceId` is defines and contains the value returned 
 from `onEvent`.
 
 The return value must be a JSON object with the following fields:
@@ -164,6 +169,31 @@ or otherwise CloudFormation will think your resource is being replaced and will
 issue a `Delete` event. The `S3Assert` example demonstrates this by returning
 `event.PhysicalResourceId` if defined (in `Update` and `Delete`) and otherwise
 `event.RequestId` (for `Create`).
+
+### Error Handling
+
+As mentioned above, if any of the user handlers fail (i.e. throws an exception)
+or times out (due to their AWS Lambda timing out), the framework will trap these
+errors and submit a "FAILED" response to AWS CloudFormation, along with the error
+message.
+
+Since errors can occur in multiple places in the provider (framework, `onEvent`,
+`isComplete`), it is important to know that there could situations where a
+resource operation fails even though the operation technically succeeded (i.e.
+isComplete throws an error).
+
+When AWS CloudFormation receives a "FAILED" response, it will attempt to roll
+back the stack to it's last state. This has different meanings for different
+lifecycle events:
+
+- If a `Create` event fails, CloudFormation will issue a `Delete` event to allow
+  the provider to clean up any unfinished work related to the creation of the
+  resource. The implication of this is that it is recommended to implement
+  `Delete` in an idempotent way, in order to make sure that the rollback
+  `Delete` operation won't fail if a resource creation has failed.
+- If an `Update` event fails, CloudFormation will issue an additional `Update`
+  with the previous properties.
+- If a `Delete` event fails, CloudFormation will abandon this resource.
 
 ### Execution Policy
 
