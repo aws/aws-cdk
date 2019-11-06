@@ -22,7 +22,7 @@ class DemoResource extends cdk.Construct {
     super(scope, id);
 
     const resource = new CustomResource(this, 'Resource', {
-      provider: CustomResourceProvider.lambda(new lambda.SingletonFunction(this, 'Singleton', {
+      provider: CustomResourceProvider.fromLambda(new lambda.SingletonFunction(this, 'Singleton', {
         uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
         // This makes the demo only work as top-level TypeScript program, but that's fine for now
         code: new lambda.InlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),

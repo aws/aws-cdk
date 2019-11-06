@@ -70,6 +70,7 @@
     "@aws-cdk/assert": "1.15.0",
     "@aws-cdk/aws-events": "1.15.0",
     "@aws-cdk/aws-ssm": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
     "@types/aws-lambda": "^8.10.34",
     "@types/sinon": "^7.5.0",
     "aws-sdk": "^2.564.0",
@@ -85,12 +86,16 @@
     "@aws-cdk/aws-cloudformation": "1.15.0",
     "@aws-cdk/aws-iam": "1.15.0",
     "@aws-cdk/aws-lambda": "1.15.0",
+    "@aws-cdk/aws-stepfunctions": "1.15.0",
+    "@aws-cdk/aws-stepfunctions-tasks": "1.15.0",
     "@aws-cdk/aws-sns": "1.15.0",
     "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudformation": "1.15.0",
+    "@aws-cdk/aws-stepfunctions": "1.15.0",
+    "@aws-cdk/aws-stepfunctions-tasks": "1.15.0",
     "@aws-cdk/aws-iam": "1.15.0",
     "@aws-cdk/aws-lambda": "1.15.0",
     "@aws-cdk/aws-sns": "1.15.0",
@@ -114,6 +119,7 @@
   "awslint": {
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/custom-resources.AwsCustomResource",
+      "props-physical-name:@aws-cdk/custom-resources.AsyncCustomResourceProps",
       "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResource",
       "docs-public-apis:@aws-cdk/custom-resources.AwsCustomResourceProps",
       "props-default-doc:@aws-cdk/custom-resources.AwsSdkCall.parameters"

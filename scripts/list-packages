@@ -12,7 +12,7 @@ if (process.argv.length < 4) {
   process.exit(1);
 }
 
-child_process.exec('lerna ls --json', { shell: true }, (error, stdout) => {
+child_process.exec('lerna ls --toposort --json', { shell: true }, (error, stdout) => {
   if (error) {
     console.error('Error: ', error);
     process.exit(-1);
