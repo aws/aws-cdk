@@ -20,6 +20,7 @@
   - [Asynchronous Providers: isComplete](#asynchronous-providers-iscomplete)
   - [Physical Resource IDs](#physical-resource-ids)
   - [Execution Policy](#execution-policy)
+  - [Timeouts](#timeouts)
   - [Examples](#examples)
 - [Custom Resources for AWS APIs](#custom-resources-for-aws-apis)
   - [Execution Policy](#execution-policy-1)
@@ -186,6 +187,18 @@ new lambda.Function(this, 'OnEventHandler', {
   ]
 });
 ```
+
+### Timeouts
+
+Users are responsible to define the timeouts for the AWS Lambda functions for
+user-defined handlers. It is recommended not to exceed a **14 minutes** timeout,
+since all framework functions are configured to time out after 15 minutes, which
+is the maximal AWS Lambda timeout.
+
+If your operation takes over **14 minutes**, the recommended approach is to
+implement an [asynchronous provider](#asynchronous-providers-iscomplete), and
+then configure the timeouts for the asynchronous retries through the
+`queryInterval` and the `totalTimeout` options.
 
 ### Examples
 

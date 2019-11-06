@@ -24,7 +24,8 @@ test('minimal setup', () => {
   // framework "onEvent" handler
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: "framework.onEvent",
-    Environment: { Variables: { USER_ON_EVENT_FUNCTION_ARN: { "Fn::GetAtt": [ "MyHandler6B74D312", "Arn" ] } } }
+    Environment: { Variables: { USER_ON_EVENT_FUNCTION_ARN: { "Fn::GetAtt": [ "MyHandler6B74D312", "Arn" ] } } },
+    Timeout: 900
   });
 
   // user "onEvent" handler
@@ -36,6 +37,7 @@ test('minimal setup', () => {
   expect(stack).not.toHaveResource('AWS::StepFunctions::StateMachine');
   expect(stack).not.toHaveResource('AWS::Lambda::Function', {
     Handler: "framework.isComplete",
+    Timeout: 900
   });
 });
 
@@ -66,6 +68,7 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: "framework.onEvent",
+    Timeout: 900,
     Environment: {
       Variables: {
         ...expectedEnv.Variables,
@@ -76,11 +79,13 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: "framework.isComplete",
+    Timeout: 900,
     Environment: expectedEnv
   });
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'framework.onTimeout',
+    Timeout: 900,
     Environment: expectedEnv
   });
 

@@ -253,7 +253,8 @@
               ]
             }
           }
-        }
+        },
+        "Timeout": 900
       },
       "DependsOn": [
         "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B",
@@ -640,7 +641,8 @@
               "Ref": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineAC25148E"
             }
           }
-        }
+        },
+        "Timeout": 900
       },
       "DependsOn": [
         "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC",
@@ -778,7 +780,8 @@
               ]
             }
           }
-        }
+        },
+        "Timeout": 900
       },
       "DependsOn": [
         "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774",
@@ -916,7 +919,8 @@
               ]
             }
           }
-        }
+        },
+        "Timeout": 900
       },
       "DependsOn": [
         "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011",

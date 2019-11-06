@@ -9,6 +9,7 @@ import consts = require('./runtime/consts');
 import { calculateRetryPolicy } from './util';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
+const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
 
 /**
  * Initialization properties for the `Provider` construct.
@@ -127,6 +128,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: `framework.${entrypoint}`,
+      timeout: FRAMEWORK_HANDLER_TIMEOUT,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
