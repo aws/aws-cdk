@@ -527,7 +527,8 @@
                 "Action": [
                   "eks:CreateCluster",
                   "eks:DescribeCluster",
-                  "eks:DeleteCluster"
+                  "eks:DeleteCluster",
+                  "eks:UpdateClusterVersion"
                 ],
                 "Effect": "Allow",
                 "Resource": "*"
@@ -558,7 +559,7 @@
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3BucketA2C12383"
+              "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8"
             },
             "S3Key": {
               "Fn::Join": [
@@ -571,7 +572,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3VersionKeyB5F0BEF8"
+                            "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                           }
                         ]
                       }
@@ -584,7 +585,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3VersionKeyB5F0BEF8"
+                            "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                           }
                         ]
                       }
@@ -989,7 +990,7 @@
                   {
                     "Ref": "cluster227BD1CB20"
                   },
-                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
+                  " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack k8s-cluster --resource cluster22NodesASGC0A97398 --region test-region"
                 ]
               ]
             }
@@ -1142,17 +1143,17 @@
       }
     },
     "Parameters": {
-      "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3BucketA2C12383": {
+      "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8": {
         "Type": "String",
-        "Description": "S3 bucket for asset \"c58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128\""
+        "Description": "S3 bucket for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
       },
-      "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128S3VersionKeyB5F0BEF8": {
+      "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD": {
         "Type": "String",
-        "Description": "S3 key for asset version \"c58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128\""
+        "Description": "S3 key for asset version \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
       },
-      "AssetParametersc58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128ArtifactHash8E5121DE": {
+      "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F": {
         "Type": "String",
-        "Description": "Artifact hash for asset \"c58ce740cd907e33a1af503069821ee4befab4fec4075707d67e86d2a0dbf128\""
+        "Description": "Artifact hash for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
       },
       "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB": {
         "Type": "String",
