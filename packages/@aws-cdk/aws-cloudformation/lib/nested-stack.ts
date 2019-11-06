@@ -135,7 +135,7 @@ export class NestedStack extends Stack {
    * - If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
    * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackId" }`
    *
-   * @example arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786
+   * @example "arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786"
    * @attribute
    */
   public get stackId() {
