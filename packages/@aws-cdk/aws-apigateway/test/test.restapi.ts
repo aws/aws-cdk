@@ -679,7 +679,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'myapi', {exportName: 'my-given-export-name'});
+    const api = new apigateway.RestApi(stack, 'myapi', { endpointExportName: 'my-given-export-name' });
     api.root.addMethod('GET');
 
     // THEN
