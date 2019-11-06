@@ -176,17 +176,15 @@ class AclTrafficImpl extends AclTraffic {
 export interface AclTrafficConfig {
   /**
    * The Internet Control Message Protocol (ICMP) code and type.
-   * Requirement is conditional: Required if specifying 1 (ICMP) for the protocol parameter.
    *
-   * @default undefined
+   * @default - Required if specifying 1 (ICMP) for the protocol parameter.
    */
   readonly icmp?: AclIcmp;
 
   /**
    * The range of port numbers for the UDP/TCP protocol.
-   * Conditional required if specifying 6 (TCP) or 17 (UDP) for the protocol parameter.
    *
-   * @default undefined
+   * @default - Required if specifying 6 (TCP) or 17 (UDP) for the protocol parameter
    */
   readonly portRange?: AclPortRange;
 

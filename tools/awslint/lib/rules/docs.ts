@@ -60,6 +60,18 @@ docsLinter.add({
   }
 });
 
+docsLinter.add({
+  code: 'props-no-undefined-default',
+  message: `'@default undefined' is not helpful. Users will know the VALUE is literally 'undefined' if they don't specify it, but what is the BEHAVIOR if they do so?`,
+  eval: e => {
+    if (e.ctx.kind !== 'interface-property') { return; }
+    if (!e.ctx.containingType.isDataType()) { return; }
+
+    const property = e.ctx.documentable;
+    e.assert(property.docs.docs.default !== 'undefined', e.ctx.errorKey);
+  }
+});
+
 function isPublic(ctx: DocsLinterContext) {
   switch (ctx.kind) {
     case "class-property":
