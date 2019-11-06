@@ -1,7 +1,10 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
+import iam = require('@aws-cdk/aws-iam');
+import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Token } from '@aws-cdk/core';
-import { ProvidersStack } from './providers';
+import { Construct, Stack } from '@aws-cdk/core';
+import path = require('path');
+import cr = require('../../../lib');
 import api = require('./s3-file-handler/api');
 
 interface S3FileProps {
@@ -39,7 +42,7 @@ export class S3File extends Construct {
     super(scope, id);
 
     const resource = new cfn.CustomResource(this, 'Resource', {
-      provider: ProvidersStack.importS3FileResourceProvider(this),
+      provider: S3FileProvider.getOrCreate(this),
       resourceType: 'Custom::S3File',
       properties: {
         [api.PROP_BUCKET_NAME]: props.bucket.bucketName,
@@ -49,8 +52,47 @@ export class S3File extends Construct {
       }
     });
 
-    this.objectKey = Token.asString(resource.getAtt(api.ATTR_OBJECT_KEY));
-    this.url = Token.asString(resource.getAtt(api.ATTR_URL));
-    this.etag = Token.asString(resource.getAtt(api.ATTR_ETAG));
+    this.objectKey = resource.getAttString(api.ATTR_OBJECT_KEY);
+    this.url = resource.getAttString(api.ATTR_URL);
+    this.etag = resource.getAttString(api.ATTR_ETAG);
+  }
+}
+
+class S3FileProvider extends Construct {
+
+  /**
+   * Returns the singleton provider.
+   */
+  public static getOrCreate(scope: Construct) {
+    const stack = Stack.of(scope);
+    const id = 'com.amazonaws.cdk.custom-resources.s3file-provider';
+    const x = stack.node.tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
+    return x.provider;
+  }
+
+  private readonly provider: cr.Provider;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    this.provider = new cr.Provider(this, 's3file-provider', {
+      onEventHandler: new lambda.Function(this, 's3file-on-event', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'index.onEvent',
+        initialPolicy: [
+          new iam.PolicyStatement({
+            resources: [ '*' ],
+            actions: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*'
+            ] })
+          ]
+      }),
+    });
   }
 }

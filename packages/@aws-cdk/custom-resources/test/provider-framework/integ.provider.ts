@@ -2,7 +2,6 @@
 
 import s3 = require('@aws-cdk/aws-s3');
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
-import { ProvidersStack } from './integration-test-fixtures/providers';
 import { S3Assert } from './integration-test-fixtures/s3-assert';
 import { S3File } from './integration-test-fixtures/s3-file';
 
@@ -41,10 +40,6 @@ class TestStack extends Stack {
 
 const app = new App();
 
-const providersStack = new ProvidersStack(app, 'integ-provider-framework-providers');
-const testStack = new TestStack(app, 'integ-provider-framework');
-
-// ensure we first deploy the providers before we use them
-testStack.addDependency(providersStack);
+new TestStack(app, 'integ-provider-framework');
 
 app.synth();

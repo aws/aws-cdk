@@ -1,7 +1,10 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
+import iam = require('@aws-cdk/aws-iam');
+import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct } from '@aws-cdk/core';
-import { ProvidersStack } from './providers';
+import { Construct, Duration, Stack } from '@aws-cdk/core';
+import path = require('path');
+import cr = require('../../../lib');
 
 export interface S3AssertProps {
   /**
@@ -28,17 +31,65 @@ export interface S3AssertProps {
  * Code is written in Python because why not.
  */
 export class S3Assert extends Construct {
+
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
     new cfn.CustomResource(this, 'Resource', {
-      provider: ProvidersStack.importS3AssertResourceProvider(this),
+      provider: S3AssertProvider.getOrCreate(this),
       resourceType: 'Custom::S3Assert',
       properties: {
         BucketName: props.bucket.bucketName,
         ObjectKey: props.objectKey,
         ExpectedContent: props.expectedContent,
       },
+    });
+  }
+}
+
+class S3AssertProvider extends Construct {
+
+  /**
+   * Returns the singleton provider.
+   */
+  public static getOrCreate(scope: Construct) {
+    const providerId = 'com.amazonaws.cdk.custom-resources.s3assert-provider';
+    const stack = Stack.of(scope);
+    const group = stack.node.tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
+    return group.provider;
+  }
+
+  private readonly provider: cr.Provider;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const onEvent = new lambda.Function(this, 's3assert-on-event', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 's3-assert-handler')),
+      runtime: lambda.Runtime.PYTHON_3_7,
+      handler: 'index.on_event'
+    });
+
+    const isComplete = new lambda.Function(this, 's3assert-is-complete', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 's3-assert-handler')),
+      runtime: lambda.Runtime.PYTHON_3_7,
+      handler: 'index.is_complete',
+      initialPolicy: [
+        new iam.PolicyStatement({
+          resources: [ '*' ],
+          actions: [
+            's3:GetObject*',
+            's3:GetBucket*',
+            's3:List*',
+          ]
+        })
+      ]
+    });
+
+    this.provider = new cr.Provider(this, 's3assert-provider', {
+      onEventHandler: onEvent,
+      isCompleteHandler: isComplete,
+      totalTimeout: Duration.minutes(5),
     });
   }
 }
