@@ -5,6 +5,8 @@ import { CfnStack } from './cloudformation.generated';
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
 
 /**
+ * Initialization props for the `NestedStack` construct.
+ *
  * @experimental
  */
 export interface NestedStackProps {

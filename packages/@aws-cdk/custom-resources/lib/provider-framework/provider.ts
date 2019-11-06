@@ -64,24 +64,8 @@ export interface ProviderProps {
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends Construct {
-  /**
-   * The entrypoint of the custom resource provider.
-   *
-   * Use this when defining custom resources:
-   *
-   * @example
-   *
-   *    import cr = require('@aws-cdk/custom-resources');
-   *    import cfn = require('@aws-cdk/aws-cloudformation');
-   *
-   *    const provider = new cr.Provider(this, 'MyProvider', { ... })
-   *
-   *    new cfn.CustomResource(this, 'MyResource', {
-   *      provider: cfn.CustomResourceProvider.lambda(provider.entrypoint)
-   *    });
-   */
-  public readonly entrypoint: lambda.IFunction;
+export class Provider extends Construct implements cfn.ICustomResourceProvider {
+
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -94,6 +78,8 @@ export class Provider extends Construct {
    * order to determine if the operation is complete.
    */
   public readonly isCompleteHandler?: lambda.IFunction;
+
+  private readonly entrypoint: lambda.Function;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -125,6 +111,15 @@ export class Provider extends Construct {
     }
 
     this.entrypoint = onEventFunction;
+  }
+
+  /**
+   * Called by `CustomResource` which uses this provider.
+   */
+  public bind(_: Construct): cfn.CustomResourceProviderConfig {
+    return {
+      serviceToken: this.entrypoint.functionArn
+    };
   }
 
   private createFunction(entrypoint: string) {
