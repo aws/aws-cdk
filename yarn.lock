@@ -4799,15 +4799,15 @@ jsii-pacmak@^0.20.0:
     xmlbuilder "^13.0.2"
     yargs "^14.2.0"
 
-jsii-reflect@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.0.tgz#81d40eba76b7c6f9fd91da26bf4d99480ab835cd"
-  integrity sha512-hLzBf+j0+bguUBLh5pWduhxvXgiQKssUgfup4qHJu4bsifFV95AH5ehhxKiBvhBwF09d7V/uWvkrnnx2E3f1Xw==
+jsii-reflect@^0.20.0, jsii-reflect@^0.20.1:
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.1.tgz#c663443efe7b546f3413bbc7d2520f5e2efe970e"
+  integrity sha512-sM4rkPnMFISLex9AvJB3ZzFdZdabje1fSkz+m4RkMOaGs+/fOVqYMS+HxthSSBm4mPsDZwM4W0EKDv7QkUdIJA==
   dependencies:
     colors "^1.4.0"
     fs-extra "^8.1.0"
-    jsii-spec "^0.20.0"
-    oo-ascii-tree "^0.20.0"
+    jsii-spec "^0.20.1"
+    oo-ascii-tree "^0.20.1"
     yargs "^14.2.0"
 
 jsii-sampiler@^0.20.0:
@@ -4820,10 +4820,10 @@ jsii-sampiler@^0.20.0:
     typescript "~3.6.4"
     yargs "^14.2.0"
 
-jsii-spec@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.0.tgz#6dce992c6885959eba120a793775bed61ddc1786"
-  integrity sha512-co4EgYRzDRWDr03xLLWeCkDqvfOwr3bhsUKfqdxgC4d3OxRZN4HyITGYmgDb4DMwBnioIk60rQ4uF1V1hwEdOA==
+jsii-spec@^0.20.0, jsii-spec@^0.20.1:
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.1.tgz#ddbd1e0d79290ab9ca0cd12d58af8a8496bdd6d5"
+  integrity sha512-VvQNVXFUTGO1HWQwhnpvxz6jCTW+RTrz7XAVyrhI3+KFNxSt9kXi55hbuwHmEiqyeCR5LoAPOlgcihyEhzBxhg==
   dependencies:
     jsonschema "^1.2.4"
 
@@ -5911,10 +5911,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-oo-ascii-tree@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.0.tgz#a712024754ed433a23dc7f35e286db91937e40bd"
-  integrity sha512-16jIzth3cug74u13WTgEod3Rhy+CFZcJq7O1/6bvxUW0NfRPBtTlpgn49QIzOjjCJ2IoZcHgOUvEiwKnQn8QAg==
+oo-ascii-tree@^0.20.1:
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.1.tgz#65466785ce8e9f1153a923e9aef56d018bd7c83f"
+  integrity sha512-JE/bUV4eNZvbpJDnk5h4xgDNlVJHRM0IBTk1qtYAFlGT7eSL8v5BWZ5NEIymSIdFEMiZpW/Cy3Ngy01NUDdbVg==
 
 opener@^1.5.1:
   version "1.5.1"
