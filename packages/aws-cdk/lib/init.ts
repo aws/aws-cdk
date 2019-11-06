@@ -18,7 +18,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+export async function cliInit(type?: string, language?: string, canUseNetwork = true, projectName?: string) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -39,7 +39,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
+  await initializeProject(template, language, canUseNetwork, projectName);
 }
 
 /**
@@ -88,8 +88,10 @@ export class InitTemplate {
    *
    * @param language    the language to instantiate this template with
    * @param targetDirectory the directory where the template is to be instantiated into
+   * @param projectName the name of the project to be instanciated.
+  *                     If not set, the current working directory name will be used
    */
-  public async install(language: string, targetDirectory: string) {
+  public async install(language: string, targetDirectory: string, projectName?: string) {
     if (this.languages.indexOf(language) === -1) {
       error(`The ${colors.blue(language)} language is not supported for ${colors.green(this.name)} `
           + `(it supports: ${this.languages.map(l => colors.blue(l)).join(', ')})`);
@@ -99,7 +101,7 @@ export class InitTemplate {
     const hookTempDirectory = path.join(targetDirectory, 'tmp');
     await fs.mkdir(hookTempDirectory);
     await this.installFiles(sourceDirectory, targetDirectory, {
-      name: decamelize(path.basename(path.resolve(targetDirectory)))
+      name: decamelize(projectName || path.basename(path.resolve(targetDirectory)))
     });
     await this.invokeHooks(hookTempDirectory, targetDirectory);
     await fs.remove(hookTempDirectory);
@@ -211,10 +213,10 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, projectName?: string) {
   await assertIsEmptyDirectory();
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
-  await template.install(language, process.cwd());
+  await template.install(language, process.cwd(), projectName);
   await initializeGitRepository();
   await postInstall(language, canUseNetwork);
   if (await fs.pathExists('README.md')) {

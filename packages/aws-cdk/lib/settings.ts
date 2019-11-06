@@ -233,6 +233,7 @@ export class Settings {
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
+      projectName: argv.projectName,
     });
   }
 
