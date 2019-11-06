@@ -89,7 +89,7 @@ export class InitTemplate {
    * @param language    the language to instantiate this template with
    * @param targetDirectory the directory where the template is to be instantiated into
    * @param projectName the name of the project to be instanciated.
-  *                     If not set, the current working directory name will be used
+   *                    If not set, the current working directory name will be used
    */
   public async install(language: string, targetDirectory: string, projectName?: string) {
     if (this.languages.indexOf(language) === -1) {
