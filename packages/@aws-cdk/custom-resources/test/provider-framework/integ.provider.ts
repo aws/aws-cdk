@@ -9,6 +9,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const file2Contents = 'this file has a generated physical id';
     const bucket = new s3.Bucket(this, 'MyBucket');
 
     const file1 = new S3File(this, 'file1', {
@@ -20,18 +21,17 @@ class TestStack extends Stack {
 
     const file2 = new S3File(this, 'file2', {
       bucket,
-      contents: 'this file has a generated physical id'
+      contents: file2Contents
     });
 
     new S3Assert(this, 'assert-file', {
       bucket,
-      objectKey: 'second.txt',
-      expectedContent: 'Hello, world, 1980!'
+      objectKey: file2.objectKey,
+      expectedContent: file2Contents
     });
 
-    // to delay file1's creation (and test the async assertions), we will make sure
-    // file2 will be created before file1.
-    file1.node.addDependency(file2);
+    // delay file2 updates so we can test async assertions
+    file2.node.addDependency(file1);
 
     new CfnOutput(this, 'file1-url', { value: file1.url });
     new CfnOutput(this, 'file2-url', { value: file2.url });
