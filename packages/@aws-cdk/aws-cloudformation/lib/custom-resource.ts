@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { CfnResource, Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { CfnCustomResource } from './cloudformation.generated';
 
 /**
@@ -8,20 +8,69 @@ import { CfnCustomResource } from './cloudformation.generated';
  */
 export type Properties = {[key: string]: any};
 
-export class CustomResourceProvider {
+/**
+ * Configuration options for custom resource providers.
+ */
+export interface CustomResourceProviderConfig {
+  /**
+   * The ARN of the SNS topic or the AWS Lambda function which implements this
+   * provider.
+   */
+  readonly serviceToken: string;
+}
+
+/**
+ * Represents a provider for an AWS CloudFormation custom resources.
+ */
+export interface ICustomResourceProvider {
+  /**
+   * Called when this provider is used by a `CustomResource`.
+   * @param scope The resource that uses this provider.
+   * @returns provider configuration
+   */
+  bind(scope: Construct): CustomResourceProviderConfig;
+}
+
+/**
+ * Represents a provider for an AWS CloudFormation custom resources.
+ */
+export class CustomResourceProvider implements ICustomResourceProvider {
   /**
    * The Lambda provider that implements this custom resource.
    *
    * We recommend using a lambda.SingletonFunction for this.
    */
-  public static lambda(handler: lambda.IFunction) { return new CustomResourceProvider(handler.functionArn); }
+  public static fromLambda(handler: lambda.IFunction): CustomResourceProvider {
+    return new CustomResourceProvider(handler.functionArn);
+  }
 
   /**
    * The SNS Topic for the provider that implements this custom resource.
    */
-  public static topic(topic: sns.ITopic) { return new CustomResourceProvider(topic.topicArn); }
+  public static fromTopic(topic: sns.ITopic): CustomResourceProvider {
+    return new CustomResourceProvider(topic.topicArn);
+  }
 
-  private constructor(public readonly serviceToken: string) {}
+  /**
+   * Use AWS Lambda as a provider.
+   * @deprecated use `fromLambda`
+   */
+  public static lambda(handler: lambda.IFunction) { return this.fromLambda(handler); }
+
+  /**
+   * Use an SNS topic as the provider.
+   * @deprecated use `fromTopic`
+   */
+  public static topic(topic: sns.ITopic) { return this.fromTopic(topic); }
+
+  /**
+   * @param serviceToken the ServiceToken which contains the ARN for this provider.
+   */
+  private constructor(public readonly serviceToken: string) { }
+
+  public bind(_: Construct): CustomResourceProviderConfig {
+    return { serviceToken: this.serviceToken };
+  }
 }
 
 /**
@@ -31,10 +80,25 @@ export interface CustomResourceProps {
   /**
    * The provider which implements the custom resource
    *
-   * @example CustomResourceProvider.lambda(myFunction)
-   * @example CustomResourceProvider.topic(myTopic)
+   * @example invoke an AWS Lambda function when a lifecycle event occurs
+   *
+   *    CustomResourceProvider.fromLambda(myFunction)
+   *
+   * @example publish lifecycle events to an SNS topic
+   *
+   *    CustomResourceProvider.fromTopic(myTopic)
+   *
+   * @example use the custom resource provider framework
+   *
+   *    import cr = require('@aws-cdk/custom-resources');
+   *    const myProvider = new cr.Provider(...)
+   *
+   *    new cfn.CustomResource(this, 'myResource', {
+   *      provider: myProvider
+   *    });
+   *
    */
-  readonly provider: CustomResourceProvider;
+  readonly provider: ICustomResourceProvider;
 
   /**
    * Properties to pass to the Lambda
@@ -88,16 +152,18 @@ export class CustomResource extends Resource {
     super(scope, id);
 
     const type = renderResourceType(props.resourceType);
-
+    const providerConfig = props.provider.bind(this);
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
-        ServiceToken: props.provider.serviceToken,
+        ServiceToken: providerConfig.serviceToken,
         ...uppercaseProperties(props.properties || {})
       }
     });
 
-    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
+    this.resource.applyRemovalPolicy(props.removalPolicy, {
+      default: RemovalPolicy.DESTROY
+    });
   }
 
   /**
@@ -108,11 +174,28 @@ export class CustomResource extends Resource {
   }
 
   /**
-   * An attribute of this custom resource
-   * @param attributeName the attribute name
+   * Returns the value of an attribute of the custom resource of an arbitrary
+   * type. Attributes are returned from the custom resource provider through the
+   * `Data` map where the key is the attribute name.
+   *
+   * @param attributeName the name of the attribute
+   * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
+   * use the convinience `getAttString` for string attributes.
    */
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
+  }
+
+  /**
+   * Returns the value of an attribute of the custom resource of type string.
+   * Attributes are returned from the custom resource provider through the
+   * `Data` map where the key is the attribute name.
+   *
+   * @param attributeName the name of the attribute
+   * @returns a token for `Fn::GetAtt` encoded as a string.
+   */
+  public getAttString(attributeName: string): string {
+    return Token.asString(this.getAtt(attributeName));
   }
 }
 
