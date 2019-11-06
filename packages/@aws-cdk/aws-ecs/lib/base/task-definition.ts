@@ -219,6 +219,22 @@ export class TaskDefinition extends TaskDefinitionBase {
   public defaultContainer?: ContainerDefinition;
 
   /**
+   * The number of cpu units used by the task.
+   *
+   * If you are using the EC2 launch type, this field is optional and any value can be used.
+   * If you are using the Fargate launch type, this field is required and must be set,
+   */
+  public cpu?: string;
+
+  /**
+   * The amount (in MiB) of memory used by the task.
+   *
+   * If you are using the EC2 launch type, this field is optional and any value can be used.
+   * If you are using the Fargate launch type, this field is required and must be set,
+   */
+  public memoryMiB?: string;
+
+  /**
    * The task launch type compatiblity requirement.
    */
   public readonly compatibility: Compatibility;
@@ -248,6 +264,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.family = props.family || this.node.uniqueId;
     this.compatibility = props.compatibility;
+    this.cpu = props.cpu;
+    this.memoryMiB = props.memoryMiB;
 
     if (props.volumes) {
       props.volumes.forEach(v => this.addVolume(v));
@@ -265,8 +283,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
 
-    if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
-      throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
+    if (this.isFargateCompatible && (!this.cpu || !this.memoryMiB)) {
+      throw new Error(`Fargate-compatible tasks require both CPU (${this.cpu}) and memory (${this.memoryMiB}) specifications`);
     }
 
     this._executionRole = props.executionRole;
@@ -290,8 +308,8 @@ export class TaskDefinition extends TaskDefinitionBase {
         !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
-      cpu: props.cpu,
-      memory: props.memoryMiB,
+      cpu: this.cpu,
+      memory: this.memoryMiB,
     });
 
     if (props.placementConstraints) {
@@ -361,6 +379,12 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Adds a new container to the task definition.
    */
   public addContainer(id: string, props: ContainerDefinitionOptions) {
+    if (this.cpu !== undefined && props.cpu !== undefined && parseInt(this.cpu, 10) < props.cpu) {
+      this.node.addWarning('CPU specified for the container cannot be greater than the CPU for the task definition');
+    }
+    if (this.memoryMiB !== undefined && props.memoryLimitMiB !== undefined && parseInt(this.memoryMiB, 10) < props.memoryLimitMiB) {
+      this.node.addWarning('Memory specified for the container cannot be greater than the memory for the task definition');
+    }
     return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
   }
 

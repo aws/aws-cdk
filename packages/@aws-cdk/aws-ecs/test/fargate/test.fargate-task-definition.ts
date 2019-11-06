@@ -23,6 +23,57 @@ export = {
       test.done();
     },
 
+    "warn when container cpu is greater than task definition cpu"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 1,
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        cpu: 4,
+      });
+      // THEN
+      test.deepEqual(taskDefinition.node.metadata[0].data, 'CPU specified for the container cannot be greater than the CPU for the task definition');
+      test.done();
+    },
+
+    "warn when container memory is greater than task definition memory"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        memoryLimitMiB: 1,
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 4,
+      });
+      // THEN
+      test.deepEqual(taskDefinition.node.metadata[0].data, 'Memory specified for the container cannot be greater than the memory for the task definition');
+      test.done();
+    },
+
+    "warn when both container memory and cpu are greater than task definition memory and cpu"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 1,
+        memoryLimitMiB: 1,
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        cpu: 4,
+        memoryLimitMiB: 4,
+      });
+      // THEN
+      test.deepEqual(taskDefinition.node.metadata[0].data, 'CPU specified for the container cannot be greater than the CPU for the task definition');
+      test.deepEqual(taskDefinition.node.metadata[1].data, 'Memory specified for the container cannot be greater than the memory for the task definition');
+      test.done();
+    },
+
     "support lazy cpu and memory values"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
