@@ -18,7 +18,7 @@ export interface CloudFormationEventContext {
   Data?: any
 }
 
-export async function submitCloudFormationResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {
+export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {
   const json: AWSLambda.CloudFormationCustomResourceResponse = {
     Status: status,
     Reason: options.reason || status,
@@ -45,3 +45,23 @@ export async function submitCloudFormationResponse(status: 'SUCCESS' | 'FAILED',
     }
   }, responseBody);
 }
+
+export let includeStackTraces = true; // for unit tests
+
+export function safeHandler(block: (event: any) => Promise<void>) {
+  return async (event: any) => {
+    try {
+      await block(event);
+    } catch (e) {
+      // tell waiter state machine to retry
+      if (e instanceof Retry) { throw e; }
+
+      // this is an actual error, fail the activity altogether and exist.
+      await submitResponse('FAILED', event, {
+        reason: includeStackTraces ? e.stack : e.message,
+      });
+    }
+  };
+}
+
+export class Retry extends Error { }

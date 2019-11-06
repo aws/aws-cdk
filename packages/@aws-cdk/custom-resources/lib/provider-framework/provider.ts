@@ -1,4 +1,5 @@
 // tslint:disable: max-line-length
+import cfn = require('@aws-cdk/aws-cloudformation');
 import lambda = require('@aws-cdk/aws-lambda');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
@@ -65,7 +66,6 @@ export interface ProviderProps {
  * Defines an AWS CloudFormation custom resource provider.
  */
 export class Provider extends Construct implements cfn.ICustomResourceProvider {
-
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource

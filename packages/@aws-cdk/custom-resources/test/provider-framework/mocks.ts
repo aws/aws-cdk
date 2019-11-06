@@ -13,12 +13,14 @@ export const MOCK_ON_EVENT_FUNCTION_ARN = 'arn:lambda:user:on:event';
 export const MOCK_IS_COMPLETE_FUNCTION_ARN = 'arn:lambda:user:is:complete';
 export const MOCK_SFN_ARN = 'arn:of:state:machine';
 
+export let stringifyPayload = true;
 export let onEventImplMock: AWSCDKAsyncCustomResource.OnEventHandler;
 export let isCompleteImplMock: AWSCDKAsyncCustomResource.IsCompleteHandler;
 export let startStateMachineInput: AWS.StepFunctions.StartExecutionInput | undefined;
 export let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
 
 export function setup() {
+  stringifyPayload = true;
   process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV] = MOCK_IS_COMPLETE_FUNCTION_ARN;
   process.env[consts.USER_ON_EVENT_FUNCTION_ARN_ENV] = MOCK_ON_EVENT_FUNCTION_ARN;
   process.env[consts.WAITER_STATE_MACHINE_ARN_ENV] = MOCK_SFN_ARN;
@@ -77,7 +79,7 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
     }
 
     return {
-      Payload: JSON.stringify(ret)
+      Payload: stringifyPayload ? JSON.stringify(ret) : ret
     };
   } catch (e) {
     return {

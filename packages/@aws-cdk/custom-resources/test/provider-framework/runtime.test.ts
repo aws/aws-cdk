@@ -1,13 +1,12 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
+import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
 import consts = require('../../lib/provider-framework/runtime/consts');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
-import util = require('../../lib/provider-framework/runtime/util');
-import { Retry } from '../../lib/provider-framework/runtime/util';
 import mocks = require('./mocks');
 
-util.includeStackTraces = false;
+cfnResponse.includeStackTraces = false;
 
 const MOCK_PHYSICAL_ID = 'mock-physical-resource-id';
 const MOCK_PROPS = { Name: "Value", List: ["1", "2", "3"], ServiceToken: 'bla' };
@@ -177,51 +176,6 @@ describe('Physical IDs', () => {
     expectCloudFormationFailed('DELETE: cannot change the physical resource ID from "CurrentPhysicalId" to "NewPhysicalId" during deletion');
   });
 
-  test('main handler fails if UPDATE is called without a physical resource id', async () => {
-    // GIVEN
-    mocks.onEventImplMock = async () => undefined;
-    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
-
-    // WHEN
-    await simulateEvent({
-      RequestType: 'Update',
-      PhysicalResourceId: undefined
-    });
-
-    // THEN
-    expectCloudFormationFailed('Invalid CloudFormation custom resource event (Update): PhysicalResourceId is required for \"Update\" and \"Delete\" events');
-  });
-
-  test('main handler fails if DELETE is called without a physical resource id', async () => {
-    // GIVEN
-    mocks.onEventImplMock = async () => undefined;
-    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
-
-    // WHEN
-    await simulateEvent({
-      RequestType: 'Delete',
-      PhysicalResourceId: undefined
-    });
-
-    // THEN
-    expectCloudFormationFailed('Invalid CloudFormation custom resource event (Delete): PhysicalResourceId is required for \"Update\" and \"Delete\" events');
-  });
-
-  test('main handler fails if CREATE is called *with* a physical resource id', async () => {
-    // GIVEN
-    mocks.onEventImplMock = async () => undefined;
-    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
-
-    // WHEN
-    await simulateEvent({
-      RequestType: 'Create',
-      PhysicalResourceId: 'Foo'
-    } as any);
-
-    // THEN
-    expectCloudFormationFailed('Invalid CloudFormation custom resource event (Create): PhysicalResourceId is not allowed for \"Create\" events');
-  });
-
 });
 
 test('isComplete always returns "false" and then a timeout occurs', async () => {
@@ -271,6 +225,18 @@ test('if there is no user-defined "isComplete", the waiter will not be triggered
   expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
 });
 
+test('fails if user handler returns a non-object response', async () => {
+  // GIVEN
+  mocks.stringifyPayload = false;
+  mocks.onEventImplMock = async () => 'string' as any;
+
+  // WHEN
+  await simulateEvent({ RequestType: 'Create' });
+
+  // THEN
+  expectCloudFormationFailed('return values from user-handlers must be JSON objects. got: \"string\"');
+});
+
 // -----------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -306,8 +272,7 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
         await framework.isComplete(event);
         retry = false;
       } catch (e) {
-        if (e instanceof Retry) {
-
+        if (e instanceof cfnResponse.Retry) {
           if (count-- === 0) {
             await framework.onTimeout({ Cause: JSON.stringify({ errorMessage: e.message }) });
             retry = false;

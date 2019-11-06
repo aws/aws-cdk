@@ -1,15 +1,15 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
 import { IsCompleteResponse, OnEventResponse } from '../types';
-import { submitCloudFormationResponse } from './cfn-response';
+import cfnResponse = require('./cfn-response');
 import consts = require('./consts');
 import { invokeFunction, startExecution } from './outbound';
-import { failOnError, getEnv, log, Retry } from './util';
+import { getEnv, log } from './util';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
 export = {
-  [consts.FRAMEWORK_ON_EVENT_HANDLER_NAME]: onEvent,
-  [consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME]: isComplete,
+  [consts.FRAMEWORK_ON_EVENT_HANDLER_NAME]: cfnResponse.safeHandler(onEvent),
+  [consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME]: cfnResponse.safeHandler(isComplete),
   [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout
 };
 
@@ -24,71 +24,62 @@ export = {
  * @param cfnRequest The cloudformation custom resource event.
  */
 async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
-  await failOnError(cfnRequest, async () => {
-    log('onEventHandler', cfnRequest);
+  log('onEventHandler', cfnRequest);
 
-    cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
+  cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
 
-    // validate incoming request
-    validateCfnRequest(cfnRequest);
+  const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, cfnRequest) as OnEventResponse;
+  log('onEvent returned:', onEventResult);
 
-    const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, cfnRequest) as OnEventResponse;
-    log('onEvent returned:', onEventResult);
+  // merge the request and the result from onEvent to form the complete resource event
+  // this also performs validation.
+  const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
+  log('event:', onEventResult);
 
-    // merge the request and the result from onEvent to form the complete resource event
-    // this also performs validation.
-    const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
-    log('event:', onEventResult);
+  // determine if this is an async provider based on whether we have an isComplete handler defined.
+  // if it is not defined, then we are basically ready to return a positive response.
+  if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
+    return await cfnResponse.submitResponse('SUCCESS', resourceEvent);
+  }
 
-    // determine if this is an async provider based on whether we have an isComplete handler defined.
-    // if it is not defined, then we are basically ready to return a positive response.
-    if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
-      await submitCloudFormationResponse('SUCCESS', resourceEvent);
-      return;
-    }
+  // ok, we are not complete, so kick off the waiter workflow
+  const waiter = {
+    stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
+    name: resourceEvent.RequestId,
+    input: JSON.stringify(resourceEvent),
+  };
 
-    // ok, we are not complete, so kick off the waiter workflow
-    const waiter = {
-      stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
-      name: resourceEvent.RequestId,
-      input: JSON.stringify(resourceEvent),
-    };
+  log('starting waiter', waiter);
 
-    log('starting waiter', waiter);
-
-    // kick off waiter state machine
-    await startExecution(waiter);
-    return;
-  });
+  // kick off waiter state machine
+  await startExecution(waiter);
 }
 
 // invoked a few times until `complete` is true or until it times out.
 async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
-  return await failOnError(event, async () => {
-    log('isComplete', event);
+  log('isComplete', event);
 
-    const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, event) as IsCompleteResponse;
-    log('user isComplete returned:', isCompleteResult);
+  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, event) as IsCompleteResponse;
+  log('user isComplete returned:', isCompleteResult);
 
-    // if we are not complete, reeturn false, and don't send a response back.
-    if (!isCompleteResult.IsComplete) {
-      if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
-        throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
-      }
-
-      throw new Retry(JSON.stringify(event));
+  // if we are not complete, reeturn false, and don't send a response back.
+  if (!isCompleteResult.IsComplete) {
+    if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
+      throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
     }
 
-    const response = {
-      ...event,
-      Data: {
-        ...event.Data,
-        ...isCompleteResult.Data
-      }
-    };
+    throw new cfnResponse.Retry(JSON.stringify(event));
+  }
 
-    await submitCloudFormationResponse('SUCCESS', response);
-  });
+  const response = {
+    ...event,
+    Data: {
+      ...event.Data,
+      ...isCompleteResult.Data
+    }
+  };
+
+  await cfnResponse.submitResponse('SUCCESS', response);
 }
 
 // invoked when completion retries are exhaused.
@@ -96,15 +87,22 @@ async function onTimeout(timeoutEvent: any) {
   log('timeoutHandler', timeoutEvent);
 
   const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
-  await submitCloudFormationResponse('FAILED', isCompleteRequest, {
+  await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
     reason: 'Operation timed out'
   });
 }
 
-async function invokeUserFunction(arnEnvironment: string, payload: any) {
-  const arn = getEnv(arnEnvironment);
-  log(`executing user function ${arnEnvironment} with payload`, payload);
-  const resp = await invokeFunction({ FunctionName: arn, Payload: JSON.stringify(payload) });
+async function invokeUserFunction(functionArnEnv: string, payload: any) {
+  const functionArn = getEnv(functionArnEnv);
+  log(`executing user function ${functionArn} with payload`, payload);
+
+  // transient errors such as timeouts, throttling errors (429), and other
+  // errors that aren't caused by a bad request (500 series) are retried
+  // automatically by the JavaScript SDK.
+  const resp = await invokeFunction({
+    FunctionName: functionArn,
+    Payload: JSON.stringify(payload)
+  });
 
   log('user function response:', resp, typeof(resp));
 
@@ -128,26 +126,7 @@ function parseJsonPayload(payload: any): any {
   try {
     return JSON.parse(text);
   } catch (e) {
-    log('parse error:', e);
-    return { text };
-  }
-}
-
-function validateCfnRequest(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
-  const errorPrefix = `Invalid CloudFormation custom resource event (${cfnRequest.RequestType || ''}):`;
-
-  [ 'LogicalResourceId', 'RequestId', 'RequestType', 'ResponseURL', 'StackId', 'ServiceToken' ].forEach(field => {
-    if (!(cfnRequest as any)[field]) {
-      throw new Error(`${errorPrefix} ${field} is required`);
-    }
-  });
-
-  if (cfnRequest.RequestType === 'Create' && (cfnRequest as any).PhysicalResourceId) {
-    throw new Error(`${errorPrefix} PhysicalResourceId is not allowed for "Create" events`);
-  }
-
-  if ((cfnRequest.RequestType === 'Update' || cfnRequest.RequestType === 'Delete') && !cfnRequest.PhysicalResourceId) {
-    throw new Error(`${errorPrefix} PhysicalResourceId is required for "Update" and "Delete" events`);
+    throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
   }
 }
 
