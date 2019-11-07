@@ -68,7 +68,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
    */
- readonly protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -107,6 +107,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: ApplicationLoadBalancer;
+
+  /**
+   * Listener port of the application load balancer that will serve traffic to the service.
+   *
+   * @default 80
+   */
+  readonly listenerPort?: number;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -273,17 +280,19 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
-    const targetProps = {
-      port: 80
-    };
-
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
     const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
+    const targetProps = {
+      port: props.listenerPort !== undefined ? props.listenerPort : 80,
+      protocol
+    };
+
     this.listener = this.loadBalancer.addListener('PublicListener', {
       protocol,
+      port: props.listenerPort,
       open: true
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);

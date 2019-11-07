@@ -87,6 +87,13 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly loadBalancer?: NetworkLoadBalancer;
 
   /**
+   * Listener port of the network load balancer that will serve traffic to the service.
+   *
+   * @default 80
+   */
+  readonly listenerPort?: number;
+
+  /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
@@ -245,11 +252,13 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
 
+    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
+
     const targetProps = {
-      port: 80
+      port: listenerPort
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: 80 });
+    this.listener = this.loadBalancer.addListener('PublicListener', { port: listenerPort });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
