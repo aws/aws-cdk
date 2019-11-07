@@ -19,14 +19,14 @@
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "^0.20.0",
-    "jsii-spec": "^0.20.0",
+    "jsii-reflect": "^0.20.1",
+    "jsii-spec": "^0.20.1",
     "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/yargs": "^13.0.3",
-    "tslint": "^5.20.0",
+    "tslint": "^5.20.1",
     "typescript": "~3.6.4"
   },
   "repository": {
