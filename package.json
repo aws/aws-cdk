@@ -7,6 +7,9 @@
   },
   "scripts": {
     "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
+    "build": "./build.sh",
+    "pack": "./pack.sh",
+    "compat": "./scripts/check-api-compatibility.sh",
     "build-all": "tsc -b"
   },
   "devDependencies": {
