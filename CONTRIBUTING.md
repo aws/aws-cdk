@@ -329,7 +329,7 @@ Install and build:
 
 ```console
 $ ./install.sh
-$ ./build.sh
+$ yarn build
 ```
 
 If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
@@ -490,22 +490,21 @@ way.
 
 [jsii-diff]: https://www.npmjs.com/package/jsii-diff
 
-Compatibility checks always run as part of a full build (`build.sh`).
+Compatibility checks always run as part of a full build (`yarn build`).
 
 You can use `yarn compat` to run compatibility checks for all modules:
 
 ```shell
-$ cd aws-cdk
+(working directory is repo root)
+$ yarn build
 $ yarn compat
-$ ./scripts/check-api-compatibility.sh
-Listing jsii packages...
-Filtering on existing packages on NPM...
 ```
 
 You can also run `compat` from individual package directories:
 
 ```shell
 $ cd packages/@aws-cdk/aws-sns
+$ yarn build
 $ yarn compat
 ```
 
@@ -521,7 +520,7 @@ Most build issues can be solved by doing a full clean rebuild:
 
 ```shell
 $ git clean -fqdx .
-$ ./build.sh
+$ yarn build
 ```
 
 However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
