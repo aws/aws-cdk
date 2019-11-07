@@ -45,7 +45,8 @@
     "cfn2ts": "cfn2ts",
     "integ": "cdk-integ",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudTrail"
