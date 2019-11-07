@@ -178,7 +178,7 @@ export class UsagePlan extends Resource {
    * @param apiKey
    */
   public addApiKey(apiKey: IApiKey): void {
-    new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
+    new CfnUsagePlanKey(this, `UsagePlanKey${apiKey.node.id}`, {
       keyId: apiKey.keyId,
       keyType: UsagePlanKeyType.API_KEY,
       usagePlanId: this.usagePlanId

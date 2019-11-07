@@ -294,7 +294,7 @@ export class RestApi extends Resource implements IRestApi {
   /**
    * Adds a usage plan.
    */
-  public addUsagePlan(id: string, props: UsagePlanProps): UsagePlan {
+  public addUsagePlan(id: string, props: UsagePlanProps = {}): UsagePlan {
     return new UsagePlan(this, id, props);
   }
 
