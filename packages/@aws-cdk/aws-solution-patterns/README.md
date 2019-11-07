@@ -15,13 +15,13 @@
 ---
 <!--END STABILITY BANNER-->
 
-This library provides higher-level multi-service constructs which follow AWS prescriptive architectural patterns. It contains:
+This library provides higher-level multi-service L3 constructs which follow AWS prescriptive architectural patterns. It contains:
 
 * AWS Lambda to Amazon DynamoDB
 
 ## AWS Lambda to Amazon DynamoDB Construct
 
-This CDK construct implements the AWS Lambda function to Amazon DynamoDB pattern
+This CDK construct implements the AWS Lambda function to Amazon DynamoDB table pattern. It will deploy a Lambda function and a DynamoDB table. It will apply the least privilege permissions for the Lambda function to read and write data from the DynamoDB table. Additionally, it will set the default input properties for the Lambda function and the DynamoDB table constructs, which can be overridden, if needed. Check the ```lib\core``` folder to see the default input properties.
 
 Here is a minimal deployable pattern definition:
 
