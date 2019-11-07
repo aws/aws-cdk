@@ -780,6 +780,19 @@ export class MustHaveIntegCommand extends ValidationRule {
   }
 }
 
+/**
+ * Checks API backwards compatibility against the latest released version.
+ */
+export class CompatScript extends ValidationRule {
+  public readonly name = 'package-info/scripts/compat';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return ; }
+
+    expectJSON(this.name, pkg, 'scripts.compat', 'cdk-compat');
+  }
+}
+
 export class PkgLintAsScript extends ValidationRule {
   public readonly name = 'package-info/scripts/pkglint';
 
