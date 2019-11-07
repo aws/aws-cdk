@@ -1452,6 +1452,8 @@ export interface AddRouteOptions {
    *
    * If true, this route will be added before any AWS resources that depend
    * on internet connectivity in the VPC will be created.
+   *
+   * @default false
    */
   readonly enablesInternetConnectivity?: boolean;
 }
