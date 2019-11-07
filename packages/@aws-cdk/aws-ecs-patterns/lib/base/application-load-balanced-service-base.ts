@@ -285,16 +285,14 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     }
     const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
-    const listenerPort = props.listenerPort;
-
     const targetProps = {
-      port: listenerPort,
+      port: props.listenerPort !== undefined ? props.listenerPort : 80,
       protocol
     };
 
     this.listener = this.loadBalancer.addListener('PublicListener', {
       protocol,
-      port: listenerPort,
+      port: props.listenerPort,
       open: true
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
