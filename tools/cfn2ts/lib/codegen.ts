@@ -353,8 +353,8 @@ export default class CodeGenerator {
    *
    * The generated code looks like this:
    * public inspect(inspector: cdk.ITreeInspector) {
-   *     inspector.attribute("aws:cdk:cloudformation:type", CfnManagedPolicy.CFN_RESOURCE_TYPE_NAME);
-   *     inspector.attribute("aws:cdk:cloudformation:props", this.cfnProperties);
+   *     inspector.addAttribute("aws:cdk:cloudformation:type", CfnManagedPolicy.CFN_RESOURCE_TYPE_NAME);
+   *     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
    * }
    *
    */
@@ -367,8 +367,8 @@ export default class CodeGenerator {
     this.code.line(' * @stability experimental');
     this.code.line(' */');
     this.code.openBlock(`public inspect(inspector: ${CORE}.ITreeInspector)`);
-    this.code.line(`inspector.attribute("${TreeAttributes.CFN_TYPE}", ${resource.className}.CFN_RESOURCE_TYPE_NAME);`);
-    this.code.line(`inspector.attribute("${TreeAttributes.CFN_PROPS}", this.cfnProperties);`);
+    this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_TYPE}", ${resource.className}.CFN_RESOURCE_TYPE_NAME);`);
+    this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_PROPS}", this.cfnProperties);`);
     this.code.closeBlock();
   }
 

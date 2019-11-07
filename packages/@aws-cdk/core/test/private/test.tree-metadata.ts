@@ -49,8 +49,8 @@ export = {
       }
 
       public inspect(inspector: ITreeInspector) {
-        inspector.attribute('aws:cdk:cloudformation:type', 'CDK::UnitTest::MyCfnResource');
-        inspector.attribute('aws:cdk:cloudformation:props', this.cfnProperties);
+        inspector.addAttribute('aws:cdk:cloudformation:type', 'CDK::UnitTest::MyCfnResource');
+        inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
       }
 
       protected get cfnProperties(): { [key: string]: any } {

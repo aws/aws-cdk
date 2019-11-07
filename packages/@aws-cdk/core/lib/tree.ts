@@ -8,7 +8,7 @@ export interface ITreeInspector {
    * @param key - key for metadata
    * @param value - value of metadata
    */
-  attribute(key: string, value: any): void;
+  addAttribute(key: string, value: any): void;
 }
 
 /**
@@ -28,7 +28,7 @@ export class TreeInspector implements ITreeInspector {
    * @param key - key for metadata
    * @param value - value of metadata.
    */
-  public attribute(key: string, value: any) {
+  public addAttribute(key: string, value: any) {
     this.attributes[key] = value;
   }
 }
