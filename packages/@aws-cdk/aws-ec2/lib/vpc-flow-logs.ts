@@ -1,9 +1,9 @@
-import iam = require("@aws-cdk/aws-iam");
-import logs = require("@aws-cdk/aws-logs");
-import s3 = require("@aws-cdk/aws-s3");
-import { Construct, IResource, PhysicalName, Resource } from "@aws-cdk/core";
-import { CfnFlowLog } from "./ec2.generated";
-import { ISubnet, IVpc } from "./vpc";
+import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
+import s3 = require('@aws-cdk/aws-s3');
+import { Construct, IResource, PhysicalName, Resource } from '@aws-cdk/core';
+import { CfnFlowLog } from './ec2.generated';
+import { ISubnet, IVpc } from './vpc';
 
 /**
  * A FlowLog
@@ -28,17 +28,17 @@ export enum FlowLogTrafficType {
   /**
    * Only log accepts
    */
-  ACCEPT = "ACCEPT",
+  ACCEPT = 'ACCEPT',
 
   /**
    * Log all requests
    */
-  ALL = "ALL",
+  ALL = 'ALL',
 
   /**
    * Only log rejects
    */
-  REJECT = "REJECT"
+  REJECT = 'REJECT'
 }
 
 /**
@@ -52,7 +52,7 @@ export abstract class FlowLogResourceType {
    */
   public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
     return {
-      resourceType: "Subnet",
+      resourceType: 'Subnet',
       resourceId: subnet.subnetId
     };
   }
@@ -62,7 +62,7 @@ export abstract class FlowLogResourceType {
    */
   public static fromVpc(vpc: IVpc): FlowLogResourceType {
     return {
-      resourceType: "VPC",
+      resourceType: 'VPC',
       resourceId: vpc.vpcId
     };
   }
@@ -72,7 +72,7 @@ export abstract class FlowLogResourceType {
    */
   public static fromNetworkInterfaceId(id: string): FlowLogResourceType {
     return {
-      resourceType: "NetworkInterface",
+      resourceType: 'NetworkInterface',
       resourceId: id
     };
   }
@@ -92,7 +92,7 @@ export abstract class FlowLogDestination {
    */
   public static toCloudWatchLogs(iamRole?: iam.IRole): FlowLogDestination {
     return new FlowLogDestinationImpl({
-      logDestinationType: "cloud-watch-logs",
+      logDestinationType: 'cloud-watch-logs',
       iamRole
     });
   }
@@ -102,7 +102,7 @@ export abstract class FlowLogDestination {
    */
   public static toS3(bucket?: s3.IBucket): FlowLogDestination {
     return new FlowLogDestinationImpl({
-      logDestinationType: "s3",
+      logDestinationType: 's3',
       s3Bucket: bucket
     });
   }
@@ -221,11 +221,7 @@ export class FlowLog extends FlowLogBase {
   /**
    * Import a Flow Log by it's Id
    */
-  public static fromFlowLogId(
-    scope: Construct,
-    id: string,
-    flowLogId: string
-  ): IFlowLog {
+  public static fromFlowLogId(scope: Construct, id: string, flowLogId: string): IFlowLog {
     class Import extends FlowLogBase {
       public flowLogId = flowLogId;
     }
@@ -260,56 +256,46 @@ export class FlowLog extends FlowLogBase {
       physicalName: props.flowLogName
     });
 
-    const destination =
-      props.destination ||
-      new FlowLogDestinationImpl({
-        logDestinationType: "cloud-watch-logs"
-      });
+    const destination = props.destination || new FlowLogDestinationImpl({
+      logDestinationType: 'cloud-watch-logs'
+    });
 
     const destinationConfig = destination.toDestination();
 
-    if (destinationConfig.logDestinationType === "cloud-watch-logs") {
-      this.iamRole =
-        destinationConfig.iamRole ||
-        new iam.Role(this, "IAMRole", {
-          roleName: PhysicalName.GENERATE_IF_NEEDED,
-          assumedBy: new iam.ServicePrincipal("vpc-flow-logs.amazonaws.com")
-        });
+    if (destinationConfig.logDestinationType === 'cloud-watch-logs') {
+      this.iamRole = destinationConfig.iamRole || new iam.Role(this, 'IAMRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com')
+      });
 
-      this.logGroup = new logs.LogGroup(
-        this,
-        "LogGroup",
-        props.logGroupOptions
-      );
+      this.logGroup = new logs.LogGroup(this, 'LogGroup', props.logGroupOptions);
 
-      new iam.Policy(this, "Policy", {
+      new iam.Policy(this, 'Policy', {
         roles: [this.iamRole],
         statements: [
           new iam.PolicyStatement({
             actions: [
-              "logs:CreateLogStream",
-              "logs:PutLogEvents",
-              "logs:DescribeLogStreams"
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+              'logs:DescribeLogStreams'
             ],
             effect: iam.Effect.ALLOW,
             resources: [this.logGroup.logGroupArn]
           }),
           new iam.PolicyStatement({
-            actions: ["iam:PassRole"],
+            actions: ['iam:PassRole'],
             effect: iam.Effect.ALLOW,
             resources: [this.iamRole.roleArn]
           })
         ]
       });
     } else {
-      this.bucket =
-        destinationConfig.s3Bucket ||
-        new s3.Bucket(this, "S3Bucket", {
-          encryption: s3.BucketEncryption.UNENCRYPTED
-        });
+      this.bucket = destinationConfig.s3Bucket || new s3.Bucket(this, 'S3Bucket', {
+        encryption: s3.BucketEncryption.UNENCRYPTED
+      });
     }
 
-    const flowLog = new CfnFlowLog(this, "FlowLog", {
+    const flowLog = new CfnFlowLog(this, 'FlowLog', {
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
       logDestinationType: destinationConfig.logDestinationType,
       logGroupName: this.logGroup ? this.logGroup.logGroupName : undefined,
