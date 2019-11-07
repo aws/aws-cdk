@@ -56,19 +56,19 @@ export interface ConfigureNatOptions {
   /**
    * The VPC we're configuring NAT for
    */
-  vpc: Vpc;
+  readonly vpc: Vpc;
 
   /**
    * The public subnets where the NAT providers need to be placed
    */
-  natSubnets: PublicSubnet[];
+  readonly natSubnets: PublicSubnet[];
 
   /**
    * The private subnets that need to route through the NAT providers.
    *
    * There may be more private subnets than public subnets with NAT providers.
    */
-  privateSubnets: PrivateSubnet[];
+  readonly privateSubnets: PrivateSubnet[];
 }
 
 /**
@@ -95,12 +95,12 @@ export interface NatInstanceProps {
    *
    * @default - Latest NAT instance image
    */
-  machineImage?: IMachineImage;
+  readonly machineImage?: IMachineImage;
 
   /**
    * Instance type of the NAT instance
    */
-  instanceType: InstanceType;
+  readonly instanceType: InstanceType;
 
   /**
    * Name of SSH keypair to grant access to instance

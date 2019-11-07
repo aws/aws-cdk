@@ -368,14 +368,14 @@ export interface LookupMachineImageProps {
   /**
    * Name of the image (may contain wildcards)
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Owner account IDs or aliases
    *
    * @default - All owners
    */
-  owners?: string[];
+  readonly owners?: string[];
 
   /**
    * Additional filters on the AMI
@@ -383,19 +383,19 @@ export interface LookupMachineImageProps {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeImages.html
    * @default - No additional filters
    */
-  filters?: {[key: string]: string[]};
+  readonly filters?: {[key: string]: string[]};
 
   /**
    * Look for Windows images
    *
    * @default false
    */
-  windows?: boolean;
+  readonly windows?: boolean;
 
   /**
    * Custom userdata for this image
    *
    * @default - Empty user data appropriate for the platform type
    */
-  userData?: UserData;
+  readonly userData?: UserData;
 }

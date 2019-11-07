@@ -1426,26 +1426,26 @@ export interface AddRouteOptions {
    *
    * @default '0.0.0.0/0'
    */
-  destinationCidrBlock?: string;
+  readonly destinationCidrBlock?: string;
 
   /**
    * IPv6 range this route applies to
    *
    * @default - Uses IPv6
    */
-  destinationIpv6CidrBlock?: string;
+  readonly destinationIpv6CidrBlock?: string;
 
   /**
    * What type of router to route this traffic to
    */
-  routerType: RouterType;
+  readonly routerType: RouterType;
 
   /**
    * The ID of the router
    *
    * Can be an instance ID, gateway ID, etc, depending on the router type.
    */
-  routerId: string;
+  readonly routerId: string;
 
   /**
    * Whether this route will enable internet connectivity
@@ -1453,7 +1453,7 @@ export interface AddRouteOptions {
    * If true, this route will be added before any AWS resources that depend
    * on internet connectivity in the VPC will be created.
    */
-  enablesInternetConnectivity?: boolean;
+  readonly enablesInternetConnectivity?: boolean;
 }
 
 /**
