@@ -359,7 +359,7 @@ export default class CodeGenerator {
    *
    */
   private emitTreeAttributes(resource: genspec.CodeName): void {
-    this.code.line("/**");
+    this.code.line('/**');
     this.code.line(' * Examines the CloudFormation resource and discloses attributes.');
     this.code.line(' *');
     this.code.line(' * @param inspector - tree inspector to collect and process attributes');
