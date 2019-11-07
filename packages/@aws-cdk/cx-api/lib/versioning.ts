@@ -31,7 +31,7 @@ import { AssemblyManifest } from './cloud-assembly';
  * Note that the versions are not compared in a semver way, they are used as
  * opaque ordered tokens.
  */
-export const CLOUD_ASSEMBLY_VERSION = '1.16.0';
+export const CLOUD_ASSEMBLY_VERSION = '1.18.0';
 
 /**
  * Look at the type of response we get and upgrade it to the latest expected version
@@ -67,6 +67,11 @@ export function upgradeAssemblyManifest(manifest: AssemblyManifest): AssemblyMan
   if (manifest.version === '1.10.0') {
     // backwards-compatible changes to the VPC provider
     manifest = justUpgradeVersion(manifest, '1.16.0');
+  }
+
+  if (manifest.version === '1.16.0') {
+    // Added AMI context provider
+    manifest = justUpgradeVersion(manifest, '1.18.0');
   }
 
   return manifest;

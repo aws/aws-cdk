@@ -4,6 +4,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
 import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
@@ -291,6 +292,8 @@ abstract class VpcBase extends Resource implements IVpc {
 
   /**
    * Dependencies for NAT connectivity
+   *
+   * @deprecated - This value is no longer used.
    */
   protected readonly natDependencies = new Array<IConstruct>();
 
@@ -606,18 +609,21 @@ export interface VpcProps {
   readonly maxAzs?: number;
 
   /**
-   * The number of NAT Gateways to create.
+   * The number of NAT Gateways/Instances to create.
+   *
+   * The type of NAT gateway or instance will be determined by the
+   * `natGatewayProvider` parameter.
    *
    * You can set this number lower than the number of Availability Zones in your
-   * VPC in order to save on NAT gateway cost. Be aware you may be charged for
+   * VPC in order to save on NAT cost. Be aware you may be charged for
    * cross-AZ data traffic instead.
    *
-   * @default - One NAT gateway per Availability Zone
+   * @default - One NAT gateway/instance per Availability Zone
    */
   readonly natGateways?: number;
 
   /**
-   * Configures the subnets which will have NAT Gateways
+   * Configures the subnets which will have NAT Gateways/Instances
    *
    * You can pick a specific group of subnets by specifying the group name;
    * the picked subnets must be public subnets.
@@ -627,6 +633,17 @@ export interface VpcProps {
    * @default - All public subnets.
    */
   readonly natGatewaySubnets?: SubnetSelection;
+
+  /**
+   * What type of NAT provider to use
+   *
+   * Select between NAT gateways or NAT instances. NAT gateways
+   * may not be available in all AWS regions.
+   *
+   * @default - NatProvider.gateway()
+   * @experimental
+   */
+  readonly natGatewayProvider?: NatProvider;
 
   /**
    * Configure the subnets to build for each AZ
@@ -939,11 +956,6 @@ export class Vpc extends VpcBase {
   private networkBuilder: NetworkBuilder;
 
   /**
-   * Mapping of NatGateway by AZ
-   */
-  private natGatewayByAZ: { [az: string]: string } = {};
-
-  /**
    * Subnet configurations for this VPC
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
@@ -1028,17 +1040,8 @@ export class Vpc extends VpcBase {
 
       // if gateways are needed create them
       if (natGatewayCount > 0) {
-        this.createNatGateways(natGatewayCount, natGatewayPlacement);
-
-        (this.privateSubnets as PrivateSubnet[]).forEach((privateSubnet, i) => {
-          let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
-          if (ngwId === undefined) {
-            const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
-            // round robin the available NatGW since one is not in your AZ
-            ngwId = ngwArray[i % ngwArray.length];
-          }
-          privateSubnet.addDefaultNatRoute(ngwId);
-        });
+        const provider = props.natGatewayProvider || NatProvider.gateway();
+        this.createNatGateways(provider, natGatewayCount, natGatewayPlacement);
       }
     }
 
@@ -1115,20 +1118,19 @@ export class Vpc extends VpcBase {
     });
   }
 
-  private createNatGateways(natCount: number, placement: SubnetSelection): void {
-    let natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
+  private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
+    const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
         throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
       }
     }
 
-    natSubnets = natSubnets.slice(0, natCount);
-    for (const sub of natSubnets) {
-      const gateway = sub.addNatGateway();
-      this.natGatewayByAZ[sub.availabilityZone] = gateway.ref;
-      this.natDependencies.push(gateway);
-    }
+    provider.configureNat({
+      vpc: this,
+      natSubnets: natSubnets.slice(0, natCount),
+      privateSubnets: this.privateSubnets as PrivateSubnet[]
+    });
   }
 
   /**
@@ -1376,12 +1378,31 @@ export class Subnet extends Resource implements ISubnet {
    * @param natGatewayId The ID of the NAT gateway
    */
   public addDefaultNatRoute(natGatewayId: string) {
-    const route = new CfnRoute(this, `DefaultRoute`, {
-      routeTableId: this.routeTable.routeTableId,
-      destinationCidrBlock: '0.0.0.0/0',
-      natGatewayId
+    this.addRoute('DefaultRoute', {
+      routerType: RouterType.NAT_GATEWAY,
+      routerId: natGatewayId,
+      enablesInternetConnectivity: true,
     });
-    this._internetConnectivityEstablished.add(route);
+  }
+
+  /**
+   * Adds an entry to this subnets route table
+   */
+  public addRoute(id: string, options: AddRouteOptions) {
+    if (options.destinationCidrBlock && options.destinationIpv6CidrBlock) {
+      throw new Error(`Cannot specify both 'destinationCidrBlock' and 'destinationIpv6CidrBlock'`);
+    }
+
+    const route = new CfnRoute(this, id, {
+      routeTableId: this.routeTable.routeTableId,
+      destinationCidrBlock: options.destinationCidrBlock || (options.destinationIpv6CidrBlock === undefined ? '0.0.0.0/0' : undefined),
+      destinationIpv6CidrBlock: options.destinationCidrBlock,
+      [routerTypeToPropName(options.routerType)]: options.routerId,
+    });
+
+    if (options.enablesInternetConnectivity) {
+      this._internetConnectivityEstablished.add(route);
+    }
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
@@ -1396,12 +1417,98 @@ export class Subnet extends Resource implements ISubnet {
   }
 }
 
+/**
+ * Options for adding a new route to a subnet
+ */
+export interface AddRouteOptions {
+  /**
+   * IPv4 range this route applies to
+   *
+   * @default '0.0.0.0/0'
+   */
+  destinationCidrBlock?: string;
+
+  /**
+   * IPv6 range this route applies to
+   *
+   * @default - Uses IPv6
+   */
+  destinationIpv6CidrBlock?: string;
+
+  /**
+   * What type of router to route this traffic to
+   */
+  routerType: RouterType;
+
+  /**
+   * The ID of the router
+   *
+   * Can be an instance ID, gateway ID, etc, depending on the router type.
+   */
+  routerId: string;
+
+  /**
+   * Whether this route will enable internet connectivity
+   *
+   * If true, this route will be added before any AWS resources that depend
+   * on internet connectivity in the VPC will be created.
+   */
+  enablesInternetConnectivity?: boolean;
+}
+
+/**
+ * Type of router used in route
+ */
+export enum RouterType {
+  /**
+   * Egress-only Internet Gateway
+   */
+  EGRESS_ONLY_INTERNET_GATEWAY = 'EgressOnlyInternetGateway',
+
+  /**
+   * Internet Gateway
+   */
+  GATEWAY = 'Gateway',
+
+  /**
+   * Instance
+   */
+  INSTANCE = 'Instance',
+
+  /**
+   * NAT Gateway
+   */
+  NAT_GATEWAY = 'NatGateway',
+
+  /**
+   * Network Interface
+   */
+  NETWORK_INTERFACE = 'NetworkInterface',
+
+  /**
+   * VPC peering connection
+   */
+  VPC_PEERING_CONNECTION = 'VpcPeeringConnection',
+}
+
+function routerTypeToPropName(routerType: RouterType) {
+  return ({
+    [RouterType.EGRESS_ONLY_INTERNET_GATEWAY]: 'egressOnlyInternetGatewayId',
+    [RouterType.GATEWAY]: 'gatewayId',
+    [RouterType.INSTANCE]: 'instanceId',
+    [RouterType.NAT_GATEWAY]: 'natGatewayId',
+    [RouterType.NETWORK_INTERFACE]: 'networkInterfaceId',
+    [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
+  })[routerType];
+}
+
 // tslint:disable-next-line:no-empty-interface
 export interface PublicSubnetProps extends SubnetProps {
 
 }
 
 export interface IPublicSubnet extends ISubnet { }
+
 export interface PublicSubnetAttributes extends SubnetAttributes { }
 
 /**

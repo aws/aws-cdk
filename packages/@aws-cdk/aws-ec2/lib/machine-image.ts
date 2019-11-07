@@ -1,5 +1,6 @@
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, Stack, Token } from '@aws-cdk/core';
+import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
+import cxapi = require('@aws-cdk/cx-api');
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
 
@@ -230,7 +231,7 @@ export interface GenericLinuxImageProps {
   /**
    * Initial user data
    *
-   * @default - Empty UserData for Windows machines
+   * @default - Empty UserData for Linux machines
    */
   readonly userData?: UserData;
 }
@@ -310,4 +311,91 @@ export class GenericWindowsImage implements IMachineImage  {
 export enum OperatingSystemType {
   LINUX,
   WINDOWS,
+}
+
+/**
+ * A machine image whose AMI ID will be searched using DescribeImages.
+ *
+ * The most recent, available, launchable image matching the given filter
+ * criteria will be used. Looking up AMIs may take a long time; specify
+ * as many filter criteria as possible to narrow down the search.
+ *
+ * The AMI selected will be cached in `cdk.context.json` and the same value
+ * will be used on future runs. To refresh the AMI lookup, you will have to
+ * evict the value from the cache using the `cdk context` command. See
+ * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+ */
+export class LookupMachineImage implements IMachineImage {
+  constructor(private readonly props: LookupMachineImageProps) {
+  }
+
+  public getImage(scope: Construct): MachineImageConfig {
+    // Need to know 'windows' or not before doing the query to return the right
+    // osType for the dummy value, so might as well add it to the filter.
+    const filters: Record<string, string[] | undefined> = {
+      'name': [this.props.name],
+      'state': ['available'],
+      'image-type': ['machine'],
+      'platform': this.props.windows ? ['windows'] : undefined,
+    };
+    Object.assign(filters, this.props.filters);
+
+    const value = ContextProvider.getValue(scope, {
+      provider: cxapi.AMI_PROVIDER,
+      props: {
+        owners: this.props.owners,
+        filters,
+       } as cxapi.AmiContextQuery,
+      dummyValue: 'ami-1234',
+    }).value as cxapi.AmiContextResponse;
+
+    if (typeof value !== 'string') {
+      throw new Error(`Response to AMI lookup invalid, got: ${value}`);
+    }
+
+    return {
+      imageId: value,
+      osType: this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX,
+      userData: this.props.userData
+    };
+  }
+}
+
+/**
+ * Properties for looking up an image
+ */
+export interface LookupMachineImageProps {
+  /**
+   * Name of the image (may contain wildcards)
+   */
+  name: string;
+
+  /**
+   * Owner account IDs or aliases
+   *
+   * @default - All owners
+   */
+  owners?: string[];
+
+  /**
+   * Additional filters on the AMI
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeImages.html
+   * @default - No additional filters
+   */
+  filters?: {[key: string]: string[]};
+
+  /**
+   * Look for Windows images
+   *
+   * @default false
+   */
+  windows?: boolean;
+
+  /**
+   * Custom userdata for this image
+   *
+   * @default - Empty user data appropriate for the platform type
+   */
+  userData?: UserData;
 }

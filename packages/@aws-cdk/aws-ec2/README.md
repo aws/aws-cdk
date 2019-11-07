@@ -86,6 +86,20 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
+### Using NAT instances
+
+By default, the `Vpc` construct will create NAT *gateways* for you, which
+are managed by AWS. If you would prefer to use your own managed NAT
+*instances* instead, specify a different value for the `natGatewayProvider`
+property, as follows:
+
+[using NAT instances](test/integ.nat-instances.lit.ts)
+
+The construct will automatically search for the most recent NAT gateway AMI.
+If you prefer to use a custom AMI, pass a `GenericLinuxImage` instance
+for the instance's `machineImage` parameter and configure the right AMI ID
+for the regions you want to deploy to.
+
 ### Advanced Subnet Configuration
 
 If the default VPC configuration (public and private subnets spanning the
@@ -341,19 +355,19 @@ fleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
 library contains constructs to select the AMI you want to use.
 
-Depending on the type of AMI, you select it a different way.
-
-The latest version of Amazon Linux and Microsoft Windows images are
-selectable by instantiating one of these classes:
+Depending on the type of AMI, you select it a different way. Here are some
+examples of things you might want to use:
 
 [example of creating images](test/example.images.lit.ts)
 
-> NOTE: The Amazon Linux images selected will be cached in your `cdk.json`, so that your
-> AutoScalingGroups don't automatically change out from under you when you're making unrelated
-> changes. To update to the latest version of Amazon Linux, remove the cache entry from the `context`
-> section of your `cdk.json`.
+> NOTE: The AMIs selected by `AmazonLinuxImage` or `LookupImage` will be cached in
+> `cdk.context.json`, so that your AutoScalingGroup instances aren't replaced while
+> you are making unrelated changes to your CDK app.
 >
-> We will add command-line options to make this step easier in the future.
+> To query for the latest AMI again, remove the relevant cache entry from
+> `cdk.context.json`, or use the `cdk context` command. For more information, see
+> [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
+> developer guide.
 
 ## VPN connections to a VPC
 
