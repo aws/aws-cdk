@@ -664,16 +664,16 @@ export interface CloudMapOptions {
   readonly name?: string,
 
   /**
-   * The service discovery namespace created in this cluster
+   * The service discovery namespace created in this service.
    *
-   * @default - no service discovery namespace created
+   * @default - the defaultCloudMapNamespace associated to the cluster
    */
   readonly cloudMapNamespace?: cloudmap.INamespace;
 
   /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
-   * @default: A
+   * @default DnsRecordType.A
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 
