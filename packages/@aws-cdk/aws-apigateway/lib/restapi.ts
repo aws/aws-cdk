@@ -399,11 +399,7 @@ export class RestApi extends Resource implements IRestApi {
         ...props.deployOptions
       });
 
-      if (!!props.endpointExportName) {
-        new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
-      } else {
-        new CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
-      }
+      new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
         throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
