@@ -70,7 +70,7 @@ export function upgradeAssemblyManifest(manifest: AssemblyManifest): AssemblyMan
   }
 
   if (manifest.version === '1.16.0') {
-    // Added AMI context provider
+    // Added AMI context provider: old assemblies won't reference it.
     manifest = justUpgradeVersion(manifest, '1.17.0');
   }
 

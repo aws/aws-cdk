@@ -640,7 +640,7 @@ export interface VpcProps {
    * Select between NAT gateways or NAT instances. NAT gateways
    * may not be available in all AWS regions.
    *
-   * @default - NatProvider.gateway()
+   * @default NatProvider.gateway()
    * @experimental
    */
   readonly natGatewayProvider?: NatProvider;
