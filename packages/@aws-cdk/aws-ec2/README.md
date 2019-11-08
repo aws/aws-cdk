@@ -412,6 +412,17 @@ Endpoints are virtual devices. They are horizontally scaled, redundant, and high
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
 
+### Security groups for interface VPC endpoints
+By default, interface VPC endpoints create a new security group and traffic is **not**
+automatically allowed from the VPC CIDR.
+
+Use the `connections` object to allow traffic to flow to the endpoint:
+```ts
+myEndpoint.connections.allowDefaultPortFrom(...);
+```
+
+Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
+
 ## Bastion Hosts
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
 You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
