@@ -56,7 +56,6 @@ export class SqsSubscription implements sns.ITopicSubscription {
 
   private regionFromArn(topic: sns.ITopic): string | undefined {
     if (!topic.topicArn || Token.isUnresolved(topic.topicArn)) {
-      // the topic is defined in the CDK app, i.e., not imported
       return undefined;
     }
     return Stack.of(topic).parseArn(topic.topicArn).region;
