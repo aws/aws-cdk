@@ -31,7 +31,7 @@ export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 echo "============================================================================================="
 echo "installing..."
-yarn install --check-files
+yarn install --frozen-lockfile
 
 fail() {
   echo "❌  Last command failed. Scroll up to see errors in log (search for '!!!!!!!!')."
