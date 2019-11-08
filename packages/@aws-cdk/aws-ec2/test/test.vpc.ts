@@ -1,8 +1,8 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AclCidr, AclTraffic, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry,
-  Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry,
+  PrivateSubnet, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -164,8 +164,8 @@ export = {
         subnetConfiguration: [
           {
             cidrMask: 24,
-            subnetType: SubnetType.PRIVATE,
-            name: 'Private',
+            subnetType: SubnetType.PUBLIC,
+            name: 'Public',
           },
           {
             cidrMask: 24,
@@ -192,7 +192,7 @@ export = {
           {
             cidrMask: 24,
             name: 'ingress',
-            subnetType: SubnetType.PRIVATE,
+            subnetType: SubnetType.PUBLIC,
           },
           {
             cidrMask: 24,
@@ -415,6 +415,18 @@ export = {
       }
       test.done();
     },
+
+    'natGateways = 0 requires there to be no PRIVATE subnets'(test: Test) {
+      const stack = getTestStack();
+      test.throws(() => {
+        new Vpc(stack, 'VPC', {
+          natGateways: 0,
+        });
+      }, /make sure you don't configure any PRIVATE subnets/);
+      test.done();
+
+    },
+
     'with mis-matched nat and subnet configs it throws'(test: Test) {
       const stack = getTestStack();
       test.throws(() => new Vpc(stack, 'VPC', {
@@ -480,7 +492,7 @@ export = {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
-          { subnetType: SubnetType.PRIVATE, name: 'Private' },
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
           { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
@@ -514,6 +526,7 @@ export = {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
           { subnetType: SubnetType.PRIVATE, name: 'Private' },
           { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
         ],
@@ -590,7 +603,7 @@ export = {
 
       const vpc = new Vpc(stack, 'VpcNetwork');
 
-      test.notEqual(vpc.publicSubnets[0].node.defaultChild, undefined);
+      test.ok(vpc.publicSubnets[0].node.defaultChild instanceof CfnSubnet);
 
       test.done();
     },
@@ -749,7 +762,7 @@ export = {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
-          { subnetType: SubnetType.PRIVATE, name: 'Private' },
+          { subnetType: SubnetType.PUBLIC, name: 'Public' },
           { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
         ]
       });
@@ -768,6 +781,7 @@ export = {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
           { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
           { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
         ]
@@ -786,6 +800,7 @@ export = {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
+          { subnetType: SubnetType.PUBLIC, name: 'BlaBla' },
           { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
           { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
         ]
@@ -799,7 +814,25 @@ export = {
       test.done();
     },
 
-    'selecting default subnets in a VPC with only public subnets throws an error'(test: Test) {
+    'selecting default subnets in a VPC with only isolated subnets returns the isolateds'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        isolatedSubnetIds: ['iso-1', 'iso-2', 'iso-3'],
+        isolatedSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
+      });
+
+      // WHEN
+      const subnets = vpc.selectSubnets();
+
+      // THEN
+      test.deepEqual(subnets.subnetIds, ['iso-1', 'iso-2', 'iso-3']);
+      test.done();
+    },
+
+    'selecting default subnets in a VPC with only public subnets returns the publics'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
@@ -809,10 +842,11 @@ export = {
         publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
       });
 
-      test.throws(() => {
-        vpc.selectSubnets();
-      }, /There are no 'Private' subnet groups in this VPC. Available types: Public/);
+      // WHEN
+      const subnets = vpc.selectSubnets();
 
+      // THEN
+      test.deepEqual(subnets.subnetIds, ['pub-1', 'pub-2', 'pub-3']);
       test.done();
     },
 
@@ -834,6 +868,7 @@ export = {
       const vpc = new Vpc(stack, 'VpcNetwork', {
         maxAzs: 1,
         subnetConfiguration: [
+          {name: 'lb', subnetType: SubnetType.PUBLIC },
           {name: 'app', subnetType: SubnetType.PRIVATE },
           {name: 'db', subnetType: SubnetType.PRIVATE },
         ]
@@ -846,36 +881,31 @@ export = {
       test.deepEqual(subnetIds.length, 1);
       test.deepEqual(subnetIds[0], vpc.privateSubnets[0].subnetId);
       test.done();
-    }
-  },
+    },
 
-  'fromLookup() requires concrete values'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    test.throws(() => {
-      Vpc.fromLookup(stack, 'Vpc', {
-        vpcId: Lazy.stringValue({ produce: () => 'some-id' })
+    'select explicitly defined subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
+      });
+      const subnet = new PrivateSubnet(stack, 'Subnet', {
+        availabilityZone: vpc.availabilityZones[0],
+        cidrBlock: '10.0.0.0/28',
+        vpcId: vpc.vpcId
       });
 
-    }, 'All arguments to Vpc.fromLookup() must be concrete');
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ subnets: [subnet] });
 
-    test.done();
-  },
-
-  'selecting subnets by name from a looked-up VPC does not throw'(test: Test) {
-    // GIVEN
-    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' }});
-    const vpc = Vpc.fromLookup(stack, 'VPC', {
-      vpcId: 'vpc-1234'
-    });
-
-    // WHEN
-    vpc.selectSubnets({ subnetName: 'Bleep' });
-
-    // THEN: no exception
-
-    test.done();
+      // THEN
+      test.deepEqual(subnetIds.length, 1);
+      test.deepEqual(subnetIds[0], subnet.subnetId);
+      test.done();
+    }
   },
 };
 

@@ -6,10 +6,5 @@ update_configs:
   - directory: /
     package_manager: javascript
     update_schedule: live
-    ignored_updates:
-      - match:
-          # Don't suggest upgrading @types/node to versions >= 9
-          dependency_name: '@types/node'
-          version_requirement: '>= 9'
     version_requirement_updates: increase_versions
-    default_labels: []
+    default_labels: [dependencies]

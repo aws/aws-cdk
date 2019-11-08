@@ -757,7 +757,15 @@
       }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -854,6 +862,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "LaunchType": "EC2",
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
@@ -877,7 +886,6 @@
           }
         },
         "SchedulingStrategy": "REPLICA",
-        "EnableECSManagedTags": false,
         "ServiceRegistries": [
           {
             "RegistryArn": {
@@ -939,7 +947,7 @@
   },
   "Parameters": {
     "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
   }

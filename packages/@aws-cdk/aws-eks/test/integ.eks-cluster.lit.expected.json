@@ -641,7 +641,8 @@
               "Action": [
                 "eks:CreateCluster",
                 "eks:DescribeCluster",
-                "eks:DeleteCluster"
+                "eks:DeleteCluster",
+                "eks:UpdateClusterVersion"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -672,7 +673,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "EKSClusterResourceHandlerCodeS3BucketCE5CFBAC"
+            "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8"
           },
           "S3Key": {
             "Fn::Join": [
@@ -685,7 +686,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "EKSClusterResourceHandlerCodeS3VersionKey343D88E8"
+                          "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                         }
                       ]
                     }
@@ -698,7 +699,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "EKSClusterResourceHandlerCodeS3VersionKey343D88E8"
+                          "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                         }
                       ]
                     }
@@ -788,7 +789,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "EKSClusterKubernetesResourceHandlerCodeS3Bucket5B1A2C93"
+            "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB"
           },
           "S3Key": {
             "Fn::Join": [
@@ -801,7 +802,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "EKSClusterKubernetesResourceHandlerCodeS3VersionKeyB2871B51"
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                         }
                       ]
                     }
@@ -814,7 +815,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "EKSClusterKubernetesResourceHandlerCodeS3VersionKeyB2871B51"
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                         }
                       ]
                     }
@@ -1017,8 +1018,8 @@
         ],
         "Tags": [
           {
-            "Key":"Name",
-            "Value":"eks-integ-test-basic/EKSCluster/Nodes"
+            "Key": "Name",
+            "Value": "eks-integ-test-basic/EKSCluster/Nodes"
           },
           {
             "Key": {
@@ -1050,7 +1051,9 @@
     "EKSClusterNodesLaunchConfig921F1106": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-12345",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.medium",
         "IamInstanceProfile": {
           "Ref": "EKSClusterNodesInstanceProfile0F2DB3B9"
@@ -1072,7 +1075,7 @@
                 {
                   "Ref": "EKSClusterE11008B6"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-test-basic --resource EKSClusterNodesASGC2597E34 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack eks-integ-test-basic --resource EKSClusterNodesASGC2597E34 --region test-region"
               ]
             ]
           }
@@ -1183,32 +1186,6 @@
       }
     }
   },
-  "Parameters": {
-    "EKSClusterResourceHandlerCodeS3BucketCE5CFBAC": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"eks-integ-test-basic/EKSCluster/Resource/ResourceHandler/Code\""
-    },
-    "EKSClusterResourceHandlerCodeS3VersionKey343D88E8": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"eks-integ-test-basic/EKSCluster/Resource/ResourceHandler/Code\""
-    },
-    "EKSClusterResourceHandlerCodeArtifactHashAECCA27B": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"eks-integ-test-basic/EKSCluster/Resource/ResourceHandler/Code\""
-    },
-    "EKSClusterKubernetesResourceHandlerCodeS3Bucket5B1A2C93": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Code\""
-    },
-    "EKSClusterKubernetesResourceHandlerCodeS3VersionKeyB2871B51": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Code\""
-    },
-    "EKSClusterKubernetesResourceHandlerCodeArtifactHashA13FF2C6": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"eks-integ-test-basic/EKSCluster/KubernetesResourceHandler/Code\""
-    }
-  },
   "Outputs": {
     "EKSClusterConfigCommand3809C9C9": {
       "Value": {
@@ -1237,6 +1214,36 @@
           ]
         ]
       }
+    }
+  },
+  "Parameters": {
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
     }
   }
 }

@@ -38,4 +38,14 @@ export interface VpcLookupOptions {
    * @default Don't care whether we return the default VPC
    */
   readonly isDefault?: boolean;
+
+  /**
+   * Optional tag for subnet group name.
+   * If not provided, we'll look at the aws-cdk:subnet-name tag.
+   * If the subnet does not have the specified tag,
+   * we'll use its type as the name.
+   *
+   * @default aws-cdk:subnet-name
+   */
+  readonly subnetGroupNameTag?: string;
 }

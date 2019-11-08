@@ -501,7 +501,8 @@
               "Action": [
                 "eks:CreateCluster",
                 "eks:DescribeCluster",
-                "eks:DeleteCluster"
+                "eks:DeleteCluster",
+                "eks:UpdateClusterVersion"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -532,7 +533,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "myClusterResourceHandlerCodeS3Bucket2CFC8C11"
+            "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8"
           },
           "S3Key": {
             "Fn::Join": [
@@ -545,7 +546,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "myClusterResourceHandlerCodeS3VersionKey0ADD9228"
+                          "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                         }
                       ]
                     }
@@ -558,7 +559,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "myClusterResourceHandlerCodeS3VersionKey0ADD9228"
+                          "Ref": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
                         }
                       ]
                     }
@@ -642,7 +643,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "myClusterKubernetesResourceHandlerCodeS3BucketDDA8FDDC"
+            "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB"
           },
           "S3Key": {
             "Fn::Join": [
@@ -655,7 +656,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "myClusterKubernetesResourceHandlerCodeS3VersionKeyF5CD1996"
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                         }
                       ]
                     }
@@ -668,7 +669,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "myClusterKubernetesResourceHandlerCodeS3VersionKeyF5CD1996"
+                          "Ref": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
                         }
                       ]
                     }
@@ -809,26 +810,6 @@
     "myClusterDefaultCapacityInstanceRoleA36E0984": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
-          },
-          {
-            "Key": {
-              "Fn::Join": [
-                "",
-                [
-                  "kubernetes.io/cluster/",
-                  {
-                    "Ref": "myClusterE51CD07F"
-                  }
-                ]
-              ]
-            },
-            "Value": "owned"
-          }
-        ],
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
@@ -888,6 +869,26 @@
               ]
             ]
           }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "myClusterE51CD07F"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
         ]
       }
     },
@@ -904,7 +905,9 @@
     "myClusterDefaultCapacityLaunchConfigCF6D4B81": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-12345",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "m5.large",
         "IamInstanceProfile": {
           "Ref": "myClusterDefaultCapacityInstanceProfileE7E48198"
@@ -926,7 +929,7 @@
                 {
                   "Ref": "myClusterE51CD07F"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\"\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterDefaultCapacityASGF3FE3A19 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterDefaultCapacityASGF3FE3A19 --region test-region"
               ]
             ]
           }
@@ -1128,26 +1131,6 @@
     "myClusterspotInstanceRole03AE80B5": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "integ-eks-spot/myCluster/spot"
-          },
-          {
-            "Key": {
-              "Fn::Join": [
-                "",
-                [
-                  "kubernetes.io/cluster/",
-                  {
-                    "Ref": "myClusterE51CD07F"
-                  }
-                ]
-              ]
-            },
-            "Value": "owned"
-          }
-        ],
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
@@ -1207,6 +1190,26 @@
               ]
             ]
           }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/spot"
+          },
+          {
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  "kubernetes.io/cluster/",
+                  {
+                    "Ref": "myClusterE51CD07F"
+                  }
+                ]
+              ]
+            },
+            "Value": "owned"
+          }
         ]
       }
     },
@@ -1223,7 +1226,9 @@
     "myClusterspotLaunchConfig6681F311": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-12345",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t3.large",
         "IamInstanceProfile": {
           "Ref": "myClusterspotInstanceProfile93D80EE5"
@@ -1246,7 +1251,7 @@
                 {
                   "Ref": "myClusterE51CD07F"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterspotASG5D95FD2F --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --use-max-pods true --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack integ-eks-spot --resource myClusterspotASG5D95FD2F --region test-region"
               ]
             ]
           }
@@ -1340,32 +1345,6 @@
       }
     }
   },
-  "Parameters": {
-    "myClusterResourceHandlerCodeS3Bucket2CFC8C11": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"integ-eks-spot/myCluster/Resource/ResourceHandler/Code\""
-    },
-    "myClusterResourceHandlerCodeS3VersionKey0ADD9228": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"integ-eks-spot/myCluster/Resource/ResourceHandler/Code\""
-    },
-    "myClusterResourceHandlerCodeArtifactHashB28336E7": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"integ-eks-spot/myCluster/Resource/ResourceHandler/Code\""
-    },
-    "myClusterKubernetesResourceHandlerCodeS3BucketDDA8FDDC": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"integ-eks-spot/myCluster/KubernetesResourceHandler/Code\""
-    },
-    "myClusterKubernetesResourceHandlerCodeS3VersionKeyF5CD1996": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"integ-eks-spot/myCluster/KubernetesResourceHandler/Code\""
-    },
-    "myClusterKubernetesResourceHandlerCodeArtifactHashAEE3F837": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"integ-eks-spot/myCluster/KubernetesResourceHandler/Code\""
-    }
-  },
   "Outputs": {
     "myClusterConfigCommandAC521B60": {
       "Value": {
@@ -1394,6 +1373,36 @@
           ]
         ]
       }
+    }
+  },
+  "Parameters": {
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
     }
   }
 }

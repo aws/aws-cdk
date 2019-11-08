@@ -1,6 +1,8 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack } from '../lib';
+import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
 export = {
@@ -111,6 +113,30 @@ export = {
     new Stack(root, 'Hello-World');
     // Did not throw
 
+    test.done();
+  },
+
+  'Stacks can have a description given to them'(test: Test) {
+    const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!'});
+    const output = toCloudFormation(stack);
+    test.equal(output.Description, 'My stack, hands off!');
+    test.done();
+  },
+
+  'Stack descriptions have a limited length'(test: Test) {
+    const desc = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+     incididunt ut labore et dolore magna aliqua. Consequat interdum varius sit amet mattis vulputate
+     enim nulla aliquet. At imperdiet dui accumsan sit amet nulla facilisi morbi. Eget lorem dolor sed
+     viverra ipsum. Diam volutpat commodo sed egestas egestas. Sit amet porttitor eget dolor morbi non.
+     Lorem dolor sed viverra ipsum. Id porta nibh venenatis cras sed felis. Augue interdum velit euismod
+     in pellentesque. Suscipit adipiscing bibendum est ultricies integer quis. Condimentum id venenatis a
+     condimentum vitae sapien pellentesque habitant morbi. Congue mauris rhoncus aenean vel elit scelerisque
+     mauris pellentesque pulvinar.
+     Faucibus purus in massa tempor nec. Risus viverra adipiscing at in. Integer feugiat scelerisque varius
+     morbi. Malesuada nunc vel risus commodo viverra maecenas accumsan lacus. Vulputate sapien nec sagittis
+     aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
+     Ultrices tincidunt arcu non sodales neque sodales.`;
+    test.throws(() => new Stack(new App(), 'MyStack', { description: desc}));
     test.done();
   },
 
@@ -284,6 +310,29 @@ export = {
     test.done();
   },
 
+  'CfnSynthesisError is ignored when preparing cross references'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+
+    // WHEN
+    class CfnTest extends CfnResource {
+      public _toCloudFormation() {
+        return new PostResolveToken({
+          xoo: 1234
+        }, props => {
+          validateString(props).assertSuccess();
+        });
+      }
+    }
+
+    new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
+
+    // THEN
+    ConstructNode.prepare(stack.node);
+    test.done();
+  },
+
   'Stacks can be children of other stacks (substack) and they will be synthesized separately'(test: Test) {
     // GIVEN
     const app = new App();
@@ -431,7 +480,7 @@ export = {
 
     test.throws(() => {
       ConstructNode.prepare(app.node);
-    }, /Can only reference cross stacks in the same region and account/);
+    }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();
   },
@@ -602,6 +651,28 @@ export = {
     // THEN
     test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
     test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
+    test.done();
+  },
+
+  'metadata is collected at the stack boundary'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.DISABLE_METADATA_STACK_TRACE]: 'true'
+      }
+    });
+    const parent = new Stack(app, 'parent');
+    const child = new Stack(parent, 'child');
+
+    // WHEN
+    child.node.addMetadata('foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    test.deepEqual(asm.getStack(parent.stackName).findMetadataByType('foo'), []);
+    test.deepEqual(asm.getStack(child.stackName).findMetadataByType('foo'), [
+      { path: '/parent/child', type: 'foo', data: 'bar' }
+    ]);
     test.done();
   }
 };

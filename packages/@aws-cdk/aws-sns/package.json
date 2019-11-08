@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-sns",
-  "version": "1.9.0",
+  "version": "1.15.0",
   "description": "CDK Constructs for AWS SNS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -48,7 +48,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::SNS"
@@ -66,25 +67,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.9.0",
-    "@aws-cdk/aws-s3": "^1.9.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.9.0",
-    "@aws-cdk/aws-events": "^1.9.0",
-    "@aws-cdk/aws-iam": "^1.9.0",
-    "@aws-cdk/core": "^1.9.0"
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.9.0",
-    "@aws-cdk/aws-events": "^1.9.0",
-    "@aws-cdk/aws-iam": "^1.9.0",
-    "@aws-cdk/core": "^1.9.0"
+    "@aws-cdk/aws-cloudwatch": "1.15.0",
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -93,7 +94,28 @@
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-sns.TopicBase",
       "props-physical-name:@aws-cdk/aws-sns.SubscriptionProps",
-      "props-physical-name:@aws-cdk/aws-sns.TopicPolicyProps"
+      "props-physical-name:@aws-cdk/aws-sns.TopicPolicyProps",
+      "docs-public-apis:@aws-cdk/aws-sns.ITopic.topicName",
+      "docs-public-apis:@aws-cdk/aws-sns.TopicPolicyProps",
+      "props-default-doc:@aws-cdk/aws-sns.StringConditions.whitelist",
+      "props-default-doc:@aws-cdk/aws-sns.StringConditions.matchPrefixes",
+      "props-default-doc:@aws-cdk/aws-sns.StringConditions.blacklist",
+      "docs-public-apis:@aws-cdk/aws-sns.SubscriptionFilter.conditions",
+      "docs-public-apis:@aws-cdk/aws-sns.Topic.topicArn",
+      "docs-public-apis:@aws-cdk/aws-sns.Topic.topicName",
+      "docs-public-apis:@aws-cdk/aws-sns.Topic.fromTopicArn",
+      "docs-public-apis:@aws-cdk/aws-sns.TopicBase.topicArn",
+      "docs-public-apis:@aws-cdk/aws-sns.TopicBase.topicName",
+      "docs-public-apis:@aws-cdk/aws-sns.ITopic",
+      "docs-public-apis:@aws-cdk/aws-sns.ITopic.topicArn",
+      "props-default-doc:@aws-cdk/aws-sns.NumericConditions.whitelist",
+      "docs-public-apis:@aws-cdk/aws-sns.ITopicSubscription.bind",
+      "props-default-doc:@aws-cdk/aws-sns.NumericConditions.between",
+      "props-default-doc:@aws-cdk/aws-sns.NumericConditions.betweenStrict",
+      "props-default-doc:@aws-cdk/aws-sns.NumericConditions.greaterThan",
+      "props-default-doc:@aws-cdk/aws-sns.NumericConditions.greaterThanOrEqualTo",
+      "props-default-doc:@aws-cdk/aws-sns.NumericConditions.lessThan",
+      "props-default-doc:@aws-cdk/aws-sns.NumericConditions.lessThanOrEqualTo"
     ]
   },
   "stability": "stable"

@@ -220,7 +220,7 @@ export interface SecurityGroupProps {
  */
 export interface SecurityGroupImportOptions {
   /**
-   * Mark the SecurityGroup as having been created allowing all outbound traffico
+   * Mark the SecurityGroup as having been created allowing all outbound traffic
    *
    * Only if this is set to false will egress rules be added to this security
    * group. Be aware, this would undo any potential "all outbound traffic"
@@ -230,6 +230,17 @@ export interface SecurityGroupImportOptions {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * If a SecurityGroup is mutable CDK can add rules to existing groups
+   *
+   * Beware that making a SecurityGroup immutable might lead to issue
+   * due to missing ingress/egress rules for new resources.
+   *
+   * @experimental
+   * @default true
+   */
+  readonly mutable?: boolean;
 }
 
 /**
@@ -245,7 +256,7 @@ export class SecurityGroup extends SecurityGroupBase {
    * Import an existing security group into this app.
    */
   public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string, options: SecurityGroupImportOptions = {}): ISecurityGroup {
-    class Import extends SecurityGroupBase {
+    class MutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
 
       public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
@@ -256,7 +267,21 @@ export class SecurityGroup extends SecurityGroupBase {
       }
     }
 
-    return new Import(scope, id);
+    class ImmutableImport extends SecurityGroupBase {
+      public securityGroupId = securityGroupId;
+
+      public addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
+        // do nothing
+      }
+
+      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean)  {
+        // do nothing
+      }
+    }
+
+    return options.mutable !== false
+    ? new MutableImport(scope, id)
+    : new ImmutableImport(scope, id);
   }
 
   /**

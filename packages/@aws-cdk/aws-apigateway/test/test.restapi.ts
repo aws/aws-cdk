@@ -1,8 +1,8 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { JsonSchemaType, JsonSchemaVersion } from '../lib';
+import { CfnRestApi, JsonSchemaType, JsonSchemaVersion } from '../lib';
 
 // tslint:disable:max-line-length
 
@@ -97,6 +97,13 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'defaultChild is set correctly'(test: Test) {
+    const stack = new Stack();
+    const api = new apigateway.RestApi(stack, 'my-api');
+    test.ok(api.node.defaultChild instanceof CfnRestApi);
     test.done();
   },
 
@@ -664,6 +671,72 @@ export = {
       ValidateRequestBody: true,
       ValidateRequestParameters: false
     }));
+
+    test.done();
+  },
+  'creates output with given "exportName"'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigateway.RestApi(stack, 'myapi', { endpointExportName: 'my-given-export-name' });
+    api.root.addMethod('GET');
+
+    // THEN
+    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs, {
+      myapiEndpoint8EB17201: {
+        Value: {
+          'Fn::Join': [
+            '',
+            [
+              'https://',
+              {Ref: 'myapi162F20B8'},
+              '.execute-api.',
+              {Ref: 'AWS::Region'},
+              '.',
+              {Ref: 'AWS::URLSuffix'},
+              '/',
+              {Ref: 'myapiDeploymentStageprod329F21FF'},
+              '/'
+            ]
+          ]
+        },
+        Export: {Name: 'my-given-export-name'}
+      }
+    });
+
+    test.done();
+  },
+
+  'creates output when "exportName" is not specified'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigateway.RestApi(stack, 'myapi');
+    api.root.addMethod('GET');
+
+    // THEN
+    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs, {
+      myapiEndpoint8EB17201: {
+        Value: {
+          'Fn::Join': [
+            '',
+            [
+              'https://',
+              {Ref: 'myapi162F20B8'},
+              '.execute-api.',
+              {Ref: 'AWS::Region'},
+              '.',
+              {Ref: 'AWS::URLSuffix'},
+              '/',
+              {Ref: 'myapiDeploymentStageprod329F21FF'},
+              '/'
+            ]
+          ]
+        }
+      }
+    });
 
     test.done();
   }

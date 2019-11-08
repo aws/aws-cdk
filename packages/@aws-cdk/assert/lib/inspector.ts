@@ -1,6 +1,5 @@
 import api = require('@aws-cdk/cx-api');
-import { Assertion } from './assertion';
-import { not } from './assertion';
+import { Assertion, not } from './assertion';
 import { MatchStyle, matchTemplate } from './assertions/match-template';
 
 export abstract class Inspector {
@@ -27,11 +26,20 @@ export abstract class Inspector {
 }
 
 export class StackInspector extends Inspector {
-  constructor(public readonly stack: api.CloudFormationStackArtifact) {
+
+  private readonly template: { [key: string]: any };
+
+  constructor(public readonly stack: api.CloudFormationStackArtifact | object) {
     super();
+
+    this.template = stack instanceof api.CloudFormationStackArtifact ? stack.template : stack;
   }
 
   public at(path: string | string[]): StackPathInspector {
+    if (!(this.stack instanceof api.CloudFormationStackArtifact)) {
+      throw new Error(`Cannot use "expect(stack).at(path)" for a raw template, only CloudFormationStackArtifact`);
+    }
+
     const strPath = typeof path === 'string' ? path : path.join('/');
     return new StackPathInspector(this.stack, strPath);
   }
@@ -41,7 +49,7 @@ export class StackInspector extends Inspector {
   }
 
   public get value(): { [key: string]: any } {
-    return this.stack.template;
+    return this.template;
   }
 }
 

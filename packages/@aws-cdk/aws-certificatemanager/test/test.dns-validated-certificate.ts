@@ -32,7 +32,7 @@ export = {
     }));
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       Handler: 'index.certificateRequestHandler',
-      Runtime: 'nodejs8.10',
+      Runtime: 'nodejs10.x',
       Timeout: 900,
     }));
     expect(stack).to(haveResource('AWS::IAM::Policy', {
