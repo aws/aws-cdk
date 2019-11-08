@@ -310,6 +310,7 @@ export interface DeployOptions {
 
   /**
    * Whether to execute the ChangeSet
+   * Not providing `execute` parameter will result in execution of ChangeSet
    * @default true
    */
   execute?: boolean;
