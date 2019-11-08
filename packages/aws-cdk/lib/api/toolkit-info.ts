@@ -143,7 +143,7 @@ export class ToolkitInfo {
       lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
     }).promise();
 
-    // Activate image scanning on push (helps in identifying software vulnerabilities, no additional charge)
+    // Configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
     await ecr.putImageScanningConfiguration({
       repositoryName,
       imageScanningConfiguration: {
