@@ -72,18 +72,21 @@ flag, the CHANGELOG will include:
   `cdk init`. It will also indicate the context key this flag uses for users who
   wish to enable it manually in their project.
 
-## Open Issues
+## Future Development
 
-### Discoverability
+As a general rule, using a feature flag should be last resort in the case where
+it is impossible to implement backwards compatibility. A feature flag is likely
+to get less usage and therefore mature slower, so it's important to make sure we
+don't abuse this pattern.
 
-How will users discover feature flags in case they want to enable them? We can
-also point them to `cx-api/future.ts`, or we can add a CLI command that will
-print them.
+Still, a valid concern is that we end up with too many feature flags between
+major releases (I would say >20 is too many), in which case it might be required
+to offer additional tools to manage and discover them.
 
-Do we think it might be useful to add a CLI command to that will apply all
-future flags to your `cdk.json` ("cdk modernize")? If we end up with many of
-them this might be desired, but I think for the time being, if there are issues
-resolved by a future flag that people want to pick up, they will find their way
-around GitHub to identify the correct key (I hope). We can always make this
-easier later?
+Here are a few ideas that came up as we designed this. All of these can be
+implemented on top of the proposed mechanism, and should be considered if needed
+in the future (as well as any other idea of course):
 
+- Introduce a CLI command to list all flags and enable/disable them in your `cdk.json`.
+- Aggregate all flags in groups so it will be easier to enable many of them.
+- Define a flag that will allow users to say "I want all feature up until a certain CDK version" (basically enables all features that were available when the version was releases).
