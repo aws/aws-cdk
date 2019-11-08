@@ -44,7 +44,7 @@ export interface ISubnet extends IResource {
 }
 
 /**
- * An absract route table
+ * An abstract route table
  */
 export interface IRouteTable {
   /**
