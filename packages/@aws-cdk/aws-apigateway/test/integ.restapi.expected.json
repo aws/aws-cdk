@@ -602,7 +602,7 @@
         "UsagePlanName": "Basic"
       }
     },
-    "myapiUsagePlanUsagePlanKeyApiKeyF40DC38C": {
+    "myapiUsagePlanUsagePlanKeyResource050D133F": {
       "Type": "AWS::ApiGateway::UsagePlanKey",
       "Properties": {
         "KeyId": {

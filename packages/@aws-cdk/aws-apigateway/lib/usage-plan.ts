@@ -178,7 +178,9 @@ export class UsagePlan extends Resource {
    * @param apiKey
    */
   public addApiKey(apiKey: IApiKey): void {
-    new CfnUsagePlanKey(this, `UsagePlanKey${apiKey.node.id}`, {
+    const prefix = 'UsagePlanKeyResource';
+    const id = this.node.tryFindChild(prefix) ? `${prefix}:${apiKey.node.id}` : prefix;
+    new CfnUsagePlanKey(this, id, {
       keyId: apiKey.keyId,
       keyType: UsagePlanKeyType.API_KEY,
       usagePlanId: this.usagePlanId
