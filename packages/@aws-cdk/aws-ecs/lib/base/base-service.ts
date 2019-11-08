@@ -664,7 +664,7 @@ export interface CloudMapOptions {
   readonly name?: string,
 
   /**
-   * The service discovery namespace created in this service.
+   * The service discovery namespace for the Cloud Map service to attach to the ECS service.
    *
    * @default - the defaultCloudMapNamespace associated to the cluster
    */
