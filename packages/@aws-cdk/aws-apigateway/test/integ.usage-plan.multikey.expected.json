@@ -16,7 +16,7 @@
         }
       }
     },
-    "myusageplanUsagePlanKeyResourcemyapikey25756C43A": {
+    "myusageplanUsagePlanKeyResourcetestapigatewayusageplanmultikeymyapikey29D6460C6AE8DE59D": {
       "Type": "AWS::ApiGateway::UsagePlanKey",
       "Properties": {
         "KeyId": {
