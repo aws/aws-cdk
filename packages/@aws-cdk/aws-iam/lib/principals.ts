@@ -274,11 +274,15 @@ export class CompositePrincipal extends PrincipalBase {
 
   public addPrincipals(...principals: PrincipalBase[]): this {
     for (const p of principals) {
-      if (p.assumeRoleActions !== this.assumeRoleActions) {
-        throw new Error(
+      const err = new Error(
           `Cannot add multiple principals with different "assumeRoleActions". ` +
           `Expecting "${this.assumeRoleActions}", got "${p.assumeRoleActions}"`);
-      }
+      if (p.assumeRoleActions.length !== this.assumeRoleActions.length) { throw err; }
+      p.assumeRoleActions.forEach((v, i) => {
+        if (v !== this.assumeRoleActions[i]) {
+          throw err;
+        }
+      });
 
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
