@@ -156,6 +156,13 @@ export interface RestApiProps extends ResourceOptions {
    * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
    */
   readonly domainName?: DomainNameOptions;
+
+  /**
+   * Export name for the CfnOutput containing the API endpoint
+   *
+   * @default - when no export name is given, output will be created without export
+   */
+  readonly endpointExportName?: string;
 }
 
 /**
@@ -392,7 +399,7 @@ export class RestApi extends Resource implements IRestApi {
         ...props.deployOptions
       });
 
-      new CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
+      new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
         throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
