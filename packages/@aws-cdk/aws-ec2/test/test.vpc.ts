@@ -381,7 +381,7 @@ export = {
     },
     'with natGateway subnets defined'(test: Test) {
       const stack = getTestStack();
-      new Vpc(stack, 'VPC', {
+      const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -403,6 +403,8 @@ export = {
           subnetGroupName: 'egress'
         },
       });
+      test.ok(vpc.natGateway());
+      test.ok(vpc.natGateway(vpc.availabilityZones[1]));
       expect(stack).to(countResources("AWS::EC2::NatGateway", 3));
       for (let i = 1; i < 4; i++) {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
