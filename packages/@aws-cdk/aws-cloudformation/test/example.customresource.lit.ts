@@ -25,7 +25,7 @@ class CopyOperation extends Construct {
     });
 
     new CustomResource(this, 'Resource', {
-      provider: CustomResourceProvider.lambda(lambdaProvider),
+      provider: CustomResourceProvider.fromLambda(lambdaProvider),
       properties: {
         sourceBucketArn: props.sourceBucket.bucketArn,
         targetBucketArn: props.targetBucket.bucketArn,

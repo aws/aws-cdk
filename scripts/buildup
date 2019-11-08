@@ -1,9 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
+if ! [ -x "$(command -v yarn)" ]; then
+  echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
+  exit 1
+fi
+
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 scriptdir=$(cd $(dirname $0) && pwd)
 export PATH=$(cd $scriptdir && npm bin):$PATH
 scope=$(${scriptdir}/current-scope)
-exec lerna run build --scope ${scope} --include-filtered-dependencies
+exec lerna run build --scope ${scope} --include-dependencies

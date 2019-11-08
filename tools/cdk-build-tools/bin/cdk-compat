@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+script_dir="$(cd $(dirname $0) && pwd)"
+repo_root="${script_dir}/../.."
+ignore="${repo_root}/allowed-breaking-changes.txt"
+package_name=$(node -p "require('./package.json').name")
+
+exec npx jsii-diff --keys --ignore-file ${ignore} npm:${package_name}

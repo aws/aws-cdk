@@ -89,7 +89,7 @@ export interface AwsSdkCall {
    *
    * Example for ECS / updateService: 'service.deploymentConfiguration.maximumPercent'
    *
-   * @default return all data
+   * @default - return all data
    */
   readonly outputPath?: string;
 }
@@ -99,21 +99,21 @@ export interface AwsCustomResourceProps {
    * The AWS SDK call to make when the resource is created.
    * At least onCreate, onUpdate or onDelete must be specified.
    *
-   * @default the call when the resource is updated
+   * @default - the call when the resource is updated
    */
   readonly onCreate?: AwsSdkCall;
 
   /**
    * The AWS SDK call to make when the resource is updated
    *
-   * @default no call
+   * @default - no call
    */
   readonly onUpdate?: AwsSdkCall;
 
   /**
    * The AWS SDK call to make when the resource is deleted
    *
-   * @default no call
+   * @default - no call
    */
   readonly onDelete?: AwsSdkCall;
 
@@ -121,7 +121,14 @@ export interface AwsCustomResourceProps {
    * The IAM policy statements to allow the different calls. Use only if
    * resource restriction is needed.
    *
-   * @default extract the permissions from the calls
+   * The custom resource also implements `iam.IGrantable`, making it possible
+   * to use the `grantXxx()` methods.
+   *
+   * As this custom resource uses a singleton Lambda function, it's important
+   * to note the that function's role will eventually accumulate the
+   * permissions/grants from all resources.
+   *
+   * @default - extract the permissions from the calls
    */
   readonly policyStatements?: iam.PolicyStatement[];
 
@@ -133,7 +140,9 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration
 }
 
-export class AwsCustomResource extends cdk.Construct {
+export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
+  public readonly grantPrincipal: iam.IPrincipal;
+
   private readonly customResource: CustomResource;
 
   constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
@@ -150,13 +159,14 @@ export class AwsCustomResource extends cdk.Construct {
     }
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'aws-custom-resource-provider')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.seconds(30),
     });
+    this.grantPrincipal = provider.grantPrincipal;
 
     if (props.policyStatements) {
       for (const statement of props.policyStatements) {
@@ -176,7 +186,7 @@ export class AwsCustomResource extends cdk.Construct {
     const create = props.onCreate || props.onUpdate;
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: 'Custom::AWS',
-      provider: CustomResourceProvider.lambda(provider),
+      provider: CustomResourceProvider.fromLambda(provider),
       properties: {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),

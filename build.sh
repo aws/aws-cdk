@@ -51,6 +51,11 @@ rm -rf $BUILD_INDICATOR
 export MERKLE_BUILD_CACHE=$(mktemp -d)
 trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
+if ! [ -x "$(command -v yarn)" ]; then
+  echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
+  exit 1
+fi
+
 echo "============================================================================================="
 echo "building..."
 time lerna run $bail --stream $runtarget || fail

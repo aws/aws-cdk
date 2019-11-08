@@ -7,6 +7,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
+  - [Pull Request Checklist](#pull-request-checklist)
   - [Step 1: Open Issue](#step-1-open-issue)
   - [Step 2: Design (optional)](#step-2-design-optional)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
@@ -34,6 +35,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [API Compatibility Checks](#api-compatibility-checks)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -45,9 +47,9 @@ For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https:
 with [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install) should be sufficient.
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
-$ ./build.sh
+$ yarn build
 ```
 
 If you wish to produce language bindings through `pack.sh`, you will need the following toolchains
@@ -191,10 +193,10 @@ fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
 ### Main build scripts
 
-The build process is divided into stages, so you can invoke them as needed:
+The build process is divided into stages, so you can invoke them as needed from the root of the repo:
 
-- __`build.sh`__: runs `yarn build` and `yarn test` in all modules (in topological order).
-- __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
+- __`yarn build`__: runs the `build` and `test` commands in all modules (in topological order).
+- __`yarn pack`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
   (running this script requires that you installed the [toolchains](#Toolchains) for all target languages on your
   system).
 
@@ -317,7 +319,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -327,7 +329,7 @@ Install and build:
 
 ```console
 $ ./install.sh
-$ ./build.sh
+$ yarn build
 ```
 
 If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
@@ -341,7 +343,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -479,13 +481,46 @@ run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
 
+### API Compatibility Checks
+
+All stable APIs in the CDK go through a compatibility check during build using
+the [jsii-diff] tool. This tool downloads the latest released version from npm
+and verifies that the APIs in the current build have not changed in a breaking
+way.
+
+[jsii-diff]: https://www.npmjs.com/package/jsii-diff
+
+Compatibility checks always run as part of a full build (`yarn build`).
+
+You can use `yarn compat` to run compatibility checks for all modules:
+
+```shell
+(working directory is repo root)
+$ yarn build
+$ yarn compat
+```
+
+You can also run `compat` from individual package directories:
+
+```shell
+$ cd packages/@aws-cdk/aws-sns
+$ yarn build
+$ yarn compat
+```
+
+The only case where it is legitimate to break a public API is if the existing
+API is a bug that blocked the usage of a feature. This means that by breaking
+this API we will not break anyone, because they weren't able to use it. The file
+`allowed-breaking-changes.txt` in the root of the repo is an exclusion file that
+can be used in these cases.
+
 ## Troubleshooting
 
 Most build issues can be solved by doing a full clean rebuild:
 
 ```shell
 $ git clean -fqdx .
-$ ./build.sh
+$ yarn build
 ```
 
 However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
