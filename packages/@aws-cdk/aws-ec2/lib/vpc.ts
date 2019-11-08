@@ -90,6 +90,12 @@ export interface IVpc extends IResource {
   readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * Return the NAT gateway for given availability zone, the default NAT is returned
+   * if availability zone is not defined.
+   */
+  natGateway(az?: string): string
+
+  /**
    * Return information on the subnets appropriate for the given selection strategy
    *
    * Requires that at least one subnet is matched, throws a descriptive
@@ -298,6 +304,14 @@ abstract class VpcBase extends Resource implements IVpc {
    * If this is set to true, don't error out on trying to select subnets
    */
   protected incompleteSubnetDefinition: boolean = false;
+
+  /**
+   * Return the NAT gateway for given availability zone, the default NAT is returned
+   * if availability zone is not defined.
+   */
+  public natGateway(_?: string): string {
+    throw new Error(`The natGateway feature is only available at ec2.Vpc class at the moment`);
+  }
 
   /**
    * Returns IDs of selected subnets
@@ -1113,6 +1127,14 @@ export class Vpc extends VpcBase {
       vpc: this,
       subnets
     });
+  }
+
+  /**
+   * Return the NAT gateway for given availability zone, the default NAT is returned
+   * if availability zone is not defined.
+   */
+  public natGateway(az?: string): string {
+    return az ? this.natGatewayByAZ[az] : this.natGatewayByAZ[this.availabilityZones[0]];
   }
 
   private createNatGateways(natCount: number, placement: SubnetSelection): void {
