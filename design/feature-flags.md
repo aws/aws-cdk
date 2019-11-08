@@ -1,23 +1,13 @@
-# "Future" Flags
+# Feature Flags
 
 Sometimes we want to introduce new breaking behavior because we believe this is
 the correct default behavior for the CDK. The problem, of course, is that
 breaking changes are only allowed in major versions and those are rare.
 
-This document describes a proposal for a pattern/mechanism called "future
-flags". It will allow us to introduce breaking behavior which is disabled by
-default (so existing projects will not be affected) but enabled automatically
-for new projects created through `cdk init`.
-
-> The name "**future flags**" is a wordplay on "feature flags" (dah!) to
-> represent features that are "from the future" and indicate that these specific
-> feature flags are only disabled by default only until the next release, after
-> which they will either be removed _or_ turned into regular feature flags that
-> people can select if they so desire.
->
-> Having said all that, I am okay if we feel this is unnecessary and we can call
-> these just "feature flags" and not have a semantic distinction between the
-> ones that are "temporary" and permanent.
+This document describes a proposal for a pattern/mechanism called feature flags.
+It will allow us to introduce breaking behavior which is disabled by default (so
+existing projects will not be affected) but enabled automatically for new
+projects created through `cdk init`.
 
 ## Approach
 
@@ -68,14 +58,15 @@ For example:
 Using the module name will allow easy tracing of the code that consumes this
 flag.
 
-The configuration for future flags will be under `cx-api/lib/future.ts` and will
-be encoded as a simple context hash that will be injected by `cdk init` to all
-`cdk.json` files generated for new projects.
+The configuration for which feature flags should be enabled for new projects
+will be under `cx-api/lib/future.ts` and will be encoded as a simple context
+hash that will be injected by `cdk init` to all `cdk.json` files generated for
+new projects.
 
 We will mandate that when a feature or bug fix is introduced under a feature
 flag, the CHANGELOG will include:
 
-- The term `(future flag)` in the title.
+- The suffix `(under feature flag)` in the title.
 - A `BREAKING CHANGES` paragraph will be added which describes the *new*
   behavior but disclaims that it will only apply to new projects created through
   `cdk init`. It will also indicate the context key this flag uses for users who
@@ -85,7 +76,7 @@ flag, the CHANGELOG will include:
 
 ### Discoverability
 
-How will users discover "future flags" in case they want to enable it? We can
+How will users discover feature flags in case they want to enable them? We can
 also point them to `cx-api/future.ts`, or we can add a CLI command that will
 print them.
 
