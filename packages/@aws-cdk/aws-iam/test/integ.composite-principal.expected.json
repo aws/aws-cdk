@@ -6,7 +6,7 @@
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Action": "sts:AssumeRole",
+              "Action": ["sts:AssumeRole"],
               "Effect": "Allow",
               "Principal": {
                 "Service": {

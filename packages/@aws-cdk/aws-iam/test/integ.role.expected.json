@@ -6,7 +6,7 @@
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Action": "sts:AssumeRole",
+              "Action": ["sts:AssumeRole"],
               "Effect": "Allow",
               "Principal": {
                 "Service": "sqs.amazonaws.com"
@@ -65,7 +65,7 @@
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Action": "sts:AssumeRole",
+              "Action": ["sts:AssumeRole"],
               "Condition": {
                 "StringEquals": {
                   "sts:ExternalId": "supply-me"
