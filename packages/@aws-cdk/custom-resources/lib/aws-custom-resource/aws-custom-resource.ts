@@ -134,8 +134,9 @@ export interface AwsCustomResourceProps {
 
   /**
    * The execution role for the Lambda function implementing this custom
-   * resource. The role must be assumable by the `lambda.amazonaws.com`
-   * service principal.
+   * resource provider. This role will apply to all `AwsCustomResource`
+   * instances in the stack. The role must be assumable by the
+   * `lambda.amazonaws.com` service principal.
    *
    * @default - a new role is created
    */
