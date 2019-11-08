@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+if ! [ -x "$(command -v yarn)" ]; then
+  echo "yarn is not installed. Follow the guide to install yarn - https://yarnpkg.com/en/docs/install."
+  exit 1
+fi
+
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 scriptdir=$(cd $(dirname $0) && pwd)
