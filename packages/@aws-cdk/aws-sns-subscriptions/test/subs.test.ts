@@ -550,3 +550,13 @@ test('with filter policy', () => {
     }
   });
 });
+
+test('region property is present on an imported topic', () => {
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
+  const queue = new sqs.Queue(stack, 'myqueue');
+  imported.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    'Region': 'us-east-1'
+  });
+});
