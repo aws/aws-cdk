@@ -1,6 +1,6 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
-import { IAuthorizer } from './authorizer';
+import { CustomAuthorizer, IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
@@ -19,6 +19,7 @@ export interface MethodOptions {
 
   /**
    * Method authorization.
+   * If the value is set of `Custom`, an `authorizer` must also be specified.
    * @default None open access
    */
   readonly authorizationType?: AuthorizationType;
@@ -26,6 +27,7 @@ export interface MethodOptions {
   /**
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
+   * If specified, the value of `authorizationType` must be set to `Custom`
    */
   readonly authorizer?: IAuthorizer;
 
@@ -117,6 +119,18 @@ export class Method extends Resource {
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
     const authorizer = options.authorizer || defaultMethodOptions.authorizer;
+    const authorizationType = options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE;
+
+    if (authorizer && authorizationType !== AuthorizationType.CUSTOM) {
+      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is not set to 'CUSTOM' when an authorizer is specified`);
+    }
+    if (!authorizer && authorizationType === AuthorizationType.CUSTOM) {
+      throw new Error(`${this.resource}/${this.httpMethod} - Authorizer is not specified when the authorization type is set to 'CUSTOM'`);
+    }
+
+    if (CustomAuthorizer.isCustomAuthorizer(authorizer)) {
+      authorizer.restApi = this.restApi;
+    }
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
@@ -124,7 +138,7 @@ export class Method extends Resource {
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
-      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE,
+      authorizationType,
       authorizerId: authorizer && authorizer.authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(props.integration),

@@ -332,6 +332,55 @@ const proxy = resource.addProxy({
 });
 ```
 
+### Authorizers
+
+API Gateway [supports several different authorization types](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html)
+that can be used for controlling access to your Rest APIs.
+
+The following CDK code allows access to an IAM user to a Rest API endpoint, via IAM policies:
+
+```ts
+const getBooks = books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: apigateway.AuthorizationType.IAM
+});
+
+iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
+  statements: [
+    new iam.PolicyStatement({
+      actions: [ 'execute-api:Invoke' ],
+      effect: iam.Effect.Allow,
+      resources: [ getBooks.methodArn() ]
+    })
+  ]
+}))
+```
+
+API Gateway also allows [lambda functions to be used as authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
+
+This module provides L2 support for Lambda Token authorizers. The following code adds a
+token authorizer to a the 'GET' Method of the Book resource.
+
+```ts
+const authFn = new lambda.Function(this, 'booksAuthorizerLambda', {
+  ...
+  ...
+});
+
+const auth = new apigateway.TokenAuthorizer(this, 'booksAuthorizer', {
+  headerName: '<key of the request header that will be used as authorization key>',
+  function: authFn
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizationType: apigateway.AuthorizationType.CUSTOM,
+  authorizer: auth
+});
+```
+
+Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi`
+construct. These options are applied across all `Method`s across all `Resource`s unless an
+override is explicitly specified as part of adding a new `Method`.
+
 ### Deployments
 
 By default, the `RestApi` construct will automatically create an API Gateway

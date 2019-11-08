@@ -2,6 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
+import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
@@ -610,4 +611,67 @@ export = {
 
     test.done();
   },
+
+  'authorizer via default method options'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+    });
+
+    const auth = new apigateway.TokenAuthorizer(stack, 'myauthorizer1', {
+      name: 'myauthorizer1',
+      headerName: 'whoami',
+      function: func
+    });
+
+    const restApi = new apigateway.RestApi(stack, 'myrestapi', {
+      defaultMethodOptions: {
+        authorizationType: apigateway.AuthorizationType.CUSTOM,
+        authorizer: auth
+      }
+    });
+    restApi.root.addMethod('ANY');
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+      Name: 'myauthorizer1',
+      Type: 'TOKEN',
+      RestApiId: stack.resolve(restApi.restApiId)
+    }));
+
+    test.done();
+  },
+
+  'fails when custom authorization type is paired when no authorizer is specified'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const restApi = new apigateway.RestApi(stack, 'myrestapi');
+
+    test.throws(() => {
+      restApi.root.addMethod('ANY', undefined, {
+        authorizationType: apigateway.AuthorizationType.CUSTOM
+      });
+    }, /Authorizer is not specified when the authorization type is set to 'CUSTOM'/);
+
+    test.done();
+  },
+
+  'fails when a custom authorizer is paired when using a non-custom authorization type'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const restApi = new apigateway.RestApi(stack, 'myrestapi');
+
+    test.throws(() => {
+      restApi.root.addMethod('ANY', undefined, {
+        authorizationType: apigateway.AuthorizationType.IAM,
+        authorizer: {
+          authorizerId: 'some-authorizer-id'
+        }
+      });
+    }, /Authorization type is not set to 'CUSTOM' when an authorizer is specified/);
+
+    test.done();
+  }
 };
