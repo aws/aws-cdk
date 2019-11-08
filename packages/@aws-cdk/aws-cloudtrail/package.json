@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudtrail",
-  "version": "1.12.0",
+  "version": "1.15.0",
   "description": "CDK Constructs for AWS CloudTrail",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,8 @@
     "cfn2ts": "cfn2ts",
     "integ": "cdk-integ",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudTrail"
@@ -63,33 +64,44 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.12.0",
-    "aws-sdk": "^2.543.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
+    "@aws-cdk/assert": "1.15.0",
+    "aws-sdk": "^2.567.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
     "colors": "^1.4.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-kms": "^1.12.0",
-    "@aws-cdk/aws-logs": "^1.12.0",
-    "@aws-cdk/aws-s3": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-kms": "1.15.0",
+    "@aws-cdk/aws-logs": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-kms": "^1.12.0",
-    "@aws-cdk/aws-logs": "^1.12.0",
-    "@aws-cdk/aws-s3": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-events": "1.15.0",
+    "@aws-cdk/aws-iam": "1.15.0",
+    "@aws-cdk/aws-kms": "1.15.0",
+    "@aws-cdk/aws-logs": "1.15.0",
+    "@aws-cdk/aws-s3": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.Trail.trailArn",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.Trail.trailSnsTopicArn",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.TrailProps",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.READ_ONLY",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.WRITE_ONLY",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.ALL"
+    ]
+  }
 }

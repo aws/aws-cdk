@@ -42,6 +42,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The minimum value is 1
    *
    * @default 1
    */
@@ -84,6 +85,13 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: NetworkLoadBalancer;
+
+  /**
+   * Listener port of the network load balancer that will serve traffic to the service.
+   *
+   * @default 80
+   */
+  readonly listenerPort?: number;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -181,6 +189,13 @@ export interface NetworkLoadBalancedTaskImageOptions {
    * @default 80
    */
   readonly containerPort?: number;
+
+  /**
+   * The name of a family that this task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
 }
 
 /**
@@ -223,6 +238,9 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
+    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+      throw new Error('You must specify a desiredCount greater than 0');
+    }
     this.desiredCount = props.desiredCount || 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
@@ -234,11 +252,13 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
 
+    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
+
     const targetProps = {
-      port: 80
+      port: listenerPort
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: 80 });
+    this.listener = this.loadBalancer.addListener('PublicListener', { port: listenerPort });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {

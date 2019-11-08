@@ -1,3 +1,114 @@
+# CloudFormation Resource Specification v7.3.0
+
+## New Resource Types
+
+* AWS::Pinpoint::EmailTemplate
+* AWS::Pinpoint::PushTemplate
+* AWS::Pinpoint::SmsTemplate
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Amplify::Branch EnablePullRequestPreview (__added__)
+* AWS::Amplify::Branch PullRequestEnvironmentName (__added__)
+* AWS::ApiGateway::ApiKey Tags (__added__)
+* AWS::ApiGateway::ClientCertificate Tags (__added__)
+* AWS::ApiGateway::DomainName SecurityPolicy (__added__)
+* AWS::ApiGateway::DomainName Tags (__added__)
+* AWS::ApiGateway::RestApi Tags (__added__)
+* AWS::ApiGateway::UsagePlan Tags (__added__)
+* AWS::CodePipeline::CustomActionType Tags (__added__)
+* AWS::CodePipeline::Pipeline Tags (__added__)
+* AWS::Cognito::UserPool AliasAttributes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Cognito::UserPool Schema.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Cognito::UserPool UserPoolName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Cognito::UserPool UsernameAttributes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::TaskDefinition InferenceAccelerators (__added__)
+* AWS::Elasticsearch::Domain LogPublishingOptions (__added__)
+* AWS::Events::Rule EventBusName (__added__)
+* AWS::Glue::Crawler DatabaseName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SNS::Topic Tags (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.GrpcRetryPolicy (__added__)
+* AWS::AppMesh::Route.GrpcRoute (__added__)
+* AWS::AppMesh::Route.GrpcRouteAction (__added__)
+* AWS::AppMesh::Route.GrpcRouteMatch (__added__)
+* AWS::AppMesh::Route.GrpcRouteMetadata (__added__)
+* AWS::AppMesh::Route.GrpcRouteMetadataMatchMethod (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule (__added__)
+* AWS::ECS::TaskDefinition.InferenceAccelerator (__added__)
+* AWS::Elasticsearch::Domain.LogPublishingOption (__added__)
+* AWS::Events::Rule.BatchArrayProperties (__added__)
+* AWS::Events::Rule.BatchParameters (__added__)
+* AWS::Events::Rule.BatchRetryStrategy (__added__)
+* AWS::Glue::Crawler.CatalogTarget (__added__)
+* AWS::Glue::Crawler.DynamoDBTarget (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig EnablePullRequestPreview (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig PullRequestEnvironmentName (__added__)
+* AWS::AppMesh::Route.RouteSpec GrpcRoute (__added__)
+* AWS::AppMesh::Route.RouteSpec Http2Route (__added__)
+* AWS::DLM::LifecyclePolicy.Schedule FastRestoreRule (__added__)
+* AWS::Events::Rule.Target BatchParameters (__added__)
+* AWS::Glue::Crawler.Targets CatalogTargets (__added__)
+* AWS::Glue::Crawler.Targets DynamoDBTargets (__added__)
+* AWS::RDS::DBCluster.DBClusterRole Status (__deleted__)
+* AWS::RDS::DBInstance.DBInstanceRole Status (__deleted__)
+
+
+# CloudFormation Resource Specification v7.1.0
+
+## New Resource Types
+
+* AWS::EC2::TrafficMirrorFilter
+* AWS::EC2::TrafficMirrorFilterRule
+* AWS::EC2::TrafficMirrorSession
+* AWS::EC2::TrafficMirrorTarget
+* AWS::Events::EventBus
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::FSx::FileSystem FileSystemType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::FSx::FileSystem SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MSK::Cluster NumberOfBrokerNodes.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::FSx::FileSystem.SelfManagedActiveDirectoryConfiguration (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources AllocationStrategy (__added__)
+* AWS::Cognito::IdentityPoolRoleAttachment.RoleMapping IdentityProvider (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration SelfManagedActiveDirectoryConfiguration (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## Property Type Changes
+
+* AWS::Serverless::Function.S3Location Version.Required (__changed__)
+  * Old: true
+  * New: false
+
 # CloudFormation Resource Specification v6.3.0
 
 ## New Resource Types
@@ -7,10 +118,6 @@
 * AWS::Cognito::UserPoolResourceServer
 * AWS::Cognito::UserPoolRiskConfigurationAttachment
 * AWS::Cognito::UserPoolUICustomizationAttachment
-* AWS::EC2::TrafficMirrorFilter
-* AWS::EC2::TrafficMirrorFilterRule
-* AWS::EC2::TrafficMirrorSession
-* AWS::EC2::TrafficMirrorTarget
 
 ## Attribute Changes
 

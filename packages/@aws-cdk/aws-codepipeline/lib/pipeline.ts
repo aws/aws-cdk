@@ -223,7 +223,11 @@ export class Pipeline extends PipelineBase {
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
     if (!propsBucket) {
-      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
+      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey', {
+        // remove the key - there is a grace period of a few days before it's gone for good,
+        // that should be enough for any emergency access to the bucket artifacts
+        removalPolicy: RemovalPolicy.DESTROY,
+      });
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
@@ -234,7 +238,7 @@ export class Pipeline extends PipelineBase {
       new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
         aliasName: this.generateNameForDefaultBucketKeyAlias(),
         targetKey: encryptionKey,
-        removalPolicy: RemovalPolicy.RETAIN, // alias should be retained, like the key
+        removalPolicy: RemovalPolicy.DESTROY, // destroy the alias along with the key
       });
     }
     this.artifactBucket = propsBucket;

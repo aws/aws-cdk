@@ -401,7 +401,15 @@
       }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHook2AE13680": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -876,7 +884,11 @@
               {
                 "Ref": "TaskDef54694570"
               },
-              "\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::ecs:runTask.sync\"}}}"
+              "\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::ecs:runTask.sync\"}}}"
             ]
           ]
         },

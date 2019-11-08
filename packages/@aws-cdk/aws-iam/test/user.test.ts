@@ -19,10 +19,16 @@ describe('IAM user', () => {
       password: SecretValue.plainText('1234')
     });
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyUserDC45028B:
-         { Type: 'AWS::IAM::User',
-         Properties: { LoginProfile: { Password: '1234' } } } } });
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyUserDC45028B:
+        {
+          Type: 'AWS::IAM::User',
+          Properties: { LoginProfile: { Password: '1234' } }
+        }
+      }
+    });
   });
 
   test('fails if reset password is required but no password is set', () => {
@@ -44,7 +50,7 @@ describe('IAM user', () => {
     // THEN
     expect(stack).toHaveResource('AWS::IAM::User', {
       ManagedPolicyArns: [
-        { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf" ] ] }
+        { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf"]] }
       ]
     });
   });
@@ -72,6 +78,19 @@ describe('IAM user', () => {
           ]
         ]
       }
+    });
+  });
+
+  test('imported user has an ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserName(stack, 'import', 'MyUserName');
+
+    // THEN
+    expect(stack.resolve(user.userArn)).toStrictEqual({
+      "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":user/MyUserName"]]
     });
   });
 });

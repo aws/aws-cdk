@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-servicediscovery",
-  "version": "1.12.0",
+  "version": "1.15.0",
   "description": "The CDK Construct Library for AWS::ServiceDiscovery",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::ServiceDiscovery"
@@ -63,24 +64,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.12.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^1.12.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^1.12.0",
-    "@aws-cdk/aws-route53": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-ec2": "1.15.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.15.0",
+    "@aws-cdk/aws-route53": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "^1.12.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^1.12.0",
-    "@aws-cdk/aws-route53": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-ec2": "1.15.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.15.0",
+    "@aws-cdk/aws-route53": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -94,7 +95,53 @@
       "props-physical-name:@aws-cdk/aws-servicediscovery.CnameInstanceProps",
       "props-physical-name:@aws-cdk/aws-servicediscovery.IpInstanceProps",
       "props-physical-name:@aws-cdk/aws-servicediscovery.NonIpInstanceProps",
-      "props-physical-name:@aws-cdk/aws-servicediscovery.ServiceProps"
+      "props-physical-name:@aws-cdk/aws-servicediscovery.ServiceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.CnameInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.RoutingPolicy",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.NamespaceType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.HealthCheckType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.DnsRecordType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceAttributes.serviceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceAttributes.serviceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceAttributes.serviceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceAttributes.routingPolicy",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceAttributes.namespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceAttributes.dnsRecordType",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.HttpNamespace.httpNamespaceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.HttpNamespace.httpNamespaceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.HttpNamespace.httpNamespaceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.HttpNamespace.fromHttpNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.InstanceBase",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.privateDnsNamespaceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.privateDnsNamespaceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.privateDnsNamespaceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.publicDnsNamespaceArn",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.publicDnsNamespaceId",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.publicDnsNamespaceName",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.fromPublicDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.Service.fromServiceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.AliasTargetInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.BaseNamespaceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.CnameInstanceBaseProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.ServiceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.HttpNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.HttpNamespaceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.IHttpNamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.IInstance",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.INamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.IPrivateDnsNamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.IPublicDnsNamespace",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.IService",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.IpInstanceBaseProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.IpInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.NonIpInstanceBaseProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.NonIpInstanceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceProps",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceAttributes",
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps"
     ]
   },
   "stability": "stable"

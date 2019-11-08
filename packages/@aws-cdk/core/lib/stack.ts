@@ -18,6 +18,13 @@ const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 export interface StackProps {
   /**
+   * A description of the stack.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
+
+  /**
    * The AWS environment (account/region) where this stack will be deployed.
    *
    * @default - The `default-account` and `default-region` context parameters will be
@@ -210,6 +217,15 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
+
+    if (props.description !== undefined) {
+      // Max length 1024 bytes
+      // Typically 2 bytes per character, may be more for more exotic characters
+      if (props.description.length > 512) {
+        throw new Error(`Stack description must be <= 1024 bytes. Received description: '${props.description}'`);
+      }
+      this.templateOptions.description = props.description;
+    }
 
     this._stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
@@ -516,7 +532,7 @@ export class Stack extends Construct implements ITaggable {
       params = new DockerImageAssetParameters(this.assetParameters, asset.sourceHash);
 
       const metadata: cxapi.ContainerImageAssetMetadataEntry = {
-        id: this.node.uniqueId,
+        id: asset.sourceHash,
         packaging: 'container-image',
         path: asset.directoryName,
         sourceHash: asset.sourceHash,
@@ -844,6 +860,11 @@ export class Stack extends Construct implements ITaggable {
     return output;
 
     function visit(node: IConstruct) {
+      // break off if we reached a node that is not a child of this stack
+      const parent = findParentStack(node);
+      if (parent !== stack) {
+        return;
+      }
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
@@ -853,6 +874,18 @@ export class Stack extends Construct implements ITaggable {
       for (const child of node.node.children) {
         visit(child);
       }
+    }
+
+    function findParentStack(node: IConstruct): Stack | undefined {
+      if (node instanceof Stack && node.parentStack === undefined) {
+        return node;
+      }
+
+      if (!node.node.scope) {
+        return undefined;
+      }
+
+      return findParentStack(node.node.scope);
     }
   }
 

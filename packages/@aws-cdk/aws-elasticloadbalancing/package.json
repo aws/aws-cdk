@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticloadbalancing",
-  "version": "1.12.0",
+  "version": "1.15.0",
   "description": "CDK Constructs for AWS ElasticLoadBalancing",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::ElasticLoadBalancing"
@@ -63,27 +64,44 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.12.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.15.0",
+    "cdk-build-tools": "^1.15.0",
+    "cdk-integ-tools": "^1.15.0",
+    "cfn2ts": "^1.15.0",
+    "pkglint": "^1.15.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-ec2": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-ec2": "1.15.0",
+    "@aws-cdk/core": "1.15.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-elasticloadbalancing.LoadBalancerProps"
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancing.LoadBalancerProps",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancer.addTarget",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancingProtocol.HTTPS",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.ListenerPort.connections",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancer.loadBalancerCanonicalHostedZoneName",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancer.loadBalancerCanonicalHostedZoneNameId",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancer.loadBalancerDnsName",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancer.loadBalancerName",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancer.loadBalancerSourceSecurityGroupGroupName",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancer.loadBalancerSourceSecurityGroupOwnerAlias",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancingProtocol.HTTP",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancing.LoadBalancerListener.externalProtocol",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancing.LoadBalancerListener.internalProtocol",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancing.LoadBalancerListener.policyNames",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancing.LoadBalancerListener.sslCertificateId",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancingProtocol",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancingProtocol.TCP",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancing.LoadBalancingProtocol.SSL"
     ]
   },
   "stability": "stable"

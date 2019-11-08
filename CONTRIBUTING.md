@@ -7,6 +7,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
+  - [Pull Request Checklist](#pull-request-checklist)
   - [Step 1: Open Issue](#step-1-open-issue)
   - [Step 2: Design (optional)](#step-2-design-optional)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
@@ -34,6 +35,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [API Compatibility Checks](#api-compatibility-checks)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -42,12 +44,12 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
-should be sufficient.
+with [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install) should be sufficient.
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
-$ ./build.sh
+$ yarn build
 ```
 
 If you wish to produce language bindings through `pack.sh`, you will need the following toolchains
@@ -191,11 +193,10 @@ fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
 ### Main build scripts
 
-The build process is divided into stages, so you can invoke them as needed:
+The build process is divided into stages, so you can invoke them as needed from the root of the repo:
 
-- __`install.sh`__: installs all external dependencies and symlinks internal dependencies (using `lerna link`).
-- __`build.sh`__: runs `npm build` and `npm test` in all modules (in topological order).
-- __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
+- __`yarn build`__: runs the `build` and `test` commands in all modules (in topological order).
+- __`yarn pack`__: packages all modules to all supported languages and produces a `dist/` directory with all the outputs
   (running this script requires that you installed the [toolchains](#Toolchains) for all target languages on your
   system).
 
@@ -214,11 +215,11 @@ You can also add a few useful aliases to your shell profile:
 # runs an npm script via lerna for a the current module
 alias lr='lerna run --stream --scope $(node -p "require(\"./package.json\").name")'
 
-# runs "npm run build" (build + test) for the current module
+# runs "yarn build" (build + test) for the current module
 alias lb='lr build'
 alias lt='lr test'
 
-# runs "npm run watch" for the current module (recommended to run in a separate terminal session):
+# runs "yarn watch" for the current module (recommended to run in a separate terminal session):
 alias lw='lr watch'
 ```
 
@@ -254,9 +255,9 @@ the [guidelines](./design/aws-guidelines.md).
 
 Here are a few useful commands:
 
- * `npm run awslint` in every module will run __awslint__ for that module.
- * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
- * `scripts/foreach.sh npm run awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
+ * `yarn awslint` in every module will run __awslint__ for that module.
+ * `yarn awslint list` prints all rules (details and rationale in the guidelines doc)
+ * `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
  * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./tools/awslint/README.md)
@@ -275,7 +276,7 @@ between those.
 
 Each module also has an npm script called `cfn2ts`:
 
-* `npm run cfn2ts`: generates L1 for a specific module
+* `yarn cfn2ts`: generates L1 for a specific module
 * `lerna run cfn2ts`: generates L1 for the entire repo
 
 ### scripts/foreach.sh
@@ -318,7 +319,7 @@ This section includes step-by-step descriptions of common workflows.
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -328,7 +329,7 @@ Install and build:
 
 ```console
 $ ./install.sh
-$ ./build.sh
+$ yarn build
 ```
 
 If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
@@ -342,7 +343,7 @@ $ ./pack.sh
 Clone the repo:
 
 ```console
-$ git clone git@github.com:aws/aws-cdk.git
+$ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 ```
 
@@ -409,7 +410,7 @@ One can use the `postinstall` script to symlink this repo:
 ```
 
 This assumes this repo is a sibling of the target repo and will install the CDK as a linked dependency during
-__npm install__.
+__yarn install__.
 
 ### Running integration tests in parallel
 
@@ -437,8 +438,8 @@ $ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > 
 The root [package.json](./package.json) includes global devDependencies (see
 [lerna docs](https://github.com/lerna/lerna#common-devdependencies)) on the topic.
 
- * To add a global dependency, run `npm i --save-dev <dep>` at  the root.
- * To add a dependency for a specific module, run `npm i <dep>` inside the module's directory.
+ * To add a global dependency, run `yarn add <dep> --dev` at  the root.
+ * To add a dependency for a specific module, run `yarn add <dep>` inside the module's directory.
 
 Guidelines:
 
@@ -480,13 +481,46 @@ run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
 
+### API Compatibility Checks
+
+All stable APIs in the CDK go through a compatibility check during build using
+the [jsii-diff] tool. This tool downloads the latest released version from npm
+and verifies that the APIs in the current build have not changed in a breaking
+way.
+
+[jsii-diff]: https://www.npmjs.com/package/jsii-diff
+
+Compatibility checks always run as part of a full build (`yarn build`).
+
+You can use `yarn compat` to run compatibility checks for all modules:
+
+```shell
+(working directory is repo root)
+$ yarn build
+$ yarn compat
+```
+
+You can also run `compat` from individual package directories:
+
+```shell
+$ cd packages/@aws-cdk/aws-sns
+$ yarn build
+$ yarn compat
+```
+
+The only case where it is legitimate to break a public API is if the existing
+API is a bug that blocked the usage of a feature. This means that by breaking
+this API we will not break anyone, because they weren't able to use it. The file
+`allowed-breaking-changes.txt` in the root of the repo is an exclusion file that
+can be used in these cases.
+
 ## Troubleshooting
 
 Most build issues can be solved by doing a full clean rebuild:
 
 ```shell
 $ git clean -fqdx .
-$ ./build.sh
+$ yarn build
 ```
 
 However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
@@ -557,7 +591,7 @@ $ CDK_TEST_BUILD=false lr test
 To debug your CDK application along with the CDK repository,
 
 1. Clone the CDK repository locally and build the repository. See [Workflows](#workflows) section for the different build options.
-2. Build the CDK application using the appropriate npm script (typically, `npm run build`) and then run the `link-all.sh` script as so -
+2. Build the CDK application using the appropriate npm script (typically, `yarn build`) and then run the `link-all.sh` script as so -
 
    ```
    cd /path/to/cdk/app
