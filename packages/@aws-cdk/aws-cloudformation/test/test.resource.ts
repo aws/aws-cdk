@@ -146,7 +146,7 @@ export = testCase({
     const stack = new cdk.Stack(app, 'Test');
     new CustomResource(stack, 'MyCustomResource', {
       resourceType: 'Custom::MyCustomResourceType',
-      provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
+      provider: CustomResourceProvider.fromTopic(new sns.Topic(stack, 'Provider'))
     });
     expect(stack).to(haveResource('Custom::MyCustomResourceType'));
     test.done();
@@ -160,7 +160,7 @@ export = testCase({
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
           resourceType: 'NoCustom::MyCustomResourceType',
-          provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
+          provider: CustomResourceProvider.fromTopic(new sns.Topic(stack, 'Provider'))
         });
       }, /Custom resource type must begin with "Custom::"/);
 
@@ -174,7 +174,7 @@ export = testCase({
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
           resourceType: 'Custom::My Custom?ResourceType',
-          provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
+          provider: CustomResourceProvider.fromTopic(new sns.Topic(stack, 'Provider'))
         });
       }, /Custom resource type name can only include alphanumeric characters and/);
 
@@ -188,7 +188,7 @@ export = testCase({
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
           resourceType: 'Custom::0123456789012345678901234567890123456789012345678901234567891',
-          provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
+          provider: CustomResourceProvider.fromTopic(new sns.Topic(stack, 'Provider'))
         });
       }, /Custom resource type length > 60/);
 
@@ -224,7 +224,7 @@ class TestCustomResource extends cdk.Construct {
 
     this.resource = new CustomResource(this, 'Resource', {
       ...opts,
-      provider: CustomResourceProvider.lambda(singletonLambda),
+      provider: CustomResourceProvider.fromLambda(singletonLambda),
     });
   }
 }
