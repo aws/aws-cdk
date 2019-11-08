@@ -24,7 +24,7 @@ export interface UnknownPrincipalProps {
  * added to it.
  */
 export class UnknownPrincipal implements IPrincipal {
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
   public readonly grantPrincipal: IPrincipal;
   private readonly resource: IConstruct;
 

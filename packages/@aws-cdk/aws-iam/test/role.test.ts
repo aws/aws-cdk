@@ -189,7 +189,7 @@ describe('IAM role', () => {
     const cognitoPrincipal = new FederatedPrincipal(
       'foo',
       { StringEquals: { key: 'value' } },
-      'sts:AssumeSomething');
+      ['sts:AssumeSomething']);
 
     new Role(stack, 'MyRole', { assumedBy: cognitoPrincipal });
 

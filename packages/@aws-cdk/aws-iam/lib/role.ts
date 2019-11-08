@@ -159,7 +159,7 @@ export class Role extends Resource implements IRole {
 
     abstract class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
-      public readonly assumeRoleAction: string = 'sts:AssumeRole';
+      public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
       public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
@@ -242,7 +242,7 @@ export class Role extends Resource implements IRole {
 
   public readonly grantPrincipal: IPrincipal = this;
 
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
 
   /**
    * The assume role policy document associated with this role.
@@ -414,7 +414,7 @@ export interface IRole extends IIdentity {
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   const statement = new PolicyStatement();
   statement.addPrincipals(principal);
-  statement.addActions(principal.assumeRoleAction);
+  statement.addActions(...principal.assumeRoleActions);
 
   if (externalIds.length) {
     statement.addCondition('StringEquals', { 'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds });

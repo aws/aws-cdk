@@ -340,7 +340,7 @@ describe('IAM Role.fromRoleArn', () => {
           "AssumeRolePolicyDocument": {
             "Statement": [
               {
-                "Action": "sts:AssumeRole",
+                "Action": ["sts:AssumeRole"],
                 "Effect": "Allow",
                 "Principal": {
                   "AWS": roleName,

@@ -35,7 +35,7 @@ export interface IPrincipal extends IGrantable {
   /**
    * When this Principal is used in an AssumeRole policy, the action to use.
    */
-  readonly assumeRoleAction: string;
+  readonly assumeRoleActions: string[];
 
   /**
    * Return the policy fragment that identifies this principal in a Policy.
@@ -65,7 +65,7 @@ export abstract class PrincipalBase implements IPrincipal {
   /**
    * When this Principal is used in an AssumeRole policy, the action to use.
    */
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
 
   public addToPolicy(_statement: PolicyStatement): boolean {
     // This base class is used for non-identity principals. None of them
@@ -210,15 +210,15 @@ export class CanonicalUserPrincipal extends PrincipalBase {
 }
 
 export class FederatedPrincipal extends PrincipalBase {
-  public readonly assumeRoleAction: string;
+  public readonly assumeRoleActions: string[];
 
   constructor(
     public readonly federated: string,
     public readonly conditions: {[key: string]: any},
-    assumeRoleAction: string = 'sts:AssumeRole') {
+    assumeRoleActions: string[] = ['sts:AssumeRole']) {
     super();
 
-    this.assumeRoleAction = assumeRoleAction;
+    this.assumeRoleActions = assumeRoleActions;
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
@@ -260,7 +260,7 @@ export class AnyPrincipal extends ArnPrincipal {
 export class Anyone extends AnyPrincipal { }
 
 export class CompositePrincipal extends PrincipalBase {
-  public readonly assumeRoleAction: string;
+  public readonly assumeRoleActions: string[];
   private readonly principals = new Array<PrincipalBase>();
 
   constructor(...principals: PrincipalBase[]) {
@@ -268,16 +268,16 @@ export class CompositePrincipal extends PrincipalBase {
     if (principals.length === 0) {
       throw new Error('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
     }
-    this.assumeRoleAction = principals[0].assumeRoleAction;
+    this.assumeRoleActions = principals[0].assumeRoleActions;
     this.addPrincipals(...principals);
   }
 
   public addPrincipals(...principals: PrincipalBase[]): this {
     for (const p of principals) {
-      if (p.assumeRoleAction !== this.assumeRoleAction) {
+      if (p.assumeRoleActions !== this.assumeRoleActions) {
         throw new Error(
-          `Cannot add multiple principals with different "assumeRoleAction". ` +
-          `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
+          `Cannot add multiple principals with different "assumeRoleActions". ` +
+          `Expecting "${this.assumeRoleActions}", got "${p.assumeRoleActions}"`);
       }
 
       const fragment = p.policyFragment;

@@ -64,7 +64,7 @@ abstract class GroupBase extends Resource implements IGroup {
   public abstract readonly groupArn: string;
 
   public readonly grantPrincipal: IPrincipal = this;
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
 
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;

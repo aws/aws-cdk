@@ -24,7 +24,7 @@ export interface LazyRoleProps extends RoleProps {
  */
 export class LazyRole extends cdk.Resource implements IRole {
   public readonly grantPrincipal: IPrincipal = this;
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
 
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();

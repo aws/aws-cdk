@@ -339,7 +339,7 @@ describe('IAM polocy document', () => {
     const stack = new Stack();
     const arrayPrincipal: IPrincipal = {
       get grantPrincipal() { return this; },
-      assumeRoleAction: 'sts:AssumeRole',
+      assumeRoleActions: ['sts:AssumeRole'],
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
       addToPolicy() { return false; }
     };
@@ -468,7 +468,7 @@ describe('IAM polocy document', () => {
       const p = new CompositePrincipal(new ArnPrincipal('arn')); // assumeRoleAction is "sts:AssumeRule"
 
       // THEN
-      expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')))
+      expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, ['sts:Boom'])))
        .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
     });
   });

@@ -129,7 +129,7 @@ export class User extends Resource implements IIdentity, IUser {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly userName: string = userName;
       public readonly userArn: string = arn;
-      public readonly assumeRoleAction: string = 'sts:AssumeRole';
+      public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
       private defaultPolicy?: Policy;
 
@@ -159,7 +159,7 @@ export class User extends Resource implements IIdentity, IUser {
   }
 
   public readonly grantPrincipal: IPrincipal = this;
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly assumeRoleActions: string[] = ['sts:AssumeRole'];
 
   /**
    * An attribute that represents the user name.
