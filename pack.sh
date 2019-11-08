@@ -44,9 +44,7 @@ for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrapp
 done
 
 # Remove a JSII aggregate POM that may have snuk past
-if [ -d dist/java/software/amazon/jsii ]; then
-  rm -rf dist/java/software/amazon/jsii
-fi
+rm -rf dist/java/software/amazon/jsii
 
 # Get version from lerna
 version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
