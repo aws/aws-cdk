@@ -101,6 +101,7 @@ async function initCommandLine() {
     proxyAddress: argv.proxy,
     ec2creds: argv.ec2creds,
   });
+  
   const configuration = new Configuration(argv);
   await configuration.load();
 
