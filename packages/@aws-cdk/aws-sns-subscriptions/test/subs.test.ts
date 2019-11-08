@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import { SecretValue, Stack } from '@aws-cdk/core';
+import { CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
 import subs = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
@@ -167,6 +167,9 @@ test('queue subscription', () => {
           "Protocol": "sqs",
           "TopicArn": {
             "Ref": "MyTopic86869434"
+          },
+          "Region": {
+            "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "MyTopic86869434" } ] } ]
           },
           "Endpoint": {
             "Fn::GetAtt": [
@@ -399,6 +402,9 @@ test('multiple subscriptions', () => {
               "MyQueueE6CA6235",
               "Arn"
             ]
+          },
+          "Region": {
+            "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "MyTopic86869434" } ] } ]
           }
         }
       },
@@ -557,6 +563,19 @@ test('region property is present on an imported topic', () => {
   imported.addSubscription(new subs.SqsSubscription(queue));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
-    'Region': 'us-east-1'
+    Region: 'us-east-1'
+  });
+});
+
+test('region property on an imported topic as a parameter', () => {
+  const topicArn = new CfnParameter(stack, 'topicArn');
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
+  const queue = new sqs.Queue(stack, 'myqueue');
+  imported.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Region: {
+      "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "topicArn" } ] } ]
+    }
   });
 });

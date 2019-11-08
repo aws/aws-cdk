@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Stack, Token } from '@aws-cdk/core';
+import { Construct, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -50,14 +50,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
-      region: this.regionFromArn(topic),
+      region: Stack.of(topic).parseArn(topic.topicArn).region,
     };
-  }
-
-  private regionFromArn(topic: sns.ITopic): string | undefined {
-    if (!topic.topicArn || Token.isUnresolved(topic.topicArn)) {
-      return undefined;
-    }
-    return Stack.of(topic).parseArn(topic.topicArn).region;
   }
 }
