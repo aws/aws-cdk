@@ -102,6 +102,9 @@
             "SubscriberQueueC193DC66",
             "Arn"
           ]
+        },
+        "Region": {
+          "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Fn::GetAtt":[ "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52", "Outputs.nestedstackstestNestedStack1topic02C2D1254Ref" ] } ] } ]
         }
       }
     },
@@ -120,6 +123,9 @@
             "SubscriberQueueC193DC66",
             "Arn"
           ]
+        },
+        "Region": {
+          "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Fn::GetAtt": [ "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52", "Outputs.nestedstackstestNestedStack1topic1474E5389Ref" ] } ] } ]
         }
       }
     },
@@ -138,6 +144,9 @@
             "SubscriberQueueC193DC66",
             "Arn"
           ]
+        },
+        "Region": {
+          "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Fn::GetAtt": [ "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52", "Outputs.nestedstackstestNestedStack1topic22C710DC4Ref" ] } ] } ]
         }
       }
     },
