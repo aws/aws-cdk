@@ -168,9 +168,6 @@ test('queue subscription', () => {
           "TopicArn": {
             "Ref": "MyTopic86869434"
           },
-          "Region": {
-            "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "MyTopic86869434" } ] } ]
-          },
           "Endpoint": {
             "Fn::GetAtt": [
               "MyQueueE6CA6235",
@@ -402,9 +399,6 @@ test('multiple subscriptions', () => {
               "MyQueueE6CA6235",
               "Arn"
             ]
-          },
-          "Region": {
-            "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "MyTopic86869434" } ] } ]
           }
         }
       },

@@ -53,9 +53,6 @@
             "MyQueueE6CA6235",
             "Arn"
           ]
-        },
-        "Region": {
-          "Fn::Select": [ 3, { "Fn::Split": [ ":", { "Ref": "MyTopic86869434" } ] } ]
         }
       }
     }

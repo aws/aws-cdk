@@ -50,7 +50,14 @@ export class SqsSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
-      region: Stack.of(topic).parseArn(topic.topicArn).region,
+      region: this.regionFromArn(topic),
     };
+  }
+
+  private regionFromArn(topic: sns.ITopic): string | undefined {
+    if (topic instanceof sns.Topic) {
+      return undefined;
+    }
+    return Stack.of(topic).parseArn(topic.topicArn).region;
   }
 }
