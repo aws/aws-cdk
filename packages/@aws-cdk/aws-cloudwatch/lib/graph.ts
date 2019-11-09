@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/core');
-import { IAlarm } from "./alarm";
-import {TimeSeriesJson} from "./timeseries";
-import { ConcreteWidget } from "./widget";
+import { IAlarm } from './alarm';
+import {TimeSeriesJson} from './timeseries';
+import { ConcreteWidget } from './widget';
 
 /**
  * Basic properties for widgets that display metrics

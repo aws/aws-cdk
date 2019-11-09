@@ -2,7 +2,7 @@ import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import {BaseAlarmProps, CreateAlarmOptions} from "./metric";
+import {BaseAlarmProps, CreateAlarmOptions} from './metric';
 import { IMetric } from './metric-types';
 import { parseStatistic } from './util.statistic';
 
@@ -25,7 +25,7 @@ export interface ComplexAlarmProps extends BaseAlarmProps {
   /**
    * TODO
    */
-  readonly metrics: CfnAlarm.MetricDataQueryProperty[]
+  readonly alarmTimeSeries: CfnAlarm.MetricDataQueryProperty[]
 }
 
 /**
@@ -86,7 +86,7 @@ export enum TreatMissingData {
 }
 
 function isComplexAlarm(props: ComplexAlarmProps | SimpleAlarmProps): props is ComplexAlarmProps {
-  return (props as ComplexAlarmProps).metrics !== undefined;
+  return (props as ComplexAlarmProps).alarmTimeSeries !== undefined;
 }
 
 /**
@@ -123,8 +123,9 @@ export class Alarm extends Resource implements IAlarm {
 
   /**
    * The list of metrics. Used if the alarms requires more than one metric.
+   * @attribute todo
    */
-  public readonly metrics?: CfnAlarm.MetricDataQueryProperty[];
+  public readonly alarmTimeSeries?: CfnAlarm.MetricDataQueryProperty[];
 
   private alarmActionArns?: string[];
   private insufficientDataActionArns?: string[];
@@ -144,9 +145,10 @@ export class Alarm extends Resource implements IAlarm {
 
     let config;
     let label;
+    // TODO: refactor
     if (isComplexAlarm(props)) {
-      config = dropUndef(props);
-      label = '';
+      this.alarmTimeSeries = props.alarmTimeSeries;
+      config = dropUndef({...props, metrics: props.alarmTimeSeries, alarmTimeSeries: undefined});
     } else {
       this.metric = props.metric;
       const alarmConfig = props.metric.toAlarmConfig();

@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/core');
 import { ComparisonOperator, TreatMissingData } from './alarm';
 import { CfnAlarm } from './cloudwatch.generated';
 import { Dimension, IMetric, MetricAlarmConfig, Unit } from './metric-types';
-import {AlarmTimeSeriesProps, MetricJson, TimeSeriesJson, ToJsonProps} from "./timeseries";
+import {AlarmTimeSeriesProps, MetricJson, TimeSeriesJson, ToJsonProps} from './timeseries';
 import { normalizeStatistic, parseStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};

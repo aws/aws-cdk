@@ -223,7 +223,7 @@ export = {
 
     // WHEN
     new Alarm(stack, 'Alarm', {
-      metrics: metricDataQueryList,
+      alarmTimeSeries: metricDataQueryList,
       threshold: 1000,
       evaluationPeriods: 2
     });
