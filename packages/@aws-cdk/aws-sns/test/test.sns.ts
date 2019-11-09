@@ -214,7 +214,8 @@ export = {
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
       period: cdk.Duration.minutes(5),
-      statistic: 'Sum'
+      statistic: 'Sum',
+      id: 'numberofmessagespublished'
     });
 
     test.deepEqual(stack.resolve(topic.metricPublishSize()), {
@@ -222,7 +223,8 @@ export = {
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'publishsize'
     });
 
     test.done();

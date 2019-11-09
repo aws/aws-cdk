@@ -279,7 +279,8 @@ export = {
       namespace: 'AWS/VPN',
       metricName: 'TunnelState',
       period: Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'tunnelstate'
     });
 
     test.done();
@@ -294,7 +295,8 @@ export = {
       namespace: 'AWS/VPN',
       metricName: 'TunnelDataOut',
       period: Duration.minutes(5),
-      statistic: 'Sum'
+      statistic: 'Sum',
+      id: 'tunneldataout'
     });
 
     test.done();

@@ -345,7 +345,8 @@ export = {
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
       period: Duration.minutes(5),
-      statistic: 'Sum'
+      statistic: 'Sum',
+      id: 'numberofmessagessent'
     });
 
     test.deepEqual(stack.resolve(queue.metricSentMessageSize()), {
@@ -353,7 +354,8 @@ export = {
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',
       period: Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'sentmessagesize'
     });
 
     test.done();

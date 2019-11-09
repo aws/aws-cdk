@@ -1152,6 +1152,7 @@ export = {
       metricName: 'Errors',
       period: cdk.Duration.minutes(5),
       statistic: 'Sum',
+      id: 'errors'
     });
 
     test.done();
