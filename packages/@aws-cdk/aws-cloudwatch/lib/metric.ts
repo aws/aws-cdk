@@ -80,6 +80,12 @@ export interface MetricProps extends CommonMetricOptions {
 }
 
 /**
+ * Properties of a metric that can be changed
+ */
+export interface MetricOptions extends CommonMetricOptions {
+}
+
+/**
  * A metric emitted by a service
  *
  * The metric is a combination of a metric identifier (namespace, name and dimensions)
