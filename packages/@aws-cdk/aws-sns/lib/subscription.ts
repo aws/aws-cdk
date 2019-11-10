@@ -34,6 +34,13 @@ export interface SubscriptionOptions {
    * @default - all messages are delivered
    */
   readonly filterPolicy?: { [attribute: string]: SubscriptionFilter };
+
+  /**
+   * The region where the topic resides, in the case of cross-region subscriptions
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-region
+   * @default - the region where the CloudFormation stack is being deployed.
+   */
+  readonly region?: string;
 }
 /**
  * Properties for creating a new subscription
@@ -85,6 +92,7 @@ export class Subscription extends Resource {
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
       filterPolicy: this.filterPolicy,
+      region: props.region,
     });
 
   }
