@@ -20,11 +20,19 @@ const metric = new cloudwatch.Metric({
   dimensions: { QueueName: queue.getAtt('QueueName') }
 });
 
+const mathExpression = new cloudwatch.Expression({expression: 'SUM(METRICS())', id: 'e1'});
+
 const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
   metric,
   threshold: 100,
   evaluationPeriods: 3,
   datapointsToAlarm: 2
+});
+
+const complexAlarm = new cloudwatch.Alarm(stack, 'ComplexAlarm', {
+  alarmTimeSeries: [metric, mathExpression].map((ats, index) => ats.toAlarmTimeSeries({returnData: index === 1})),
+  threshold: 100,
+  evaluationPeriods: 3
 });
 
 const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
@@ -49,6 +57,15 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current messages in queue',
   timeSeries: [metric.toJson()]
+}));
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  timeSeries: [metric, mathExpression].map(ts => ts.toJson()),
+  title: 'My time series'
+}));
+
+dashboard.addWidgets(new cloudwatch.AlarmWidget({
+  alarm: complexAlarm
 }));
 
 app.synth();

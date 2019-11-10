@@ -27,6 +27,44 @@
         "Threshold": 100
       }
     },
+    "ComplexAlarmA8F1D103": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 3,
+        "Metrics": [
+          {
+            "Id": "approximatenumberofmessagesvisible",
+            "MetricStat": {
+              "Metric": {
+                "Dimensions": [
+                  {
+                    "Name": "QueueName",
+                    "Value": {
+                      "Fn::GetAtt": [
+                        "queue",
+                        "QueueName"
+                      ]
+                    }
+                  }
+                ],
+                "MetricName": "ApproximateNumberOfMessagesVisible",
+                "Namespace": "AWS/SQS"
+              },
+              "Period": 300,
+              "Stat": "Average"
+            },
+            "ReturnData": false
+          },
+          {
+            "Expression": "SUM(METRICS())",
+            "Id": "e1",
+            "ReturnData": true
+          }
+        ],
+        "Threshold": 100
+      }
+    },
     "DashCCD7F836": {
       "Type": "AWS::CloudWatch::Dashboard",
       "Properties": {
@@ -67,7 +105,29 @@
                   "QueueName"
                 ]
               },
-              "\",{\"period\":300,\"stat\":\"Average\",\"yAxis\":\"left\",\"id\":\"approximatenumberofmessagesvisible\"}]]}}]}"
+              "\",{\"period\":300,\"stat\":\"Average\",\"yAxis\":\"left\",\"id\":\"approximatenumberofmessagesvisible\"}]]}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":17,\"properties\":{\"view\":\"timeSeries\",\"title\":\"My time series\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
+              "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+              {
+                "Fn::GetAtt": [
+                  "queue",
+                  "QueueName"
+                ]
+              },
+              "\",{\"period\":300,\"stat\":\"Average\",\"yAxis\":\"left\",\"id\":\"approximatenumberofmessagesvisible\"}],[{\"expression\":\"SUM(METRICS())\",\"id\":\"e1\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":23,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
+              "\",\"annotations\":{\"alarms\":[\"",
+              {
+                "Fn::GetAtt": [
+                  "ComplexAlarmA8F1D103",
+                  "Arn"
+                ]
+              },
+              "\"]},\"yAxis\":{}}}]}"
             ]
           ]
         },
