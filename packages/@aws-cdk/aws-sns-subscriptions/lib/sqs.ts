@@ -55,6 +55,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
   }
 
   private regionFromArn(topic: sns.ITopic): string | undefined {
+    // no need to specify `region` for topics defined within the same stack
     if (topic instanceof sns.Topic) {
       return undefined;
     }
