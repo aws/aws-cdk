@@ -161,7 +161,7 @@ export class Alarm extends Resource implements IAlarm {
           extendedStatistic: renderIfExtendedStatistic(props.statistic)
         })
       };
-      // tslint:disable-next-line:max-line-length
+
       label = `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * alarmConfig.period)}`;
     }
 
