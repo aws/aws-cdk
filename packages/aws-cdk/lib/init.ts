@@ -18,7 +18,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -39,7 +39,8 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
+
+  await initializeProject(template, language, canUseNetwork, generateOnly);
 }
 
 /**
@@ -116,7 +117,7 @@ export class InitTemplate {
       } else if (file.match(/^.*\.template\.[^.]+$/)) {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
         continue;
-      } else if (file.match(/^.*\.hook\.[^.]+$/)) {
+      } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
         await this.installProcessed(fromFile, path.join(targetDirectory, "tmp", file), project);
         continue;
       } else {
@@ -211,12 +212,14 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean) {
   await assertIsEmptyDirectory();
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, process.cwd());
-  await initializeGitRepository();
-  await postInstall(language, canUseNetwork);
+  if (!generateOnly) {
+    await initializeGitRepository();
+    await postInstall(language, canUseNetwork);
+  }
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
