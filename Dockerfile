@@ -2,7 +2,7 @@ FROM amazonlinux:2
 
 WORKDIR /app
 
-ENV NODE_VERSION 10.3.0
+ENV NODE_VERSION 10.17.0
 ENV YARN_VERSION 1.19.1
 
 RUN yum -y --security update \
