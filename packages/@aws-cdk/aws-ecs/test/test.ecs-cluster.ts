@@ -1174,7 +1174,8 @@ export = {
       namespace: 'AWS/ECS',
       metricName: 'CPUReservation',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'cpureservation'
     });
 
     test.deepEqual(stack.resolve(cluster.metricMemoryReservation()), {
@@ -1184,7 +1185,8 @@ export = {
       namespace: 'AWS/ECS',
       metricName: 'MemoryReservation',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'memoryreservation'
     });
 
     test.deepEqual(stack.resolve(cluster.metric("myMetric")), {
@@ -1194,7 +1196,8 @@ export = {
       namespace: 'AWS/ECS',
       metricName: 'myMetric',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'mymetric'
     });
 
     test.done();

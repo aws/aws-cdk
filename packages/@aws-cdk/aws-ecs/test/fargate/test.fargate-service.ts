@@ -1349,7 +1349,8 @@ export = {
       namespace: 'AWS/ECS',
       metricName: 'CPUUtilization',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'cpuutilization'
     });
 
     test.done();

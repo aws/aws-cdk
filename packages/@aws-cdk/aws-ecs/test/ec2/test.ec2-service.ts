@@ -1848,7 +1848,8 @@ export = {
       namespace: 'AWS/ECS',
       metricName: 'MemoryUtilization',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'memoryutilization'
     });
 
     test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
@@ -1859,7 +1860,8 @@ export = {
       namespace: 'AWS/ECS',
       metricName: 'CPUUtilization',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
+      id: 'cpuutilization'
     });
 
     test.done();
