@@ -284,3 +284,26 @@ test('implements IGrantable', () => {
     }
   });
 });
+
+test('can use existing role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/CoolRole');
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: 'id'
+    },
+    role
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Role: 'arn:aws:iam::123456789012:role/CoolRole'
+  });
+
+  expect(stack).not.toHaveResource('AWS::IAM::Role');
+});
