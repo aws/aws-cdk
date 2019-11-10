@@ -1,5 +1,5 @@
-import {CfnAlarm} from "./cloudwatch.generated";
-import {AlarmTimeSeriesProps, ITimeSeries, TimeSeriesJson, ToJsonProps} from "./timeseries";
+import { CfnAlarm } from "./cloudwatch.generated";
+import { AlarmTimeSeriesProps, ITimeSeries, TimeSeriesJson, ToJsonProps } from "./timeseries";
 import MetricDataQueryProperty = CfnAlarm.MetricDataQueryProperty;
 
 /**

@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/core');
 import { IAlarm } from './alarm';
-import {TimeSeriesJson} from './timeseries';
+import { TimeSeriesJson } from './timeseries';
 import { ConcreteWidget } from './widget';
 
 /**

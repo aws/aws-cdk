@@ -2,8 +2,8 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
 import { ComparisonOperator, TreatMissingData } from './alarm';
 import { CfnAlarm } from './cloudwatch.generated';
-import { Dimension, IMetric, MetricAlarmConfig, Unit } from './metric-types';
-import {AlarmTimeSeriesProps, MetricJson, TimeSeriesJson, ToJsonProps} from './timeseries';
+import { Dimension, IMetric, MetricAlarmConfig, MetricRenderingProperties, Unit } from './metric-types';
+import { AlarmTimeSeriesProps, MetricJson, TimeSeriesJson, ToJsonProps } from './timeseries';
 import { normalizeStatistic, parseStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
@@ -163,15 +163,9 @@ export class Metric implements IMetric {
 
   public toJson(props: ToJsonProps = {}): TimeSeriesJson {
     const dimensions = this.dimensionsAsList().map(d => [d.name, d.value]);
-    const ms: string[] = ([] as string[]).concat(...dimensions);
+    const dims = ([] as any).concat(...dimensions);
 
-    // TODO: fix error, ...ms fails
-    const array: MetricJson = [
-      this.namespace,
-      this.metricName,
-    ];
-
-    array.push(...ms, {
+    const renderingProperties: MetricRenderingProperties = {
       color: this.color,
       label: this.label,
       period: this.period.toSeconds(),
@@ -179,9 +173,14 @@ export class Metric implements IMetric {
       visible: props.visible,
       yAxis: props.yAxis || "left",
       id: this.id
-    });
+    };
 
-    return array;
+    return [
+      this.namespace,
+      this.metricName,
+      ...dims,
+      renderingProperties
+    ] as MetricJson;
   }
 
   public toAlarmConfig(): MetricAlarmConfig {

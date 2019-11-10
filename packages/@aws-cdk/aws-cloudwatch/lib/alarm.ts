@@ -2,7 +2,7 @@ import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import {BaseAlarmProps, CreateAlarmOptions} from './metric';
+import { BaseAlarmProps, CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
 import { parseStatistic } from './util.statistic';
 

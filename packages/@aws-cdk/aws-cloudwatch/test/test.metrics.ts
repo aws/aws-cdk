@@ -30,5 +30,5 @@ export = {
     }));
 
     test.done();
-  }
+  },
 };

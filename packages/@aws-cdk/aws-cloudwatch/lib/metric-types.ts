@@ -1,4 +1,4 @@
-import {ITimeSeries} from "./timeseries";
+import { ITimeSeries } from "./timeseries";
 
 /**
  * Interface for metrics

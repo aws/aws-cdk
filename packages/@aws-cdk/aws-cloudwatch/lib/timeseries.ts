@@ -1,9 +1,9 @@
-import {CfnAlarm} from "./cloudwatch.generated";
-import {IExpression} from "./expression";
-import {MetricRenderingProperties, yAxisType} from "./metric-types";
+import { CfnAlarm } from "./cloudwatch.generated";
+import { IExpression } from "./expression";
+import { yAxisType } from "./metric-types";
 import MetricDataQueryProperty = CfnAlarm.MetricDataQueryProperty;
 
-export type MetricJson = [string, string, ...Array<string|MetricRenderingProperties>];
+export type MetricJson = [string, string, ...any[]];
 export type ExpressionJson = [IExpression];
 export type TimeSeriesJson = ExpressionJson|MetricJson;
 
