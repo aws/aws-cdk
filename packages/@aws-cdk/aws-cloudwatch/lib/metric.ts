@@ -162,8 +162,8 @@ export class Metric implements IMetric {
   }
 
   public toJson(props: ToJsonProps = {}): TimeSeriesJson {
-    const dimensions = this.dimensionsAsList().map(d => [d.name, d.value]);
-    const dims = ([] as any).concat(...dimensions);
+    const dimensions: any[] = this.dimensionsAsList().map(d => [d.name, d.value]);
+    const dims = [].concat(...dimensions);
 
     const renderingProperties: MetricRenderingProperties = {
       color: this.color,
@@ -175,12 +175,16 @@ export class Metric implements IMetric {
       id: this.id
     };
 
-    return [
+    // Todo: refactor
+    const array: MetricJson = [
       this.namespace,
       this.metricName,
       ...dims,
-      renderingProperties
-    ] as MetricJson;
+      // renderingProperties
+    ];
+    array.push(renderingProperties);
+
+    return array;
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
