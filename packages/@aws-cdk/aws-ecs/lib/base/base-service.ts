@@ -456,7 +456,7 @@ export abstract class BaseService extends Resource
    * @returns The created CloudMap service
    */
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.defaultCloudMapNamespace;
+    const sdNamespace = options.cloudMapNamespace !== undefined ? options.cloudMapNamespace : this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }
@@ -664,9 +664,16 @@ export interface CloudMapOptions {
   readonly name?: string,
 
   /**
+   * The service discovery namespace for the Cloud Map service to attach to the ECS service.
+   *
+   * @default - the defaultCloudMapNamespace associated to the cluster
+   */
+  readonly cloudMapNamespace?: cloudmap.INamespace;
+
+  /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
-   * @default: A
+   * @default DnsRecordType.A
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 
