@@ -11,6 +11,11 @@ const CONSTRUCT_CLASS = `${CORE}.Construct`;
 const TAG_TYPE = `${CORE}.TagType`;
 const TAG_MANAGER = `${CORE}.TagManager`;
 
+enum TreeAttributes {
+  CFN_TYPE = 'aws:cdk:cloudformation:type',
+  CFN_PROPS = 'aws:cdk:cloudformation:props'
+}
+
 interface Dictionary<T> { [key: string]: T; }
 
 /**
@@ -104,7 +109,8 @@ export default class CodeGenerator {
 
   private openClass(name: genspec.CodeName, superClasses?: string): string {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
-    this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
+    const implementsPostfix = ` implements ${CORE}.IInspectable`;
+    this.code.openBlock(`export class ${name.className}${extendsPostfix}${implementsPostfix}`);
     return name.className;
   }
 
@@ -305,6 +311,9 @@ export default class CodeGenerator {
     }
     this.code.closeBlock();
 
+    this.code.line();
+    this.emitTreeAttributes(resourceName);
+
     // setup render properties
     if (propsType && propMap) {
       this.code.line();
@@ -336,6 +345,30 @@ export default class CodeGenerator {
     this.code.closeBlock();
     this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
     this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
+    this.code.closeBlock();
+  }
+
+  /**
+   * Emit the function that is going to implement the IInspectable interface.
+   *
+   * The generated code looks like this:
+   * public inspect(inspector: cdk.TreeInspector) {
+   *     inspector.addAttribute("aws:cdk:cloudformation:type", CfnManagedPolicy.CFN_RESOURCE_TYPE_NAME);
+   *     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
+   * }
+   *
+   */
+  private emitTreeAttributes(resource: genspec.CodeName): void {
+    this.code.line('/**');
+    this.code.line(' * Examines the CloudFormation resource and discloses attributes.');
+    this.code.line(' *');
+    this.code.line(' * @param inspector - tree inspector to collect and process attributes');
+    this.code.line(' *');
+    this.code.line(' * @stability experimental');
+    this.code.line(' */');
+    this.code.openBlock(`public inspect(inspector: ${CORE}.TreeInspector)`);
+    this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_TYPE}", ${resource.className}.CFN_RESOURCE_TYPE_NAME);`);
+    this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_PROPS}", this.cfnProperties);`);
     this.code.closeBlock();
   }
 

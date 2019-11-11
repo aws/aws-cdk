@@ -3,6 +3,7 @@ import path = require('path');
 
 import { ArtifactType } from '@aws-cdk/cx-api';
 import { Construct, IConstruct, ISynthesisSession } from '../construct';
+import { IInspectable, TreeInspector } from "../tree";
 
 const FILE_PATH = 'tree.json';
 
@@ -23,10 +24,12 @@ export class TreeMetadata extends Construct {
 
     const visit = (construct: IConstruct): Node => {
       const children = construct.node.children.map(visit);
+      const childrenMap = children.reduce((map, child) => Object.assign(map, { [child.id]: child }), {});
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
-        children: children.length === 0 ? undefined : children,
+        children: children.length === 0 ? undefined : childrenMap,
+        attributes: this.getAttributes(construct)
       };
 
       lookup[node.path] = node;
@@ -49,10 +52,27 @@ export class TreeMetadata extends Construct {
       }
     });
   }
+
+  private getAttributes(construct: IConstruct): { [key: string]: any } | undefined {
+    // check if a construct implements IInspectable
+    function canInspect(inspectable: any): inspectable is IInspectable {
+      return inspectable.inspect !== undefined;
+    }
+
+    const inspector = new TreeInspector();
+
+    // get attributes from the inspector
+    if (canInspect(construct)) {
+      construct.inspect(inspector);
+      return inspector.attributes;
+    }
+    return undefined;
+  }
 }
 
 interface Node {
   id: string;
   path: string;
-  children?: Node[];
+  children?: { [key: string]: Node };
+  attributes?: { [key: string]: any };
 }
