@@ -57,6 +57,8 @@ All notable changes to this project will be documented in this file. See [standa
 * **init/csharp:** correct cdk.json 'app' command ([#4778](https://github.com/aws/aws-cdk/issues/4778)) ([d89504f](https://github.com/aws/aws-cdk/commit/d89504fec52df8cb9378c8f2b10eb0fce236c510))
 * **ssm:** malformed ARNs for parameters with physical names that use path notation ([#4842](https://github.com/aws/aws-cdk/issues/4842)) ([43f276a](https://github.com/aws/aws-cdk/commit/43f276ad526cb0e257bcfd1d5061be9624b945c4))
 
+In addition to the above, several bugs in the Python, .NET and Java release of the CDK have been addressed.
+
 ## [1.15.0](https://github.com/aws/aws-cdk/compare/v1.14.0...v1.15.0) (2019-10-28)
 
 
