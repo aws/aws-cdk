@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/core",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "AWS Cloud Development Kit Core Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -150,18 +150,18 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/lodash": "^4.14.146",
-    "cdk-build-tools": "^1.15.0",
-    "cfn2ts": "^1.15.0",
+    "cdk-build-tools": "1.16.0",
+    "cfn2ts": "1.16.0",
     "fast-check": "^1.18.1",
     "lodash": "^4.17.15",
-    "pkglint": "^1.15.0"
+    "pkglint": "1.16.0"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "1.15.0"
+    "@aws-cdk/cx-api": "1.16.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cx-api": "1.15.0"
+    "@aws-cdk/cx-api": "1.16.0"
   },
   "engines": {
     "node": ">= 10.3.0"
