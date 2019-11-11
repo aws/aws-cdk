@@ -970,6 +970,11 @@ export class Vpc extends VpcBase {
   private networkBuilder: NetworkBuilder;
 
   /**
+   * Mapping of NatGateway by AZ
+   */
+  private natGatewayByAZ: { [az: string]: string } = {};
+
+  /**
    * Subnet configurations for this VPC
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
@@ -1148,7 +1153,7 @@ export class Vpc extends VpcBase {
       }
     }
 
-    provider.configureNat({
+    this.natGatewayByAZ = provider.configureNat({
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
       privateSubnets: this.privateSubnets as PrivateSubnet[]

@@ -44,7 +44,7 @@ export abstract class NatProvider {
   /**
    * Called by the VPC to configure NAT
    */
-  public abstract configureNat(options: ConfigureNatOptions): void;
+  public abstract configureNat(options: ConfigureNatOptions): { [az: string]: string };
 }
 
 /**
@@ -111,7 +111,7 @@ export interface NatInstanceProps {
 }
 
 class NatGateway extends NatProvider {
-  public configureNat(options: ConfigureNatOptions) {
+  public configureNat(options: ConfigureNatOptions): { [az: string]: string } {
     // Create the NAT gateways
     const gatewayIds = new PrefSet<string>();
     for (const sub of options.natSubnets) {
@@ -120,13 +120,16 @@ class NatGateway extends NatProvider {
     }
 
     // Add routes to them in the private subnets
+    const gateways: { [az: string]: string } = {}
     for (const sub of options.privateSubnets) {
       sub.addRoute('DefaultRoute', {
         routerType: RouterType.NAT_GATEWAY,
         routerId: gatewayIds.pick(sub.availabilityZone),
         enablesInternetConnectivity: true,
       });
+      gateways[sub.availabilityZone] = gatewayIds.pick(sub.availabilityZone)
     }
+    return gateways
   }
 }
 
@@ -135,7 +138,7 @@ class NatInstance extends NatProvider {
     super();
   }
 
-  public configureNat(options: ConfigureNatOptions) {
+  public configureNat(options: ConfigureNatOptions): { [az: string]: string } {
     // Create the NAT instances. They can share a security group and a Role.
     const instances = new PrefSet<Instance>();
     const machineImage = this.props.machineImage || new NatInstanceImage();
@@ -167,13 +170,16 @@ class NatInstance extends NatProvider {
     }
 
     // Add routes to them in the private subnets
+    const gateways: { [az: string]: string } = {}
     for (const sub of options.privateSubnets) {
       sub.addRoute('DefaultRoute', {
         routerType: RouterType.INSTANCE,
         routerId: instances.pick(sub.availabilityZone).instanceId,
         enablesInternetConnectivity: true,
       });
+      gateways[sub.availabilityZone] = instances.pick(sub.availabilityZone).instanceId
     }
+    return gateways
   }
 }
 
