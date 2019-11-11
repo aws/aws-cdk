@@ -1,20 +1,7 @@
 /**
- * Interface for inspecting a construct and adding metadata into the construct tree
- */
-export interface ITreeInspector {
-  /**
-   * Adds key-value pairs of metadata as attributes
-   *
-   * @param key - key for metadata
-   * @param value - value of metadata
-   */
-  addAttribute(key: string, value: any): void;
-}
-
-/**
  * Inspector that maintains an attribute bag
  */
-export class TreeInspector implements ITreeInspector {
+export class TreeInspector {
   /**
    * Represents the bag of attributes as key-value pairs.
    */
@@ -42,5 +29,5 @@ export interface IInspectable {
    *
    * @param inspector - tree inspector to collect and process attributes
    */
-  inspect(inspector: ITreeInspector): void;
+  inspect(inspector: TreeInspector): void;
 }

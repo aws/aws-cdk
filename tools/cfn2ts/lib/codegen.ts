@@ -352,7 +352,7 @@ export default class CodeGenerator {
    * Emit the function that is going to implement the IInspectable interface.
    *
    * The generated code looks like this:
-   * public inspect(inspector: cdk.ITreeInspector) {
+   * public inspect(inspector: cdk.TreeInspector) {
    *     inspector.addAttribute("aws:cdk:cloudformation:type", CfnManagedPolicy.CFN_RESOURCE_TYPE_NAME);
    *     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
    * }
@@ -366,7 +366,7 @@ export default class CodeGenerator {
     this.code.line(' *');
     this.code.line(' * @stability experimental');
     this.code.line(' */');
-    this.code.openBlock(`public inspect(inspector: ${CORE}.ITreeInspector)`);
+    this.code.openBlock(`public inspect(inspector: ${CORE}.TreeInspector)`);
     this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_TYPE}", ${resource.className}.CFN_RESOURCE_TYPE_NAME);`);
     this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_PROPS}", this.cfnProperties);`);
     this.code.closeBlock();

@@ -29,7 +29,7 @@ export class TreeMetadata extends Construct {
         id: construct.node.id || 'App',
         path: construct.node.path,
         children: children.length === 0 ? undefined : childrenMap,
-        attributes: this.inferAttributes(construct)
+        attributes: this.getAttributes(construct)
       };
 
       lookup[node.path] = node;
@@ -53,10 +53,10 @@ export class TreeMetadata extends Construct {
     });
   }
 
-  private inferAttributes(construct: IConstruct): { [key: string]: any } | undefined {
+  private getAttributes(construct: IConstruct): { [key: string]: any } | undefined {
     // check if a construct implements IInspectable
     function canInspect(inspectable: any): inspectable is IInspectable {
-      return (inspectable as IInspectable).inspect !== undefined;
+      return inspectable.inspect !== undefined;
     }
 
     const inspector = new TreeInspector();

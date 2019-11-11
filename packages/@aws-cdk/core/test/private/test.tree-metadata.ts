@@ -1,7 +1,7 @@
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
-import { App, CfnResource, Construct, ITreeInspector, Stack } from '../../lib/index';
+import { App, CfnResource, Construct, Stack, TreeInspector } from '../../lib/index';
 
 export = {
   'tree metadata is generated as expected'(test: Test) {
@@ -48,7 +48,7 @@ export = {
         });
       }
 
-      public inspect(inspector: ITreeInspector) {
+      public inspect(inspector: TreeInspector) {
         inspector.addAttribute('aws:cdk:cloudformation:type', 'CDK::UnitTest::MyCfnResource');
         inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
       }
