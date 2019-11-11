@@ -3,6 +3,7 @@ export * from './connections';
 export * from './instance-types';
 export * from './instance';
 export * from './machine-image';
+export * from './nat';
 export * from './network-acl';
 export * from './network-acl-types';
 export * from './port';

@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { ISDK } from '../api/util/sdk';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
+import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { ContextProviderPlugin } from './provider';
@@ -56,4 +57,5 @@ const availableContextProviders: ProviderMap = {
   [cxapi.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
   [cxapi.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
   [cxapi.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
+  [cxapi.AMI_PROVIDER]: AmiContextProviderPlugin,
 };

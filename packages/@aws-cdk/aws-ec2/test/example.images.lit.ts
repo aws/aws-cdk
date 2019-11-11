@@ -1,9 +1,7 @@
 import ec2 = require("../lib");
+import { LookupMachineImage } from "../lib";
 
 /// !show
-// Pick a Windows edition to use
-const windows = new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE);
-
 // Pick the right Amazon Linux edition. All arguments shown are optional
 // and will default to these values when omitted.
 const amznLinux = new ec2.AmazonLinuxImage({
@@ -11,6 +9,17 @@ const amznLinux = new ec2.AmazonLinuxImage({
   edition: ec2.AmazonLinuxEdition.STANDARD,
   virtualization: ec2.AmazonLinuxVirt.HVM,
   storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
+});
+
+// Pick a Windows edition to use
+const windows = new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE);
+
+// Look up the most recent image matching a set of AMI filters.
+// In this case, look up the NAT instance AMI, by using a wildcard
+// in the 'name' field:
+const natAmi = new LookupMachineImage({
+  name: 'amzn-ami-vpc-nat-*',
+  owners: ['amazon'],
 });
 
 // For other custom (Linux) images, instantiate a `GenericLinuxImage` with
@@ -36,3 +45,4 @@ Array.isArray(windows);
 Array.isArray(amznLinux);
 Array.isArray(linux);
 Array.isArray(genericWindows);
+Array.isArray(natAmi);
