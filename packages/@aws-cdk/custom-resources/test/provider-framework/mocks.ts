@@ -14,18 +14,17 @@ export const MOCK_IS_COMPLETE_FUNCTION_ARN = 'arn:lambda:user:is:complete';
 export const MOCK_SFN_ARN = 'arn:of:state:machine';
 
 export let stringifyPayload = true;
-export let onEventImplMock: AWSCDKAsyncCustomResource.OnEventHandler;
-export let isCompleteImplMock: AWSCDKAsyncCustomResource.IsCompleteHandler;
+export let onEventImplMock: AWSCDKAsyncCustomResource.OnEventHandler | undefined;
+export let isCompleteImplMock: AWSCDKAsyncCustomResource.IsCompleteHandler | undefined;
 export let startStateMachineInput: AWS.StepFunctions.StartExecutionInput | undefined;
 export let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
 
 export function setup() {
-  stringifyPayload = true;
-  process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV] = MOCK_IS_COMPLETE_FUNCTION_ARN;
-  process.env[consts.USER_ON_EVENT_FUNCTION_ARN_ENV] = MOCK_ON_EVENT_FUNCTION_ARN;
   process.env[consts.WAITER_STATE_MACHINE_ARN_ENV] = MOCK_SFN_ARN;
-  onEventImplMock = () => { throw new Error('"onEvent" not implemented'); };
-  isCompleteImplMock = () => { throw new Error('"isComplete" not implemented'); };
+
+  stringifyPayload = true;
+  onEventImplMock = undefined;
+  isCompleteImplMock = undefined;
   cfnResponse = {} as any;
   startStateMachineInput = undefined;
 }
@@ -67,12 +66,18 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
     let ret;
     switch (req.FunctionName) {
       case MOCK_ON_EVENT_FUNCTION_ARN:
+        if (!onEventImplMock) {
+          throw new Error(`Trying to trigger "onEvent" but it is not implemented`);
+        }
         ret = await onEventImplMock(input as AWSCDKAsyncCustomResource.OnEventRequest);
         break;
 
       case MOCK_IS_COMPLETE_FUNCTION_ARN:
-        ret = await isCompleteImplMock(input as AWSCDKAsyncCustomResource.IsCompleteRequest);
-        break;
+          if (!isCompleteImplMock) {
+            throw new Error(`Trying to trigger "isComplete" but it is not implemented`);
+          }
+          ret = await isCompleteImplMock(input as AWSCDKAsyncCustomResource.IsCompleteRequest);
+          break;
 
       default:
         throw new Error(`unknown mock function`);
@@ -105,8 +110,20 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
   }
 }
 
-export function resetStartExecutionMock() {
+export function prepareForExecution() {
   startStateMachineInput = undefined;
+
+  if (onEventImplMock) {
+    process.env[consts.USER_ON_EVENT_FUNCTION_ARN_ENV] = MOCK_ON_EVENT_FUNCTION_ARN;
+  } else {
+    delete process.env[consts.USER_ON_EVENT_FUNCTION_ARN_ENV];
+  }
+
+  if (isCompleteImplMock) {
+    process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV] = MOCK_IS_COMPLETE_FUNCTION_ARN;
+  } else {
+    delete process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV];
+  }
 }
 
 export async function startExecutionMock(req: AWS.StepFunctions.StartExecutionInput) {

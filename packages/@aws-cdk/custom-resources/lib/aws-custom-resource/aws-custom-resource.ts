@@ -2,8 +2,12 @@ import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformat
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
+import fs = require('fs');
 import path = require('path');
-import metadata = require('./sdk-api-metadata.json');
+
+// don't use "require" since the typescript compiler emits errors since this
+// file is not listed in tsconfig.json.
+const metadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
 
 /**
  * AWS SDK service metadata.
