@@ -19,7 +19,7 @@
     "conventional-changelog-cli": "^2.0.27",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
-    "jsii-diff": "^0.20.2",
+    "jsii-diff": "^0.20.3",
     "jsii-pacmak": "^0.20.2",
     "lerna": "^3.18.4",
     "nodeunit": "^0.11.3",
