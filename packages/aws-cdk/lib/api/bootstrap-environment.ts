@@ -90,5 +90,5 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
   });
 
   const assembly = builder.buildAssembly();
-  return await deployStack({ stack: assembly.getStack(toolkitStackName), sdk: aws, roleArn, tags: props.tags });
+  return await deployStack({ stack: assembly.getStackByName(toolkitStackName), sdk: aws, roleArn, tags: props.tags });
 }

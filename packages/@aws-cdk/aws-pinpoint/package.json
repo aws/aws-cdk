@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-pinpoint",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "The CDK Construct Library for AWS::Pinpoint",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -46,7 +46,8 @@
     "watch": "cdk-watch",
     "cfn2ts": "cfn2ts",
     "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package"
+    "build+test+package": "npm run build+test && npm run package",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::Pinpoint"
@@ -65,16 +66,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.16.0",
+    "cdk-build-tools": "1.16.0",
+    "cfn2ts": "1.16.0",
+    "pkglint": "1.16.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/core": "1.16.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/core": "1.16.0"
   },
   "engines": {
     "node": ">= 10.3.0"

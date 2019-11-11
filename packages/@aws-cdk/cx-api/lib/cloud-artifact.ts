@@ -68,6 +68,12 @@ export interface AwsCloudFormationStackProperties {
    * Values for CloudFormation stack parameters that should be passed when the stack is deployed.
    */
   readonly parameters?: { [id: string]: string };
+
+  /**
+   * The name to use for the CloudFormation stack.
+   * @default - name derived from artifact ID
+   */
+  readonly stackName?: string;
 }
 
 /**

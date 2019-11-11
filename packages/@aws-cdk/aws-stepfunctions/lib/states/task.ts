@@ -55,6 +55,16 @@ export interface TaskProps {
     readonly resultPath?: string;
 
     /**
+     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+     *
+     * @see
+     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+     *
+     * @default No parameters
+     */
+    readonly parameters?: { [name: string]: any };
+
+    /**
      * Maximum run time of this state
      *
      * If the state takes longer than this amount of time to complete, a 'Timeout' error is raised.

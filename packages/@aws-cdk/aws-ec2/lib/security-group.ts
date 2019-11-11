@@ -220,7 +220,7 @@ export interface SecurityGroupProps {
  */
 export interface SecurityGroupImportOptions {
   /**
-   * Mark the SecurityGroup as having been created allowing all outbound traffico
+   * Mark the SecurityGroup as having been created allowing all outbound traffic
    *
    * Only if this is set to false will egress rules be added to this security
    * group. Be aware, this would undo any potential "all outbound traffic"
