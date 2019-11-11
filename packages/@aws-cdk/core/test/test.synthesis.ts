@@ -156,7 +156,7 @@ export = {
     const assembly = ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
-    const stack = assembly.getStack('art');
+    const stack = assembly.getStackByName('art');
     test.deepEqual(stack.template, { hello: 123 });
     test.deepEqual(stack.templateFile, 'hey.json');
     test.deepEqual(stack.parameters, { paramId: 'paramValue', paramId2: 'paramValue2' });

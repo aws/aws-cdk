@@ -98,7 +98,7 @@ test('cloud assembly builder', () => {
   });
 
   // verify we have a template file
-  expect(assembly.getStack('minimal-artifact').template).toStrictEqual({
+  expect(assembly.getStackByName('minimal-artifact').template).toStrictEqual({
     Resources: {
       MyTopic: {
         Type: 'AWS::S3::Topic'
