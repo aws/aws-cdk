@@ -69,8 +69,4 @@ export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventReque
     Bucket: bucketName,
     Key: objectKey,
   }).promise();
-
-  return {
-    PhysicalResourceId: objectKey
-  };
 }

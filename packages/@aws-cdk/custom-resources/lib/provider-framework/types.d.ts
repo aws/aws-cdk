@@ -65,8 +65,11 @@ interface OnEventResponse {
    *   deleted, and CloudFormation will immediately send a `Delete` event with
    *   the old physical ID.
    * - For `Delete`, this must be the same value received in the event.
+   *
+   * @default - for "Create" requests, defaults to the event's RequestId, for
+   * "Update" and "Delete", defaults to the current `PhysicalResourceId`.
    */
-  readonly PhysicalResourceId: string;
+  readonly PhysicalResourceId?: string;
 
   /**
    * Resource attributes to return.
