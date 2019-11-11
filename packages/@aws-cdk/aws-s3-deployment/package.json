@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3-deployment",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Constructs for deploying contents to S3 buckets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -78,29 +78,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "^1.15.0",
-    "cdk-integ-tools": "^1.15.0",
-    "pkglint": "^1.15.0"
+    "@aws-cdk/assert": "1.16.0",
+    "cdk-build-tools": "1.16.0",
+    "cdk-integ-tools": "1.16.0",
+    "pkglint": "1.16.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.15.0",
-    "@aws-cdk/aws-cloudfront": "1.15.0",
-    "@aws-cdk/aws-iam": "1.15.0",
-    "@aws-cdk/aws-lambda": "1.15.0",
-    "@aws-cdk/aws-s3": "1.15.0",
-    "@aws-cdk/aws-s3-assets": "1.15.0",
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/aws-cloudformation": "1.16.0",
+    "@aws-cdk/aws-cloudfront": "1.16.0",
+    "@aws-cdk/aws-iam": "1.16.0",
+    "@aws-cdk/aws-lambda": "1.16.0",
+    "@aws-cdk/aws-s3": "1.16.0",
+    "@aws-cdk/aws-s3-assets": "1.16.0",
+    "@aws-cdk/core": "1.16.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.15.0",
-    "@aws-cdk/aws-cloudfront": "1.15.0",
-    "@aws-cdk/aws-iam": "1.15.0",
-    "@aws-cdk/aws-lambda": "1.15.0",
-    "@aws-cdk/aws-s3": "1.15.0",
-    "@aws-cdk/aws-s3-assets": "1.15.0",
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/aws-cloudformation": "1.16.0",
+    "@aws-cdk/aws-cloudfront": "1.16.0",
+    "@aws-cdk/aws-iam": "1.16.0",
+    "@aws-cdk/aws-lambda": "1.16.0",
+    "@aws-cdk/aws-s3": "1.16.0",
+    "@aws-cdk/aws-s3-assets": "1.16.0",
+    "@aws-cdk/core": "1.16.0"
   },
   "engines": {
     "node": ">= 10.3.0"
