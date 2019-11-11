@@ -655,7 +655,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template = assembly.getStack(stack.stackName).template;
+    const template = assembly.getStackByName(stack.stackName).template;
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
       ImageId: {
         Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -709,7 +709,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template = assembly.getStack(stack.stackName).template;
+    const template = assembly.getStackByName(stack.stackName).template;
     test.deepEqual(template.Parameters, {
       SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
@@ -846,7 +846,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template = assembly.getStack(stack.stackName).template;
+    const template = assembly.getStackByName(stack.stackName).template;
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
       ImageId: {
         Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -877,7 +877,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template = assembly.getStack(stack.stackName).template;
+    const template = assembly.getStackByName(stack.stackName).template;
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
       ImageId: {
         Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -908,7 +908,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template = assembly.getStack(stack.stackName).template;
+    const template = assembly.getStackByName(stack.stackName).template;
     test.deepEqual(template.Parameters, {
       SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",

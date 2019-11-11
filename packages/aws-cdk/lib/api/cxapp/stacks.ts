@@ -122,7 +122,7 @@ export class AppStacks {
             return stacks;
           } else {
             throw new Error(`Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n` +
-              `Stacks: ${stacks.map(x => x.name).join(' ')}`);
+              `Stacks: ${stacks.map(x => x.id).join(' ')}`);
           }
         default:
           throw new Error(`invalid default behavior: ${options.defaultBehavior}`);
@@ -131,7 +131,7 @@ export class AppStacks {
 
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
     for (const stack of stacks) {
-      allStacks.set(stack.name, stack);
+      allStacks.set(stack.id, stack);
     }
 
     // For every selector argument, pick stacks from the list.
@@ -140,8 +140,8 @@ export class AppStacks {
       let found = false;
 
       for (const stack of stacks) {
-        if (minimatch(stack.name, pattern) && !selectedStacks.has(stack.name)) {
-          selectedStacks.set(stack.name, stack);
+        if (minimatch(stack.id, pattern) && !selectedStacks.has(stack.id)) {
+          selectedStacks.set(stack.id, stack);
           found = true;
         }
       }
@@ -162,7 +162,7 @@ export class AppStacks {
     }
 
     // Filter original array because it is in the right order
-    const selectedList = stacks.filter(s => selectedStacks.has(s.name));
+    const selectedList = stacks.filter(s => selectedStacks.has(s.id));
 
     return selectedList;
   }
@@ -183,9 +183,9 @@ export class AppStacks {
   /**
    * Synthesize a single stack
    */
-  public async synthesizeStack(stackName: string): Promise<cxapi.CloudFormationStackArtifact> {
+  public async synthesizeStack(stackId: string): Promise<cxapi.CloudFormationStackArtifact> {
     const resp = await this.synthesizeStacks();
-    const stack = resp.getStack(stackName);
+    const stack = resp.getStackArtifact(stackId);
     return stack;
   }
 
@@ -251,11 +251,11 @@ export class AppStacks {
                   stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
                   stack.template.Resources.CDKMetadata.Condition = condName;
                 } else {
-                  warning(`The stack ${stack.name} already includes a ${condName} condition`);
+                  warning(`The stack ${stack.id} already includes a ${condName} condition`);
                 }
               }
             } else {
-              warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
+              warning(`The stack ${stack.id} already includes a CDKMetadata resource`);
             }
           }
         }
@@ -333,8 +333,8 @@ export class AppStacks {
 /**
  * Combine the names of a set of stacks using a comma
  */
-export function listStackNames(stacks: cxapi.CloudFormationStackArtifact[]): string {
-  return stacks.map(s => s.name).join(', ');
+export function listStackIds(stacks: cxapi.CloudFormationStackArtifact[]): string {
+  return stacks.map(s => s.id).join(', ');
 }
 
 /**
@@ -371,11 +371,11 @@ function includeDownstreamStacks(
   while (madeProgress) {
     madeProgress = false;
 
-    for (const [name, stack] of allStacks) {
+    for (const [id, stack] of allStacks) {
       // Select this stack if it's not selected yet AND it depends on a stack that's in the selected set
-      if (!selectedStacks.has(name) && (stack.dependencies || []).some(dep => selectedStacks.has(dep.id))) {
-        selectedStacks.set(name, stack);
-        added.push(name);
+      if (!selectedStacks.has(id) && (stack.dependencies || []).some(dep => selectedStacks.has(dep.id))) {
+        selectedStacks.set(id, stack);
+        added.push(id);
         madeProgress = true;
       }
     }
@@ -401,10 +401,10 @@ function includeUpstreamStacks(
 
     for (const stack of selectedStacks.values()) {
       // Select an additional stack if it's not selected yet and a dependency of a selected stack (and exists, obviously)
-      for (const dependencyName of stack.dependencies.map(x => x.id)) {
-        if (!selectedStacks.has(dependencyName) && allStacks.has(dependencyName)) {
-          added.push(dependencyName);
-          selectedStacks.set(dependencyName, allStacks.get(dependencyName)!);
+      for (const dependencyId of stack.dependencies.map(x => x.id)) {
+        if (!selectedStacks.has(dependencyId) && allStacks.has(dependencyId)) {
+          added.push(dependencyId);
+          selectedStacks.set(dependencyId, allStacks.get(dependencyId)!);
           madeProgress = true;
         }
       }

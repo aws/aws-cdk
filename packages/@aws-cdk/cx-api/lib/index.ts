@@ -11,5 +11,7 @@ export * from './cloud-assembly';
 export * from './assets';
 export * from './environment';
 export * from './metadata';
+export * from './features';
+export * from './future';
 
 export { CLOUD_ASSEMBLY_VERSION } from './versioning';

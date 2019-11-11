@@ -215,7 +215,7 @@ export = {
 
     // THEN
     const asm = app.synth();
-    test.deepEqual(asm.getStack('Stack2').template, {
+    test.deepEqual(asm.getStackByName('Stack2').template, {
       Outputs: {
         Stack1Id: {
           Value: {

@@ -287,12 +287,12 @@ async function initCommandLine() {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  async function cliSynthesize(stackNames: string[],
+  async function cliSynthesize(stackIds: string[],
                                exclusively: boolean): Promise<any> {
     // Only autoselect dependencies if it doesn't interfere with user request or output options
     const autoSelectDependencies = !exclusively;
 
-    const stacks = await appStacks.selectStacks(stackNames, {
+    const stacks = await appStacks.selectStacks(stackIds, {
       extend: autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.AllStacks
     });
@@ -318,7 +318,7 @@ async function initCommandLine() {
 
     // not outputting template to stdout, let's explain things to the user a little bit...
     success(`Successfully synthesized to ${colors.blue(path.resolve(appStacks.assembly!.directory))}`);
-    print(`Supply a stack name (${stacks.map(s => colors.green(s.name)).join(', ')}) to display its template.`);
+    print(`Supply a stack id (${stacks.map(s => colors.green(s.id)).join(', ')}) to display its template.`);
 
     return undefined;
   }
@@ -331,16 +331,17 @@ async function initCommandLine() {
       const long = [];
       for (const stack of stacks) {
         long.push({
-          name: stack.name,
+          id: stack.id,
+          name: stack.stackName,
           environment: stack.environment
         });
       }
       return long; // will be YAML formatted output
     }
 
-    // just print stack names
+    // just print stack IDs
     for (const stack of stacks) {
-      data(stack.name);
+      data(stack.id);
     }
 
     return 0; // exit-code
@@ -349,18 +350,18 @@ async function initCommandLine() {
   /**
    * Match a single stack from the list of available stacks
    */
-  async function findStack(name: string): Promise<string> {
-    const stacks = await appStacks.selectStacks([name], {
+  async function findStack(artifactId: string): Promise<string> {
+    const stacks = await appStacks.selectStacks([artifactId], {
       extend: ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.None
     });
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.length > 1) {
-      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.map(x => x.name)}`);
+      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.map(x => x.id)}`);
     }
 
-    return stacks[0].name;
+    return stacks[0].id;
   }
 
   function toJsonOrYaml(object: any): string {

@@ -152,7 +152,7 @@ export = nodeunit.testCase({
       });
 
       // THEN
-      const template = app.synth().getStack('Stack2').template;
+      const template = app.synth().getStackByName('Stack2').template;
 
       test.deepEqual(template, {
         Outputs: {

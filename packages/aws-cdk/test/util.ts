@@ -52,5 +52,5 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
 export function testStack(stack: TestStackArtifact) {
   const assembly = testAssembly({ stacks: [stack] });
-  return assembly.getStack(stack.stackName);
+  return assembly.getStackByName(stack.stackName);
 }

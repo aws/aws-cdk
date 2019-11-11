@@ -14,7 +14,7 @@ test('empty assembly', () => {
   expect(assembly.tree()).toBeUndefined();
 });
 
-test('assembly a single cloudformation stack and tree metadata', () => {
+test('assembly with a single cloudformation stack and tree metadata', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'single-stack'));
   expect(assembly.artifacts).toHaveLength(2);
   expect(assembly.stacks).toHaveLength(1);
@@ -31,7 +31,8 @@ test('assembly a single cloudformation stack and tree metadata', () => {
   expect(stack.messages).toEqual([]);
   expect(stack.manifest.metadata).toEqual(undefined);
   expect(stack.originalName).toEqual('MyStackName');
-  expect(stack.name).toEqual('MyStackName');
+  expect(stack.stackName).toEqual('MyStackName');
+  expect(stack.id).toEqual('MyStackName');
 
   const treeArtifact = assembly.tree();
   expect(treeArtifact).toBeDefined();
@@ -100,7 +101,7 @@ test('dependencies', () => {
   expect(assembly.stacks).toHaveLength(4);
 
   // expect stacks to be listed in topological order
-  expect(assembly.stacks.map(s => s.name)).toEqual([ 'StackA', 'StackD', 'StackC', 'StackB' ]);
+  expect(assembly.stacks.map(s => s.id)).toEqual([ 'StackA', 'StackD', 'StackC', 'StackB' ]);
   expect(assembly.stacks[0].dependencies).toEqual([]);
   expect(assembly.stacks[1].dependencies).toEqual([]);
   expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual([ 'StackD' ]);
@@ -116,4 +117,44 @@ test('verifyManifestVersion', () => {
   // tslint:disable-next-line:max-line-length
   expect(() => verifyManifestVersion('0.31.0')).toThrow(`The CDK CLI you are using requires your app to use CDK modules with version >= ${CLOUD_ASSEMBLY_VERSION}`);
   expect(() => verifyManifestVersion('99.99.99')).toThrow(`A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app`);
+});
+
+test('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'explicit-stack-name'));
+
+  expect(assembly.getStackByName('TheStackName').stackName).toStrictEqual('TheStackName');
+  expect(assembly.getStackByName('TheStackName').id).toStrictEqual('stackid1');
+
+  // deprecated but still test
+  expect(assembly.getStack('TheStackName').stackName).toStrictEqual('TheStackName');
+  expect(assembly.getStack('TheStackName').id).toStrictEqual('stackid1');
+});
+
+test('getStackByName fails if there are multiple stacks with the same name', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
+  expect(() => assembly.getStackByName('the-physical-name-of-the-stack')).toThrow(/There are multiple stacks with the stack name \"the-physical-name-of-the-stack\" \(stack1\,stack2\)\. Use \"getStackArtifact\(id\)\" instead/);
+});
+
+test('getStackArtifact retrieves a stack by artifact id', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
+
+  expect(assembly.getStackArtifact('stack1').stackName).toEqual('the-physical-name-of-the-stack');
+  expect(assembly.getStackArtifact('stack2').stackName).toEqual('the-physical-name-of-the-stack');
+  expect(assembly.getStackArtifact('stack2').id).toEqual('stack2');
+  expect(assembly.getStackArtifact('stack1').id).toEqual('stack1');
+});
+
+test('displayName shows both artifact ID and stack name if needed', () => {
+  const a1 = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
+  expect(a1.getStackArtifact('stack1').displayName).toStrictEqual('stack1 (the-physical-name-of-the-stack)');
+  expect(a1.getStackArtifact('stack2').displayName).toStrictEqual('stack2 (the-physical-name-of-the-stack)');
+
+  const a2 = new CloudAssembly(path.join(FIXTURES, 'single-stack'));
+  const art1 = a2.getStackArtifact('MyStackName');
+  const art2 = a2.getStackByName('MyStackName');
+
+  expect(art1).toBe(art2);
+  expect(art1.displayName).toBe('MyStackName');
+  expect(art1.id).toBe('MyStackName');
+  expect(art1.stackName).toBe('MyStackName');
 });

@@ -33,7 +33,7 @@ export = {
     const toolkit = new FakeToolkit();
 
     // WHEN
-    const params = await prepareAssets(assembly.getStack('SomeStack'), toolkit as any);
+    const params = await prepareAssets(assembly.getStackByName('SomeStack'), toolkit as any);
 
     // THEN
     test.deepEqual(params, [
