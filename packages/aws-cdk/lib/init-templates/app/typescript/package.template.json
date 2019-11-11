@@ -13,6 +13,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "^%cdk-version%",
     "@types/jest": "^24.0.18",
+    "@types/node": "10.3.0",
     "jest": "^24.9.0",
     "ts-jest": "^24.0.2",
     "aws-cdk": "^%cdk-version%",
