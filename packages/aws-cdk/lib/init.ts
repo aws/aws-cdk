@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
@@ -102,6 +103,7 @@ export class InitTemplate {
     await this.installFiles(sourceDirectory, targetDirectory, {
       name: decamelize(path.basename(path.resolve(targetDirectory)))
     });
+    await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory);
     await fs.remove(hookTempDirectory);
   }
@@ -162,6 +164,25 @@ export class InitTemplate {
              .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
              .replace(/%python-executable%/g, pythonExecutable())
              .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+  }
+
+  /**
+   * Adds context variables to `cdk.json` in the generated project directory to
+   * enable future behavior for new projects.
+   */
+  private async applyFutureFlags(projectDir: string) {
+    const cdkJson = path.join(projectDir, 'cdk.json');
+    if (!await fs.pathExists(cdkJson)) {
+      return;
+    }
+
+    const config = await fs.readJson(cdkJson);
+    config.context = {
+      ...config.context,
+      ...cxapi.FUTURE_FLAGS
+    };
+
+    await fs.writeJson(cdkJson, config, { spaces: 2 });
   }
 }
 

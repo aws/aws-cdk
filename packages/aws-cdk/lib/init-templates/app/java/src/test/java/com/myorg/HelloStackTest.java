@@ -21,7 +21,7 @@ public class HelloStackTest {
 
         // synthesize the stack to a CloudFormation template and compare against
         // a checked-in JSON file.
-        JsonNode actual = JSON.valueToTree(app.synth().getStack(stack.getStackName()).getTemplate());
+        JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
         JsonNode expected = JSON.readTree(getClass().getResource("expected.cfn.json"));
         assertEquals(expected, actual);
     }

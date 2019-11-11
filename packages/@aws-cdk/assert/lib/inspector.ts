@@ -63,7 +63,7 @@ export class StackPathInspector extends Inspector {
     // then try with the stack name preprended for backwards compat with most tests that happen to give
     // their stack an ID that's the same as the stack name.
     const metadata = this.stack.manifest.metadata || {};
-    const md = metadata[this.path] || metadata[`/${this.stack.name}${this.path}`];
+    const md = metadata[this.path] || metadata[`/${this.stack.id}${this.path}`];
     if (md === undefined) { return undefined; }
     const resourceMd = md.find(entry => entry.type === api.LOGICAL_ID_METADATA_KEY);
     if (resourceMd === undefined) { return undefined; }
