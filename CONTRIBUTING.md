@@ -36,6 +36,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
   - [API Compatibility Checks](#api-compatibility-checks)
+  - [Feature Flags](#feature-flags)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -513,6 +514,49 @@ API is a bug that blocked the usage of a feature. This means that by breaking
 this API we will not break anyone, because they weren't able to use it. The file
 `allowed-breaking-changes.txt` in the root of the repo is an exclusion file that
 can be used in these cases.
+
+### Feature Flags
+
+Sometimes we want to introduce new breaking behavior because we believe this is
+the correct default behavior for the CDK. The problem of course is that breaking
+changes are only allowed in major versions and those are rare.
+
+To address this need, we have a feature flags pattern/mechanism. It allows us to
+introduce new breaking behavior which is disabled by default (so existing
+projects will not be affected) but enabled automatically for new projects
+created through `cdk init`.
+
+The pattern is simple:
+
+1. Define a new const under
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
+   with the name of the context key that **enables** this new feature (for
+   example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
+   form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
+2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
+   in your code. If it is not defined, revert to the legacy behavior.
+3. Add your feature flag to
+   [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
+   This map is inserted to generated `cdk.json` files for new projects created
+   through `cdk init`.
+4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+
+    ```
+    fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
+    ```
+5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
+
+    ```
+    BREAKING CHANGE: template file names for new projects created through "cdk init" 
+    will use the template artifact ID instead of the physical stack name to enable 
+    multiple stacks to use the same name. This is enabled through the flag 
+    `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
+    ```
+
+In the [next major version of the
+CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
+legacy behavior or flip the logic for all these features and then
+reset the `FEATURE_FLAGS` map for the next cycle.
 
 ## Troubleshooting
 
