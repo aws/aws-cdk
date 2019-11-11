@@ -2163,10 +2163,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemaker@^0.20.2:
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-0.20.2.tgz#1e6ed5d53cad4dd10c116c25129fcbf4694979c7"
-  integrity sha512-3p3qq+JargDzb8MYzUCIZqrXNxPC3stg9rPzS3QGot2aknnY1qmmUb3PP8sRQj+kRjhEfqQ4MXz2ZR2g/o2oLQ==
+codemaker@^0.20.2, codemaker@^0.20.3:
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/codemaker/-/codemaker-0.20.3.tgz#adcac2f7fef890ba1542a32583e0fbf3f80eea2c"
+  integrity sha512-gm0lBPlc6RRSTugEBg8/vWAq5oGZBSYztsCMtbh3P1CutvEFqisCmIWwE9SEg5DoopvVuSeLRrezOg1buXQABw==
   dependencies:
     camelcase "^5.3.1"
     decamelize "^1.2.0"
