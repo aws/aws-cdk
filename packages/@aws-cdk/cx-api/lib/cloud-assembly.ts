@@ -215,7 +215,9 @@ export class CloudAssemblyBuilder {
    * @param missing Missing context information.
    */
   public addMissing(missing: MissingContext) {
-    this.missing.push(missing);
+    if (this.missing.every(m => m.key !== missing.key)) {
+      this.missing.push(missing);
+    }
   }
 
   /**
