@@ -218,7 +218,7 @@ export = {
 
     const assembly = app.synth();
 
-    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
       Resources: {
         ParentResource: {
           Type: 'Parent::Resource',
@@ -229,7 +229,7 @@ export = {
       }
     });
 
-    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+    test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
       Resources: {
         ChildResource8C37244D: {
           Type: 'My::Resource',
