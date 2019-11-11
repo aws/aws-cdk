@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.22",
-    "@types/node": "^8.10.58",
+    "@types/node": "^10.17.5",
     "@types/nodeunit": "^0.0.30",
     "conventional-changelog-cli": "^2.0.27",
     "fs-extra": "^8.1.0",
