@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -44,7 +44,8 @@
     "awslint": "cdk-awslint",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -54,9 +55,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "cdk-build-tools": "1.16.0",
     "fs-extra": "^8.1.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "1.16.0"
   },
   "jest": {
     "coverageReporters": [

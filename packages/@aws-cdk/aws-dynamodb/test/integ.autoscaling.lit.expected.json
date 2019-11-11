@@ -20,8 +20,8 @@
           "WriteCapacityUnits": 5
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TableReadScalingTargetF96E9F76": {
       "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
@@ -47,11 +47,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":iam:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
+              ":iam::",
               {
                 "Ref": "AWS::AccountId"
               },

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`assembly a single cloudformation stack and tree metadata 1`] = `
+exports[`assembly with a single cloudformation stack and tree metadata 1`] = `
 Object {
   "environment": "aws://37736633/us-region-1",
   "properties": Object {
@@ -10,7 +10,7 @@ Object {
 }
 `;
 
-exports[`assembly a single cloudformation stack and tree metadata 2`] = `
+exports[`assembly with a single cloudformation stack and tree metadata 2`] = `
 Object {
   "properties": Object {
     "file": "foo.tree.json",
@@ -48,7 +48,7 @@ Array [
 
 exports[`empty assembly 1`] = `
 Object {
-  "version": "1.10.0",
+  "version": "1.16.0",
 }
 `;
 

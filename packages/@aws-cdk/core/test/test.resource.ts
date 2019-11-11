@@ -668,7 +668,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const templateB = assembly.getStack(stackB.stackName).template;
+    const templateB = assembly.getStackByName(stackB.stackName).template;
 
     test.deepEqual(templateB, {
       Resources: {
