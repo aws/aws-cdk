@@ -1131,7 +1131,6 @@ export class Vpc extends VpcBase {
     return az ? this.natGatewayByAZ[az] : this.natGatewayByAZ[this.availabilityZones[0]];
   }
 
-  
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {

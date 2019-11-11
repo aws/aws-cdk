@@ -110,7 +110,6 @@ export interface NatInstanceProps {
   readonly keyName?: string;
 }
 
-
 class NatGateway extends NatProvider {
   public configureNat(options: ConfigureNatOptions): { [az: string]: string } {
     // Create the NAT gateways
@@ -121,18 +120,18 @@ class NatGateway extends NatProvider {
     }
 
     // Add routes to them in the private subnets
-    const gateways: { [az: string]: string } = {}
+    const gateways: { [az: string]: string } = {};
     for (const sub of options.privateSubnets) {
-      const az = sub.availabilityZone
-      const gw = gatewayIds.pick(az)
+      const az = sub.availabilityZone;
+      const gw = gatewayIds.pick(az);
       sub.addRoute('DefaultRoute', {
         routerType: RouterType.NAT_GATEWAY,
         routerId: gw,
         enablesInternetConnectivity: true,
       });
-      gateways[az] = gw
+      gateways[az] = gw;
     }
-    return gateways
+    return gateways;
   }
 }
 
@@ -173,18 +172,18 @@ class NatInstance extends NatProvider {
     }
 
     // Add routes to them in the private subnets
-    const gateways: { [az: string]: string } = {}
+    const gateways: { [az: string]: string } = {};
     for (const sub of options.privateSubnets) {
-      const az = sub.availabilityZone
-      const gw = instances.pick(sub.availabilityZone).instanceId
+      const az = sub.availabilityZone;
+      const gw = instances.pick(sub.availabilityZone).instanceId;
       sub.addRoute('DefaultRoute', {
         routerType: RouterType.INSTANCE,
         routerId: gw,
         enablesInternetConnectivity: true,
       });
-      gateways[az] = gw
+      gateways[az] = gw;
     }
-    return gateways
+    return gateways;
   }
 }
 
