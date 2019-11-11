@@ -4,7 +4,7 @@ import api = require('./api');
 
 const s3 = new AWS.S3();
 
-export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
+export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest) {
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
@@ -56,7 +56,7 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
   };
 }
 
-export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> {
+export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventRequest) {
   const bucketName = event.ResourceProperties.BucketName;
   if (!bucketName) { throw new Error(`"BucketName" is required`); }
 
