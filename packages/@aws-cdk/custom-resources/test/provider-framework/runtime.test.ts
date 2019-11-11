@@ -6,6 +6,8 @@ import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 import mocks = require('./mocks');
 
+console.log = jest.fn();
+
 cfnResponse.includeStackTraces = false;
 
 const MOCK_PHYSICAL_ID = 'mock-physical-resource-id';
