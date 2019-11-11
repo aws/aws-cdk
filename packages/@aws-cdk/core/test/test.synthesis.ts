@@ -36,9 +36,9 @@ export = {
       tree: {
         id: 'App',
         path: '',
-        children: [
-          { id: 'Tree', path: 'Tree' }
-        ]
+        children: {
+          Tree: { id: 'Tree', path: 'Tree' }
+        }
       }
     });
     test.done();
