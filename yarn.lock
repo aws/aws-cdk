@@ -4805,23 +4805,23 @@ jsii-sampiler@^0.20.2:
     typescript "~3.6.4"
     yargs "^14.2.0"
 
-jsii-spec@^0.20.2:
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.2.tgz#8254db4e98dce6147d0fd3e10bb1dae7d801085a"
-  integrity sha512-v2r8eBjfTfTKDriIer66g4VJpLryXNTmQ3X3uI3H10LBGHRk9DS4z2+yrw0GMUWVIkb0DzHvtYiPkPJbsS520g==
+jsii-spec@^0.20.2, jsii-spec@^0.20.3:
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.3.tgz#de5a5c04c110d64fd02e9c2060a2880e3b960936"
+  integrity sha512-tJK5JVyXqU94dGDOJIYQaoUpEJlFuDH5fzuaB0qdlRKqp9B4xcis/lZpfr3NwQgTDeE7cNpmhIAR1O3K7o7lmQ==
   dependencies:
     jsonschema "^1.2.4"
 
-jsii@^0.20.2:
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.20.2.tgz#0a717b25ea3d844870cbc7ea00c477d30ce4473f"
-  integrity sha512-0kOHwtvYWOhePprvMviqcpuJixhsQxZ0z5+dFyuaTw36m8GtNS+NZg2fK7W1bA2GuOKav/qSk/ElpycZCzJsQA==
+jsii@^0.20.3:
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.20.3.tgz#088455e65bb45b9730789c62d36feb6f1c73803c"
+  integrity sha512-lLunNBE3RxOIHUKv1FAqJgepaeF8E+oFxAV7zSwJhl4g3Kh91zRNp8ZQ7U1ylBPM+mubPNdkDlQfrR6ghxonCg==
   dependencies:
     case "^1.6.2"
     colors "^1.4.0"
     deep-equal "^1.1.0"
     fs-extra "^8.1.0"
-    jsii-spec "^0.20.2"
+    jsii-spec "^0.20.3"
     log4js "^5.3.0"
     semver "^6.3.0"
     sort-json "^2.0.0"
