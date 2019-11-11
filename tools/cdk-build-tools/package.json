@@ -11,6 +11,7 @@
   },
   "bin": {
     "cdk-build": "bin/cdk-build",
+    "cdk-compat": "bin/cdk-compat",
     "cdk-watch": "bin/cdk-watch",
     "cdk-test": "bin/cdk-test",
     "cdk-package": "bin/cdk-package",
