@@ -173,5 +173,8 @@ function defaultPhysicalResourceId(req: AWSLambda.CloudFormationCustomResourceEv
     case 'Update':
     case 'Delete':
       return req.PhysicalResourceId;
+
+    default:
+      throw new Error(`Invalid "RequestType" in request "${JSON.stringify(req)}"`);
   }
 }

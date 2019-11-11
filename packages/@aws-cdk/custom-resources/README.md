@@ -151,8 +151,8 @@ Every resource in CloudFormation has a physical resource ID. When a resource is
 created, the `PhysicalResourceId` returned from the `Create` operation is stored
 by AWS CloudFormation and assigned to the logical ID defined for this resource
 in the template. If a `Create` operation returns without a `PhysicalResourceId`,
-the framework will use `RequestId` as the default. This may be sufficient for
-"pseudo-resources" such as resources that only represent query data.
+the framework will use `RequestId` as the default. This is sufficient for
+various cases such as "pseudo-resources" which only query data.
 
 For `Update` and `Delete` operations, the resource event will always include the
 current `PhysicalResourceId` of the resource.
