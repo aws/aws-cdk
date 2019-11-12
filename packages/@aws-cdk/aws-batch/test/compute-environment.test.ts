@@ -4,7 +4,6 @@ import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType, Secur
 import { AmiHardwareType, EcsOptimizedAmi } from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Tag } from '@aws-cdk/core';
 import { throws } from 'assert';
 import * as batch from '../lib';
 
@@ -123,7 +122,7 @@ describe('When creating a batch compute evironment', () => {
                 computeResources: {
                     vpc,
                     bidPercentage: 20,
-                    computeResourcesTags: new Tag('foo', 'bar'),
+                    computeResourcesTags: new cdk.Tag('foo', 'bar'),
                     desiredvCpus: 1,
                     ec2KeyPair: 'my-key-pair',
                     image: new EcsOptimizedAmi({

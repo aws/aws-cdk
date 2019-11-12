@@ -18,17 +18,24 @@ export enum ComputeEnvironmentType {
     UNMANAGED = 'UNMANAGED',
 }
 
-<<<<<<< HEAD
 /**
  * Property to specify how compute resources will be provisioned based
  */
-=======
 export enum ComputeEnvironmentStatus {
+    /**
+     * Jobs are allowed to be assigned to this environment
+     */
     ENABLED = 'ENABLED',
+    /**
+     * Jobs are not allowed to be assigned to this environment
+     */
     DISABLED = 'DISABLED',
 }
 
->>>>>>> chore(batch): update tests and constructs based on feedback
+/**
+ * Property to specify if the compute environment
+ * uses On-Demand of SpotFleet compute resources
+ */
 export enum ComputeResourceType {
     /**
      * Resources will be EC2 On-Demand resources
@@ -45,14 +52,34 @@ export enum ComputeResourceType {
  * that are provisioned for a compute environment
  */
 export enum AllocationStrategy {
+    /**
+     * Batch will use the best fitting instance type will be used
+     * when assigning a batch job in this compute environment
+     */
     BEST_FIT = 'BEST_FIT',
+    /**
+     * Batch will select additional instance types that are large enough to
+     * meet the requirements of the jobs in the queue, with a preference for
+     * instance types with a lower cost per unit vCPU
+     */
     BEST_FIT_PROGRESSIVE = 'BEST_FIT_PROGRESSIVE',
+    /**
+     * This is only available for Spot Instance compute resources and will select
+     * additional instance types that are large enough to meet the requirements of
+     * the jobs in the queue, with a preference for instance types that are less
+     * likely to be interrupted
+     */
     SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
 }
 
+/**
+ * Properties for defining the structure of the batch compute cluster
+ */
 export interface ComputeResourceProps {
     /**
      * The IAM role applied to EC2 resources in the compute environment.
+     *
+     * @default - a new role will be created
      */
     readonly instanceRole?: iam.IRole;
 
@@ -128,14 +155,9 @@ export interface ComputeResourceProps {
 
     /**
      * The EC2 key pair that is used for instances launched in the compute environment.
-<<<<<<< HEAD
      * If no key is defined, then SSH access is not allowed to provisioned compute resources.
      *
-     * @default - No key will be used
-=======
-     *
      * @default - No SSH access will be possible.
->>>>>>> chore(batch): update tests and constructs based on feedback
      */
     readonly ec2KeyPair?: string;
 
@@ -362,6 +384,11 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         if (props.computeResources && props.computeResources.type &&
             props.computeResources.type === ComputeResourceType.EC2 && props.computeResources.bidPercentage !== undefined) {
             throw new Error('Setting the bid percentage is only allowed for SPOT type resources on a batch compute environment');
+        }
+
+        if (props.computeResources && props.computeResources.type && props.allocationStrategy &&
+            props.computeResources.type === ComputeResourceType.EC2 && props.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED) {
+                throw new Error('The SPOT_CAPACITY_OPTIMIZED allocation strategy is only allowed if the environment is a SPOT type compute environment');
         }
 
         // Bid percentage must be from 0 - 100
