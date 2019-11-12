@@ -35,7 +35,7 @@ async function main() {
     await shell(options.test, { timers });
   }
 
-  const testFiles = await unitTestFiles();
+  const testFiles = await unitTestFiles(args._);
   const useJest = 'jest' in currentPackageJson();
 
   if (useJest) {

@@ -62,8 +62,12 @@ export async function listFiles(dirName: string, predicate: (x: File) => boolean
 /**
  * Return the unit test files for this package
  */
-export async function unitTestFiles(): Promise<File[]> {
-  return listFiles('test', f => f.filename.startsWith('test.') && f.filename.endsWith('.js'));
+export async function unitTestFiles(prefixMatches?: string[]): Promise<File[]> {
+  const files = await listFiles('test', f => f.filename.startsWith('test.') && f.filename.endsWith('.js'));
+  if (!prefixMatches || prefixMatches.length === 0) {
+    return files;
+  }
+  return files.filter(f => prefixMatches.reduce((acc: boolean, val) => acc || f.filename.startsWith(val), false));
 }
 
 /**
