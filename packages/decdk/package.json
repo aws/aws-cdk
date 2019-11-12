@@ -163,7 +163,7 @@
     "@types/yaml": "1.2.0",
     "@types/yargs": "^13.0.3",
     "jest": "^24.9.0",
-    "jsii": "^0.20.3"
+    "jsii": "^0.20.4"
   },
   "keywords": [
     "aws",
