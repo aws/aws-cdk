@@ -7,7 +7,7 @@ source ${scriptdir}/common.bash
 setup
 
 function nonfailing_diff() {
-    cdk diff --no-fail $1 2>&1 | strip_color_codes
+    cdk diff $1 2>&1 | strip_color_codes
 }
 
 assert "nonfailing_diff ${STACK_NAME_PREFIX}-iam-test" <<HERE
