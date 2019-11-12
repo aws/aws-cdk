@@ -18,7 +18,7 @@ aws cloudformation describe-stacks --stack-name ${stack_arn} > ${response_json}
 
 stack_status=$(node -e "console.log(require('${response_json}').Stacks[0].StackStatus)")
 if [ "${stack_status}" -ne "REVIEW_IN_PROGRESS" ]; then
-    fail "stack creation without execution failed"
+    fail "Expected stack to be in status REVIEW_IN_PROGRESS but got ${stack_status}"
 fi
 
 # destroy

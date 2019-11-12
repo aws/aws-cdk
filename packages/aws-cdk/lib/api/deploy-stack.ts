@@ -105,6 +105,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
     debug('Stack %s has completed updating', deployName);
   } else {
+    debug('Entering no-execute workflow for ChangeSet %s on stack %s', changeSetName, deployName);
     cfn.executeChangeSet();
   }
   return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
