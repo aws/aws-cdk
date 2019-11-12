@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-batch",
-  "version": "1.15.0",
+  "version": "1.16.1",
   "description": "The CDK Construct Library for AWS::Batch",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::Batch"
@@ -63,17 +64,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.16.1",
+    "cdk-build-tools": "1.16.1",
+    "cfn2ts": "1.16.1",
+    "pkglint": "1.16.1"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/core": "1.16.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/core": "1.16.1"
   },
   "engines": {
     "node": ">= 10.3.0"

@@ -1,33 +1,28 @@
 {
     "compilerOptions": {
-        "target":"ES2018",
+        "target": "ES2018",
         "module": "commonjs",
-        "lib": ["es2016", "es2017.object", "es2017.string", "dom"],
-        "declaration": true,
+        "lib": ["es2018", "dom"],
         "strict": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "noImplicitThis": true,
         "alwaysStrict": true,
+        "declaration": true,
+        "inlineSourceMap": true,
+        "inlineSources": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": false,
-        "inlineSourceMap": true,
-        "inlineSources": true,
-        "experimentalDecorators": true,
-        "strictPropertyInitialization":false
-    },
+        "noFallthroughCasesInSwitch": true,
+        "resolveJsonModule": true,
+        "composite": true,
+        "incremental": true
+      },
     "include": [
         "**/*.ts",
-        "**/*.d.ts"
+        "**/*.d.ts",
+        "lib/init-templates/*/*/add-project.hook.ts"
     ],
     "exclude": [
-        "lib/init-templates/**/*"
-    ],
-    "files": [
-        "lib/init-templates/app/csharp/add-project.hook.ts",
-        "lib/init-templates/app/fsharp/add-project.hook.ts"
+        "lib/init-templates/*/typescript/**/*.ts"
     ]
 }
 

@@ -435,12 +435,6 @@ export class ViewerCertificate {
        aliases,
     } = options;
 
-    const certificateRegion = certificatemanager.getCertificateRegion(certificate);
-
-    if (certificateRegion && !cdk.Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-      throw new Error(`acmCertificate certficate must be in the us-east-1 region, got ${certificateRegion}`);
-    }
-
     return new ViewerCertificate({
       acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion
     }, aliases);
@@ -766,7 +760,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
-        certificatemanager.Certificate.fromCertificateArn(scope, 'AliasConfigurationCert', acmCertRef),
+        certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
         { securityPolicy, sslMethod, aliases }
       );
     }

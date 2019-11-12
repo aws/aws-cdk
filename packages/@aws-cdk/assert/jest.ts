@@ -6,7 +6,7 @@ import { expect as ourExpect } from './lib/expect';
 
 declare global {
   namespace jest {
-    interface Matchers<R> {
+    interface Matchers<R, T> {
       toMatchTemplate(template: any,
                       matchStyle?: MatchStyle): R;
 
