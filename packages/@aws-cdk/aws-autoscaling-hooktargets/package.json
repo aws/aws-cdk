@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-autoscaling-hooktargets",
-  "version": "1.16.1",
+  "version": "1.16.2",
   "description": "Lifecycle hook for AWS AutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -72,32 +72,32 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
+    "@aws-cdk/assert": "1.16.2",
+    "@aws-cdk/aws-ec2": "1.16.2",
+    "cdk-build-tools": "1.16.2",
+    "cdk-integ-tools": "1.16.2",
+    "cfn2ts": "1.16.2",
     "jest": "^24.9.0",
-    "pkglint": "1.16.1"
+    "pkglint": "1.16.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-autoscaling": "1.16.2",
+    "@aws-cdk/aws-iam": "1.16.2",
+    "@aws-cdk/aws-lambda": "1.16.2",
+    "@aws-cdk/aws-sns": "1.16.2",
+    "@aws-cdk/aws-sns-subscriptions": "1.16.2",
+    "@aws-cdk/aws-sqs": "1.16.2",
+    "@aws-cdk/core": "1.16.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-autoscaling": "1.16.2",
+    "@aws-cdk/aws-iam": "1.16.2",
+    "@aws-cdk/aws-lambda": "1.16.2",
+    "@aws-cdk/aws-sns": "1.16.2",
+    "@aws-cdk/aws-sns-subscriptions": "1.16.2",
+    "@aws-cdk/aws-sqs": "1.16.2",
+    "@aws-cdk/core": "1.16.2"
   },
   "engines": {
     "node": ">= 10.3.0"
