@@ -15,18 +15,6 @@
 
 ---
 <!--END STABILITY BANNER-->
-- [Provider Framework](#provider-framework)
-  - [Handling Lifecycle Events: onEvent](#handling-lifecycle-events-onevent)
-  - [Asynchronous Providers: isComplete](#asynchronous-providers-iscomplete)
-  - [Physical Resource IDs](#physical-resource-ids)
-  - [Error Handling](#error-handling)
-  - [Execution Policy](#execution-policy)
-  - [Timeouts](#timeouts)
-  - [Examples](#examples)
-- [Custom Resources for AWS APIs](#custom-resources-for-aws-apis)
-  - [Execution Policy](#execution-policy-1)
-  - [Examples](#examples-1)
-
 
 ## Provider Framework
 
@@ -56,7 +44,8 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
-  onEventHandler: onEvent
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete // optional async "waiter"
 });
 
 new cfn.CustomResource(this, 'Resource1', { provider: myProvider });
@@ -70,10 +59,55 @@ At the minimum, users must define the `onEvent` handler, which is invoked by the
 framework for all resource lifecycle events (`Create`, `Update` and `Delete`)
 and returns a result which is then submitted to CloudFormation.
 
+The following example is a skelaton for a Python implementation of `onEvent`:
+
+```py
+def on_event(event, context):
+  print(event)  
+  request_type = event['RequestType']
+  if request_type == 'Create': return on_create(event)
+  if request_type == 'Update': return on_update(event)
+  if request_type == 'Delete': return on_delete(event)
+  raise Exception("Invalid request type: %s" % request_type)
+
+def on_create(event):
+  props = event["ResourceProperties"]
+  print("create new resource with props %s" % props)
+
+  # add your create code here...
+  physical_id = ...
+  
+  return { 'PhysicalResourceId': physical_id }
+  
+def on_update(event):
+  physical_id = event["PhysicalResourceId"]
+  props = event["ResourceProperties"]
+  print("update resource %s with props %s" % (physical_id, props))
+  # ...
+
+def on_delete(event):
+  physical_id = event["PhysicalResourceId"]
+  print("delete resource %s" % physical_id)
+  # ...
+```
+
 Users may also provide an additional handler called `isComplete`, for cases
 where the lifecycle operation cannot be completed immediately. The
 `isComplete` handler will be retried asynchronously after `onEvent` until it
 returns `IsComplete: true`, or until the total provider timeout has expired.
+
+The following example is a skelaton for a Python implementation of `isComplete`:
+
+```py
+def is_complete(event, context):
+  physical_id = event["PhysicalResourceId"]
+  request_type = event["RequestType"]
+
+  # check if resource is stable based on request_type
+  is_ready = ... 
+  
+  return { 'IsComplete': is_ready }
+```
 
 [custom resources]: (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
 
