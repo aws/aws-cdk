@@ -391,9 +391,11 @@ Now to test, you can either use `lr test` or invoke `npm run test`:
 
 ```console
 $ cd packages/@aws-cdk/aws-iam
-$ npm run test -- test/test.*.js
+$ npm run test
 <BOOM>
 ```
+
+To run a specific unit test, use `npm run test -- policy.test.js`
 
 ### Linking against this repository
 
