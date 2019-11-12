@@ -20,7 +20,7 @@
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
     "jsii-reflect": "^0.20.3",
-    "jsii-spec": "^0.20.3",
+    "jsii-spec": "^0.20.4",
     "yargs": "^14.2.0"
   },
   "devDependencies": {
