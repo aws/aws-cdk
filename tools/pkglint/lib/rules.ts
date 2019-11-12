@@ -699,8 +699,6 @@ export class GlobalDevDependencies extends ValidationRule {
     const deps = [
       'typescript',
       'tslint',
-      'nodeunit',
-      '@types/nodeunit',
       // '@types/node', // we tend to get @types/node 12.x from transitive closures now, it breaks builds.
       'nyc'
     ];
