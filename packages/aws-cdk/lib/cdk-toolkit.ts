@@ -55,7 +55,7 @@ export class CdkToolkit {
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.length !== 1) {
-        throw new Error('Can only select one stack when comparing to fixed template. Use --excusively to avoid selecting multiple stacks.');
+        throw new Error('Can only select one stack when comparing to fixed template. Use --exclusively to avoid selecting multiple stacks.');
       }
 
       if (!await fs.pathExists(options.templatePath)) {
@@ -66,7 +66,7 @@ export class CdkToolkit {
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks) {
-        stream.write(format('Stack %s\n', colors.bold(stack.name)));
+        stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
         if (printStackDiff(currentTemplate, stack, !!options.strict, options.contextLines || 3, stream) !== 0) {
           ret = 1;
@@ -88,20 +88,20 @@ export class CdkToolkit {
     this.appStacks.processMetadata(stacks);
 
     for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
+      if (stacks.length !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
-        throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
+        throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
         const cfn = await options.sdk.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
-        if (!await stackExists(cfn, stack.name)) {
-          warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.name));
+        if (!await stackExists(cfn, stack.stackName)) {
+          warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
         } else {
-          warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.name));
+          warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
           await this.destroy({
-            stackNames: [stack.name],
+            stackNames: [stack.stackName],
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -128,11 +128,7 @@ export class CdkToolkit {
         }
       }
 
-      if (stack.name !== stack.originalName) {
-        print('%s: deploying... (was %s)', colors.bold(stack.name), colors.bold(stack.originalName));
-      } else {
-        print('%s: deploying...', colors.bold(stack.name));
-      }
+      print('%s: deploying...', colors.bold(stack.displayName));
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
@@ -142,7 +138,7 @@ export class CdkToolkit {
       try {
         const result = await this.provisioner.deployStack({
           stack,
-          deployName: stack.name,
+          deployName: stack.stackName,
           roleArn: options.roleArn,
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
@@ -155,7 +151,7 @@ export class CdkToolkit {
           ? ` ✅  %s (no changes)`
           : ` ✅  %s`;
 
-        success('\n' + message, stack.name);
+        success('\n' + message, stack.displayName);
 
         if (Object.keys(result.outputs).length > 0) {
           print('\nOutputs:');
@@ -163,14 +159,14 @@ export class CdkToolkit {
 
         for (const name of Object.keys(result.outputs)) {
           const value = result.outputs[name];
-          print('%s.%s = %s', colors.cyan(stack.name), colors.cyan(name), colors.underline(colors.cyan(value)));
+          print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
 
         print('\nStack ARN:');
 
         data(result.stackArn);
       } catch (e) {
-        error('\n ❌  %s failed: %s', colors.bold(stack.name), e);
+        error('\n ❌  %s failed: %s', colors.bold(stack.displayName), e);
         throw e;
       }
     }
@@ -187,7 +183,7 @@ export class CdkToolkit {
 
     if (!options.force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.id).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
@@ -195,12 +191,12 @@ export class CdkToolkit {
 
     const action = options.fromDeploy ? 'deploy' : 'destroy';
     for (const stack of stacks) {
-      success('%s: destroying...', colors.blue(stack.name));
+      success('%s: destroying...', colors.blue(stack.displayName));
       try {
-        await destroyStack({ stack, sdk: options.sdk, deployName: stack.name, roleArn: options.roleArn });
-        success(`\n ✅  %s: ${action}ed`, colors.blue(stack.name));
+        await destroyStack({ stack, sdk: options.sdk, deployName: stack.stackName, roleArn: options.roleArn });
+        success(`\n ✅  %s: ${action}ed`, colors.blue(stack.displayName));
       } catch (e) {
-        error(`\n ❌  %s: ${action} failed`, colors.blue(stack.name), e);
+        error(`\n ❌  %s: ${action} failed`, colors.blue(stack.displayName), e);
         throw e;
       }
     }

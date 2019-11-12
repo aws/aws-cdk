@@ -60,7 +60,7 @@ export = {
       path: dirPath
     });
 
-    const synth = app.synth().getStack(stack.stackName);
+    const synth = app.synth().getStackByName(stack.stackName);
     const meta = synth.manifest.metadata || {};
     test.ok(meta['/my-stack']);
     test.ok(meta['/my-stack'][0]);
@@ -340,7 +340,7 @@ export = {
 
       // WHEN
       const session = app.synth();
-      const artifact = session.getStack(stack.stackName);
+      const artifact = session.getStackByName(stack.stackName);
       const metadata = artifact.manifest.metadata || {};
       const md = Object.values(metadata)[0]![0]!.data;
       test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
