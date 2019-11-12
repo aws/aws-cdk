@@ -386,7 +386,7 @@
     "FargateNlbServiceLBPublicListenerECSGroup7501571D": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
-        "Port": 2015,
+        "Port": 80,
         "Protocol": "TCP",
         "TargetType": "ip",
         "VpcId": {
@@ -667,7 +667,7 @@
     "FargateAlbServiceLBPublicListenerECSGroupB3826700": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
-        "Port": 2015,
+        "Port": 80,
         "Protocol": "HTTP",
         "TargetType": "ip",
         "VpcId": {
