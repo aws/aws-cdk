@@ -92,6 +92,21 @@
     "@aws-cdk/aws-iam": "1.22.0",
     "@aws-cdk/core": "1.22.0"
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "collectCoverageFrom": [
+      "lib/**/*.{js,ts}",
+      "!lib/**/*.generated.{js,ts}"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 70
+      }
+    }
+  },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "1.22.0",

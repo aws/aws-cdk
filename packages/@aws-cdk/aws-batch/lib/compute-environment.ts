@@ -18,9 +18,17 @@ export enum ComputeEnvironmentType {
     UNMANAGED = 'UNMANAGED',
 }
 
+<<<<<<< HEAD
 /**
  * Property to specify how compute resources will be provisioned based
  */
+=======
+export enum ComputeEnvironmentStatus {
+    ENABLED = 'ENABLED',
+    DISABLED = 'DISABLED',
+}
+
+>>>>>>> chore(batch): update tests and constructs based on feedback
 export enum ComputeResourceType {
     /**
      * Resources will be EC2 On-Demand resources
@@ -46,7 +54,7 @@ export interface ComputeResourceProps {
     /**
      * The IAM role applied to EC2 resources in the compute environment.
      */
-    readonly instanceRole: iam.IRole;
+    readonly instanceRole?: iam.IRole;
 
     /**
      * The types of EC2 instances that may be launched in the compute environment. You can specify instance
@@ -70,7 +78,7 @@ export interface ComputeResourceProps {
      * The minimum number of EC2 vCPUs that an environment should maintain (even if the compute environment state is DISABLED).
      * Each vCPU is equivalent to 1,024 CPU shares. You must specify at least one vCPU.
      *
-     * @default 0
+     * @default 1
      */
     readonly minvCpus?: number;
 
@@ -82,9 +90,16 @@ export interface ComputeResourceProps {
     readonly securityGroupIds?: ec2.ISecurityGroup[];
 
     /**
-     * The VPC subnets into which the compute resources are launched.
+     * The VPC network that all compute resources will be connected to.
      */
-    readonly subnets: ec2.ISubnet[];
+    readonly vpc: ec2.IVpc;
+
+    /**
+     * The VPC subnets into which the compute resources are launched.
+     *
+     * @default - private subnets of the supplied VPC
+     */
+    readonly vpcSubnets?: ec2.SubnetSelection;
 
     /**
      * The type of compute environment: EC2 or SPOT.
@@ -113,9 +128,14 @@ export interface ComputeResourceProps {
 
     /**
      * The EC2 key pair that is used for instances launched in the compute environment.
+<<<<<<< HEAD
      * If no key is defined, then SSH access is not allowed to provisioned compute resources.
      *
      * @default - No key will be used
+=======
+     *
+     * @default - No SSH access will be possible.
+>>>>>>> chore(batch): update tests and constructs based on feedback
      */
     readonly ec2KeyPair?: string;
 
@@ -124,7 +144,7 @@ export interface ComputeResourceProps {
      *
      * @default - no image will be used
      */
-    readonly imagedId?: ec2.IMachineImage;
+    readonly image?: ec2.IMachineImage;
 
     /**
      * The launch template to use for your compute resources. Any other compute resource parameters
@@ -134,7 +154,7 @@ export interface ComputeResourceProps {
      *
      * @default - no launch template will be used
      */
-    readonly launchTemplate?: ec2.CfnLaunchTemplate;
+    readonly launchTemplate?: ec2.CfnInstance.LaunchTemplateSpecificationProperty;
 
     /**
      * The Amazon EC2 placement group to associate with your compute resources. If you intend to submit multi-node
@@ -162,7 +182,7 @@ export interface ComputeResourceProps {
      *
      * @default - no tags will be assigned on compute resources
      */
-    readonly tags?: Tag;
+    readonly computeResourcesTags?: Tag;
 }
 
 /**
@@ -197,18 +217,22 @@ export interface ComputeEnvironmentProps {
     /**
      * The details of the compute resources managed by this environment.
      *
-     * If specified, and this is an unmanaged compute environment, the property will be ignored.
+     * If specified, and this is an managed compute environment, the property will be ignored.
      *
-     * @default "No resources are provisioned"
+     * By default, AWS Batch managed compute environments use a recent, approved version of the
+     * Amazon ECS-optimized AMI for compute resources.
+     *
+     * @default - AWS-managed compute resources
      */
     readonly computeResources?: ComputeResourceProps;
 
     /**
-     * The state of the compute environment to determine if jobs should be accepted from a queue.
+     * The state of the compute environment. If the state is set to true, then the compute
+     * environment accepts jobs from a queue and can scale out automatically based on queues.
      *
-     * @default true
+     * @default ComputeEnvironmentStatus.ENABLED
      */
-    readonly state?: boolean;
+    readonly state?: ComputeEnvironmentStatus;
 
     /**
      * Whether the compute resources should scale automatically based on job queues.
@@ -276,25 +300,28 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
      */
     public readonly computeEnvironmentName: string;
 
-    constructor(scope: Construct, id: string, props?: ComputeEnvironmentProps) {
+    constructor(scope: Construct, id: string, props: ComputeEnvironmentProps = {}) {
         super(scope, id, {
-            physicalName: props ? props.computeEnvironmentName : undefined,
+            physicalName: props.computeEnvironmentName,
         });
 
         this.validateProps(props);
 
-        let computeResources: CfnComputeEnvironment.ComputeResourcesProperty;
+        let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
-        if (props && props.computeResources) {
+        // Only allow compute resources to be set when using MANAGED type
+        if (props.computeResources && props.type === ComputeEnvironmentType.UNMANAGED) {
             computeResources = {
                 allocationStrategy: props.allocationStrategy || AllocationStrategy.BEST_FIT,
                 bidPercentage: props.computeResources.bidPercentage,
                 desiredvCpus: props.computeResources.desiredvCpus,
                 ec2KeyPair: props.computeResources.ec2KeyPair,
-                imageId: props.computeResources.imagedId ? props.computeResources.imagedId.getImage(this).imageId : undefined,
-                instanceRole: props.computeResources.instanceRole.roleArn || new iam.Role(this, 'Resource-Role', {
-                    assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-                }).roleArn,
+                imageId: props.computeResources.image ? props.computeResources.image.getImage(this).imageId : undefined,
+                instanceRole: props.computeResources.instanceRole ?
+                    props.computeResources.instanceRole.roleArn :
+                    new iam.Role(this, 'Resource-Role', {
+                        assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+                    }).roleArn,
                 instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
                 launchTemplate: props.computeResources.launchTemplate,
                 maxvCpus: props.computeResources.maxvCpus || 256,
@@ -302,28 +329,9 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
                 placementGroup: props.computeResources.placementGroup ? props.computeResources.placementGroup.ref : undefined,
                 securityGroupIds: this.buildSecurityGroupIds(props.computeResources.securityGroupIds),
                 spotIamFleetRole: props.computeResources.spotIamFleetRole ? props.computeResources.spotIamFleetRole.roleArn : undefined,
-                subnets: props.computeResources.subnets.reduce((ids: string[], subnet: ec2.ISubnet): string[] => {
-                    return [...ids, subnet.subnetId];
-                }, []),
-                tags: props.computeResources.tags ? props.computeResources.tags.value : undefined,
+                subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
+                tags: props.computeResources.computeResourcesTags ? props.computeResources.computeResourcesTags : undefined,
                 type: props.computeResources.type || ComputeResourceType.EC2,
-            };
-        } else {
-            const defaultVpc = ec2.Vpc.fromLookup(this, 'Resource-Default-VPC', {
-                isDefault: true,
-            });
-
-            // Compose an environment from free tier resources on default AWS VPC
-            computeResources = {
-                allocationStrategy: AllocationStrategy.BEST_FIT,
-                instanceRole: new iam.Role(this, 'Resource-Role', {
-                    assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-                }).roleArn,
-                instanceTypes: this.buildInstanceTypes(),
-                maxvCpus: 256,
-                minvCpus: 0,
-                subnets: defaultVpc.privateSubnets.map(subnet => subnet.subnetId),
-                type: ComputeResourceType.EC2,
             };
         }
 
@@ -334,7 +342,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
                 awsServiceName: 'batch.amazonaws.com',
                 customSuffix: `-${id}`,
             }).ref,
-            state: props ? (props.state ? 'true' : 'false') : 'false',
+            state: props ? props.state : 'ENABLED',
             type: props ? (props.type ? props.type : ComputeEnvironmentType.MANAGED) : ComputeEnvironmentType.MANAGED,
         });
 
@@ -360,6 +368,16 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         if (props.computeResources && props.computeResources.bidPercentage !== undefined &&
             (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
             throw new Error('Bid percentage can only be a value between 0 and 100');
+        }
+
+        if (props.computeResources && props.computeResources.minvCpus &&
+            props.computeResources.minvCpus < 0) {
+            throw new Error('Minimum vCpus for a batch compute environment cannot be less than 0');
+        }
+
+        if (props.computeResources && props.computeResources.minvCpus && props.computeResources.maxvCpus &&
+            props.computeResources.minvCpus > props.computeResources.maxvCpus) {
+            throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
         }
     }
 

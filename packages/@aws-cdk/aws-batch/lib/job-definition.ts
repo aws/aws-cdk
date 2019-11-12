@@ -39,12 +39,16 @@ export interface IJobDefinitionContainer {
 
     /**
      * The IAM role that the container can assume for AWS permissions.
+     *
+     * @default - An IAM role will created
      */
     readonly jobRole?: iam.IRole;
 
     /**
      * Linux-specific modifications that are applied to the container, such as details for device mappings.
      * For now, only the `devices` property is supported.
+     *
+     * @default - None will be used
      */
     readonly linuxParams?: ecs.LinuxParameters;
 
@@ -58,6 +62,8 @@ export interface IJobDefinitionContainer {
 
     /**
      * The mount points for data volumes in your container.
+     *
+     * @default - No mount points will be used
      */
     readonly mountPoints?: ecs.MountPoint[];
 
@@ -77,6 +83,8 @@ export interface IJobDefinitionContainer {
     /**
      * The number of physical GPUs to reserve for the container. The number of GPUs reserved for all
      * containers in a job should not exceed the number of available GPUs on the compute resource that the job is launched on.
+     *
+     * @default - No GPU reservation
      */
     readonly gpuCount?: number;
 
@@ -87,6 +95,8 @@ export interface IJobDefinitionContainer {
 
     /**
      * The user name to use inside the container.
+     *
+     * @default - None will be used
      */
     readonly user?: string;
 
@@ -100,6 +110,8 @@ export interface IJobDefinitionContainer {
 
     /**
      * A list of data volumes used in a job.
+     *
+     * @default - No data volumes will be used
      */
     readonly volumes?: ecs.Volume[];
 }
@@ -252,31 +264,31 @@ export class JobDefinition extends Resource implements IJobDefinition {
     public readonly jobDefinitionArn: string;
     public readonly jobDefinitionName: string;
 
-    constructor(scope: Construct, id: string, props?: JobDefinitionProps) {
+    constructor(scope: Construct, id: string, props: JobDefinitionProps = {}) {
         super(scope, id, {
-            physicalName: props ? props.jobDefinitionName : undefined,
+            physicalName: props.jobDefinitionName,
         });
 
         const jobDef = new CfnJobDefinition(this, 'Resource', {
-            jobDefinitionName: props ? props.jobDefinitionName : undefined,
-            containerProperties: props ? this.buildJobContainer(props.containerProps) : undefined,
+            jobDefinitionName: props.jobDefinitionName,
+            containerProperties: this.buildJobContainer(props.containerProps),
             type: 'container',
-            nodeProperties: props ? props.nodeProps ? {
+            nodeProperties: props.nodeProps ? {
                 mainNode: props.nodeProps.mainNode,
                 nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps),
                 numNodes: props.nodeProps.count,
-            } : undefined : undefined,
-            parameters: props ? props.parameters : undefined,
+            } : undefined,
+            parameters: props.parameters,
             retryStrategy: {
-                attempts: props ? props.retryAttempts || 1 : undefined,
+                attempts: props.retryAttempts || 1,
             },
             timeout: {
-                attemptDurationSeconds: props ? props.timeout ? props.timeout.toSeconds() : undefined : undefined,
+                attemptDurationSeconds: props.timeout ? props.timeout.toSeconds() : undefined,
             },
         });
 
         this.jobDefinitionArn = jobDef.ref;
-        this.jobDefinitionName = this.getResourceNameAttribute((props ? props.jobDefinitionName : undefined) || this.physicalName);
+        this.jobDefinitionName = this.getResourceNameAttribute(this.physicalName);
     }
 
     private deserializeEnvVariables(env?: { [name: string]: string}): CfnJobDefinition.EnvironmentProperty[] | undefined {

@@ -59,13 +59,17 @@ export interface JobQueueProps {
      * The priority of the job queue. Job queues with a higher priority (or a higher integer value for the priority parameter) are evaluated first
      * when associated with the same compute environment. Priority is determined in descending order, for example, a job queue with a priority value
      * of 10 is given scheduling preference over a job queue with a priority value of 1.
+     *
+     * @default 1
      */
-    readonly priority: number;
+    readonly priority?: number;
 
     /**
      * The state of the job queue. If the job queue state is ENABLED, it is able to accept jobs.
+     *
+     * @default JobQueueState.ENABLED
      */
-    readonly state: JobQueueState;
+    readonly state?: JobQueueState;
 }
 
 /**
@@ -120,29 +124,30 @@ export class JobQueue extends Resource implements IJobQueue {
     public readonly jobQueueArn: string;
     public readonly jobQueueName?: string;
 
-    constructor(scope: Construct, id: string, props: JobQueueProps) {
+    constructor(scope: Construct, id: string, props: JobQueueProps = {}) {
         super(scope, id, {
             physicalName: props.jobQueueName,
         });
 
         const jobQueue = new CfnJobQueue(this, 'Resource', {
-            computeEnvironmentOrder: props.computeEnvironmentOrder ? props.computeEnvironmentOrder.map(cp => {
-                return {
+            computeEnvironmentOrder: props.computeEnvironmentOrder
+              ? props.computeEnvironmentOrder.map(cp => ({
                     computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
                     order: cp.order,
-                } as CfnJobQueue.ComputeEnvironmentOrderProperty;
-            }) : [
+                } as CfnJobQueue.ComputeEnvironmentOrderProperty)
+              ) : [
                 {
+                    // Get an AWS Managed Compute Environment
                     computeEnvironment: new ComputeEnvironment(this, 'Resource-Batch-Compute-Environment').computeEnvironmentArn,
                     order: 1,
                 },
-            ],
+              ],
             jobQueueName: this.physicalName,
             priority: props.priority || 1,
             state: props.state || JobQueueState.DISABLED,
         });
 
         this.jobQueueArn = jobQueue.ref;
-        this.jobQueueName = this.getResourceNameAttribute(props.jobQueueName || this.physicalName);
+        this.jobQueueName = this.getResourceNameAttribute(this.physicalName);
     }
 }
