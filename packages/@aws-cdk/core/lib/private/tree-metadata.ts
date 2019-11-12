@@ -3,7 +3,8 @@ import path = require('path');
 
 import { ArtifactType } from '@aws-cdk/cx-api';
 import { Construct, IConstruct, ISynthesisSession } from '../construct';
-import { IInspectable, TreeInspector } from "../tree";
+import { Stack } from '../stack';
+import { IInspectable, TreeInspector } from '../tree';
 
 const FILE_PATH = 'tree.json';
 
@@ -64,7 +65,7 @@ export class TreeMetadata extends Construct {
     // get attributes from the inspector
     if (canInspect(construct)) {
       construct.inspect(inspector);
-      return inspector.attributes;
+      return Stack.of(construct).resolve(inspector.attributes);
     }
     return undefined;
   }
