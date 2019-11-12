@@ -78,25 +78,32 @@ export class CustomResourceProvider implements ICustomResourceProvider {
  */
 export interface CustomResourceProps {
   /**
-   * The provider which implements the custom resource
+   * The provider which implements the custom resource.
    *
-   * @example invoke an AWS Lambda function when a lifecycle event occurs
+   * You can implement a provider by listening to raw AWS CloudFormation events
+   * through an SNS topic or an AWS Lambda function or use the CDK's custom
+   * [resource provider framework] which makes it easier to implement robust
+   * providers.
    *
-   *    CustomResourceProvider.fromLambda(myFunction)
+   * [resource provider framework]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
    *
-   * @example publish lifecycle events to an SNS topic
+   * ```ts
+   * // use the provider framework from aws-cdk/custom-resources:
+   * provider: new custom_resources.Provider({
+   *   onEventHandler: myOnEventLambda,
+   *   isCompleteHandler: myIsCompleteLambda, // optional
+   * });
+   * ```
    *
-   *    CustomResourceProvider.fromTopic(myTopic)
+   * ```ts
+   * // invoke an AWS Lambda function when a lifecycle event occurs:
+   * provider: CustomResourceProvider.fromLambda(myFunction)
+   * ```
    *
-   * @example use the custom resource provider framework
-   *
-   *    import cr = require('@aws-cdk/custom-resources');
-   *    const myProvider = new cr.Provider(...)
-   *
-   *    new cfn.CustomResource(this, 'myResource', {
-   *      provider: myProvider
-   *    });
-   *
+   * ```ts
+   * // publish lifecycle events to an SNS topic:
+   * provider: CustomResourceProvider.fromTopic(myTopic)
+   * ```
    */
   readonly provider: ICustomResourceProvider;
 

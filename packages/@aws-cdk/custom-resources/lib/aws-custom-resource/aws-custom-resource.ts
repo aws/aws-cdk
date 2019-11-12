@@ -2,8 +2,12 @@ import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformat
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
+import fs = require('fs');
 import path = require('path');
-import metadata = require('./sdk-api-metadata.json');
+
+// don't use "require" since the typescript compiler emits errors since this
+// file is not listed in tsconfig.json.
+const metadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
 
 /**
  * AWS SDK service metadata.
@@ -133,6 +137,16 @@ export interface AwsCustomResourceProps {
   readonly policyStatements?: iam.PolicyStatement[];
 
   /**
+   * The execution role for the Lambda function implementing this custom
+   * resource provider. This role will apply to all `AwsCustomResource`
+   * instances in the stack. The role must be assumable by the
+   * `lambda.amazonaws.com` service principal.
+   *
+   * @default - a new role is created
+   */
+  readonly role?: iam.IRole;
+
+  /**
    * The timeout for the Lambda function implementing this custom resource.
    *
    * @default Duration.seconds(30)
@@ -165,6 +179,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.seconds(30),
+      role: props.role,
     });
     this.grantPrincipal = provider.grantPrincipal;
 

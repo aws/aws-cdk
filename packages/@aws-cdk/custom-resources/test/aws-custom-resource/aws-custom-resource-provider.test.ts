@@ -7,6 +7,8 @@ import { handler } from '../../lib/aws-custom-resource/runtime';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
+console.log = jest.fn(); // tslint:disable-line no-console
+
 const eventCommon = {
   ServiceToken: 'token',
   ResponseURL: 'https://localhost',

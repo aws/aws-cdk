@@ -98,7 +98,7 @@ test('cloud assembly builder', () => {
   });
 
   // verify we have a template file
-  expect(assembly.getStack('minimal-artifact').template).toStrictEqual({
+  expect(assembly.getStackByName('minimal-artifact').template).toStrictEqual({
     Resources: {
       MyTopic: {
         Type: 'AWS::S3::Topic'
@@ -109,4 +109,16 @@ test('cloud assembly builder', () => {
 
 test('outdir must be a directory', () => {
   expect(() => new CloudAssemblyBuilder(__filename)).toThrow('must be a directory');
+});
+
+test('duplicate missing values with the same key are only reported once', () => {
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
+  const session = new CloudAssemblyBuilder(outdir);
+
+  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
+  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
+
+  const assembly = session.buildAssembly();
+
+  expect(assembly.manifest.missing!.length).toEqual(1);
 });

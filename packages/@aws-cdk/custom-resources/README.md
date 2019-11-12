@@ -43,6 +43,7 @@ and powerful custom resources and includes the following capabilities:
   deployments
 * Validates handler return values to help with correct handler implementation
 * Supports asynchronous handlers to enable long operations which can exceed the AWS Lambda timeout
+* Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
 with `cfn.CustomResource` and a user-provided AWS Lambda function which
@@ -109,7 +110,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 
 |Field|Type|Required|Description
 |-----|----|--------|-----------
-|`PhysicalResourceId`|String|Yes|The allocated/assigned physical ID of the resource. Must be returned for all request types, including `Update` and `Delete`, even if the physical ID hasn't changed.
+|`PhysicalResourceId`|String|No|The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur.
 |`Data`|JSON|No|Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
@@ -132,9 +133,10 @@ with the message "Operation timed out".
 If an error is thrown, the framework will submit a "FAILED" response to AWS
 CloudFormation.
 
-The input event to `isComplete` is similar to [`onEvent`](#handling-lifecycle-events-onevent), 
-with an additional guarantee that `PhysicalResourceId` is defines and contains the value returned 
-from `onEvent`.
+The input event to `isComplete` is similar to
+[`onEvent`](#handling-lifecycle-events-onevent), with an additional guarantee
+that `PhysicalResourceId` is defines and contains the value returned from
+`onEvent` or the described default. At any case, it is guaranteed to exist.
 
 The return value must be a JSON object with the following fields:
 
@@ -148,27 +150,24 @@ The return value must be a JSON object with the following fields:
 Every resource in CloudFormation has a physical resource ID. When a resource is
 created, the `PhysicalResourceId` returned from the `Create` operation is stored
 by AWS CloudFormation and assigned to the logical ID defined for this resource
-in the template.
+in the template. If a `Create` operation returns without a `PhysicalResourceId`,
+the framework will use `RequestId` as the default. This is sufficient for
+various cases such as "pseudo-resources" which only query data.
 
-When an `Update` operation occurs, if the returned `PhysicalResourceId` is
-different from the one currently stored (and passed in the event through the
-`PhysicalResourceId` field), AWS CloudFormation will treat this as a **resource
-replacement**, and it will issue a subsequent `Delete` operation for the old
-resource.
+For `Update` and `Delete` operations, the resource event will always include the
+current `PhysicalResourceId` of the resource.
+
+When an `Update` operation occurs, the default behavior is to return the current
+physical resource ID. if the `onEvent` returns a `PhysicalResourceId` which is
+different from the current one, AWS CloudFormation will treat this as a
+**resource replacement**, and it will issue a subsequent `Delete` operation for
+the old resource.
 
 As a rule of thumb, if your custom resource supports configuring a physical name
 (e.g. you can specify a `BucketName` when you define an `AWS::S3::Bucket`), you
 must return this name in `PhysicalResourceId` and make sure to handle
 replacement properly. The `S3File` example demonstrates this
 through the `objectKey` property.
-
-If your custom resource doesn't support configuring a physical name for the
-resource, it is safe to use `RequestId` as `PhysicalResourceId` in the `Create`
-operation, but you must return the same value in subsequent `Update` operations,
-or otherwise CloudFormation will think your resource is being replaced and will
-issue a `Delete` event. The `S3Assert` example demonstrates this by returning
-`event.PhysicalResourceId` if defined (in `Update` and `Delete`) and otherwise
-`event.RequestId` (for `Create`).
 
 ### Error Handling
 

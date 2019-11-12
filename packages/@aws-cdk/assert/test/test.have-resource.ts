@@ -103,5 +103,5 @@ function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   });
 
   writeFileSync(join(assembly.outdir, 'template.json'), JSON.stringify(template));
-  return assembly.buildAssembly().getStack('test');
+  return assembly.buildAssembly().getStackByName('test');
 }

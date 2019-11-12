@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
@@ -18,7 +19,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -39,7 +40,8 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
     print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
-  await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
+
+  await initializeProject(template, language, canUseNetwork, generateOnly);
 }
 
 /**
@@ -101,6 +103,7 @@ export class InitTemplate {
     await this.installFiles(sourceDirectory, targetDirectory, {
       name: decamelize(path.basename(path.resolve(targetDirectory)))
     });
+    await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory);
     await fs.remove(hookTempDirectory);
   }
@@ -162,6 +165,25 @@ export class InitTemplate {
              .replace(/%python-executable%/g, pythonExecutable())
              .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
   }
+
+  /**
+   * Adds context variables to `cdk.json` in the generated project directory to
+   * enable future behavior for new projects.
+   */
+  private async applyFutureFlags(projectDir: string) {
+    const cdkJson = path.join(projectDir, 'cdk.json');
+    if (!await fs.pathExists(cdkJson)) {
+      return;
+    }
+
+    const config = await fs.readJson(cdkJson);
+    config.context = {
+      ...config.context,
+      ...cxapi.FUTURE_FLAGS
+    };
+
+    await fs.writeJson(cdkJson, config, { spaces: 2 });
+  }
 }
 
 interface ProjectInfo {
@@ -211,12 +233,14 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean) {
   await assertIsEmptyDirectory();
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, process.cwd());
-  await initializeGitRepository();
-  await postInstall(language, canUseNetwork);
+  if (!generateOnly) {
+    await initializeGitRepository();
+    await postInstall(language, canUseNetwork);
+  }
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
