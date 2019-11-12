@@ -144,7 +144,8 @@ export class CdkToolkit {
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
           notificationArns: options.notificationArns,
-          tags
+          tags,
+          execute: options.execute
         });
 
         const message = result.noOp
