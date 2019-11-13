@@ -68,7 +68,7 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
       {}
     );
 
-    const evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, task);
+    const evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_LATEST, task);
 
     return {
       resourceArn: evalFn.functionArn,
@@ -89,7 +89,7 @@ function createEvalFn(runtime: lambda.Runtime, scope: cdk.Construct) {
   const lambdaPurpose = 'Eval';
 
   switch (runtime) {
-    case lambda.Runtime.NODEJS_10_X:
+    case lambda.Runtime.NODEJS_LATEST:
       return new lambda.SingletonFunction(scope, 'EvalFunction', {
         runtime,
         handler: 'index.handler',
