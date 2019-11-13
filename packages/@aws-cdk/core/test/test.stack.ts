@@ -672,21 +672,60 @@ export = {
     test.done();
   },
 
-  'allow using the same stack name for two stacks (i.e. in different regions)'(test: Test) {
-    // GIVEN
-    const app = new App({ context: cxapi.FUTURE_FLAGS });
+  '@aws-cdk/core:enableStackNameDuplicates': {
 
-    // WHEN
-    const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
-    const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
-    const assembly = app.synth();
+    'disabled (default)': {
 
-    // THEN
-    test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
-    test.deepEqual(assembly.getStackArtifact(stack2.artifactId).templateFile, 'MyStack2.template.json');
-    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
-    test.deepEqual(stack2.templateFile, 'MyStack2.template.json');
-    test.done();
+      'artifactId and templateFile use the stack name'(test: Test) {
+        // GIVEN
+        const app = new App();
+
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+        const assembly = app.synth();
+
+        // THEN
+        test.deepEqual(stack1.artifactId, 'thestack');
+        test.deepEqual(stack1.templateFile, 'thestack.template.json');
+        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'thestack.template.json');
+        test.done();
+      }
+    },
+
+    'enabled': {
+      'allows using the same stack name for two stacks (i.e. in different regions)'(test: Test) {
+        // GIVEN
+        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
+
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+        const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
+        const assembly = app.synth();
+
+        // THEN
+        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
+        test.deepEqual(assembly.getStackArtifact(stack2.artifactId).templateFile, 'MyStack2.template.json');
+        test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+        test.deepEqual(stack2.templateFile, 'MyStack2.template.json');
+        test.done();
+      },
+
+      'artifactId and templateFile use the unique id and not the stack name'(test: Test) {
+        // GIVEN
+        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
+
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+        const assembly = app.synth();
+
+        // THEN
+        test.deepEqual(stack1.artifactId, 'MyStack1');
+        test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
+        test.done();
+      }
+    }
+
   },
 
   'metadata is collected at the stack boundary'(test: Test) {
