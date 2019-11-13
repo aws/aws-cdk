@@ -39,7 +39,7 @@ export class TreeMetadata extends Construct {
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
-        children: children.length === 0 ? undefined : childrenMap,
+        children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct)
       };
 

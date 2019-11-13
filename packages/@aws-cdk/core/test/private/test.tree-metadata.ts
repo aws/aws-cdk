@@ -288,6 +288,25 @@ export = {
     });
     test.ok(warn);
 
+    // assert that the rest of the construct tree is rendered
+    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
+      version: 'tree-0.1',
+      tree: {
+        id: 'App',
+        path: '',
+        children: {
+          Tree: {
+            id: 'Tree',
+            path: 'Tree'
+          },
+          mystack: {
+            id: 'mystack',
+            path: 'mystack'
+          }
+        }
+      }
+    });
+
     test.done();
   },
 };
