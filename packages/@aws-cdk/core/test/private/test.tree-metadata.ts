@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
@@ -259,7 +260,36 @@ export = {
     });
 
     test.done();
-  }
+  },
+
+  'failing nodes'(test: Test) {
+    class MyCfnResource extends CfnResource {
+      public inspect(_: TreeInspector) {
+        throw new Error('Forcing an inspect error');
+      }
+    }
+
+    const app = new App();
+    const stack = new Stack(app, 'mystack');
+    new MyCfnResource(stack, 'mycfnresource', {
+      type: 'CDK::UnitTest::MyCfnResource'
+    });
+
+    const assembly = app.synth();
+    const treeArtifact = assembly.tree();
+    test.ok(treeArtifact);
+
+    const treenode = app.node.findChild('Tree');
+
+    const warn = treenode.node.metadata.find((md) => {
+      return md.type === cxapi.WARNING_METADATA_KEY
+        && /Forcing an inspect error/.test(md.data as string)
+        && /mycfnresource/.test(md.data as string);
+    });
+    test.ok(warn);
+
+    test.done();
+  },
 };
 
 function readJson(outdir: string, file: string) {

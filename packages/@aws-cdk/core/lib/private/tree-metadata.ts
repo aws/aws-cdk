@@ -21,42 +21,47 @@ export class TreeMetadata extends Construct {
   }
 
   protected synthesize(session: ISynthesisSession) {
-    try {
-      const lookup: { [path: string]: Node } = { };
+    const lookup: { [path: string]: Node } = { };
 
-      const visit = (construct: IConstruct): Node => {
-        const children = construct.node.children.map(visit);
-        const childrenMap = children.reduce((map, child) => Object.assign(map, { [child.id]: child }), {});
-        const node: Node = {
-          id: construct.node.id || 'App',
-          path: construct.node.path,
-          children: children.length === 0 ? undefined : childrenMap,
-          attributes: this.synthAttributes(construct)
-        };
-
-        lookup[node.path] = node;
-
-        return node;
-      };
-
-      const tree = {
-        version: 'tree-0.1',
-        tree: visit(this.node.root),
-      };
-
-      const builder = session.assembly;
-      fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, undefined, 2), { encoding: 'utf-8' });
-
-      builder.addArtifact('Tree', {
-        type: ArtifactType.CDK_TREE,
-        properties: {
-          file: FILE_PATH
+    const visit = (construct: IConstruct): Node => {
+      const children = construct.node.children.map((c) => {
+        try {
+          return visit(c);
+        } catch (e) {
+          this.node.addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          return undefined;
         }
       });
-    } catch (e) {
-      // Prevent errors here to fail synthesis, until this module stays @experimental.
-      this.node.addWarning(`tree.json could not be generated - ${e}`);
-    }
+      const childrenMap = children
+        .filter((child) => child !== undefined)
+        .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
+
+      const node: Node = {
+        id: construct.node.id || 'App',
+        path: construct.node.path,
+        children: children.length === 0 ? undefined : childrenMap,
+        attributes: this.synthAttributes(construct)
+      };
+
+      lookup[node.path] = node;
+
+      return node;
+    };
+
+    const tree = {
+      version: 'tree-0.1',
+      tree: visit(this.node.root),
+    };
+
+    const builder = session.assembly;
+    fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, undefined, 2), { encoding: 'utf-8' });
+
+    builder.addArtifact('Tree', {
+      type: ArtifactType.CDK_TREE,
+      properties: {
+        file: FILE_PATH
+      }
+    });
   }
 
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
