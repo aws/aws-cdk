@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53-targets",
-  "version": "1.16.2",
+  "version": "1.16.3",
   "description": "CDK Constructs for AWS Route53 Alias Targets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -72,38 +72,38 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.2",
-    "@aws-cdk/aws-certificatemanager": "1.16.2",
-    "@aws-cdk/aws-ec2": "1.16.2",
-    "@aws-cdk/aws-lambda": "1.16.2",
-    "cdk-build-tools": "1.16.2",
-    "cdk-integ-tools": "1.16.2",
-    "cfn2ts": "1.16.2",
+    "@aws-cdk/assert": "1.16.3",
+    "@aws-cdk/aws-certificatemanager": "1.16.3",
+    "@aws-cdk/aws-ec2": "1.16.3",
+    "@aws-cdk/aws-lambda": "1.16.3",
+    "cdk-build-tools": "1.16.3",
+    "cdk-integ-tools": "1.16.3",
+    "cfn2ts": "1.16.3",
     "jest": "^24.9.0",
-    "pkglint": "1.16.2"
+    "pkglint": "1.16.3"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "1.16.2",
-    "@aws-cdk/aws-cloudfront": "1.16.2",
-    "@aws-cdk/aws-elasticloadbalancing": "1.16.2",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.16.2",
-    "@aws-cdk/aws-iam": "1.16.2",
-    "@aws-cdk/aws-route53": "1.16.2",
-    "@aws-cdk/aws-s3": "1.16.2",
-    "@aws-cdk/core": "1.16.2",
-    "@aws-cdk/region-info": "1.16.2"
+    "@aws-cdk/aws-apigateway": "1.16.3",
+    "@aws-cdk/aws-cloudfront": "1.16.3",
+    "@aws-cdk/aws-elasticloadbalancing": "1.16.3",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.16.3",
+    "@aws-cdk/aws-iam": "1.16.3",
+    "@aws-cdk/aws-route53": "1.16.3",
+    "@aws-cdk/aws-s3": "1.16.3",
+    "@aws-cdk/core": "1.16.3",
+    "@aws-cdk/region-info": "1.16.3"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-apigateway": "1.16.2",
-    "@aws-cdk/aws-cloudfront": "1.16.2",
-    "@aws-cdk/aws-elasticloadbalancing": "1.16.2",
-    "@aws-cdk/aws-elasticloadbalancingv2": "1.16.2",
-    "@aws-cdk/aws-iam": "1.16.2",
-    "@aws-cdk/aws-route53": "1.16.2",
-    "@aws-cdk/aws-s3": "1.16.2",
-    "@aws-cdk/core": "1.16.2",
-    "@aws-cdk/region-info": "1.16.2"
+    "@aws-cdk/aws-apigateway": "1.16.3",
+    "@aws-cdk/aws-cloudfront": "1.16.3",
+    "@aws-cdk/aws-elasticloadbalancing": "1.16.3",
+    "@aws-cdk/aws-elasticloadbalancingv2": "1.16.3",
+    "@aws-cdk/aws-iam": "1.16.3",
+    "@aws-cdk/aws-route53": "1.16.3",
+    "@aws-cdk/aws-s3": "1.16.3",
+    "@aws-cdk/core": "1.16.3",
+    "@aws-cdk/region-info": "1.16.3"
   },
   "engines": {
     "node": ">= 10.3.0"
