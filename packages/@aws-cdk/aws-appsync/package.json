@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-appsync",
-  "version": "1.16.2",
+  "version": "1.16.3",
   "description": "The CDK Construct Library for AWS::AppSync",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,17 +64,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.2",
-    "cdk-build-tools": "1.16.2",
-    "cfn2ts": "1.16.2",
-    "pkglint": "1.16.2"
+    "@aws-cdk/assert": "1.16.3",
+    "cdk-build-tools": "1.16.3",
+    "cfn2ts": "1.16.3",
+    "pkglint": "1.16.3"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.16.2"
+    "@aws-cdk/core": "1.16.3"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "1.16.2"
+    "@aws-cdk/core": "1.16.3"
   },
   "engines": {
     "node": ">= 10.3.0"

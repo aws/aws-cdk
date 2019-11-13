@@ -1,7 +1,7 @@
 {
   "name": "cfn2ts",
   "private": true,
-  "version": "1.16.2",
+  "version": "1.16.3",
   "description": "Generates typescript types from CloudFormation spec, with support for enrichments",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -34,8 +34,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/cfnspec": "1.16.2",
-    "codemaker": "^0.20.4",
+    "@aws-cdk/cfnspec": "1.16.3",
+    "codemaker": "^0.20.5",
     "fast-json-patch": "^3.0.0-1",
     "fs-extra": "^8.1.0",
     "yargs": "^14.2.0"
@@ -43,8 +43,8 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/yargs": "^13.0.3",
-    "cdk-build-tools": "1.16.2",
-    "pkglint": "1.16.2"
+    "cdk-build-tools": "1.16.3",
+    "pkglint": "1.16.3"
   },
   "keywords": [
     "aws",
