@@ -47,6 +47,9 @@ export class Runtime {
   public static readonly RUBY_2_5 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
   public static readonly PROVIDED =     new Runtime('provided',       RuntimeFamily.OTHER);
 
+  /**
+   * Alias of the latest Node JS runtime
+   */
   public static readonly NODEJS_LATEST = Runtime.NODEJS_10_X;
 
   /**
