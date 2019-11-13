@@ -414,6 +414,15 @@ export = {
       }]
     }));
 
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+      TargetType: "ip",
+      VpcId: {
+        Ref: "VPCB9E5F0B4"
+      }
+    }));
+
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 1,
       LaunchType: "FARGATE",
