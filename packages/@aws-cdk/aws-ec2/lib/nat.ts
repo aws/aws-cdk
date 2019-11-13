@@ -85,9 +85,9 @@ export interface NatInstanceProps {
    * If you have a specific AMI ID you want to use, pass a `GenericLinuxImage`. For example:
    *
    * ```ts
-   * NatProvider.instance({
-   *   instanceType: new InstanceType('t3.micro'),
-   *   machineImage: new GenericLinuxImage({
+   * ec2.NatProvider.instance({
+   *   instanceType: new ec2.InstanceType('t3.micro'),
+   *   machineImage: new ec2.GenericLinuxImage({
    *     'us-east-2': 'ami-0f9c61b5a562a16af'
    *   })
    * })

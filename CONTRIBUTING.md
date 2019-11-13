@@ -36,6 +36,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
   - [API Compatibility Checks](#api-compatibility-checks)
+  - [Examples](#examples)
   - [Feature Flags](#feature-flags)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
@@ -515,6 +516,62 @@ this API we will not break anyone, because they weren't able to use it. The file
 `allowed-breaking-changes.txt` in the root of the repo is an exclusion file that
 can be used in these cases.
 
+### Examples
+
+Examples typed in fenced code blocks (looking like `'''ts`, but then with backticks
+instead of regular quotes) will be automatically extrated, compiled and translated
+to other languages when the bindings are generated.
+
+To successfully do that, they must be compilable. The easiest way to do that is using
+a *fixture*, which looks like this:
+
+```
+'''ts fixture=with-bucket
+bucket.addLifecycleTransition({ ... });
+'''
+```
+
+While processing the examples, the tool will look for a file called
+`rosetta/with-bucket.ts-fixture` in the package directory. This file will be
+treated as a regular TypeScript source file, but it must also contain the text
+`/// here`, at which point the example will be inserted. The complete file must
+compile properly.
+
+Before the `/// here` marker, the fixture should import the necessary packages
+and initialize the required variables.
+
+If no fixture is specified, the fixture with the name
+`rosetta/default.ts-fixture` will be used if present. `nofixture` can be used to
+opt out of that behavior.
+
+In an `@example` block, which is unfenced, the first line of the example can
+contain three slashes to achieve the same effect:
+
+```
+/**
+ * @example
+ * /// fixture=with-bucket
+ * bucket.addLifecycleTransition({ ... });
+ */
+```
+
+When including packages in your examples (even the package you're writing the
+examples for), use the full package name (e.g. `import s3 =
+require('@aws-cdk/aws-s3);`). The example will be compiled in an environment
+where all CDK packages are available using their public names. In this way,
+it's also possible to import packages that are not in the dependency set of
+the current package.
+
+For a practical example of how making sample code compilable works, see the
+`aws-ec2` package.
+
+Examples of all packages are extracted and compiled as part of the packaging
+step. If you are working on getting rid of example compilation errors of a
+single package, you can run `scripts/compile-samples` on the package by itself.
+
+For now, non-compiling examples will not yet block the build, but at some point
+in the future they will.
+
 ### Feature Flags
 
 Sometimes we want to introduce new breaking behavior because we believe this is
@@ -547,9 +604,9 @@ The pattern is simple:
 5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
 
     ```
-    BREAKING CHANGE: template file names for new projects created through "cdk init" 
-    will use the template artifact ID instead of the physical stack name to enable 
-    multiple stacks to use the same name. This is enabled through the flag 
+    BREAKING CHANGE: template file names for new projects created through "cdk init"
+    will use the template artifact ID instead of the physical stack name to enable
+    multiple stacks to use the same name. This is enabled through the flag
     `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
     ```
 

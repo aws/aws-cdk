@@ -143,10 +143,9 @@ export interface InstanceProps {
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
    *
    * @example
-   *
-   *    const role = new iam.Role(this, 'MyRole', {
-   *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
-   *    });
+   * const role = new iam.Role(this, 'MyRole', {
+   *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   * });
    *
    * @default - A role will automatically be created, it can be accessed via the `role` property
    */
