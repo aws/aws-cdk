@@ -6,8 +6,8 @@ import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct';
 import { CfnReference } from './private/cfn-reference';
+import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
-import { IResolvable } from './resolvable';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
@@ -131,7 +131,7 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string): IResolvable {
+  public getAtt(attributeName: string): Reference {
     return CfnReference.for(this, attributeName);
   }
 
@@ -140,10 +140,38 @@ export class CfnResource extends CfnRefElement {
    * property override, either use `addPropertyOverride` or prefix `path` with
    * "Properties." (i.e. `Properties.TopicName`).
    *
-   * @param path  The path of the property, you can use dot notation to
+   * If the override is nested, separate each nested level using a dot (.) in the path parameter.
+   * If there is an array as part of the nesting, specify the index in the path.
+   *
+   * For example,
+   * ```typescript
+   * addOverride('Properties.GlobalSecondaryIndexes.0.Projection.NonKeyAttributes', ['myattribute'])
+   * addOverride('Properties.GlobalSecondaryIndexes.1.ProjectionType', 'INCLUDE')
+   * ```
+   * would add the overrides
+   * ```json
+   * "Properties": {
+   *   "GlobalSecondaryIndexes": [
+   *     {
+   *       "Projection": {
+   *         "NonKeyAttributes": [ "myattribute" ]
+   *         ...
+   *       }
+   *       ...
+   *     },
+   *     {
+   *       "ProjectionType": "INCLUDE"
+   *       ...
+   *     },
+   *   ]
+   *   ...
+   * }
+   * ```
+   *
+   * @param path - The path of the property, you can use dot notation to
    *        override values in complex types. Any intermdediate keys
    *        will be created as needed.
-   * @param value The value. Could be primitive or complex.
+   * @param value - The value. Could be primitive or complex.
    */
   public addOverride(path: string, value: any) {
     const parts = path.split('.');

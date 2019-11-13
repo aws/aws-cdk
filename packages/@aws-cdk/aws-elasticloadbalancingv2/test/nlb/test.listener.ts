@@ -99,16 +99,12 @@ export = {
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
     group.configureHealthCheck({
-      timeout: cdk.Duration.hours(1),
-      interval: cdk.Duration.seconds(30),
-      path: '/test',
+      interval: cdk.Duration.seconds(30)
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckPath: "/test",
-      HealthCheckTimeoutSeconds: 3600,
+      HealthCheckIntervalSeconds: 30
     }));
 
     test.done();
@@ -183,10 +179,107 @@ export = {
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     test.throws(() => lb.addListener('Listener', {
-        port: 443,
-        protocol: elbv2.Protocol.HTTP,
-        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-      }), Error, '/The protocol must be either TCP or TLS. Found HTTP/');
+      port: 443,
+      protocol: elbv2.Protocol.HTTP,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    }), /The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
+
+    test.done();
+  },
+
+  'Invalid Listener Target Healthcheck Interval'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+    const targetGroup = listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60)
+      }
+    });
+
+    const validationErrors: string[] = (targetGroup as any).validate();
+    const intervalError = validationErrors.find((err) => /Health check interval '60' not supported. Must be one of the following values/.test(err));
+    test.notEqual(intervalError, undefined, 'Failed to return health check interval validation error');
+
+    test.done();
+  },
+
+  'validation error if invalid health check protocol'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+    const targetGroup = listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60)
+      }
+    });
+
+    targetGroup.configureHealthCheck({
+      interval: cdk.Duration.seconds(30),
+      protocol: elbv2.Protocol.UDP
+    });
+
+    // THEN
+    const validationErrors: string[] = (targetGroup as any).validate();
+    test.deepEqual(validationErrors, ["Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]"]);
+
+    test.done();
+  },
+
+  'validation error if invalid path health check protocol'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+    const targetGroup = listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60)
+      }
+    });
+
+    targetGroup.configureHealthCheck({
+      interval: cdk.Duration.seconds(30),
+      protocol: elbv2.Protocol.TCP,
+      path: '/'
+    });
+
+    // THEN
+    const validationErrors: string[] = (targetGroup as any).validate();
+    test.deepEqual(validationErrors, [
+      "'TCP' health checks do not support the path property. Must be one of [HTTP, HTTPS]"
+    ]);
+
+    test.done();
+  },
+
+  'validation error if invalid timeout health check'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+    const targetGroup = listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60)
+      }
+    });
+
+    targetGroup.configureHealthCheck({
+      interval: cdk.Duration.seconds(30),
+      protocol: elbv2.Protocol.HTTP,
+      timeout: cdk.Duration.seconds(10),
+    });
+
+    // THEN
+    const validationErrors: string[] = (targetGroup as any).validate();
+    test.deepEqual(validationErrors, [
+      "Custom health check timeouts are not supported for Network Load Balancer health checks. Expected 6 seconds for HTTP, got 10"
+    ]);
 
     test.done();
   },
@@ -200,7 +293,7 @@ export = {
       port: 443,
       protocol: elbv2.Protocol.TLS,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-    }), Error, '/When the protocol is set to TLS, you must specify certificates/');
+    }), /When the protocol is set to TLS, you must specify certificates/);
 
     test.done();
   },
@@ -218,7 +311,7 @@ export = {
       protocol: elbv2.Protocol.TCP,
       certificates: [ { certificateArn: cert.certificateArn } ],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
-    }), Error, '/Protocol must be TLS when certificates have been specified/');
+    }), /Protocol must be TLS when certificates have been specified/);
 
     test.done();
   },

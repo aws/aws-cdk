@@ -1,5 +1,5 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
@@ -27,25 +27,11 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly vpc?: IVpc;
 
   /**
-   * The image used to start a container.
+   * The properties required to create a new task definition. One of taskImageOptions or taskDefinition must be specified.
+   *
+   * @default - none
    */
-  readonly image: ContainerImage;
-
-  /**
-   * The port number on the container that is bound to the user-specified or automatically assigned host port.
-   *
-   * If you are using containers in a task with the awsvpc or host network mode, exposed ports should be specified using containerPort.
-   * If you are using containers in a task with the bridge network mode and you specify a container port and not a host port,
-   * your container automatically receives a host port in the ephemeral port range.
-   *
-   * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
-   *
-   * For more information, see
-   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
-   *
-   * @default 80
-   */
-  readonly containerPort?: number;
+  readonly taskImageOptions?: NetworkLoadBalancedTaskImageOptions;
 
   /**
    * Determines whether the Load Balancer will be internet-facing.
@@ -56,10 +42,88 @@ export interface NetworkLoadBalancedServiceBaseProps {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The minimum value is 1
    *
    * @default 1
    */
   readonly desiredCount?: number;
+
+  /**
+   * The domain name for the service, e.g. "api.example.com."
+   *
+   * @default - No domain name.
+   */
+  readonly domainName?: string;
+
+  /**
+   * The Route53 hosted zone for the domain, e.g. "example.com."
+   *
+   * @default - No Route53 hosted domain zone.
+   */
+  readonly domainZone?: IHostedZone;
+
+  /**
+   * The name of the service.
+   *
+   * @default - CloudFormation-generated name.
+   */
+  readonly serviceName?: string;
+
+  /**
+   * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
+   * Elastic Load Balancing target health checks after a task has first started.
+   *
+   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
+   */
+  readonly healthCheckGracePeriod?: cdk.Duration;
+
+  /**
+   * The network load balancer that will serve traffic to the service.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - a new load balancer will be created.
+   */
+  readonly loadBalancer?: NetworkLoadBalancer;
+
+  /**
+   * Listener port of the network load balancer that will serve traffic to the service.
+   *
+   * @default 80
+   */
+  readonly listenerPort?: number;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default - none
+   */
+  readonly propagateTags?: PropagatedTagSource;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default false
+   */
+  readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The options for configuring an Amazon ECS service to use service discovery.
+   *
+   * @default - AWS Cloud Map service discovery is not enabled.
+   */
+  readonly cloudMapOptions?: CloudMapOptions;
+}
+
+export interface NetworkLoadBalancedTaskImageOptions {
+  /**
+   * The image used to start a container. Image or taskDefinition must be specified, but not both.
+   *
+   * @default - none
+   */
+  readonly image: ContainerImage;
 
   /**
    * The environment variables to pass to the container.
@@ -83,18 +147,11 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
-   * The domain name for the service, e.g. "api.example.com."
+   * The log driver to use.
    *
-   * @default - No domain name.
+   * @default - AwsLogDriver if enableLogging is true
    */
-  readonly domainName?: string;
-
-  /**
-   * The Route53 hosted zone for the domain, e.g. "example.com."
-   *
-   * @default - No Route53 hosted domain zone.
-   */
-  readonly domainZone?: IHostedZone;
+  readonly logDriver?: LogDriver;
 
   /**
    * The name of the task execution IAM role that grants the Amazon ECS container agent permission to call AWS APIs on your behalf.
@@ -104,7 +161,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly executionRole?: IRole;
 
   /**
-   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   * The name of the task IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
    * @default - A task role is automatically created for you.
    */
@@ -118,27 +175,27 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly containerName?: string;
 
   /**
-   * The name of the service.
+   * The port number on the container that is bound to the user-specified or automatically assigned host port.
    *
-   * @default - CloudFormation-generated name.
+   * If you are using containers in a task with the awsvpc or host network mode, exposed ports should be specified using containerPort.
+   * If you are using containers in a task with the bridge network mode and you specify a container port and not a host port,
+   * your container automatically receives a host port in the ephemeral port range.
+   *
+   * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
+   *
+   * For more information, see
+   * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+   *
+   * @default 80
    */
-  readonly serviceName?: string;
+  readonly containerPort?: number;
 
   /**
-   * The log driver to use.
+   * The name of a family that this task definition is registered to. A family groups multiple versions of a task definition.
    *
-   * @default - AwsLogDriver if enableLogging is true
+   * @default - Automatically generated name.
    */
-  readonly logDriver?: LogDriver;
-
-  /**
-   * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
-   * Elastic Load Balancing target health checks after a task has first started.
-   *
-   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
-   */
-  readonly healthCheckGracePeriod?: cdk.Duration;
-
+  readonly family?: string;
 }
 
 /**
@@ -171,25 +228,19 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   public readonly cluster: ICluster;
 
   /**
-   * The log driver to use for logging.
-   */
-  public readonly logDriver?: LogDriver;
-
-  /**
    * Constructs a new instance of the NetworkLoadBalancedServiceBase class.
    */
-  constructor(scope: cdk.Construct, id: string, props: NetworkLoadBalancedServiceBaseProps) {
+  constructor(scope: cdk.Construct, id: string, props: NetworkLoadBalancedServiceBaseProps = {}) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    // Create log driver if logging is enabled
-    const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
-    this.logDriver = props.logDriver !== undefined ? props.logDriver : enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
-
+    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+      throw new Error('You must specify a desiredCount greater than 0');
+    }
     this.desiredCount = props.desiredCount || 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
@@ -199,13 +250,15 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    this.loadBalancer = new NetworkLoadBalancer(this, 'LB', lbProps);
+    this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
+
+    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
 
     const targetProps = {
       port: 80
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: 80 });
+    this.listener = this.loadBalancer.addListener('PublicListener', { port: listenerPort });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
@@ -240,7 +293,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     this.targetGroup.addTarget(service);
   }
 
-  private createAWSLogDriver(prefix: string): AwsLogDriver {
+  protected createAWSLogDriver(prefix: string): AwsLogDriver {
     return new AwsLogDriver({ streamPrefix: prefix });
   }
 }

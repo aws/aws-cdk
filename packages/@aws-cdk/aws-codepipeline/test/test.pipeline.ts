@@ -46,6 +46,26 @@ export = {
     },
 
     'that is cross-region': {
+      'validates that source actions are in the same account as the pipeline'(test: Test) {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack', { env: { region: 'us-west-1', account: '123456789012' }});
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+        const sourceStage = pipeline.addStage({
+          stageName: 'Source',
+        });
+        const sourceAction = new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: new codepipeline.Artifact(),
+          region: 'ap-southeast-1',
+        });
+
+        test.throws(() => {
+          sourceStage.addAction(sourceAction);
+        }, /Source action 'FakeSource' must be in the same region as the pipeline/);
+
+        test.done();
+      },
+
       'allows passing an Alias in place of the KMS Key in the replication Bucket'(test: Test) {
         const app = new cdk.App();
 
@@ -96,7 +116,18 @@ export = {
                 "Type": "S3",
                 "EncryptionKey": {
                   "Type": "KMS",
-                  "Id": "alias/my-replication-alias",
+                  "Id": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-west-1:123456789012:alias/my-replication-alias",
+                      ],
+                    ],
+                  },
                 },
               },
             },
@@ -143,7 +174,7 @@ export = {
         test.done();
       },
 
-      "generates ArtifactStores with the alias' name as the KeyID"(test: Test) {
+      "generates ArtifactStores with the alias' ARN as the KeyID"(test: Test) {
         const app = new cdk.App();
         const replicationRegion = 'us-west-1';
 
@@ -180,7 +211,18 @@ export = {
                 "Type": "S3",
                 "EncryptionKey": {
                   "Type": "KMS",
-                  "Id": "alias/mystack-support-us-west-1tencryptionalias9b344b2b8e6825cb1f7d",
+                  "Id": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-west-1:123456789012:alias/s-west-1tencryptionalias9b344b2b8e6825cb1f7d",
+                      ],
+                    ],
+                  },
                 },
               },
             },
@@ -191,8 +233,8 @@ export = {
         }));
 
         expect(pipeline.crossRegionSupport[replicationRegion].stack).to(haveResourceLike('AWS::KMS::Alias', {
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
+          "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
         }, ResourcePart.CompleteDefinition));
 
         test.done();
@@ -242,7 +284,7 @@ export = {
                 "Location": "my-us-west-1-replication-bucket",
                 "EncryptionKey": {
                   "Type": "KMS",
-                  "Id": "1234-5678-9012",
+                  "Id": "arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012",
                 },
               },
             },

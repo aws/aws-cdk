@@ -1,6 +1,6 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
 
@@ -8,6 +8,13 @@ import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
  */
 export interface QueueProcessingServiceBaseProps {
+  /**
+   * The name of the service.
+   *
+   * @default - CloudFormation-generated name.
+   */
+  readonly serviceName?: string;
+
   /**
    * The name of the cluster that hosts the service.
    *
@@ -102,6 +109,29 @@ export interface QueueProcessingServiceBaseProps {
    * @default - AwsLogDriver if enableLogging is true
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @default - none
+   */
+  readonly propagateTags?: PropagatedTagSource;
+
+  /**
+   * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
+   * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
+   *
+   * @default false
+   */
+  readonly enableECSManagedTags?: boolean;
+
+  /**
+   * The name of a family that the task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
 }
 
 /**
@@ -181,8 +211,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.secrets = props.secrets;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
-    this.desiredCount = props.desiredTaskCount || 1;
+    this.desiredCount = props.desiredTaskCount !== undefined ? props.desiredTaskCount : 1;
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+
+    if (!this.desiredCount && !this.maxCapacity) {
+      throw new Error(`maxScalingCapacity must be set and greater than 0 if desiredCount is 0`);
+    }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
     new CfnOutput(this, 'SQSQueueArn', { value: this.sqsQueue.queueArn });

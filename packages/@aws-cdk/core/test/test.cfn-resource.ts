@@ -14,7 +14,7 @@ export = nodeunit.testCase({
         test.notEqual(val, null);
       };
 
-      test.deepEqual(app.synth().getStack(stack.stackName).template, {
+      test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
         Resources: {
           DefaultResource: {
             Type: 'Test::Resource::Fake'
@@ -37,7 +37,7 @@ export = nodeunit.testCase({
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
 
     // THEN
-    test.deepEqual(app.synth().getStack(stack.stackName).template, {
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
       Resources: {
         DefaultResource: {
           Type: 'Test::Resource::Fake',
@@ -62,7 +62,7 @@ export = nodeunit.testCase({
     });
 
     // THEN
-    test.deepEqual(app.synth().getStack(stack.stackName).template, {
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
       Resources: {
         DefaultResource: {
           Type: 'Test::Resource::Fake',

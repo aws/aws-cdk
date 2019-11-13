@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-events-targets",
-  "version": "1.9.0",
+  "version": "1.16.1",
   "description": "Event targets for AWS CloudWatch Events",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,11 +45,12 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "pre": [
-      "cp -f node_modules/aws-sdk/apis/metadata.json lib/sdk-api-metadata.json"
+      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json"
     ]
   },
   "jest": {
@@ -79,48 +80,59 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.9.0",
-    "@aws-cdk/aws-codecommit": "^1.9.0",
-    "aws-sdk": "^2.535.0",
+    "@aws-cdk/assert": "1.16.1",
+    "@aws-cdk/aws-codecommit": "1.16.1",
+    "aws-sdk": "^2.569.0",
     "aws-sdk-mock": "^4.5.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
+    "cdk-build-tools": "1.16.1",
+    "cdk-integ-tools": "1.16.1",
     "jest": "^24.9.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "1.16.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.9.0",
-    "@aws-cdk/aws-codebuild": "^1.9.0",
-    "@aws-cdk/aws-codepipeline": "^1.9.0",
-    "@aws-cdk/aws-ec2": "^1.9.0",
-    "@aws-cdk/aws-ecs": "^1.9.0",
-    "@aws-cdk/aws-events": "^1.9.0",
-    "@aws-cdk/aws-iam": "^1.9.0",
-    "@aws-cdk/aws-lambda": "^1.9.0",
-    "@aws-cdk/aws-sns": "^1.9.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.9.0",
-    "@aws-cdk/aws-sqs": "^1.9.0",
-    "@aws-cdk/aws-stepfunctions": "^1.9.0",
-    "@aws-cdk/core": "^1.9.0"
+    "@aws-cdk/aws-cloudformation": "1.16.1",
+    "@aws-cdk/aws-codebuild": "1.16.1",
+    "@aws-cdk/aws-codepipeline": "1.16.1",
+    "@aws-cdk/aws-ec2": "1.16.1",
+    "@aws-cdk/aws-ecs": "1.16.1",
+    "@aws-cdk/aws-events": "1.16.1",
+    "@aws-cdk/aws-iam": "1.16.1",
+    "@aws-cdk/aws-lambda": "1.16.1",
+    "@aws-cdk/aws-sns": "1.16.1",
+    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
+    "@aws-cdk/aws-sqs": "1.16.1",
+    "@aws-cdk/aws-stepfunctions": "1.16.1",
+    "@aws-cdk/core": "1.16.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.9.0",
-    "@aws-cdk/aws-codebuild": "^1.9.0",
-    "@aws-cdk/aws-codepipeline": "^1.9.0",
-    "@aws-cdk/aws-ec2": "^1.9.0",
-    "@aws-cdk/aws-ecs": "^1.9.0",
-    "@aws-cdk/aws-events": "^1.9.0",
-    "@aws-cdk/aws-iam": "^1.9.0",
-    "@aws-cdk/aws-lambda": "^1.9.0",
-    "@aws-cdk/aws-sns": "^1.9.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.9.0",
-    "@aws-cdk/aws-sqs": "^1.9.0",
-    "@aws-cdk/aws-stepfunctions": "^1.9.0",
-    "@aws-cdk/core": "^1.9.0"
+    "@aws-cdk/aws-cloudformation": "1.16.1",
+    "@aws-cdk/aws-codebuild": "1.16.1",
+    "@aws-cdk/aws-codepipeline": "1.16.1",
+    "@aws-cdk/aws-ec2": "1.16.1",
+    "@aws-cdk/aws-ecs": "1.16.1",
+    "@aws-cdk/aws-events": "1.16.1",
+    "@aws-cdk/aws-iam": "1.16.1",
+    "@aws-cdk/aws-lambda": "1.16.1",
+    "@aws-cdk/aws-sns": "1.16.1",
+    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
+    "@aws-cdk/aws-sqs": "1.16.1",
+    "@aws-cdk/aws-stepfunctions": "1.16.1",
+    "@aws-cdk/core": "1.16.1"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-events-targets.EcsTask.securityGroup",
+      "docs-public-apis:@aws-cdk/aws-events-targets.SfnStateMachine.machine",
+      "docs-public-apis:@aws-cdk/aws-events-targets.SnsTopic.topic",
+      "docs-public-apis:@aws-cdk/aws-events-targets.SqsQueue.queue",
+      "docs-public-apis:@aws-cdk/aws-events-targets.ContainerOverride",
+      "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
+      "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"
+    ]
+  }
 }

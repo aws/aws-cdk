@@ -22,11 +22,13 @@ class EventStack extends cdk.Stack {
     // Create the scheduled task
     new ScheduledEc2Task(this, 'ScheduledEc2Task', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        cpu: 1,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
       desiredTaskCount: 2,
-      memoryLimitMiB: 512,
-      cpu: 1,
-      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
     /// !hide

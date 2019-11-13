@@ -4,7 +4,7 @@ import nodeunit = require('nodeunit');
 import { ISDK } from '../../lib/api';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
 
-AWS.setSDKInstance(aws);
+AWS.setSDK(require.resolve('aws-sdk'));
 
 const mockSDK: ISDK = {
   defaultAccount: () => Promise.resolve('123456789012'),
@@ -54,7 +54,8 @@ export = nodeunit.testCase({
       publicSubnetIds: ['sub-123456'],
       publicSubnetNames: ['Public'],
       publicSubnetRouteTableIds: ['rtb-123456'],
-      vpnGatewayId: 'gw-abcdef'
+      vpnGatewayId: 'gw-abcdef',
+      subnetGroups: undefined,
     });
 
     AWS.restore();
@@ -138,7 +139,8 @@ export = nodeunit.testCase({
       publicSubnetIds: ['sub-123456'],
       publicSubnetNames: ['Public'],
       publicSubnetRouteTableIds: ['rtb-123456'],
-      vpnGatewayId: 'gw-abcdef'
+      vpnGatewayId: 'gw-abcdef',
+      subnetGroups: undefined,
     });
 
     test.done();
@@ -199,6 +201,7 @@ export = nodeunit.testCase({
       publicSubnetNames: ['Public'],
       publicSubnetRouteTableIds: ['rtb-123456'],
       vpnGatewayId: undefined,
+      subnetGroups: undefined,
     });
 
     AWS.restore();

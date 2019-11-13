@@ -10,6 +10,7 @@ import {
   fileShouldBe, fileShouldContain,
   findInnerPackages,
   monoRepoRoot,
+  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -422,11 +423,11 @@ export class NodeCompatibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^8.')) {
+    if (atTypesNode && !atTypesNode.startsWith('^10.')) {
       pkg.report({
         ruleName: this.name,
-        message: `packages must support node version 8 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^8.10.38')
+        message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
+        fix: () => pkg.addDevDependency('@types/node', '^10.17.5')
       });
     }
   }
@@ -451,6 +452,10 @@ export class NoAtTypesInDependencies extends ValidationRule {
       });
     }
   }
+}
+
+function isCdkModuleName(name: string) {
+  return !!name.match(/^@aws-cdk\//);
 }
 
 /**
@@ -576,7 +581,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-build-tools',
-      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-build-tools'))}`);
+      `${require('../../cdk-build-tools/package.json').version}`);
   }
 }
 
@@ -628,6 +633,28 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
           ruleName: this.name,
           message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
           fix: () => pkg.addPeerDependency(depName, depVersion)
+        });
+      }
+    }
+  }
+}
+
+/**
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ */
+export class MustDependonCdkByPointVersions extends ValidationRule {
+  public readonly name = 'dependencies/cdk-point-dependencies';
+
+  public validate(pkg: PackageJson): void {
+    const expectedVersion = monoRepoVersion();
+
+    for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
+      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
+          fix: () => pkg.addDependency(depName, expectedVersion)
         });
       }
     }
@@ -749,7 +776,20 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
-      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-integ-tools'))}`);
+      `${require('../../cdk-integ-tools/package.json').version}`);
+  }
+}
+
+/**
+ * Checks API backwards compatibility against the latest released version.
+ */
+export class CompatScript extends ValidationRule {
+  public readonly name = 'package-info/scripts/compat';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return ; }
+
+    expectJSON(this.name, pkg, 'scripts.compat', 'cdk-compat');
   }
 }
 
@@ -759,7 +799,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../'))}`);
+    expectDevDependency(this.name, pkg, 'pkglint', `${require('../package.json').version}`);
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({
@@ -817,7 +857,7 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
-    this.ourPackages[pkg.json.name] = "^" + pkg.json.version;
+    this.ourPackages[pkg.json.name] = `^${pkg.json.version}`;
     this.recordDeps(pkg.json.dependencies);
     this.recordDeps(pkg.json.devDependencies);
   }
@@ -984,6 +1024,39 @@ export class FastFailingBuildScripts extends ValidationRule {
 
     const cmdBuildTest = 'npm run build+test';
     expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
+  }
+}
+
+export class YarnNohoistBundledDependencies extends ValidationRule {
+  public readonly name = 'yarn/nohoist-bundled-dependencies';
+
+  public validate(pkg: PackageJson) {
+    const bundled: string[] = pkg.json.bundleDependencies || pkg.json.bundledDependencies || [];
+    if (bundled.length === 0) { return; }
+
+    const repoPackageJson = path.resolve(__dirname, '../../../package.json');
+
+    const nohoist: string[] = require(repoPackageJson).workspaces.nohoist;
+
+    const missing = new Array<string>();
+    for (const dep of bundled) {
+      for (const entry of [`${pkg.packageName}/${dep}`, `${pkg.packageName}/${dep}/**`]) {
+        if (nohoist.indexOf(entry) >= 0) { continue; }
+        missing.push(entry);
+      }
+    }
+
+    if (missing.length > 0) {
+      pkg.report({
+        ruleName: this.name,
+        message: `Repository-level 'workspaces.nohoist' directive is missing: ${missing.join(', ')}`,
+        fix: () => {
+          const packageJson = require(repoPackageJson);
+          packageJson.workspaces.nohoist = [...packageJson.workspaces.nohoist, ...missing].sort();
+          fs.writeFileSync(repoPackageJson, `${JSON.stringify(packageJson, null, 2)}\n`, { encoding: 'utf8' });
+        },
+      });
+    }
   }
 }
 

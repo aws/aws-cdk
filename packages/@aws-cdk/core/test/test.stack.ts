@@ -1,6 +1,8 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack } from '../lib';
+import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
 export = {
@@ -114,6 +116,30 @@ export = {
     test.done();
   },
 
+  'Stacks can have a description given to them'(test: Test) {
+    const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!'});
+    const output = toCloudFormation(stack);
+    test.equal(output.Description, 'My stack, hands off!');
+    test.done();
+  },
+
+  'Stack descriptions have a limited length'(test: Test) {
+    const desc = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+     incididunt ut labore et dolore magna aliqua. Consequat interdum varius sit amet mattis vulputate
+     enim nulla aliquet. At imperdiet dui accumsan sit amet nulla facilisi morbi. Eget lorem dolor sed
+     viverra ipsum. Diam volutpat commodo sed egestas egestas. Sit amet porttitor eget dolor morbi non.
+     Lorem dolor sed viverra ipsum. Id porta nibh venenatis cras sed felis. Augue interdum velit euismod
+     in pellentesque. Suscipit adipiscing bibendum est ultricies integer quis. Condimentum id venenatis a
+     condimentum vitae sapien pellentesque habitant morbi. Congue mauris rhoncus aenean vel elit scelerisque
+     mauris pellentesque pulvinar.
+     Faucibus purus in massa tempor nec. Risus viverra adipiscing at in. Integer feugiat scelerisque varius
+     morbi. Malesuada nunc vel risus commodo viverra maecenas accumsan lacus. Vulputate sapien nec sagittis
+     aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
+     Ultrices tincidunt arcu non sodales neque sodales.`;
+    test.throws(() => new Stack(new App(), 'MyStack', { description: desc}));
+    test.done();
+  },
+
   'Include should support non-hash top-level template elements like "Description"'(test: Test) {
     const stack = new Stack();
 
@@ -141,8 +167,8 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template1 = assembly.getStack(stack1.stackName).template;
-    const template2 = assembly.getStack(stack2.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
 
     test.deepEqual(template1, {
       Outputs: {
@@ -179,7 +205,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template2 = assembly.getStack(stack2.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
 
     test.deepEqual(template2, {
       Resources: {
@@ -205,8 +231,8 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.stringValue({ produce: () => account1 }) });
 
     const assembly = app.synth();
-    const template1 = assembly.getStack(stack1.stackName).template;
-    const template2 = assembly.getStack(stack2.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
 
     // THEN
     test.deepEqual(template1, {
@@ -242,7 +268,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template2 = assembly.getStack(stack2.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
 
     test.deepEqual(template2, {
       Outputs: {
@@ -269,7 +295,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
     const assembly = app.synth();
-    const template2 = assembly.getStack(stack2.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
 
     // THEN
     test.deepEqual(template2, {
@@ -281,6 +307,29 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'CfnSynthesisError is ignored when preparing cross references'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+
+    // WHEN
+    class CfnTest extends CfnResource {
+      public _toCloudFormation() {
+        return new PostResolveToken({
+          xoo: 1234
+        }, props => {
+          validateString(props).assertSuccess();
+        });
+      }
+    }
+
+    new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
+
+    // THEN
+    ConstructNode.prepare(stack.node);
     test.done();
   },
 
@@ -296,8 +345,8 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(assembly.getStack(parentStack.stackName).template, { Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
-    test.deepEqual(assembly.getStack(childStack.stackName).template, { Resources: { MyChildResource: { Type: 'Resource::Child' } } });
+    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, { Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
+    test.deepEqual(assembly.getStackByName(childStack.stackName).template, { Resources: { MyChildResource: { Type: 'Resource::Child' } } });
     test.done();
   },
 
@@ -318,14 +367,14 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
       Resources: { MyParentResource: { Type: 'Resource::Parent' } },
       Outputs: { ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
         Value: { 'Fn::GetAtt': [ 'MyParentResource', 'AttOfParentResource' ] },
         Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' } }
       }
     });
-    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+    test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
       Resources: {
         MyChildResource: {
           Type: 'Resource::Child',
@@ -357,7 +406,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(assembly.getStack(parentStack.stackName).template, {
+    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
       Resources: {
         MyParentResource: {
           Type: 'Resource::Parent',
@@ -368,7 +417,7 @@ export = {
       }
     });
 
-    test.deepEqual(assembly.getStack(childStack.stackName).template, {
+    test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
       Resources: {
         MyChildResource: { Type: 'Resource::Child' } },
       Outputs: {
@@ -431,7 +480,7 @@ export = {
 
     test.throws(() => {
       ConstructNode.prepare(app.node);
-    }, /Can only reference cross stacks in the same region and account/);
+    }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();
   },
@@ -524,7 +573,7 @@ export = {
     // THEN
     const session = app.synth();
     test.deepEqual(stack.stackName, 'valid-stack-name');
-    test.ok(session.tryGetArtifact('valid-stack-name'));
+    test.ok(session.tryGetArtifact(stack.artifactId));
     test.done();
   },
 
@@ -591,7 +640,7 @@ export = {
     test.done();
   },
 
-  'stack.templateFile contains the name of the cloudformation output'(test: Test) {
+  'stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)'(test: Test) {
     // GIVEN
     const app = new App();
 
@@ -602,6 +651,102 @@ export = {
     // THEN
     test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
     test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
+    test.done();
+  },
+
+  'when feature flag is enabled we will use the artifact id as the template name'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true'
+      }
+    });
+
+    // WHEN
+    const stack1 = new Stack(app, 'MyStack1');
+    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+
+    // THEN
+    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+    test.deepEqual(stack2.templateFile, 'MyStack2.template.json');
+    test.done();
+  },
+
+  '@aws-cdk/core:enableStackNameDuplicates': {
+
+    'disabled (default)': {
+
+      'artifactId and templateFile use the stack name'(test: Test) {
+        // GIVEN
+        const app = new App();
+
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+        const assembly = app.synth();
+
+        // THEN
+        test.deepEqual(stack1.artifactId, 'thestack');
+        test.deepEqual(stack1.templateFile, 'thestack.template.json');
+        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'thestack.template.json');
+        test.done();
+      }
+    },
+
+    'enabled': {
+      'allows using the same stack name for two stacks (i.e. in different regions)'(test: Test) {
+        // GIVEN
+        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
+
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+        const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
+        const assembly = app.synth();
+
+        // THEN
+        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
+        test.deepEqual(assembly.getStackArtifact(stack2.artifactId).templateFile, 'MyStack2.template.json');
+        test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+        test.deepEqual(stack2.templateFile, 'MyStack2.template.json');
+        test.done();
+      },
+
+      'artifactId and templateFile use the unique id and not the stack name'(test: Test) {
+        // GIVEN
+        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
+
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
+        const assembly = app.synth();
+
+        // THEN
+        test.deepEqual(stack1.artifactId, 'MyStack1');
+        test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
+        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
+        test.done();
+      }
+    }
+
+  },
+
+  'metadata is collected at the stack boundary'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.DISABLE_METADATA_STACK_TRACE]: 'true'
+      }
+    });
+    const parent = new Stack(app, 'parent');
+    const child = new Stack(parent, 'child');
+
+    // WHEN
+    child.node.addMetadata('foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    test.deepEqual(asm.getStackByName(parent.stackName).findMetadataByType('foo'), []);
+    test.deepEqual(asm.getStackByName(child.stackName).findMetadataByType('foo'), [
+      { path: '/parent/child', type: 'foo', data: 'bar' }
+    ]);
     test.done();
   }
 };

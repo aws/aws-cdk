@@ -5,7 +5,7 @@ import { ArtifactManifest, ArtifactType, CloudArtifact } from './cloud-artifact'
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
 import { TreeCloudArtifact } from './tree-cloud-artifact';
-import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from './versioning';
+import { CLOUD_ASSEMBLY_VERSION, upgradeAssemblyManifest, verifyManifestVersion } from './versioning';
 
 /**
  * A manifest which describes the cloud assembly.
@@ -73,7 +73,9 @@ export class CloudAssembly {
    */
   constructor(directory: string) {
     this.directory = directory;
-    this.manifest = JSON.parse(fs.readFileSync(path.join(directory, MANIFEST_FILE), 'UTF-8'));
+
+    const manifest = JSON.parse(fs.readFileSync(path.join(directory, MANIFEST_FILE), 'UTF-8'));
+    this.manifest = upgradeAssemblyManifest(manifest);
 
     this.version = this.manifest.version;
     verifyManifestVersion(this.version);
@@ -96,18 +98,49 @@ export class CloudAssembly {
 
   /**
    * Returns a CloudFormation stack artifact from this assembly.
+   *
    * @param stackName the name of the CloudFormation stack.
    * @throws if there is no stack artifact by that name
+   * @throws if there is more than one stack with the same stack name. You can
+   * use `getStackArtifact(stack.artifactId)` instead.
    * @returns a `CloudFormationStackArtifact` object.
    */
-  public getStack(stackName: string): CloudFormationStackArtifact {
-    const artifact = this.tryGetArtifact(stackName);
+  public getStackByName(stackName: string): CloudFormationStackArtifact {
+    const artifacts = this.artifacts.filter(a => a instanceof CloudFormationStackArtifact && a.stackName === stackName);
+    if (!artifacts || artifacts.length === 0) {
+      throw new Error(`Unable to find stack with stack name "${stackName}"`);
+    }
+
+    if (artifacts.length > 1) {
+      throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
+    }
+
+    return artifacts[0] as CloudFormationStackArtifact;
+  }
+
+  /**
+   * Returns a CloudFormation stack artifact by name from this assembly.
+   * @deprecated renamed to `getStackByName` (or `getStackArtifact(id)`)
+   */
+  public getStack(stackName: string) {
+    return this.getStackByName(stackName);
+  }
+
+  /**
+   * Returns a CloudFormation stack artifact from this assembly.
+   *
+   * @param artifactId the artifact id of the stack (can be obtained through `stack.artifactId`).
+   * @throws if there is no stack artifact with that id
+   * @returns a `CloudFormationStackArtifact` object.
+   */
+  public getStackArtifact(artifactId: string): CloudFormationStackArtifact {
+    const artifact = this.tryGetArtifact(artifactId);
     if (!artifact) {
-      throw new Error(`Unable to find artifact with id "${stackName}"`);
+      throw new Error(`Unable to find artifact with id "${artifactId}"`);
     }
 
     if (!(artifact instanceof CloudFormationStackArtifact)) {
-      throw new Error(`Artifact ${stackName} is not a CloudFormation stack`);
+      throw new Error(`Artifact ${artifactId} is not a CloudFormation stack`);
     }
 
     return artifact;
@@ -156,7 +189,10 @@ export class CloudAssembly {
   private renderArtifacts() {
     const result = new Array<CloudArtifact>();
     for (const [ name, artifact ] of Object.entries(this.manifest.artifacts || { })) {
-      result.push(CloudArtifact.fromManifest(this, name, artifact));
+      const cloudartifact = CloudArtifact.fromManifest(this, name, artifact);
+      if (cloudartifact) {
+        result.push(cloudartifact);
+      }
     }
 
     return topologicalSort(result, x => x.id, x => x._dependencyIDs);
@@ -210,7 +246,9 @@ export class CloudAssemblyBuilder {
    * @param missing Missing context information.
    */
   public addMissing(missing: MissingContext) {
-    this.missing.push(missing);
+    if (this.missing.every(m => m.key !== missing.key)) {
+      this.missing.push(missing);
+    }
   }
 
   /**

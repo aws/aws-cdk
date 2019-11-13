@@ -1,7 +1,7 @@
 {
   "name": "cdk-integ-tools",
   "private": true,
-  "version": "1.9.0",
+  "version": "1.16.1",
   "description": "Package with integration test scripts for CDK packages",
   "main": "index.js",
   "repository": {
@@ -29,17 +29,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/yargs": "^13.0.3",
-    "cdk-build-tools": "file:../cdk-build-tools",
-    "pkglint": "file:../pkglint"
+    "cdk-build-tools": "1.16.1",
+    "pkglint": "1.16.1"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^1.9.0",
-    "@aws-cdk/cx-api": "^1.9.0",
-    "aws-cdk": "^1.9.0",
+    "@aws-cdk/cloudformation-diff": "1.16.1",
+    "@aws-cdk/cx-api": "1.16.1",
+    "aws-cdk": "1.16.1",
     "fs-extra": "^8.1.0",
-    "yargs": "^14.0.0"
+    "yargs": "^14.2.0"
   },
   "keywords": [
     "aws",
