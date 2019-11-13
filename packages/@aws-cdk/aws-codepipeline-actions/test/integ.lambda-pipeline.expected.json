@@ -600,8 +600,20 @@
               ]
             },
             "eventName": [
+              "CompleteMultipartUpload",
+              "CopyObject",
               "PutObject"
-            ]
+            ],
+            "requestParameters": {
+              "bucketName": [
+                {
+                  "Ref": "PipelineBucketB967BD35"
+                }
+              ],
+              "key": [
+                "key"
+              ]
+            }
           }
         },
         "State": "ENABLED",

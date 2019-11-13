@@ -51,6 +51,74 @@ export = {
       test.done();
     },
 
+    "with custom cloudmap namespace"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: "scorekeep.com",
+        vpc,
+      });
+
+      new ecs.Ec2Service(stack, "Ec2Service", {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          name: "myApp",
+          failureThreshold: 20,
+          cloudMapNamespace,
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 60,
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'TestCloudMapNamespace1FB9B446',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 20
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'TestCloudMapNamespace1FB9B446',
+            'Id'
+          ]
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+        Name: "scorekeep.com",
+        Vpc: {
+          Ref: "MyVpcF9F0CA6F"
+        }
+      }));
+
+      test.done();
+    },
+
     "with all properties set"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

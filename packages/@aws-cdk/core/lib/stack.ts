@@ -173,6 +173,11 @@ export class Stack extends Construct implements ITaggable {
   public readonly templateFile: string;
 
   /**
+   * The ID of the cloud assembly artifact for this stack.
+   */
+  public readonly artifactId: string;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -201,12 +206,14 @@ export class Stack extends Construct implements ITaggable {
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
-   * @param name The name of the CloudFormation stack. Defaults to "Stack".
+   * @param id The construct ID of this stack. If `stackName` is not explicitly
+   * defined, this id (and any parent IDs) will be used to determine the
+   * physical ID of the stack.
    * @param props Stack properties.
    */
-  public constructor(scope?: Construct, name?: string, props: StackProps = {}) {
+  public constructor(scope?: Construct, id?: string, props: StackProps = {}) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
-    super(scope!, name!);
+    super(scope!, id!);
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
@@ -227,14 +234,23 @@ export class Stack extends Construct implements ITaggable {
       this.templateOptions.description = props.description;
     }
 
-    this._stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
+    this._stackName = props.stackName !== undefined ? props.stackName : this.generateUniqueId();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
-      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${id}'`);
     }
 
-    this.templateFile = `${this.stackName}.template.json`;
+    // the preferred behavior is to generate a unique id for this stack and use
+    // it as the artifact ID in the assembly. this allows multiple stacks to use
+    // the same name. however, this behavior is breaking for 1.x so it's only
+    // applied under a feature flag which is applied automatically for new
+    // projects created using `cdk init`.
+    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT)
+      ? this.generateUniqueId()
+      : this.stackName;
+
+    this.templateFile = `${this.artifactId}.template.json`;
     this.templateUrl = Lazy.stringValue({ produce: () => this._templateUrl || '<unresolved>' });
   }
 
@@ -704,15 +720,27 @@ export class Stack extends Construct implements ITaggable {
       return;
     }
 
-    const deps = this.dependencies.map(s => s.stackName);
+    const deps = this.dependencies.map(s => s.artifactId);
     const meta = this.collectMetadata();
 
+    // backwards compatibility since originally artifact ID was always equal to
+    // stack name the stackName attribute is optional and if it is not specified
+    // the CLI will use the artifact ID as the stack name. we *could have*
+    // always put the stack name here but wanted to minimize the risk around
+    // changes to the assembly manifest. so this means that as long as stack
+    // name and artifact ID are the same, the cloud assembly manifest will not
+    // change.
+    const stackNameProperty = this.stackName === this.artifactId
+      ? { }
+      : { stackName: this.stackName };
+
     const properties: cxapi.AwsCloudFormationStackProperties = {
-      templateFile: this.templateFile
+      templateFile: this.templateFile,
+      ...stackNameProperty
     };
 
     // add an artifact that represents this stack
-    builder.addArtifact(this.stackName, {
+    builder.addArtifact(this.artifactId, {
       type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: this.environment,
       properties,
@@ -892,7 +920,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Calculcate the stack name based on the construct path
    */
-  private calculateStackName() {
+  private generateUniqueId() {
     // In tests, it's possible for this stack to be the root object, in which case
     // we need to use it as part of the root path.
     const rootPath = this.node.scope !== undefined ? this.node.scopes.slice(1) : [this];

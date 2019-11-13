@@ -778,7 +778,15 @@
       }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
       "Type": "AWS::AutoScaling::LifecycleHook",

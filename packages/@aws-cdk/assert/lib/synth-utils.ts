@@ -11,7 +11,7 @@ export class SynthUtils {
     // if the root is an app, invoke "synth" to avoid double synthesis
     const assembly = root instanceof App ? root.synth() : ConstructNode.synth(root.node, options);
 
-    return assembly.getStack(stack.stackName);
+    return assembly.getStackArtifact(stack.artifactId);
   }
 
   /**
@@ -61,7 +61,7 @@ export class SynthUtils {
       return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
     }
 
-    return assembly.getStack(stack.stackName);
+    return assembly.getStackArtifact(stack.artifactId);
   }
 }
 
