@@ -31,7 +31,7 @@ export class TreeMetadata extends Construct {
           id: construct.node.id || 'App',
           path: construct.node.path,
           children: children.length === 0 ? undefined : childrenMap,
-          attributes: this.getAttributes(construct)
+          attributes: this.synthAttributes(construct)
         };
 
         lookup[node.path] = node;
@@ -59,7 +59,7 @@ export class TreeMetadata extends Construct {
     }
   }
 
-  private getAttributes(construct: IConstruct): { [key: string]: any } | undefined {
+  private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
     // check if a construct implements IInspectable
     function canInspect(inspectable: any): inspectable is IInspectable {
       return inspectable.inspect !== undefined;
