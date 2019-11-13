@@ -144,7 +144,8 @@ export class CdkToolkit {
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
           notificationArns: options.notificationArns,
-          tags
+          tags,
+          execute: options.execute
         });
 
         const message = result.noOp
@@ -303,6 +304,13 @@ export interface DeployOptions {
    * AWS SDK
    */
   sdk: ISDK;
+
+  /**
+   * Whether to execute the ChangeSet
+   * Not providing `execute` parameter will result in execution of ChangeSet
+   * @default true
+   */
+  execute?: boolean;
 }
 
 export interface DestroyOptions {
