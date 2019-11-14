@@ -105,7 +105,7 @@ export interface TableOptions {
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table.
    *
-   * @default undefined, streams are disabled
+   * @default - streams are disabled
    */
   readonly stream?: StreamViewType;
 
@@ -139,7 +139,7 @@ export interface SecondaryIndexProps {
 
   /**
    * The non-key attributes that are projected into the secondary index.
-   * @default undefined
+   * @default - No additional attributes
    */
   readonly nonKeyAttributes?: string[];
 }
@@ -152,7 +152,7 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
 
   /**
    * The attribute of a sort key for the global secondary index.
-   * @default undefined
+   * @default - No sort key
    */
   readonly sortKey?: Attribute;
 
@@ -657,6 +657,7 @@ export class Table extends Resource {
     // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
     return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
       service: 'iam',
+      region: '',
       resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
     }));

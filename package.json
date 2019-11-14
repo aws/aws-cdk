@@ -1,30 +1,33 @@
 {
   "name": "aws-cdk",
-  "version": "1.15.0",
+  "version": "1.16.1",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
   },
   "scripts": {
     "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
+    "build": "./build.sh",
+    "pack": "./pack.sh",
+    "compat": "./scripts/check-api-compatibility.sh",
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
-    "@types/node": "^8.10.56",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^10.17.5",
     "@types/nodeunit": "^0.0.30",
-    "conventional-changelog-cli": "^2.0.25",
+    "conventional-changelog-cli": "^2.0.27",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
-    "jsii-diff": "^0.20.0",
-    "jsii-pacmak": "^0.20.0",
-    "lerna": "^3.18.3",
+    "jsii-diff": "^0.20.5",
+    "jsii-pacmak": "^0.20.5",
+    "lerna": "^3.18.4",
     "nodeunit": "^0.11.3",
     "nyc": "^14.1.1",
     "standard-version": "^7.0.0",
     "ts-jest": "^24.1.0",
-    "tslint": "^5.20.0",
-    "typescript": "~3.6.3"
+    "tslint": "^5.20.1",
+    "typescript": "~3.6.4"
   },
   "repository": {
     "type": "git",

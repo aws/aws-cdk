@@ -598,6 +598,51 @@ export = {
 
     test.ok(message && message.includes('showMeInTheStackTrace'));
     test.done();
+  },
+
+  'stringifyNumber': {
+    'converts number to string'(test: Test) {
+      test.equal(Tokenization.stringifyNumber(100), '100');
+      test.done();
+    },
+
+    'converts tokenized number to string'(test: Test) {
+      test.equal(resolve(Tokenization.stringifyNumber({
+        resolve: () => 100
+      } as any)), '100');
+      test.done();
+    },
+
+    'string remains the same'(test: Test) {
+      test.equal(Tokenization.stringifyNumber('123' as any), '123');
+      test.done();
+    },
+
+    'Ref remains the same'(test: Test) {
+      const val = { Ref: 'SomeLogicalId' };
+      test.deepEqual(Tokenization.stringifyNumber(val as any), val);
+      test.done();
+    },
+
+    'lazy Ref remains the same'(test: Test) {
+      const resolvedVal = { Ref: 'SomeLogicalId' };
+      const tokenizedVal = Lazy.anyValue({
+        produce: () => resolvedVal
+      });
+      const res = Tokenization.stringifyNumber(tokenizedVal as any) as any;
+      test.notDeepEqual(res, resolvedVal);
+      test.deepEqual(resolve(res), resolvedVal);
+      test.done();
+    },
+
+    'tokenized Ref remains the same'(test: Test) {
+      const resolvedVal = { Ref: 'SomeLogicalId' };
+      const tokenizedVal = Token.asNumber(resolvedVal);
+      const res = Tokenization.stringifyNumber(tokenizedVal) as any;
+      test.notDeepEqual(res, resolvedVal);
+      test.deepEqual(resolve(res), resolvedVal);
+      test.done();
+    },
   }
 };
 

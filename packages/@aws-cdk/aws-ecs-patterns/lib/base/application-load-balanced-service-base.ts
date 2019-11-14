@@ -43,6 +43,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The minimum value is 1
    *
    * @default 1
    */
@@ -67,7 +68,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
    */
- readonly protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -106,6 +107,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: ApplicationLoadBalancer;
+
+  /**
+   * Listener port of the application load balancer that will serve traffic to the service.
+   *
+   * @default - The default listener port is determined from the protocol (port 80 for HTTP,
+   * port 443 for HTTPS). A domain name and zone must be also be specified if using HTTPS.
+   */
+  readonly listenerPort?: number;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -258,6 +267,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
+    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+      throw new Error('You must specify a desiredCount greater than 0');
+    }
     this.desiredCount = props.desiredCount || 1;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
@@ -269,17 +281,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
-    const targetProps = {
-      port: 80
-    };
-
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
     const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
+    const targetProps = {
+      port: 80
+    };
+
     this.listener = this.loadBalancer.addListener('PublicListener', {
       protocol,
+      port: props.listenerPort,
       open: true
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
