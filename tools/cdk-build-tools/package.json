@@ -32,7 +32,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.22",
+    "@types/jest": "^24.0.23",
     "@types/yargs": "^13.0.3",
     "pkglint": "1.16.1"
   },
