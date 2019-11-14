@@ -4751,13 +4751,13 @@ jsesc@^2.5.1:
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-jsii-diff@^0.20.5:
-  version "0.20.5"
-  resolved "https://registry.yarnpkg.com/jsii-diff/-/jsii-diff-0.20.5.tgz#2cc5fd05ca15b806ec30cc8f7386da362a602f9e"
-  integrity sha512-rb+cPLm3rDzKxd1HaHWge0k5bNmS8nCR4iDx0YD2GiNBV+FtMzCQ2ikdv2MAtP5YSz1K1CyJjsU/rvTwQbhMHA==
+jsii-diff@^0.20.6:
+  version "0.20.6"
+  resolved "https://registry.yarnpkg.com/jsii-diff/-/jsii-diff-0.20.6.tgz#5a2e7e355a888d680376ca1fc58851b0d176118f"
+  integrity sha512-PhEhPpgHVNpz9Z9uWN0p1qxkI6z1NTgcXt4ahR5c6zJ/w6rKJmhvqPo9cna5OBZWOEmek/NnfSW7FSjUDFgvBA==
   dependencies:
-    jsii-reflect "^0.20.5"
-    jsii-spec "^0.20.5"
+    jsii-reflect "^0.20.6"
+    jsii-spec "^0.20.6"
     log4js "^5.3.0"
     typescript "~3.6.4"
     yargs "^14.2.0"
@@ -4779,7 +4779,7 @@ jsii-pacmak@^0.20.6:
     xmlbuilder "^13.0.2"
     yargs "^14.2.0"
 
-jsii-reflect@^0.20.3, jsii-reflect@^0.20.5, jsii-reflect@^0.20.6:
+jsii-reflect@^0.20.3, jsii-reflect@^0.20.6:
   version "0.20.6"
   resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.6.tgz#1805a1098901f81a5e8c98ad33bd8f67d1014031"
   integrity sha512-OmXCd7G/DpQs3guXPmZXSs2RbdtBwfDL5nR+3cNP1MSq9iELnafEmfVDUWc5o4toQiF1DQYVfkH4u2ABAaUqgA==
