@@ -1,3 +1,30 @@
+# CloudFormation Resource Specification v8.0.0
+
+## New Resource Types
+
+* AWS::CodeStarNotifications::NotificationRule
+* AWS::MediaConvert::JobTemplate
+* AWS::MediaConvert::Preset
+* AWS::MediaConvert::Queue
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AppStream::ImageBuilder AccessEndpoints (__added__)
+* AWS::AppStream::Stack AccessEndpoints (__added__)
+* AWS::AppStream::Stack EmbedHostDomains (__added__)
+
+## Property Type Changes
+
+* AWS::DLM::LifecyclePolicy.FastRestoreRule (__removed__)
+* AWS::AppStream::ImageBuilder.AccessEndpoint (__added__)
+* AWS::AppStream::Stack.AccessEndpoint (__added__)
+* AWS::DLM::LifecyclePolicy.Schedule FastRestoreRule (__deleted__)
+* AWS::ECS::TaskDefinition.InferenceAccelerator DevicePolicy (__deleted__)
+
+
 # CloudFormation Resource Specification v7.3.0
 
 ## New Resource Types
