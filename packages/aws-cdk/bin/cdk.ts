@@ -59,6 +59,7 @@ async function parseCommandLineArguments() {
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
       .option('notification-arns', {type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true})
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true }))
+      .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -70,7 +71,8 @@ async function parseCommandLineArguments() {
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
-      .option('list', { type: 'boolean', desc: 'List the available templates' }))
+      .option('list', { type: 'boolean', desc: 'List the available templates' })
+      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project'}))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
@@ -100,6 +102,7 @@ async function initCommandLine() {
     proxyAddress: argv.proxy,
     ec2creds: argv.ec2creds,
   });
+
   const configuration = new Configuration(argv);
   await configuration.load();
 
@@ -205,6 +208,7 @@ async function initCommandLine() {
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           sdk: aws,
+          execute: args.execute
         });
 
       case 'destroy':
@@ -225,10 +229,11 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
+        const generateOnly = configuration.settings.get(['generate-only']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language);
+          return await cliInit(args.TEMPLATE, language, undefined, generateOnly);
         }
       case 'version':
         return print(version.DISPLAY_VERSION);
@@ -284,12 +289,12 @@ async function initCommandLine() {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  async function cliSynthesize(stackNames: string[],
+  async function cliSynthesize(stackIds: string[],
                                exclusively: boolean): Promise<any> {
     // Only autoselect dependencies if it doesn't interfere with user request or output options
     const autoSelectDependencies = !exclusively;
 
-    const stacks = await appStacks.selectStacks(stackNames, {
+    const stacks = await appStacks.selectStacks(stackIds, {
       extend: autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.AllStacks
     });
@@ -315,7 +320,7 @@ async function initCommandLine() {
 
     // not outputting template to stdout, let's explain things to the user a little bit...
     success(`Successfully synthesized to ${colors.blue(path.resolve(appStacks.assembly!.directory))}`);
-    print(`Supply a stack name (${stacks.map(s => colors.green(s.name)).join(', ')}) to display its template.`);
+    print(`Supply a stack id (${stacks.map(s => colors.green(s.id)).join(', ')}) to display its template.`);
 
     return undefined;
   }
@@ -328,16 +333,17 @@ async function initCommandLine() {
       const long = [];
       for (const stack of stacks) {
         long.push({
-          name: stack.name,
+          id: stack.id,
+          name: stack.stackName,
           environment: stack.environment
         });
       }
       return long; // will be YAML formatted output
     }
 
-    // just print stack names
+    // just print stack IDs
     for (const stack of stacks) {
-      data(stack.name);
+      data(stack.id);
     }
 
     return 0; // exit-code
@@ -346,18 +352,18 @@ async function initCommandLine() {
   /**
    * Match a single stack from the list of available stacks
    */
-  async function findStack(name: string): Promise<string> {
-    const stacks = await appStacks.selectStacks([name], {
+  async function findStack(artifactId: string): Promise<string> {
+    const stacks = await appStacks.selectStacks([artifactId], {
       extend: ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.None
     });
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.length > 1) {
-      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.map(x => x.name)}`);
+      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.map(x => x.id)}`);
     }
 
-    return stacks[0].name;
+    return stacks[0].id;
   }
 
   function toJsonOrYaml(object: any): string {

@@ -479,6 +479,46 @@ export = {
     test.done();
   },
 
+  'allows multiple aliasConfiguration CloudFrontWebDistribution per stack'(test: Test) {
+    const stack = new cdk.Stack();
+    const s3BucketSource = new s3.Bucket(stack, 'Bucket');
+
+    const originConfigs = [{
+        s3OriginSource: {s3BucketSource},
+        behaviors: [{ isDefaultBehavior: true }]
+    }];
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs,
+      aliasConfiguration: {acmCertRef: 'acm_ref', names: ['www.example.com']},
+    });
+    new CloudFrontWebDistribution(stack, 'AnotherAmazingWebsiteProbably', {
+      originConfigs,
+      aliasConfiguration: {acmCertRef: 'another_acm_ref', names: ['ftp.example.com']},
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      "DistributionConfig": {
+        "Aliases": ["www.example.com"],
+        "ViewerCertificate": {
+          "AcmCertificateArn": "acm_ref",
+          "SslSupportMethod": "sni-only"
+        }
+      }
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      "DistributionConfig": {
+        "Aliases": ["ftp.example.com"],
+        "ViewerCertificate": {
+          "AcmCertificateArn": "another_acm_ref",
+          "SslSupportMethod": "sni-only"
+        }
+      }
+    }));
+    test.done();
+  },
+
   'viewerCertificate': {
     'acmCertificate': {
       'base usage'(test: Test) {

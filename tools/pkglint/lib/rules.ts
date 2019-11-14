@@ -423,11 +423,11 @@ export class NodeCompatibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^8.')) {
+    if (atTypesNode && !atTypesNode.startsWith('^10.')) {
       pkg.report({
         ruleName: this.name,
-        message: `packages must support node version 8 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^8.10.38')
+        message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
+        fix: () => pkg.addDevDependency('@types/node', '^10.17.5')
       });
     }
   }
@@ -581,7 +581,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-build-tools',
-      `^${require('../../cdk-build-tools/package.json').version}`);
+      `${require('../../cdk-build-tools/package.json').version}`);
   }
 }
 
@@ -776,7 +776,20 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
-      `^${require('../../cdk-integ-tools/package.json').version}`);
+      `${require('../../cdk-integ-tools/package.json').version}`);
+  }
+}
+
+/**
+ * Checks API backwards compatibility against the latest released version.
+ */
+export class CompatScript extends ValidationRule {
+  public readonly name = 'package-info/scripts/compat';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return ; }
+
+    expectJSON(this.name, pkg, 'scripts.compat', 'cdk-compat');
   }
 }
 
@@ -786,7 +799,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', `^${require('../package.json').version}`);
+    expectDevDependency(this.name, pkg, 'pkglint', `${require('../package.json').version}`);
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({
