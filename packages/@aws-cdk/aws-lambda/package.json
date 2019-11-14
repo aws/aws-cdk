@@ -70,7 +70,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.16.1",
     "@types/aws-lambda": "^8.10.35",
-    "@types/lodash": "^4.14.146",
+    "@types/lodash": "^4.14.147",
     "@types/sinon": "^7.5.0",
     "aws-sdk": "^2.569.0",
     "aws-sdk-mock": "^4.5.0",
