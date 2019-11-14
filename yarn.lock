@@ -4812,16 +4812,16 @@ jsii-spec@^0.20.3, jsii-spec@^0.20.5:
   dependencies:
     jsonschema "^1.2.4"
 
-jsii@^0.20.3:
-  version "0.20.3"
-  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.20.3.tgz#088455e65bb45b9730789c62d36feb6f1c73803c"
-  integrity sha512-lLunNBE3RxOIHUKv1FAqJgepaeF8E+oFxAV7zSwJhl4g3Kh91zRNp8ZQ7U1ylBPM+mubPNdkDlQfrR6ghxonCg==
+jsii@^0.20.5:
+  version "0.20.5"
+  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.20.5.tgz#8ed362f09dcf77fcf549da619a914137366c02ba"
+  integrity sha512-DKqclf82Yj31FoSFCpM3GL4zeQnReq1Dzx5FX9QMLJjZTCx/myJigHW2qVsCPdjayE6ot51LZrJa6nZfiRQPVQ==
   dependencies:
     case "^1.6.2"
     colors "^1.4.0"
     deep-equal "^1.1.0"
     fs-extra "^8.1.0"
-    jsii-spec "^0.20.3"
+    jsii-spec "^0.20.5"
     log4js "^5.3.0"
     semver "^6.3.0"
     sort-json "^2.0.0"
