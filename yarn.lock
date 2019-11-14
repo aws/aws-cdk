@@ -4784,15 +4784,15 @@ jsii-pacmak@^0.20.3:
     xmlbuilder "^13.0.2"
     yargs "^14.2.0"
 
-jsii-reflect@^0.20.3:
-  version "0.20.3"
-  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.3.tgz#a4445b43cb4100f0f4d02e59f4b79f55c3347a74"
-  integrity sha512-77ilTJeW9btQ9l3+J4ZNoyMEmzJy+ypAepTd2zfoAhsFeEll2/yaDzIUhT45j5F6T/XqNzaK/wWCin7ZSelmUA==
+jsii-reflect@^0.20.3, jsii-reflect@^0.20.5:
+  version "0.20.5"
+  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.5.tgz#b56122ebf6d669136a88fac21681f5dddc177e6a"
+  integrity sha512-HFYaL1Hue+hhso1nNVy/sRsz4A93v3mk+HeebrihR78QJhMH8l23ic/bDciisGFPUuvq36Bij0h6iJBbxQwEqg==
   dependencies:
     colors "^1.4.0"
     fs-extra "^8.1.0"
-    jsii-spec "^0.20.3"
-    oo-ascii-tree "^0.20.3"
+    jsii-spec "^0.20.5"
+    oo-ascii-tree "^0.20.5"
     yargs "^14.2.0"
 
 jsii-sampiler@^0.20.3:
@@ -5896,10 +5896,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-oo-ascii-tree@^0.20.3:
-  version "0.20.3"
-  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.3.tgz#4350b4d741ec916e6efa0162f26693cd5e184835"
-  integrity sha512-iHgtpUEhzGzprfdK8Q8oA4zV6mlYnUki2sqXvLs6qoWBWWqNuTmssnluDPCwPHfudnvyytVfb4NZR7y9fzgDMQ==
+oo-ascii-tree@^0.20.5:
+  version "0.20.5"
+  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.5.tgz#748cf131dd061c236fdb44a32423cc720a3dd993"
+  integrity sha512-xrk0AkCdxHnYVnI7MUmW4pZMizx7BqaG7odzS7zTZbmC1C06JRT0kYKWVsAg0Cw1a+U5L06Rimp4BSmqO6dyxw==
 
 opener@^1.5.1:
   version "1.5.1"
