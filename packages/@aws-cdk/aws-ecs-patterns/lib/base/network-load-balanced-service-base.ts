@@ -255,7 +255,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
 
     const targetProps = {
-      port: listenerPort
+      port: 80
     };
 
     this.listener = this.loadBalancer.addListener('PublicListener', { port: listenerPort });
