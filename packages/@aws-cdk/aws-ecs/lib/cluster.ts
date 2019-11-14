@@ -183,20 +183,51 @@ export class Cluster extends Resource implements ICluster {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
-    // Tie instances to cluster
-    autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+    if ( autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS ) {
 
-    if (!options.canContainersAccessInstanceRole) {
-      // Deny containers access to instance metadata service
-      // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-      autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-      autoScalingGroup.addUserData('sudo service iptables save');
-      // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
-      autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
-    }
+      // clear the cache of the agent
+      autoScalingGroup.addUserData('Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache');
 
-    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-      autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+      // pull the latest ECS Tools
+      autoScalingGroup.addUserData('Import-Module ECSTools');
+
+      // set the cluster name environment variable
+      autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`);
+      autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")`);
+      // tslint:disable-next-line: max-line-length
+      autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", "[\"json-file\",\"awslogs\"]", "Machine")`);
+
+      // enable instance draining
+      if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+        autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")`);
+      }
+
+      // enable task iam role
+      if (!options.canContainersAccessInstanceRole) {
+        autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")`);
+        autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole'`);
+      } else {
+        autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
+      }
+
+    } else {
+
+      // Tie instances to cluster
+      autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+
+      if (!options.canContainersAccessInstanceRole) {
+        // Deny containers access to instance metadata service
+        // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+        autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+        autoScalingGroup.addUserData('sudo service iptables save');
+        // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+        autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+      }
+
+      if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+        autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+      }
+
     }
 
     // ECS instances must be able to do these things
