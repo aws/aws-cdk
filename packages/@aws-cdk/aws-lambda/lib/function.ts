@@ -147,12 +147,25 @@ export interface FunctionProps {
    * What security group to associate with the Lambda's network interfaces.
    *
    * Only used if 'vpc' is supplied.
+   * Only use this or the securityGroupsList prop, not both at once
    *
    * @default - If the function is placed within a VPC and a security group is
-   * not specified, a dedicated security group will be created for this
-   * function.
+   * not specified, either by this or securityGroupsList prop, a dedicated security
+   * group will be created for this function.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * What list of security groups to associate with the Lambda's network interfaces.
+   *
+   * Only used if 'vpc' is supplied.
+   * Only use this or the securityGroup prop, not both at once
+   *
+   * @default - If the function is placed within a VPC and a security group is
+   * not specified, either by this or securityGroup prop, a dedicated security
+   * group will be created for this function.
+   */
+  readonly securityGroupsList?: ec2.ISecurityGroup[];
 
   /**
    * Whether to allow the Lambda to send all network traffic
@@ -566,14 +579,24 @@ export class Function extends FunctionBase {
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
     }
-
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-      description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
-      allowAllOutbound: props.allowAllOutbound
-    });
-
-    this._connections = new ec2.Connections({ securityGroups: [securityGroup] });
+	
+	let securityGroupsList: ec2.ISecurityGroup[];
+	
+	if (props.securityGroup && props.securityGroupsList) {
+		throw new Error('Only one of the function props, securityGroup or securityGroupsList, is allowed');
+	}
+	
+	if (props.securityGroupsList) }{
+		securityGroupsList = props.securityGroupsList;
+	} else {
+		const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+			vpc: props.vpc,
+			description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
+			allowAllOutbound: props.allowAllOutbound
+		});
+		securityGroupsList = [securityGroup];
+	}
+    this._connections = new ec2.Connections({ securityGroups: securityGroupsList });
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.
@@ -593,7 +616,7 @@ export class Function extends FunctionBase {
 
     return {
       subnetIds,
-      securityGroupIds: [securityGroup.securityGroupId]
+      securityGroupIds: securityGroupsList.map(sg => sg.securityGroupId)
     };
   }
 
