@@ -15,7 +15,7 @@ public class %name.PascalCased%Test {
         new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 
     @Test
-    public void testStack()  throws IOException {
+    public void testStack() throws IOException {
         App app = new App();
         %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
 
