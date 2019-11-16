@@ -58,6 +58,7 @@
     "@aws-cdk/aws-codepipeline": "1.16.1",
     "@aws-cdk/aws-codepipeline-actions": "1.16.1",
     "@aws-cdk/aws-codestar": "1.16.1",
+    "@aws-cdk/aws-codestarnotifications": "1.16.1",
     "@aws-cdk/aws-cognito": "1.16.1",
     "@aws-cdk/aws-config": "1.16.1",
     "@aws-cdk/aws-datapipeline": "1.16.1",
@@ -106,6 +107,7 @@
     "@aws-cdk/aws-logs": "1.16.1",
     "@aws-cdk/aws-logs-destinations": "1.16.1",
     "@aws-cdk/aws-managedblockchain": "1.16.1",
+    "@aws-cdk/aws-mediaconvert": "1.16.1",
     "@aws-cdk/aws-medialive": "1.16.1",
     "@aws-cdk/aws-mediastore": "1.16.1",
     "@aws-cdk/aws-msk": "1.16.1",
@@ -159,11 +161,11 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.22",
+    "@types/jest": "^24.0.23",
     "@types/yaml": "1.2.0",
     "@types/yargs": "^13.0.3",
     "jest": "^24.9.0",
-    "jsii": "^0.20.3"
+    "jsii": "^0.20.6"
   },
   "keywords": [
     "aws",

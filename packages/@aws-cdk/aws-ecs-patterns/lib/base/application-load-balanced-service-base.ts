@@ -129,7 +129,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
    *
-   * @default 80
+   * @default - The default listener port is determined from the protocol (port 80 for HTTP,
+   * port 443 for HTTPS). A domain name and zone must be also be specified if using HTTPS.
    */
   readonly listenerPort?: number;
 
@@ -304,8 +305,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     const protocol = props.protocol !== undefined ? props.protocol : (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     const targetProps = {
-      port: props.listenerPort !== undefined ? props.listenerPort : 80,
-      protocol
+      port: 80
     };
 
     this.listener = this.loadBalancer.addListener('PublicListener', {
