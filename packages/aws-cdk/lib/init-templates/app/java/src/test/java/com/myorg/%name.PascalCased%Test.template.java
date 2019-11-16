@@ -8,21 +8,20 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-public class HelloStackTest {
+public class %name.PascalCased%Test {
     private final static ObjectMapper JSON =
         new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 
     @Test
-    public void testStack() throws IOException {
+    public void testStack()  throws IOException {
         App app = new App();
-        HelloStack stack = new HelloStack(app, "test");
+        %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
 
         // synthesize the stack to a CloudFormation template and compare against
         // a checked-in JSON file.
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
-        JsonNode expected = JSON.readTree(getClass().getResource("expected.cfn.json"));
-        assertEquals(expected, actual);
+        assertFalse(actual.elements().hasNext());
     }
 }
