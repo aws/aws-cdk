@@ -760,6 +760,21 @@ export enum RedirectProtocol {
 }
 
 /**
+ * Specifies the S3 Bucket how the access logs will be persited in.
+ */
+export interface ServerAccessLogs {
+  /**
+   * Destination bucket for the server access logs.
+   */
+  readonly destinationBucket: IBucket;
+  /**
+   * Optional log file prefix to use for the bucket's access logs.
+   * @default - No log file prefix
+   */
+  readonly logFilePrefix?: string | undefined;
+}
+
+/**
  * Specifies a redirect behavior of all requests to a website endpoint of a bucket.
  */
 export interface RedirectTarget {
@@ -826,6 +841,13 @@ export interface BucketProps {
    * @default - No lifecycle rules.
    */
   readonly lifecycleRules?: LifecycleRule[];
+
+  /**
+   * Whether this bucket should have server access logs configured or not.
+   *
+   * @default - Disabled server access logs
+   */
+  readonly serverAccessLogs?: ServerAccessLogs;
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
@@ -982,6 +1004,7 @@ export class Bucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
+  protected serverAccessLogs?: ServerAccessLogs;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
@@ -1007,10 +1030,12 @@ export class Bucket extends BucketBase {
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
       accessControl: props.accessControl,
+      loggingConfiguration: Lazy.anyValue({ produce: () => this.parseServerAccessLogs() }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
+    this.serverAccessLogs = props.serverAccessLogs;
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
@@ -1060,6 +1085,15 @@ export class Bucket extends BucketBase {
     }
 
     this.lifecycleRules.push(rule);
+  }
+
+  /**
+   * Adds server access logs to the bucket.
+   *
+   * @param serverAccessLogs configuration for the S3 bucket.
+   */
+  public addServerAccessLogs(serverAccessLogs: ServerAccessLogs): void {
+    this.serverAccessLogs = serverAccessLogs;
   }
 
   /**
@@ -1271,6 +1305,17 @@ export class Bucket extends BucketBase {
 
       return x;
     }
+  }
+
+  private parseServerAccessLogs(): CfnBucket.LoggingConfigurationProperty | undefined {
+    if (!this.serverAccessLogs) {
+      return undefined;
+    }
+
+    return {
+      destinationBucketName: this.serverAccessLogs.destinationBucket.bucketName,
+      logFilePrefix: this.serverAccessLogs.logFilePrefix,
+    };
   }
 
   private parseMetricConfiguration(): CfnBucket.MetricsConfigurationProperty[] | undefined {
