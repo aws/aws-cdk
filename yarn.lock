@@ -1248,10 +1248,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/lodash@^4.14.147":
-  version "4.14.147"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.147.tgz#8ca5cfa9c67753dcb73e507d1bbf1c4f8ba6f029"
-  integrity sha512-+0zY1Axql6ru5T85Rh6aR6Zr0xT7c0USLqsHv01b3ID//dOrV3OvpXJGjm69+4QpxoZ0oMNEfmW1ltwXe2WVzQ==
+"@types/lodash@^4.14.148":
+  version "4.14.148"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.148.tgz#ffa2786721707b335c6aa1465e6d3d74016fbd3e"
+  integrity sha512-05+sIGPev6pwpHF7NZKfP3jcXhXsIVFnYyVRT4WOB0me62E8OlWfTN+sKyt2/rqN+ETxuHAtgTSK1v71F0yncg==
 
 "@types/md5@^2.1.33":
   version "2.1.33"
