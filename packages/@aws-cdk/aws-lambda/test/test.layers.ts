@@ -16,7 +16,7 @@ export = testCase({
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10]
     });
 
     // THEN
