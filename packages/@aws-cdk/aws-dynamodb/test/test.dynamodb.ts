@@ -1233,6 +1233,11 @@ export = {
                   "StreamArn"
                 ]
               }
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"

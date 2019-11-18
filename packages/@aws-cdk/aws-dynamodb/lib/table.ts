@@ -474,13 +474,14 @@ export class Table extends Resource {
   }
 
   /**
-   * Permis an IAM principal all stream data read operations for this
+   * Permits an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
    * @param grantee The principal to grant access to
    */
   public grantStreamRead(grantee: iam.IGrantable) {
-    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
+    this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
+    return Table.grantListStreams(grantee);
   }
 
   /**
@@ -570,7 +571,7 @@ export class Table extends Resource {
 
     // throw error if key attribute is part of non-key attributes
     this.attributeDefinitions.forEach(keyAttribute => {
-      if (typeof keyAttribute.attributeName === 'string' && this.nonKeyAttributes.includes(keyAttribute.attributeName)) {
+      if (this.nonKeyAttributes.includes(keyAttribute.attributeName)) {
         throw new Error(`a key attribute, ${keyAttribute.attributeName}, is part of a list of non-key attributes, ${this.nonKeyAttributes}` +
           ', which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure');
       }
