@@ -29,6 +29,53 @@
         ]
       }
     },
+    "layerawssdkjsB2ED5E7B": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Ref": "AssetParameters1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7S3Bucket9111837A"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7S3VersionKey5C696394"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7S3VersionKey5C696394"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "CompatibleRuntimes": [
+          "nodejs10.x"
+        ],
+        "Description": "AWS SDK JS"
+      }
+    },
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -139,7 +186,12 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs10.x",
+        "Layers": [
+          {
+            "Ref": "layerawssdkjsB2ED5E7B"
+          }
+        ]
       },
       "DependsOn": [
         "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
@@ -219,6 +271,18 @@
     }
   },
   "Parameters": {
+    "AssetParameters1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7S3Bucket9111837A": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7\""
+    },
+    "AssetParameters1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7S3VersionKey5C696394": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7\""
+    },
+    "AssetParameters1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7ArtifactHash24D48A0B": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"1225cfb84ab98458f900aca0912b08536c3fc65797fbc5fa9bea7f85e756a1c7\""
+    },
     "AssetParameters7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063S3Bucket05714AA7": {
       "Type": "String",
       "Description": "S3 bucket for asset \"7f96a9f879348c0e50ac55d67a74edede0cc96cf0615355938c45801708cd063\""

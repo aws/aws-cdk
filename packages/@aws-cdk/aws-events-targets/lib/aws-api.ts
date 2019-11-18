@@ -1,6 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import { Layer } from '@aws-cdk/lambda-layers';
 import path = require('path');
 import metadata = require('./sdk-api-metadata.json');
 import { addLambdaPermission } from './util';
@@ -87,6 +88,7 @@ export class AwsApi implements events.IRuleTarget {
       handler: 'index.handler',
       uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
       lambdaPurpose: 'AWS',
+      layers: [Layer.AWS_SDK_JS.getLayerVersion(rule as events.Rule)]
     });
 
     if (this.props.policyStatement) {

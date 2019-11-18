@@ -2,6 +2,7 @@ import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformat
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
+import { Layer } from '@aws-cdk/lambda-layers';
 import fs = require('fs');
 import path = require('path');
 
@@ -180,6 +181,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.seconds(30),
       role: props.role,
+      layers: [Layer.AWS_SDK_JS.getLayerVersion(this)]
     });
     this.grantPrincipal = provider.grantPrincipal;
 

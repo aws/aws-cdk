@@ -1,0 +1,102 @@
+{
+  "name": "@aws-cdk/lambda-layers",
+  "version": "1.16.1",
+  "description": "Useful Lambda layers",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.lambda.layers",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-lambda-layers",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.LambdaLayers",
+        "packageId": "Amazon.CDK.LambdaLayers",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.lambda-layers",
+        "module": "aws_cdk.lambda_layers"
+      }
+    }
+  },
+  "pkglint": {
+    "exclude": ["package-info/scripts/build"]
+  },
+  "cdk-build": {
+    "pre": [
+      "rm -rf layers && mkdir -p layers"
+    ]
+  },
+  "scripts": {
+    "build": "cdk-build && node build-tools/build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "awslint": "cdk-awslint",
+    "package": "cdk-package",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "aws-sdk": "^2.573.0",
+    "cdk-build-tools": "1.16.1",
+    "cdk-integ-tools": "1.16.1",
+    "fs-extra": "^8.1.0",
+    "pkglint": "1.16.1"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-lambda": "1.16.1",
+    "@aws-cdk/core": "1.16.1"
+  },
+  "peerDependencies": {
+    "@aws-cdk/aws-lambda": "1.16.1",
+    "@aws-cdk/core": "1.16.1"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/lambda-layers"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "sdk",
+    "layer",
+    "lambda"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 80
+      }
+    }
+  },
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental"
+}
