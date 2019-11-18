@@ -15,6 +15,7 @@ This library provides higher-level Amazon ECS constructs which follow common arc
 * Network Load Balanced Services
 * Queue Processing Services
 * Scheduled Tasks (cron jobs)
+* Additional Examples
 
 ## Application Load Balanced Services
 
@@ -149,5 +150,41 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
   schedule: events.Schedule.expression('rate(1 minute)')
+});
+```
+
+## Additional Examples
+
+In addition to using the constructs, users can also add logic to customize these constructs:
+
+### Add Schedule-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
+
+```ts
+import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
+import { ApplicationLoadBalancedFargateService, ApplicationLoadBalancedFargateServiceProps } from './application-load-balanced-fargate-service';
+
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+});
+
+const scalableTarget = loadBalancedFargateService.service.autoScaleTaskCount({
+  minCapacity: 5,
+  maxCapacity: 20,
+});
+
+scalableTarget.scaleOnSchedule('DaytimeScaleDown', {
+  schedule: Schedule.cron({ hour: '8', minute: '0'}),
+  minCapacity: 1,
+});
+
+scalableTarget.scaleOnSchedule('EveningRushScaleUp', {
+  schedule: Schedule.cron({ hour: '20', minute: '0'}),
+  minCapacity: 10,
 });
 ```
