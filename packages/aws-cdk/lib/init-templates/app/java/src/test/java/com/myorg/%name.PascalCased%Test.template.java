@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 
 public class %name.PascalCased%Test {
     private final static ObjectMapper JSON =
@@ -22,6 +22,6 @@ public class %name.PascalCased%Test {
         // synthesize the stack to a CloudFormation template and compare against
         // a checked-in JSON file.
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
-        assertFalse(actual.elements().hasNext());
+        assertEquals(new ObjectMapper().createObjectNode(), actual);
     }
 }
