@@ -494,19 +494,19 @@ export interface BaseResolverProps {
     readonly fieldName: string;
     /**
      * configuration of the pipeline resolver
-     * 
+     *
      * @default - create a UNIT resolver
      */
     readonly pipelineConfig?: CfnResolver.PipelineConfigProperty | IResolvable;
     /**
      * The request mapping template for this resolver
-     * 
+     *
      * @default - No mapping template
      */
     readonly requestMappingTemplate?: MappingTemplate;
     /**
      * The response mapping template for this resolver
-     * 
+     *
      * @default - No mapping template
      */
     readonly responseMappingTemplate?: MappingTemplate;
@@ -519,7 +519,7 @@ export interface ResolverProps extends BaseResolverProps {
     readonly api: GraphQLApi;
     /**
      * The data source this resolver is using
-     * 
+     *
      * @default - No datasource
      */
     readonly dataSource?: BaseDataSource;
