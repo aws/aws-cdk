@@ -15,18 +15,6 @@
 
 ---
 <!--END STABILITY BANNER-->
-- [Provider Framework](#provider-framework)
-  - [Handling Lifecycle Events: onEvent](#handling-lifecycle-events-onevent)
-  - [Asynchronous Providers: isComplete](#asynchronous-providers-iscomplete)
-  - [Physical Resource IDs](#physical-resource-ids)
-  - [Error Handling](#error-handling)
-  - [Execution Policy](#execution-policy)
-  - [Timeouts](#timeouts)
-  - [Examples](#examples)
-- [Custom Resources for AWS APIs](#custom-resources-for-aws-apis)
-  - [Execution Policy](#execution-policy-1)
-  - [Examples](#examples-1)
-
 
 ## Provider Framework
 
@@ -43,6 +31,7 @@ and powerful custom resources and includes the following capabilities:
   deployments
 * Validates handler return values to help with correct handler implementation
 * Supports asynchronous handlers to enable long operations which can exceed the AWS Lambda timeout
+* Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
 with `cfn.CustomResource` and a user-provided AWS Lambda function which
@@ -55,7 +44,8 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
-  onEventHandler: onEvent
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete // optional async "waiter"
 });
 
 new cfn.CustomResource(this, 'Resource1', { provider: myProvider });
@@ -69,10 +59,55 @@ At the minimum, users must define the `onEvent` handler, which is invoked by the
 framework for all resource lifecycle events (`Create`, `Update` and `Delete`)
 and returns a result which is then submitted to CloudFormation.
 
+The following example is a skelaton for a Python implementation of `onEvent`:
+
+```py
+def on_event(event, context):
+  print(event)  
+  request_type = event['RequestType']
+  if request_type == 'Create': return on_create(event)
+  if request_type == 'Update': return on_update(event)
+  if request_type == 'Delete': return on_delete(event)
+  raise Exception("Invalid request type: %s" % request_type)
+
+def on_create(event):
+  props = event["ResourceProperties"]
+  print("create new resource with props %s" % props)
+
+  # add your create code here...
+  physical_id = ...
+  
+  return { 'PhysicalResourceId': physical_id }
+  
+def on_update(event):
+  physical_id = event["PhysicalResourceId"]
+  props = event["ResourceProperties"]
+  print("update resource %s with props %s" % (physical_id, props))
+  # ...
+
+def on_delete(event):
+  physical_id = event["PhysicalResourceId"]
+  print("delete resource %s" % physical_id)
+  # ...
+```
+
 Users may also provide an additional handler called `isComplete`, for cases
 where the lifecycle operation cannot be completed immediately. The
 `isComplete` handler will be retried asynchronously after `onEvent` until it
 returns `IsComplete: true`, or until the total provider timeout has expired.
+
+The following example is a skelaton for a Python implementation of `isComplete`:
+
+```py
+def is_complete(event, context):
+  physical_id = event["PhysicalResourceId"]
+  request_type = event["RequestType"]
+
+  # check if resource is stable based on request_type
+  is_ready = ... 
+  
+  return { 'IsComplete': is_ready }
+```
 
 [custom resources]: (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
 
@@ -109,7 +144,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 
 |Field|Type|Required|Description
 |-----|----|--------|-----------
-|`PhysicalResourceId`|String|Yes|The allocated/assigned physical ID of the resource. Must be returned for all request types, including `Update` and `Delete`, even if the physical ID hasn't changed.
+|`PhysicalResourceId`|String|No|The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur.
 |`Data`|JSON|No|Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
@@ -132,9 +167,10 @@ with the message "Operation timed out".
 If an error is thrown, the framework will submit a "FAILED" response to AWS
 CloudFormation.
 
-The input event to `isComplete` is similar to [`onEvent`](#handling-lifecycle-events-onevent), 
-with an additional guarantee that `PhysicalResourceId` is defines and contains the value returned 
-from `onEvent`.
+The input event to `isComplete` is similar to
+[`onEvent`](#handling-lifecycle-events-onevent), with an additional guarantee
+that `PhysicalResourceId` is defines and contains the value returned from
+`onEvent` or the described default. At any case, it is guaranteed to exist.
 
 The return value must be a JSON object with the following fields:
 
@@ -148,27 +184,24 @@ The return value must be a JSON object with the following fields:
 Every resource in CloudFormation has a physical resource ID. When a resource is
 created, the `PhysicalResourceId` returned from the `Create` operation is stored
 by AWS CloudFormation and assigned to the logical ID defined for this resource
-in the template.
+in the template. If a `Create` operation returns without a `PhysicalResourceId`,
+the framework will use `RequestId` as the default. This is sufficient for
+various cases such as "pseudo-resources" which only query data.
 
-When an `Update` operation occurs, if the returned `PhysicalResourceId` is
-different from the one currently stored (and passed in the event through the
-`PhysicalResourceId` field), AWS CloudFormation will treat this as a **resource
-replacement**, and it will issue a subsequent `Delete` operation for the old
-resource.
+For `Update` and `Delete` operations, the resource event will always include the
+current `PhysicalResourceId` of the resource.
+
+When an `Update` operation occurs, the default behavior is to return the current
+physical resource ID. if the `onEvent` returns a `PhysicalResourceId` which is
+different from the current one, AWS CloudFormation will treat this as a
+**resource replacement**, and it will issue a subsequent `Delete` operation for
+the old resource.
 
 As a rule of thumb, if your custom resource supports configuring a physical name
 (e.g. you can specify a `BucketName` when you define an `AWS::S3::Bucket`), you
 must return this name in `PhysicalResourceId` and make sure to handle
 replacement properly. The `S3File` example demonstrates this
 through the `objectKey` property.
-
-If your custom resource doesn't support configuring a physical name for the
-resource, it is safe to use `RequestId` as `PhysicalResourceId` in the `Create`
-operation, but you must return the same value in subsequent `Update` operations,
-or otherwise CloudFormation will think your resource is being replaced and will
-issue a `Delete` event. The `S3Assert` example demonstrates this by returning
-`event.PhysicalResourceId` if defined (in `Update` and `Delete`) and otherwise
-`event.RequestId` (for `Create`).
 
 ### Error Handling
 

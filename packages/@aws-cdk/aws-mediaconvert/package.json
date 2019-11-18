@@ -1,0 +1,84 @@
+{
+  "name": "@aws-cdk/aws-mediaconvert",
+  "version": "1.16.1",
+  "description": "The CDK Construct Library for AWS::MediaConvert",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.MediaConvert",
+        "packageId": "Amazon.CDK.AWS.MediaConvert",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.mediaconvert",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "mediaconvert",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-mediaconvert",
+        "module": "aws_cdk.aws_mediaconvert"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-mediaconvert"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "cfn2ts": "cfn2ts",
+    "compat": "cdk-compat",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::MediaConvert"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::MediaConvert",
+    "aws-mediaconvert"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^1.16.1",
+    "cdk-build-tools": "1.16.1",
+    "cfn2ts": "^1.16.1",
+    "pkglint": "1.16.1"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "1.16.1"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "1.16.1"
+  },
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental"
+}

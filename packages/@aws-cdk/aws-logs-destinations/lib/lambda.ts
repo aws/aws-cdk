@@ -10,18 +10,16 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(_scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
+  public bind(scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     const arn = logGroup.logGroupArn;
 
-    const logSubscriptionDestinationPolicyAddedFor: string[] = [];
-
-    if (logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
-      this.fn.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.amazonaws.com`),
-        sourceArn: arn
-      });
-      logSubscriptionDestinationPolicyAddedFor.push(arn);
-    }
+    this.fn.addPermission('CanInvokeLambda', {
+      principal: new iam.ServicePrincipal(`logs.amazonaws.com`),
+      sourceArn: arn,
+      // Using SubScription Filter as scope is okay, since every Subscription Filter has only
+      // one destination.
+      scope
+    });
     return { arn: this.fn.functionArn };
   }
 }
