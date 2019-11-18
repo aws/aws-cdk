@@ -21,7 +21,7 @@ class TestStack extends Stack {
           body: 'hello, world!'
         };
       };`),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler'
     });
 
