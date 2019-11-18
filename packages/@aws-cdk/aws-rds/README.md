@@ -25,7 +25,7 @@ your instances will be launched privately or publicly:
 const cluster = new DatabaseCluster(this, 'Database', {
     engine: DatabaseClusterEngine.AURORA,
     masterUser: {
-        username: 'admin'
+        username: 'clusteradmin'
     },
     instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
