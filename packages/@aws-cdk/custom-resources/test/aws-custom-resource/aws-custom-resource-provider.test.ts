@@ -3,7 +3,7 @@ import AWS = require('aws-sdk-mock');
 import nock = require('nock');
 import sinon = require('sinon');
 import { AwsSdkCall } from '../../lib';
-import { handler } from '../../lib/aws-custom-resource/runtime';
+import { flatten, handler } from '../../lib/aws-custom-resource/runtime';
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
@@ -320,4 +320,21 @@ test('can specify apiVersion and region', async () => {
   await handler(event, {} as AWSLambda.Context);
 
   expect(request.isDone()).toBeTruthy();
+});
+
+test('flatten correctly flattens a nested object', () => {
+  expect(flatten({
+    a: { b: 'c' },
+    d: [
+      { e: 'f' },
+      { g: 'h', i: 1, j: null, k: { l: false } }
+    ],
+  })).toEqual({
+    'a.b': 'c',
+    'd.0.e': 'f',
+    'd.1.g': 'h',
+    'd.1.i': 1,
+    'd.1.j': null,
+    'd.1.k.l': false
+  });
 });
