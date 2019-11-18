@@ -8,13 +8,13 @@ import { AwsSdkCall } from '../aws-custom-resource';
  * @param object the object to be flattened
  * @returns a flat object with path as keys
  */
-function flatten(object: object): { [key: string]: string } {
+export function flatten(object: object): { [key: string]: string } {
   return Object.assign(
     {},
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
         .map(key =>
-          typeof child[key] === 'object'
+          typeof child[key] === 'object' && child[key] !== null
             ? _flatten(child[key], path.concat([key]))
             : ({ [path.concat([key]).join('.')]: child[key] })
       ));
