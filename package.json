@@ -16,7 +16,7 @@
     "@types/jest": "^24.0.23",
     "@types/node": "^10.17.5",
     "@types/nodeunit": "^0.0.30",
-    "conventional-changelog-cli": "^2.0.27",
+    "conventional-changelog-cli": "^2.0.28",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
     "jsii-diff": "^0.20.6",
