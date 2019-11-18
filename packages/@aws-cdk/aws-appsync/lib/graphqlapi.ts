@@ -6,6 +6,9 @@ import { Construct, IResolvable } from "@aws-cdk/core";
 import { readFileSync } from "fs";
 import { CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
 
+/**
+ * enum with all possible values for Cognito user-pool default actions
+ */
 export enum UserPoolDefaultAction {
     /**
      * ALLOW access to API
@@ -17,6 +20,9 @@ export enum UserPoolDefaultAction {
     DENY = 'DENY',
 }
 
+/**
+ * Configuration for Cognito user-pools in AppSync
+ */
 export interface UserPoolConfig {
 
     /**
@@ -37,6 +43,9 @@ export interface UserPoolConfig {
     readonly defaultAction?: UserPoolDefaultAction;
 }
 
+/**
+ * log-level for fields in AppSync
+ */
 export enum FieldLogLevel {
     /**
      * No logging
@@ -52,6 +61,9 @@ export enum FieldLogLevel {
     ALL = 'ALL',
 }
 
+/**
+ * Logging configuration for AppSync
+ */
 export interface LogConfig {
     /**
      * exclude verbose content
@@ -63,6 +75,9 @@ export interface LogConfig {
     readonly fieldLogLevel?: FieldLogLevel;
 }
 
+/**
+ * Properties for an AppSync GraphQL API
+ */
 export interface GraphQLApiProps {
 
     /**
@@ -99,6 +114,9 @@ export interface GraphQLApiProps {
 
 }
 
+/**
+ * An AppSync GraphQL API
+ */
 export class GraphQLApi extends Construct {
 
     /**
@@ -210,6 +228,9 @@ export class GraphQLApi extends Construct {
 
 }
 
+/**
+ * Base properties fo an AppSync datasource
+ */
 export interface BaseDataSourceProps {
     /**
      * The API to attach this data source to
@@ -273,6 +294,9 @@ export interface ExtendedDataSourceProps {
     readonly relationalDatabaseConfig?: CfnDataSource.RelationalDatabaseConfigProperty | IResolvable;
 }
 
+/**
+ * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
+ */
 export abstract class BaseDataSource extends Construct implements IGrantable {
 
     /**
@@ -318,6 +342,9 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
 
 }
 
+/**
+ * Properties for an AppSync DynamoDB datasource
+ */
 export interface DynamoDbDataSourceProps extends BaseDataSourceProps {
     /**
      * The DynamoDB table backing this data source
@@ -338,6 +365,9 @@ export interface DynamoDbDataSourceProps extends BaseDataSourceProps {
     readonly useCallerCredentials?: boolean;
 }
 
+/**
+ * An AppSync datasource backed by a DynamoDB table
+ */
 export class DynamoDbDataSource extends BaseDataSource {
     constructor(scope: Construct, id: string, props: DynamoDbDataSourceProps) {
         super(scope, id, props, {
@@ -356,6 +386,9 @@ export class DynamoDbDataSource extends BaseDataSource {
     }
 }
 
+/**
+ * Properties for an AppSync Lambda datasource
+ */
 export interface LambdaDataSourceProps extends BaseDataSourceProps {
     /**
      * The Lambda function to call to interact with this data source
@@ -363,6 +396,9 @@ export interface LambdaDataSourceProps extends BaseDataSourceProps {
     readonly lambdaFunction: IFunction;
 }
 
+/**
+ * An AppSync datasource backed by a Lambda function
+ */
 export class LambdaDataSource extends BaseDataSource {
     constructor(scope: Construct, id: string, props: LambdaDataSourceProps) {
         super(scope, id, props, {
@@ -375,6 +411,9 @@ export class LambdaDataSource extends BaseDataSource {
     }
 }
 
+/**
+ * MappingTemplates for AppSync resolvers
+ */
 export abstract class MappingTemplate {
 
     /**
@@ -483,6 +522,9 @@ class StringMappingTemplate extends MappingTemplate {
     }
 }
 
+/**
+ * Basic properties for an AppSync resolver
+ */
 export interface BaseResolverProps {
     /**
      * name of the GraphQL type this resolver is attached to
@@ -512,6 +554,9 @@ export interface BaseResolverProps {
     readonly responseMappingTemplate?: MappingTemplate;
 }
 
+/**
+ * Additional properties for an AppSync resolver like GraphQL API reference and datasource
+ */
 export interface ResolverProps extends BaseResolverProps {
     /**
      * The API this resolver is attached to
@@ -525,6 +570,9 @@ export interface ResolverProps extends BaseResolverProps {
     readonly dataSource?: BaseDataSource;
 }
 
+/**
+ * An AppSync resolver
+ */
 export class Resolver extends Construct {
 
     /**
