@@ -90,7 +90,8 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
       });
 
       // Create log driver if logging is enabled

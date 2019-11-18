@@ -368,7 +368,7 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
-   * listener.addTarget(service.loadBalancerTarget({
+   * listener.addTargets(service.loadBalancerTarget({
    *   containerName: 'MyContainer',
    *   containerPort: 1234
    * }));
@@ -395,6 +395,8 @@ export abstract class BaseService extends Resource
   /**
    * Use this function to create all load balancer targets to be registered in this service, add them to
    * target groups, and attach target groups to listeners accordingly.
+   *
+   * Alternatively, you can use `listener.addTargets()` to create targets and add them to target groups.
    *
    * @example
    *
@@ -454,7 +456,7 @@ export abstract class BaseService extends Resource
    * @returns The created CloudMap service
    */
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.defaultCloudMapNamespace;
+    const sdNamespace = options.cloudMapNamespace !== undefined ? options.cloudMapNamespace : this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }
@@ -662,9 +664,16 @@ export interface CloudMapOptions {
   readonly name?: string,
 
   /**
+   * The service discovery namespace for the Cloud Map service to attach to the ECS service.
+   *
+   * @default - the defaultCloudMapNamespace associated to the cluster
+   */
+  readonly cloudMapNamespace?: cloudmap.INamespace;
+
+  /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
-   * @default: A
+   * @default DnsRecordType.A
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 

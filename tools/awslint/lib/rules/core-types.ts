@@ -79,6 +79,13 @@ export class CoreTypes {
   }
 
   /**
+   * Return true if the given interface type is a CFN class or prop type
+   */
+  public static isCfnType(interfaceType: reflect.Type) {
+    return interfaceType.name.startsWith('Cfn') || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'));
+  }
+
+  /**
    * @returns `classType` for the core type Construct
    */
   public get constructClass() {

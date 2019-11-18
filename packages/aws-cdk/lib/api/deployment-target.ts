@@ -31,6 +31,7 @@ export interface DeployStackOptions {
   toolkitStackName?: string;
   reuseAssets?: string[];
   tags?: Tag[];
+  execute?: boolean;
 }
 
 export interface ProvisionerProps {
@@ -48,14 +49,14 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   }
 
   public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
-    debug(`Reading existing template for stack ${stack.name}.`);
+    debug(`Reading existing template for stack ${stack.displayName}.`);
 
     const cfn = await this.aws.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
     try {
-      const response = await cfn.getTemplate({ StackName: stack.name }).promise();
+      const response = await cfn.getTemplate({ StackName: stack.stackName }).promise();
       return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
     } catch (e) {
-      if (e.code === 'ValidationError' && e.message === `Stack with id ${stack.name} does not exist`) {
+      if (e.code === 'ValidationError' && e.message === `Stack with id ${stack.stackName} does not exist`) {
         return {};
       } else {
         throw e;
@@ -75,7 +76,8 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       ci: options.ci,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
-      tags: options.tags
+      tags: options.tags,
+      execute: options.execute
     });
   }
 }

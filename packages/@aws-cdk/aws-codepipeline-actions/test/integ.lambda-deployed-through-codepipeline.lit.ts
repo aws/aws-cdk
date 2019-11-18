@@ -14,7 +14,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10,
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
 // other resources that your Lambda needs, added to the lambdaStack...
 
@@ -47,7 +47,7 @@ pipeline.addStage({
 // synthesize the Lambda CDK template, using CodeBuild
 // the below values are just examples, assuming your CDK code is in TypeScript/JavaScript -
 // adjust the build environment and/or commands accordingly
-const cdkBuildProject = new codebuild.PipelineProject(pipelineStack, 'CdkBuildProject', {
+const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', {
   environment: {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
   },
@@ -80,7 +80,7 @@ const cdkBuildAction = new codepipeline_actions.CodeBuildAction({
 // build your Lambda code, using CodeBuild
 // again, this example assumes your Lambda is written in TypeScript/JavaScript -
 // make sure to adjust the build environment and/or commands if they don't match your specific situation
-const lambdaBuildProject = new codebuild.PipelineProject(pipelineStack, 'LambdaBuildProject', {
+const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProject', {
   environment: {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
   },

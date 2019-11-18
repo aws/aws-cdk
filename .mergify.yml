@@ -1,6 +1,13 @@
 # See https://doc.mergify.io
 
 pull_request_rules:
+  - name: label core
+    actions:
+      label:
+        add: [ contribution/core ]
+    conditions:
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB)$
+      - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
@@ -11,8 +18,6 @@ pull_request_rules:
         strict_method: merge
       delete_head_branch: {}
     conditions:
-      - author!=dependabot[bot]
-      - author!=dependabot-preview[bot]
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
       - -merged

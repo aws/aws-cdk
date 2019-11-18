@@ -5,6 +5,8 @@ import { CfnStack } from './cloudformation.generated';
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
 
 /**
+ * Initialization props for the `NestedStack` construct.
+ *
  * @experimental
  */
 export interface NestedStackProps {
@@ -133,7 +135,7 @@ export class NestedStack extends Stack {
    * - If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
    * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackId" }`
    *
-   * @example arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786
+   * @example "arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786"
    * @attribute
    */
   public get stackId() {
@@ -149,7 +151,8 @@ export class NestedStack extends Stack {
     // the nested stack references a resource from the parent stack:
     // we pass it through a as a cloudformation parameter
     if (targetStack === sourceStack.parentStack) {
-      const paramId = `reference-to-${reference.target.node.uniqueId}.${reference.displayName}`;
+      // we call "this.resolve" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
+      const paramId = this.resolve(`reference-to-${reference.target.node.uniqueId}.${reference.displayName}`);
       let param = this.node.tryFindChild(paramId) as CfnParameter;
       if (!param) {
         param = new CfnParameter(this, paramId, { type: 'String' });
@@ -195,7 +198,7 @@ export class NestedStack extends Stack {
       output = new CfnOutput(this, outputId, { value: Token.asString(reference) });
     }
 
-    return this.resource.getAtt(`Outputs.${outputId}`);
+    return this.resource.getAtt(`Outputs.${output.logicalId}`);
   }
 
   private contextualAttribute(innerValue: string, outerValue: string) {

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudfront",
-  "version": "1.13.1",
+  "version": "1.16.1",
   "description": "CDK Constructs for AWS CloudFront",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFront"
@@ -63,32 +64,81 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.13.1",
-    "aws-sdk": "^2.553.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.16.1",
+    "aws-sdk": "^2.573.0",
+    "cdk-build-tools": "1.16.1",
+    "cdk-integ-tools": "1.16.1",
+    "cfn2ts": "1.16.1",
+    "pkglint": "1.16.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/aws-kms": "1.13.1",
-    "@aws-cdk/aws-lambda": "1.13.1",
-    "@aws-cdk/aws-s3": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-certificatemanager": "1.16.1",
+    "@aws-cdk/aws-iam": "1.16.1",
+    "@aws-cdk/aws-kms": "1.16.1",
+    "@aws-cdk/aws-lambda": "1.16.1",
+    "@aws-cdk/aws-s3": "1.16.1",
+    "@aws-cdk/core": "1.16.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.13.1",
-    "@aws-cdk/aws-iam": "1.13.1",
-    "@aws-cdk/aws-kms": "1.13.1",
-    "@aws-cdk/aws-lambda": "1.13.1",
-    "@aws-cdk/aws-s3": "1.13.1",
-    "@aws-cdk/core": "1.13.1"
+    "@aws-cdk/aws-certificatemanager": "1.16.1",
+    "@aws-cdk/aws-iam": "1.16.1",
+    "@aws-cdk/aws-kms": "1.16.1",
+    "@aws-cdk/aws-lambda": "1.16.1",
+    "@aws-cdk/aws-s3": "1.16.1",
+    "@aws-cdk/core": "1.16.1"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.ALLOW_ALL",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS",
+      "props-default-doc:@aws-cdk/aws-cloudfront.Behavior.isDefaultBehavior",
+      "props-default-doc:@aws-cdk/aws-cloudfront.Behavior.minTtl",
+      "props-default-doc:@aws-cdk/aws-cloudfront.Behavior.pathPattern",
+      "props-default-doc:@aws-cdk/aws-cloudfront.Behavior.trustedSigners",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontWebDistributionProps",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.LambdaFunctionAssociation",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.S3OriginConfig",
+      "props-default-doc:@aws-cdk/aws-cloudfront.S3OriginConfig.originAccessIdentityId",
+      "props-default-doc:@aws-cdk/aws-cloudfront.SourceConfiguration.customOriginSource",
+      "props-default-doc:@aws-cdk/aws-cloudfront.SourceConfiguration.s3OriginSource",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontAllowedCachedMethods.GET_HEAD",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontAllowedCachedMethods.GET_HEAD_OPTIONS",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontAllowedMethods.GET_HEAD",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontAllowedMethods.GET_HEAD_OPTIONS",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.CloudFrontAllowedMethods.ALL",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion.HTTP1_1",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.HttpVersion.HTTP2",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.LambdaEdgeEventType",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.HTTPS_ONLY",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy.HTTP_ONLY",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy.MATCH_VIEWER",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy.HTTPS_ONLY",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.SSL_V3",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.TLS_V1",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.TLS_V1_1",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.OriginSslPolicy.TLS_V1_2",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.PriceClass.PRICE_CLASS_100",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.PriceClass.PRICE_CLASS_200",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.PriceClass.PRICE_CLASS_ALL",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SSLMethod.SNI",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SSLMethod.VIP",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.SSL_V3",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2016",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2_2018",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.aliases",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.props",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificateOptions",
+      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases"
+    ]
+  }
 }
