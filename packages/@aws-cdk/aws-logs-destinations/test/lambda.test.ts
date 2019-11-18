@@ -14,7 +14,7 @@ beforeEach(() => {
   fn = new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
   });
   logGroup = new logs.LogGroup(stack, 'LogGroup');
 });

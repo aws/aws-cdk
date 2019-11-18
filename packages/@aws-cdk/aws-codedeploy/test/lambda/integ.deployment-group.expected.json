@@ -79,7 +79,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "HandlerServiceRoleFCDC14AE"
@@ -250,7 +250,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "PreHookServiceRoleDefaultPolicy65358F76",
@@ -383,7 +383,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "PostHookServiceRoleDefaultPolicy82AEE758",
