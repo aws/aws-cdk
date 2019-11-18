@@ -7,7 +7,13 @@ import { readFileSync } from "fs";
 import { CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from "./appsync.generated";
 
 export enum UserPoolDefaultAction {
+    /**
+     * ALLOW access to API
+     */
     ALLOW = 'ALLOW',
+    /**
+     * DENY access to API
+     */
     DENY = 'DENY',
 }
 
@@ -19,29 +25,40 @@ export interface UserPoolConfig {
     readonly userPool: IUserPool;
     /**
      * the optional app id regex
+     *
      * @default -  None
      */
     readonly appIdClientRegex?: string;
     /**
      * Default auth action
+     *
      * @default ALLOW
      */
     readonly defaultAction?: UserPoolDefaultAction;
 }
 
 export enum FieldLogLevel {
+    /**
+     * No logging
+     */
     NONE = 'NONE',
+    /**
+     * Error logging
+     */
     ERROR = 'ERROR',
+    /**
+     * All logging
+     */
     ALL = 'ALL',
 }
 
 export interface LogConfig {
     /**
-     *
+     * exclude verbose content
      */
     readonly excludeVerboseContent?: boolean | IResolvable;
     /**
-     *
+     * log level for fields
      */
     readonly fieldLogLevel?: FieldLogLevel;
 }
@@ -55,23 +72,27 @@ export interface GraphQLApiProps {
 
     /**
      * Optional user pool authorizer configuration
+     *
      * @default - Do not use Cognito auth
      */
     readonly userPoolConfig?: UserPoolConfig;
 
     /**
      * Logging configuration for this api
+     *
      * @default - None
      */
     readonly logConfig?: LogConfig;
 
     /**
      * GraphQL schema definition. You have to specify a definition or a file containing one.
+     *
      * @default - Use schemaDefinitionFile
      */
     readonly schemaDefinition?: string;
     /**
      * File containing the GraphQL schema definition. You have to specify a definition or a file containing one.
+     *
      * @default - Use schemaDefinition
      */
     readonly schemaDefinitionFile?: string;
@@ -200,11 +221,13 @@ export interface BaseDataSourceProps {
     readonly name: string;
     /**
      * the description of the data source
+     *
      * @default - None
      */
     readonly description?: string;
     /**
      * The IAM service role to be assumed by AppSync to interact with the data source
+     *
      * @default -  Create a new role
      */
     readonly serviceRole?: IRole;
@@ -214,11 +237,39 @@ export interface BaseDataSourceProps {
  * props used by implementations of BaseDataSource to provide configuration. Should not be used directly.
  */
 export interface ExtendedDataSourceProps {
+    /**
+     * the type of the AppSync datasource
+     */
     readonly type: string;
+    /**
+     * configuration for DynamoDB Datasource
+     *
+     * @defautl - No config
+     */
     readonly dynamoDbConfig?: CfnDataSource.DynamoDBConfigProperty | IResolvable;
+    /**
+     * configuration for Elasticsearch Datasource
+     *
+     * @defautl - No config
+     */
     readonly elasticsearchConfig?: CfnDataSource.ElasticsearchConfigProperty | IResolvable;
+    /**
+     * configuration for HTTP Datasource
+     *
+     * @defautl - No config
+     */
     readonly httpConfig?: CfnDataSource.HttpConfigProperty | IResolvable;
+    /**
+     * configuration for Lambda Datasource
+     *
+     * @defautl - No config
+     */
     readonly lambdaConfig?: CfnDataSource.LambdaConfigProperty | IResolvable;
+    /**
+     * configuration for RDS Datasource
+     *
+     * @defautl - No config
+     */
     readonly relationalDatabaseConfig?: CfnDataSource.RelationalDatabaseConfigProperty | IResolvable;
 }
 
@@ -275,11 +326,13 @@ export interface DynamoDbDataSourceProps extends BaseDataSourceProps {
     readonly table: Table;
     /**
      * Specify whether this DS is read only or has read and write permissions to the DynamoDB table
+     *
      * @default false
      */
     readonly readOnlyAccess?: boolean;
     /**
-     * TODO
+     * use credentials of caller to access DynamoDB
+     *
      * @default false
      */
     readonly useCallerCredentials?: boolean;
@@ -321,8 +374,6 @@ export class LambdaDataSource extends BaseDataSource {
         props.lambdaFunction.grantInvoke(this.serviceRole);
     }
 }
-
-// TODO more datasource types
 
 export abstract class MappingTemplate {
 
@@ -443,16 +494,19 @@ export interface BaseResolverProps {
     readonly fieldName: string;
     /**
      * configuration of the pipeline resolver
+     * 
      * @default - create a UNIT resolver
      */
     readonly pipelineConfig?: CfnResolver.PipelineConfigProperty | IResolvable;
     /**
      * The request mapping template for this resolver
+     * 
      * @default - No mapping template
      */
     readonly requestMappingTemplate?: MappingTemplate;
     /**
      * The response mapping template for this resolver
+     * 
      * @default - No mapping template
      */
     readonly responseMappingTemplate?: MappingTemplate;
@@ -465,6 +519,7 @@ export interface ResolverProps extends BaseResolverProps {
     readonly api: GraphQLApi;
     /**
      * The data source this resolver is using
+     * 
      * @default - No datasource
      */
     readonly dataSource?: BaseDataSource;
