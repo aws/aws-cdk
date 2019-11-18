@@ -67,10 +67,14 @@ export enum FieldLogLevel {
 export interface LogConfig {
     /**
      * exclude verbose content
+     *
+     * @default false
      */
     readonly excludeVerboseContent?: boolean | IResolvable;
     /**
      * log level for fields
+     *
+     * @default - Use AppSync default
      */
     readonly fieldLogLevel?: FieldLogLevel;
 }
@@ -265,31 +269,31 @@ export interface ExtendedDataSourceProps {
     /**
      * configuration for DynamoDB Datasource
      *
-     * @defautl - No config
+     * @default - No config
      */
     readonly dynamoDbConfig?: CfnDataSource.DynamoDBConfigProperty | IResolvable;
     /**
      * configuration for Elasticsearch Datasource
      *
-     * @defautl - No config
+     * @default - No config
      */
     readonly elasticsearchConfig?: CfnDataSource.ElasticsearchConfigProperty | IResolvable;
     /**
      * configuration for HTTP Datasource
      *
-     * @defautl - No config
+     * @default - No config
      */
     readonly httpConfig?: CfnDataSource.HttpConfigProperty | IResolvable;
     /**
      * configuration for Lambda Datasource
      *
-     * @defautl - No config
+     * @default - No config
      */
     readonly lambdaConfig?: CfnDataSource.LambdaConfigProperty | IResolvable;
     /**
      * configuration for RDS Datasource
      *
-     * @defautl - No config
+     * @default - No config
      */
     readonly relationalDatabaseConfig?: CfnDataSource.RelationalDatabaseConfigProperty | IResolvable;
 }
@@ -332,6 +336,9 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
         this.api = props.api;
     }
 
+    /**
+     * creates a new resolver for this datasource and API using the given properties
+     */
     public createResolver(props: BaseResolverProps): Resolver {
         return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
             api: this.api,
