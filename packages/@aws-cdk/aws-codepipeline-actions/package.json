@@ -68,7 +68,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.16.1",
     "@aws-cdk/aws-cloudtrail": "1.16.1",
-    "@types/lodash": "^4.14.148",
+    "@types/lodash": "^4.14.149",
     "cdk-build-tools": "1.16.1",
     "cdk-integ-tools": "1.16.1",
     "lodash": "^4.17.15",
