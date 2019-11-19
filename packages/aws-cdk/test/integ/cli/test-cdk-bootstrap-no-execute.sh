@@ -6,15 +6,13 @@ source ${scriptdir}/common.bash
 
 setup
 
-stack_arn=$(cdk deploy -v ${STACK_NAME_PREFIX}-test-2 --no-execute)
-echo "Stack deployed successfully"
+bootstrap_stack_name="toolkit-stack-1-${RANDOM}"
 
-# verify that we only deployed a single stack (there's a single ARN in the output)
-assert_lines "${stack_arn}" 1
+# deploy with --no-execute (leaves stack in review)
+cdk bootstrap --toolkit-stack-name ${bootstrap_stack_name} --no-execute
 
-# verify the number of resources in the stack
 response_json=$(mktemp).json
-aws cloudformation describe-stacks --stack-name ${stack_arn} > ${response_json}
+aws cloudformation describe-stacks --stack-name ${bootstrap_stack_name} > ${response_json}
 
 stack_status=$(node -e "console.log(require('${response_json}').Stacks[0].StackStatus)")
 if [ ! "${stack_status}" == "REVIEW_IN_PROGRESS" ]; then
@@ -22,6 +20,6 @@ if [ ! "${stack_status}" == "REVIEW_IN_PROGRESS" ]; then
 fi
 
 # destroy
-cdk destroy -f ${STACK_NAME_PREFIX}-test-2
+aws cloudformation delete-stack --stack-name ${bootstrap_stack_name}
 
 echo "✅  success"
