@@ -8,6 +8,7 @@ import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
   fileShouldBe, fileShouldContain,
+  fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
   monoRepoVersion,
@@ -381,7 +382,7 @@ export class CDKPackage extends ValidationRule {
 }
 
 export class NoTsBuildInfo extends ValidationRule {
-  public readonly name = 'no-tsc-build-info';
+  public readonly name = 'npmignore/tsbuildinfo';
 
   public validate(pkg: PackageJson): void {
     // skip private packages
@@ -392,6 +393,32 @@ export class NoTsBuildInfo extends ValidationRule {
     // We might at some point also want to strip tsconfig.json but for now,
     // the TypeScript DOCS BUILD needs to it to load the typescript source.
     fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
+  }
+}
+
+export class NoTsConfig extends ValidationRule {
+  public readonly name = 'npmignore/tsconfig';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    fileShouldContain(this.name, pkg, '.npmignore', 'tsconfig.json');
+  }
+}
+
+export class IncludeJsiiInNpmTarball extends ValidationRule {
+  public readonly name = 'npmignore/jsii-included';
+
+  public validate(pkg: PackageJson): void {
+    // only jsii modules
+    if (!isJSII(pkg)) { return; }
+
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    fileShouldNotContain(this.name, pkg, '.npmignore', '.jsii');
+    fileShouldContain(this.name, pkg, '.npmignore', '!.jsii'); // make sure .jsii is included
   }
 }
 

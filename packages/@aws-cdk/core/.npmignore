@@ -19,3 +19,5 @@ dist
 !core
 
 *.tsbuildinfo
+
+tsconfig.json

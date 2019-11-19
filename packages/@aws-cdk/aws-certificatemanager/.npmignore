@@ -19,3 +19,5 @@ dist
 lambda-packages/dns_validated_certificate_handler/node_modules
 
 *.tsbuildinfo
+
+tsconfig.json

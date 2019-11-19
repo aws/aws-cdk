@@ -17,3 +17,5 @@ dist
 lambda-packages/aws-global-table-coordinator/node_modules
 
 *.tsbuildinfo
+
+tsconfig.json

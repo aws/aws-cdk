@@ -17,3 +17,5 @@ dist
 
 *.tsbuildinfo
 
+
+tsconfig.json
