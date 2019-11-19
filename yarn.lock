@@ -4850,15 +4850,15 @@ jsii-pacmak@^0.20.6:
     xmlbuilder "^13.0.2"
     yargs "^14.2.0"
 
-jsii-reflect@^0.20.3, jsii-reflect@^0.20.6:
-  version "0.20.6"
-  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.6.tgz#1805a1098901f81a5e8c98ad33bd8f67d1014031"
-  integrity sha512-OmXCd7G/DpQs3guXPmZXSs2RbdtBwfDL5nR+3cNP1MSq9iELnafEmfVDUWc5o4toQiF1DQYVfkH4u2ABAaUqgA==
+jsii-reflect@^0.20.6, jsii-reflect@^0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.7.tgz#80e1d303957b3f2098ec8671108b36a54722390c"
+  integrity sha512-6BoJ+8Ey2VyDzMJcM2RQ9IJv0UZqor4KrxyL6Upd9NvZLrokYkbLci7qQJ6wvaH+uVJAVI0uVl2GTdcbXbSH6g==
   dependencies:
     colors "^1.4.0"
     fs-extra "^8.1.0"
-    jsii-spec "^0.20.6"
-    oo-ascii-tree "^0.20.6"
+    jsii-spec "^0.20.7"
+    oo-ascii-tree "^0.20.7"
     yargs "^14.2.0"
 
 jsii-sampiler@^0.20.6:
@@ -4871,10 +4871,10 @@ jsii-sampiler@^0.20.6:
     typescript "~3.6.4"
     yargs "^14.2.0"
 
-jsii-spec@^0.20.5, jsii-spec@^0.20.6:
-  version "0.20.6"
-  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.6.tgz#5737f93b7f82f43917966eef2f91bd68cf647a76"
-  integrity sha512-hw5LkLg7drH21dx+xGk737XG4MKW3ETruwf613Y77+x6P4LM2iw61n16a7fQ2W9O8EY8bxjCZht4zzID8ku2mQ==
+jsii-spec@^0.20.5, jsii-spec@^0.20.6, jsii-spec@^0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.7.tgz#0c23dfefbb41b0e3b76f5e4105c4aacf50ca47f3"
+  integrity sha512-/ciOLtoJlGRjrLN2F92/G4KnGdTOqP82r4ZlLuRvmJ/SMa/8rNimQ0RPUsgU1tmi2gDlkWHzNhCCG2FKnqBUpA==
   dependencies:
     jsonschema "^1.2.4"
 
@@ -5977,10 +5977,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-oo-ascii-tree@^0.20.6:
-  version "0.20.6"
-  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.6.tgz#193ebd89ed715e69d4e9675414565119c7d8ba26"
-  integrity sha512-vSnNGlK0OqVOlAHV3LbrYZZM8I4w4mIwThq4XKhyd9/Jrh+9yEVCubbTOEgDm7xTu7i0vZlFXMZdeBdpB1M4Ag==
+oo-ascii-tree@^0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.7.tgz#e91c2c07f5970b47b0b92ed2f09bb95ca03ddec7"
+  integrity sha512-qfpZzAAZ2ya03lrvAHYAMPwuKA1KBS7vX2PdMyMyF5zJ3v3SHWuFjMA9h/OvWeWFDeCdgar5udTN31FBiLH/qQ==
 
 opener@^1.5.1:
   version "1.5.1"
