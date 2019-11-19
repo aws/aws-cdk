@@ -1,31 +1,8 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import core = require('@aws-cdk/core');
 import cdk = require('@aws-cdk/core');
 import { Cluster } from './cluster';
 import { KubernetesResource } from './k8s-resource';
-
-/**
- * A Cluster Autoscaler
- */
-export interface IKubernetesClusterAutoscaler extends core.IConstruct {
-  /**
-   *  The Cluster Autoscalers Cluster.
-   *
-   * [disable-awslint:ref-via-interface]
-   */
-  readonly cluster: Cluster;
-
-  /**
-   *  The IAM policy created by this construct.
-   */
-  readonly policy: iam.IPolicy;
-
-  /**
-   * The Kubernetes Resource that defines the Cluster Autoscaler K8s resources.
-   */
-  readonly clusterAutoscaler: KubernetesResource;
-}
 
 /**
  * The properties for the Cluster Autoscaler.
@@ -49,7 +26,7 @@ export interface KubernetesClusterAutoscalerProps {
   /**
    * The version of the Cluster Autoscaler to deploy.
    *
-   * @default - the defualt version is v1.14.6
+   * @default - the default version is v1.14.6
    */
   readonly version?: string;
 
@@ -59,7 +36,7 @@ export interface KubernetesClusterAutoscalerProps {
  * The Cluster Autoscaler Construct. This will create a new IAM Policy, add labels to the ASGs, and
  * deploy the Cluster Autoscaler manifest.
  */
-export class KubernetesClusterAutoscaler extends cdk.Construct implements IKubernetesClusterAutoscaler {
+export class KubernetesClusterAutoscaler extends cdk.Construct {
 
   /**
    *  The cluster this autoscaler is assosciated with
@@ -72,11 +49,6 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
    *  The IAM policy created by this construct.
    */
   public readonly policy: iam.IPolicy;
-
-  /**
-   * The Kubernetes Resource that defines the Cluster Autoscaler K8s resources.
-   */
-  public readonly clusterAutoscaler: KubernetesResource;
 
   /**
    * Constructs a new instance of the Cluster Autoscaler.
@@ -120,33 +92,31 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
       policy.attachToRole(element.role);
     });
 
-    // define the Kubernetes Cluster Autoscaler manifests
-    this.clusterAutoscaler = new KubernetesResource(this, 'k8s-cluster-autoscaler-manifest', {
+    const metadata = {
+      name: 'cluster-autoscaler',
+      namespace: 'kube-system',
+      labels: {
+        'k8s-addon': 'cluster-autoscaler.addons.k8s.io',
+        'k8s-app': 'cluster-autoscaler'
+      }
+    };
+
+    // define the Kubernetes Cluster Autoscaler manifests the manifest is referenced in the aws
+    // documentation which is linked below. this manifest automates the manual steps outlined
+    // in the documentation
+    // https://docs.aws.amazon.com/en_pv/eks/latest/userguide/cluster-autoscaler.html
+    new KubernetesResource(this, 'k8s-cluster-autoscaler-manifest', {
       cluster: props.cluster,
       manifest: [
         {
           apiVersion: 'v1',
           kind: 'ServiceAccount',
-          metadata: {
-            name: 'cluster-autoscaler',
-            namespace: 'kube-system',
-            labels: {
-              'k8s-addon': 'cluster-autoscaler.addons.k8s.io',
-              'k8s-app': 'cluster-autoscaler'
-            }
-          }
+          metadata
         },
         {
           apiVersion: 'rbac.authorization.k8s.io/v1',
           kind: 'ClusterRole',
-          metadata: {
-            name: 'cluster-autoscaler',
-            namespace: 'kube-system',
-            labels: {
-              'k8s-addon': 'cluster-autoscaler.addons.k8s.io',
-              'k8s-app': 'cluster-autoscaler'
-            }
-          },
+          metadata,
           rules: [
             {
               apiGroups: [''],
@@ -166,7 +136,7 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
             {
               apiGroups: [''],
               resources: ['endpoints'],
-              resourceNames: ['cluster-autoscaler'],
+              resourceNames: [metadata.name],
               verbs: ['get', 'update']
             },
             {
@@ -209,14 +179,7 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
         {
           apiVersion: 'rbac.authorization.k8s.io/v1',
           kind: 'Role',
-          metadata: {
-            name: 'cluster-autoscaler',
-            namespace: 'kube-system',
-            labels: {
-              'k8s-addon': 'cluster-autoscaler.addons.k8s.io',
-              'k8s-app': 'cluster-autoscaler'
-            }
-          },
+          metadata,
           rules: [
             {
               apiGroups: [''],
@@ -234,72 +197,51 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
         {
           apiVersion: 'rbac.authorization.k8s.io/v1',
           kind: 'ClusterRoleBinding',
-          metadata: {
-            name: 'cluster-autoscaler',
-            namespace: 'kube-system',
-            labels: {
-              'k8s-addon': 'cluster-autoscaler.addons.k8s.io',
-              'k8s-app': 'cluster-autoscaler'
-            }
-          },
+          metadata,
           roleRef: {
             apiGroup: 'rbac.authorization.k8s.io',
             kind: 'ClusterRole',
-            name: 'cluster-autoscaler'
+            name: metadata.name
           },
           subjects: [
             {
               kind: 'ServiceAccount',
-              name: 'cluster-autoscaler',
-              namespace: 'kube-system'
+              name: metadata.name,
+              namespace: metadata.namespace
             }
           ]
         },
         {
           apiVersion: 'rbac.authorization.k8s.io/v1',
           kind: 'RoleBinding',
-          metadata: {
-            name: 'cluster-autoscaler',
-            namespace: 'kube-system',
-            labels: {
-              'k8s-addon': 'cluster-autoscaler.addons.k8s.io',
-              'k8s-app': 'cluster-autoscaler'
-            }
-          },
+          metadata,
           roleRef: {
             apiGroup: 'rbac.authorization.k8s.io',
             kind: 'Role',
-            name: 'cluster-autoscaler'
+            name: metadata.name
           },
           subjects: [
             {
               kind: 'ServiceAccount',
-              name: 'cluster-autoscaler',
-              namespace: 'kube-system'
+              name: metadata.name,
+              namespace: metadata.namespace
             }
           ]
         },
         {
           apiVersion: 'rbac.authorization.k8s.io/v1',
           kind: 'RoleBinding',
-          metadata: {
-            name: 'cluster-autoscaler',
-            namespace: 'kube-system',
-            labels: {
-              'k8s-addon': 'cluster-autoscaler.addons.k8s.io',
-              'k8s-app': 'cluster-autoscaler'
-            }
-          },
+          metadata,
           roleRef: {
             apiGroup: 'rbac.authorization.k8s.io',
             kind: 'Role',
-            name: 'cluster-autoscaler'
+            name: metadata.name
           },
           subjects: [
             {
               kind: 'ServiceAccount',
-              name: 'cluster-autoscaler',
-              namespace: 'kube-system'
+              name: metadata.name,
+              namespace: metadata.namespace
             }
           ]
         },
@@ -307,10 +249,10 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
           apiVersion: 'apps/v1',
           kind: 'Deployment',
           metadata: {
-            name: 'cluster-autoscaler',
-            namespace: 'kube-system',
+            name: metadata.name,
+            namespace: metadata.namespace,
             labels: {
-              app: 'cluster-autoscaler'
+              app: metadata.name
             },
             annotations: {
               'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false'
@@ -320,13 +262,13 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
             replicas: 1,
             selector: {
               matchLabels: {
-                app: 'cluster-autoscaler'
+                app: metadata.name
               }
             },
             template: {
               metadata: {
                 labels: {
-                  app: 'cluster-autoscaler'
+                  app: metadata.name
                 },
                 annotations: {
                   'prometheus.io/scrape': 'true',
@@ -334,11 +276,11 @@ export class KubernetesClusterAutoscaler extends cdk.Construct implements IKuber
                 }
               },
               spec: {
-                serviceAccountName: 'cluster-autoscaler',
+                serviceAccountName: metadata.name,
                 containers: [
                    {
                       image: 'k8s.gcr.io/cluster-autoscaler:' + version,
-                      name: 'cluster-autoscaler',
+                      name: metadata.name,
                       resources: {
                          limits: {
                             cpu: '100m',
