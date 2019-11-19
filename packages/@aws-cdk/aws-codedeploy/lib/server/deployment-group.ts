@@ -425,15 +425,14 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     return {
       onPremisesTagSetList: tagSet.instanceTagGroups.map(tagGroup => {
         return {
-          onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup) as
-            CfnDeploymentGroup.TagFilterProperty[],
+          onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup),
         };
       }),
     };
   }
 
-  private tagGroup2TagsArray(tagGroup: InstanceTagGroup): any[] {
-    const tagsInGroup = [];
+  private tagGroup2TagsArray(tagGroup: InstanceTagGroup): CfnDeploymentGroup.TagFilterProperty[] {
+    const tagsInGroup = new Array<CfnDeploymentGroup.TagFilterProperty>();
     for (const tagKey in tagGroup) {
       if (tagGroup.hasOwnProperty(tagKey)) {
         const tagValues = tagGroup[tagKey];

@@ -1661,7 +1661,7 @@ class CompositeDependable implements IDependable {
     const self = this;
     DependableTrait.implement(this, {
       get dependencyRoots() {
-        const ret = [];
+        const ret = new Array<IConstruct>();
         for (const dep of self.dependables) {
           ret.push(...DependableTrait.get(dep).dependencyRoots);
         }

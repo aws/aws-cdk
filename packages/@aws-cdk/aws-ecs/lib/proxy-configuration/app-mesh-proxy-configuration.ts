@@ -99,7 +99,7 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
 }
 
 function renderProperties(props: AppMeshProxyConfigurationProps): CfnTaskDefinition.KeyValuePairProperty[] {
-  const ret = [];
+  const ret = new Array<CfnTaskDefinition.KeyValuePairProperty>();
   for (const [k, v] of Object.entries(props)) {
     const key = String(k);
     const value = String(v);

@@ -1,4 +1,5 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -217,7 +218,7 @@ export = {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    const metrics = [];
+    const metrics = new Array<Metric>();
     metrics.push(lb.metricActiveConnectionCount());
     metrics.push(lb.metricClientTlsNegotiationErrorCount());
     metrics.push(lb.metricConsumedLCUs());
