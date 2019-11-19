@@ -2744,6 +2744,11 @@ date-format@^2.1.0:
   resolved "https://registry.yarnpkg.com/date-format/-/date-format-2.1.0.tgz#31d5b5ea211cf5fd764cd38baf9d033df7e125cf"
   integrity sha512-bYQuGLeFxhkxNOF3rcMtiZxvCBAquGzZm6oWA1oZ0g2THUzivaRhv8uOhdr19LmoobSOLoIAxeUK2RdbM8IFTA==
 
+date-format@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/date-format/-/date-format-3.0.0.tgz#eb8780365c7d2b1511078fb491e6479780f3ad95"
+  integrity sha512-eyTcpKOcamdhWJXj56DpQMo1ylSQpcGtGKXcU0Tb97+K56/CF5amAqqqNj0+KvA0iw2ynxtHWFsPDSClCxe48w==
+
 dateformat@^3.0.0:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
@@ -2819,10 +2824,10 @@ deep-eql@^3.0.1:
   dependencies:
     type-detect "^4.0.0"
 
-deep-equal@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.1.0.tgz#3103cdf8ab6d32cf4a8df7865458f2b8d33f3745"
-  integrity sha512-ZbfWJq/wN1Z273o7mUSjILYqehAktR2NVoSrOukDkU9kg2v/Uv89yU4Cvz8seJeAmtN5oqiefKq8FPuXOboqLw==
+deep-equal@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.1.1.tgz#b5c98c942ceffaf7cb051e24e1434a25a2e6076a"
+  integrity sha512-yd9c5AdiqVcR+JjcwUQb9DkhJc8ngNr0MahEBGvDiJw8puWab2yZlh+nkasOnZP+EGTAP6rRp2JzJhJZzvNF8g==
   dependencies:
     is-arguments "^1.0.4"
     is-date-object "^1.0.1"
@@ -4871,24 +4876,24 @@ jsii-sampiler@^0.20.6:
     typescript "~3.6.4"
     yargs "^14.2.0"
 
-jsii-spec@^0.20.5, jsii-spec@^0.20.6:
-  version "0.20.6"
-  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.6.tgz#5737f93b7f82f43917966eef2f91bd68cf647a76"
-  integrity sha512-hw5LkLg7drH21dx+xGk737XG4MKW3ETruwf613Y77+x6P4LM2iw61n16a7fQ2W9O8EY8bxjCZht4zzID8ku2mQ==
+jsii-spec@^0.20.5, jsii-spec@^0.20.6, jsii-spec@^0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.7.tgz#0c23dfefbb41b0e3b76f5e4105c4aacf50ca47f3"
+  integrity sha512-/ciOLtoJlGRjrLN2F92/G4KnGdTOqP82r4ZlLuRvmJ/SMa/8rNimQ0RPUsgU1tmi2gDlkWHzNhCCG2FKnqBUpA==
   dependencies:
     jsonschema "^1.2.4"
 
-jsii@^0.20.6:
-  version "0.20.6"
-  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.20.6.tgz#a1ad780d37f17eabb4363d16556490a3c79a50e2"
-  integrity sha512-eruPkicO6yLx/fBhcHPUKX3mMogPuhsleXhzwxPgGPJPR9xPkjXbq8Ah+ETB5ZK4e36u7mTN9BswvmV+apG2tw==
+jsii@^0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/jsii/-/jsii-0.20.7.tgz#0e9a3332995337f4aab21cf7634749f66d755c3e"
+  integrity sha512-zH8WVm2vtF8/AO8sCySFjJGKhsknEnJbJ23YrQJiD3hOt1D6F48KiVvsjMZ6/bCblcnEfVhVoinZ8K1nbSR3IA==
   dependencies:
     case "^1.6.2"
     colors "^1.4.0"
-    deep-equal "^1.1.0"
+    deep-equal "^1.1.1"
     fs-extra "^8.1.0"
-    jsii-spec "^0.20.6"
-    log4js "^5.3.0"
+    jsii-spec "^0.20.7"
+    log4js "^6.0.0"
     semver "^6.3.0"
     sort-json "^2.0.0"
     spdx-license-list "^6.1.0"
@@ -5222,6 +5227,17 @@ log4js@^5.3.0:
     flatted "^2.0.1"
     rfdc "^1.1.4"
     streamroller "^2.2.2"
+
+log4js@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/log4js/-/log4js-6.0.0.tgz#9fa6576d4507ac8bf816e15bbbc38e384a6bb022"
+  integrity sha512-Iwc/OWOE6bjQOTRoV3JOnXLiG9naU0gWUYhvFfXQ4FQRGnwZbc+67kFGeYwmrO1GO+n1UmX0QCDRiTzRkeYgeQ==
+  dependencies:
+    date-format "^3.0.0"
+    debug "^4.1.1"
+    flatted "^2.0.1"
+    rfdc "^1.1.4"
+    streamroller "^2.2.3"
 
 lolex@^4.1.0, lolex@^4.2.0:
   version "4.2.0"
@@ -7289,7 +7305,7 @@ stream-shift@^1.0.0:
   resolved "https://registry.yarnpkg.com/stream-shift/-/stream-shift-1.0.0.tgz#d5c752825e5367e786f78e18e445ea223a155952"
   integrity sha1-1cdSgl5TZ+eG944Y5EXqIjoVWVI=
 
-streamroller@^2.2.2:
+streamroller@^2.2.2, streamroller@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/streamroller/-/streamroller-2.2.3.tgz#b95c9fad44e2e89005d242141486b3b4962c2d28"
   integrity sha512-AegmvQsscTRhHVO46PhCDerjIpxi7E+d2GxgUDu+nzw/HuLnUdxHWr6WQ+mVn/4iJgMKKFFdiUwFcFRDvcjCtw==
