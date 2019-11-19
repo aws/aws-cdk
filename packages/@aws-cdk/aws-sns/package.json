@@ -78,6 +78,7 @@
     "@aws-cdk/aws-cloudwatch": "1.16.1",
     "@aws-cdk/aws-events": "1.16.1",
     "@aws-cdk/aws-iam": "1.16.1",
+    "@aws-cdk/aws-kms": "1.16.1",
     "@aws-cdk/core": "1.16.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -85,6 +86,7 @@
     "@aws-cdk/aws-cloudwatch": "1.16.1",
     "@aws-cdk/aws-events": "1.16.1",
     "@aws-cdk/aws-iam": "1.16.1",
+    "@aws-cdk/aws-kms": "1.16.1",
     "@aws-cdk/core": "1.16.1"
   },
   "engines": {
