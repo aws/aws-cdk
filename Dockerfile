@@ -4,6 +4,8 @@ WORKDIR /app
 
 ENV NODE_VERSION 10.17.0
 ENV YARN_VERSION 1.19.1
+ENV DOTNET_VERSION 2.2
+
 
 RUN yum -y --security update \
   && yum install -y \
@@ -16,6 +18,8 @@ RUN yum -y --security update \
     python3 \
     python3-dev \
     py3-setuptools \
+  && rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm \
+  && yum install -y dotnet-sdk-${DOTNET_VERSION} \
   && yum clean all \
   && rm -rf /var/cache/yum \
   && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
