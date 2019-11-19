@@ -4871,10 +4871,10 @@ jsii-sampiler@^0.20.6:
     typescript "~3.6.4"
     yargs "^14.2.0"
 
-jsii-spec@^0.20.5, jsii-spec@^0.20.6:
-  version "0.20.6"
-  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.6.tgz#5737f93b7f82f43917966eef2f91bd68cf647a76"
-  integrity sha512-hw5LkLg7drH21dx+xGk737XG4MKW3ETruwf613Y77+x6P4LM2iw61n16a7fQ2W9O8EY8bxjCZht4zzID8ku2mQ==
+jsii-spec@^0.20.6, jsii-spec@^0.20.7:
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/jsii-spec/-/jsii-spec-0.20.7.tgz#0c23dfefbb41b0e3b76f5e4105c4aacf50ca47f3"
+  integrity sha512-/ciOLtoJlGRjrLN2F92/G4KnGdTOqP82r4ZlLuRvmJ/SMa/8rNimQ0RPUsgU1tmi2gDlkWHzNhCCG2FKnqBUpA==
   dependencies:
     jsonschema "^1.2.4"
 
