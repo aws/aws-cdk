@@ -348,7 +348,7 @@ export = {
     };
     const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler'
     });
