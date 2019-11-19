@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-mediaconvert",
-  "version": "1.16.1",
+  "version": "1.17.0",
   "description": "The CDK Construct Library for AWS::MediaConvert",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -66,16 +66,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cfn2ts": "^1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.17.0",
+    "cdk-build-tools": "1.17.0",
+    "cfn2ts": "1.17.0",
+    "pkglint": "1.17.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/core": "1.17.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/core": "1.17.0"
   },
   "engines": {
     "node": ">= 10.3.0"
