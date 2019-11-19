@@ -1,7 +1,7 @@
 {
   "name": "awslint",
   "private": true,
-  "version": "1.17.0",
+  "version": "1.17.1",
   "description": "Enforces the AWS Construct Library guidelines",
   "main": "index.js",
   "scripts": {

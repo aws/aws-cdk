@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -42,22 +42,22 @@
     "compat": "cdk-compat"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.17.0",
-    "@aws-cdk/aws-codebuild": "1.17.0",
-    "@aws-cdk/aws-codepipeline": "1.17.0",
-    "@aws-cdk/aws-codepipeline-actions": "1.17.0",
-    "@aws-cdk/aws-events": "1.17.0",
-    "@aws-cdk/aws-iam": "1.17.0",
-    "@aws-cdk/core": "1.17.0",
-    "@aws-cdk/cx-api": "1.17.0"
+    "@aws-cdk/aws-cloudformation": "1.17.1",
+    "@aws-cdk/aws-codebuild": "1.17.1",
+    "@aws-cdk/aws-codepipeline": "1.17.1",
+    "@aws-cdk/aws-codepipeline-actions": "1.17.1",
+    "@aws-cdk/aws-events": "1.17.1",
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/core": "1.17.1",
+    "@aws-cdk/cx-api": "1.17.1"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.17.0",
-    "@aws-cdk/aws-s3": "1.17.0",
-    "cdk-build-tools": "1.17.0",
-    "cdk-integ-tools": "1.17.0",
+    "@aws-cdk/assert": "1.17.1",
+    "@aws-cdk/aws-s3": "1.17.1",
+    "cdk-build-tools": "1.17.1",
+    "cdk-integ-tools": "1.17.1",
     "fast-check": "^1.18.1",
-    "pkglint": "1.17.0"
+    "pkglint": "1.17.1"
   },
   "repository": {
     "type": "git",
@@ -76,14 +76,14 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.17.0",
-    "@aws-cdk/aws-codebuild": "1.17.0",
-    "@aws-cdk/aws-codepipeline": "1.17.0",
-    "@aws-cdk/aws-codepipeline-actions": "1.17.0",
-    "@aws-cdk/aws-events": "1.17.0",
-    "@aws-cdk/aws-iam": "1.17.0",
-    "@aws-cdk/core": "1.17.0",
-    "@aws-cdk/cx-api": "1.17.0"
+    "@aws-cdk/aws-cloudformation": "1.17.1",
+    "@aws-cdk/aws-codebuild": "1.17.1",
+    "@aws-cdk/aws-codepipeline": "1.17.1",
+    "@aws-cdk/aws-codepipeline-actions": "1.17.1",
+    "@aws-cdk/aws-events": "1.17.1",
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/core": "1.17.1",
+    "@aws-cdk/cx-api": "1.17.1"
   },
   "engines": {
     "node": ">= 10.3.0"
