@@ -128,7 +128,7 @@ export = {
 };
 
 function tree(dir: string, depth = ''): string[] {
-  const lines = [];
+  const lines = new Array<string>();
   for (const file of fs.readdirSync(dir).sort()) {
     const filePath = path.join(dir, file);
     const stat = fs.lstatSync(filePath);
