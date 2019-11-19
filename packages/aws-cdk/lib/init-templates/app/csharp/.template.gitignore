@@ -340,3 +340,6 @@ ASALocalRun/
 
 
 # End of https://www.gitignore.io/api/csharp
+
+# artifacts for a vscode workspace
+.vscode/
