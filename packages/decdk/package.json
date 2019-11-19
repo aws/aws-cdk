@@ -154,7 +154,7 @@
     "@aws-cdk/cx-api": "1.17.0",
     "@aws-cdk/region-info": "1.17.0",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "0.20.7",
+    "jsii-reflect": "^0.20.7",
     "jsonschema": "^1.2.4",
     "yaml": "1.7.2",
     "yargs": "^15.0.1"
@@ -165,7 +165,7 @@
     "@types/yaml": "1.2.0",
     "@types/yargs": "^13.0.3",
     "jest": "^24.9.0",
-    "jsii": "0.20.7"
+    "jsii": "^0.20.7"
   },
   "keywords": [
     "aws",
