@@ -18,3 +18,6 @@ dist
 *.tsbuildinfo
 
 tsconfig.json
+
+# init templates include default tsconfig.json files which we need
+!lib/init-templates/**/tsconfig.json
