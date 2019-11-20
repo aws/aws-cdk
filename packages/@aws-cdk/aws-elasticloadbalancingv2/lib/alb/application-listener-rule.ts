@@ -262,7 +262,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    * Render the conditions for this rule
    */
   private renderConditions() {
-    const ret = [];
+    const ret = new Array<{ field: string, values: string[] }>();
     for (const [field, values] of Object.entries(this.conditions)) {
       if (values !== undefined) {
         ret.push({ field, values });
