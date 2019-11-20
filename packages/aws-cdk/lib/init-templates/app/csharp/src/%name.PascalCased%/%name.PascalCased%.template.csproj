@@ -10,7 +10,7 @@
     <PackageReference Include="Amazon.CDK" Version="%cdk-version%-devpreview" />
 
     <!-- jsii Roslyn analyzers -->
-    <PackageReference Include="Amazon.Jsii.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

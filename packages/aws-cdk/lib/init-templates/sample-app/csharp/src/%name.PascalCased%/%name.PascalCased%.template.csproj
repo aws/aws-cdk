@@ -14,7 +14,7 @@
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
 
     <!-- jsii Roslyn analyzers -->
-    <PackageReference Include="Amazon.Jsii.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

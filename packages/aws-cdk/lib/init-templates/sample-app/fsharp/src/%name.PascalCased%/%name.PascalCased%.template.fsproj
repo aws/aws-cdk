@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
 
     <!-- jsii Roslyn analyzers -->
-    <PackageReference Include="Amazon.Jsii.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
