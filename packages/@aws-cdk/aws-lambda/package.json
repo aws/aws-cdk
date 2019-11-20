@@ -150,6 +150,7 @@
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_2_7",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_3_6",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_3_7",
+      "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_3_8",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.RUBY_2_5",
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.toString",
