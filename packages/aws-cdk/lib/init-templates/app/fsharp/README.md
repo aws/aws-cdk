@@ -1,13 +1,3 @@
-
-# CDK HelloWorld
-
-Welcome to your CDK .NET project!
-
-You should explore the contents of this template. It demonstrates a CDK app with two instances of
-a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app. It uses the `dotnet` CLI to do this.
-
 # Useful commands
 
 * `dotnet build src` compile this app
