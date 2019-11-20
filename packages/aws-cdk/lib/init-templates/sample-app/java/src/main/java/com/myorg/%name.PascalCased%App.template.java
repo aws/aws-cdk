@@ -3,7 +3,7 @@ package com.myorg;
 import software.amazon.awscdk.core.App;
 
 public final class %name.PascalCased%App {
-    public static void main(final String argv[]) {
+    public static void main(String[] args) {
         App app = new App();
 
         new %name.PascalCased%Stack(app, "%name.PascalCased%Stack");
