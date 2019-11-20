@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cloudformation-diff",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "description": "Utilities to diff CDK stacks against CloudFormation templates",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,8 +26,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/cfnspec": "1.17.0",
-    "@aws-cdk/cx-api": "1.17.0",
+    "@aws-cdk/cfnspec": "1.17.1",
+    "@aws-cdk/cx-api": "1.17.1",
     "colors": "^1.4.0",
     "diff": "^4.0.1",
     "fast-deep-equal": "^2.0.1",
@@ -38,9 +38,9 @@
   "devDependencies": {
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
-    "cdk-build-tools": "1.17.0",
+    "cdk-build-tools": "1.17.1",
     "fast-check": "^1.18.1",
-    "pkglint": "1.17.0"
+    "pkglint": "1.17.1"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
