@@ -44,23 +44,26 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 ## Getting Started
 
-For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
-with [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install) should be sufficient.
-
-```console
-$ git clone https://github.com/aws/aws-cdk.git
-$ cd aws-cdk
-$ yarn build
-```
-
-If you wish to produce language bindings through `pack.sh`, you will need the following toolchains
-installed, or use the Docker workflow.
-
+For day-to-day development and normal contributions, the following SDKs and tools are required:
  - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
  - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+ 
+The basic commands to get the repository cloned and built locally follow:
+
+```console
+$ git clone https://github.com/aws/aws-cdk.git
+$ cd aws-cdk
+$ yarn install
+$ yarn build
+```
+
+Alternatively, the [Full Docker build](#full-docker-build) workflow can be used so
+that you don't have to worry about installing all those tools on your local machine
+and instead only depend on having a working Docker install.
 
 ## Pull Requests
 
