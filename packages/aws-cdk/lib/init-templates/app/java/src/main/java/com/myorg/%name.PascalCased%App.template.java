@@ -2,7 +2,9 @@ package com.myorg;
 
 import software.amazon.awscdk.core.App;
 
-public final class %name.PascalCased%App {
+import java.util.Arrays;
+
+public class %name.PascalCased%App {
     public static void main(final String argv[]) {
         App app = new App();
 

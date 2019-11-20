@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53",
-  "version": "1.16.1",
+  "version": "1.17.1",
   "description": "CDK Constructs for AWS Route53",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,25 +64,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "aws-sdk": "^2.573.0",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.17.1",
+    "aws-sdk": "^2.575.0",
+    "cdk-build-tools": "1.17.1",
+    "cdk-integ-tools": "1.17.1",
+    "cfn2ts": "1.17.1",
+    "pkglint": "1.17.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-logs": "1.16.1",
-    "@aws-cdk/core": "1.16.1",
-    "@aws-cdk/cx-api": "1.16.1"
+    "@aws-cdk/aws-ec2": "1.17.1",
+    "@aws-cdk/aws-logs": "1.17.1",
+    "@aws-cdk/core": "1.17.1",
+    "@aws-cdk/cx-api": "1.17.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-logs": "1.16.1",
-    "@aws-cdk/core": "1.16.1",
-    "@aws-cdk/cx-api": "1.16.1"
+    "@aws-cdk/aws-ec2": "1.17.1",
+    "@aws-cdk/aws-logs": "1.17.1",
+    "@aws-cdk/core": "1.17.1",
+    "@aws-cdk/cx-api": "1.17.1"
   },
   "engines": {
     "node": ">= 10.3.0"
