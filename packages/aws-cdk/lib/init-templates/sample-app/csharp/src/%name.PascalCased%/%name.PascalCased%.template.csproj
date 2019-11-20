@@ -13,8 +13,9 @@
     <PackageReference Include="Amazon.CDK.AWS.SNS.Subscriptions" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
 
-    <!-- jsii Roslyn analyzers -->
+    <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
+    -->
   </ItemGroup>
 
 </Project>
