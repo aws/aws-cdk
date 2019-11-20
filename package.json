@@ -21,7 +21,7 @@
     "jest": "^24.9.0",
     "jsii-diff": "^0.20.7",
     "jsii-pacmak": "^0.20.7",
-    "lerna": "^3.18.4",
+    "lerna": "^3.18.5",
     "nodeunit": "^0.11.3",
     "nyc": "^14.1.1",
     "standard-version": "^7.0.1",
