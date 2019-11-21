@@ -1,7 +1,7 @@
 
 # Welcome to your CDK F# project!
 
-You should explore the contents of this template. It demonstrates a CDK app with two instances of
+You should explore the contents of this project. It demonstrates a CDK app with two instances of
 a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.

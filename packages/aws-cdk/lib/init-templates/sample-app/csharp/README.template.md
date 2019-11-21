@@ -1,13 +1,13 @@
 # Welcome to your CDK C# project!
 
-You should explore the contents of this template. It demonstrates a CDK app with two instances of
+You should explore the contents of this project. It demonstrates a CDK app with two instances of
 a stack (`%name.PascalCased%Stack`) which also uses a user-defined construct (`%name.PascalCased%Construct`).
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
 
-# Useful commands
+## Useful commands
 
 * `dotnet build src` compile this app
 * `cdk ls`           list all stacks in the app

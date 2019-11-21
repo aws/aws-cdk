@@ -6,7 +6,7 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 It is a [Maven](https://maven.apache.org/) based project, so you can open this project with any Maven compatible Java IDE to build and run tests.
 
-# Useful commands
+## Useful commands
 
  * `mvn package`     compile and run tests
  * `cdk ls`          list all stacks in the app
