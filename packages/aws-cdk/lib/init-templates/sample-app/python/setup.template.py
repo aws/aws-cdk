@@ -6,7 +6,7 @@ with open("README.md") as fp:
 
 
 setuptools.setup(
-    name="hello",
+    name="%name%",
     version="0.0.1",
 
     description="A sample CDK Python app",
@@ -15,8 +15,8 @@ setuptools.setup(
 
     author="author",
 
-    package_dir={"": "hello"},
-    packages=setuptools.find_packages(where="hello"),
+    package_dir={"": "%name%"},
+    packages=setuptools.find_packages(where="%name%"),
 
     install_requires=[
         "aws-cdk.core",

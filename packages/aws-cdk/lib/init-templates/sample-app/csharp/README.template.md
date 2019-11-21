@@ -1,14 +1,13 @@
+# Welcome to your CDK C# project!
 
-# CDK Sample App
+You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`%name.PascalCased%Stack`)
+which contains an Amazon SNS topic that is subscribed to an Amazon SQS queue.
 
-Welcome to your CDK .NET project!
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-You should explore the contents of this template. It demonstrates a CDK app with two instances of
-a stack (`%name.PascalCased%Stack`) which also uses a user-defined construct (`%name.PascalCased%Construct`).
+It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app. It uses the `dotnet` CLI to do this.
-
-# Useful commands
+## Useful commands
 
 * `dotnet build src` compile this app
 * `cdk ls`           list all stacks in the app

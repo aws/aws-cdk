@@ -1,8 +1,8 @@
 
 # Welcome to your CDK Python project!
 
-You should explore the contents of this template. It demonstrates a CDK app with two instances of
-a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
+You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`%name.PascalCased%Stack`)
+which contains an Amazon SNS topic that is subscribed to an Amazon SQS queue.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -54,7 +54,7 @@ To add additional dependencies, for example other CDK libraries, just add to
 your requirements.txt file and rerun the `pip install -r requirements.txt`
 command.
 
-# Useful commands
+## Useful commands
 
  * `cdk ls`          list all stacks in the app
  * `cdk synth`       emits the synthesized CloudFormation template

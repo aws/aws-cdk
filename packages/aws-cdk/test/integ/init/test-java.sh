@@ -5,11 +5,22 @@
 set -e
 scriptdir=$(cd $(dirname $0) && pwd)
 source ${scriptdir}/common.bash
+
 header Java
+
 #------------------------------------------------------------------
 
-# Run the test
-setup
+if [[ "${1:-}" == "" ]]; then
+    templates="app sample-app"
+else
+    templates="$@"
+fi
 
-cdk init -l java -t app
-mvn package
+for template in $templates; do
+    echo "Trying Java template $template"
+
+    setup
+
+    cdk init -l java -t $template
+    cdk synth
+done

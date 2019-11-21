@@ -5,14 +5,22 @@
 set -e
 scriptdir=$(cd $(dirname $0) && pwd)
 source ${scriptdir}/common.bash
+
 header C#
+
 #------------------------------------------------------------------
 
-# Run the test
-setup
+if [[ "${1:-}" == "" ]]; then
+    templates="app sample-app"
+else
+    templates="$@"
+fi
 
-cdk init -l csharp -t app
-dotnet build \
-    --source https://api.nuget.org/v3/index.json \
-    src
-cdk synth
+for template in $templates; do
+    echo "Trying C# template $template"
+
+    setup
+
+    cdk init -l csharp -t $template
+    cdk synth
+done
