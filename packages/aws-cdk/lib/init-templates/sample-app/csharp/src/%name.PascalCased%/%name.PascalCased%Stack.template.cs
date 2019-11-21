@@ -1,5 +1,4 @@
 using Amazon.CDK;
-using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SNS.Subscriptions;
 using Amazon.CDK.AWS.SQS;
