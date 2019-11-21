@@ -1,4 +1,12 @@
-# Useful commands
+## Welcome to your CDK F# project!
+
+This is a blank project for F# development with CDK.
+
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
+
+It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
+
+## Useful commands
 
 * `dotnet build src` compile this app
 * `cdk ls`           list all stacks in the app
