@@ -1,14 +1,10 @@
+# Welcome to your CDK Java project!
 
-Welcome to your CDK Java project!
+You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`%name.PascalCased%Stack`).
 
-It is a Maven-based project, so you can open this directory with any Maven-compatible Java IDE,
-and you should be able to build and run tests from your IDE.
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-You should explore the contents of this template. It demonstrates a CDK app with an instance 
-of a stack (`%name.PascalCased%Stack`).
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app. This example relies on maven
-to do that.
+It is a [Maven](https://maven.apache.org/) based project, so you can open this project with any Maven compatible Java IDE to build and run tests.
 
 # Useful commands
 
