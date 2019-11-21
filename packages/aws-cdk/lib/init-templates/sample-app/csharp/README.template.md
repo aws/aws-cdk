@@ -11,9 +11,9 @@ It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to
 
 * `dotnet build src` compile this app
 * `cdk ls`           list all stacks in the app
-* `cdk synth %name.PascalCased%Stack-1`  emits the synthesized CloudFormation template for the first stack
-* `cdk deploy %name.PascalCased%Stack-1` deploy this stack to your default AWS account/region
-* `cdk diff %name.PascalCased%Stack-1`   compare deployed stack with current state
-* `cdk docs`         open CDK documentation
+* `cdk synth`       emits the synthesized CloudFormation template
+* `cdk deploy`      deploy this stack to your default AWS account/region
+* `cdk diff`        compare deployed stack with current state
+* `cdk docs`        open CDK documentation
 
 Enjoy!
