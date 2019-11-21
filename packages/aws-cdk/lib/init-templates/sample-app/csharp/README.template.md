@@ -1,7 +1,7 @@
 # Welcome to your CDK C# project!
 
-You should explore the contents of this project. It demonstrates a CDK app with two instances of
-a stack (`%name.PascalCased%Stack`) which also uses a user-defined construct (`%name.PascalCased%Construct`).
+You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`%name.PascalCased%Stack`)
+which contains an Amazon SNS topic that is subscribed to an Amazon SQS queue.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
