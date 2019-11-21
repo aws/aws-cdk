@@ -57,6 +57,13 @@ export = {
     test.done();
   },
 
+  async 'fetch(k, resolver) returns resolver value even when persisting of cache fails'(test: Test) {
+    const cache: AccountAccessKeyCache = new AccountAccessKeyCache('/path-without-write-access');
+
+    test.deepEqual(await cache.fetch('foo', async () => 'bar'), 'bar', 'resolved by fetch and returned');
+    test.done();
+  },
+
   async 'cache is nuked if it exceeds 1000 entries'(test: Test) {
     const self = this as any;
     const cache: AccountAccessKeyCache = self.cache;

@@ -1,7 +1,7 @@
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
-import { debug } from '../../logging';
+import { debug, warning } from '../../logging';
 
 /**
  * Disk cache which maps access key IDs to account IDs.
@@ -71,7 +71,11 @@ export class AccountAccessKeyCache {
     }
 
     map[accessKeyId] = accountId;
-    await this.saveMap(map);
+    try {
+      await this.saveMap(map);
+    } catch (error) {
+      warning(`Persisting of account cache failed: ${error}`);
+    }
   }
 
   private async loadMap(): Promise<{ [accessKeyId: string]: string }> {
