@@ -10,12 +10,7 @@ namespace %name.PascalCased%
         static void Main(string[] args)
         {
             var app = new App(null);
-
-            // A CDK app can contain multiple stacks. You can view a list of all the stacks in your
-            // app by typing `cdk list`.
-
-            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack-1", new StackProps());
-            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack-2", new StackProps());
+            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack");
 
             app.Synth();
         }

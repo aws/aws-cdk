@@ -2,28 +2,25 @@
 #------------------------------------------------------------------
 # setup
 #------------------------------------------------------------------
-set -eu
+set -e
 scriptdir=$(cd $(dirname $0) && pwd)
 source ${scriptdir}/common.bash
 
-header TypeScript
+header F#
 
 #------------------------------------------------------------------
 
 if [[ "${1:-}" == "" ]]; then
-    templates="app sample-app lib"
+    templates="app sample-app"
 else
     templates="$@"
 fi
 
 for template in $templates; do
-    echo "Trying TypeScript template $template"
+    echo "Trying F# template $template"
 
     setup
 
-    cdk init -l typescript -t $template
-    npm ls # this will fail if we have unmet peer dependencies
-    npm run build
-    npm run test
+    cdk init -l fsharp -t $template
     cdk synth
 done
