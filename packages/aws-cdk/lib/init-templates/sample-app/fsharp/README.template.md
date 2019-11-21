@@ -1,6 +1,8 @@
-## Welcome to your CDK F# project!
 
-This is a blank project for F# development with CDK.
+# Welcome to your CDK F# project!
+
+You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`%name.PascalCased%Stack`)
+which contains an Amazon SNS topic that is subscribed to an Amazon SQS queue.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

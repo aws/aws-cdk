@@ -1,0 +1,3 @@
+{
+  "app": "mvn -e -q exec:java"
+}

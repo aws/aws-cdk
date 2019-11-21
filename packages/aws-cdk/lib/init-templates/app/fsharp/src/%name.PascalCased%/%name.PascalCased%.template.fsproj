@@ -6,12 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="%name.PascalCased%Stack.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- CDK Construct Library dependencies -->
     <PackageReference Include="Amazon.CDK" Version="%cdk-version%-devpreview" />
-    <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%-devpreview" />
-    <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%-devpreview" />
-    <PackageReference Include="Amazon.CDK.AWS.SNS.Subscriptions" Version="%cdk-version%-devpreview" />
-    <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
 
     <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
