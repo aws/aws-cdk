@@ -7,7 +7,7 @@ namespace %name.PascalCased%
 {
     public class %name.PascalCased%Stack : Stack
     {
-        public %name.PascalCased%Stack(Construct scope, string id) : base(scope, id)
+        internal %name.PascalCased%Stack(Construct scope, string id) : base(scope, id)
         {
              // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
             var queue = new Queue(this, "%name.PascalCased%Queue", new QueueProps
