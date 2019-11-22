@@ -17,10 +17,10 @@ infrastructure definition and share it without worrying about boilerplate logic.
 
 The CDK is available in the following languages:
 
-* JavaScript, TypeScript (GA, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/))
-* Python (GA, [Python ≥ 3.6](https://www.python.org/downloads/))
-* Java (GA, [Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
-* .NET (GA, [.NET Core ≥ 3.0](https://dotnet.microsoft.com/download))
+* JavaScript, TypeScript ([Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/))
+* Python ([Python ≥ 3.6](https://www.python.org/downloads/))
+* Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
+* .NET ([.NET Core ≥ 3.0](https://dotnet.microsoft.com/download))
 
 -------
 
