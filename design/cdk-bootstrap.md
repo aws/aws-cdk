@@ -9,6 +9,30 @@ This document is a design for extending the capabilities of the `bootstrap` comm
 
 ## Required changes
 
+### `--trust`
+
+We will add a new, optional command-line flag called `--trust` to the `bootstrap` command.
+Its value is a list of AWS account IDs:
+
+```shell
+$ cdk bootstrap \
+    [--trust accountId[,otherAccountId]...] \
+    [--cloudformation-execution-policies policyArn[,otherPolicyArn]...] \
+    aws://account/region
+```
+
+**Note**: if a user wants to add new trusted account(s) to an existing bootstrap stack,
+they have to specify all of the accounts they want to trust in the `--trust` option,
+not only the one being newly added -
+otherwise, the previously trusted account(s) will be removed.
+We should make sure to make that explicit in the documentation of this option.
+
+We will also add a another option,
+`--cloudformation-execution-policies`,
+that allows you to pass a list of managed policy ARNs on the command line to attach to the
+**CloudFormation Execution Role**.
+This option will be required if `--trust` was passed.
+
 ### Bootstrap resources
 
 The `bootstrap` command creates a CloudFormation stack in the environment passed on the command line.
@@ -20,24 +44,24 @@ We will add the following resources to the bootstrap stack:
 
 * An ECR repository that stores the images that are the results of building Docker assets.
 
-If the `--trust` option has been passed,
-additionally, we will create the following resources:
-
 * An IAM role, called the **Publishing role**,
   that has permissions to write to both the S3 bucket and the ECR repository from above.
-  This role will be assumable by any principal from the account(s) passed by the `--trust` option.
+  This role will be assumable by any principal from the account(s) passed by the `--trust` option,
+  and from any principal in the target environment's account.
 
 * An IAM role, called the **Deployment Action Role**,
   that will be assumed when executing the CloudFormation deployment actions
   (CreateChangeSet and ExecuteChangeSet).
-  It is also assumable by any principal from the account(s) passed by the `--trust` option.
+  It is also assumable by any principal from the account(s) passed by the `--trust` option,
+  and from any principal in the target environment's account.
 
 * An IAM role, called the **CloudFormation Execution Role**,
   that will be used to perform the actual CFN stack deployment in the continuous delivery pipeline to this environment.
   It is assumable *only* by the CloudFormation service principal
   (this is for security reasons, as this role will have, necessarily, very wide permissions).
   It will not have any inline policies,
-  but will instead have the Managed Policies attached that the user selected when prompted (see above).
+  but will instead have the Managed Policies attached that the user passed in the
+  `--cloudformation-execution-policies` option.
 
 #### Physical resource names
 
@@ -59,57 +83,44 @@ The naming scheme will include the following elements in order to minimize the c
 * The account ID we're bootstrapping in.
 * The type of the resource (file assets bucket, Docker assets repository, etc.).
 
-### `--trust`
-
-We will add a new command-line option called `--trust` to the `bootstrap` command.
-Its value is a list of AWS account IDs:
-
-```shell
-$ cdk bootstrap \
-    [--trust accountId[,otherAccountId]...] \
-    [--cloudformation-execution-policies policyName[,otherPolicyName]...] \
-    aws://account/region
-```
-
-If a user wants to add new trusted account(s) to an existing bootstrap stack,
-they have to specify all of the accounts they want to trust in the `--trust` option,
-not only the one being newly added -
-otherwise, the previously trusted account(s) will be removed.
-
-We will also add a another option,
-`--cloudformation-execution-policies`,
-that allows you to pass a list of managed policy ARNs on the command line to attach to the
-**CloudFormation Execution Role**.
-
 ### Removing existing customization options
 
 The existing customization options: `--bootstrap-bucket-name` and `--bootstrap-kms-key-id` will be removed.
 We will need to know the names of the bootstrap bucket and KMS key and synthesis time.
+
 The only way to customize the bootstrap template will be to deploy your own,
 based on the default one the CDK provides,
 and then change the default options when creating instances of the `Stack`
-class to match the names used in the custom template.
+class to match the names used in the custom template
+(this customization will most likely require overriding some methods,
+so probably involves implementing a custom subclass of `Stack`).
 
 ### CLI options in detail
+
+#### Existing kept options
 
 These options are inherited from the current CLI experience,
 and need to be kept for backwards compatibility reasons:
 
 * `--profile`: use the given local AWS credentials profile when interacting with the target environment.
 
-* `--toolkit-stack-name`, `--stack-name`: allows you to explicitly name the CloudFormation bootstrap stack
+* `--toolkit-stack-name`: allows you to explicitly name the CloudFormation bootstrap stack
   (instead of relying on the default naming scheme).
 
-* `--tags`, `-t`: a list of key=value pairs to add as tags to add to the bootstrap stack.
+* `--tags` / `-t`: a list of key=value pairs to add as tags to add to the bootstrap stack.
 
-These options will be removed:
+#### Existing removed options
 
-* `--bootstrap-bucket-name`, `-b`: allows you to explicitly name the file assets S3 bucket
+The following options that exist today will be removed:
+
+* `--toolkit-bucket-name` / `--bootstrap-bucket-name` / `-b`: allows you to explicitly name the file assets S3 bucket
   (instead of relying on the default naming scheme).
 
 * `--bootstrap-kms-key-id`: optional identifier of the KMS key used for encrypting the file assets S3 bucket.
 
-These are the new options:
+#### New options
+
+These options will be added to the `bootstrap` command:
 
 * `--trust`: allows specifying an AWS account ID, or a list of them,
   that the created roles (see above) should be assumable from.
@@ -190,7 +201,8 @@ This is the current situation
 ### CLI: old, framework: old, bootstrap: old, init template: new
 
 The new template will differ from the old one in only one aspect:
-it will contain a setting in the `cdk.json` file that activates the new assets behavior.
+it will contain a setting in the `cdk.json` file that activates the new assets behavior,
+using our [feature flags](./feature-flags.md) functionality.
 
 The old code will simply ignore this setting
 (as it doesn't have any knowledge of it),
