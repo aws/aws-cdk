@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.autoscaling.hooktargets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "autoscaling-hooktargets",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "autoscaling-hooktargets"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.AutoScaling.HookTargets",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

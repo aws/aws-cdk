@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.inspector",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "inspector",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "inspector"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Inspector",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

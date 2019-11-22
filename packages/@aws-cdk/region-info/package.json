@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.regioninfo",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-region-info",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "cdk-region-info"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.RegionInfo",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

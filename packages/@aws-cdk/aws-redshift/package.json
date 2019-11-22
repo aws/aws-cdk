@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.redshift",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "redshift",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "redshift"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Redshift",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

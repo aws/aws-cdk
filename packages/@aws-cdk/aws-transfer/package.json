@@ -12,15 +12,13 @@
         "packageId": "Amazon.CDK.AWS.Transfer",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.transfer",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "transfer",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "transfer"
         }
       },
       "python": {

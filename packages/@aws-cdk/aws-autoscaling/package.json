@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.autoscaling",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "autoscaling",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "autoscaling"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.AutoScaling",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

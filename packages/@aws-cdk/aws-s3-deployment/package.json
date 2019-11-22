@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.s3.deployment",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-deployment",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "s3-deployment"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.S3.Deployment",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

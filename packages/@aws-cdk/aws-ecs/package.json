@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.ecs",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ecs",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "ecs"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.ECS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

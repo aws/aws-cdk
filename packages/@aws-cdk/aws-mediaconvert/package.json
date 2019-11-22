@@ -12,15 +12,13 @@
         "packageId": "Amazon.CDK.AWS.MediaConvert",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.mediaconvert",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "mediaconvert",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "mediaconvert"
         }
       },
       "python": {

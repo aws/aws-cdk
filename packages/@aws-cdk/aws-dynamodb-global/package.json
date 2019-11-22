@@ -21,8 +21,7 @@
         "package": "software.amazon.awscdk.services.dynamodb.global",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "dynamodb-global",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "dynamodb-global"
         }
       },
       "python": {
@@ -34,7 +33,6 @@
         "packageId": "Amazon.CDK.AWS.DynamoDB.Global",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       }
     }

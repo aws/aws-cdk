@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.cloud9",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cloud9",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "cloud9"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Cloud9",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

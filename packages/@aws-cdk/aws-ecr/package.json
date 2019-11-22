@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.ecr",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ecr",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "ecr"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.ECR",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

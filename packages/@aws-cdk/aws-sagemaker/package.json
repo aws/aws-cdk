@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.sagemaker",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sagemaker",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "sagemaker"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Sagemaker",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

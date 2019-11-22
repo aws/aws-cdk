@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.elasticsearch",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "elasticsearch",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "elasticsearch"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Elasticsearch",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

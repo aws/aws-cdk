@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.rds",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "rds",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "rds"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.RDS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

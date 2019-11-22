@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.config",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "config",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "config"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Config",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

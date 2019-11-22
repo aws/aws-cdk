@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.route53.targets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "route53-targets",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "route53-targets"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Route53.Targets",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

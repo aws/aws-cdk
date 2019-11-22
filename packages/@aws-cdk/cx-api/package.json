@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.cxapi",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-cx-api",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "cdk-cx-api"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.CXAPI",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

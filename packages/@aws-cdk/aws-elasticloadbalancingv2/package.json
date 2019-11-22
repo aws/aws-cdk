@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.elasticloadbalancingv2",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "elasticloadbalancingv2",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "elasticloadbalancingv2"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.codepipeline",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codepipeline",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "codepipeline"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.CodePipeline",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

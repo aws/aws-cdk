@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.s3.notifications",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-notifications",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "s3-notifications"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.S3.Notifications",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
