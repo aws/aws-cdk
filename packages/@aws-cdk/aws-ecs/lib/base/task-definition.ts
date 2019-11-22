@@ -235,6 +235,12 @@ export class TaskDefinition extends TaskDefinitionBase {
   public memoryMiB?: string;
 
   /**
+   * The amount (in MiB) of memory available in the task definition. As more containers are
+   * added to the task definition, the remainingMemoryMiB will reduce.
+   */
+  public remainingMemoryMiB?: string;
+
+  /**
    * The task launch type compatiblity requirement.
    */
   public readonly compatibility: Compatibility;
@@ -266,6 +272,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.compatibility = props.compatibility;
     this.cpu = props.cpu;
     this.memoryMiB = props.memoryMiB;
+    this.remainingMemoryMiB = this.memoryMiB;
 
     if (props.volumes) {
       props.volumes.forEach(v => this.addVolume(v));
@@ -379,12 +386,25 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Adds a new container to the task definition.
    */
   public addContainer(id: string, props: ContainerDefinitionOptions) {
-    if (this.cpu !== undefined && props.cpu !== undefined && parseInt(this.cpu, 10) < props.cpu) {
+    if (this.cpu !== undefined
+          && props.cpu !== undefined
+          && parseInt(this.cpu, 10) < props.cpu) {
       this.node.addWarning('CPU specified for the container cannot be greater than the CPU for the task definition');
     }
-    if (this.memoryMiB !== undefined && props.memoryLimitMiB !== undefined && parseInt(this.memoryMiB, 10) < props.memoryLimitMiB) {
+    if (this.memoryMiB !== undefined
+          && props.memoryLimitMiB !== undefined
+          && parseInt(this.memoryMiB, 10) < props.memoryLimitMiB) {
       this.node.addWarning('Memory specified for the container cannot be greater than the memory for the task definition');
     }
+    if (this.remainingMemoryMiB !== undefined
+          && props.memoryLimitMiB !== undefined
+          && parseInt(this.remainingMemoryMiB, 10) > (parseInt(this.remainingMemoryMiB, 10) - props.memoryLimitMiB)) {
+      this.node.addWarning('Total memory specified for all containers cannot be greater than the memory for the task definition');
+      this.remainingMemoryMiB = (parseInt(this.remainingMemoryMiB, 10) - props.memoryLimitMiB).toString();
+    } else if (this.remainingMemoryMiB !== undefined && props.memoryLimitMiB !== undefined) {
+      this.remainingMemoryMiB = (parseInt(this.remainingMemoryMiB, 10) - props.memoryLimitMiB).toString();
+    }
+
     return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
   }
 

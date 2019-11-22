@@ -39,6 +39,33 @@ export = {
       test.done();
     },
 
+    "warn when total container memory is greater than task definition memory"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        memoryLimitMiB: 100,
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 50,
+      });
+
+      taskDefinition.addContainer("frontend", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 51,
+      });
+
+      taskDefinition.addContainer("backend", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 1,
+      });
+      // THEN
+      test.deepEqual(taskDefinition.node.metadata[0].data, 'Total memory specified for all containers cannot be greater than the memory for the task definition');
+      test.deepEqual(taskDefinition.node.metadata[1].data, 'Total memory specified for all containers cannot be greater than the memory for the task definition');
+      test.done();
+    },
+
     "warn when container memory is greater than task definition memory"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
