@@ -9,8 +9,8 @@ namespace %name.PascalCased%
     {
         static void Main(string[] args)
         {
-            var app = new App(null);
-            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack", new StackProps());
+            var app = new App();
+            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack");
             app.Synth();
         }
     }

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
-  "version": "1.16.1",
+  "version": "1.17.1",
   "description": "CDK Constructs for AWS CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,34 +64,34 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "@aws-cdk/aws-events": "1.16.1",
-    "@aws-cdk/aws-s3-assets": "1.16.1",
-    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/aws-ssm": "1.16.1",
-    "@types/aws-lambda": "^8.10.35",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.17.1",
+    "@aws-cdk/aws-events": "1.17.1",
+    "@aws-cdk/aws-s3-assets": "1.17.1",
+    "@aws-cdk/aws-sns-subscriptions": "1.17.1",
+    "@aws-cdk/aws-sqs": "1.17.1",
+    "@aws-cdk/aws-ssm": "1.17.1",
+    "@types/aws-lambda": "^8.10.36",
+    "cdk-build-tools": "1.17.1",
+    "cdk-integ-tools": "1.17.1",
+    "cfn2ts": "1.17.1",
+    "pkglint": "1.17.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/core": "1.16.1",
-    "@aws-cdk/cx-api": "1.16.1"
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/aws-lambda": "1.17.1",
+    "@aws-cdk/aws-s3": "1.17.1",
+    "@aws-cdk/aws-sns": "1.17.1",
+    "@aws-cdk/core": "1.17.1",
+    "@aws-cdk/cx-api": "1.17.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/core": "1.16.1",
-    "@aws-cdk/cx-api": "1.16.1"
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/aws-lambda": "1.17.1",
+    "@aws-cdk/aws-s3": "1.17.1",
+    "@aws-cdk/aws-sns": "1.17.1",
+    "@aws-cdk/core": "1.17.1",
+    "@aws-cdk/cx-api": "1.17.1"
   },
   "engines": {
     "node": ">= 10.3.0"

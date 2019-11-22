@@ -498,7 +498,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 
 test('with filter policy', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_8_10,
+    runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }')
   });

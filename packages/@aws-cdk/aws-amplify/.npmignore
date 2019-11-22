@@ -20,3 +20,5 @@ dist
 
 # Include .jsii
 !.jsii
+
+tsconfig.json

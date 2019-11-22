@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-applicationautoscaling",
-  "version": "1.16.1",
+  "version": "1.17.1",
   "description": "The CDK Construct Library for AWS::ApplicationAutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -64,24 +64,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
+    "@aws-cdk/assert": "1.17.1",
+    "cdk-build-tools": "1.17.1",
+    "cfn2ts": "1.17.1",
     "fast-check": "^1.18.1",
-    "pkglint": "1.16.1"
+    "pkglint": "1.17.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-common": "1.16.1",
-    "@aws-cdk/aws-cloudwatch": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-autoscaling-common": "1.17.1",
+    "@aws-cdk/aws-cloudwatch": "1.17.1",
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/core": "1.17.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling-common": "1.16.1",
-    "@aws-cdk/aws-cloudwatch": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-autoscaling-common": "1.17.1",
+    "@aws-cdk/aws-cloudwatch": "1.17.1",
+    "@aws-cdk/aws-iam": "1.17.1",
+    "@aws-cdk/core": "1.17.1"
   },
   "engines": {
     "node": ">= 10.3.0"

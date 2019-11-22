@@ -32,7 +32,12 @@ export interface BootstrapEnvironmentProps {
    *
    * @default - None.
    */
-  tags?: Tag[];
+  readonly tags?: Tag[];
+  /**
+   * Whether to execute the changeset or only create it and leave it in review.
+   * @default true
+   */
+  readonly execute?: boolean;
 }
 
 /** @experimental */
@@ -90,5 +95,10 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, aws: 
   });
 
   const assembly = builder.buildAssembly();
-  return await deployStack({ stack: assembly.getStackByName(toolkitStackName), sdk: aws, roleArn, tags: props.tags });
+  return await deployStack({
+    stack: assembly.getStackByName(toolkitStackName),
+    sdk: aws, roleArn,
+    tags: props.tags,
+    execute: props.execute
+  });
 }
