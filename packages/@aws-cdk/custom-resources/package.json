@@ -73,7 +73,7 @@
     "@aws-cdk/aws-s3": "1.17.1",
     "@aws-cdk/aws-ssm": "1.17.1",
     "@types/aws-lambda": "^8.10.36",
-    "@types/sinon": "^7.5.0",
+    "@types/sinon": "^7.5.1",
     "aws-sdk": "^2.578.0",
     "aws-sdk-mock": "^4.5.0",
     "cdk-build-tools": "1.17.1",
