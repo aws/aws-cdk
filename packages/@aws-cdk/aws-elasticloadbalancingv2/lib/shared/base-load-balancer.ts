@@ -45,16 +45,16 @@ export interface ILoadBalancerV2 extends IResource {
   /**
    * The canonical hosted zone ID of this load balancer
    *
-   * @example Z2P70J7EXAMPLE
    * @attribute
+   * @example Z2P70J7EXAMPLE
    */
   readonly loadBalancerCanonicalHostedZoneId: string;
 
   /**
    * The DNS name of this load balancer
    *
-   * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
    * @attribute
+   * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
    */
   readonly loadBalancerDnsName: string;
 }
@@ -66,40 +66,40 @@ export abstract class BaseLoadBalancer extends Resource {
   /**
    * The canonical hosted zone ID of this load balancer
    *
-   * @example Z2P70J7EXAMPLE
    * @attribute
+   * @example Z2P70J7EXAMPLE
    */
   public readonly loadBalancerCanonicalHostedZoneId: string;
 
   /**
    * The DNS name of this load balancer
    *
-   * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
    * @attribute
+   * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
    */
   public readonly loadBalancerDnsName: string;
 
   /**
    * The full name of this load balancer
    *
-   * @example app/my-load-balancer/50dc6c495c0c9188
    * @attribute
+   * @example app/my-load-balancer/50dc6c495c0c9188
    */
   public readonly loadBalancerFullName: string;
 
   /**
    * The name of this load balancer
    *
-   * @example my-load-balancer
    * @attribute
+   * @example my-load-balancer
    */
   public readonly loadBalancerName: string;
 
   /**
    * The ARN of this load balancer
    *
-   * @example arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
    * @attribute
+   * @example arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
    */
   public readonly loadBalancerArn: string;
 

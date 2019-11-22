@@ -17,7 +17,7 @@ response_json=$(mktemp).json
 aws cloudformation describe-stacks --stack-name ${stack_arn} > ${response_json}
 
 stack_status=$(node -e "console.log(require('${response_json}').Stacks[0].StackStatus)")
-if [ "${stack_status}" -ne "REVIEW_IN_PROGRESS" ]; then
+if [ ! "${stack_status}" == "REVIEW_IN_PROGRESS" ]; then
     fail "Expected stack to be in status REVIEW_IN_PROGRESS but got ${stack_status}"
 fi
 
