@@ -16,10 +16,17 @@ export class Fact {
    * @param region the name of the region (e.g: `us-east-1`)
    * @param name   the name of the fact being looked up (see the `FactName` class for details)
    *
-   * @returns the fact value if it is known, and `undefined` otherwise.
+   * @returns the fact value, if it is known.
    */
   public static find(region: string, name: string): string | undefined {
     const regionFacts = this.database[region];
+
+    // We want to avoid users from writing boilerplate code,
+    // in the event that the fact value does not exist
+    if (!regionFacts || !regionFacts[name]) {
+      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}`);
+    }
+
     return regionFacts && regionFacts[name];
   }
 

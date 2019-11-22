@@ -2,12 +2,12 @@ import { AWS_REGIONS } from '../build-tools/aws-entities';
 import { Fact, FactName } from '../lib';
 
 describe('find', () => {
-  test('returns undefined for an unknown fact', () => {
-    expect(Fact.find(AWS_REGIONS[0], 'not:a:known:fact')).toBe(undefined);
+  test('throws error for an unknown fact', () => {
+    expect(() => Fact.find(AWS_REGIONS[0], 'not:a:known:fact')).toThrowError();
   });
 
-  test('returns undefined for an unknown region', () => {
-    expect(Fact.find('bermuda-triangle-42', FactName.PARTITION)).toBe(undefined);
+  test('throws error for an unknown region', () => {
+    expect(() => Fact.find('bermuda-triangle-42', FactName.PARTITION)).toThrowError();
   });
 });
 
@@ -19,7 +19,7 @@ describe('register', () => {
     const value = '1337';
 
     // WHEN
-    expect(Fact.find(region, name)).toBe(undefined);
+    expect(() => Fact.find(region, name)).toThrowError();
     expect(() => Fact.register({ region, name, value })).not.toThrowError();
 
     // THEN
@@ -36,7 +36,7 @@ describe('register', () => {
     const value = '1337';
 
     // WHEN
-    expect(Fact.find(region, name)).toBe(undefined);
+    expect(() => Fact.find(region, name)).toThrowError();
     expect(() => Fact.register({ region, name, value })).not.toThrowError();
 
     // THEN
@@ -68,7 +68,7 @@ describe('register', () => {
     const value = '1337';
 
     // WHEN
-    expect(Fact.find(region, name)).toBe(undefined);
+    expect(() => Fact.find(region, name)).toThrowError();
     expect(() => Fact.register({ region, name, value })).not.toThrowError();
     expect(Fact.find(region, name)).toBe(value);
 
