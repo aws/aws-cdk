@@ -25,7 +25,7 @@
     "nodeunit": "^0.11.3",
     "nyc": "^14.1.1",
     "standard-version": "^7.0.1",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
     "typescript": "~3.6.4"
   },
