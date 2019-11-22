@@ -21,14 +21,14 @@ const listener = lb.addListener('Listener', {
 
 const group1 = listener.addTargets('Target', {
   port: 80,
-  targets: [new elbv2.IpTarget('10.0.1.1')]
+  targets: [new elbv2.IpTarget('10.0.128.1')]
 });
 
 const group2 = listener.addTargets('ConditionalTarget', {
   priority: 10,
   hostHeader: 'example.com',
   port: 80,
-  targets: [new elbv2.IpTarget('10.0.1.2')]
+  targets: [new elbv2.IpTarget('10.0.128.2')]
 });
 
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
