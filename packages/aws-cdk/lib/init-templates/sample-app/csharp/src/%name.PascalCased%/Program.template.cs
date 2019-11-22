@@ -2,7 +2,7 @@
 
 namespace %name.PascalCased%
 {
-    class Program
+    sealed class Program
     {
         public static void Main(string[] args)
         {
