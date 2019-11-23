@@ -44,7 +44,9 @@ export interface IDetectorModel extends IResource {
   readonly detectorModelName?: string;
 
   /**
-   * The IAM service Role for this Detector Model
+   * The IAM service Role associated with this detector model.
+   * This role is used as argument for {@link CfnDetectorModel} to
+   * "grant permission to AWS IoT Events to perform its operations".
    *
    * @type {IRole}
    * @memberof IDetectorModel
@@ -58,7 +60,7 @@ export interface IDetectorModel extends IResource {
    */
   readonly grantPrincipal?: IPrincipal;
   /**
-   * Add policy statement to the linked role if exists
+   * Adds a statement to the IAM role assumed by the detector model
    *
    * @param {PolicyStatement} policyStatement
    * @memberof IDetectorModel
