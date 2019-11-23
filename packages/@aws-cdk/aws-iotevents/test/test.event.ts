@@ -3,7 +3,7 @@ import { CfnDeliveryStream } from "@aws-cdk/aws-kinesisfirehose";
 import { Function, InlineCode, Runtime } from "@aws-cdk/aws-lambda";
 import { Topic } from "@aws-cdk/aws-sns";
 import { Queue } from "@aws-cdk/aws-sqs";
-import { Stack } from "@aws-cdk/core";
+import { Stack, Duration } from "@aws-cdk/core";
 import { Test, testCase } from "nodeunit";
 import { DetectorModel, Event, State } from "../lib";
 
@@ -112,6 +112,63 @@ export = testCase({
         },
       }
     );
+
+    test.done();
+  },
+  "reset timer"(test: Test) {
+    const { event, stack } = setup();
+    event.resetTimer("timerName");
+
+    expectMatchEventAction(stack, {
+      ResetTimer: {
+        TimerName: "timerName",
+      },
+    });
+
+    test.done();
+  },
+  "clear timer"(test: Test) {
+    const { event, stack } = setup();
+    event.clearTimer("timerName");
+
+    expectMatchEventAction(stack, {
+      ClearTimer: {
+        TimerName: "timerName",
+      },
+    });
+
+    test.done();
+  },
+  "set timer"(test: Test) {
+    const { event, stack } = setup();
+    event.setTimer("timerName", Duration.seconds(60));
+    expectMatchEventAction(stack, {
+      SetTimer: {
+        Seconds: 60,
+        TimerName: "timerName",
+      },
+    });
+
+    test.done();
+  },
+  "set timer minimum duration is 60 seconds"(test: Test) {
+    const { event } = setup();
+
+    test.throws(() => {
+      event.setTimer("timerName", Duration.seconds(59));
+    });
+
+    test.done();
+  },
+  "set variable"(test: Test) {
+    const { event, stack } = setup();
+    event.setVariable("variableName", "variableValue");
+    expectMatchEventAction(stack, {
+      SetVariable: {
+        Value: "variableValue",
+        VariableName: "variableName",
+      },
+    });
 
     test.done();
   },

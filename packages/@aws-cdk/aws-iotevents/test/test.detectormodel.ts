@@ -4,7 +4,7 @@ import { CfnDeliveryStream } from "@aws-cdk/aws-kinesisfirehose";
 import { Code, Function, Runtime } from "@aws-cdk/aws-lambda";
 import { Topic } from "@aws-cdk/aws-sns";
 import { Queue } from "@aws-cdk/aws-sqs";
-import { Construct, Stack } from "@aws-cdk/core";
+import { Construct, Stack, Duration } from "@aws-cdk/core";
 import { Test, testCase } from "nodeunit";
 import { DetectorModel, Event, Input, State, TransitionEvent } from "../lib";
 
@@ -142,7 +142,7 @@ export = testCase({
         .addSQS(new Queue(stack, "SQS"))
         .clearTimer("timerName")
         .resetTimer("timerName")
-        .setTimer("timerName", 60)
+        .setTimer("timerName", Duration.seconds(60))
         .republish(model)
         .publishToIotTopic("http://example.com")
     );
@@ -248,7 +248,7 @@ function newTestModel(
   state1
     .onEnter(
       new Event("Event 1")
-        .setTimer("Timer 1", 120)
+        .setTimer("Timer 1", Duration.minutes(2))
         .setVariable("Variable 1", `$input.${input.inputName}.my_value`)
     )
     .onInput(

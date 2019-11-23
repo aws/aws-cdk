@@ -3,7 +3,7 @@ import { CfnDeliveryStream } from "@aws-cdk/aws-kinesisfirehose";
 import { IFunction } from "@aws-cdk/aws-lambda";
 import { ITopic } from "@aws-cdk/aws-sns";
 import { IQueue } from "@aws-cdk/aws-sqs";
-import { Lazy } from "@aws-cdk/core";
+import { Lazy, Duration } from "@aws-cdk/core";
 import { IDetectorModel } from "./DetectorModel";
 import { CfnDetectorModel } from "./iotevents.generated";
 export type AnyEventProperty =
@@ -115,11 +115,12 @@ export interface IEvent {
    * Action to set a timer
    *
    * @param {string} name
-   * @param {number} seconds
+   * @param {Duration} duration
    * @returns {Event}
    * @memberof IEvent
+   * @throws {Error} if duration is less than 60 seconds
    */
-  setTimer(name: string, seconds: number): Event;
+  setTimer(name: string, duration: Duration): Event;
 
   /**
    * Action to send a SNS
@@ -248,7 +249,12 @@ export class Event implements IEvent {
     this.actions.push({ resetTimer: { timerName: name } });
     return this;
   }
-  public setTimer(name: string, seconds: number): Event {
+  public setTimer(name: string, duration: Duration): Event {
+    const seconds = duration.toSeconds();
+
+    if(seconds < 60) {
+      throw Error("The minimum valid duration for setTimer() is 60 seconds")
+    }
     this.actions.push({ setTimer: { timerName: name, seconds } });
     return this;
   }
