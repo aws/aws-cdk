@@ -3,7 +3,7 @@ import { CfnDeliveryStream } from "@aws-cdk/aws-kinesisfirehose";
 import { Function, InlineCode, Runtime } from "@aws-cdk/aws-lambda";
 import { Topic } from "@aws-cdk/aws-sns";
 import { Queue } from "@aws-cdk/aws-sqs";
-import { Stack, Duration } from "@aws-cdk/core";
+import { Duration, Stack } from "@aws-cdk/core";
 import { Test, testCase } from "nodeunit";
 import { DetectorModel, Event, State } from "../lib";
 

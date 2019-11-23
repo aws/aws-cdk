@@ -4,7 +4,7 @@ import { CfnDeliveryStream } from "@aws-cdk/aws-kinesisfirehose";
 import { Code, Function, Runtime } from "@aws-cdk/aws-lambda";
 import { Topic } from "@aws-cdk/aws-sns";
 import { Queue } from "@aws-cdk/aws-sqs";
-import { Construct, Stack, Duration } from "@aws-cdk/core";
+import { Construct, Duration, Stack } from "@aws-cdk/core";
 import { Test, testCase } from "nodeunit";
 import { DetectorModel, Event, Input, State, TransitionEvent } from "../lib";
 
