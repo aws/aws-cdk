@@ -14,9 +14,6 @@ import { DatabaseClusterEngine } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
 import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
-/**
- * A database instance
- */
 export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * The instance identifier.
@@ -106,10 +103,6 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceEndpoint: Endpoint;
-
-  /**
-   * Access to network connections.
-   */
   public abstract readonly connections: ec2.Connections;
 
   /**
@@ -193,15 +186,11 @@ export enum LicenseModel {
 export interface ProcessorFeatures {
   /**
    * The number of CPU core.
-   *
-   * @default - the default number of CPU cores for the chosen instance class.
    */
   readonly coreCount?: number;
 
   /**
    * The number of threads per core.
-   *
-   * @default - the default number of threads per core for the chosen instance class.
    */
   readonly threadsPerCore?: number;
 }
@@ -357,7 +346,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - a 30-minute window selected at random from an 8-hour block of
    * time for each AWS Region. To see the time blocks available, see
-   * https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow
+   * https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow
    */
   readonly preferredBackupWindow?: string;
 
@@ -453,9 +442,9 @@ export interface DatabaseInstanceNewProps {
    * Format: `ddd:hh24:mi-ddd:hh24:mi`
    * Constraint: Minimum 30-minute window
    *
-   * @default - a 30-minute window selected at random from an 8-hour block of
+   * @default a 30-minute window selected at random from an 8-hour block of
    * time for each AWS Region, occurring on a random day of the week. To see
-   * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
+   * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow
    */
   // tslint:enable:max-line-length
   readonly preferredMaintenanceWindow?: string;
@@ -480,11 +469,7 @@ export interface DatabaseInstanceNewProps {
  * A new database instance.
  */
 abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IDatabaseInstance {
-  /**
-   * The VPC where this database instance is deployed.
-   */
   public readonly vpc: ec2.IVpc;
-
   public readonly connections: ec2.Connections;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
@@ -592,7 +577,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The license model.
    *
-   * @default - RDS default license model
+   * @default RDS default license model
    */
   readonly licenseModel?: LicenseModel;
 
@@ -600,7 +585,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    * The engine version. To prevent automatic upgrades, be sure to specify the
    * full version number.
    *
-   * @default - RDS default engine version
+   * @default RDS default engine version
    */
   readonly engineVersion?: string;
 
@@ -614,7 +599,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The time zone of the instance.
    *
-   * @default - RDS default timezone
+   * @default RDS default timezone
    */
   readonly timezone?: string;
 
@@ -628,28 +613,28 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The master user password.
    *
-   * @default - a Secrets Manager generated password
+   * @default a Secrets Manager generated password
    */
   readonly masterUserPassword?: SecretValue;
 
   /**
    * The KMS key to use to encrypt the secret for the master user password.
    *
-   * @default - default master key
+   * @default default master key
    */
   readonly secretKmsKey?: kms.IKey;
 
   /**
    * The name of the database.
    *
-   * @default - no name
+   * @default no name
    */
   readonly databaseName?: string;
 
   /**
    * The DB parameter group to associate with the instance.
    *
-   * @default - no parameter group
+   * @default no parameter group
    */
   readonly parameterGroup?: IParameterGroup;
 }
@@ -658,9 +643,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
  * A new source database instance (not a read replica)
  */
 abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
-  /**
-   * The AWS Secrets Manager secret attached to the instance.
-   */
   public abstract readonly secret?: secretsmanager.ISecret;
 
   protected readonly sourceCfnProps: CfnDBInstanceProps;
@@ -716,7 +698,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    * For supported engines, specifies the character set to associate with the
    * DB instance.
    *
-   * @default - RDS default character set name
+   * @default RDS default character set name
    */
   readonly characterSetName?: string;
 
@@ -730,7 +712,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
    * The master key that's used to encrypt the DB instance.
    *
-   * @default - default master key
+   * @default default master key
    */
   readonly kmsKey?: kms.IKey;
 }
@@ -765,7 +747,9 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUsername,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
-        : props.masterUserPassword && props.masterUserPassword.toString(),
+        : (props.masterUserPassword
+          ? props.masterUserPassword.toString()
+          : undefined),
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
@@ -913,7 +897,7 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceSource
   /**
    * The master key that's used to encrypt the DB instance.
    *
-   * @default - default master key
+   * @default default master key
    */
   readonly kmsKey?: kms.IKey;
 }
