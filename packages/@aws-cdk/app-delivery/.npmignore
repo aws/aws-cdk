@@ -14,3 +14,5 @@ coverage
 !.jsii
 
 *.tsbuildinfo
+
+tsconfig.json

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda-event-sources",
-  "version": "1.16.1",
+  "version": "1.18.0",
   "description": "Event sources for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.lambda.eventsources",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda-event-sources",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "lambda-event-sources"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Lambda.EventSources",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -60,39 +58,39 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.18.0",
+    "cdk-build-tools": "1.18.0",
+    "cdk-integ-tools": "1.18.0",
+    "pkglint": "1.18.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "1.16.1",
-    "@aws-cdk/aws-dynamodb": "1.16.1",
-    "@aws-cdk/aws-events": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kinesis": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/aws-s3-notifications": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-apigateway": "1.18.0",
+    "@aws-cdk/aws-dynamodb": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kinesis": "1.18.0",
+    "@aws-cdk/aws-lambda": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/aws-s3-notifications": "1.18.0",
+    "@aws-cdk/aws-sns": "1.18.0",
+    "@aws-cdk/aws-sns-subscriptions": "1.18.0",
+    "@aws-cdk/aws-sqs": "1.18.0",
+    "@aws-cdk/core": "1.18.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-apigateway": "1.16.1",
-    "@aws-cdk/aws-dynamodb": "1.16.1",
-    "@aws-cdk/aws-events": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kinesis": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/aws-s3-notifications": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-apigateway": "1.18.0",
+    "@aws-cdk/aws-dynamodb": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kinesis": "1.18.0",
+    "@aws-cdk/aws-lambda": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/aws-s3-notifications": "1.18.0",
+    "@aws-cdk/aws-sns": "1.18.0",
+    "@aws-cdk/aws-sns-subscriptions": "1.18.0",
+    "@aws-cdk/aws-sqs": "1.18.0",
+    "@aws-cdk/core": "1.18.0"
   },
   "engines": {
     "node": ">= 10.3.0"

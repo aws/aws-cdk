@@ -614,8 +614,8 @@ export interface HealthCheck {
   readonly timeout?: cdk.Duration;
 }
 
-function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
-  const ret = [];
+function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
+  const ret = new Array();
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
   }
