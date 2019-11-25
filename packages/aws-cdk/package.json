@@ -45,7 +45,7 @@
     "@types/node": "^10.17.5",
     "@types/request": "^2.48.3",
     "@types/semver": "^6.2.0",
-    "@types/sinon": "^7.5.1",
+    "@types/sinon": "^7.5.0",
     "@types/table": "^4.0.7",
     "@types/uuid": "^3.4.6",
     "@types/yaml": "^1.2.0",
