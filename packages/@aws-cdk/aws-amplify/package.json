@@ -62,21 +62,46 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 80
+      }
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.18.0",
     "cdk-build-tools": "1.18.0",
+    "cdk-integ-tools": "1.18.0",
     "cfn2ts": "1.18.0",
     "pkglint": "1.18.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kms": "1.18.0",
+    "@aws-cdk/aws-codebuild": "1.18.0",
+    "@aws-cdk/aws-secretsmanager": "1.18.0",
     "@aws-cdk/core": "1.18.0"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kms": "1.18.0",
+    "@aws-cdk/aws-codebuild": "1.18.0",
+    "@aws-cdk/aws-secretsmanager": "1.18.0",
     "@aws-cdk/core": "1.18.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "construct-ctor-props-optional:@aws-cdk/aws-amplify.App"
+    ]
+  }
 }
