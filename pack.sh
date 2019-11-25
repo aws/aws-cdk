@@ -40,7 +40,7 @@ lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --st
 
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do
   echo "Merging ${dir} into ${distdir}"
-  rsync -av $dir/ ${distdir}/
+  rsync -av --exclude '*.jsii.tgz' $dir/ ${distdir}/
 done
 
 # Remove a JSII aggregate POM that may have snuk past
