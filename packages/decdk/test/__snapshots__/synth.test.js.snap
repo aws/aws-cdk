@@ -1100,7 +1100,20 @@ Object {
             Object {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "TableCD117FA1",
+                        "Arn",
+                      ],
+                    },
+                    "/stream/*",
+                  ],
+                ],
+              },
             },
           ],
           "Version": "2012-10-17",

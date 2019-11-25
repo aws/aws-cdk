@@ -187,6 +187,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
  */
 export class Table extends Resource {
   /**
+   * @deprecated
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @param grantee The principal (no-op if undefined)
    */
@@ -474,6 +475,20 @@ export class Table extends Resource {
   }
 
   /**
+   * Permits an IAM Principal to list all DynamoDB Streams.
+   * @param grantee The principal (no-op if undefined)
+   */
+  public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: [
+        Lazy.stringValue({ produce: () => this.tableStreamArn ? `${this.tableArn}/stream/*` : Aws.NO_VALUE })
+      ],
+    });
+  }
+
+  /**
    * Permits an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
@@ -481,7 +496,7 @@ export class Table extends Resource {
    */
   public grantStreamRead(grantee: iam.IGrantable) {
     this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
-    return Table.grantListStreams(grantee);
+    return this.grantTableListStreams(grantee);
   }
 
   /**

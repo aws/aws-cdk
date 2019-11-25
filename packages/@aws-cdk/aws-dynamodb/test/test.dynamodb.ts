@@ -1162,10 +1162,17 @@ export = {
     '"Table.grantListStreams" allows principal to list all streams'(test: Test) {
       // GIVEN
       const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        stream: StreamViewType.NEW_IMAGE
+      });
       const user = new iam.User(stack, 'user');
 
       // WHEN
-      Table.grantListStreams(user);
+      table.grantTableListStreams(user);
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -1174,7 +1181,7 @@ export = {
             {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
@@ -1237,7 +1244,7 @@ export = {
             {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
