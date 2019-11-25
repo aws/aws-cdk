@@ -90,7 +90,7 @@ export class Duration {
   }
 
   /**
-   * @returns the value of this `Duration` expressed in Seconds.
+   * @returns the value of this `Duration` expressed in Milliseconds.
    */
   public toMilliseconds(opts: TimeConversionOptions = {}): number {
     return convert(this.amount, this.unit, TimeUnit.Milliseconds, opts);

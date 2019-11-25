@@ -291,6 +291,11 @@ export class PackageJson {
     }
   }
 
+  public removeFromFileSync(fileName: string, line: string) {
+    const lines = this.readFileLinesSync(fileName).filter(l => l.trim() !== line);
+    this.writeFileLinesSync(fileName, lines);
+  }
+
   /**
    * Writes the given content into a file.
    * @param fileName the name of the package-level file to write.
