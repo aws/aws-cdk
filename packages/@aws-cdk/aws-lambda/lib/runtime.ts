@@ -34,13 +34,16 @@ export class Runtime {
   public static readonly NODEJS_6_10 =    new Runtime('nodejs6.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
   /** @deprecated Use {@link NODEJS_10_X} */
   public static readonly NODEJS_8_10 =    new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
-  public static readonly NODEJS_10_X =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: false });
+  public static readonly NODEJS_10_X =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_12_X =    new Runtime('nodejs12.x',     RuntimeFamily.NODEJS);
   public static readonly PYTHON_2_7 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
   public static readonly PYTHON_3_6 =     new Runtime('python3.6',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
   public static readonly PYTHON_3_7 =     new Runtime('python3.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_3_8 =     new Runtime('python3.8',      RuntimeFamily.PYTHON);
   public static readonly JAVA_8 =        new Runtime('java8',          RuntimeFamily.JAVA);
+  public static readonly JAVA_11 =        new Runtime('java11',          RuntimeFamily.JAVA);
   public static readonly DOTNET_CORE_1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DOTNET_CORE);
-  /** @deprecated Use `DotNetCore21` */
+  /** @deprecated Use {@link DotNetCore21} */
   public static readonly DOTNET_CORE_2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
   public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
   public static readonly GO_1_X =         new Runtime('go1.x',          RuntimeFamily.GO);

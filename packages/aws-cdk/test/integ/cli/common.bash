@@ -90,6 +90,10 @@ function fail() {
   exit 1
 }
 
+#
+# compares two files
+# usage: assert_diff TEST_NAME actual-file expected-file
+#
 function assert_diff() {
   local test=$1
   local actual=$2
@@ -111,6 +115,10 @@ function assert_diff() {
   }
 }
 
+#
+# compares the result of $1 with STDIN
+# usage: assert COMMAND < file
+#
 function assert() {
   local command="$1"
 

@@ -1,4 +1,5 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/core');
 import { ConstructNode, Duration } from '@aws-cdk/core';
@@ -469,7 +470,7 @@ export = {
     });
 
     // WHEN
-    const metrics = [];
+    const metrics = new Array<Metric>();
     metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
     metrics.push(group.metricIpv6RequestCount());
     metrics.push(group.metricUnhealthyHostCount());
