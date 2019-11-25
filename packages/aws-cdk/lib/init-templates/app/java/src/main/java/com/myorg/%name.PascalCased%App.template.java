@@ -5,7 +5,7 @@ import software.amazon.awscdk.core.App;
 import java.util.Arrays;
 
 public class %name.PascalCased%App {
-    public static void main(final String argv[]) {
+    public static void main(final String[] args) {
         App app = new App();
 
         new %name.PascalCased%Stack(app, "%name.PascalCased%Stack");

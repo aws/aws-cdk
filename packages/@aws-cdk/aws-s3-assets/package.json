@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3-assets",
-  "version": "1.16.1",
+  "version": "1.18.0",
   "description": "Deploy local files and directories to S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.s3.assets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-assets",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "s3-assets"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.S3.Assets",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -61,29 +59,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
+    "@aws-cdk/assert": "1.18.0",
     "@types/sinon": "^7.5.0",
-    "aws-cdk": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "pkglint": "1.16.1",
+    "aws-cdk": "1.18.0",
+    "cdk-build-tools": "1.18.0",
+    "cdk-integ-tools": "1.18.0",
+    "pkglint": "1.18.0",
     "sinon": "^7.5.0",
     "ts-mock-imports": "^1.2.6"
   },
   "dependencies": {
-    "@aws-cdk/assets": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/core": "1.16.1",
-    "@aws-cdk/cx-api": "1.16.1"
+    "@aws-cdk/assets": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/core": "1.18.0",
+    "@aws-cdk/cx-api": "1.18.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-s3": "1.16.1",
-    "@aws-cdk/core": "1.16.1",
-    "@aws-cdk/cx-api": "1.16.1"
+    "@aws-cdk/assets": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/core": "1.18.0",
+    "@aws-cdk/cx-api": "1.18.0"
   },
   "engines": {
     "node": ">= 10.3.0"
