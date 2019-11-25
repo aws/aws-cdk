@@ -1,5 +1,5 @@
 import { Construct, IResource, Resource, Aws } from '@aws-cdk/core';
-import { ConnectionInput } from './connection-input'
+import { IConnectionInput } from './connection-input'
 import { CfnConnection } from './glue.generated';
 
 export interface IConnection extends IResource {
@@ -11,7 +11,7 @@ export interface IConnection extends IResource {
   /**
    * @attribute
    */
-  readonly connectionInput: ConnectionInput;
+  readonly connectionInput: IConnectionInput;
 
   /**
    * @attribute
@@ -22,14 +22,14 @@ export interface IConnection extends IResource {
 
 export interface ConnectionAttributes {
   readonly catalogId: string;
-  readonly connectionInput: ConnectionInput;
+  readonly connectionInput: IConnectionInput;
   readonly connectionName: string;
 }
 
 
 export interface ConnectionProps {
   readonly catalogId?: string;
-  readonly connectionInput: ConnectionInput;
+  readonly connectionInput: IConnectionInput;
 }
 
 export class Connection extends Resource implements IConnection {
@@ -49,7 +49,7 @@ export class Connection extends Resource implements IConnection {
   /**
    * The connection that you want to create.
    */
-  public readonly connectionInput: ConnectionInput;
+  public readonly connectionInput: IConnectionInput;
 
   /**
    * The connection name

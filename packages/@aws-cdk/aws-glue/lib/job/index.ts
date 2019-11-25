@@ -170,7 +170,7 @@ export interface ConnectionInputProps {
   readonly workerType?: WorkerType;
 }
 
-export class ConnectionInput extends Resource implements IConnectionInput {
+export class Job extends Resource implements IConnectionInput {
   /**
    * TThe number of capacity units that are allocated to this job.
    */
