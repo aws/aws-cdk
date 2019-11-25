@@ -170,6 +170,8 @@ function prepare_nuget_packages() {
     mv $HOME/.nuget/NuGet/NuGet.Config $HOME/.nuget/NuGet/NuGet.Config.bak
   fi
 
+  trap clean_up_nuget_config EXIT
+
   cat > $HOME/.nuget/NuGet/NuGet.Config <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
@@ -179,8 +181,6 @@ function prepare_nuget_packages() {
   </packageSources>
 </configuration>
 EOF
-
-  trap clean_up_nuget_config EXIT
 }
 
 function clean_up_nuget_config() {
