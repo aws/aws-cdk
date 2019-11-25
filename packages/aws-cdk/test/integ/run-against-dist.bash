@@ -174,11 +174,24 @@ function prepare_nuget_packages() {
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
-    <add key="Locall Distributed Packages" value="${NUGET_SOURCE}" />
+    <add key="Locally Distributed Packages" value="${NUGET_SOURCE}" />
     <add key="NuGet official package source" value="https://api.nuget.org/v3/index.json" />
   </packageSources>
 </configuration>
 EOF
+
+  trap clean_up_nuget_config EXIT
+}
+
+function clean_up_nuget_config() {
+  log "Restoring NuGet configuration"
+  if [ -f $HOME/.nuget/NuGet/NuGet.Config.bak ]; then
+    log "-> Restoring $HOME/.nuget/NuGet/NuGet.Config from $HOME/.nuget/NuGet/NuGet.Config.bak"
+    mv $HOME/.nuget/NuGet/NuGet.Config.bak $HOME/.nuget/NuGet/NuGet.Config
+  else
+    log "-> Removing $HOME/.nuget/NuGet/NuGet.Config"
+    rm -rf $HOME/.nuget/NuGet/NuGet.Config
+  fi
 }
 
 # pip_install REQUIREMENTS_FILE
