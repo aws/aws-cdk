@@ -62,7 +62,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.17.1",
-    "@types/sinon": "^7.5.1",
+    "@types/sinon": "^7.5.0",
     "aws-cdk": "1.17.1",
     "cdk-build-tools": "1.17.1",
     "cdk-integ-tools": "1.17.1",

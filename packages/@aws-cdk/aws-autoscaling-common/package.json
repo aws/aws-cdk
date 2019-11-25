@@ -63,7 +63,7 @@
     "@aws-cdk/assert": "1.17.1",
     "cdk-build-tools": "1.17.1",
     "cdk-integ-tools": "1.17.1",
-    "fast-check": "^1.19.0",
+    "fast-check": "^1.18.1",
     "pkglint": "1.17.1"
   },
   "dependencies": {

@@ -65,7 +65,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.17.1",
-    "aws-sdk": "^2.578.0",
+    "aws-sdk": "^2.575.0",
     "cdk-build-tools": "1.17.1",
     "cdk-integ-tools": "1.17.1",
     "cfn2ts": "1.17.1",
