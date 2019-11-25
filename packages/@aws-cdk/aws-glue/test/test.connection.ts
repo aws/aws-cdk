@@ -11,7 +11,8 @@ export = {
 
     new glue.Connection(stack, 'Connection', {
       connectionInput: {
-        properties: {}
+        properties: {},
+        type: glue.ConnectionInputTypes.JDBC
       }
     });
 
