@@ -1113,8 +1113,11 @@ interface StackDependency {
 }
 
 function extractSingleValue<T>(array: T[] | undefined): T[] | T | undefined {
-  if (array && array.length === 1) {
-    return array[0];
+  if (array) {
+    if (array.length === 1) {
+      return array[0];
+    }
+    return Array.from(new Set(array)); // Unique values
   }
   return array;
 }

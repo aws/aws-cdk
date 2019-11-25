@@ -275,14 +275,8 @@ export default class CodeGenerator {
       }
     }
     if (spec.RequiredTransform) {
-      const transformField = `${resourceName.className}.REQUIRED_TRANSFORM`;
-      this.code.line('// If a different transform than the required one is in use, this resource cannot be used');
-      this.code.openBlock(`if (this.stack.templateOptions.transform && this.stack.templateOptions.transform !== ${transformField})`);
-      // tslint:disable-next-line:max-line-length
-      this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.stack.templateOptions.transform)} is used.\`);`);
-      this.code.closeBlock();
-      this.code.line('// Automatically configure the required transform');
-      this.code.line(`this.stack.templateOptions.transform = ${resourceName.className}.REQUIRED_TRANSFORM;`);
+      this.code.line('// Automatically add the required transform');
+      this.code.line(`this.stack.templateOptions.transforms = [...this.stack.templateOptions.transforms || [], ${resourceName.className}.REQUIRED_TRANSFORM];`);
     }
 
     // initialize all attribute properties
