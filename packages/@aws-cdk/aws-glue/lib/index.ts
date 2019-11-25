@@ -5,3 +5,5 @@ export * from './database';
 export * from './schema';
 export * from './data-format';
 export * from './table';
+export * from './connection'
+export * from './job'
