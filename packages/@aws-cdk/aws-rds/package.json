@@ -108,11 +108,6 @@
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE2",
-      "props-default-doc:@aws-cdk/aws-rds.ProcessorFeatures.threadsPerCore",
-      "props-default-doc:@aws-cdk/aws-rds.ProcessorFeatures.coreCount",
-      "props-default-doc:@aws-cdk/aws-rds.OptionConfiguration.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.IDatabaseInstance",
-      "props-default-doc:@aws-cdk/aws-rds.BackupProps.preferredWindow",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.applicationId",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER",
@@ -127,10 +122,6 @@
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA_MYSQL",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA_POSTGRESQL",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstance.connections",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstance.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstance.secret",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceBase.connections",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.MARIADB",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.MYSQL",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_EE",
@@ -141,13 +132,7 @@
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EE",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EX",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_SE",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.connections",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.secret",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.connections",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.OptionGroup"
+      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB"
     ]
   },
   "stability": "experimental"
