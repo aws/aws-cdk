@@ -187,8 +187,8 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
  */
 export class Table extends Resource {
   /**
-   * @deprecated
    * Permits an IAM Principal to list all DynamoDB Streams.
+   * @deprecated Use grantTableListStream() for more granular permission
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
