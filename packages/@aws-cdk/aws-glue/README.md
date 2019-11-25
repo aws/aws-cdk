@@ -17,6 +17,10 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+### Connection
+
+TODO
+
 ### Database
 
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
@@ -35,6 +39,10 @@ new glue.Database(stack, 'MyDatabase', {
   locationUri: 's3://explicit-bucket/some-path/'
 });
 ```
+
+### Job
+
+TODO
 
 ### Table
 
