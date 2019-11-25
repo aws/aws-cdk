@@ -39,7 +39,7 @@
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>core</artifactId>
-            <version>%cdk-version%.DEVPREVIEW</version>
+            <version>%cdk-version%</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->

@@ -1,7 +1,7 @@
 {
   "name": "aws-global-lambda-coordinator",
   "private": true,
-  "version": "1.17.1",
+  "version": "1.18.0",
   "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.",
   "main": "lib/handler.js",
   "directories": {
