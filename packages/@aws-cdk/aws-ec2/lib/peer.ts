@@ -159,7 +159,7 @@ class CidrIPv6 implements IPeer {
  */
 class AnyIPv6 extends CidrIPv6 {
   constructor() {
-    super("::/0");
+    super("::0/0");
   }
 }
 
