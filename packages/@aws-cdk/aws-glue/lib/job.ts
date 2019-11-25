@@ -1,8 +1,77 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource, Duration } from '@aws-cdk/core';
-import { Connection } from '../connection'
-import { IJobCommand } from './command'
+import { Construct, IResource, Resource, Duration, Lazy } from '@aws-cdk/core';
+import { Connection } from './connection'
 import { CfnJob } from './glue.generated';
+
+/**
+ * The Python version being used to execute a Python shell job.
+ */
+export enum JobCommandPythonVersion {
+  TWO = '2',
+  THREE = '3'
+}
+
+/**
+ * The type of job command
+ */
+export enum JobCommandTypes {
+  SPARK_ETL = 'glueetl',
+  PYTHON_SHELL = 'pythonshell'
+}
+
+/**
+ * Specifies code executed when a job is run.
+ */
+export class IJobCommand {
+  /**
+   * @attribute
+   */
+  readonly name?: string;
+
+  /**
+   * @attribute
+   */
+  readonly scriptLocation?: string;
+}
+
+export class SparkETLJob implements IJobCommand {
+  /**
+   * The name of the job command. For an Apache Spark ETL job,
+   * this must be glueetl.
+   */
+  public readonly name: JobCommandTypes = JobCommandTypes.SPARK_ETL;
+}
+
+export class IPythonShellJobCommand extends IJobCommand {
+  /**
+   * @attribute
+   */
+  readonly pythonVersion?: JobCommandPythonVersion;
+}
+
+export interface PythonShellJobProps {
+  readonly pythonVersion?: JobCommandPythonVersion;
+}
+
+export class PythonShellJob implements IPythonShellJobCommand{
+  /**
+   * The name of the job command. For a Python shell job, it
+   * must be pythonshell.
+   */
+  public readonly name: JobCommandTypes;
+
+  /**
+   * The Python version being used to execute a Python shell job. Allowed
+   * values are 2 or 3.
+   */
+  public readonly pythonVersion: JobCommandPythonVersion;
+
+  constructor(props: PythonShellJobProps) {
+    this.name = JobCommandTypes.PYTHON_SHELL
+    this.pythonVersion = props.pythonVersion
+  }
+}
+
 
 /**
  * The Python version being used to execute a Python shell job.
@@ -32,7 +101,7 @@ const pythonSparkVersions = {
   }
 }
 
-export interface IConnectionInput extends IResource {
+export interface IJob extends IResource {
   /**
    * @attribute
    */
@@ -170,7 +239,14 @@ export interface ConnectionInputProps {
   readonly workerType?: WorkerType;
 }
 
-export class Job extends Resource implements IConnectionInput {
+export class Job extends Resource implements IJob {
+  // /** TODO
+  //  * Imports a glue job from the specified job ARN.
+  //  */
+  // public static fromJobArn(scope: Construct, id: string, jobArn: string): IJob {
+  //   // TODO
+  // }
+
   /**
    * TThe number of capacity units that are allocated to this job.
    */
@@ -316,13 +392,15 @@ export class Job extends Resource implements IConnectionInput {
   public readonly jobName: string;
 
   constructor(scope: Construct, id: string, props: ConnectionInputProps) {
-    super(scope, id, {
-      physicalName: '',
-    });
+    super(scope, id);
 
     this.allocatedCapacity = props.allocatedCapacity;
     this.command = props.command;
-    this.connections = props.connections;
+
+    if (props.connections) {
+      props.connections.forEach(c => this.addConnection(c));
+    }
+
     this.defaultArguments = props.defaultArguments;
     this.description = props.description;
     this.maxConcurrentRuns = props.maxConcurrentRuns;
@@ -347,7 +425,7 @@ export class Job extends Resource implements IConnectionInput {
     const jobResource = new CfnJob(this, 'Job', {
       allocatedCapacity: this.allocatedCapacity,
       command: this.command,
-      connections: this.connections,
+      connections: Lazy.anyValue({ produce: () => this.connections }, { omitEmptyArray: true }),
       defaultArguments: JSON.stringify(this.defaultArguments),
       description: this.description,
       
@@ -361,7 +439,7 @@ export class Job extends Resource implements IConnectionInput {
       maxRetries: this.maxRetries,
       name: this.name,
 
-      notifactionProperty: {
+      notificationProperty: {
         notifyDelayAfter: this.notifyDelayAfter
       },
 
@@ -370,7 +448,7 @@ export class Job extends Resource implements IConnectionInput {
       role: this.role,
       securityConfiguration: this.securityConfiguration,
       tags: this.tags,
-      timeout: this.timeout,
+      timeout: this.timeout.toMinutes(),
       workerType: this.workerType
     })
 
@@ -384,5 +462,13 @@ export class Job extends Resource implements IConnectionInput {
     // });
 
     this.node.defaultChild = jobResource
+  }
+
+
+  /**
+   * Adds a connection to the glue job.
+   */
+  public addConnection(connection: Connection) {
+    this.connections.push(connection);
   }
 }

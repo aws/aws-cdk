@@ -1,6 +1,64 @@
 import { Construct, IResource, Resource, Aws } from '@aws-cdk/core';
+import ec2 = require('@aws-cdk/aws-ec2');
 import { IConnectionInput } from './connection-input'
 import { CfnConnection } from './glue.generated';
+
+export enum ConnectionInputTypes {
+  /**
+   * The type of the connection. Currently, only JDBC is supported; SFTP is not supported.
+   */
+  JDBC = 'JDBC',
+}
+
+
+export interface IPhysicalRequirements {
+  /**
+   * @attribute
+   */
+  readonly availabilityZone?: string;
+
+  /**
+   * @attribute
+   */
+  readonly securityGroupIds?: ec2.ISecurityGroup[];
+
+  /**
+   * @attribute
+   */
+  readonly subnet?: ec2.ISubnet;
+}
+
+export interface IConnectionInput {
+  /**
+   * @attribute
+   */
+  readonly properties: object;
+
+  /**
+   * @attribute
+   */
+  readonly type: ConnectionInputTypes;
+
+  /**
+   * @attribute
+   */
+  readonly description?: string;
+
+  /**
+   * @attribute
+   */
+  readonly matchCriteria?: string[];
+
+  /**
+   * @attribute
+   */
+  readonly name?: string;
+
+  /**
+   * @attribute
+   */
+  readonly physicalRequirements?: IPhysicalRequirements;
+}
 
 export interface IConnection extends IResource {
   /**
@@ -33,7 +91,6 @@ export interface ConnectionProps {
 }
 
 export class Connection extends Resource implements IConnection {
-
   /**
    * The ID of the data catalog to create the catalog object in.
    * Currently, this should be the AWS account ID.
@@ -57,9 +114,7 @@ export class Connection extends Resource implements IConnection {
   public readonly connectionName: string;
 
   constructor(scope: Construct, id: string, props: ConnectionProps) {
-    super(scope, id, {
-      physicalName: '',
-    });
+    super(scope, id);
 
     this.catalogId = props.catalogId || Aws.ACCOUNT_ID;
     this.connectionInput = props.connectionInput;
@@ -70,5 +125,7 @@ export class Connection extends Resource implements IConnection {
     })
 
     this.connectionName = this.getResourceNameAttribute(connectionResource.ref);
+
+    this.node.defaultChild = connectionResource;
   }
 }
