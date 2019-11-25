@@ -155,16 +155,30 @@ function prepare_java_packages() {
 
 function prepare_nuget_packages() {
   # For NuGet, we wrap the "dotnet" CLI command to use local packages.
-  log "Hijacking 'dotnet build' command..."
+  log "Writing new NuGet configuration..."
 
-  ORIGINAL_DOTNET=$(type -p dotnet) || { echo "No 'dotnet' found" >&2; exit 1; }
-  export ORIGINAL_DOTNET
-  export NUGET_SOURCE=$dist_root/dotnet
+  local NUGET_SOURCE=$dist_root/dotnet
 
   if [ ! -d "$NUGET_SOURCE" ]; then
     echo "NuGet packages missing at $NUGET_SOURCE" >&2
     exit 1
   fi
+
+  mkdir -p $HOME/.nuget/NuGet
+  if [ -f $HOME/.nuget/NuGet/NuGet.Config ]; then
+    echo "⚠️ Saving previous NuGet.Config to $HOME/.nuget/NuGet/NuGet.Config.bak"
+    mv $HOME/.nuget/NuGet/NuGet.Config $HOME/.nuget/NuGet/NuGet.Config.bak
+  fi
+
+  cat > $HOME/.nuget/NuGet/NuGet.Config <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="Locall Distributed Packages" value="${NUGET_SOURCE}" />
+    <add key="NuGet official package source" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+EOF
 }
 
 # pip_install REQUIREMENTS_FILE
