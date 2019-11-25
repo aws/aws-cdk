@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -288,7 +288,7 @@ export class Function extends FunctionBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
+        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
 
         if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
@@ -416,7 +416,7 @@ export class Function extends FunctionBase {
       physicalName: props.functionName,
     });
 
-    this.environment = props.environment || { };
+    this.environment = props.environment || {};
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
@@ -436,13 +436,6 @@ export class Function extends FunctionBase {
 
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
-    }
-
-    const region = Stack.of(this).region;
-    const isChina = !Token.isUnresolved(region) && region.startsWith('cn-');
-    if (isChina && props.environment && Object.keys(props.environment).length > 0) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
     }
 
     const code = props.code.bind(this);
