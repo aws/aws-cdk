@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnEventBus } from './events.generated';
 
@@ -135,6 +136,22 @@ export class EventBus extends Resource implements IEventBus {
 
     return new Import(scope, id);
   }
+
+  /**
+   * Permits an IAM Principal to send custom events to EventBridge
+   * so that they can be matched to rules.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  public static grantPutEvents(grantee: iam.IGrantable): iam.Grant {
+    // It's currently not possible to restrict PutEvents to specific resources.
+    // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/permissions-reference-cwe.html
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:PutEvents'],
+      resourceArns: ['*'],
+    });
+ }
 
   private static eventBusProps(defaultEventBusName: string, props?: EventBusProps) {
     if (props) {
