@@ -144,6 +144,8 @@ export class EventBus extends Resource implements IEventBus {
    * @param grantee The principal (no-op if undefined)
    */
   public static grantPutEvents(grantee: iam.IGrantable): iam.Grant {
+    // It's currently not possible to restrict PutEvents to specific resources.
+    // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/permissions-reference-cwe.html
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['events:PutEvents'],
