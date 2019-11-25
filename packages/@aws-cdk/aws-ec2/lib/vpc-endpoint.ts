@@ -293,6 +293,17 @@ export interface InterfaceVpcEndpointOptions {
    * @default - a new security group is created
    */
   readonly securityGroups?: ISecurityGroup[];
+
+  /**
+   * Whether to automatically allow traffic to the endpoint
+   *
+   * If enabled (or left as default) all traffic to the endpoint will be
+   * automatically allowed. When disabled, explicit connections will need
+   * to be explicitly allowed using the `connections` object.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 }
 
 /**
@@ -378,23 +389,20 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   constructor(scope: Construct, id: string, props: InterfaceVpcEndpointProps) {
     super(scope, id);
 
-    const port = Port.tcp(props.service.port);
-    let securityGroups = props.securityGroups;
-
-    if (!securityGroups || securityGroups.length === 0) {
-      const defaultSecurityGroup = new SecurityGroup(this, "SecurityGroup", {
-        vpc: props.vpc,
-      });
-      defaultSecurityGroup.addIngressRule(Peer.anyIpv4(), port);
-      defaultSecurityGroup.addIngressRule(Peer.anyIpv6(), port);
-      securityGroups = [defaultSecurityGroup];
-    }
+    const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
+      vpc: props.vpc
+    })];
 
     this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
-      defaultPort: port,
+      defaultPort: Port.tcp(props.service.port),
       securityGroups
     });
+
+    if (props.open !== false) {
+      this.connections.allowDefaultPortFromAnyIpv4();
+      this.connections.allowDefaultPortFrom(Peer.anyIpv6());
+    }
 
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     const subnetIds = subnets.subnetIds;
