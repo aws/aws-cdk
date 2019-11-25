@@ -300,7 +300,7 @@ There are various classes that implement the connection peer part:
 // Simple connection peers
 let peer = ec2.Peer.ipv4("10.0.0.0/16");
 let peer = ec2.Peer.anyIpv4();
-let peer = ec2.Peer.ipv6("::/0");
+let peer = ec2.Peer.ipv6("::0/0");
 let peer = ec2.Peer.anyIpv6();
 let peer = ec2.Peer.prefixList("pl-12345");
 fleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');

@@ -26,12 +26,12 @@ export = {
 
   'can parse cidr-ip 6'(test: Test) {
     const rule = new SecurityGroupRule({
-      CidrIpv6: '::/0'
+      CidrIpv6: '::0/0'
     });
 
     const peer = rule.peer!;
     if (peer.kind !== 'cidr-ip') { throw new Error('Fail'); }
-    test.equal(peer.ip, '::/0');
+    test.equal(peer.ip, '::0/0');
 
     test.done();
   },
