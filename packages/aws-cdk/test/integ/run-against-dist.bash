@@ -187,10 +187,10 @@ function clean_up_nuget_config() {
   log "Restoring NuGet configuration"
   if [ -f $HOME/.nuget/NuGet/NuGet.Config.bak ]; then
     log "-> Restoring $HOME/.nuget/NuGet/NuGet.Config from $HOME/.nuget/NuGet/NuGet.Config.bak"
-    mv $HOME/.nuget/NuGet/NuGet.Config.bak $HOME/.nuget/NuGet/NuGet.Config
+    mv -f $HOME/.nuget/NuGet/NuGet.Config.bak $HOME/.nuget/NuGet/NuGet.Config
   else
     log "-> Removing $HOME/.nuget/NuGet/NuGet.Config"
-    rm -rf $HOME/.nuget/NuGet/NuGet.Config
+    rm -f $HOME/.nuget/NuGet/NuGet.Config
   fi
 }
 
