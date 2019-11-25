@@ -1,6 +1,5 @@
 import { Construct, IResource, Resource, Aws } from '@aws-cdk/core';
 import ec2 = require('@aws-cdk/aws-ec2');
-import { IConnectionInput } from './connection-input'
 import { CfnConnection } from './glue.generated';
 
 export enum ConnectionInputTypes {

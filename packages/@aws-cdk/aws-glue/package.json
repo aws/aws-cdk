@@ -71,6 +71,7 @@
     "pkglint": "1.17.1"
   },
   "dependencies": {
+    "@aws-cdk/aws-ec2": "1.17.1",
     "@aws-cdk/aws-iam": "1.17.1",
     "@aws-cdk/aws-kms": "1.17.1",
     "@aws-cdk/aws-s3": "1.17.1",
@@ -78,6 +79,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-ec2": "1.17.1",
     "@aws-cdk/aws-iam": "1.17.1",
     "@aws-cdk/aws-kms": "1.17.1",
     "@aws-cdk/aws-s3": "1.17.1",
