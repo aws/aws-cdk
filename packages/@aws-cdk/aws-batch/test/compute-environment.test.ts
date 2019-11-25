@@ -1,121 +1,114 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType, SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
-import { AmiHardwareType, EcsOptimizedAmi } from '@aws-cdk/aws-ecs';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { throws } from 'assert';
 import * as batch from '../lib';
 
-const computeResourceProps = (override: batch.ComputeResourceProps): batch.ComputeResourceProps => {
-    return {
-        ...override,
-    };
-};
+describe('Batch Compute Evironment', () => {
+    let expectedUnmanagedDefaultComputeProps: any;
 
-const expectedManagedDefaultProps = {
-    ServiceRole: {
-        Ref: 'testcomputeenvResourceServiceLinkedRoleDC93CC0B',
-    },
-    Type: batch.ComputeEnvironmentType.MANAGED,
-};
+    let stack: cdk.Stack;
+    let vpc: ec2.Vpc;
 
-const expectedUnmanagedDefaultComputeProps = (override: any) => {
-    return {
-        ComputeResources: {
-            AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
-            InstanceRole: {
-                'Fn::GetAtt': [
-                    'testcomputeenvResourceRoleBD565AC0',
-                    'Arn'
-                ]
-            },
-            InstanceTypes: [
-                'optimal'
-            ],
-            MaxvCpus: 256,
-            MinvCpus: 0,
-            Subnets: [
-                {
-                    Ref: 'testvpcPrivateSubnet1Subnet865FB50A'
-                },
-                {
-                    Ref: 'testvpcPrivateSubnet2Subnet23D3396F'
+    beforeEach(() => {
+        // GIVEN
+        stack = new cdk.Stack();
+        vpc = new ec2.Vpc(stack, 'test-vpc');
+
+        expectedUnmanagedDefaultComputeProps = (overrides: any) => {
+            return {
+                ComputeResources: {
+                    AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
+                    InstanceRole: {
+                        'Fn::GetAtt': [
+                            'testcomputeenvResourceRoleBD565AC0',
+                            'Arn'
+                        ]
+                    },
+                    InstanceTypes: [
+                        'optimal'
+                    ],
+                    MaxvCpus: 256,
+                    MinvCpus: 0,
+                    Subnets: [
+                        {
+                            Ref: 'testvpcPrivateSubnet1Subnet865FB50A'
+                        },
+                        {
+                            Ref: 'testvpcPrivateSubnet2Subnet23D3396F'
+                        }
+                    ],
+                    Type: batch.ComputeResourceType.ON_DEMAND,
+                    ...overrides,
                 }
-            ],
-            Type: batch.ComputeResourceType.EC2,
-            ...override,
-        },
-    };
-};
+            };
+        };
+    });
 
-describe('When creating a batch compute evironment', () => {
-    describe('with no properties provided', () => {
-        test('should create an AWS managed environment', () => {
-            // GIVEN
-            const stack = new cdk.Stack();
-
-            // WHEN
-            new batch.ComputeEnvironment(stack, 'test-compute-env');
-
+    describe('when validating props', () => {
+        test('should deny setting compute resources when using type managed', () => {
             // THEN
-            expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-                Type: batch.ComputeEnvironmentType.MANAGED
-            }, ResourcePart.Properties));
+            throws(() => {
+                // WHEN
+                new batch.ComputeEnvironment(stack, 'test-compute-env', {
+                    computeResources: {
+                        vpc,
+                    },
+                });
+            }, new Error('It is not allowed to set computeResources on an AWS managed compute environment'));
+        });
+
+        test('should deny if creating an unmanged environment with no provided compute resource props', () => {
+            // THEN
+            throws(() => {
+                // WHEN
+                new batch.ComputeEnvironment(stack, 'test-compute-env', {
+                    managed: false,
+                });
+            }, new Error('computeResources is missing but required on an unmanaged compute environment'));
         });
     });
 
     describe('using spot resources', () => {
         describe('with a bid percentage', () => {
             test('should deny my bid if set below 0', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                    type: batch.ComputeResourceType.SPOT,
-                    bidPercentage: -1,
-                });
-
                 // THEN
                 throws(() => {
                     // WHEN
                     new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                        type: batch.ComputeEnvironmentType.UNMANAGED,
-                        computeResources: props,
+                        managed: false,
+                        computeResources: {
+                            vpc,
+                            type: batch.ComputeResourceType.SPOT,
+                            bidPercentage: -1,
+                        },
                     });
-                });
+                }, new Error('Bid percentage can only be a value between 0 and 100'));
             });
 
             test('should deny my bid if above 100', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                    type: batch.ComputeResourceType.SPOT,
-                    bidPercentage: 101,
-                });
-
                 // THEN
                 throws(() => {
                     // WHEN
                     new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                        type: batch.ComputeEnvironmentType.UNMANAGED,
-                        computeResources: props,
+                        managed: false,
+                        computeResources: {
+                            vpc,
+                            type: batch.ComputeResourceType.SPOT,
+                            bidPercentage: 101,
+                        },
                     });
-                });
+                }, new Error('Bid percentage can only be a value between 0 and 100'));
             });
         });
     });
 
     describe('with properties specified', () => {
-        test('should match all provided properties', () => {
-            // GIVEN
-            const stack = new cdk.Stack();
-
+        test('renders the correct cloudformation properties', () => {
             // WHEN
-            const vpc = new Vpc(stack, 'test-vpc');
             const props = {
                 allocationStrategy: batch.AllocationStrategy.BEST_FIT_PROGRESSIVE,
                 computeEnvironmentName: 'my-test-compute-env',
@@ -125,20 +118,20 @@ describe('When creating a batch compute evironment', () => {
                     computeResourcesTags: new cdk.Tag('foo', 'bar'),
                     desiredvCpus: 1,
                     ec2KeyPair: 'my-key-pair',
-                    image: new EcsOptimizedAmi({
-                        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-                        hardwareType: AmiHardwareType.STANDARD,
+                    image: new ecs.EcsOptimizedAmi({
+                        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+                        hardwareType: ecs.AmiHardwareType.STANDARD,
                     }),
                     instanceRole: new iam.Role(stack, 'test-compute-env-instance-role', {
                         assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
                     }),
                     instanceTypes: [
-                        InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
+                        ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
                     ],
                     maxvCpus: 4,
                     minvCpus: 1,
-                    securityGroupIds: [
-                        new SecurityGroup(stack, 'test-sg', {
+                    securityGroups: [
+                        new ec2.SecurityGroup(stack, 'test-sg', {
                             vpc,
                             allowAllOutbound: true,
                         }),
@@ -148,11 +141,11 @@ describe('When creating a batch compute evironment', () => {
                     }),
                     type: batch.ComputeResourceType.SPOT,
                     vpcSubnets: {
-                        subnetType: SubnetType.PRIVATE,
+                        subnetType: ec2.SubnetType.PRIVATE,
                     },
-                },
-                state: batch.ComputeEnvironmentStatus.DISABLED,
-                type: batch.ComputeEnvironmentType.UNMANAGED,
+                } as batch.ComputeResourceProps,
+                enabled: false,
+                managed: false,
             };
 
             new batch.ComputeEnvironment(stack, 'test-compute-env', props);
@@ -160,8 +153,8 @@ describe('When creating a batch compute evironment', () => {
             // THEN
             expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
                 ComputeEnvironmentName: 'my-test-compute-env',
-                Type: batch.ComputeEnvironmentType.UNMANAGED,
-                State: batch.ComputeEnvironmentStatus.DISABLED,
+                Type: 'UNMANAGED',
+                State: 'DISABLED',
                 ComputeResources: {
                     AllocationStrategy: batch.AllocationStrategy.BEST_FIT_PROGRESSIVE,
                     BidPercentage: props.computeResources.bidPercentage,
@@ -172,26 +165,26 @@ describe('When creating a batch compute evironment', () => {
                     },
                     InstanceRole: {
                         'Fn::GetAtt': [
-                            `${props.computeResources.instanceRole.node.uniqueId}F3B86D94`,
+                            props.computeResources.instanceRole ? `${props.computeResources.instanceRole.node.uniqueId}F3B86D94` : '',
                             'Arn'
                         ]
                     },
                     InstanceTypes: [
-                        props.computeResources.instanceTypes[0].toString(),
+                        props.computeResources.instanceTypes ? props.computeResources.instanceTypes[0].toString() : '',
                     ],
                     MaxvCpus: props.computeResources.maxvCpus,
                     MinvCpus: props.computeResources.minvCpus,
                     SecurityGroupIds: [
                         {
                             'Fn::GetAtt': [
-                                `${props.computeResources.securityGroupIds[0].node.uniqueId}872EB48A`,
+                                props.computeResources.securityGroups ? `${props.computeResources.securityGroups[0].node.uniqueId}872EB48A` : '',
                                 'GroupId'
                             ]
                         }
                     ],
                     SpotIamFleetRole: {
                         'Fn::GetAtt': [
-                            `${props.computeResources.spotIamFleetRole.node.uniqueId}36A9D2CA`,
+                            props.computeResources.spotIamFleetRole ? `${props.computeResources.spotIamFleetRole.node.uniqueId}36A9D2CA` : '',
                             'Arn'
                         ]
                     },
@@ -216,127 +209,99 @@ describe('When creating a batch compute evironment', () => {
 
         describe('with no allocation strategy specified', () => {
             test('should default to a best_fit strategy', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({ vpc });
-
                 // WHEN
                 new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                    computeResources: props,
+                    managed: false,
+                    computeResources: {
+                        vpc,
+                    },
                 });
 
                 // THEN
                 expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-                    ...expectedManagedDefaultProps,
+                    ServiceRole: {
+                        Ref: 'testcomputeenvResourceServiceLinkedRoleDC93CC0B',
+                    },
+                    Type: 'UNMANAGED',
                 }, ResourcePart.Properties));
             });
         });
 
         describe('with a min vcpu value', () => {
             test('should deny less than 0', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                    minvCpus: -1,
-                });
-
                 // THEN
                 throws(() => {
                     // WHEN
                     new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                        computeResources: props,
+                        computeResources: {
+                            vpc,
+                            minvCpus: -1,
+                        },
                     });
-                });
+                }, new Error('Minimum vCpus for a batch compute environment cannot be less than 0'));
             });
 
             test('cannot be greater than the max vcpu value', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                    minvCpus: 2,
-                    maxvCpus: 1,
-                });
-
                 // THEN
                 throws(() => {
                     // WHEN
                     new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                        computeResources: props,
+                        computeResources: {
+                            vpc,
+                            minvCpus: 2,
+                            maxvCpus: 1,
+                        },
                     });
-                });
+                }, new Error('Minimum vCpus cannot be greater than the maximum vCpus'));
             });
         });
 
         describe('with no min vcpu value provided', () => {
             test('should default to 0', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                });
-
                 // WHEN
                 new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                    type: batch.ComputeEnvironmentType.UNMANAGED,
-                    computeResources: props,
+                    managed: false,
+                    computeResources: {
+                        vpc,
+                    },
                 });
 
                 // THEN
-                const expectedProps = expectedUnmanagedDefaultComputeProps({
-                    MinvCpus: 0,
-                });
-
                 expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-                   ...expectedProps,
+                    ...expectedUnmanagedDefaultComputeProps({
+                        MinvCpus: 0,
+                    }),
                 }, ResourcePart.Properties));
             });
         });
 
         describe('with no max vcpu value provided', () => {
             test('should default to 256', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                });
-
                 // WHEN
                 new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                    type: batch.ComputeEnvironmentType.UNMANAGED,
-                    computeResources: props,
+                    managed: false,
+                    computeResources: {
+                        vpc,
+                    },
                 });
 
                 // THEN
-                const expectedProps = expectedUnmanagedDefaultComputeProps({
-                    MaxvCpus: 256,
-                });
-
                 expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-                   ...expectedProps,
+                    ...expectedUnmanagedDefaultComputeProps({
+                        MaxvCpus: 256,
+                    }),
                 }, ResourcePart.Properties));
             });
         });
 
         describe('with no instance role specified', () => {
             test('should generate a role for me', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                });
-
                 // WHEN
                 new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                    type: batch.ComputeEnvironmentType.UNMANAGED,
-                    computeResources: props,
+                    managed: false,
+                    computeResources: {
+                        vpc,
+                    },
                 });
 
                 // THEN
@@ -347,52 +312,38 @@ describe('When creating a batch compute evironment', () => {
 
         describe('with no instance type defined', () => {
             test('should default to optimal matching', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                });
-
                 // WHEN
                 new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                    type: batch.ComputeEnvironmentType.UNMANAGED,
-                    computeResources: props,
+                    managed: false,
+                    computeResources: {
+                        vpc,
+                    },
                 });
 
                 // THEN
-                const expectedProps = expectedUnmanagedDefaultComputeProps({
-                    InstanceTypes: [ 'optimal' ],
-                });
-
                 expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-                   ...expectedProps,
+                    ...expectedUnmanagedDefaultComputeProps({
+                        InstanceTypes: [ 'optimal' ],
+                    }),
                 }, ResourcePart.Properties));
             });
         });
 
         describe('with no type specified', () => {
             test('should default to EC2', () => {
-                // GIVEN
-                const stack = new cdk.Stack();
-                const vpc = new Vpc(stack, 'test-vpc');
-                const props = computeResourceProps({
-                    vpc,
-                });
-
                 // WHEN
                 new batch.ComputeEnvironment(stack, 'test-compute-env', {
-                    type: batch.ComputeEnvironmentType.UNMANAGED,
-                    computeResources: props,
+                    managed: false,
+                    computeResources: {
+                        vpc,
+                    },
                 });
 
                 // THEN
-                const expectedProps = expectedUnmanagedDefaultComputeProps({
-                    Type: batch.ComputeResourceType.EC2,
-                });
-
                 expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-                   ...expectedProps,
+                    ...expectedUnmanagedDefaultComputeProps({
+                        Type: batch.ComputeResourceType.ON_DEMAND,
+                    }),
                 }, ResourcePart.Properties));
             });
         });

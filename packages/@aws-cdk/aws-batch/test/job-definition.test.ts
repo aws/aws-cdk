@@ -1,88 +1,89 @@
 import '@aws-cdk/assert/jest';
 import { ResourcePart } from '@aws-cdk/assert/lib/assertions/have-resource';
-import { InstanceClass, InstanceSize, InstanceType } from '@aws-cdk/aws-ec2';
-import { Repository } from '@aws-cdk/aws-ecr';
-import { EcrImage, LinuxParameters, MountPoint, Ulimit, Volume } from '@aws-cdk/aws-ecs';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
 import cdk = require('@aws-cdk/core');
 import batch = require('../lib');
 
-const getJobProps = (scope: cdk.Stack, overrideProps?: batch.JobDefinitionProps): batch.JobDefinitionProps => {
-    const jobRepo = new Repository(scope, 'job-repo');
+describe('Batch Job Definition', () => {
+    let stack: cdk.Stack;
+    let jobDefProps: batch.JobDefinitionProps;
 
-    const role = new iam.Role(scope, 'job-role', {
-        assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-    });
+    beforeEach(() => {
+        stack = new cdk.Stack();
 
-    const linuxParams = new LinuxParameters(scope, 'job-linux-params', {
-        initProcessEnabled: true,
-        sharedMemorySize: 1,
-    });
+        const jobRepo = new ecr.Repository(stack, 'job-repo');
 
-    return Object.assign({
-        jobDefinitionName: 'test-job',
-        containerProps: {
-            command: [ 'echo "Hello World"' ],
-            environment: {
+        const role = new iam.Role(stack, 'job-role', {
+            assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+        });
+
+        const linuxParams = new ecs.LinuxParameters(stack, 'job-linux-params', {
+            initProcessEnabled: true,
+            sharedMemorySize: 1,
+        });
+
+        jobDefProps = {
+            jobDefinitionName: 'test-job',
+            container: {
+                command: [ 'echo "Hello World"' ],
+                environment: {
+                    foo: 'bar',
+                },
+                jobRole: role,
+                gpuCount: 1,
+                image: ecs.EcrImage.fromEcrRepository(jobRepo),
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+                linuxParams,
+                memoryLimitMiB: 1,
+                mountPoints: new Array<ecs.MountPoint>(),
+                privileged: true,
+                readOnly: true,
+                ulimits: new Array<ecs.Ulimit>(),
+                user: 'root',
+                vcpus: 2,
+                volumes: new Array<ecs.Volume>(),
+            },
+            nodeProps: {
+                count: 2,
+                mainNode: 1,
+                rangeProps: new Array<batch.INodeRangeProps>(),
+            },
+            parameters: {
                 foo: 'bar',
             },
-            jobRole: role,
-            gpuCount: 1,
-            image: EcrImage.fromEcrRepository(jobRepo),
-            instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
-            linuxParams,
-            memoryLimitMiB: 1,
-            mountPoints: new Array<MountPoint>(),
-            privileged: true,
-            readOnly: true,
-            ulimits: new Array<Ulimit>(),
-            user: 'root',
-            vcpus: 2,
-            volumes: new Array<Volume>(),
-        },
-        nodeProps: {
-            count: 2,
-            mainNode: 1,
-            rangeProps: new Array<batch.INodeRangeProps>(),
-        },
-        parameters: {
-            foo: 'bar',
-        },
-        retryAttempts: 2,
-        timeout: Duration.seconds(30),
-    } as batch.JobDefinitionProps, overrideProps);
-};
+            retryAttempts: 2,
+            timeout: Duration.seconds(30),
+        };
+    });
 
-describe('When creating a Batch Job Definition', () => {
-    test('it should match all specified properties', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-
+    test('renders the correct cloudformation properties', () => {
         // WHEN
-        const jobDefProps = getJobProps(stack);
         new batch.JobDefinition(stack, 'job-def', jobDefProps);
 
         // THEN
         expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
             JobDefinitionName: jobDefProps.jobDefinitionName,
-            ContainerProperties: jobDefProps.containerProps ? {
-                Command: jobDefProps.containerProps.command,
+            ContainerProperties: jobDefProps.container ? {
+                Command: jobDefProps.container.command,
                 Environment: [
                     {
                         Name: 'foo',
                         Value: 'bar',
                     },
                 ],
-                InstanceType: jobDefProps.containerProps.instanceType.toString(),
+                InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
                 LinuxParameters: {},
-                Memory: jobDefProps.containerProps.memoryLimitMiB,
+                Memory: jobDefProps.container.memoryLimitMiB,
                 MountPoints: [],
-                Privileged: jobDefProps.containerProps.privileged,
-                ReadonlyRootFilesystem: jobDefProps.containerProps.readOnly,
+                Privileged: jobDefProps.container.privileged,
+                ReadonlyRootFilesystem: jobDefProps.container.readOnly,
                 Ulimits: [],
-                User: jobDefProps.containerProps.user,
-                Vcpus: jobDefProps.containerProps.vcpus,
+                User: jobDefProps.container.user,
+                Vcpus: jobDefProps.container.vcpus,
                 Volumes: [],
             } : undefined,
             NodeProperties: jobDefProps.nodeProps ? {
@@ -103,16 +104,13 @@ describe('When creating a Batch Job Definition', () => {
         }, ResourcePart.Properties);
     });
 
-    test('it should be possible to create one from an ARN', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-
+    test('can be imported from an ARN', () => {
         // WHEN
-        const jobDefProps = getJobProps(stack);
-        const existingJob = new batch.JobDefinition(stack, 'job-def', jobDefProps);
-        const job = batch.JobDefinition.fromJobDefinitionArn(stack, 'job-def-clone', existingJob.jobDefinitionArn);
+        const importedJob = batch.JobDefinition.fromJobDefinitionArn(stack, 'job-def-clone',
+          'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
 
         // THEN
-        expect(job.jobDefinitionArn).toEqual(existingJob.jobDefinitionArn);
+        expect(importedJob.jobDefinitionName).toEqual('job-definition');
+        expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
     });
 });

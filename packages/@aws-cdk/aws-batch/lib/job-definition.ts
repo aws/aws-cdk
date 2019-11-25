@@ -34,8 +34,10 @@ export interface IJobDefinitionContainer {
      * The instance type to use for a multi-node parallel job. Currently all node groups in a
      * multi-node parallel job must use the same instance type. This parameter is not valid
      * for single-node container jobs.
+     *
+     * @default - None
      */
-    readonly instanceType: ec2.InstanceType;
+    readonly instanceType?: ec2.InstanceType;
 
     /**
      * The IAM role that the container can assume for AWS permissions.
@@ -90,8 +92,10 @@ export interface IJobDefinitionContainer {
 
     /**
      * A list of ulimits to set in the container.
+     *
+     * @default - No limits
      */
-    readonly ulimits: ecs.Ulimit[];
+    readonly ulimits?: ecs.Ulimit[];
 
     /**
      * The user name to use inside the container.
@@ -117,7 +121,7 @@ export interface IJobDefinitionContainer {
 }
 
 /**
- * Properties for a job definition
+ * Construction properties of the {@link JobDefinition} construct.
  */
 export interface JobDefinitionProps {
     /**
@@ -125,7 +129,6 @@ export interface JobDefinitionProps {
      *
      * Up to 128 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed.
      *
-     * @attribute
      * @default Cloudformation-generated name
      */
     readonly jobDefinitionName?: string;
@@ -135,7 +138,7 @@ export interface JobDefinitionProps {
      *
      * @default - undefined
      */
-    readonly containerProps?: IJobDefinitionContainer;
+    readonly container?: IJobDefinitionContainer;
 
     /**
      * An object with various properties specific to multi-node parallel jobs.
@@ -202,28 +205,36 @@ export interface INodeRangeProps {
      * The container details for the node range.
      */
     container: IJobDefinitionContainer;
+
     /**
-     * The minimum node index value to apply this container definition against. If omitted, the value zero is used.
+     * The minimum node index value to apply this container definition against.
+     *
      * You may nest node ranges, for example 0:10 and 4:5, in which case the 4:5 range properties override the 0:10 properties.
+     *
+     * @default 0
      */
     fromNodeIndex?: number;
+
     /**
-     * The maximum node index value to apply this container definition against. If omitted, the highest value is used relative
+     * The maximum node index value to apply this container definition against. If omitted, the highest value is used relative.
+     *
      * to the number of nodes associated with the job. You may nest node ranges, for example 0:10 and 4:5,
      * in which case the 4:5 range properties override the 0:10 properties.
+     *
+     * @default {@link IMultiNodeprops.count}
      */
     toNodeIndex?: number;
 }
 
 /**
- * Properties of a job definition
+ * An interface representing a job definition - either a new one, created with the CDK, *using the
+ * {@link JobDefinition} class, or existing ones, referenced using the {@link JobDefinition.fromJobDefinitionArn} method..
  */
 export interface IJobDefinition extends IResource {
     /**
      * The ARN of this batch job definition
      *
      * @attribute
-     * @default Cloudformation-generated ARN
      */
     readonly jobDefinitionArn: string;
 
@@ -231,7 +242,6 @@ export interface IJobDefinition extends IResource {
      * The name of the batch job definition
      *
      * @attribute
-     * @default Cloudformation-generated name
      */
     readonly jobDefinitionName: string;
 }
@@ -243,7 +253,7 @@ export interface IJobDefinition extends IResource {
  */
 export class JobDefinition extends Resource implements IJobDefinition {
     /**
-     * Fetches an existing batch job definition by its amazon resource name.
+     * Imports an existing batch job definition by its amazon resource name.
      *
      * @param scope
      * @param id
@@ -271,13 +281,13 @@ export class JobDefinition extends Resource implements IJobDefinition {
 
         const jobDef = new CfnJobDefinition(this, 'Resource', {
             jobDefinitionName: props.jobDefinitionName,
-            containerProperties: this.buildJobContainer(props.containerProps),
+            containerProperties: this.buildJobContainer(props.container),
             type: 'container',
-            nodeProperties: props.nodeProps ? {
-                mainNode: props.nodeProps.mainNode,
+            nodeProperties: props.nodeProps
+            ? { mainNode: props.nodeProps.mainNode,
                 nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps),
-                numNodes: props.nodeProps.count,
-            } : undefined,
+                numNodes: props.nodeProps.count }
+            : undefined,
             parameters: props.parameters,
             retryStrategy: {
                 attempts: props.retryAttempts || 1,
@@ -287,7 +297,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
             },
         });
 
-        this.jobDefinitionArn = jobDef.ref;
+        this.jobDefinitionArn = this.getResourceArnAttribute(jobDef.ref, {
+            service: 'batch',
+            resource: 'job-definition',
+            resourceName: this.physicalName,
+        });
         this.jobDefinitionName = this.getResourceNameAttribute(this.physicalName);
     }
 
@@ -295,7 +309,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
         const vars = new Array<CfnJobDefinition.EnvironmentProperty>();
 
         if (env === undefined) {
-            return vars;
+            return undefined;
         }
 
         Object.keys(env).map((name: string) => {
@@ -305,28 +319,28 @@ export class JobDefinition extends Resource implements IJobDefinition {
         return vars;
     }
 
-    private buildJobContainer(containerProps?: IJobDefinitionContainer): CfnJobDefinition.ContainerPropertiesProperty | undefined {
-        if (containerProps === undefined) {
+    private buildJobContainer(container?: IJobDefinitionContainer): CfnJobDefinition.ContainerPropertiesProperty | undefined {
+        if (container === undefined) {
             return undefined;
         }
 
         return {
-            command: containerProps.command,
-            environment: this.deserializeEnvVariables(containerProps.environment),
-            image: containerProps.image.imageName,
-            instanceType: containerProps.instanceType ? containerProps.instanceType.toString() : undefined,
-            jobRoleArn: containerProps.jobRole ? containerProps.jobRole.roleArn : undefined,
-            linuxParameters: containerProps.linuxParams ? {
-                devices: containerProps.linuxParams.renderLinuxParameters().devices,
-            } : undefined,
-            memory: containerProps.memoryLimitMiB || 4,
-            mountPoints: containerProps.mountPoints,
-            privileged: containerProps.privileged || false,
-            readonlyRootFilesystem: containerProps.readOnly || false,
-            ulimits: containerProps.ulimits,
-            user: containerProps.user,
-            vcpus: containerProps.vcpus || 1,
-            volumes: containerProps.volumes,
+            command: container.command,
+            environment: this.deserializeEnvVariables(container.environment),
+            image: container.image.imageName,
+            instanceType: container.instanceType && container.instanceType.toString(),
+            jobRoleArn: container.jobRole && container.jobRole.roleArn,
+            linuxParameters: container.linuxParams
+            ? { devices: container.linuxParams.renderLinuxParameters().devices }
+            : undefined,
+            memory: container.memoryLimitMiB || 4,
+            mountPoints: container.mountPoints,
+            privileged: container.privileged || false,
+            readonlyRootFilesystem: container.readOnly || false,
+            ulimits: container.ulimits,
+            user: container.user,
+            vcpus: container.vcpus || 1,
+            volumes: container.volumes,
         };
     }
 

@@ -4,35 +4,6 @@ import { Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**
- * Property to determine if AWS Batch
- * should manage your compute resources
- */
-export enum ComputeEnvironmentType {
-    /**
-     * AWS Batch manages your compute resources
-     */
-    MANAGED   = 'MANAGED',
-    /**
-     * Custom managed compute resources
-     */
-    UNMANAGED = 'UNMANAGED',
-}
-
-/**
- * Property to specify how compute resources will be provisioned based
- */
-export enum ComputeEnvironmentStatus {
-    /**
-     * Jobs are allowed to be assigned to this environment
-     */
-    ENABLED = 'ENABLED',
-    /**
-     * Jobs are not allowed to be assigned to this environment
-     */
-    DISABLED = 'DISABLED',
-}
-
-/**
  * Property to specify if the compute environment
  * uses On-Demand of SpotFleet compute resources
  */
@@ -40,7 +11,8 @@ export enum ComputeResourceType {
     /**
      * Resources will be EC2 On-Demand resources
      */
-    EC2  = 'EC2',
+    ON_DEMAND  = 'EC2',
+
     /**
      * Resources will be EC2 SpotFleet resources
      */
@@ -57,12 +29,14 @@ export enum AllocationStrategy {
      * when assigning a batch job in this compute environment
      */
     BEST_FIT = 'BEST_FIT',
+
     /**
      * Batch will select additional instance types that are large enough to
      * meet the requirements of the jobs in the queue, with a preference for
      * instance types with a lower cost per unit vCPU
      */
     BEST_FIT_PROGRESSIVE = 'BEST_FIT_PROGRESSIVE',
+
     /**
      * This is only available for Spot Instance compute resources and will select
      * additional instance types that are large enough to meet the requirements of
@@ -94,27 +68,11 @@ export interface ComputeResourceProps {
     readonly instanceTypes?: ec2.InstanceType[];
 
     /**
-     * The maximum number of EC2 vCPUs that an environment can reach. Each vCPU is equivalent to
-     * 1,024 CPU shares. You must specify at least one vCPU.
-     *
-     * @default 256
-     */
-    readonly maxvCpus?: number;
-
-    /**
-     * The minimum number of EC2 vCPUs that an environment should maintain (even if the compute environment state is DISABLED).
-     * Each vCPU is equivalent to 1,024 CPU shares. You must specify at least one vCPU.
-     *
-     * @default 1
-     */
-    readonly minvCpus?: number;
-
-    /**
      * The EC2 security group(s) associated with instances launched in the compute environment.
      *
      * @default AWS default security group
      */
-    readonly securityGroupIds?: ec2.ISecurityGroup[];
+    readonly securityGroups?: ec2.ISecurityGroup[];
 
     /**
      * The VPC network that all compute resources will be connected to.
@@ -129,18 +87,21 @@ export interface ComputeResourceProps {
     readonly vpcSubnets?: ec2.SubnetSelection;
 
     /**
-     * The type of compute environment: EC2 or SPOT.
+     * The type of compute environment: ON_DEMAND or SPOT.
      *
-     * @default EC2
+     * @default ON_DEMAND
      */
     readonly type?: ComputeResourceType;
 
     /**
+     * This property will be ignored if you set the environment type to ON_DEMAND.
+     *
      * The maximum percentage that a Spot Instance price can be when compared with the On-Demand price for
      * that instance type before instances are launched. For example, if your maximum percentage is 20%,
      * then the Spot price must be below 20% of the current On-Demand price for that EC2 instance. You always
      * pay the lowest (market) price and never more than your maximum percentage. If you leave this field empty,
      * the default value is 100% of the On-Demand price.
+     *
      *
      * @default 100
      */
@@ -152,6 +113,22 @@ export interface ComputeResourceProps {
      * @default - no desired vcpu value will be used
      */
     readonly desiredvCpus?: number;
+
+    /**
+     * The maximum number of EC2 vCPUs that an environment can reach. Each vCPU is equivalent to
+     * 1,024 CPU shares. You must specify at least one vCPU.
+     *
+     * @default 256
+     */
+    readonly maxvCpus?: number;
+
+    /**
+     * The minimum number of EC2 vCPUs that an environment should maintain (even if the compute environment state is DISABLED).
+     * Each vCPU is equivalent to 1,024 CPU shares. You must specify at least one vCPU.
+     *
+     * @default 1
+     */
+    readonly minvCpus?: number;
 
     /**
      * The EC2 key pair that is used for instances launched in the compute environment.
@@ -190,6 +167,8 @@ export interface ComputeResourceProps {
     readonly placementGroup?: ec2.CfnPlacementGroup;
 
     /**
+     * This property will be ignored if you set the environment type to ON_DEMAND.
+     *
      * The Amazon Resource Name (ARN) of the Amazon EC2 Spot Fleet IAM role applied to a SPOT compute environment.
      * For more information, see Amazon EC2 Spot Fleet Role in the AWS Batch User Guide.
      *
@@ -252,16 +231,17 @@ export interface ComputeEnvironmentProps {
      * The state of the compute environment. If the state is set to true, then the compute
      * environment accepts jobs from a queue and can scale out automatically based on queues.
      *
-     * @default ComputeEnvironmentStatus.ENABLED
+     * @default true
      */
-    readonly state?: ComputeEnvironmentStatus;
+    readonly enabled?: boolean;
 
     /**
-     * Whether the compute resources should scale automatically based on job queues.
+     * Determines if AWS should manage the allocation of compute resources for processing jobs.
+     * If set to false, then you are in charge of providing the compute resource details.
      *
-     * @default MANAGED
+     * @default true
      */
-    readonly type?: ComputeEnvironmentType;
+    readonly managed?: boolean;
 }
 
 /**
@@ -322,7 +302,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
      */
     public readonly computeEnvironmentName: string;
 
-    constructor(scope: Construct, id: string, props: ComputeEnvironmentProps = {}) {
+    constructor(scope: Construct, id: string, props: ComputeEnvironmentProps = { enabled: true, managed: true }) {
         super(scope, id, {
             physicalName: props.computeEnvironmentName,
         });
@@ -331,29 +311,29 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
 
         let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
-        // Only allow compute resources to be set when using MANAGED type
-        if (props.computeResources && props.type === ComputeEnvironmentType.UNMANAGED) {
+        // Only allow compute resources to be set when using UNMANAGED type
+        if (props.computeResources && !this.isManaged(props)) {
             computeResources = {
                 allocationStrategy: props.allocationStrategy || AllocationStrategy.BEST_FIT,
                 bidPercentage: props.computeResources.bidPercentage,
                 desiredvCpus: props.computeResources.desiredvCpus,
                 ec2KeyPair: props.computeResources.ec2KeyPair,
-                imageId: props.computeResources.image ? props.computeResources.image.getImage(this).imageId : undefined,
-                instanceRole: props.computeResources.instanceRole ?
-                    props.computeResources.instanceRole.roleArn :
-                    new iam.Role(this, 'Resource-Role', {
-                        assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-                    }).roleArn,
+                imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
+                instanceRole: props.computeResources.instanceRole
+                ? props.computeResources.instanceRole.roleArn
+                : new iam.Role(this, 'Resource-Role', {
+                  assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+                }).roleArn,
                 instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
                 launchTemplate: props.computeResources.launchTemplate,
                 maxvCpus: props.computeResources.maxvCpus || 256,
                 minvCpus: props.computeResources.minvCpus || 0,
-                placementGroup: props.computeResources.placementGroup ? props.computeResources.placementGroup.ref : undefined,
-                securityGroupIds: this.buildSecurityGroupIds(props.computeResources.securityGroupIds),
-                spotIamFleetRole: props.computeResources.spotIamFleetRole ? props.computeResources.spotIamFleetRole.roleArn : undefined,
+                placementGroup: props.computeResources.placementGroup && props.computeResources.placementGroup.ref,
+                securityGroupIds: this.buildSecurityGroupIds(props.computeResources.securityGroups),
+                spotIamFleetRole: props.computeResources.spotIamFleetRole && props.computeResources.spotIamFleetRole.roleArn,
                 subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
-                tags: props.computeResources.computeResourcesTags ? props.computeResources.computeResourcesTags : undefined,
-                type: props.computeResources.type || ComputeResourceType.EC2,
+                tags: props.computeResources.computeResourcesTags,
+                type: props.computeResources.type || ComputeResourceType.ON_DEMAND,
             };
         }
 
@@ -362,49 +342,81 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
             computeResources,
             serviceRole: new iam.CfnServiceLinkedRole(this, 'Resource-Service-Linked-Role', {
                 awsServiceName: 'batch.amazonaws.com',
-                customSuffix: `-${id}`,
+                customSuffix: `-${scope.node.uniqueId}`,
             }).ref,
-            state: props ? props.state : 'ENABLED',
-            type: props ? (props.type ? props.type : ComputeEnvironmentType.MANAGED) : ComputeEnvironmentType.MANAGED,
+            state: this.isEnabled(props) ? 'ENABLED' : 'DISABLED',
+            type: this.isManaged(props) ? 'MANAGED' : 'UNMANAGED',
         });
 
-        this.computeEnvironmentArn = computeEnvironment.ref;
-        this.computeEnvironmentName = this.getResourceNameAttribute(props ? props.computeEnvironmentName || this.physicalName : this.physicalName);
+        this.computeEnvironmentArn = this.getResourceArnAttribute(computeEnvironment.ref, {
+            service: 'batch',
+            resource: 'compute-environment',
+            resourceName: this.physicalName,
+        });
+        this.computeEnvironmentName = this.getResourceNameAttribute(props.computeEnvironmentName || this.physicalName);
+    }
+
+    private isEnabled(props: ComputeEnvironmentProps): boolean {
+        return props.enabled === undefined ? true : props.enabled;
+    }
+
+    private isManaged(props: ComputeEnvironmentProps): boolean {
+        return props.managed === undefined ? true : props.managed;
     }
 
     /**
      * Validates the properties provided for a new batch compute environment
      */
-    public validateProps(props?: ComputeEnvironmentProps) {
+    private validateProps(props: ComputeEnvironmentProps) {
         if (props === undefined) {
             return;
         }
 
-        // Setting a bid percentage is only allowed on SPOT resources
-        if (props.computeResources && props.computeResources.type &&
-            props.computeResources.type === ComputeResourceType.EC2 && props.computeResources.bidPercentage !== undefined) {
-            throw new Error('Setting the bid percentage is only allowed for SPOT type resources on a batch compute environment');
+        if (this.isManaged(props) && props.computeResources !== undefined) {
+            throw new Error('It is not allowed to set computeResources on an AWS managed compute environment');
         }
 
-        if (props.computeResources && props.computeResources.type && props.allocationStrategy &&
-            props.computeResources.type === ComputeResourceType.EC2 && props.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED) {
-                throw new Error('The SPOT_CAPACITY_OPTIMIZED allocation strategy is only allowed if the environment is a SPOT type compute environment');
+        if (!this.isManaged(props) && props.computeResources === undefined) {
+            throw new Error('computeResources is missing but required on an unmanaged compute environment');
         }
 
-        // Bid percentage must be from 0 - 100
-        if (props.computeResources && props.computeResources.bidPercentage !== undefined &&
-            (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
-            throw new Error('Bid percentage can only be a value between 0 and 100');
-        }
+        // Setting a bid percentage is only allowed on SPOT resources +
+        // Cannot use SPOT_CAPACITY_OPTIMIZED when using ON_DEMAND
+        if (props.computeResources) {
+            if (props.computeResources.type === ComputeResourceType.ON_DEMAND) {
+                // VALIDATE FOR ON_DEMAND
 
-        if (props.computeResources && props.computeResources.minvCpus &&
-            props.computeResources.minvCpus < 0) {
-            throw new Error('Minimum vCpus for a batch compute environment cannot be less than 0');
-        }
+                // Bid percentage is not allowed
+                if (props.computeResources.bidPercentage !== undefined) {
+                    throw new Error('Setting the bid percentage is only allowed for SPOT type resources on a batch compute environment');
+                }
 
-        if (props.computeResources && props.computeResources.minvCpus && props.computeResources.maxvCpus &&
-            props.computeResources.minvCpus > props.computeResources.maxvCpus) {
-            throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
+                // SPOT_CAPACITY_OPTIMIZED allocation is not allowed
+                if (props.allocationStrategy && props.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED) {
+                    throw new Error('The SPOT_CAPACITY_OPTIMIZED allocation strategy is only allowed if the environment is a SPOT type compute environment');
+                }
+            } else {
+                // VALIDATE FOR SPOT
+
+                // Bid percentage must be from 0 - 100
+                if (props.computeResources.bidPercentage !== undefined &&
+                    (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
+                        throw new Error('Bid percentage can only be a value between 0 and 100');
+                }
+            }
+
+            if (props.computeResources.minvCpus) {
+                // minvCpus cannot be less than 0
+                if (props.computeResources.minvCpus < 0) {
+                    throw new Error('Minimum vCpus for a batch compute environment cannot be less than 0');
+                }
+
+                // minvCpus cannot exceed max vCpus
+                if (props.computeResources.maxvCpus &&
+                    props.computeResources.minvCpus > props.computeResources.maxvCpus) {
+                    throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
+                }
+            }
         }
     }
 
@@ -415,18 +427,14 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
             ];
         }
 
-        return instanceTypes.reduce((types: string[], type: ec2.InstanceType): string[] => {
-            return [...types, type.toString()];
-        }, []);
+        return instanceTypes.map((type: ec2.InstanceType) => type.toString());
     }
 
-    private buildSecurityGroupIds(securityGroupIds?: ec2.ISecurityGroup[]): string[] | undefined {
-        if (securityGroupIds === undefined) {
+    private buildSecurityGroupIds(securityGroups?: ec2.ISecurityGroup[]): string[] | undefined {
+        if (securityGroups === undefined) {
             return undefined;
         }
 
-        return securityGroupIds.reduce((ids: string[], group: ec2.ISecurityGroup): string[] => {
-            return [...ids, group.securityGroupId];
-        }, []);
+        return securityGroups.map((group: ec2.ISecurityGroup) => group.securityGroupId);
     }
 }

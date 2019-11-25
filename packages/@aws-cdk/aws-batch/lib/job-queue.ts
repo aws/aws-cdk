@@ -3,21 +3,6 @@ import { CfnJobQueue } from './batch.generated';
 import { ComputeEnvironment, IComputeEnvironment } from './compute-environment';
 
 /**
- * Property to determine if the Batch Job
- * Queue should accept incoming jobs to be queued
- */
-export enum JobQueueState {
-    /**
-     * The Job Queue accepts incoming batch jobs
-     */
-    ENABLED = 'ENABLED',
-    /**
-     * The Job Queue blocks incoming batch jobs
-     */
-    DISABLED = 'DISABLED'
-}
-
-/**
  * Properties for mapping a compute environment to a job queue
  */
 export interface JobQueueComputeEnvironment {
@@ -41,7 +26,6 @@ export interface JobQueueProps {
      *
      * Up to 128 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed.
      *
-     * @attribute
      * @default Cloudformation-generated name
      */
     readonly jobQueueName?: string;
@@ -65,11 +49,11 @@ export interface JobQueueProps {
     readonly priority?: number;
 
     /**
-     * The state of the job queue. If the job queue state is ENABLED, it is able to accept jobs.
+     * The state of the job queue. If set to true, it is able to accept jobs.
      *
-     * @default JobQueueState.ENABLED
+     * @default true
      */
-    readonly state?: JobQueueState;
+    readonly enabled?: boolean;
 }
 
 /**
@@ -80,7 +64,6 @@ export interface IJobQueue extends IResource {
      * The ARN of this batch job queue
      *
      * @attribute
-     * @default Cloudformation-generated ARN
      */
     readonly jobQueueArn: string;
 
@@ -90,9 +73,8 @@ export interface IJobQueue extends IResource {
      * Up to 128 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed.
      *
      * @attribute
-     * @default Cloudformation-generated name
      */
-    readonly jobQueueName?: string;
+    readonly jobQueueName: string;
 }
 
 /**
@@ -122,7 +104,7 @@ export class JobQueue extends Resource implements IJobQueue {
     }
 
     public readonly jobQueueArn: string;
-    public readonly jobQueueName?: string;
+    public readonly jobQueueName: string;
 
     constructor(scope: Construct, id: string, props: JobQueueProps = {}) {
         super(scope, id, {
@@ -131,23 +113,27 @@ export class JobQueue extends Resource implements IJobQueue {
 
         const jobQueue = new CfnJobQueue(this, 'Resource', {
             computeEnvironmentOrder: props.computeEnvironmentOrder
-              ? props.computeEnvironmentOrder.map(cp => ({
-                    computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
-                    order: cp.order,
-                } as CfnJobQueue.ComputeEnvironmentOrderProperty)
-              ) : [
+            ? props.computeEnvironmentOrder.map(cp => ({
+                computeEnvironment: cp.computeEnvironment.computeEnvironmentArn,
+                order: cp.order,
+            } as CfnJobQueue.ComputeEnvironmentOrderProperty))
+            : [
                 {
                     // Get an AWS Managed Compute Environment
                     computeEnvironment: new ComputeEnvironment(this, 'Resource-Batch-Compute-Environment').computeEnvironmentArn,
                     order: 1,
                 },
-              ],
+            ],
             jobQueueName: this.physicalName,
             priority: props.priority || 1,
-            state: props.state || JobQueueState.DISABLED,
+            state: props.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
         });
 
-        this.jobQueueArn = jobQueue.ref;
+        this.jobQueueArn = this.getResourceArnAttribute(jobQueue.ref, {
+            service: 'batch',
+            resource: 'job-queue',
+            resourceName: this.physicalName,
+        });
         this.jobQueueName = this.getResourceNameAttribute(this.physicalName);
     }
 }

@@ -3,30 +3,26 @@ import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
 
-describe('When creating a batch job queue', () => {
-    describe('with no compute environment provided', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
+describe('Batch Job Queue', () => {
+    let stack: cdk.Stack;
+    let computeEnvironment: batch.ComputeEnvironment;
 
-        // WHEN
-        new batch.JobQueue(stack, 'test-job-queue', {
-            priority: 1,
-            state: batch.JobQueueState.DISABLED,
-        });
-
-        // THEN
-        expect(stack).toHaveResource('AWS::Batch::JobQueue');
-        expect(stack).toHaveResource('AWS::Batch::ComputeEnvironment');
+    beforeEach(() => {
+        stack = new cdk.Stack();
+        computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env');
     });
 
-    it('should be possible to create one from a provided ARN', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-
+    it('can be imported from an ARN', () => {
         // WHEN
         const existingJobQ = new batch.JobQueue(stack, 'test-job-queue', {
             priority: 1,
-            state: batch.JobQueueState.DISABLED,
+            enabled: false,
+            computeEnvironmentOrder: [
+                {
+                    computeEnvironment,
+                    order: 1,
+                }
+            ],
         });
         const jobQFromArn = batch.JobQueue.fromJobQueueArn(stack, 'test-job-queue-from-arn', existingJobQ.jobQueueArn);
 
@@ -34,15 +30,11 @@ describe('When creating a batch job queue', () => {
         expect(jobQFromArn.jobQueueArn).toEqual(existingJobQ.jobQueueArn);
     });
 
-    it('should match all specified properties', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-
+    it('renders the correct cloudformation properties', () => {
         // WHEN
-        const computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env');
         const props: batch.JobQueueProps = {
             priority: 1,
-            state: batch.JobQueueState.DISABLED,
+            enabled: false,
             computeEnvironmentOrder: [
                 {
                     computeEnvironment,
@@ -56,7 +48,7 @@ describe('When creating a batch job queue', () => {
         // THEN
         expect(stack).toHaveResourceLike('AWS::Batch::JobQueue', {
             JobQueueName: props.jobQueueName,
-            State: props.state,
+            State: props.enabled ? 'ENABLED' : 'DISABLED',
             Priority: props.priority,
             ComputeEnvironmentOrder: [
                 {
@@ -69,13 +61,16 @@ describe('When creating a batch job queue', () => {
         }, ResourcePart.Properties);
     });
 
-    it('should default to level 1 queue priority', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-
+    it('should have a default queue priority of 1', () => {
         // WHEN
         new batch.JobQueue(stack, 'test-job-queue', {
-            state: batch.JobQueueState.DISABLED,
+            enabled: false,
+            computeEnvironmentOrder: [
+                {
+                    computeEnvironment,
+                    order: 1,
+                }
+            ],
         });
 
         // THEN
