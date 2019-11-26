@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-rds",
-  "version": "1.16.1",
+  "version": "1.18.0",
   "description": "CDK Constructs for AWS RDS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.rds",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "rds",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "rds"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.RDS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -64,37 +62,37 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "@aws-cdk/aws-events-targets": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.18.0",
+    "@aws-cdk/aws-events-targets": "1.18.0",
+    "cdk-build-tools": "1.18.0",
+    "cdk-integ-tools": "1.18.0",
+    "cfn2ts": "1.18.0",
+    "pkglint": "1.18.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.16.1",
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-events": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kms": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-logs": "1.16.1",
-    "@aws-cdk/aws-sam": "1.16.1",
-    "@aws-cdk/aws-secretsmanager": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-cloudwatch": "1.18.0",
+    "@aws-cdk/aws-ec2": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kms": "1.18.0",
+    "@aws-cdk/aws-lambda": "1.18.0",
+    "@aws-cdk/aws-logs": "1.18.0",
+    "@aws-cdk/aws-sam": "1.18.0",
+    "@aws-cdk/aws-secretsmanager": "1.18.0",
+    "@aws-cdk/core": "1.18.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.16.1",
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-events": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kms": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-logs": "1.16.1",
-    "@aws-cdk/aws-sam": "1.16.1",
-    "@aws-cdk/aws-secretsmanager": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-cloudwatch": "1.18.0",
+    "@aws-cdk/aws-ec2": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kms": "1.18.0",
+    "@aws-cdk/aws-lambda": "1.18.0",
+    "@aws-cdk/aws-logs": "1.18.0",
+    "@aws-cdk/aws-sam": "1.18.0",
+    "@aws-cdk/aws-secretsmanager": "1.18.0",
+    "@aws-cdk/core": "1.18.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -110,11 +108,6 @@
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE2",
-      "props-default-doc:@aws-cdk/aws-rds.ProcessorFeatures.threadsPerCore",
-      "props-default-doc:@aws-cdk/aws-rds.ProcessorFeatures.coreCount",
-      "props-default-doc:@aws-cdk/aws-rds.OptionConfiguration.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.IDatabaseInstance",
-      "props-default-doc:@aws-cdk/aws-rds.BackupProps.preferredWindow",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.applicationId",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER",
@@ -129,10 +122,6 @@
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA_MYSQL",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseClusterEngine.AURORA_POSTGRESQL",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstance.connections",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstance.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstance.secret",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceBase.connections",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.MARIADB",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.MYSQL",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_EE",
@@ -143,13 +132,7 @@
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EE",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EX",
       "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_SE",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.connections",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.secret",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.connections",
-      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.vpc",
-      "docs-public-apis:@aws-cdk/aws-rds.OptionGroup"
+      "docs-public-apis:@aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB"
     ]
   },
   "stability": "experimental"
