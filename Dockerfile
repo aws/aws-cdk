@@ -4,8 +4,7 @@ WORKDIR /app
 
 ENV NODE_VERSION 10.17.0
 ENV YARN_VERSION 1.19.1
-ENV DOTNET_VERSION 2.2
-
+ENV DOTNET_VERSION 3.0
 
 RUN yum -y --security update \
   && yum install -y \
