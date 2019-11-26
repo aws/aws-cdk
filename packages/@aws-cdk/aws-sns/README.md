@@ -58,7 +58,7 @@ const fn = new lambda.Function(this, 'Function', ...);
 // size: anything but 'small' or 'medium'
 // price: between 100 and 200 or greater than 300
 // store: attribute must be present
-topic.subscribeLambda(new subs.LambdaSubscription(fn, {
+topic.addSubscription(new subs.LambdaSubscription(fn, {
     filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
             whitelist: ['red', 'orange'],
