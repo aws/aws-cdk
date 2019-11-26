@@ -74,6 +74,20 @@ export = {
     test.done();
   },
 
+  'stack.addTransform() adds a transform'(test: Test) {
+    const stack = new Stack();
+
+    stack.addTransform('A');
+    stack.addTransform('B');
+    stack.addTransform('C');
+
+    test.deepEqual(toCloudFormation(stack), {
+      Transform: ['A', 'B', 'C']
+    });
+
+    test.done();
+  },
+
   // This approach will only apply to TypeScript code, but at least it's a temporary
   // workaround for people running into issues caused by SDK-3003.
   // We should come up with a proper solution that involved jsii callbacks (when they exist)
