@@ -297,11 +297,11 @@ export interface InterfaceVpcEndpointOptions {
   /**
    * Whether to automatically allow traffic to the endpoint
    *
-   * If enabled (or left as default) all traffic to the endpoint will be
-   * automatically allowed. When disabled, explicit connections will need
-   * to be explicitly allowed using the `connections` object.
+   * If enabled, all traffic to the endpoint will be automatically allowed. By
+   * default, explicit connections will need to be explicitly allowed using the
+   * `connections` object.
    *
-   * @default true
+   * @default false
    */
   readonly open?: boolean;
 }
@@ -399,7 +399,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       securityGroups
     });
 
-    if (props.open !== false) {
+    if (props.open) {
       this.connections.allowDefaultPortFromAnyIpv4();
       this.connections.allowDefaultPortFrom(Peer.anyIpv6());
     }
