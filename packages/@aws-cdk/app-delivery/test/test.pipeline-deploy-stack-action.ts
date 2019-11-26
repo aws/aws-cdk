@@ -199,6 +199,49 @@ export = nodeunit.testCase({
         Version: '2012-10-17',
         Statement: [
           {
+            Action: [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*",
+            ],
+            Effect: "Allow",
+            Resource: [
+              {
+                "Fn::GetAtt": [
+                  "CodePipelineArtifactsBucketF1E925CF",
+                  "Arn",
+                ],
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "CodePipelineArtifactsBucketF1E925CF",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              "kms:Decrypt",
+              "kms:DescribeKey",
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "CodePipelineArtifactsBucketEncryptionKey85407CB4",
+                "Arn",
+              ],
+            },
+          },
+          {
             Action: '*',
             Effect: 'Allow',
             Resource: '*',
@@ -272,6 +315,49 @@ export = nodeunit.testCase({
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
+          {
+            Action: [
+              "s3:GetObject*",
+              "s3:GetBucket*",
+              "s3:List*",
+            ],
+            Effect: "Allow",
+            Resource: [
+              {
+                "Fn::GetAtt": [
+                  "CodePipelineArtifactsBucketF1E925CF",
+                  "Arn",
+                ],
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "CodePipelineArtifactsBucketF1E925CF",
+                        "Arn",
+                      ],
+                    },
+                    "/*"
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              "kms:Decrypt",
+              "kms:DescribeKey",
+            ],
+            Effect: "Allow",
+            Resource: {
+              "Fn::GetAtt": [
+                "CodePipelineArtifactsBucketEncryptionKey85407CB4",
+                "Arn",
+              ],
+            },
+          },
           {
             Action: [
               'ec2:AuthorizeSecurityGroupEgress',
