@@ -840,24 +840,25 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
-    if (props.generateMasterUserPassword && !props.masterUsername) {
-      throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
-    }
+    let secret: DatabaseSecret | undefined;
 
-    if (!props.generateMasterUserPassword && props.masterUsername) {
-      throw new Error('Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
-    }
+    if (props.generateMasterUserPassword) {
+      if (!props.masterUsername) { // We need the master username to include it in the generated secret
+        throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
+      }
 
-    if (props.generateMasterUserPassword && props.masterUserPassword) {
-      throw new Error('Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
-    }
+      if (props.masterUserPassword) {
+        throw new Error('Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
+      }
 
-    let secret;
-    if (props.generateMasterUserPassword && props.masterUsername) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUsername,
         encryptionKey: props.secretKmsKey,
       });
+    } else {
+      if (props.masterUsername) { // It's not possible to change the master username of a RDS instance
+        throw new Error('Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
+      }
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {
