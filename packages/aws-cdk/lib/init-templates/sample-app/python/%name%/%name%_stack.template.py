@@ -6,26 +6,18 @@ from aws_cdk import (
     core
 )
 
-from .hello_construct import HelloConstruct
-
-
-class MyStack(core.Stack):
+class %name.PascalCased%Stack(core.Stack):
 
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         queue = sqs.Queue(
-            self, "MyFirstQueue",
+            self, "%name.PascalCased%Queue",
             visibility_timeout=core.Duration.seconds(300),
         )
 
         topic = sns.Topic(
-            self, "MyFirstTopic",
-            display_name="My First Topic"
+            self, "%name.PascalCased%Topic"
         )
 
         topic.add_subscription(subs.SqsSubscription(queue))
-
-        hello = HelloConstruct(self, "MyHelloConstruct", num_buckets=4)
-        user = iam.User(self, "MyUser")
-        hello.grant_read(user)

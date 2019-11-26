@@ -188,3 +188,32 @@ scalableTarget.scaleOnSchedule('EveningRushScaleUp', {
   minCapacity: 10,
 });
 ```
+
+### Add Metric-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
+
+```ts
+import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
+
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+});
+
+const scalableTarget = loadBalancedFargateService.service.autoScaleTaskCount({
+  minCapacity: 1,
+  maxCapacity: 20,
+});
+
+scalableTarget.scaleOnCpuUtilization('CpuScaling', {
+  targetUtilizationPercent: 50,
+});
+
+scalableTarget.scaleOnMemoryUtilization('MemoryScaling', {
+  targetUtilizationPercent: 50,
+});
+```
