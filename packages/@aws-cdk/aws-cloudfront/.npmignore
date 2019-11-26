@@ -17,3 +17,5 @@ coverage
 *.snk
 
 *.tsbuildinfo
+
+tsconfig.json

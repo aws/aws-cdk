@@ -7,4 +7,3 @@ update_configs:
     package_manager: javascript
     update_schedule: live
     version_requirement_updates: increase_versions
-    default_labels: [dependencies]
