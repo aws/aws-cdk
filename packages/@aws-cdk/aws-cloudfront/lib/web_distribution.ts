@@ -1,4 +1,5 @@
 import certificatemanager = require('@aws-cdk/aws-certificatemanager');
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
@@ -827,6 +828,16 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
           }))
       });
+
+      // allow edgelambda.amazonaws.com to assume the functions' execution role.
+      for (const a of input.lambdaFunctionAssociations) {
+        if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
+          a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
+            actions: [ 'sts:AssumeRole' ],
+            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ]
+          }));
+        }
+      }
     }
     return toReturn;
   }
