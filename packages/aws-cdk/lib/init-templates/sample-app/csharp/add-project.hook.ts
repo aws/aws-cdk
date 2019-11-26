@@ -6,28 +6,40 @@ export const invoke: InvokeHook = async (targetDirectory: string) => {
   const slnPath = path.join(targetDirectory, "src", "%name.PascalCased%.sln");
   const csprojPath = path.join(targetDirectory, "src", "%name.PascalCased%", "%name.PascalCased%.csproj");
 
-  const child = child_process.spawn('dotnet', [ 'sln', slnPath, 'add', csprojPath ], {
-    // Need this for Windows where we want .cmd and .bat to be found as well.
-    shell: true,
-    stdio: [ 'ignore', 'pipe', 'inherit' ]
-  });
+  try {
+    await runCommand('dotnet', 'sln', slnPath, 'add', csprojPath);
+  } catch (err) {
+    throw new Error(`Could not add project %name.PascalCased%.csproj to solution %name.PascalCased%.sln: ${err}`);
+  }
 
-  await new Promise<string>((resolve, reject) => {
-    const stdout = new Array<any>();
+  try {
+    await runCommand('dotnet', 'add', csprojPath, 'package', 'Amazon.Jsii.Analyzers');
+  } catch (err) {
+    throw new Error(`Could not add Amazon.Jsii.Analyzers to %name.PascalCased%.csproj: ${err}`);
+  }
+};
+
+function runCommand(command: string, ...args: string[]): Promise<string> {
+  const child = child_process.spawn(command, args, { shell: true, stdio: ['ignore', 'pipe', 'inherit'] });
+
+  return new Promise<string>((ok, ko) => {
+    const stdout = new Array<Buffer>();
 
     child.stdout.on('data', chunk => {
+      stdout.push(Buffer.from(chunk));
       process.stdout.write(chunk);
-      stdout.push(chunk);
     });
 
-    child.once('error', reject);
+    child.once('error', ko);
 
-    child.once('exit', code => {
+    child.once('exit', (code, signal) => {
       if (code === 0) {
-        resolve(Buffer.concat(stdout).toString('utf-8'));
+        ok(Buffer.concat(stdout).toString('utf-8'));
+      } else if (code != null) {
+        ko(new Error(`Command exited with non-zero code: ${code}`));
       } else {
-        reject(new Error(`Could not add project %name.PascalCased%.csproj to solution %name.PascalCased%.sln. Error code: ${code}`));
+        ko(new Error(`Command was killed by signal: ${signal}`));
       }
     });
   });
-};
+}
