@@ -1,3 +1,4 @@
+import { IKey } from '@aws-cdk/aws-kms';
 import { Construct, Stack } from '@aws-cdk/core';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
@@ -23,6 +24,13 @@ export interface TopicProps {
    * @default Generated name
    */
   readonly topicName?: string;
+
+  /**
+   * A KMS Key, either managed by this CDK app, or imported.
+   *
+   * @default None
+   */
+  readonly masterKey?: IKey;
 }
 
 /**
@@ -53,6 +61,7 @@ export class Topic extends TopicBase {
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: this.physicalName,
+      kmsMasterKeyId: props.masterKey && props.masterKey.keyId,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

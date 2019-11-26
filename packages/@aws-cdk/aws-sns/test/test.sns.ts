@@ -1,5 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
+import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/core');
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -63,6 +64,21 @@ export = {
           }
         }
       });
+
+      test.done();
+    },
+
+    'specify kmsMasterKey'(test: Test) {
+      const stack = new cdk.Stack();
+      const key = new kms.Key(stack, "CustomKey");
+
+      new sns.Topic(stack, 'MyTopic', {
+        masterKey: key,
+      });
+
+      expect(stack).to(haveResource("AWS::SNS::Topic", {
+        "KmsMasterKeyId": { "Ref": "CustomKey1E6D0D07" },
+      }));
 
       test.done();
     },
