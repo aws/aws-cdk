@@ -805,14 +805,20 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
   /**
    * The master user name.
    *
-   * @default inherited from the snapshot
+   * Specify this prop with the **current** master user name of the snapshot
+   * only when generating a new master user password with `generateMasterUserPassword`.
+   * The value will be set in the generated secret attached to the instance.
+   *
+   * It is not possible to change the master user name of a RDS instance.
+   *
+   * @default - inherited from the snapshot
    */
   readonly masterUsername?: string;
 
   /**
    * Whether to generate a new master user password and store it in
-   * Secrets Manager. `masterUsername` must be specified when this property
-   * is set to true.
+   * Secrets Manager. `masterUsername` must be specified with the **current**
+   * master user name of the snapshot when this property is set to true.
    *
    * @default false
    */
@@ -834,27 +840,33 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
-    if (props.generateMasterUserPassword && !props.masterUsername) {
-      throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
-    }
+    let secret: DatabaseSecret | undefined;
 
-    let secret;
-    if (!props.masterUserPassword && props.generateMasterUserPassword && props.masterUsername) {
+    if (props.generateMasterUserPassword) {
+      if (!props.masterUsername) { // We need the master username to include it in the generated secret
+        throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
+      }
+
+      if (props.masterUserPassword) {
+        throw new Error('Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
+      }
+
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUsername,
         encryptionKey: props.secretKmsKey,
       });
+    } else {
+      if (props.masterUsername) { // It's not possible to change the master username of a RDS instance
+        throw new Error('Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
+      }
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUsername,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
-        : (props.masterUserPassword
-          ? props.masterUserPassword.toString()
-          : undefined),
+        : props.masterUserPassword && props.masterUserPassword.toString(),
     });
 
     this.instanceIdentifier = instance.ref;
