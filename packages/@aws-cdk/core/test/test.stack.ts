@@ -54,7 +54,7 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Description: 'StackDescription',
-      Transform: ['DeprecatedField', 'Transform'],
+      Transform: ['Transform', 'DeprecatedField'],
       AWSTemplateFormatVersion: 'TemplateVersion',
       Metadata: { MetadataKey: 'MetadataValue' }
     });

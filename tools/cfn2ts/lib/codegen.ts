@@ -276,7 +276,7 @@ export default class CodeGenerator {
     }
     if (spec.RequiredTransform) {
       this.code.line('// Automatically add the required transform');
-      this.code.line(`this.stack.templateOptions.transforms = [...this.stack.templateOptions.transforms || [], ${resourceName.className}.REQUIRED_TRANSFORM];`);
+      this.code.line(`this.stack.addTransform(${resourceName.className}.REQUIRED_TRANSFORM);`);
     }
 
     // initialize all attribute properties
