@@ -1,10 +1,11 @@
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { App, Stack } from '@aws-cdk/core';
 import path = require('path');
 import { AuthorizationType, MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer } from '../../lib';
 
 const app = new App();
-const stack = new Stack(app, 'TokenAuthorizerInteg');
+const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
@@ -12,11 +13,16 @@ const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler'))
 });
 
-const restapi = new RestApi(stack, 'MyRestApi');
+const role = new iam.Role(stack, 'authorizerRole', {
+  assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com')
+});
 
 const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,
+  assumeRole: role,
 });
+
+const restapi = new RestApi(stack, 'MyRestApi');
 
 restapi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [

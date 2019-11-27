@@ -283,8 +283,7 @@
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.operationName",
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestModels",
       "props-default-doc:@aws-cdk/aws-apigateway.MethodOptions.requestValidator",
-      "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url",
-      "props-physical-name:@aws-cdk/aws-apigateway.TokenAuthorizerProps"
+      "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase.url"
     ]
   },
   "stability": "stable"

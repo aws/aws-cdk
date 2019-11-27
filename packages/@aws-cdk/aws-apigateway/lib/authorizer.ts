@@ -45,8 +45,10 @@ export abstract class CustomAuthorizer extends Resource implements IAuthorizer {
    * Typically, this is taken care of by the module while defining {@link Method}s via the {@link ResourceBase#addMethod | addMethod()} API call.
    *
    * @throws when a different RestApi is already associated to this authorizer.
+   *
+   * @internal
    */
-  public set restApi(restApi: IRestApi) {
+  public _bind(restApi: IRestApi) {
     if (this._restApi && this._restApi !== restApi) {
       throw new Error(`Cannot attach authorizer [${this.node.uniqueId}] to RestApi [${restApi.node.uniqueId}]. `
         + `Already attached to RestApi [${this._restApi.node.uniqueId}]`);

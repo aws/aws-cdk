@@ -622,9 +622,8 @@ export = {
     });
 
     const auth = new apigateway.TokenAuthorizer(stack, 'myauthorizer1', {
-      name: 'myauthorizer1',
-      headerName: 'whoami',
-      function: func
+      authorizerName: 'myauthorizer1',
+      handler: func
     });
 
     const restApi = new apigateway.RestApi(stack, 'myrestapi', {

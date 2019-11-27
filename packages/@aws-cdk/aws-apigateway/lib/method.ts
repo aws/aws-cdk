@@ -129,7 +129,7 @@ export class Method extends Resource {
     }
 
     if (CustomAuthorizer.isCustomAuthorizer(authorizer)) {
-      authorizer.restApi = this.restApi;
+      authorizer._bind(this.restApi);
     }
 
     const methodProps: CfnMethodProps = {

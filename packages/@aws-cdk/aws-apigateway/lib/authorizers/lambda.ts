@@ -15,23 +15,31 @@ export interface TokenAuthorizerProps {
    *
    * @default - CDK will use the uniqueId assigned to this construct.
    */
-  readonly name?: string;
+  readonly authorizerName?: string;
 
   /**
-   * The authorizer lambda function.
+   * The handler for the authorizer lambda function.
+   *
+   * The handler must follow a very specific protocol on the input it receives and the output it needs to produce.
+   * API Gateway has documented the handler's input specification
+   * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-input.html | here} and output specification
+   * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html | here}.
    */
-  readonly function: lambda.IFunction;
+  readonly handler: lambda.IFunction;
 
   /**
-   * The name of the header in the request that contains the authorization token as submitted by the client.
+   * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
+   * this should be `method.request.header.AuthToken` where AuthToken is the header containing the bearer token.
+   * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
+   * @default 'method.request.header.auth_token'
    */
-  readonly headerName: string;
+  readonly identitySource?: string;
 
   /**
    * The TTL on how long APIGateway should cache the results. Max 1 hour.
    * Disable caching by setting this to 0.
    *
-   *  @default - 300 seconds
+   *  @default - Duration.minutes(5)
    */
   readonly resultsCacheTtl?: Duration;
 
@@ -44,7 +52,8 @@ export interface TokenAuthorizerProps {
   readonly validationRegex?: string;
 
   /**
-   * An optional IAM role for APIGateway to assume before calling the Lambda-based authorizer.
+   * An optional IAM role for APIGateway to assume before calling the Lambda-based authorizer. The IAM role must be
+   * assumable by 'apigateway.amazonaws.com'.
    *
    * @default - A resource policy is added to the Lambda function allowing apigateway.amazonaws.com to invoke the function.
    */
@@ -52,7 +61,7 @@ export interface TokenAuthorizerProps {
 }
 
 /**
- * Token based lambda authorizer that recognizes the caller's identity caller's identity as a bearer token,
+ * Token based lambda authorizer that recognizes the caller's identity as a bearer token,
  * such as a JSON Web Token (JWT) or an OAuth token.
  * Based on the token, authorization is performed by a lambda function.
  *
@@ -74,25 +83,25 @@ export class TokenAuthorizer extends CustomAuthorizer {
 
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, {
-      physicalName: props.name || Lazy.stringValue({ produce: () => this.node.uniqueId })
+      physicalName: props.authorizerName || Lazy.stringValue({ produce: () => this.node.uniqueId })
     });
 
     if (props.resultsCacheTtl && props.resultsCacheTtl.toSeconds() > 3600) {
-      throw new Error(`Lambda authorizer property 'cacheTtl' must not be greater than 3600 seconds`);
+      throw new Error(`Lambda authorizer property 'cacheTtl' must not be greater than 3600 seconds (1 hour)`);
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: this.physicalName,
       restApiId: this.restApiId,
       type: 'TOKEN',
-      authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.function.functionArn}/invocations`,
+      authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
       authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
-      identitySource: `method.request.header.${props.headerName}`,
+      identitySource: props.identitySource || 'method.request.header.auth_token',
       identityValidationExpression: props.validationRegex,
     });
 
-    this.authorizerId = resource.ref;
+    this.authorizerId = super.getResourceNameAttribute(resource.ref);
 
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
@@ -101,12 +110,19 @@ export class TokenAuthorizer extends CustomAuthorizer {
     });
 
     if (!props.assumeRole) {
-      new lambda.CfnPermission(this, `${this.node.uniqueId}:Permissions`, {
-        functionName: props.function.functionArn,
-        action: 'lambda:InvokeFunction',
-        principal: 'apigateway.amazonaws.com',
+      props.handler.addPermission(`${this.node.uniqueId}:Permissions`, {
+        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: this.authorizerArn
       });
+    } else if (props.assumeRole instanceof iam.Role) { // i.e., not imported
+      props.assumeRole.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: [ props.handler.functionArn ],
+            actions: [ 'lambda:InvokeFunction' ],
+          })
+        ]
+      }));
     }
   }
 }
