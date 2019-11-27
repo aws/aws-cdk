@@ -420,15 +420,15 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4"
-        },
         "Targets": [
           {
-            "Id": "10.0.1.1"
+            "Id": "10.0.128.4"
           }
         ],
-        "TargetType": "ip"
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
       }
     },
     "LBListenerConditionalTargetGroupA75CCCD9": {
@@ -436,15 +436,15 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4"
-        },
         "Targets": [
           {
-            "Id": "10.0.1.2"
+            "Id": "10.0.128.5"
           }
         ],
-        "TargetType": "ip"
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
       }
     },
     "LBListenerConditionalTargetRule91FA260F": {
@@ -477,10 +477,6 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "EvaluationPeriods": 2,
-        "MetricName": "TargetResponseTime",
-        "Namespace": "AWS/ApplicationELB",
-        "Period": 300,
-        "Threshold": 5,
         "Dimensions": [
           {
             "Name": "TargetGroup",
@@ -543,7 +539,11 @@
             }
           }
         ],
-        "Statistic": "Average"
+        "MetricName": "TargetResponseTime",
+        "Namespace": "AWS/ApplicationELB",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 5
       }
     },
     "ResponseTimeHigh2FFCF1FE1": {
@@ -551,10 +551,6 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "EvaluationPeriods": 2,
-        "MetricName": "TargetResponseTime",
-        "Namespace": "AWS/ApplicationELB",
-        "Period": 300,
-        "Threshold": 5,
         "Dimensions": [
           {
             "Name": "TargetGroup",
@@ -617,7 +613,11 @@
             }
           }
         ],
-        "Statistic": "Average"
+        "MetricName": "TargetResponseTime",
+        "Namespace": "AWS/ApplicationELB",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 5
       }
     }
   }
