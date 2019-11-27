@@ -39,10 +39,10 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       // TODO: revert "as any" once we move all actions into a single package.
-      test.deepEqual(stage.actions[0].actionProperties.inputs, [artifact],
+      test.deepEqual(stage.fullActions[0].actionProperties.inputs, [artifact],
                      'The input was correctly registered');
 
-      _assertActionMatches(test, stack, stage.actions, 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -128,7 +128,7 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
                                { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
-      _assertActionMatches(test, stack, stage.actions, 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -349,7 +349,8 @@ class FullAction {
 class StageDouble implements codepipeline.IStage {
   public readonly stageName: string;
   public readonly pipeline: codepipeline.IPipeline;
-  public readonly actions: FullAction[];
+  public readonly actions: codepipeline.IAction[] = [];
+  public readonly fullActions: FullAction[];
 
   public get node(): cdk.ConstructNode {
     throw new Error('StageDouble is not a real construct');
@@ -368,7 +369,7 @@ class StageDouble implements codepipeline.IStage {
         bucket: pipeline.artifactBucket,
       })));
     }
-    this.actions = fullActions;
+    this.fullActions = fullActions;
   }
 
   public addAction(_action: codepipeline.IAction): void {
