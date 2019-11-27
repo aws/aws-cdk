@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import * as lambda from '@aws-cdk/aws-lambda';
 import s3 = require('@aws-cdk/aws-s3');
@@ -414,7 +414,7 @@ export = {
       uuid: 'xxxx-xxxx-xxxx-xxxx',
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -476,6 +476,46 @@ export = {
     });
 
     test.ok(distribution.node.defaultChild instanceof CfnDistribution);
+    test.done();
+  },
+
+  'allows multiple aliasConfiguration CloudFrontWebDistribution per stack'(test: Test) {
+    const stack = new cdk.Stack();
+    const s3BucketSource = new s3.Bucket(stack, 'Bucket');
+
+    const originConfigs = [{
+        s3OriginSource: {s3BucketSource},
+        behaviors: [{ isDefaultBehavior: true }]
+    }];
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs,
+      aliasConfiguration: {acmCertRef: 'acm_ref', names: ['www.example.com']},
+    });
+    new CloudFrontWebDistribution(stack, 'AnotherAmazingWebsiteProbably', {
+      originConfigs,
+      aliasConfiguration: {acmCertRef: 'another_acm_ref', names: ['ftp.example.com']},
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      "DistributionConfig": {
+        "Aliases": ["www.example.com"],
+        "ViewerCertificate": {
+          "AcmCertificateArn": "acm_ref",
+          "SslSupportMethod": "sni-only"
+        }
+      }
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      "DistributionConfig": {
+        "Aliases": ["ftp.example.com"],
+        "ViewerCertificate": {
+          "AcmCertificateArn": "another_acm_ref",
+          "SslSupportMethod": "sni-only"
+        }
+      }
+    }));
     test.done();
   },
 
@@ -747,4 +787,87 @@ export = {
     }
   },
 
+  'edgelambda.amazonaws.com is added to the trust policy of lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X
+    });
+    const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', { lambda: fn });
+
+    // WHEN
+    new CloudFrontWebDistribution(stack, 'MyDistribution', {
+      originConfigs: [
+        {
+          s3OriginSource: { s3BucketSource: sourceBucket },
+          behaviors : [
+            {
+              isDefaultBehavior: true, lambdaFunctionAssociations: [
+                {
+                  eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                  lambdaFunction: lambdaVersion
+                }
+              ]
+            }
+          ]
+        }
+      ]
+     });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
+            }
+          },
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "edgelambda.amazonaws.com"
+            }
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    }));
+    test.done();
+  },
+
+  'edgelambda.amazonaws.com is not added to lambda role for imported functions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const lambdaVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:my-version');
+
+    // WHEN
+    new CloudFrontWebDistribution(stack, 'MyDistribution', {
+      originConfigs: [
+        {
+          s3OriginSource: { s3BucketSource: sourceBucket },
+          behaviors : [
+            {
+              isDefaultBehavior: true, lambdaFunctionAssociations: [
+                {
+                  eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                  lambdaFunction: lambdaVersion
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    expect(stack).notTo(haveResourceLike('AWS::IAM::Role'));
+    test.done();
+  }
 };

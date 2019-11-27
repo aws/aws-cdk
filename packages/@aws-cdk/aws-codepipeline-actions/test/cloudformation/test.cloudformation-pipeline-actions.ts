@@ -1,11 +1,10 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import { Repository } from '@aws-cdk/aws-codecommit';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { Role } from '@aws-cdk/aws-iam';
-import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
@@ -201,7 +200,7 @@ export = {
 
   },
 
-  'fullPermissions leads to admin role and full IAM capabilities'(test: Test) {
+  'fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions'(test: Test) {
   // GIVEN
   const stack = new TestFixture();
 
@@ -239,10 +238,25 @@ export = {
   }));
 
   // THEN: Role is created with full permissions
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
+  expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
+        {
+          "Action": [
+            "s3:GetObject*",
+            "s3:GetBucket*",
+            "s3:List*",
+          ],
+          "Effect": "Allow",
+        },
+        {
+          "Action": [
+            "kms:Decrypt",
+            "kms:DescribeKey",
+          ],
+          "Effect": "Allow",
+        },
         {
           Action: "*",
           Effect: 'Allow',

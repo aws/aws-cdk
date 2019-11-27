@@ -1,7 +1,7 @@
 {
   "name": "awslint",
   "private": true,
-  "version": "1.15.0",
+  "version": "1.18.0",
   "description": "Enforces the AWS Construct Library guidelines",
   "main": "index.js",
   "scripts": {
@@ -19,15 +19,15 @@
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "^0.19.0",
-    "jsii-spec": "^0.19.0",
-    "yargs": "^14.2.0"
+    "jsii-reflect": "^0.20.8",
+    "jsii-spec": "^0.20.8",
+    "yargs": "^15.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/yargs": "^13.0.3",
-    "tslint": "^5.20.0",
-    "typescript": "~3.6.3"
+    "tslint": "^5.20.1",
+    "typescript": "~3.6.4"
   },
   "repository": {
     "type": "git",

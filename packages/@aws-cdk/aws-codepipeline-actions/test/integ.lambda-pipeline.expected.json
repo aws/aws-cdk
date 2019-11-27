@@ -600,8 +600,20 @@
               ]
             },
             "eventName": [
+              "CompleteMultipartUpload",
+              "CopyObject",
               "PutObject"
-            ]
+            ],
+            "requestParameters": {
+              "bucketName": [
+                {
+                  "Ref": "PipelineBucketB967BD35"
+                }
+              ],
+              "key": [
+                "key"
+              ]
+            }
           }
         },
         "State": "ENABLED",
@@ -812,7 +824,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "LambdaFunServiceRoleDefaultPolicy217FED83",

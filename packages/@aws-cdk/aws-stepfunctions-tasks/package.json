@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-stepfunctions-tasks",
-  "version": "1.15.0",
+  "version": "1.18.0",
   "description": "Task integrations for AWS StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.stepfunctions.tasks",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "stepfunctions-tasks",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "stepfunctions-tasks"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.StepFunctions.Tasks",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -74,44 +73,44 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.15.0",
-    "cdk-build-tools": "^1.15.0",
-    "cdk-integ-tools": "^1.15.0",
+    "@aws-cdk/assert": "1.18.0",
+    "cdk-build-tools": "1.18.0",
+    "cdk-integ-tools": "1.18.0",
     "jest": "^24.9.0",
-    "pkglint": "^1.15.0"
+    "pkglint": "1.18.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "1.15.0",
-    "@aws-cdk/aws-cloudwatch": "1.15.0",
-    "@aws-cdk/aws-ec2": "1.15.0",
-    "@aws-cdk/aws-ecr": "1.15.0",
-    "@aws-cdk/aws-ecr-assets": "1.15.0",
-    "@aws-cdk/aws-ecs": "1.15.0",
-    "@aws-cdk/aws-iam": "1.15.0",
-    "@aws-cdk/aws-kms": "1.15.0",
-    "@aws-cdk/aws-lambda": "1.15.0",
-    "@aws-cdk/aws-s3": "1.15.0",
-    "@aws-cdk/aws-sns": "1.15.0",
-    "@aws-cdk/aws-sqs": "1.15.0",
-    "@aws-cdk/aws-stepfunctions": "1.15.0",
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/assets": "1.18.0",
+    "@aws-cdk/aws-cloudwatch": "1.18.0",
+    "@aws-cdk/aws-ec2": "1.18.0",
+    "@aws-cdk/aws-ecr": "1.18.0",
+    "@aws-cdk/aws-ecr-assets": "1.18.0",
+    "@aws-cdk/aws-ecs": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kms": "1.18.0",
+    "@aws-cdk/aws-lambda": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/aws-sns": "1.18.0",
+    "@aws-cdk/aws-sqs": "1.18.0",
+    "@aws-cdk/aws-stepfunctions": "1.18.0",
+    "@aws-cdk/core": "1.18.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "1.15.0",
-    "@aws-cdk/aws-cloudwatch": "1.15.0",
-    "@aws-cdk/aws-ec2": "1.15.0",
-    "@aws-cdk/aws-ecr": "1.15.0",
-    "@aws-cdk/aws-ecr-assets": "1.15.0",
-    "@aws-cdk/aws-ecs": "1.15.0",
-    "@aws-cdk/aws-iam": "1.15.0",
-    "@aws-cdk/aws-kms": "1.15.0",
-    "@aws-cdk/aws-lambda": "1.15.0",
-    "@aws-cdk/aws-s3": "1.15.0",
-    "@aws-cdk/aws-sns": "1.15.0",
-    "@aws-cdk/aws-sqs": "1.15.0",
-    "@aws-cdk/aws-stepfunctions": "1.15.0",
-    "@aws-cdk/core": "1.15.0"
+    "@aws-cdk/assets": "1.18.0",
+    "@aws-cdk/aws-cloudwatch": "1.18.0",
+    "@aws-cdk/aws-ec2": "1.18.0",
+    "@aws-cdk/aws-ecr": "1.18.0",
+    "@aws-cdk/aws-ecr-assets": "1.18.0",
+    "@aws-cdk/aws-ecs": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-kms": "1.18.0",
+    "@aws-cdk/aws-lambda": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/aws-sns": "1.18.0",
+    "@aws-cdk/aws-sqs": "1.18.0",
+    "@aws-cdk/aws-stepfunctions": "1.18.0",
+    "@aws-cdk/core": "1.18.0"
   },
   "engines": {
     "node": ">= 10.3.0"

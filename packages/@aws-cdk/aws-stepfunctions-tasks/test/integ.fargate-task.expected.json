@@ -342,7 +342,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Timeout": 300
       },
       "DependsOn": [
@@ -476,10 +476,10 @@
                 ]
               },
               "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\"},\"Type\":\"Task\",\"Resource\":\"arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":states:::ecs:runTask.sync\"}}}"
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::ecs:runTask.sync\"}}}"
             ]
           ]
         },

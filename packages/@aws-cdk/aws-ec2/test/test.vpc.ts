@@ -1,8 +1,8 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, NetworkAcl, NetworkAclEntry,
-  PrivateSubnet, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType,
+  NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -615,6 +615,59 @@ export = {
           cidr: Lazy.stringValue({ produce: () => 'abc' })
         });
       }, /property must be a concrete CIDR string/);
+
+      test.done();
+    },
+  },
+
+  'NAT instances': {
+    'Can configure NAT instances instead of NAT gateways'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: NatProvider.instance({
+          instanceType: new InstanceType('q86.mega'),
+          machineImage: new GenericLinuxImage({
+            'us-east-1': 'ami-1'
+          })
+        })
+      });
+
+      // THEN
+      expect(stack).to(countResources('AWS::EC2::Instance', 3));
+      expect(stack).to(haveResource('AWS::EC2::Instance', {
+        ImageId: "ami-1",
+        InstanceType: "q86.mega",
+        SourceDestCheck: false,
+      }));
+      expect(stack).to(haveResource('AWS::EC2::Route', {
+        RouteTableId: { Ref: "TheVPCPrivateSubnet1RouteTableF6513BC2" },
+        DestinationCidrBlock: "0.0.0.0/0",
+        InstanceId: { Ref: "TheVPCPublicSubnet1NatInstanceCC514192" }
+      }));
+
+      test.done();
+    },
+
+    'natGateways controls amount of NAT instances'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: NatProvider.instance({
+          instanceType: new InstanceType('q86.mega'),
+          machineImage: new GenericLinuxImage({
+            'us-east-1': 'ami-1'
+          })
+        }),
+        natGateways: 1
+      });
+
+      // THEN
+      expect(stack).to(countResources('AWS::EC2::Instance', 1));
 
       test.done();
     },
