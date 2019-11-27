@@ -444,7 +444,7 @@ Guidelines:
  * Make sure dependencies are defined using [caret
    ranges](https://docs.npmjs.com/misc/semver#caret-ranges-123-025-004) (e.g. `^1.2.3`). This enables non-breaking
    updates to automatically be picked up.
- * Make sure `package-lock.json` files are included in your commit.
+ * Make sure `yarn.lock` is included in your commit.
 
 ### Finding dependency cycles between packages
 
