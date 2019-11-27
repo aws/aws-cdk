@@ -367,7 +367,7 @@ $ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
 In many cases, you don't really need to build the entire project. Say you want to work on the `@aws-cdk/aws-ec2` module:
 
 ```console
-$ ./install.sh
+$ yarn install
 $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
@@ -448,7 +448,7 @@ Guidelines:
  * Make sure dependencies are defined using [caret
    ranges](https://docs.npmjs.com/misc/semver#caret-ranges-123-025-004) (e.g. `^1.2.3`). This enables non-breaking
    updates to automatically be picked up.
- * Make sure `package-lock.json` files are included in your commit.
+ * Make sure `yarn.lock` is included in your commit.
 
 ### Finding dependency cycles between packages
 
@@ -471,7 +471,7 @@ Cycle: @aws-cdk/aws-sns => @aws-cdk/aws-lambda => @aws-cdk/aws-codecommit => @aw
 To update all dependencies (without bumping major versions):
 
 1. Obtain a fresh clone from "master".
-2. Run `./install.sh`
+2. Run `yarn install`
 3. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
 4. Submit a Pull Request.
 
