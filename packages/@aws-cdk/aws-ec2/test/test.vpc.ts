@@ -618,6 +618,16 @@ export = {
 
       test.done();
     },
+
+    'Default NAT gateway provider'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway();
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      test.ok(natGatewayProvider.onlineGateways().length > 0);
+
+      test.done();
+    }
   },
 
   'NAT instances': {

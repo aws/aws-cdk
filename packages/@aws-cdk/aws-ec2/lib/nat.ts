@@ -12,7 +12,7 @@ import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 export interface IGateway {
 
   /**
-   * Availability Zone 
+   * Availability Zone
    */
   readonly az: string
 
