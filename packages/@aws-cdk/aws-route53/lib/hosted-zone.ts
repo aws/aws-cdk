@@ -62,7 +62,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
     class Import extends Resource implements IHostedZone {
-      public readonly hostedZoneId = attrs.hostedZoneId;
+      public readonly hostedZoneId = attrs.hostedZoneId.replace('/hostedzone/', '');
       public readonly zoneName = attrs.zoneName;
     }
 
@@ -74,7 +74,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
-      Id: '/hostedzone/DUMMY',
+      Id: 'DUMMY',
       Name: query.domainName,
     };
 

@@ -15,8 +15,9 @@ export = {
       const missing = SynthUtils.synthesize(stack).assembly.manifest.missing!;
       test.ok(missing && missing.length === 1);
 
+      const fakeZoneId = '11111111111111';
       const fakeZone = {
-        Id: "/hostedzone/11111111111111",
+        Id: `/hostedzone/${fakeZoneId}`,
         Name: "example.com.",
         CallerReference: "TestLates-PublicZo-OESZPDFV7G6A",
         Config: {
