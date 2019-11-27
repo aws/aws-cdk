@@ -1,6 +1,6 @@
 import { Test, testCase } from 'nodeunit';
 import { Stack } from '../lib';
-import { capitalizePropertyNames, filterUndefined, ignoreEmpty } from '../lib/util';
+import { capitalizePropertyNames, filterUndefined, findCommonStack, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
 
 export = testCase({
   'capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase'(test: Test) {
@@ -83,6 +83,57 @@ export = testCase({
       test.deepEqual(filterUndefined({ 'an undefined': undefined, 'yes': true }), { yes: true });
       test.done();
     }
+  },
+
+  'pathToTopLevelStack returns the array of stacks that lead to a stack'(test: Test) {
+    const a = new Stack(undefined, 'a');
+    const aa = new Nested(a, 'aa');
+    const aaa = new Nested(aa, 'aaa');
+
+    test.deepEqual(path(aaa), [ 'a', 'aa', 'aaa' ]);
+    test.deepEqual(path(aa), [ 'a', 'aa' ]);
+    test.deepEqual(path(a), [ 'a' ]);
+    test.done();
+
+    function path(s: Stack) {
+      return pathToTopLevelStack(s).map(x => x.node.id);
+    }
+  },
+
+  'findCommonStack returns the lowest common stack between two stacks or undefined'(test: Test) {
+    const a = new Stack(undefined, 'a');
+    const aa = new Nested(a, 'aa');
+    const ab = new Nested(a, 'ab');
+    const aaa = new Nested(aa, 'aaa');
+    const aab = new Nested(aa, 'aab');
+    const aba = new Nested(ab, 'aba');
+
+    const b = new Stack(undefined, 'b');
+    const ba = new Nested(b, 'ba');
+    const baa = new Nested(ba, 'baa');
+
+    test.equal(lca(a, b), undefined);
+    test.equal(lca(aa, ab), 'a');
+    test.equal(lca(ab, aa), 'a');
+    test.equal(lca(aa, aba), 'a');
+    test.equal(lca(aba, aa), 'a');
+    test.equal(lca(ab, aba), 'ab');
+    test.equal(lca(aba, ab), 'ab');
+    test.equal(lca(aba, aba), 'aba');
+    test.equal(lca(aa, aa), 'aa');
+    test.equal(lca(a, aaa), 'a');
+    test.equal(lca(aaa, aab), 'aa');
+    test.equal(lca(aaa, b), undefined);
+    test.equal(lca(aaa, ba), undefined);
+    test.equal(lca(baa, ba), 'ba');
+
+    test.done();
+
+    function lca(s1: Stack, s2: Stack) {
+      const res = findCommonStack(s1, s2);
+      if (!res) { return undefined; }
+      return res.node.id;
+    }
   }
 });
 
@@ -92,4 +143,8 @@ class SomeToken {
   public resolve() {
     return this.foo + this.goo;
   }
+}
+
+class Nested extends Stack {
+  constructor(public readonly parentStack: Stack, id: string) { super(parentStack, id); }
 }

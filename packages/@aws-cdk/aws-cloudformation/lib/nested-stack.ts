@@ -1,5 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
-import { Aws, CfnOutput, CfnParameter, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnOutput, CfnParameter, CfnResource, Construct, Duration, Fn, IResolvable, IResolveContext, Lazy, Reference, Stack, Token } from '@aws-cdk/core';
 import { CfnStack } from './cloudformation.generated';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-cloudformation.NestedStack');
@@ -77,6 +77,7 @@ export class NestedStack extends Stack {
 
   public readonly templateFile: string;
   public readonly parentStack?: Stack;
+  public readonly nestedStackResource?: CfnResource;
 
   private readonly parameters: { [name: string]: string };
   private readonly resource: CfnStack;
@@ -105,6 +106,8 @@ export class NestedStack extends Stack {
       notificationArns: props.notifications ? props.notifications.map(n => n.topicArn) : undefined,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
+
+    this.nestedStackResource = this.resource;
 
     // context-aware stack name: if resolved from within this stack, return AWS::StackName
     // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource

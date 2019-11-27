@@ -157,6 +157,14 @@ export class Stack extends Construct implements ITaggable {
   public readonly parentStack?: Stack;
 
   /**
+   * The AWS::CloudFormation::Resource that represents this nested stack (if
+   * this is a nested stack).
+   *
+   * @experimental
+   */
+  public readonly nestedStackResource?: CfnResource;
+
+  /**
    * An attribute (late-bound) that represents the URL of the template file
    * in the deployment bucket.
    *
@@ -185,7 +193,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Other stacks this stack depends on
    */
-  private readonly _stackDependencies = new Set<StackDependency>();
+  private readonly _stackDependencies: { [uniqueId: string]: StackDependency } = { };
 
   /**
    * Lists all missing contextual information.
@@ -318,28 +326,64 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Add a dependency between this stack and another stack
    */
-  public addDependency(stack: Stack, reason?: string) {
-    if (stack === this) { return; }  // Can ignore a dependency on self
+  public addDependency(target: Stack, reason?: string) {
+    const source = this;
 
-    reason = reason || 'dependency added using stack.addDependency()';
-    const dep = stack.stackDependencyReasons(this);
-    if (dep !== undefined) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`'${stack.node.path}' depends on '${this.node.path}' (${dep.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
-    }
-    this._stackDependencies.add({ stack, reason });
+    if (source === target) { return; }
 
-    if (process.env.CDK_DEBUG_DEPS) {
-      // tslint:disable-next-line:no-console
-      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${stack.node.path}" because: ${reason}`);
+    const common = findCommonStack(source, target);
+
+    // if there is no common stack (i.e. we got to the root), then define an assembly-
+    // level dependency between the two top-level stacks
+    if (!common) {
+      const topLevelSource = findTopLevelStack(source);
+      const topLevelTarget = findTopLevelStack(target);
+
+      topLevelSource.addAssemblyDependency(topLevelTarget, reason);
+
+      return;
     }
+
+    // if both source & target are top-level stacks and we have a common stack
+    // by definition it means that source === target == common.
+    if (!target.nested && !source.nested) {
+
+      if (target !== source || source !== common) {
+        throw new Error(`Unexpected: if two top-level stacks have a common stack, they all must be the same stack`);
+      }
+
+      // source & target are the same, ignore
+      return;
+    }
+
+    // nested stacks cannot depend on any of its parent stacks
+    if (target.isParentOfNestedStack(source)) {
+      throw new Error(`Nested stack '${source.node.path}' cannot depend on a parent stack '${target.node.path}'`);
+    }
+
+    // if the target is a nested stack of the source (directly or indirectly),
+    // then we can ignore because by definition it will be deployed before it.
+    if (source.isParentOfNestedStack(target)) {
+      return;
+    }
+
+    // at this point, we know that both source and target are nested stacks
+    if (!source.nestedStackResource || !target.nestedStackResource) {
+      throw new Error(`Unexpected: both '${source.node.path}' and '${target.node.path}' are expected to be nested stacks`);
+    }
+
+    // both source and target are nested, so we are going to transfer the dependency to the
+    // respective AWS::CloudFormation::Stack resources that share the same common stack.
+    const sourceResource = findCommonCfnResource(source.nestedStackResource, common);
+    const targetResource = findCommonCfnResource(target.nestedStackResource, common);
+    sourceResource.addDependsOn(targetResource);
   }
 
   /**
    * Return the stacks this stack depends on
    */
   public get dependencies(): Stack[] {
-    return Array.from(this._stackDependencies.values()).map(d => d.stack);
+    return Object.values(this._stackDependencies).map(x => x.stack);
   }
 
   /**
@@ -674,14 +718,9 @@ export class Stack extends Construct implements ITaggable {
 
     // Resource dependencies
     for (const dependency of this.node.dependencies) {
-      const theirStack = Stack.of(dependency.target);
-      if (theirStack !== undefined && theirStack !== this && Stack.of(dependency.source) === this) {
-        this.addDependency(theirStack, `"${dependency.source.node.path}" depends on "${dependency.target.node.path}"`);
-      } else {
-        for (const target of findResources([dependency.target])) {
-          for (const source of findResources([dependency.source])) {
-            source.addDependsOn(target);
-          }
+      for (const target of findCfnResources([ dependency.target ])) {
+        for (const source of findCfnResources([ dependency.source ])) {
+          source.addDependsOn(target);
         }
       }
     }
@@ -870,10 +909,10 @@ export class Stack extends Construct implements ITaggable {
    */
   private stackDependencyReasons(other: Stack): string[] | undefined {
     if (this === other) { return []; }
-    for (const dep of this._stackDependencies) {
+    for (const dep of Object.values(this._stackDependencies)) {
       const ret = dep.stack.stackDependencyReasons(other);
       if (ret !== undefined) {
-        return [dep.reason].concat(ret);
+        return [ ...dep.reasons, ...ret ];
       }
     }
     return undefined;
@@ -1004,6 +1043,54 @@ export class Stack extends Construct implements ITaggable {
     }
     return tokens;
   }
+
+  /**
+   * @returns true if this stack is a direct or indirect parent of the nested
+   * stack `nested`. If `nested` is a top-level stack, returns false.
+   */
+  private isParentOfNestedStack(child: Stack): boolean {
+    // if "nested" is not a nested stack, then by definition we cannot be its parent
+    if (!child.parentStack) {
+      return false;
+    }
+
+    // if this is the direct parent, then we found it
+    if (this === child.parentStack) {
+      return true;
+    }
+
+    // traverse up
+    return this.isParentOfNestedStack(child.parentStack);
+  }
+
+  private addAssemblyDependency(target: Stack, reason?: string) {
+    // defensive: we should never get here for nested stacks
+    if (this.nested || target.nested) {
+      throw new Error(`Cannot add assembly-level dependencies for nested stacks`);
+    }
+
+    reason = reason || 'dependency added using stack.addDependency()';
+    const cycle = target.stackDependencyReasons(this);
+    if (cycle !== undefined) {
+        // tslint:disable-next-line:max-line-length
+        throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
+    }
+
+    let dep = this._stackDependencies[target.node.uniqueId];
+    if (!dep) {
+      dep = this._stackDependencies[target.node.uniqueId] = {
+        stack: target,
+        reasons: []
+      };
+    }
+
+    dep.reasons.push(reason);
+
+    if (process.env.CDK_DEBUG_DEPS) {
+      // tslint:disable-next-line:no-console
+      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${target.node.path}" because: ${reason}`);
+    }
+  }
 }
 
 function merge(template: any, part: any) {
@@ -1095,11 +1182,12 @@ import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
+import { findCommonCfnResource, findCommonStack, findTopLevelStack } from './util';
 
 /**
  * Find all resources in a set of constructs
  */
-function findResources(roots: Iterable<IConstruct>): CfnResource[] {
+function findCfnResources(roots: Iterable<IConstruct>): CfnResource[] {
   const ret = new Array<CfnResource>();
   for (const root of roots) {
     ret.push(...root.node.findAll().filter(CfnResource.isCfnResource));
@@ -1109,7 +1197,7 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
 
 interface StackDependency {
   stack: Stack;
-  reason: string;
+  reasons: string[];
 }
 
 function extractSingleValue<T>(array: T[] | undefined): T[] | T | undefined {
