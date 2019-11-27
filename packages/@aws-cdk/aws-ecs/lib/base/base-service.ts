@@ -3,6 +3,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
@@ -189,7 +190,7 @@ class ApplicationListenerConfig extends ListenerConfig {
     const port = props.port !== undefined ? props.port : (protocol === undefined ? 80 :
       (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80));
     this.listener.addTargets(id, {
-      ... props,
+      ...props,
       targets: [
         service.loadBalancerTarget({
           ...target
@@ -230,6 +231,19 @@ class NetworkListenerConfig extends ListenerConfig {
  */
 export abstract class BaseService extends Resource
   implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+
+  /**
+   * The CloudMap service created for this service, if any.
+   */
+  public get cloudMapService(): cloudmap.IService | undefined {
+    return this.cloudmapService;
+  }
+
+  private get defaultLoadBalancerTarget() {
+    return this.loadBalancerTarget({
+      containerName: this.taskDefinition.defaultContainer!.containerName
+    });
+  }
 
   /**
    * The security groups which manage the allowed network traffic for the service.
@@ -288,10 +302,10 @@ export abstract class BaseService extends Resource
    * Constructs a new instance of the BaseService class.
    */
   constructor(scope: Construct,
-              id: string,
-              props: BaseServiceProps,
-              additionalProps: any,
-              taskDefinition: TaskDefinition) {
+    id: string,
+    props: BaseServiceProps,
+    additionalProps: any,
+    taskDefinition: TaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
     });
@@ -331,10 +345,274 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * The CloudMap service created for this service, if any.
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
    */
-  public get cloudMapService(): cloudmap.IService | undefined {
-    return this.cloudmapService;
+  public onServiceSteadyState(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'INFO',
+        eventName: 'SERVICE_STEADY_STATE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onTaskSetSteadyState(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'INFO',
+        eventName: 'TASKSET_STEADY_STATE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDesiredCountUpdated(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'INFO',
+        eventName: 'SERVICE_DESIRED_COUNT_UPDATED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceTaskStartImpaired(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'WARN',
+        eventName: 'SERVICE_TASK_START_IMPAIRED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDiscoveryInstanceUnhealthy(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'WARN',
+        eventName: 'SERVICE_DISCOVERY_INSTANCE_UNHEALTHY',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDaemonPlacementConstraintViolated(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onEcsOperationThrottled(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'ECS_OPERATION_THROTTLED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDiscoveryOperationThrottled(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_DISCOVERY_OPERATION_THROTTLED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceTaskPlacementFailured(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_TASK_PLACEMENT_FAILURE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceTaskConfigurationFailure(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_TASK_CONFIGURATION_FAILURE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onInfoEvents(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'INFO',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any warn event
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onWarnEvents(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      detail: {
+        eventType: 'WARN',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines a CloudWatch event rule which triggers for service events. Use
+   * `rule.addEventPattern(pattern)` to specify a filter.
+   */
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn]
+    });
+    rule.addTarget(options.target);
+    return rule;
   }
 
   /**
@@ -471,7 +749,7 @@ export abstract class BaseService extends Resource
     let dnsRecordType = options.dnsRecordType;
 
     if (networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.HOST) {
-      if (dnsRecordType ===  undefined) {
+      if (dnsRecordType === undefined) {
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
       if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
@@ -481,7 +759,7 @@ export abstract class BaseService extends Resource
 
     // Default DNS record type for AwsVpc network mode is A Records
     if (networkMode === NetworkMode.AWS_VPC) {
-      if (dnsRecordType ===  undefined) {
+      if (dnsRecordType === undefined) {
         dnsRecordType = cloudmap.DnsRecordType.A;
       }
     }
@@ -612,12 +890,6 @@ export abstract class BaseService extends Resource
     return { targetType };
   }
 
-  private get defaultLoadBalancerTarget() {
-    return this.loadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName
-    });
-  }
-
   /**
    * Generate the role that will be used for autoscaling this service
    */
@@ -646,8 +918,8 @@ export abstract class BaseService extends Resource
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.anyValue({
       produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
-                     this.loadBalancers.length > 0 ? 60 :
-                     undefined
+        this.loadBalancers.length > 0 ? 60 :
+          undefined
     });
   }
 }
