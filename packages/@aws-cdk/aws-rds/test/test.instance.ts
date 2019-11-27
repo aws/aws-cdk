@@ -261,7 +261,42 @@ export = {
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       generateMasterUserPassword: true,
-    }), /`masterUsername`.*`generateMasterUserPassword`/);
+    }), '`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
+
+    test.done();
+  },
+
+  'throws when specifying user name without asking to generate a new password'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      masterUsername: 'superadmin'
+    }), 'Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
+
+    test.done();
+  },
+
+  'throws when password and generate password ar both specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      masterUserPassword: cdk.SecretValue.plainText('supersecret'),
+      generateMasterUserPassword: true,
+    }), 'Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
 
     test.done();
   },
@@ -308,7 +343,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     // WHEN

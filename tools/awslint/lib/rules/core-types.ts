@@ -121,7 +121,7 @@ export class CoreTypes {
   }
 
   public get physicalNameClass() {
-    return this.sys.findClass(CoreTypesFqn.PhysicalName)
+    return this.sys.findClass(CoreTypesFqn.PhysicalName);
   }
 
   private readonly sys: TypeSystem;
