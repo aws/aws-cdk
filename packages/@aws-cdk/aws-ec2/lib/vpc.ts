@@ -956,11 +956,6 @@ export class Vpc extends VpcBase {
   private networkBuilder: NetworkBuilder;
 
   /**
-   * Mapping of NatGateway by AZ
-   */
-  private natGatewayByAZ: { [az: string]: string } = {};
-
-  /**
    * Subnet configurations for this VPC
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
@@ -1123,14 +1118,6 @@ export class Vpc extends VpcBase {
     });
   }
 
-  /**
-   * Return the NAT gateway for given availability zone, the default NAT is returned
-   * if availability zone is not defined.
-   */
-  public natGateway(az?: string): string {
-    return az ? this.natGatewayByAZ[az] : this.natGatewayByAZ[this.availabilityZones[0]];
-  }
-
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
@@ -1139,7 +1126,7 @@ export class Vpc extends VpcBase {
       }
     }
 
-    this.natGatewayByAZ = provider.configureNat({
+    provider.configureNat({
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
       privateSubnets: this.privateSubnets as PrivateSubnet[]

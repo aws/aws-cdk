@@ -7,6 +7,22 @@ import { SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 
 /**
+ * Pair represents a gateway created by NAT Provider
+ */
+export interface IGateway {
+
+  /**
+   * Availability Zone 
+   */
+  readonly az: string
+
+  /**
+   * Identity of gateway spawned by the provider
+   */
+  readonly gatewayId: string
+}
+
+/**
  * NAT providers
  *
  * Determines what type of NAT provider to create, either NAT gateways or NAT
@@ -44,7 +60,12 @@ export abstract class NatProvider {
   /**
    * Called by the VPC to configure NAT
    */
-  public abstract configureNat(options: ConfigureNatOptions): { [az: string]: string };
+  public abstract configureNat(options: ConfigureNatOptions): void;
+
+  /**
+   * Return list of gateways spawned by the provider
+   */
+  public abstract onlineGateways(): IGateway[];
 }
 
 /**
@@ -111,7 +132,9 @@ export interface NatInstanceProps {
 }
 
 class NatGateway extends NatProvider {
-  public configureNat(options: ConfigureNatOptions): { [az: string]: string } {
+  private gateways: IGateway[] = [];
+
+  public configureNat(options: ConfigureNatOptions) {
     // Create the NAT gateways
     const gatewayIds = new PrefSet<string>();
     for (const sub of options.natSubnets) {
@@ -120,27 +143,31 @@ class NatGateway extends NatProvider {
     }
 
     // Add routes to them in the private subnets
-    const gateways: { [az: string]: string } = {};
     for (const sub of options.privateSubnets) {
       const az = sub.availabilityZone;
-      const gw = gatewayIds.pick(az);
+      const gatewayId = gatewayIds.pick(az);
       sub.addRoute('DefaultRoute', {
         routerType: RouterType.NAT_GATEWAY,
-        routerId: gw,
+        routerId: gatewayId,
         enablesInternetConnectivity: true,
       });
-      gateways[az] = gw;
+      this.gateways.push({ az, gatewayId });
     }
-    return gateways;
+  }
+
+  public onlineGateways(): IGateway[] {
+    return this.gateways;
   }
 }
 
 class NatInstance extends NatProvider {
+  private gateways: IGateway[] = [];
+
   constructor(private readonly props: NatInstanceProps) {
     super();
   }
 
-  public configureNat(options: ConfigureNatOptions): { [az: string]: string } {
+  public configureNat(options: ConfigureNatOptions) {
     // Create the NAT instances. They can share a security group and a Role.
     const instances = new PrefSet<Instance>();
     const machineImage = this.props.machineImage || new NatInstanceImage();
@@ -172,18 +199,20 @@ class NatInstance extends NatProvider {
     }
 
     // Add routes to them in the private subnets
-    const gateways: { [az: string]: string } = {};
     for (const sub of options.privateSubnets) {
       const az = sub.availabilityZone;
-      const gw = instances.pick(sub.availabilityZone).instanceId;
+      const gatewayId = instances.pick(sub.availabilityZone).instanceId;
       sub.addRoute('DefaultRoute', {
         routerType: RouterType.INSTANCE,
-        routerId: gw,
+        routerId: gatewayId,
         enablesInternetConnectivity: true,
       });
-      gateways[az] = gw;
+      this.gateways.push({ az, gatewayId });
     }
-    return gateways;
+  }
+
+  public onlineGateways(): IGateway[] {
+    return this.gateways;
   }
 }
 

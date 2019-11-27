@@ -7,10 +7,12 @@ class NatInstanceStack extends cdk.Stack {
 
     /// !show
     // Configure the `natGatewayProvider` when defining a Vpc
+    const natGatewayProvider = ec2.NatProvider.instance({
+      instanceType: new ec2.InstanceType('t3.small')
+    });
+
     const vpc = new ec2.Vpc(this, 'MyVpc', {
-      natGatewayProvider: ec2.NatProvider.instance({
-        instanceType: new ec2.InstanceType('t3.small')
-      }),
+      natGatewayProvider,
 
       // The 'natGateways' parameter now controls the number of NAT instances
       natGateways: 2,
@@ -18,6 +20,7 @@ class NatInstanceStack extends cdk.Stack {
     /// !hide
 
     Array.isArray(vpc);
+    Array.isArray(natGatewayProvider.onlineGateways());
   }
 }
 
