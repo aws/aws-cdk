@@ -1084,20 +1084,6 @@ Object {
         "PolicyDocument": Object {
           "Statement": Array [
             Object {
-              "Action": Array [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "TableCD117FA1",
-                  "StreamArn",
-                ],
-              },
-            },
-            Object {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
               "Resource": Object {
@@ -1112,6 +1098,20 @@ Object {
                     },
                     "/stream/*",
                   ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "TableCD117FA1",
+                  "StreamArn",
                 ],
               },
             },

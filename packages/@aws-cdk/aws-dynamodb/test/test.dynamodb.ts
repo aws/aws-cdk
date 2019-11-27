@@ -1162,6 +1162,31 @@ export = {
     '"Table.grantListStreams" allows principal to list all streams'(test: Test) {
       // GIVEN
       const stack = new Stack();
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      Table.grantListStreams(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
+    },
+
+    '"grantListStreams" allows principal to list all streams for this table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
       const table = new Table(stack, 'my-table', {
         partitionKey: {
           name: 'id',
@@ -1228,6 +1253,11 @@ export = {
         "PolicyDocument": {
           "Statement": [
             {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
+            },
+            {
               "Action": [
                 "dynamodb:DescribeStream",
                 "dynamodb:GetRecords",
@@ -1240,11 +1270,6 @@ export = {
                   "StreamArn"
                 ]
               }
-            },
-            {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
             }
           ],
           "Version": "2012-10-17"

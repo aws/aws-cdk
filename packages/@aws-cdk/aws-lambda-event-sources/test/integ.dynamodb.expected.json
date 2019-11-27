@@ -37,20 +37,6 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TD925BC7E",
-                  "StreamArn"
-                ]
-              }
-            },
-            {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
               "Resource": {
@@ -65,6 +51,20 @@
                     },
                     "/stream/*"
                   ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TD925BC7E",
+                  "StreamArn"
                 ]
               }
             }

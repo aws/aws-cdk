@@ -188,7 +188,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 export class Table extends Resource {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
-   * @deprecated Use grantTableListStream() for more granular permission
+   * @deprecated Use {@link #grantTableListStreams} for more granular permission
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
@@ -452,7 +452,7 @@ export class Table extends Resource {
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
-  public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
@@ -475,7 +475,8 @@ export class Table extends Resource {
   }
 
   /**
-   * Permits an IAM Principal to list all DynamoDB Streams.
+   * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
    * @param grantee The principal (no-op if undefined)
    */
   public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
@@ -494,9 +495,9 @@ export class Table extends Resource {
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
    * @param grantee The principal to grant access to
    */
-  public grantStreamRead(grantee: iam.IGrantable) {
-    this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
-    return this.grantTableListStreams(grantee);
+  public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
+    this.grantTableListStreams(grantee);
+    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
   }
 
   /**
@@ -586,7 +587,7 @@ export class Table extends Resource {
 
     // throw error if key attribute is part of non-key attributes
     this.attributeDefinitions.forEach(keyAttribute => {
-      if (this.nonKeyAttributes.includes(keyAttribute.attributeName)) {
+      if (typeof keyAttribute.attributeName === 'string' && this.nonKeyAttributes.includes(keyAttribute.attributeName)) {
         throw new Error(`a key attribute, ${keyAttribute.attributeName}, is part of a list of non-key attributes, ${this.nonKeyAttributes}` +
           ', which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure');
       }
