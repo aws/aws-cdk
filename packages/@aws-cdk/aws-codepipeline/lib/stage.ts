@@ -42,8 +42,12 @@ export class Stage implements IStage {
   /**
    * Get a duplicate of this stage's list of actions.
    */
-  public get actions(): FullActionDescriptor[] {
+  public get actionDescriptors(): FullActionDescriptor[] {
     return this._actions.slice();
+  }
+
+  public get actions(): IAction[] {
+    return this._actions.map(actionDescriptor => actionDescriptor.action);
   }
 
   public get pipeline(): IPipeline {
@@ -52,7 +56,7 @@ export class Stage implements IStage {
 
   public render(): CfnPipeline.StageDeclarationProperty {
     // first, assign names to output Artifacts who don't have one
-    for (const action of this.actions) {
+    for (const action of this._actions) {
       const outputArtifacts = action.outputs;
 
       const unnamedOutputs = outputArtifacts.filter(o => !o.artifactName);
@@ -116,7 +120,7 @@ export class Stage implements IStage {
 
   private validateActions(): string[] {
     const ret = new Array<string>();
-    for (const action of this.actions) {
+    for (const action of this.actionDescriptors) {
       ret.push(...this.validateAction(action));
     }
     return ret;
