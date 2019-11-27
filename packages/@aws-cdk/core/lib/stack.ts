@@ -574,7 +574,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Add a Transform to this stack. A Transform is a macros that AWS
+   * Add a Transform to this stack. A Transform is a macro that AWS
    * CloudFormation uses to process your template.
    *
    * Duplicate values are removed when stack is synthesized.
