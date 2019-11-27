@@ -163,7 +163,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import targets = require('@aws-cdk/aws-elasticloadbalancingv2-targets');
 
 const lambdaFunction = new lambda.Function(...);
-const loadBalancer = new elbv2.ApplicationLoadBalancer(...);
+const lb = new elbv2.ApplicationLoadBalancer(...);
 
 const listener = lb.addListener('Listener', { port: 80 });
 listener.addTargets('Targets', {
