@@ -234,26 +234,23 @@ export class Stack extends Construct implements ITaggable {
       this.templateOptions.description = props.description;
     }
 
-    this._stackName = props.stackName !== undefined ? props.stackName : this.generateUniqueStackName();
+    this._stackName = props.stackName !== undefined ? props.stackName : this.generateUniqueId();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
-      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${id}'`);
+      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`);
     }
 
-    // we use `generateUniqueStackName` here as the artifact ID. This will
-    // ensure that in case where `stackName` is not explicitly configured,
-    // artifact ID and stack name will be the same and therefore the template
-    // file name will be the same as `<stackName>.template.json` (for backwards
-    // compatibility with the behavior before we
-    // ENABLE_STACK_NAME_DUPLICATES_CONTEXT was introduced).
-    this.artifactId = this.generateUniqueStackName();
-
-    const templateFileName = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT)
-      ? this.artifactId
+    // the preferred behavior is to generate a unique id for this stack and use
+    // it as the artifact ID in the assembly. this allows multiple stacks to use
+    // the same name. however, this behavior is breaking for 1.x so it's only
+    // applied under a feature flag which is applied automatically for new
+    // projects created using `cdk init`.
+    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT)
+      ? this.generateUniqueId()
       : this.stackName;
 
-    this.templateFile = `${templateFileName}.template.json`;
+    this.templateFile = `${this.artifactId}.template.json`;
     this.templateUrl = Lazy.stringValue({ produce: () => this._templateUrl || '<unresolved>' });
   }
 
@@ -923,7 +920,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Calculcate the stack name based on the construct path
    */
-  private generateUniqueStackName() {
+  private generateUniqueId() {
     // In tests, it's possible for this stack to be the root object, in which case
     // we need to use it as part of the root path.
     const rootPath = this.node.scope !== undefined ? this.node.scopes.slice(1) : [this];
