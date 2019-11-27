@@ -1,12 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Attribute, AttributeType, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
-import { Stack } from '@aws-cdk/core';
-import * as assert from 'assert';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import {
-  GlobalTable,
-  GlobalTableProps
-} from '../lib';
+import { GlobalTable, GlobalTableProps } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -64,26 +60,53 @@ export = {
       test.done();
     },
   },
+
+  'GlobalTable generated stacks inherit their account from the parent stack'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'GlobalTableStack', { env: { account: '123456789012', region: 'us-east-1' } });
+
+    const globalTable = new GlobalTable(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      regions: ['us-east-1', 'us-west-2'],
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
+    });
+
+    new CfnOutput(stack, 'DynamoDbOutput', {
+      // this works, because both `stack` and `regionTables[0]` stack are in the same account & region
+      value: globalTable.regionalTables[0].tableStreamArn!,
+    });
+
+    expect(stack).toMatch({
+      "Outputs": {
+        "DynamoDbOutput": {
+          "Value": {
+            "Fn::ImportValue": "GlobalTableStackawscdkdynamodbglobalawscdkdynamodbglobaluseast19C1C8A14:awscdkdynamodbglobalawscdkdynamodbglobaluseast1ExportsOutputFnGetAttawscdkdynamodbglobalGlobalTableuseast1FC03DD69StreamArn28E90DB8",
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
   'Enforce StreamSpecification': {
     'global dynamo should only allow NEW_AND_OLD_IMAGES'(test: Test) {
       const stack = new Stack();
-      try {
+
+      test.throws(() => {
         new GlobalTable(stack, CONSTRUCT_NAME, {
           tableName: TABLE_NAME,
           stream: StreamViewType.KEYS_ONLY,
           partitionKey: TABLE_PARTITION_KEY,
           regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
         });
-        // We are expecting the above line to throw a TypeError since
-        // the streamSpecification is wrong.  Force a failure on this
-        // line if we get there.
-        expect(stack).to(haveResource('Fail::this::test::IfWeGetThisFar', {}));
-      } catch ( TypeError ) {
-        expect(stack);
-      }
+      }, /dynamoProps.stream MUST be set to dynamodb.StreamViewType.NEW_AND_OLD_IMAGES/);
+
       test.done();
     },
   },
+
   'Check getting tables': {
     'global dynamo should only allow NEW_AND_OLD_IMAGES'(test: Test) {
       const stack = new Stack();
@@ -92,9 +115,9 @@ export = {
         partitionKey: TABLE_PARTITION_KEY,
         regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
       });
-      assert(regTables.regionalTables.length === 3);
+      test.equal(regTables.regionalTables.length, 3);
       for (const table of regTables.regionalTables) {
-        assert(table instanceof Table);
+        test.ok(table instanceof Table);
       }
       test.done();
     },
