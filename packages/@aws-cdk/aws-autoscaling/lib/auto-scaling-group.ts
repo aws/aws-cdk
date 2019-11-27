@@ -44,7 +44,9 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Initial amount of instances in the fleet
    *
-   * @default 1
+   * @default - If minCapacity is provided, it will be used as the desired capacity.
+   * If minCapacity is not set, then maxCapacity will be used if it's provided.
+   * If neither minCapacity or maxCapacity is set, a default of 1 will be used.
    */
   readonly desiredCapacity?: number;
 
