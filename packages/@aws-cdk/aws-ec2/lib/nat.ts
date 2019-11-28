@@ -58,6 +58,11 @@ export abstract class NatProvider {
   }
 
   /**
+   * Return list of gateways spawned by the provider
+   */
+  public abstract readonly configuredGateways: GatewayConfig[];
+  
+  /**
    * Called by the VPC to configure NAT
    */
   public abstract configureNat(options: ConfigureNatOptions): void;
@@ -66,11 +71,6 @@ export abstract class NatProvider {
    * Configures subnet with the gateway
    */
   public abstract configureSubnet(subnet: PrivateSubnet): void;
-
-  /**
-   * Return list of gateways spawned by the provider
-   */
-  public abstract configuredGateways(): GatewayConfig[];
 }
 
 /**
@@ -162,7 +162,7 @@ class NatGateway extends NatProvider {
     });
   }
 
-  public configuredGateways(): GatewayConfig[] {
+  public get configuredGateways(): GatewayConfig[] {
     return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1]}));
   }
 }
@@ -220,7 +220,7 @@ class NatInstance extends NatProvider {
     });
   }
 
-  public configuredGateways(): GatewayConfig[] {
+  public get configuredGateways(): GatewayConfig[] {
     return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1].instanceId}));
   }
 }
