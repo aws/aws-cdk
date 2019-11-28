@@ -106,8 +106,16 @@
       "docs-public-apis:@aws-cdk/aws-glue.Table.fromTableArn",
       "docs-public-apis:@aws-cdk/aws-glue.Schema.DOUBLE",
       "docs-public-apis:@aws-cdk/aws-glue.Schema.FLOAT",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.AVRO",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.CLOUDTRAIL",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.GROK",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.HIVE_JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.LAZY_SIMPLE",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.OPEN_CSV",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.OPENX_JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.ORC",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.PARQUET",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.REGEXP",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className"
     ]
   }
