@@ -27,6 +27,7 @@ async function main() {
   }
 
   detectScrutinyTypes(spec);
+  replaceIncompleteTypes(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
@@ -48,6 +49,28 @@ function decorateResourceTypes(data: any) {
   const resourceTypes = data.ResourceTypes || data.ResourceType;
   for (const name of Object.keys(resourceTypes)) {
     resourceTypes[name].RequiredTransform = requiredTransform;
+  }
+}
+
+/**
+ * Fix incomplete type definitions in PropertyTypes
+ *
+ * Some user-defined types are defined to not have any properties, and not
+ * be a collection of other types either. They have no definition at all.
+ *
+ * Type them as "Json".
+ */
+function replaceIncompleteTypes(spec: schema.Specification) {
+  for (const [name, definition] of Object.entries(spec.PropertyTypes)) {
+    if (!schema.isRecordType(definition)
+    && !schema.isCollectionProperty(definition)
+    && !schema.isScalarPropery(definition)
+    && !schema.isPrimitiveProperty(definition)) {
+      // tslint:disable-next-line:no-console
+      console.log(`[${name}] Incomplete type, replacing with "Json"`);
+
+      (definition as unknown as schema.PrimitiveProperty).PrimitiveType = schema.PrimitiveType.Json;
+    }
   }
 }
 
