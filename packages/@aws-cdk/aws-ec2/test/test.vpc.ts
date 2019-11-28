@@ -624,7 +624,7 @@ export = {
       const natGatewayProvider = NatProvider.gateway();
       new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
 
-      test.ok(natGatewayProvider.configuredGateways().length > 0);
+      test.ok(natGatewayProvider.configuredGateways.length > 0);
 
       test.done();
     }
