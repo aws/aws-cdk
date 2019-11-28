@@ -100,6 +100,13 @@ export interface AwsSdkCall {
 
 export interface AwsCustomResourceProps {
   /**
+   * Cloudformation Resource type.
+   *
+   * @default - Custom::AWS
+   */
+  readonly resourceType?: string;
+
+  /**
    * The AWS SDK call to make when the resource is created.
    * At least onCreate, onUpdate or onDelete must be specified.
    *
@@ -200,7 +207,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
     const create = props.onCreate || props.onUpdate;
     this.customResource = new CustomResource(this, 'Resource', {
-      resourceType: 'Custom::AWS',
+      resourceType: props.resourceType || 'Custom::AWS',
       provider: CustomResourceProvider.fromLambda(provider),
       properties: {
         create: create && encodeBooleans(create),
