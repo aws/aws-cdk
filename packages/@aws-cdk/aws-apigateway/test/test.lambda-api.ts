@@ -199,4 +199,60 @@ export = {
 
     test.done();
   },
+
+  'LambdaRestApi defines a REST API with CORS enabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      defaultCorsPreflightOptions: {
+        allowOrigins: ['https://amazon.com'],
+        allowMethods: ['GET']
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'OPTIONS',
+      ResourceId: { Ref: 'lambdarestapiproxyE3AE07E3' },
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              "method.response.header.Access-Control-Allow-Origin": "'https://aws.amazon.com'",
+              "method.response.header.Vary": "'Origin'",
+              "method.response.header.Access-Control-Allow-Methods": "'GET,PUT'",
+            },
+            StatusCode: "204"
+          }
+        ],
+        RequestTemplates: {
+          "application/json": "{ statusCode: 200 }"
+        },
+        Type: "MOCK"
+      },
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            "method.response.header.Access-Control-Allow-Headers": true,
+            "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Vary": true,
+            "method.response.header.Access-Control-Allow-Methods": true,
+          },
+          StatusCode: "204"
+        }
+      ]
+    }));
+
+    test.done();
+  }
 };

@@ -1,4 +1,5 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import lambda = require('@aws-cdk/aws-lambda');
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
@@ -645,6 +646,37 @@ export = {
       }
     }), /Invalid "allowOrigins" - cannot mix "\*" with specific origins: https:\/\/bla\.com,\*,https:\/\/specific/);
 
+    test.done();
+  },
+
+  'defaultCorsPreflightOptions can be used to specify CORS for all resource tree [LambdaRestApi]'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      defaultCorsPreflightOptions: {
+        allowOrigins: ['https://amazon.com'],
+      }
+    });
+
+    // THEN
+    expect(stack).to(countResources('AWS::ApiGateway::Method', 2)); // on both resources
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'OPTIONS',
+      ResourceId: { Ref: 'apiMyResourceD5CDB490' }
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'OPTIONS',
+      ResourceId: { Ref: 'apiMyResourceMyChildResource2DC010C5' }
+    }));
     test.done();
   }
 };
