@@ -359,6 +359,50 @@ export = {
 
     test.done();
   },
+
+  'actions can be retrieved from stages they have been added to'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const sourceOutput = new codepipeline.Artifact();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [
+            new FakeSourceAction({
+              actionName: 'source',
+              output: sourceOutput,
+            }),
+          ],
+        },
+      ],
+    });
+    const sourceStage = pipeline.stages[0];
+    const buildStage = pipeline.addStage({
+      stageName: 'Build',
+      actions: [
+        new FakeBuildAction({
+          actionName: 'build1',
+          input: sourceOutput,
+          runOrder: 11,
+        }),
+        new FakeBuildAction({
+          actionName: 'build2',
+          input: sourceOutput,
+          runOrder: 2,
+        }),
+      ],
+    });
+
+    test.equal(sourceStage.actions.length, 1);
+    test.equal(sourceStage.actions[0].actionProperties.actionName, 'source');
+
+    test.equal(buildStage.actions.length, 2);
+    test.equal(buildStage.actions[0].actionProperties.actionName, 'build1');
+    test.equal(buildStage.actions[1].actionProperties.actionName, 'build2');
+
+    test.done();
+  },
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
