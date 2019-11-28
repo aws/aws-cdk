@@ -14,6 +14,8 @@ import { findTokens , resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
+const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
+
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 export interface StackProps {
@@ -65,7 +67,18 @@ export class Stack extends Construct implements ITaggable {
    * @param construct The construct to start the search from.
    */
   public static of(construct: IConstruct): Stack {
-    return _lookup(construct);
+    // we want this to be as cheap as possible. cache this result by mutating
+    // the object. anecdotally, at the time of this writing, @aws-cdk/core unit
+    // tests hit this cache 1,112 times, @aws-cdk/aws-cloudformation unit tests
+    // hit this 2,435 times).
+    const cache = (construct as any)[MY_STACK_CACHE] as Stack | undefined;
+    if (cache) {
+      return cache;
+    } else {
+      const value = _lookup(construct);
+      Object.defineProperty(construct, MY_STACK_CACHE, { value });
+      return value;
+    }
 
     function _lookup(c: IConstruct): Stack  {
       if (Stack.isStack(c)) {
@@ -324,59 +337,13 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Add a dependency between this stack and another stack
+   * Add a dependency between this stack and another stack.
+   *
+   * This can be used to define dependencies between any two stacks within an
+   * app, and also supports nested stacks.
    */
   public addDependency(target: Stack, reason?: string) {
-    const source = this;
-
-    if (source === target) { return; }
-
-    const common = findCommonStack(source, target);
-
-    // if there is no common stack (i.e. we got to the root), then define an assembly-
-    // level dependency between the two top-level stacks
-    if (!common) {
-      const topLevelSource = findTopLevelStack(source);
-      const topLevelTarget = findTopLevelStack(target);
-
-      topLevelSource.addAssemblyDependency(topLevelTarget, reason);
-
-      return;
-    }
-
-    // if both source & target are top-level stacks and we have a common stack
-    // by definition it means that source === target == common.
-    if (!target.nested && !source.nested) {
-
-      if (target !== source || source !== common) {
-        throw new Error(`Unexpected: if two top-level stacks have a common stack, they all must be the same stack`);
-      }
-
-      // source & target are the same, ignore
-      return;
-    }
-
-    // nested stacks cannot depend on any of its parent stacks
-    if (target.isParentOfNestedStack(source)) {
-      throw new Error(`Nested stack '${source.node.path}' cannot depend on a parent stack '${target.node.path}'`);
-    }
-
-    // if the target is a nested stack of the source (directly or indirectly),
-    // then we can ignore because by definition it will be deployed before it.
-    if (source.isParentOfNestedStack(target)) {
-      return;
-    }
-
-    // at this point, we know that both source and target are nested stacks
-    if (!source.nestedStackResource || !target.nestedStackResource) {
-      throw new Error(`Unexpected: both '${source.node.path}' and '${target.node.path}' are expected to be nested stacks`);
-    }
-
-    // both source and target are nested, so we are going to transfer the dependency to the
-    // respective AWS::CloudFormation::Stack resources that share the same common stack.
-    const sourceResource = findCommonCfnResource(source.nestedStackResource, common);
-    const targetResource = findCommonCfnResource(target.nestedStackResource, common);
-    sourceResource.addDependsOn(targetResource);
+    addDependency(this, target, reason);
   }
 
   /**
@@ -615,6 +582,44 @@ export class Stack extends Construct implements ITaggable {
     return {
       imageUri, repositoryName
     };
+  }
+
+  /**
+   * Called implicitly by the `addDependency` helper function in order to
+   * realize a dependency between two top-level stacks at the assembly level.
+   *
+   * Use `stack.addDependency` to define the dependency between any two stacks,
+   * and take into account nested stack relationships.
+   *
+   * @internal
+   */
+  public _addAssemblyDependency(target: Stack, reason?: string) {
+    // defensive: we should never get here for nested stacks
+    if (this.nested || target.nested) {
+      throw new Error(`Cannot add assembly-level dependencies for nested stacks`);
+    }
+
+    reason = reason || 'dependency added using stack.addDependency()';
+    const cycle = target.stackDependencyReasons(this);
+    if (cycle !== undefined) {
+        // tslint:disable-next-line:max-line-length
+        throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
+    }
+
+    let dep = this._stackDependencies[target.node.uniqueId];
+    if (!dep) {
+      dep = this._stackDependencies[target.node.uniqueId] = {
+        stack: target,
+        reasons: []
+      };
+    }
+
+    dep.reasons.push(reason);
+
+    if (process.env.CDK_DEBUG_DEPS) {
+      // tslint:disable-next-line:no-console
+      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${target.node.path}" because: ${reason}`);
+    }
   }
 
   /**
@@ -1043,54 +1048,6 @@ export class Stack extends Construct implements ITaggable {
     }
     return tokens;
   }
-
-  /**
-   * @returns true if this stack is a direct or indirect parent of the nested
-   * stack `nested`. If `nested` is a top-level stack, returns false.
-   */
-  private isParentOfNestedStack(child: Stack): boolean {
-    // if "nested" is not a nested stack, then by definition we cannot be its parent
-    if (!child.parentStack) {
-      return false;
-    }
-
-    // if this is the direct parent, then we found it
-    if (this === child.parentStack) {
-      return true;
-    }
-
-    // traverse up
-    return this.isParentOfNestedStack(child.parentStack);
-  }
-
-  private addAssemblyDependency(target: Stack, reason?: string) {
-    // defensive: we should never get here for nested stacks
-    if (this.nested || target.nested) {
-      throw new Error(`Cannot add assembly-level dependencies for nested stacks`);
-    }
-
-    reason = reason || 'dependency added using stack.addDependency()';
-    const cycle = target.stackDependencyReasons(this);
-    if (cycle !== undefined) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
-    }
-
-    let dep = this._stackDependencies[target.node.uniqueId];
-    if (!dep) {
-      dep = this._stackDependencies[target.node.uniqueId] = {
-        stack: target,
-        reasons: []
-      };
-    }
-
-    dep.reasons.push(reason);
-
-    if (process.env.CDK_DEBUG_DEPS) {
-      // tslint:disable-next-line:no-console
-      console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${target.node.path}" because: ${reason}`);
-    }
-  }
 }
 
 function merge(template: any, part: any) {
@@ -1175,6 +1132,7 @@ import { Fn } from './cfn-fn';
 import { CfnOutput } from './cfn-output';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
+import { addDependency } from './deps';
 import { Lazy } from './lazy';
 import { CfnReference } from './private/cfn-reference';
 import { Intrinsic } from './private/intrinsic';
@@ -1182,7 +1140,6 @@ import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
-import { findCommonCfnResource, findCommonStack, findTopLevelStack } from './util';
 
 /**
  * Find all resources in a set of constructs

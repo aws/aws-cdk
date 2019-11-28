@@ -1,4 +1,3 @@
-import { CfnResource } from "./cfn-resource";
 import { IConstruct } from "./construct";
 import { Intrinsic } from "./private/intrinsic";
 import { IPostProcessor, IResolveContext } from "./resolvable";
@@ -95,35 +94,6 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
 }
 
 /**
- * Given two stacks, returns a parent stack (in terms of nested stacks, not
- * construct tree) that is the deepest common stack between the two.
- *
- * Implementation (classic LCA): calculates the path between each stack and the
- * root and returns the last stack before the arrays differ.
- */
-export function findCommonStack(s1: Stack, s2: Stack) {
-  const path1 = pathToTopLevelStack(s1);
-  const path2 = pathToTopLevelStack(s2);
-
-  let i = 0;
-  while (i < path1.length && i < path2.length) {
-    if (path1[i] !== path2[i]) {
-      break;
-    }
-
-    i++;
-  }
-
-  // no common elements
-  if (i === 0) {
-    return undefined;
-  }
-
-  // return the last before diff
-  return path1[i - 1];
-}
-
-/**
  * @returns the list of stacks that lead from the top-level stack (non-nested) all the way to a nested stack.
  */
 export function pathToTopLevelStack(s: Stack): Stack[] {
@@ -135,35 +105,37 @@ export function pathToTopLevelStack(s: Stack): Stack[] {
 }
 
 /**
- * @returns the top-level stack
+ * @returns true if this stack is a direct or indirect parent of the nested
+ * stack `nested`. If `nested` is a top-level stack, returns false.
  */
-export function findTopLevelStack(stack: Stack): Stack {
-  if (stack.parentStack) {
-    return findTopLevelStack(stack.parentStack);
-  } else {
-    return stack;
+export function isParentOfNestedStack(parent: Stack, child: Stack): boolean {
+  // if "nested" is not a nested stack, then by definition we cannot be its parent
+  if (!child.parentStack) {
+    return false;
   }
+
+  // if this is the direct parent, then we found it
+  if (parent === child.parentStack) {
+    return true;
+  }
+
+  // traverse up
+  return isParentOfNestedStack(parent, child.parentStack);
 }
 
 /**
- * @returns the CfnResource which represents `resource` within `commonStack`,
- * which can either be the stack where the resource is defined (in which case we
- * just return `resource`) or a parent stack, in which case we will return its
- * nested stack resource.
+ * Given two arrays, returns the last common element or `undefined` if there
+ * isn't (arrays are foriegn).
  */
-export function findCommonCfnResource(resource: CfnResource, commonStack: Stack): CfnResource {
-  const resourceStack = Stack.of(resource);
+export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined {
+  let i = 0;
+  while (i < path1.length && i < path2.length) {
+    if (path1[i] !== path2[i]) {
+      break;
+    }
 
-  // if the resource is defined in the same stack, then just return that resource
-  if (commonStack === resourceStack) {
-    return resource;
+    i++;
   }
 
-  // otherwise, try the resource that represents this nested stack
-  if (!resourceStack.nestedStackResource) {
-    // tslint:disable:max-line-length
-    throw new Error(`Unexpected: could not find a resource to represent '${resource.node.path}' in the context of the stack '${commonStack.node.path}`);
-  }
-
-  return findCommonCfnResource(resourceStack.nestedStackResource, commonStack);
+  return path1[i - 1];
 }

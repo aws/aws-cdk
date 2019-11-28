@@ -5,12 +5,12 @@ import { CfnCondition } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct';
+import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
-import { Stack } from './stack';
 import { TagManager } from './tag-manager';
-import { capitalizePropertyNames, findCommonCfnResource, findCommonStack as findCommonStack, findTopLevelStack, ignoreEmpty, PostResolveToken } from './util';
+import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
 export interface CfnResourceProps {
   /**
@@ -224,36 +224,14 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
-   * Indicates that this resource depends on another resource and cannot be provisioned
-   * unless the other resource has been successfully provisioned.
+   * Indicates that this resource depends on another resource and cannot be
+   * provisioned unless the other resource has been successfully provisioned.
+   *
+   * This can be used for resources across stacks (or nested stack) boundaries
+   * and the dependency will automatically be transferred to the relevant scope.
    */
   public addDependsOn(target: CfnResource) {
-    const source = this;
-
-    // ignore
-    if (source === target) { return; }
-
-    const sourceStack = Stack.of(source);
-    const targetStack = Stack.of(target);
-
-    // find the "deepest" (lowest) stack that is a parent of both the source and
-    // the target stacks.
-    const lca = findCommonStack(sourceStack, targetStack);
-
-    // if we don't have a common stack, we need to take a dependency between the
-    // two top-level stacks themselves and not through resources
-    if (!lca) {
-      const s = findTopLevelStack(sourceStack);
-      const t = findTopLevelStack(targetStack);
-      s.addDependency(t, `"${source.node.path}" depends on "${target.node.path}"`);
-      return;
-    }
-
-    // find the resources that represent our source and target within the common
-    // stack and add a "DependsOn" between them.
-    const sourceRepr = findCommonCfnResource(source, lca);
-    const targetRepr = findCommonCfnResource(target, lca);
-    sourceRepr.dependsOn.add(targetRepr);
+    addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
   }
 
   /**
@@ -261,6 +239,20 @@ export class CfnResource extends CfnRefElement {
    */
   public toString() {
     return `${super.toString()} [${this.cfnResourceType}]`;
+  }
+
+  /**
+   * Called by the `addDependency` helper function in order to realize a direct
+   * dependency between two resources that are directly defined in the same
+   * stacks.
+   *
+   * Use `resource.addDependsOn` to define the dependency between two resources,
+   * which also takes stack boundaries into account.
+   *
+   * @internal
+   */
+  public _addResourceDependency(target: CfnResource) {
+    this.dependsOn.add(target);
   }
 
   /**

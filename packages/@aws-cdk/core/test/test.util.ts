@@ -1,6 +1,6 @@
 import { Test, testCase } from 'nodeunit';
 import { Stack } from '../lib';
-import { capitalizePropertyNames, filterUndefined, findCommonStack, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
+import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
 
 export = testCase({
   'capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase'(test: Test) {
@@ -130,7 +130,7 @@ export = testCase({
     test.done();
 
     function lca(s1: Stack, s2: Stack) {
-      const res = findCommonStack(s1, s2);
+      const res = findLastCommonElement(pathToTopLevelStack(s1), pathToTopLevelStack(s2));
       if (!res) { return undefined; }
       return res.node.id;
     }
