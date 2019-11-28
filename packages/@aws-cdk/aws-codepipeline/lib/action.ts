@@ -153,6 +153,11 @@ export interface IStage {
 
   readonly pipeline: IPipeline;
 
+  /**
+   * The actions belonging to this stage.
+   */
+  readonly actions: IAction[];
+
   addAction(action: IAction): void;
 
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;

@@ -595,6 +595,25 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Add a Transform to this stack. A Transform is a macro that AWS
+   * CloudFormation uses to process your template.
+   *
+   * Duplicate values are removed when stack is synthesized.
+   *
+   * @example addTransform('AWS::Serverless-2016-10-31')
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+   *
+   * @param transform The transform to add
+   */
+  public addTransform(transform: string) {
+    if (!this.templateOptions.transforms) {
+      this.templateOptions.transforms = [];
+    }
+    this.templateOptions.transforms.push(transform);
+  }
+
+  /**
    * Called implicitly by the `addDependency` helper function in order to
    * realize a dependency between two top-level stacks at the assembly level.
    *
@@ -814,19 +833,25 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   protected _toCloudFormation() {
+    let transform: string | string[] | undefined;
+
     if (this.templateOptions.transform) {
       // tslint:disable-next-line: max-line-length
-      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `templateOptions.transforms`.');
-      if (!this.templateOptions.transforms) {
-        this.templateOptions.transforms = [];
-      }
-      if (this.templateOptions.transforms.indexOf(this.templateOptions.transform) === -1) {
-        this.templateOptions.transforms.unshift(this.templateOptions.transform);
+      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      this.addTransform(this.templateOptions.transform);
+    }
+
+    if (this.templateOptions.transforms) {
+      if (this.templateOptions.transforms.length === 1) { // Extract single value
+        transform = this.templateOptions.transforms[0];
+      } else { // Remove duplicate values
+        transform = Array.from(new Set(this.templateOptions.transforms));
       }
     }
+
     const template: any = {
       Description: this.templateOptions.description,
-      Transform: extractSingleValue(this.templateOptions.transforms),
+      Transform: transform,
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
       Metadata: this.templateOptions.metadata
     };
@@ -1165,11 +1190,4 @@ function findCfnResources(roots: Iterable<IConstruct>): CfnResource[] {
 interface StackDependency {
   stack: Stack;
   reasons: string[];
-}
-
-function extractSingleValue<T>(array: T[] | undefined): T[] | T | undefined {
-  if (array && array.length === 1) {
-    return array[0];
-  }
-  return array;
 }

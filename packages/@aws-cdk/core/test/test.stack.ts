@@ -16,7 +16,7 @@ export = {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
-    stack.templateOptions.transform = 'SAMy';
+    stack.templateOptions.transforms = ['SAMy'];
     test.deepEqual(toCloudFormation(stack), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
@@ -54,9 +54,35 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Description: 'StackDescription',
-      Transform: ['DeprecatedField', 'Transform'],
+      Transform: ['Transform', 'DeprecatedField'],
       AWSTemplateFormatVersion: 'TemplateVersion',
       Metadata: { MetadataKey: 'MetadataValue' }
+    });
+
+    test.done();
+  },
+
+  'stack.templateOptions.transforms removes duplicate values'(test: Test) {
+    const stack = new Stack();
+
+    stack.templateOptions.transforms = ['A', 'B', 'C', 'A'];
+
+    test.deepEqual(toCloudFormation(stack), {
+      Transform: ['A', 'B', 'C']
+    });
+
+    test.done();
+  },
+
+  'stack.addTransform() adds a transform'(test: Test) {
+    const stack = new Stack();
+
+    stack.addTransform('A');
+    stack.addTransform('B');
+    stack.addTransform('C');
+
+    test.deepEqual(toCloudFormation(stack), {
+      Transform: ['A', 'B', 'C']
     });
 
     test.done();
