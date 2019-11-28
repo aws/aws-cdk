@@ -146,5 +146,5 @@ class SomeToken {
 }
 
 class Nested extends Stack {
-  constructor(public readonly parentStack: Stack, id: string) { super(parentStack, id); }
+  constructor(public readonly nestedStackParent: Stack, id: string) { super(nestedStackParent, id); }
 }

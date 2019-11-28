@@ -10,10 +10,13 @@ type Element = CfnResource | Stack;
  *
  * The algorithm consists of:
  * - Try to find the deepest common stack between the two elements
- * - If there isn't a common stack, it means the elements belong to two disjoined stack-trees
- *   and therefore we apply the dependency at the assembly/app level between the two topl-level stacks.
- * - If we did find a common stack,
- *
+ * - If there isn't a common stack, it means the elements belong to two
+ *   disjoined stack-trees and therefore we apply the dependency at the
+ *   assembly/app level between the two topl-level stacks.
+ * - If we did find a common stack, we apply the dependency as a CloudFormation
+ *   "DependsOn" between the resources that "represent" our source and target
+ *   either directly or through the AWS::CloudFormation::Stack resources that
+ *   "lead" to them.
  *
  * @param source The source resource/stack (the depedent)
  * @param target The target resource/stack (the dependency)
@@ -85,4 +88,3 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
     return resourceInCommonStackFor(resourceStack);
   }
 }
-

@@ -97,8 +97,8 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
  * @returns the list of stacks that lead from the top-level stack (non-nested) all the way to a nested stack.
  */
 export function pathToTopLevelStack(s: Stack): Stack[] {
-  if (s.parentStack) {
-    return [ ...pathToTopLevelStack(s.parentStack), s ];
+  if (s.nestedStackParent) {
+    return [ ...pathToTopLevelStack(s.nestedStackParent), s ];
   } else {
     return [ s ];
   }
@@ -110,17 +110,17 @@ export function pathToTopLevelStack(s: Stack): Stack[] {
  */
 export function isParentOfNestedStack(parent: Stack, child: Stack): boolean {
   // if "nested" is not a nested stack, then by definition we cannot be its parent
-  if (!child.parentStack) {
+  if (!child.nestedStackParent) {
     return false;
   }
 
   // if this is the direct parent, then we found it
-  if (parent === child.parentStack) {
+  if (parent === child.nestedStackParent) {
     return true;
   }
 
   // traverse up
-  return isParentOfNestedStack(parent, child.parentStack);
+  return isParentOfNestedStack(parent, child.nestedStackParent);
 }
 
 /**

@@ -164,14 +164,15 @@ export class Stack extends Construct implements ITaggable {
 
   /**
    * Returns the parent stack if this stack is nested.
+   * This is `undefined` for top-level (non-nested) stacks.
    *
    * @experimental
    */
-  public readonly parentStack?: Stack;
+  public readonly nestedStackParent?: Stack;
 
   /**
-   * The AWS::CloudFormation::Resource that represents this nested stack (if
-   * this is a nested stack).
+   * The AWS::CloudFormation::Stack resource which represents this nested stack.
+   * This is `undefined` for top-level (non-nested) stacks.
    *
    * @experimental
    */
@@ -407,7 +408,7 @@ export class Stack extends Construct implements ITaggable {
    * Indicates if this is a nested stack, in which case `parentStack` will include a reference to it's parent.
    */
   public get nested(): boolean {
-    return this.parentStack !== undefined;
+    return this.nestedStackParent !== undefined;
   }
 
   /**
@@ -513,8 +514,8 @@ export class Stack extends Construct implements ITaggable {
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
 
     // assets are always added at the top-level stack
-    if (this.parentStack) {
-      return this.parentStack.addFileAsset(asset);
+    if (this.nestedStackParent) {
+      return this.nestedStackParent.addFileAsset(asset);
     }
 
     let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
@@ -550,8 +551,8 @@ export class Stack extends Construct implements ITaggable {
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    if (this.parentStack) {
-      return this.parentStack.addDockerImageAsset(asset);
+    if (this.nestedStackParent) {
+      return this.nestedStackParent.addDockerImageAsset(asset);
     }
 
     let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as DockerImageAssetParameters;
@@ -582,6 +583,15 @@ export class Stack extends Construct implements ITaggable {
     return {
       imageUri, repositoryName
     };
+  }
+
+  /**
+   * Returns the parent of a nested stack.
+   *
+   * @deprecated use `nestedStackParent`
+   */
+  public get parentStack() {
+    return this.nestedStackParent;
   }
 
   /**
@@ -734,11 +744,11 @@ export class Stack extends Construct implements ITaggable {
       this.node.addMetadata(cxapi.STACK_TAGS_METADATA_KEY, this.tags.renderTags());
     }
 
-    if (this.parentStack) {
+    if (this.nestedStackParent) {
       // add the nested stack template as an asset
       const cfn = JSON.stringify(this._toCloudFormation());
       const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
-      const parent = this.parentStack;
+      const parent = this.nestedStackParent;
       const templateLocation = parent.addFileAsset({
         packaging: FileAssetPackaging.FILE,
         sourceHash: templateHash,
@@ -862,8 +872,8 @@ export class Stack extends Construct implements ITaggable {
 
     // add a dependency on the producing stack - it has to be deployed before this stack can consume the exported value
     // if the producing stack is a nested stack (i.e. has a parent), the dependency is taken on the parent.
-    const producerDependency = targetStack.parentStack ? targetStack.parentStack : targetStack;
-    const consumerDependency = sourceStack.parentStack ? sourceStack.parentStack : sourceStack;
+    const producerDependency = targetStack.nestedStackParent ? targetStack.nestedStackParent : targetStack;
+    const consumerDependency = sourceStack.nestedStackParent ? sourceStack.nestedStackParent : sourceStack;
     consumerDependency.addDependency(producerDependency, `${sourceStack.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
@@ -949,7 +959,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     function findParentStack(node: IConstruct): Stack | undefined {
-      if (node instanceof Stack && node.parentStack === undefined) {
+      if (node instanceof Stack && node.nestedStackParent === undefined) {
         return node;
       }
 
