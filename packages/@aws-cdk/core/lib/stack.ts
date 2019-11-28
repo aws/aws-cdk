@@ -76,7 +76,12 @@ export class Stack extends Construct implements ITaggable {
       return cache;
     } else {
       const value = _lookup(construct);
-      Object.defineProperty(construct, MY_STACK_CACHE, { value });
+      Object.defineProperty(construct, MY_STACK_CACHE, {
+        enumerable: false,
+        writable: false,
+        configurable: false,
+        value
+      });
       return value;
     }
 
