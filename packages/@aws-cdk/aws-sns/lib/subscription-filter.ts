@@ -81,7 +81,7 @@ export class SubscriptionFilter {
    * Returns a subscription filter for a string attribute.
    */
   public static stringFilter(stringConditions: StringConditions) {
-    const conditions = [];
+    const conditions = new Array<any>();
 
     if (stringConditions.whitelist) {
       conditions.push(...stringConditions.whitelist);
@@ -102,7 +102,7 @@ export class SubscriptionFilter {
    * Returns a subscription filter for a numeric attribute.
    */
   public static numericFilter(numericConditions: NumericConditions) {
-    const conditions = [];
+    const conditions = new Array<any>();
 
     if (numericConditions.whitelist) {
       conditions.push(...numericConditions.whitelist.map(v => ({ numeric: ['=', v] })));

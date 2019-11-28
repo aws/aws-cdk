@@ -45,6 +45,19 @@ export function fileShouldContain(ruleName: string, pkg: PackageJson, fileName: 
   }
 }
 
+export function fileShouldNotContain(ruleName: string, pkg: PackageJson, fileName: string, ...lines: string[]) {
+  for (const line of lines) {
+    const doesContain = pkg.fileContainsSync(fileName, line);
+    if (doesContain) {
+      pkg.report({
+        ruleName,
+        message: `${fileName} should NOT contain '${line}'`,
+        fix: () => pkg.removeFromFileSync(fileName, line)
+      });
+    }
+  }
+}
+
 /**
  * Export a package-level file to contain specific content
  */
@@ -160,8 +173,14 @@ function findLernaJSON() {
 
 export function* findInnerPackages(dir: string): IterableIterator<string> {
   for (const fname of fs.readdirSync(dir, { encoding: 'utf8' })) {
-    const stat = fs.statSync(path.join(dir, fname));
-    if (!stat.isDirectory()) { continue; }
+    try {
+      const stat = fs.statSync(path.join(dir, fname));
+      if (!stat.isDirectory()) { continue; }
+    } catch (e) {
+      // Survive invalid symlinks
+      if (e.code !== 'ENOENT') { throw e; }
+      continue;
+    }
     if (fname === 'node_modules') { continue; }
 
     if (fs.existsSync(path.join(dir, fname, 'package.json'))) {
