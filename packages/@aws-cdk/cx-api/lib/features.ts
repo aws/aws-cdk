@@ -33,3 +33,10 @@ export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
  * enabled through the generated `cdk.json`.
  */
 export const ENABLE_STACK_NAME_DUPLICATES_CONTEXT = '@aws-cdk/core:enableStackNameDuplicates';
+
+/**
+ * IF this is set, `cdk diff` will always exit with 0.
+ *
+ * Use `cdk diff --fail` to exit with 1 if there's a diff.
+ */
+export const ENABLE_DIFF_NO_FAIL = 'aws-cdk:enableDiffNoFail';
