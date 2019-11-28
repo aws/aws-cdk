@@ -108,7 +108,7 @@ export class CodeCommitSourceAction extends Action {
 
     return {
       configuration: {
-        RepositoryName: this.props.repository.repositoryName,
+        RepositoryName: this.props.repository.repositoryName.repositoryName,
         BranchName: this.branch,
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
       },
