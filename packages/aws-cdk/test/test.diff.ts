@@ -53,6 +53,32 @@ export = {
     test.ok(plainTextOutput.indexOf('Stack A') > -1, `Did not contain "Stack A": ${plainTextOutput}`);
     test.ok(plainTextOutput.indexOf('Stack B') > -1, `Did not contain "Stack B": ${plainTextOutput}`);
 
+    test.equals(0, exitCode);
+
+    test.done();
+  },
+
+  async 'exits with 1 with diffs and fail set to true'(test: Test) {
+    // GIVEN
+    const provisioner: IDeploymentTarget = {
+      async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
+        return {};
+      },
+      async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {
+        return { noOp: true, outputs: {}, stackArn: ''};
+      }
+    };
+    const toolkit = new CdkToolkit({ appStacks, provisioner });
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      fail: true
+    });
+
+    // THEN
     test.equals(1, exitCode);
 
     test.done();
