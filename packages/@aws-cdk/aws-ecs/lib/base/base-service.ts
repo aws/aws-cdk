@@ -35,91 +35,91 @@ export interface IBaseService extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onAnyInfoEvent(id: string, options: events.OnEventOptions): events.Rule
+  onAnyInfoEvent(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive any ECS warn action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onAnyWarnEvent(id: string, options: events.OnEventOptions): events.Rule
+  onAnyWarnEvent(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive any ECS error action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onAnyErrorEvent(id: string, options: events.OnEventOptions): events.Rule
+  onAnyErrorEvent(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_STEADY_STATE action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceSteadyState(id: string, options: events.OnEventOptions): events.Rule
+  onServiceSteadyState(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS TASKSET_STEADY_STATE action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onTaskSetSteadyState(id: string, options: events.OnEventOptions): events.Rule
+  onTaskSetSteadyState(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_DESIRED_COUNT_UPDATED action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceDesiredCountUpdated(id: string, options: events.OnEventOptions): events.Rule
+  onServiceDesiredCountUpdated(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_TASK_START_IMPAIRED action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceTaskStartImpaired(id: string, options: events.OnEventOptions): events.Rule
+  onServiceTaskStartImpaired(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_DISCOVERY_INSTANCE_UNHEALTHY action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceDiscoveryInstanceUnhealthy(id: string, options: events.OnEventOptions): events.Rule
+  onServiceDiscoveryInstanceUnhealthy(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceDaemonPlacementConstraintViolated(id: string, options: events.OnEventOptions): events.Rule
+  onServiceDaemonPlacementConstraintViolated(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS ECS_OPERATION_THROTTLED action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onEcsOperationThrottled(id: string, options: events.OnEventOptions): events.Rule
+  onEcsOperationThrottled(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_DISCOVERY_OPERATION_THROTTLED action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceDiscoveryOperationThrottled(id: string, options: events.OnEventOptions): events.Rule
+  onServiceDiscoveryOperationThrottled(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_TASK_PLACEMENT_FAILURE action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceTaskPlacementFailured(id: string, options: events.OnEventOptions): events.Rule
+  onServiceTaskPlacementFailured(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS SERVICE_TASK_CONFIGURATION_FAILURE action events.
    *
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onServiceTaskConfigurationFailure(id: string, options: events.OnEventOptions): events.Rule
+  onServiceTaskConfigurationFailure(id: string, options?: events.OnEventOptions): events.Rule
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS action events.
    *
