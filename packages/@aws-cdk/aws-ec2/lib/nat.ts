@@ -61,7 +61,7 @@ export abstract class NatProvider {
    * Return list of gateways spawned by the provider
    */
   public abstract readonly configuredGateways: GatewayConfig[];
-  
+
   /**
    * Called by the VPC to configure NAT
    */
