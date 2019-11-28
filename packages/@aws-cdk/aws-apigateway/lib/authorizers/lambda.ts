@@ -29,9 +29,9 @@ export interface TokenAuthorizerProps {
 
   /**
    * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
-   * this should be `method.request.header.AuthToken` where AuthToken is the header containing the bearer token.
+   * this should be `method.request.header.Authorizer` where Authorizer is the header containing the bearer token.
    * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
-   * @default 'method.request.header.auth_token'
+   * @default 'method.request.header.Authorizer'
    */
   readonly identitySource?: string;
 
@@ -97,7 +97,7 @@ export class TokenAuthorizer extends CustomAuthorizer {
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
       authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
-      identitySource: props.identitySource || 'method.request.header.auth_token',
+      identitySource: props.identitySource || 'method.request.header.Authorizer',
       identityValidationExpression: props.validationRegex,
     });
 

@@ -222,7 +222,7 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.auth_token",
+        "IdentitySource": "method.request.header.Authorizer",
         "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F"
       }
     },

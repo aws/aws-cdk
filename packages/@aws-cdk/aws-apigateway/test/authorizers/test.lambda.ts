@@ -28,7 +28,7 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
-      IdentitySource: 'method.request.header.auth_token'
+      IdentitySource: 'method.request.header.Authorizer'
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
