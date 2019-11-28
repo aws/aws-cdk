@@ -289,10 +289,10 @@ export abstract class BaseService extends Resource
    * Constructs a new instance of the BaseService class.
    */
   constructor(scope: Construct,
-    id: string,
-    props: BaseServiceProps,
-    additionalProps: any,
-    taskDefinition: TaskDefinition) {
+              id: string,
+              props: BaseServiceProps,
+              additionalProps: any,
+              taskDefinition: TaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
     });
@@ -543,7 +543,6 @@ export abstract class BaseService extends Resource
     return this.metric('CPUUtilization', props);
   }
 
-
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_STEADY_STATE event. For more information,
    * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
@@ -704,7 +703,7 @@ export abstract class BaseService extends Resource
     return rule;
   }
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_DISCOVERY_OPERATION_THROTTLED event. 
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_DISCOVERY_OPERATION_THROTTLED event.
    * For more information,
    * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
    *
