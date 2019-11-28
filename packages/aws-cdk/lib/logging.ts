@@ -20,7 +20,7 @@ export function debug(fmt: string, ...args: any[]) {
 }
 
 export function highlight(fmt: string, ...args: any[]) {
-  console.error(colors.bold(colors.white(util.format(fmt, ...args))));
+  console.error(colors.bold(util.format(fmt, ...args)));
 }
 
 export function success(fmt: string, ...args: any[]) {
@@ -32,7 +32,7 @@ export function warning(fmt: string, ...args: any[]) {
 }
 
 export function print(fmt: string, ...args: any[]) {
-  console.error(colors.white(util.format(fmt, ...args)));
+  console.error(util.format(fmt, ...args));
 }
 
 export function data(fmt: string, ...args: any[]) {
