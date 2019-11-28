@@ -1,0 +1,1043 @@
+{
+  "Resources": {
+    "Vpc8378EB38": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet1Subnet5C2D37C4": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/18",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet1RouteTable6C95E38E": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet1RouteTableAssociation97140677": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+        },
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+        }
+      }
+    },
+    "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VpcIGWD7BA715C"
+        }
+      },
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ]
+    },
+    "VpcPublicSubnet1EIPD7E02669": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "VpcPublicSubnet1NATGateway4D7517AA": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "VpcPublicSubnet1EIPD7E02669",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet2Subnet691E08A3": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/18",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet2RouteTable94F7E489": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+        },
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+        }
+      }
+    },
+    "VpcPublicSubnet2DefaultRoute97F91067": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VpcIGWD7BA715C"
+        }
+      },
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ]
+    },
+    "VpcPrivateSubnet1Subnet536B997A": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/18",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      }
+    },
+    "VpcPrivateSubnet1RouteTableB2C5B500": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+        },
+        "SubnetId": {
+          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+        }
+      }
+    },
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+        }
+      }
+    },
+    "VpcPrivateSubnet2Subnet3788AAA1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.192.0/18",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      }
+    },
+    "VpcPrivateSubnet2RouteTableA678073B": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+        },
+        "SubnetId": {
+          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+        }
+      }
+    },
+    "VpcPrivateSubnet2DefaultRoute060D2087": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+        }
+      }
+    },
+    "VpcIGWD7BA715C": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc"
+          }
+        ]
+      }
+    },
+    "VpcVPCGWBF912B6E": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        },
+        "InternetGatewayId": {
+          "Ref": "VpcIGWD7BA715C"
+        }
+      }
+    },
+    "FargateCluster7CCD5F93": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "TaskDefTaskRole1EDB4A67": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TaskDef54694570": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": "amazon/amazon-ecs-sample",
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ]
+          }
+        ],
+        "Cpu": "512",
+        "Family": "awsecsintegTaskDef6FDFB69A",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "TaskDefTaskRole1EDB4A67",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ServiceD69D759B": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "TaskDefinition": {
+          "Ref": "TaskDef54694570"
+        },
+        "Cluster": {
+          "Ref": "FargateCluster7CCD5F93"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServiceSecurityGroupC96ED6A7",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+              },
+              {
+                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "ServiceSecurityGroupC96ED6A7": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "ServiceOnAnyInfoEventC11D8F8A": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "INFO"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnAnyWarnEvent822990E7": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "WARN"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnAnyErrorEvent55B44655": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "ERROR"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceSteadyStateBBD7A594": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "INFO"
+            ],
+            "eventName": [
+              "SERVICE_STEADY_STATE"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnTaskSetSteadyState14FE136E": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "INFO"
+            ],
+            "eventName": [
+              "TASKSET_STEADY_STATE"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceDesiredCountUpdatedBA686115": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "INFO"
+            ],
+            "eventName": [
+              "SERVICE_DESIRED_COUNT_UPDATED"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceTaskStartImpairedC0BC8BA7": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "WARN"
+            ],
+            "eventName": [
+              "SERVICE_TASK_START_IMPAIRED"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceDiscoveryInstanceUnhealthyF14F3F2B": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "WARN"
+            ],
+            "eventName": [
+              "SERVICE_DISCOVERY_INSTANCE_UNHEALTHY"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceDaemonPlacementConstraintViolated85E34D43": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "ERROR"
+            ],
+            "eventName": [
+              "SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnEcsOperationThrottled076C6F32": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "ERROR"
+            ],
+            "eventName": [
+              "ECS_OPERATION_THROTTLED"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceDiscoveryOperationThrottled79FC68A4": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "ERROR"
+            ],
+            "eventName": [
+              "SERVICE_DISCOVERY_OPERATION_THROTTLED"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceTaskPlacementFailuredC45D3852": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "ERROR"
+            ],
+            "eventName": [
+              "SERVICE_TASK_PLACEMENT_FAILURE"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnServiceTaskConfigurationFailure5AC36E66": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "eventType": [
+              "ERROR"
+            ],
+            "eventName": [
+              "SERVICE_TASK_CONFIGURATION_FAILURE"
+            ],
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "ServiceOnEvent887614EC": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Service Action"
+          ],
+          "resources": [
+            {
+              "Ref": "ServiceD69D759B"
+            }
+          ],
+          "detail": {
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "TopicBFC7AF6E": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "TopicPolicyA1747468": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "Sid": "0"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Topics": [
+          {
+            "Ref": "TopicBFC7AF6E"
+          }
+        ]
+      }
+    }
+  }
+}

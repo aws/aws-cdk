@@ -663,9 +663,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'INFO',
-        eventName: 'SERVICE_STEADY_STATE',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['INFO'],
+        eventName: ['SERVICE_STEADY_STATE'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -686,9 +686,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'INFO',
-        eventName: 'TASKSET_STEADY_STATE',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['INFO'],
+        eventName: ['TASKSET_STEADY_STATE'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -709,9 +709,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'INFO',
-        eventName: 'SERVICE_DESIRED_COUNT_UPDATED',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['INFO'],
+        eventName: ['SERVICE_DESIRED_COUNT_UPDATED'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -732,9 +732,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'WARN',
-        eventName: 'SERVICE_TASK_START_IMPAIRED',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['WARN'],
+        eventName: ['SERVICE_TASK_START_IMPAIRED'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -754,9 +754,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'WARN',
-        eventName: 'SERVICE_DISCOVERY_INSTANCE_UNHEALTHY',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['WARN'],
+        eventName: ['SERVICE_DISCOVERY_INSTANCE_UNHEALTHY'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -777,9 +777,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['ERROR'],
+        eventName: ['SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -799,9 +799,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'ERROR',
-        eventName: 'ECS_OPERATION_THROTTLED',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['ERROR'],
+        eventName: ['ECS_OPERATION_THROTTLED'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -822,9 +822,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_DISCOVERY_OPERATION_THROTTLED',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['ERROR'],
+        eventName: ['SERVICE_DISCOVERY_OPERATION_THROTTLED'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -845,9 +845,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_TASK_PLACEMENT_FAILURE',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['ERROR'],
+        eventName: ['SERVICE_TASK_PLACEMENT_FAILURE'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -868,9 +868,9 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_TASK_CONFIGURATION_FAILURE',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['ERROR'],
+        eventName: ['SERVICE_TASK_CONFIGURATION_FAILURE'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -891,8 +891,8 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'INFO',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['INFO'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -913,8 +913,8 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'WARN',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['WARN'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -935,8 +935,8 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        eventType: 'ERROR',
-        clusterArn: this.cluster.clusterArn
+        eventType: ['ERROR'],
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     return rule;
@@ -954,7 +954,7 @@ export abstract class BaseService extends Resource
       detailType: ['ECS Service Action'],
       resources: [this.serviceArn],
       detail: {
-        clusterArn: this.cluster.clusterArn
+        clusterArn: [this.cluster.clusterArn]
       }
     });
     rule.addTarget(options.target);
