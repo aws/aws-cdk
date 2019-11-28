@@ -1,8 +1,9 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
-import { CfnAuthorizer } from '../../lib/apigateway.generated';
-import { CustomAuthorizer } from '../../lib/authorizer';
+import { CfnAuthorizer } from '../apigateway.generated';
+import { Authorizer, AuthorizerConfig } from '../authorizer';
+import { AuthorizationType, Method } from '../method';
 
 /**
  * Properties for TokenAuthorizer
@@ -67,7 +68,7 @@ export interface TokenAuthorizerProps {
  *
  * @resource AWS::ApiGateway::Authorizer
  */
-export class TokenAuthorizer extends CustomAuthorizer {
+export class TokenAuthorizer extends Authorizer {
 
   /**
    * The id of the authorizer.
@@ -124,5 +125,15 @@ export class TokenAuthorizer extends CustomAuthorizer {
         ]
       }));
     }
+  }
+
+  /**
+   * Configuration needed to bind this authorizer to a {@link Method}.
+   */
+  protected authorizerConfig(_: Method): AuthorizerConfig {
+    return {
+      authorizerId: this.authorizerId,
+      authorizationType: AuthorizationType.CUSTOM,
+    };
   }
 }

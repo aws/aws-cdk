@@ -612,6 +612,25 @@ export = {
     test.done();
   },
 
+  'authorizer is bound correctly'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const auth = new DummyAuthorizer(stack, 'myauthorizer');
+
+    const restApi = new apigateway.RestApi(stack, 'myrestapi');
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer: auth
+    });
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      AuthorizationType: 'CUSTOM',
+      AuthorizerId: stack.resolve(auth.authorizerId),
+    }));
+
+    test.done();
+  },
+
   'authorizer via default method options'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -643,21 +662,7 @@ export = {
     test.done();
   },
 
-  'fails when custom authorization type is paired when no authorizer is specified'(test: Test) {
-    const stack = new cdk.Stack();
-
-    const restApi = new apigateway.RestApi(stack, 'myrestapi');
-
-    test.throws(() => {
-      restApi.root.addMethod('ANY', undefined, {
-        authorizationType: apigateway.AuthorizationType.CUSTOM
-      });
-    }, /Authorizer is not specified when the authorization type is set to 'CUSTOM'/);
-
-    test.done();
-  },
-
-  'fails when a custom authorizer is paired when using a non-custom authorization type'(test: Test) {
+  'fails when authorization type does not match the authorizer'(test: Test) {
     const stack = new cdk.Stack();
 
     const restApi = new apigateway.RestApi(stack, 'myrestapi');
@@ -665,12 +670,49 @@ export = {
     test.throws(() => {
       restApi.root.addMethod('ANY', undefined, {
         authorizationType: apigateway.AuthorizationType.IAM,
-        authorizer: {
-          authorizerId: 'some-authorizer-id'
-        }
+        authorizer: new DummyAuthorizer(stack, 'dummyauthorizer'),
       });
-    }, /Authorization type is not set to 'CUSTOM' when an authorizer is specified/);
+    }, /Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
+
+    test.done();
+  },
+
+  'fails when authorization type does not match the authorizer in default method options'(test: Test) {
+    const stack = new cdk.Stack();
+    const authorizer = new DummyAuthorizer(stack, 'dummyauthorizer');
+
+    const restApi = new apigateway.RestApi(stack, 'myrestapi', {
+      defaultMethodOptions: {
+        authorizer
+      }
+    });
+
+    test.throws(() => {
+      restApi.root.addMethod('ANY', undefined, {
+        authorizationType: apigateway.AuthorizationType.NONE,
+      });
+    }, /Authorization type is set to NONE which is different from what is required by the authorizer/);
 
     test.done();
   }
 };
+
+class DummyAuthorizer extends apigateway.Authorizer {
+  public readonly authorizerId: string;
+
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+    this.authorizerId = id;
+  }
+
+  public fetchRestApiId(): string {
+    return this.restApiId;
+  }
+
+  protected authorizerConfig(_: apigateway.Method): apigateway.AuthorizerConfig {
+    return {
+      authorizerId: this.authorizerId,
+      authorizationType: apigateway.AuthorizationType.CUSTOM
+    };
+  }
+}

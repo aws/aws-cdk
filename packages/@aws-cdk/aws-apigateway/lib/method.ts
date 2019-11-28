@@ -1,6 +1,6 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
-import { CustomAuthorizer, IAuthorizer } from './authorizer';
+import { Authorizer, IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
@@ -119,17 +119,20 @@ export class Method extends Resource {
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
     const authorizer = options.authorizer || defaultMethodOptions.authorizer;
-    const authorizationType = options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE;
 
-    if (authorizer && authorizationType !== AuthorizationType.CUSTOM) {
-      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is not set to 'CUSTOM' when an authorizer is specified`);
-    }
-    if (!authorizer && authorizationType === AuthorizationType.CUSTOM) {
-      throw new Error(`${this.resource}/${this.httpMethod} - Authorizer is not specified when the authorization type is set to 'CUSTOM'`);
-    }
-
-    if (CustomAuthorizer.isCustomAuthorizer(authorizer)) {
-      authorizer._bind(this.restApi);
+    let authorizationType;
+    let authorizerId;
+    if (Authorizer.isAuthorizer(authorizer)) {
+      const authConfig = authorizer._bind(this);
+      if (options.authorizationType && options.authorizationType !== authConfig.authorizationType) {
+        throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${options.authorizationType} ` +
+          `which is different from what is required by the authorizer [${authConfig.authorizationType}]`);
+      }
+      authorizationType = authConfig.authorizationType;
+      authorizerId = authConfig.authorizerId;
+    } else {
+      authorizationType = options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE;
+      authorizerId = authorizer ? authorizer.authorizerId : undefined;
     }
 
     const methodProps: CfnMethodProps = {
@@ -139,7 +142,7 @@ export class Method extends Resource {
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
       authorizationType,
-      authorizerId: authorizer && authorizer.authorizerId,
+      authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
