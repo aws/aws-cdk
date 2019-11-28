@@ -20,7 +20,7 @@ class NatInstanceStack extends cdk.Stack {
     /// !hide
 
     Array.isArray(vpc);
-    Array.isArray(natGatewayProvider.onlineGateways());
+    Array.isArray(natGatewayProvider.configuredGateways());
   }
 }
 

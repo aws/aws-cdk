@@ -9,7 +9,7 @@ import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 /**
  * Pair represents a gateway created by NAT Provider
  */
-export interface IGateway {
+export interface GatewayConfig {
 
   /**
    * Availability Zone
@@ -63,9 +63,14 @@ export abstract class NatProvider {
   public abstract configureNat(options: ConfigureNatOptions): void;
 
   /**
+   * Configures subnet with the gateway
+   */
+  public abstract configureSubnet(subnet: PrivateSubnet): void;
+
+  /**
    * Return list of gateways spawned by the provider
    */
-  public abstract onlineGateways(): IGateway[];
+  public abstract configuredGateways(): GatewayConfig[];
 }
 
 /**
@@ -132,36 +137,38 @@ export interface NatInstanceProps {
 }
 
 class NatGateway extends NatProvider {
-  private gateways: IGateway[] = [];
+  private gateways: PrefSet<string> = new PrefSet<string>();
 
   public configureNat(options: ConfigureNatOptions) {
     // Create the NAT gateways
-    const gatewayIds = new PrefSet<string>();
     for (const sub of options.natSubnets) {
       const gateway = sub.addNatGateway();
-      gatewayIds.add(sub.availabilityZone, gateway.ref);
+      this.gateways.add(sub.availabilityZone, gateway.ref);
     }
 
     // Add routes to them in the private subnets
     for (const sub of options.privateSubnets) {
-      const az = sub.availabilityZone;
-      const gatewayId = gatewayIds.pick(az);
-      sub.addRoute('DefaultRoute', {
-        routerType: RouterType.NAT_GATEWAY,
-        routerId: gatewayId,
-        enablesInternetConnectivity: true,
-      });
-      this.gateways.push({ az, gatewayId });
+      this.configureSubnet(sub);
     }
   }
 
-  public onlineGateways(): IGateway[] {
-    return this.gateways;
+  public configureSubnet(subnet: PrivateSubnet) {
+    const az = subnet.availabilityZone;
+    const gatewayId = this.gateways.pick(az);
+    subnet.addRoute('DefaultRoute', {
+      routerType: RouterType.NAT_GATEWAY,
+      routerId: gatewayId,
+      enablesInternetConnectivity: true,
+    });
+  }
+
+  public configuredGateways(): GatewayConfig[] {
+    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1]}));
   }
 }
 
 class NatInstance extends NatProvider {
-  private gateways: IGateway[] = [];
+  private gateways: PrefSet<Instance> = new PrefSet<Instance>();
 
   constructor(private readonly props: NatInstanceProps) {
     super();
@@ -169,7 +176,6 @@ class NatInstance extends NatProvider {
 
   public configureNat(options: ConfigureNatOptions) {
     // Create the NAT instances. They can share a security group and a Role.
-    const instances = new PrefSet<Instance>();
     const machineImage = this.props.machineImage || new NatInstanceImage();
     const sg = new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
@@ -195,24 +201,27 @@ class NatInstance extends NatProvider {
         keyName: this.props.keyName
       });
       // NAT instance routes all traffic, both ways
-      instances.add(sub.availabilityZone, natInstance);
+      this.gateways.add(sub.availabilityZone, natInstance);
     }
 
     // Add routes to them in the private subnets
     for (const sub of options.privateSubnets) {
-      const az = sub.availabilityZone;
-      const gatewayId = instances.pick(sub.availabilityZone).instanceId;
-      sub.addRoute('DefaultRoute', {
-        routerType: RouterType.INSTANCE,
-        routerId: gatewayId,
-        enablesInternetConnectivity: true,
-      });
-      this.gateways.push({ az, gatewayId });
+      this.configureSubnet(sub);
     }
   }
 
-  public onlineGateways(): IGateway[] {
-    return this.gateways;
+  public configureSubnet(subnet: PrivateSubnet) {
+    const az = subnet.availabilityZone;
+    const gatewayId = this.gateways.pick(az).instanceId;
+    subnet.addRoute('DefaultRoute', {
+      routerType: RouterType.INSTANCE,
+      routerId: gatewayId,
+      enablesInternetConnectivity: true,
+    });
+  }
+
+  public configuredGateways(): GatewayConfig[] {
+    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1].instanceId}));
   }
 }
 
@@ -224,12 +233,12 @@ class NatInstance extends NatProvider {
  */
 class PrefSet<A> {
   private readonly map: Record<string, A> = {};
-  private readonly vals = new Array<A>();
+  private readonly vals = new Array<[string, A]>();
   private next: number = 0;
 
   public add(pref: string, value: A) {
     this.map[pref] = value;
-    this.vals.push(value);
+    this.vals.push([pref, value]);
   }
 
   public pick(pref: string): A {
@@ -238,7 +247,11 @@ class PrefSet<A> {
     }
 
     if (pref in this.map) { return this.map[pref]; }
-    return this.vals[this.next++ % this.vals.length];
+    return this.vals[this.next++ % this.vals.length][1];
+  }
+
+  public values(): Array<[string, A]> {
+    return this.vals;
   }
 }
 
