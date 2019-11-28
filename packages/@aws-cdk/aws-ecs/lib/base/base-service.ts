@@ -233,19 +233,6 @@ export abstract class BaseService extends Resource
   implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
 
   /**
-   * The CloudMap service created for this service, if any.
-   */
-  public get cloudMapService(): cloudmap.IService | undefined {
-    return this.cloudmapService;
-  }
-
-  private get defaultLoadBalancerTarget() {
-    return this.loadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName
-    });
-  }
-
-  /**
    * The security groups which manage the allowed network traffic for the service.
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
@@ -345,274 +332,10 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
+   * The CloudMap service created for this service, if any.
    */
-  public onServiceSteadyState(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'INFO',
-        eventName: 'SERVICE_STEADY_STATE',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onTaskSetSteadyState(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'INFO',
-        eventName: 'TASKSET_STEADY_STATE',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onServiceDesiredCountUpdated(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'INFO',
-        eventName: 'SERVICE_DESIRED_COUNT_UPDATED',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onServiceTaskStartImpaired(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'WARN',
-        eventName: 'SERVICE_TASK_START_IMPAIRED',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onServiceDiscoveryInstanceUnhealthy(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'WARN',
-        eventName: 'SERVICE_DISCOVERY_INSTANCE_UNHEALTHY',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onServiceDaemonPlacementConstraintViolated(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onEcsOperationThrottled(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'ERROR',
-        eventName: 'ECS_OPERATION_THROTTLED',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onServiceDiscoveryOperationThrottled(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_DISCOVERY_OPERATION_THROTTLED',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onServiceTaskPlacementFailured(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_TASK_PLACEMENT_FAILURE',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onServiceTaskConfigurationFailure(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'ERROR',
-        eventName: 'SERVICE_TASK_CONFIGURATION_FAILURE',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onInfoEvents(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'INFO',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when receive any warn event
-   *
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onWarnEvents(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      detail: {
-        eventType: 'WARN',
-        clusterArn: this.cluster.clusterArn
-      }
-    });
-    return rule;
-  }
-
-  /**
-   * Defines a CloudWatch event rule which triggers for service events. Use
-   * `rule.addEventPattern(pattern)` to specify a filter.
-   */
-  public onEvent(id: string, options: events.OnEventOptions = {}) {
-    const rule = new events.Rule(this, id, options);
-    rule.addEventPattern({
-      source: ['aws.ecs'],
-      detailType: ['ECS Service Action'],
-      resources: [this.serviceArn]
-    });
-    rule.addTarget(options.target);
-    return rule;
+  public get cloudMapService(): cloudmap.IService | undefined {
+    return this.cloudmapService;
   }
 
   /**
@@ -820,6 +543,321 @@ export abstract class BaseService extends Resource
     return this.metric('CPUUtilization', props);
   }
 
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_STEADY_STATE event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceSteadyState(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'INFO',
+        eventName: 'SERVICE_STEADY_STATE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the TASKSET_STEADY_STATE event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onTaskSetSteadyState(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'INFO',
+        eventName: 'TASKSET_STEADY_STATE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_DESIRED_COUNT_UPDATED event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDesiredCountUpdated(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'INFO',
+        eventName: 'SERVICE_DESIRED_COUNT_UPDATED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_TASK_START_IMPAIRED event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceTaskStartImpaired(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'WARN',
+        eventName: 'SERVICE_TASK_START_IMPAIRED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_DISCOVERY_INSTANCE_UNHEALTHY event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDiscoveryInstanceUnhealthy(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'WARN',
+        eventName: 'SERVICE_DISCOVERY_INSTANCE_UNHEALTHY',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED event.
+   * For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDaemonPlacementConstraintViolated(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_DAEMON_PLACEMENT_CONSTRAINT_VIOLATED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the ECS_OPERATION_THROTTLED event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onEcsOperationThrottled(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'ECS_OPERATION_THROTTLED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_DISCOVERY_OPERATION_THROTTLED event. 
+   * For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceDiscoveryOperationThrottled(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_DISCOVERY_OPERATION_THROTTLED',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_TASK_PLACEMENT_FAILURE event.
+   * For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceTaskPlacementFailured(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_TASK_PLACEMENT_FAILURE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive the SERVICE_TASK_CONFIGURATION_FAILURE event.
+   * For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onServiceTaskConfigurationFailure(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'ERROR',
+        eventName: 'SERVICE_TASK_CONFIGURATION_FAILURE',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any info event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onAnyInfoEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'INFO',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any warn event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onAnyWarnEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'WARN',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when receive any error event. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onAnyErrorEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        eventType: 'ERROR',
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines a CloudWatch event rule which triggers for service events.
+   * `rule.addEventPattern(pattern)` to specify a filter. For more information,
+   * see [Service Action Events](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_cwe_events.html#ecs_service_events)
+   */
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.ecs'],
+      detailType: ['ECS Service Action'],
+      resources: [this.serviceArn],
+      detail: {
+        clusterArn: this.cluster.clusterArn
+      }
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
+
   /**
    * This method is called to create a networkConfiguration.
    */
@@ -890,6 +928,12 @@ export abstract class BaseService extends Resource
     return { targetType };
   }
 
+  private get defaultLoadBalancerTarget() {
+    return this.loadBalancerTarget({
+      containerName: this.taskDefinition.defaultContainer!.containerName
+    });
+  }
+
   /**
    * Generate the role that will be used for autoscaling this service
    */
@@ -922,6 +966,7 @@ export abstract class BaseService extends Resource
           undefined
     });
   }
+
 }
 
 /**
