@@ -76,7 +76,6 @@ export class NestedStack extends Stack {
   }
 
   public readonly templateFile: string;
-  public readonly nestedStackParent?: Stack;
   public readonly nestedStackResource?: CfnResource;
 
   private readonly parameters: { [name: string]: string };
@@ -89,8 +88,7 @@ export class NestedStack extends Stack {
 
     super(scope, id, { env: { account: parentStack.account, region: parentStack.region } });
 
-    this.nestedStackParent = parentStack;
-
+    // @deprecate: remove this in v2.0 (redundent)
     const parentScope = new Construct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });

@@ -1,5 +1,5 @@
 import { Test, testCase } from 'nodeunit';
-import { Stack } from '../lib';
+import { CfnRefElement, CfnResource, Construct, Stack } from '../lib';
 import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
 
 export = testCase({
@@ -146,5 +146,11 @@ class SomeToken {
 }
 
 class Nested extends Stack {
-  constructor(public readonly nestedStackParent: Stack, id: string) { super(nestedStackParent, id); }
+  public readonly nestedStackResource?: CfnResource;
+
+  constructor(scope: Construct, id: string) {
+    const resource = new CfnResource(scope, `${id}+NestedStackResource`, { type: 'AWS::CloudFormation::Stack' });
+    super(scope, id);
+    this.nestedStackResource = resource;
+  }
 }

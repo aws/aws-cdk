@@ -168,16 +168,8 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
-   * Returns the parent stack if this stack is nested.
-   * This is `undefined` for top-level (non-nested) stacks.
-   *
-   * @experimental
-   */
-  public readonly nestedStackParent?: Stack;
-
-  /**
-   * The AWS::CloudFormation::Stack resource which represents this nested stack.
-   * This is `undefined` for top-level (non-nested) stacks.
+   * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
+   * resource. `undefined` for top-level (non-nested) stacks.
    *
    * @experimental
    */
@@ -413,7 +405,7 @@ export class Stack extends Construct implements ITaggable {
    * Indicates if this is a nested stack, in which case `parentStack` will include a reference to it's parent.
    */
   public get nested(): boolean {
-    return this.nestedStackParent !== undefined;
+    return this.nestedStackResource !== undefined;
   }
 
   /**
@@ -588,6 +580,13 @@ export class Stack extends Construct implements ITaggable {
     return {
       imageUri, repositoryName
     };
+  }
+
+  /**
+   * If this is a nested stack, returns it's parent stack.
+   */
+  public get nestedStackParent() {
+    return this.nestedStackResource && Stack.of(this.nestedStackResource);
   }
 
   /**
