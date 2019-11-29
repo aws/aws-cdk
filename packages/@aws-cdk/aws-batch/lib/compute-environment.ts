@@ -236,6 +236,17 @@ export interface ComputeEnvironmentProps {
     readonly enabled?: boolean;
 
     /**
+     * The IAM role used by Batch to make calls to other AWS services on your behalf for managing
+     * the resources that you use with the service. By default, this role is created for you using
+     * the AWS managed service policy for Batch.
+     *
+     * @link https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html
+     *
+     * @default - Role using the 'service-role/AWSBatchServiceRole' policy
+     */
+    readonly serviceRole?: iam.IRole,
+
+    /**
      * Determines if AWS should manage the allocation of compute resources for processing jobs.
      * If set to false, then you are in charge of providing the compute resource details.
      *
@@ -321,8 +332,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
                 imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
                 instanceRole: props.computeResources.instanceRole
                 ? props.computeResources.instanceRole.roleArn
-                : new iam.Role(this, 'Resource-Role', {
-                  assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+                : new iam.LazyRole(this, 'Resource-Instance-Role', {
+                    assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
                 }).roleArn,
                 instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
                 launchTemplate: props.computeResources.launchTemplate,
@@ -340,10 +351,14 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         const computeEnvironment = new CfnComputeEnvironment(this, 'Resource', {
             computeEnvironmentName: this.physicalName,
             computeResources,
-            serviceRole: new iam.CfnServiceLinkedRole(this, 'Resource-Service-Linked-Role', {
-                awsServiceName: 'batch.amazonaws.com',
-                customSuffix: `-${scope.node.uniqueId}`,
-            }).ref,
+            serviceRole: props.serviceRole
+            ? props.serviceRole.roleArn
+            : new iam.LazyRole(this, 'Resource-Service-Instance-Role', {
+                managedPolicies: [
+                    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
+                ],
+                assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+            }).roleArn,
             state: this.isEnabled(props) ? 'ENABLED' : 'DISABLED',
             type: this.isManaged(props) ? 'MANAGED' : 'UNMANAGED',
         });
