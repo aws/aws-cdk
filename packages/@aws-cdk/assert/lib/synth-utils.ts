@@ -57,7 +57,7 @@ export class SynthUtils {
     const assembly = root instanceof App ? root.synth() : ConstructNode.synth(root.node, options);
 
     // if this is a nested stack (it has a parent), then just read the template as a string
-    if (stack.parentStack) {
+    if (stack.nestedStackParent) {
       return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
     }
 

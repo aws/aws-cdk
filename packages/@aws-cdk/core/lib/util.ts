@@ -92,3 +92,50 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
     return this.processor(o);
   }
 }
+
+/**
+ * @returns the list of stacks that lead from the top-level stack (non-nested) all the way to a nested stack.
+ */
+export function pathToTopLevelStack(s: Stack): Stack[] {
+  if (s.nestedStackParent) {
+    return [ ...pathToTopLevelStack(s.nestedStackParent), s ];
+  } else {
+    return [ s ];
+  }
+}
+
+/**
+ * @returns true if this stack is a direct or indirect parent of the nested
+ * stack `nested`. If `nested` is a top-level stack, returns false.
+ */
+export function isParentOfNestedStack(parent: Stack, child: Stack): boolean {
+  // if "nested" is not a nested stack, then by definition we cannot be its parent
+  if (!child.nestedStackParent) {
+    return false;
+  }
+
+  // if this is the direct parent, then we found it
+  if (parent === child.nestedStackParent) {
+    return true;
+  }
+
+  // traverse up
+  return isParentOfNestedStack(parent, child.nestedStackParent);
+}
+
+/**
+ * Given two arrays, returns the last common element or `undefined` if there
+ * isn't (arrays are foriegn).
+ */
+export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined {
+  let i = 0;
+  while (i < path1.length && i < path2.length) {
+    if (path1[i] !== path2[i]) {
+      break;
+    }
+
+    i++;
+  }
+
+  return path1[i - 1];
+}
