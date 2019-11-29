@@ -54,6 +54,18 @@ export = {
     // Check that package.json and bin/ got created in the current directory
     test.equal(true, await fs.pathExists('package.json'));
     test.equal(true, await fs.pathExists('bin'));
+    test.equal(true, await fs.pathExists('.git'));
+
+    test.done();
+  },
+
+  async '--generate-only should skip git init'(test: Test) {
+    await cliInit('app', 'javascript', false, true);
+
+    // Check that package.json and bin/ got created in the current directory
+    test.equal(true, await fs.pathExists('package.json'));
+    test.equal(true, await fs.pathExists('bin'));
+    test.equal(false, await fs.pathExists('.git'));
 
     test.done();
   },
