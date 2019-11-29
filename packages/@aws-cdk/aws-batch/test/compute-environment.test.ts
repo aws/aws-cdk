@@ -9,6 +9,7 @@ import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
     let expectedUnmanagedDefaultComputeProps: any;
+    let defaultServiceRole: any;
 
     let stack: cdk.Stack;
     let vpc: ec2.Vpc;
@@ -18,13 +19,22 @@ describe('Batch Compute Evironment', () => {
         stack = new cdk.Stack();
         vpc = new ec2.Vpc(stack, 'test-vpc');
 
+        defaultServiceRole = {
+            ServiceRole: {
+                'Fn::GetAtt': [
+                    'testcomputeenvResourceServiceInstanceRole105069A5',
+                    'Arn'
+                ],
+            },
+        };
+
         expectedUnmanagedDefaultComputeProps = (overrides: any) => {
             return {
                 ComputeResources: {
                     AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
                     InstanceRole: {
                         'Fn::GetAtt': [
-                            'testcomputeenvResourceRoleBD565AC0',
+                            'testcomputeenvResourceInstanceRole7FD819B9',
                             'Arn'
                         ]
                     },
@@ -155,6 +165,12 @@ describe('Batch Compute Evironment', () => {
                 ComputeEnvironmentName: 'my-test-compute-env',
                 Type: 'UNMANAGED',
                 State: 'DISABLED',
+                ServiceRole: {
+                    'Fn::GetAtt': [
+                        'testcomputeenvResourceServiceInstanceRole105069A5',
+                        'Arn'
+                    ],
+                },
                 ComputeResources: {
                     AllocationStrategy: batch.AllocationStrategy.BEST_FIT_PROGRESSIVE,
                     BidPercentage: props.computeResources.bidPercentage,
@@ -219,10 +235,13 @@ describe('Batch Compute Evironment', () => {
 
                 // THEN
                 expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-                    ServiceRole: {
-                        Ref: 'testcomputeenvResourceServiceLinkedRoleDC93CC0B',
-                    },
                     Type: 'UNMANAGED',
+                    ServiceRole: {
+                        'Fn::GetAtt': [
+                            'testcomputeenvResourceServiceInstanceRole105069A5',
+                            'Arn'
+                        ],
+                    },
                 }, ResourcePart.Properties));
             });
         });
@@ -268,6 +287,7 @@ describe('Batch Compute Evironment', () => {
 
                 // THEN
                 expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+                    ...defaultServiceRole,
                     ...expectedUnmanagedDefaultComputeProps({
                         MinvCpus: 0,
                     }),
