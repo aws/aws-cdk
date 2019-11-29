@@ -238,11 +238,10 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
-        const generateOnly = configuration.settings.get(['generate-only']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language, undefined, generateOnly);
+          return await cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'version':
         return data(version.DISPLAY_VERSION);

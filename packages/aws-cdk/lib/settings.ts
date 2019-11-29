@@ -233,7 +233,6 @@ export class Settings {
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
-      generateOnly: argv.generateOnly,
     });
   }
 
