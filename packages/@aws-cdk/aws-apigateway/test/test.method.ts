@@ -697,7 +697,7 @@ export = {
   }
 };
 
-class DummyAuthorizer extends apigateway.Authorizer {
+class DummyAuthorizer extends apigateway.AuthorizerBase {
   public readonly authorizerId: string;
 
   constructor(scope: cdk.Construct, id: string) {

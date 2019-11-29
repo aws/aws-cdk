@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { App, Stack } from '@aws-cdk/core';
 import path = require('path');
-import { AuthorizationType, MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer } from '../../lib';
+import { AuthorizationType, Authorizer, MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
 
 const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
@@ -17,7 +17,7 @@ const role = new iam.Role(stack, 'authorizerRole', {
   assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com')
 });
 
-const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
+const authorizer = Authorizer.token(stack, 'MyAuthorizer', {
   handler: authorizerFn,
   assumeRole: role,
 });

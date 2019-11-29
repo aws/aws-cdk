@@ -2,8 +2,8 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
-import { Authorizer, AuthorizerConfig } from '../authorizer';
 import { AuthorizationType, Method } from '../method';
+import { AuthorizerBase, AuthorizerConfig } from './authorizer-base';
 
 /**
  * Properties for TokenAuthorizer
@@ -68,7 +68,7 @@ export interface TokenAuthorizerProps {
  *
  * @resource AWS::ApiGateway::Authorizer
  */
-export class TokenAuthorizer extends Authorizer {
+export class TokenAuthorizer extends AuthorizerBase {
 
   /**
    * The id of the authorizer.

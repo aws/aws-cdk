@@ -1,6 +1,7 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
-import { Authorizer, IAuthorizer } from './authorizer';
+import { IAuthorizer } from './authorizer';
+import { AuthorizerBase } from './authorizers';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
@@ -20,6 +21,12 @@ export interface MethodOptions {
   /**
    * Method authorization.
    * If the value is set of `Custom`, an `authorizer` must also be specified.
+   *
+   * If you're using one of the authorizers that are available via the {@link Authorizer} class, such as {@link Authorizer#token()},
+   * it is recommended that this option not be specified. The authorizer will take care of setting the correct authorization type.
+   * However, specifying an authorization type using this property that conflicts with what is expected by the {@link Authorizer}
+   * will result in an error.
+   *
    * @default None open access
    */
   readonly authorizationType?: AuthorizationType;
@@ -122,7 +129,7 @@ export class Method extends Resource {
 
     let authorizationType;
     let authorizerId;
-    if (Authorizer.isAuthorizer(authorizer)) {
+    if (AuthorizerBase._isAuthorizer(authorizer)) {
       const authConfig = authorizer._bind(this);
       if (options.authorizationType && options.authorizationType !== authConfig.authorizationType) {
         throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${options.authorizationType} ` +

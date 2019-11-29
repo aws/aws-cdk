@@ -1,6 +1,6 @@
 import { Construct, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuthorizationType, Authorizer, Method, RestApi } from '../lib';
+import { AuthorizationType, AuthorizerBase, AuthorizerConfig, Method, RestApi } from '../../lib';
 
 export = {
   'attach authorizer to multiple RestApi'(test: Test) {
@@ -37,7 +37,7 @@ export = {
   }
 };
 
-class DummyAuthorizer extends Authorizer {
+class DummyAuthorizer extends AuthorizerBase {
   public readonly authorizerId: string;
 
   constructor(scope: Construct, id: string, authorizerId: string) {
@@ -49,7 +49,7 @@ class DummyAuthorizer extends Authorizer {
     return this.restApiId;
   }
 
-  protected authorizerConfig(_: Method): import("../lib").AuthorizerConfig {
+  protected authorizerConfig(_: Method): AuthorizerConfig {
     return {
       authorizerId: this.authorizerId,
       authorizationType: AuthorizationType.CUSTOM
