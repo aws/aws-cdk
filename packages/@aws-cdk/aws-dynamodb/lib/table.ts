@@ -480,11 +480,14 @@ export class Table extends Resource {
    * @param grantee The principal (no-op if undefined)
    */
   public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
       resourceArns: [
-        Lazy.stringValue({ produce: () => this.tableStreamArn ? `${this.tableArn}/stream/*` : Aws.NO_VALUE })
+        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*`})
       ],
     });
   }

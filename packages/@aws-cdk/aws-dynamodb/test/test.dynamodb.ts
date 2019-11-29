@@ -1184,7 +1184,24 @@ export = {
       test.done();
     },
 
-    '"grantListStreams" allows principal to list all streams for this table'(test: Test) {
+    '"grantTableListStreams" should fail if streaming is not enabled on table"'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        }
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      test.throws(() => table.grantTableListStreams(user), /DynamoDB Streams must be enabled on the table my-table/);
+
+      test.done();
+    },
+
+    '"grantTableListStreams" allows principal to list all streams for this table'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const table = new Table(stack, 'my-table', {
