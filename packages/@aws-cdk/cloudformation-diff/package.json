@@ -30,7 +30,7 @@
     "@aws-cdk/cx-api": "1.18.0",
     "colors": "^1.4.0",
     "diff": "^4.0.1",
-    "fast-deep-equal": "^2.0.1",
+    "fast-deep-equal": "^3.0.1",
     "source-map-support": "^0.5.16",
     "string-width": "^4.2.0",
     "table": "^5.4.6"
