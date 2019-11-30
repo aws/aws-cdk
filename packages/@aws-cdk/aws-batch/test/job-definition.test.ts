@@ -15,8 +15,6 @@ describe('Batch Job Definition', () => {
     beforeEach(() => {
         stack = new cdk.Stack();
 
-        const jobRepo = new ecr.Repository(stack, 'job-repo');
-
         const role = new iam.Role(stack, 'job-role', {
             assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
         });
@@ -35,7 +33,7 @@ describe('Batch Job Definition', () => {
                 },
                 jobRole: role,
                 gpuCount: 1,
-                image: ecs.EcrImage.fromEcrRepository(jobRepo),
+                image: ecs.EcrImage.fromRegistry('docker/whalesay'),
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
                 linuxParams,
                 memoryLimitMiB: 1,
@@ -101,6 +99,95 @@ describe('Batch Job Definition', () => {
                 AttemptDurationSeconds: jobDefProps.timeout ? jobDefProps.timeout.toSeconds() : -1,
             },
             Type: 'container',
+        }, ResourcePart.Properties);
+    });
+    test('can use an ecr image', () => {
+        // WHEN
+        const repo = new ecr.Repository(stack, 'image-repo');
+
+        new batch.JobDefinition(stack, 'job-def', {
+            container: {
+                image: ecs.ContainerImage.fromEcrRepository(repo),
+            },
+        });
+
+        // THEN
+        expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+            ContainerProperties: {
+                Image: {
+                    'Fn::Join': [
+                        '',
+                        [
+                            {
+                                'Fn::Select': [
+                                    4,
+                                    {
+                                        'Fn::Split': [
+                                            ':',
+                                            {
+                                                'Fn::GetAtt': [
+                                                    'imagerepoD116FAF0',
+                                                    'Arn'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            '.dkr.ecr.',
+                            {
+                                'Fn::Select': [
+                                    3,
+                                    {
+                                        'Fn::Split': [
+                                            ':',
+                                            {
+                                                'Fn::GetAtt': [
+                                                    'imagerepoD116FAF0',
+                                                    'Arn'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            '.',
+                            {
+                                Ref: 'AWS::URLSuffix'
+                            },
+                            '/',
+                            {
+                                Ref: 'imagerepoD116FAF0'
+                            },
+                            ':latest'
+                        ]
+                    ]
+                },
+                Memory: 4,
+                Privileged: false,
+                ReadonlyRootFilesystem: false,
+                Vcpus: 1
+            }
+        }, ResourcePart.Properties);
+    });
+
+    test('can use a registry image', () => {
+        // WHEN
+        new batch.JobDefinition(stack, 'job-def', {
+            container: {
+                image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
+            },
+        });
+
+        // THEN
+        expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+            ContainerProperties: {
+                Image: 'docker/whalesay',
+                Memory: 4,
+                Privileged: false,
+                ReadonlyRootFilesystem: false,
+                Vcpus: 1,
+            },
         }, ResourcePart.Properties);
     });
 
