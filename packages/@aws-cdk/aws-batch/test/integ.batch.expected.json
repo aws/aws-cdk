@@ -582,6 +582,202 @@
         },
         "State": "ENABLED"
       }
+    },
+    "batchspotcomputeenvResourceInstanceRoleF6188F15": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "batch.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "batchspotcomputeenvResourceServiceInstanceRole8B0DF5A7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "batch.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSBatchServiceRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "batchspotcomputeenv2CE4DFD9": {
+      "Type": "AWS::Batch::ComputeEnvironment",
+      "Properties": {
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "batchspotcomputeenvResourceServiceInstanceRole8B0DF5A7",
+            "Arn"
+          ]
+        },
+        "Type": "UNMANAGED",
+        "ComputeResources": {
+          "AllocationStrategy": "BEST_FIT",
+          "BidPercentage": 80,
+          "InstanceRole": {
+            "Fn::GetAtt": [
+              "batchspotcomputeenvResourceInstanceRoleF6188F15",
+              "Arn"
+            ]
+          },
+          "InstanceTypes": [
+            "optimal"
+          ],
+          "MaxvCpus": 256,
+          "MinvCpus": 0,
+          "Subnets": [
+            {
+              "Ref": "vpcPrivateSubnet1Subnet934893E8"
+            },
+            {
+              "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+            },
+            {
+              "Ref": "vpcPrivateSubnet3Subnet985AC459"
+            }
+          ],
+          "Type": "SPOT"
+        },
+        "State": "ENABLED"
+      }
+    },
+    "batchjobqueueE3C528F2": {
+      "Type": "AWS::Batch::JobQueue",
+      "Properties": {
+        "ComputeEnvironmentOrder": [
+          {
+            "ComputeEnvironment": {
+              "Ref": "batchdemandcomputeenv6131030A"
+            },
+            "Order": 1
+          },
+          {
+            "ComputeEnvironment": {
+              "Ref": "batchspotcomputeenv2CE4DFD9"
+            },
+            "Order": 2
+          }
+        ],
+        "Priority": 1,
+        "State": "ENABLED"
+      }
+    },
+    "batchjobrepo4C508C51": {
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "batchjobdeffromecrE0E30DAD": {
+      "Type": "AWS::Batch::JobDefinition",
+      "Properties": {
+        "Type": "container",
+        "ContainerProperties": {
+          "Image": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    4,
+                    {
+                      "Fn::Split": [
+                        ":",
+                        {
+                          "Fn::GetAtt": [
+                            "batchjobrepo4C508C51",
+                            "Arn"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                ".dkr.ecr.",
+                {
+                  "Fn::Select": [
+                    3,
+                    {
+                      "Fn::Split": [
+                        ":",
+                        {
+                          "Fn::GetAtt": [
+                            "batchjobrepo4C508C51",
+                            "Arn"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                },
+                "/",
+                {
+                  "Ref": "batchjobrepo4C508C51"
+                },
+                ":latest"
+              ]
+            ]
+          },
+          "Memory": 4,
+          "Privileged": false,
+          "ReadonlyRootFilesystem": false,
+          "Vcpus": 1
+        },
+        "RetryStrategy": {
+          "Attempts": 1
+        },
+        "Timeout": {}
+      }
+    },
+    "batchjobdeffrom4007378D": {
+      "Type": "AWS::Batch::JobDefinition",
+      "Properties": {
+        "Type": "container",
+        "ContainerProperties": {
+          "Image": "docker/whalesay",
+          "Memory": 4,
+          "Privileged": false,
+          "ReadonlyRootFilesystem": false,
+          "Vcpus": 1
+        },
+        "RetryStrategy": {
+          "Attempts": 1
+        },
+        "Timeout": {}
+      }
     }
   }
 }
