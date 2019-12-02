@@ -27,6 +27,5 @@ export class DynamoEventSource extends StreamEventSource {
     );
 
     this.table.grantStreamRead(target);
-    dynamodb.Table.grantListStreams(target);
   }
 }
