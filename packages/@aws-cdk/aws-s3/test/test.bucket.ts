@@ -1723,5 +1723,51 @@ export = {
     // THEN
     new s3.Bucket(stack, 'b', { encryptionKey: key });
     test.done();
-  }
+  },
+
+  'Bucket with Server Access Logs'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const accessLogBucket = new Bucket(stack, 'AccessLogs');
+    new Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+      }
+    }));
+
+    test.done();
+  },
+
+  'Bucket with Server Access Logs with Prefix'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const accessLogBucket = new Bucket(stack, 'AccessLogs');
+    new Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      serverAccessLogsPrefix: 'hello',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+        LogFilePrefix: 'hello'
+      }
+    }));
+
+    test.done();
+  },
 };
