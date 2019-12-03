@@ -77,7 +77,6 @@
     "@aws-cdk/aws-kms": "1.18.0",
     "@aws-cdk/aws-lambda": "1.18.0",
     "@aws-cdk/aws-logs": "1.18.0",
-    "@aws-cdk/aws-sam": "1.18.0",
     "@aws-cdk/aws-secretsmanager": "1.18.0",
     "@aws-cdk/core": "1.18.0"
   },
@@ -90,7 +89,6 @@
     "@aws-cdk/aws-kms": "1.18.0",
     "@aws-cdk/aws-lambda": "1.18.0",
     "@aws-cdk/aws-logs": "1.18.0",
-    "@aws-cdk/aws-sam": "1.18.0",
     "@aws-cdk/aws-secretsmanager": "1.18.0",
     "@aws-cdk/core": "1.18.0"
   },

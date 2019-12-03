@@ -470,7 +470,53 @@ export = {
     }, ResourcePart.Properties));
 
     test.done();
-  }
+  },
+
+  'throws when trying to add rotation to a cluster without secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      masterUser: {
+        username: 'admin',
+        password: SecretValue.plainText('tooshort')
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // THEN
+    test.throws(() => cluster.addRotationSingleUser(), /without secret/);
+
+    test.done();
+  },
+
+  'throws when trying to add single user rotation multiple timet'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      masterUser: { username: 'admin' },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    test.throws(() => cluster.addRotationSingleUser(), /A single user rotation was already added to this cluster/);
+
+    test.done();
+  },
 };
 
 function testStack() {

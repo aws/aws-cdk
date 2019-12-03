@@ -460,11 +460,11 @@
         }
       }
     },
-    "InstanceSecurityGroupfromawscdkrdsinstanceInstanceRotationSecurityGroupBB71D98EIndirectPort60E4E51A": {
+    "InstanceSecurityGroupfromawscdkrdsinstanceInstanceRotationSingleUserSecurityGroupE959D912IndirectPortFF39F421": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from awscdkrdsinstanceInstanceRotationSecurityGroupBB71D98E:{IndirectPort}",
+        "Description": "from awscdkrdsinstanceInstanceRotationSingleUserSecurityGroupE959D912:{IndirectPort}",
         "FromPort": {
           "Fn::GetAtt": [
             "InstanceC1063A87",
@@ -479,7 +479,7 @@
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "InstanceRotationSecurityGroupEF8D211E",
+            "InstanceRotationSingleUserSecurityGroupF3FB5C25",
             "GroupId"
           ]
         },
@@ -533,7 +533,7 @@
         }
       }
     },
-    "InstanceSecretAttachedSecretBACA1D43": {
+    "InstanceSecretAttachment83BEE581": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
       "Properties": {
         "SecretId": {
@@ -545,44 +545,63 @@
         "TargetType": "AWS::RDS::DBInstance"
       }
     },
-    "InstanceSecretAttachedSecretRotationSchedule275109B7": {
+    "InstanceSecretAttachmentRotationScheduleCC555119": {
       "Type": "AWS::SecretsManager::RotationSchedule",
       "Properties": {
         "SecretId": {
-          "Ref": "InstanceSecretAttachedSecretBACA1D43"
+          "Ref": "InstanceSecretAttachment83BEE581"
         },
         "RotationLambdaARN": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":lambda:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":function:awscdkrdsinstanceInstanceRotation0925DC60"
-            ]
+          "Fn::GetAtt": [
+            "InstanceRotationSingleUser90E8AB49",
+            "Outputs.RotationLambdaARN"
           ]
         },
         "RotationRules": {
           "AutomaticallyAfterDays": 30
         }
-      },
-      "DependsOn": [
-        "InstanceRotationPermission63844D0A"
-      ]
+      }
+    },
+    "InstanceSecretAttachmentPolicy60A8B8DE": {
+      "Type": "AWS::SecretsManager::ResourcePolicy",
+      "Properties": {
+        "ResourcePolicy": {
+          "Statement": [
+            {
+              "Action": "secretsmanager:DeleteSecret",
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "SecretId": {
+          "Ref": "InstanceSecretAttachment83BEE581"
+        }
+      }
     },
     "InstanceC1063A87": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBInstanceClass": "db.t2.medium",
+        "DBInstanceClass": "db.t3.medium",
         "AllocatedStorage": "100",
         "AutoMinorVersionUpgrade": false,
         "BackupRetentionPeriod": 7,
@@ -751,10 +770,10 @@
         "RetentionInDays": 30
       }
     },
-    "InstanceRotationSecurityGroupEF8D211E": {
+    "InstanceRotationSingleUserSecurityGroupF3FB5C25": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-cdk-rds-instance/Instance/Rotation/SecurityGroup",
+        "GroupDescription": "aws-cdk-rds-instance/Instance/RotationSingleUser/SecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -767,12 +786,12 @@
         }
       }
     },
-    "InstanceRotationAA37A997": {
+    "InstanceRotationSingleUser90E8AB49": {
       "Type": "AWS::Serverless::Application",
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-          "SemanticVersion": "1.0.56"
+          "SemanticVersion": "1.1.3"
         },
         "Parameters": {
           "endpoint": {
@@ -790,13 +809,7 @@
               ]
             ]
           },
-          "functionName": "awscdkrdsinstanceInstanceRotation0925DC60",
-          "vpcSecurityGroupIds": {
-            "Fn::GetAtt": [
-              "InstanceRotationSecurityGroupEF8D211E",
-              "GroupId"
-            ]
-          },
+          "functionName": "awscdkrdsinstanceInstanceRotationSingleUserAFE3C214",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
@@ -810,30 +823,15 @@
                 }
               ]
             ]
+          },
+          "vpcSecurityGroupIds": {
+            "Fn::GetAtt": [
+              "InstanceRotationSingleUserSecurityGroupF3FB5C25",
+              "GroupId"
+            ]
           }
         }
       }
-    },
-    "InstanceRotationPermission63844D0A": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": "awscdkrdsinstanceInstanceRotation0925DC60",
-        "Principal": {
-          "Fn::Join": [
-            "",
-            [
-              "secretsmanager.",
-              {
-                "Ref": "AWS::URLSuffix"
-              }
-            ]
-          ]
-        }
-      },
-      "DependsOn": [
-        "InstanceRotationAA37A997"
-      ]
     },
     "InstanceAvailabilityAD5D452C": {
       "Type": "AWS::Events::Rule",
@@ -1002,7 +1000,6 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "EvaluationPeriods": 1,
-        "Threshold": 90,
         "Dimensions": [
           {
             "Name": "DBInstanceIdentifier",
@@ -1014,7 +1011,8 @@
         "MetricName": "CPUUtilization",
         "Namespace": "AWS/RDS",
         "Period": 300,
-        "Statistic": "Average"
+        "Statistic": "Average",
+        "Threshold": 90
       }
     },
     "FunctionServiceRole675BB04A": {
@@ -1088,8 +1086,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4": {"Type":"String","Description":"S3 bucket for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""},
-    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4": {"Type":"String","Description":"S3 key for asset version \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""},
-    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42ArtifactHashD6C3B3DD": {"Type":"String","Description":"Artifact hash for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""}
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""
+    },
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""
+    },
+    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42ArtifactHashD6C3B3DD": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""
+    }
   }
 }
