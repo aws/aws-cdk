@@ -27382,6 +27382,12 @@
         }
       }
     },
+    "AWS::WAFv2::RuleGroup.AllQueryArguments": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-allqueryarguments.html"
+    },
+    "AWS::WAFv2::RuleGroup.AllowAction": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-allowaction.html"
+    },
     "AWS::WAFv2::RuleGroup.AndStatementOne": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-andstatementone.html",
       "Properties": {

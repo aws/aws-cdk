@@ -664,7 +664,7 @@ export default class CodeGenerator {
     }
 
     // Yes, some types can be both collection and scalar. Looking at you, SAM.
-    if (schema.isScalarPropery(propSpec)) {
+    if (schema.isScalarProperty(propSpec)) {
       // Scalar type
       const typeNames = scalarTypeNames(propSpec);
       const types = genspec.specTypesToCodeTypes(resourceContext, typeNames);

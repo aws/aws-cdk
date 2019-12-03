@@ -64,12 +64,12 @@ function replaceIncompleteTypes(spec: schema.Specification) {
   for (const [name, definition] of Object.entries(spec.PropertyTypes)) {
     if (!schema.isRecordType(definition)
     && !schema.isCollectionProperty(definition)
-    && !schema.isScalarPropery(definition)
+    && !schema.isScalarProperty(definition)
     && !schema.isPrimitiveProperty(definition)) {
       // tslint:disable-next-line:no-console
-      console.log(`[${name}] Incomplete type, replacing with "Json"`);
+      console.log(`[${name}] Incomplete type, adding empty "Properties" field`);
 
-      (definition as unknown as schema.PrimitiveProperty).PrimitiveType = schema.PrimitiveType.Json;
+      (definition as unknown as schema.RecordProperty).Properties = {};
     }
   }
 }
