@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
+import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import path = require('path');
 import yargs = require('yargs');
@@ -48,8 +49,7 @@ async function parseCommandLineArguments() {
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' })
     )
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
-    )
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
@@ -66,13 +66,14 @@ async function parseCommandLineArguments() {
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependees' })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
@@ -192,7 +193,8 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           templatePath: args.template,
           strict: args.strict,
-          contextLines: args.contextLines
+          contextLines: args.contextLines,
+          fail: args.fail || !configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL),
         });
 
       case 'bootstrap':
@@ -236,11 +238,10 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
-        const generateOnly = configuration.settings.get(['generate-only']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language, undefined, generateOnly);
+          return await cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'version':
         return data(version.DISPLAY_VERSION);
