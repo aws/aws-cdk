@@ -58,7 +58,7 @@ function decorateResourceTypes(data: any) {
  * Some user-defined types are defined to not have any properties, and not
  * be a collection of other types either. They have no definition at all.
  *
- * Type them as "Json".
+ * Add a property object type with empty properties.
  */
 function replaceIncompleteTypes(spec: schema.Specification) {
   for (const [name, definition] of Object.entries(spec.PropertyTypes)) {

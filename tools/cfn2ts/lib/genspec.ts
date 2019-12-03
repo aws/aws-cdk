@@ -329,9 +329,8 @@ export function typeDispatch<T>(resourceContext: CodeName, spec: schema.Property
   // Atom or union of atoms
   if (scalarTypes.length > 1) {
     return visitor.visitAtomUnion(scalarTypes);
-  } else if (scalarTypes.length === 1) {
+  } else {
     return visitor.visitAtom(scalarTypes[0]);
   }
 
-  // We found a complex type that doesn't have any properties
 }
