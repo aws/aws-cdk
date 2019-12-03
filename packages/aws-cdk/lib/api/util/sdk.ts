@@ -53,6 +53,13 @@ export interface SDKOptions {
    * @default Automatically determine.
    */
   ec2creds?: boolean;
+
+  /**
+   * A path to a certificate bundle that contains a cert to be trusted.
+   *
+   * @default No certificate bundle
+   */
+  caBundlePath?: string;
 }
 
 /**
@@ -88,23 +95,7 @@ export class SDK implements ISDK {
 
     const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
 
-    // Find the package.json from the main toolkit
-    const pkg = (require.main as any).require('../package.json');
-    AWS.config.update({
-        customUserAgent: `${pkg.name}/${pkg.version}`
-    });
-
-    // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
-    if (options.proxyAddress === undefined) {
-      options.proxyAddress = httpsProxyFromEnvironment();
-    }
-    if (options.proxyAddress) { // Ignore empty string on purpose
-      debug('Using proxy server: %s', options.proxyAddress);
-      AWS.config.update({
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        httpOptions: { agent: require('proxy-agent')(options.proxyAddress) }
-      });
-    }
+    this.configureSDKHttpOptions(options);
 
     this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
@@ -196,6 +187,30 @@ export class SDK implements ISDK {
     return environment;
   }
 
+  private async configureSDKHttpOptions(options: SDKOptions) {
+    const config: {[k: string]: any} = {};
+    const httpOptions: {[k: string]: any} = {};
+    // Find the package.json from the main toolkit
+    const pkg = (require.main as any).require('../package.json');
+    config.customUserAgent = `${pkg.name}/${pkg.version}`;
+
+    // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
+    options.proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();
+    options.caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
+
+    if (options.proxyAddress) { // Ignore empty string on purpose
+      debug('Using proxy server: %s', options.proxyAddress);
+      httpOptions.proxy = options.proxyAddress;
+    }
+    if (options.caBundlePath) {
+      debug('Using ca bundle path: %s', options.caBundlePath);
+      const https = require('https');
+      httpOptions.agent = new https.Agent({ca: await readIfPossible(options.caBundlePath)});
+    }
+    config.httpOptions = httpOptions;
+
+    AWS.config.update(config);
+  }
 }
 
 /**
@@ -434,6 +449,19 @@ function httpsProxyFromEnvironment(): string | undefined {
   }
   if (process.env.HTTPS_PROXY) {
     return process.env.HTTPS_PROXY;
+  }
+  return undefined;
+}
+
+/**
+ * Find and return a CA certificate bundle path to be passed into the SDK.
+ */
+function caBundlePathFromEnvironment(): string | undefined {
+  if (process.env.aws_ca_bundle) {
+    return process.env.aws_ca_bundle;
+  }
+  if (process.env.AWS_CA_BUNDLE) {
+    return process.env.AWS_CA_BUNDLE;
   }
   return undefined;
 }
