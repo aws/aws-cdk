@@ -54,7 +54,7 @@
     "@aws-cdk/aws-s3": "1.18.0",
     "cdk-build-tools": "1.18.0",
     "cdk-integ-tools": "1.18.0",
-    "fast-check": "^1.18.1",
+    "fast-check": "^1.20.0",
     "pkglint": "1.18.0"
   },
   "repository": {

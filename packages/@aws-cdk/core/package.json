@@ -150,7 +150,7 @@
     "@types/lodash": "^4.14.149",
     "cdk-build-tools": "1.18.0",
     "cfn2ts": "1.18.0",
-    "fast-check": "^1.18.1",
+    "fast-check": "^1.20.0",
     "lodash": "^4.17.15",
     "pkglint": "1.18.0"
   },
