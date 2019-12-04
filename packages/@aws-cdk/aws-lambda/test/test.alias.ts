@@ -254,5 +254,42 @@ export = {
     });
 
     test.done();
+  },
+
+  'with event invoke config'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const version = fn.addVersion('1');
+
+    // WHEN
+    new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      onSuccess: {
+        bind: () => ({
+          destination: 'on-success-arn'
+        })
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3'
+      },
+      Qualifier: 'prod',
+      DestinationConfig: {
+        OnSuccess: {
+          Destination: 'on-success-arn'
+        }
+      }
+    }));
+
+    test.done();
   }
 };

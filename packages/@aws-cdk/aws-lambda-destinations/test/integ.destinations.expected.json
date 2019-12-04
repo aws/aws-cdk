@@ -1,0 +1,124 @@
+{
+  "Resources": {
+    "TopicBFC7AF6E": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "Queue4A7E3555": {
+      "Type": "AWS::SQS::Queue"
+    },
+    "FunctionServiceRole675BB04A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "FunctionServiceRoleDefaultPolicy2F49994A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "TopicBFC7AF6E"
+              }
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Queue4A7E3555",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "FunctionServiceRoleDefaultPolicy2F49994A",
+        "Roles": [
+          {
+            "Ref": "FunctionServiceRole675BB04A"
+          }
+        ]
+      }
+    },
+    "Function76856677": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = async (event) => {\n        if (event === 'OK') return 'success';\n        throw new Error('failure');\n      };"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "FunctionServiceRole675BB04A",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x"
+      },
+      "DependsOn": [
+        "FunctionServiceRoleDefaultPolicy2F49994A",
+        "FunctionServiceRole675BB04A"
+      ]
+    },
+    "FunctionEventInvokeConfig9F3DE447": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "Function76856677"
+        },
+        "Qualifier": "$LATEST",
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Ref": "TopicBFC7AF6E"
+            }
+          },
+          "OnSuccess": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "Queue4A7E3555",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "MaximumEventAgeInSeconds": 10800,
+        "MaximumRetryAttempts": 1
+      }
+    }
+  }
+}

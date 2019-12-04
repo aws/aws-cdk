@@ -1,5 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct } from '@aws-cdk/core';
+import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
@@ -21,7 +22,7 @@ export interface IAlias extends IFunction {
 /**
  * Properties for a new Lambda alias
  */
-export interface AliasProps {
+export interface AliasProps extends EventInvokeConfigOptions {
   /**
    * Description for the alias
    *
@@ -136,6 +137,17 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       resourceName: `${this.lambda.functionName}:${this.physicalName}`,
       sep: ':',
     });
+
+    if (props.onFailure || props.onSuccess || props.maximumEventAge || props.maximumRetryAttemps) {
+      new EventInvokeConfig(this, 'EventInvokeConfig', {
+        function: this.version.lambda,
+        qualifier: this.aliasName,
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maximumEventAge: props.maximumEventAge,
+        maximumRetryAttemps: props.maximumRetryAttemps
+      });
+    }
 
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur

@@ -1464,6 +1464,46 @@ export = {
     }));
 
     test.done();
+  },
+
+  'with event invoke config'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      onFailure: {
+        bind: () => ({ destination: 'on-failure-arn' }),
+      },
+      onSuccess: {
+        bind: () => ({ destination: 'on-success-arn' }),
+      },
+      maximumEventAge: cdk.Duration.hours(1),
+      maximumRetryAttemps: 0
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3'
+      },
+      Qualifier: '$LATEST',
+      DestinationConfig: {
+        OnFailure: {
+          Destination: 'on-failure-arn'
+        },
+        OnSuccess: {
+          Destination: 'on-success-arn'
+        },
+      },
+      MaximumEventAgeInSeconds: 3600,
+      MaximumRetryAttempts: 0
+    }));
+
+    test.done();
   }
 };
 

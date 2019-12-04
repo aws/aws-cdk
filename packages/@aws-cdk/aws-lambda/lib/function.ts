@@ -5,6 +5,7 @@ import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
+import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -33,7 +34,7 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps {
+export interface FunctionProps extends EventInvokeConfigOptions {
   /**
    * The source code of your Lambda function. You can point to a file in an
    * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
@@ -493,6 +494,17 @@ export class Function extends FunctionBase {
     }
 
     props.code.bindToResource(resource);
+
+    // Event Invoke Config
+    if (props.onFailure || props.onSuccess || props.maximumEventAge || props.maximumRetryAttemps) {
+      new EventInvokeConfig(this, 'EventInvokeConfig', {
+        function: this,
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maximumEventAge: props.maximumEventAge,
+        maximumRetryAttemps: props.maximumRetryAttemps,
+      });
+    }
   }
 
   /**
