@@ -41,6 +41,13 @@ export interface VersionProps {
    * Function to get the value of
    */
   readonly lambda: IFunction;
+
+  /**
+   * Specifies a provisioned concurrency configuration for a function's version.
+   *
+   * @default ProvisionedConcurrencyConfig execution number
+   */
+  readonly provisionedConcurrencyConfig?: IProvisionedConcurrencyConfiguration;
 }
 
 export interface VersionAttributes {
@@ -126,7 +133,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
-      functionName: props.lambda.functionName
+      functionName: props.lambda.functionName,
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrentExecutions(props)
     });
 
     this.version = version.attrVersion;
@@ -155,6 +163,23 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       ...props
     });
   }
+
+  /**
+   * Validate that the provisionedConcurrentExecutions makes sense
+   *
+   * We validate that they are positive values
+   */
+  private determineProvisionedConcurrentExecutions(props: VersionProps) {
+    if (!props.provisionedConcurrencyConfig) {
+      return undefined;
+    }
+
+    if (props.provisionedConcurrencyConfig.provisionedConcurrentExecutions < 0) {
+      throw new Error('provisionedConcurrentExecutions cannot be less tha 0');
+    }
+
+    return props.provisionedConcurrencyConfig;
+  }
 }
 
 /**
@@ -172,4 +197,15 @@ export class Version extends QualifiedFunctionBase implements IVersion {
  */
 function extractVersionFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
+}
+
+/**
+ * Specifies a provisioned concurrency configuration for a function's version.
+ */
+export interface IProvisionedConcurrencyConfiguration {
+  /**
+   * The amount of provisioned concurrency to allocate for the version
+   */
+
+  readonly provisionedConcurrentExecutions: number;
 }

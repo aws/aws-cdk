@@ -7,7 +7,7 @@ import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
-import { Version } from './lambda-version';
+import {IProvisionedConcurrencyConfiguration, Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { LogRetention } from './log-retention';
@@ -540,13 +540,15 @@ export class Function extends FunctionBase {
    * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda source code, or
    *  omit to skip validation.
    * @param description A description for this version.
+   * @param provisionedConcurrencyConfiguration A provisioned concurrency configuration for a function's version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+  public addVersion(name: string, codeSha256?: string, description?: string, pce?: IProvisionedConcurrencyConfiguration): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
+      provisionedConcurrencyConfig: pce,
     });
   }
 

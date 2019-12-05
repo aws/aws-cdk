@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct } from '@aws-cdk/core';
 import { IFunction, QualifiedFunctionBase } from './function-base';
-import { IVersion } from './lambda-version';
+import {IProvisionedConcurrencyConfiguration, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 
 export interface IAlias extends IFunction {
@@ -59,6 +59,13 @@ export interface AliasProps {
    * @default No additional versions
    */
   readonly additionalVersions?: VersionWeight[];
+
+  /**
+   * Specifies a provisioned concurrency configuration for a function's version.
+   *
+   * @default ProvisionedConcurrencyConfig execution number
+   */
+  readonly provisionedConcurrencyConfig?: IProvisionedConcurrencyConfiguration;
 }
 
 export interface AliasAttributes {
@@ -127,7 +134,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       description: props.description,
       functionName: this.version.lambda.functionName,
       functionVersion: props.version.version,
-      routingConfig: this.determineRoutingConfig(props)
+      routingConfig: this.determineRoutingConfig(props),
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrentExecutions(props)
     });
 
     this.functionArn = this.getResourceArnAttribute(alias.ref, {
@@ -199,6 +207,23 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     if (total > 1) {
       throw new Error(`Sum of additional version weights must not exceed 1, got: ${total}`);
     }
+  }
+
+  /**
+   * Validate that the provisionedConcurrentExecutions makes sense
+   *
+   * We validate that they are positive values
+   */
+  private determineProvisionedConcurrentExecutions(props: AliasProps) {
+    if (!props.provisionedConcurrencyConfig) {
+      return undefined;
+    }
+
+    if (props.provisionedConcurrencyConfig.provisionedConcurrentExecutions < 0) {
+      throw new Error('provisionedConcurrentExecutions cannot be less tha 0');
+    }
+
+    return props.provisionedConcurrencyConfig;
   }
 }
 
