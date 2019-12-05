@@ -171,6 +171,7 @@ export interface ComputeResourceProps {
    * The Amazon Resource Name (ARN) of the Amazon EC2 Spot Fleet IAM role applied to a SPOT compute environment.
    * For more information, see Amazon EC2 Spot Fleet Role in the AWS Batch User Guide.
    *
+   * @link https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
    * @default - no fleet role will be used
    */
   readonly spotIamFleetRole?: iam.IRole;
@@ -319,10 +320,11 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
 
     this.validateProps(props);
 
+    const spotFleetRole = this.getSpotFleetRole(props);
     let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
     // Only allow compute resources to be set when using UNMANAGED type
-    if (props.computeResources && !this.isManaged(props)) {
+    if (props.computeResources && !this.isManagedByAWS(props)) {
       computeResources = {
         allocationStrategy: props.allocationStrategy || AllocationStrategy.BEST_FIT,
         bidPercentage: props.computeResources.bidPercentage,
@@ -339,8 +341,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         maxvCpus: props.computeResources.maxvCpus || 256,
         minvCpus: props.computeResources.minvCpus || 0,
         placementGroup: props.computeResources.placementGroup && props.computeResources.placementGroup.ref,
-        securityGroupIds: this.buildSecurityGroupIds(props.computeResources.securityGroups),
-        spotIamFleetRole: props.computeResources.spotIamFleetRole && props.computeResources.spotIamFleetRole.roleArn,
+        securityGroupIds: this.buildSecurityGroupIds(props.computeResources.vpc, props.computeResources.securityGroups),
+        spotIamFleetRole: spotFleetRole ? spotFleetRole.roleArn : undefined,
         subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
         tags: props.computeResources.computeResourcesTags,
         type: props.computeResources.type || ComputeResourceType.ON_DEMAND,
@@ -359,8 +361,12 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
       }).roleArn,
       state: this.isEnabled(props) ? 'ENABLED' : 'DISABLED',
-      type: this.isManaged(props) ? 'MANAGED' : 'UNMANAGED',
+      type: this.isManagedByAWS(props) ? 'UNMANAGED' : 'MANAGED',
     });
+
+    if (props.computeResources && props.computeResources.vpc) {
+      this.node.addDependency(props.computeResources.vpc);
+    }
 
     this.computeEnvironmentArn = this.getResourceArnAttribute(computeEnvironment.ref, {
       service: 'batch',
@@ -374,7 +380,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     return props.enabled === undefined ? true : props.enabled;
   }
 
-  private isManaged(props: ComputeEnvironmentProps): boolean {
+  private isManagedByAWS(props: ComputeEnvironmentProps): boolean {
     return props.managed === undefined ? true : props.managed;
   }
 
@@ -386,11 +392,11 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       return;
     }
 
-    if (this.isManaged(props) && props.computeResources !== undefined) {
+    if (this.isManagedByAWS(props) && props.computeResources !== undefined) {
       throw new Error('It is not allowed to set computeResources on an AWS managed compute environment');
     }
 
-    if (!this.isManaged(props) && props.computeResources === undefined) {
+    if (!this.isManagedByAWS(props) && props.computeResources === undefined) {
       throw new Error('computeResources is missing but required on an unmanaged compute environment');
     }
 
@@ -444,11 +450,35 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     return instanceTypes.map((type: ec2.InstanceType) => type.toString());
   }
 
-  private buildSecurityGroupIds(securityGroups?: ec2.ISecurityGroup[]): string[] | undefined {
+  private buildSecurityGroupIds(vpc: ec2.IVpc, securityGroups?: ec2.ISecurityGroup[]): string[] | undefined {
     if (securityGroups === undefined) {
-      return undefined;
+      return [
+        new ec2.SecurityGroup(this, 'Resource-Security-Group', { vpc }).securityGroupId,
+      ];
     }
 
     return securityGroups.map((group: ec2.ISecurityGroup) => group.securityGroupId);
+  }
+
+  /**
+   * Generates an AWS IAM role for provisioning spotfleet resources
+   * if the allocation strategy is set to BEST_FIT or not defined.
+   *
+   * @param props - the compute environment construct properties
+   */
+  private getSpotFleetRole(props: ComputeEnvironmentProps): iam.IRole | undefined {
+    const spotFleetArn = `arn:aws:iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`;
+    let role = props.computeResources ? props.computeResources.spotIamFleetRole : undefined;
+
+    if (props.allocationStrategy && props.allocationStrategy !== AllocationStrategy.BEST_FIT) {
+      return;
+    }
+
+    if (props.computeResources && props.computeResources.type &&
+      props.computeResources.type === ComputeResourceType.SPOT) {
+      role = iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role', spotFleetArn);
+    }
+
+    return role;
   }
 }

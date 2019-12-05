@@ -8,7 +8,7 @@ import { throws } from 'assert';
 import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
-  let expectedUnmanagedDefaultComputeProps: any;
+  let expectedManagedDefaultComputeProps: any;
   let defaultServiceRole: any;
 
   let stack: cdk.Stack;
@@ -28,7 +28,7 @@ describe('Batch Compute Evironment', () => {
       },
     };
 
-    expectedUnmanagedDefaultComputeProps = (overrides: any) => {
+    expectedManagedDefaultComputeProps = (overrides: any) => {
       return {
         ComputeResources: {
           AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
@@ -83,6 +83,37 @@ describe('Batch Compute Evironment', () => {
   });
 
   describe('using spot resources', () => {
+    test('should provide a spotfleet role if one is not given', () => {
+      // WHEN
+      new batch.ComputeEnvironment(stack, 'test-compute-env', {
+        managed: false,
+        computeResources: {
+          type: batch.ComputeResourceType.SPOT,
+          vpc,
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Type: 'MANAGED',
+        ...expectedManagedDefaultComputeProps({
+          Type: batch.ComputeResourceType.SPOT,
+          SpotIamFleetRole: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:aws:iam::',
+                {
+                  Ref: 'AWS::AccountId'
+                },
+                ':role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet',
+              ],
+            ],
+          },
+        }),
+      }, ResourcePart.Properties));
+    });
+
     describe('with a bid percentage', () => {
       test('should deny my bid if set below 0', () => {
         // THEN
@@ -120,11 +151,10 @@ describe('Batch Compute Evironment', () => {
     test('renders the correct cloudformation properties', () => {
       // WHEN
       const props = {
-        allocationStrategy: batch.AllocationStrategy.BEST_FIT_PROGRESSIVE,
+        allocationStrategy: batch.AllocationStrategy.BEST_FIT,
         computeEnvironmentName: 'my-test-compute-env',
         computeResources: {
           vpc,
-          bidPercentage: 20,
           computeResourcesTags: new cdk.Tag('foo', 'bar'),
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
@@ -146,10 +176,7 @@ describe('Batch Compute Evironment', () => {
               allowAllOutbound: true,
             }),
           ],
-          spotIamFleetRole: new iam.Role(stack, 'test-spotfleet-role', {
-            assumedBy: new iam.ServicePrincipal('spotfleet.amazonaws.com'),
-          }),
-          type: batch.ComputeResourceType.SPOT,
+          type: batch.ComputeResourceType.ON_DEMAND,
           vpcSubnets: {
             subnetType: ec2.SubnetType.PRIVATE,
           },
@@ -163,7 +190,7 @@ describe('Batch Compute Evironment', () => {
       // THEN
       expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
         ComputeEnvironmentName: 'my-test-compute-env',
-        Type: 'UNMANAGED',
+        Type: 'MANAGED',
         State: 'DISABLED',
         ServiceRole: {
           'Fn::GetAtt': [
@@ -172,8 +199,7 @@ describe('Batch Compute Evironment', () => {
           ],
         },
         ComputeResources: {
-          AllocationStrategy: batch.AllocationStrategy.BEST_FIT_PROGRESSIVE,
-          BidPercentage: props.computeResources.bidPercentage,
+          AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
           DesiredvCpus: props.computeResources.desiredvCpus,
           Ec2KeyPair: props.computeResources.ec2KeyPair,
           ImageId: {
@@ -193,17 +219,11 @@ describe('Batch Compute Evironment', () => {
           SecurityGroupIds: [
             {
               'Fn::GetAtt': [
-                props.computeResources.securityGroups ? `${props.computeResources.securityGroups[0].node.uniqueId}872EB48A` : '',
+                'testsg872EB48A',
                 'GroupId'
               ]
             }
           ],
-          SpotIamFleetRole: {
-            'Fn::GetAtt': [
-              props.computeResources.spotIamFleetRole ? `${props.computeResources.spotIamFleetRole.node.uniqueId}36A9D2CA` : '',
-              'Arn'
-            ]
-          },
           Subnets: [
             {
               Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`
@@ -218,7 +238,7 @@ describe('Batch Compute Evironment', () => {
             defaultPriority: 100,
             value: 'bar'
           },
-          Type: 'SPOT'
+          Type: 'EC2'
         },
       }, ResourcePart.Properties));
     });
@@ -235,7 +255,7 @@ describe('Batch Compute Evironment', () => {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-          Type: 'UNMANAGED',
+          Type: 'MANAGED',
           ServiceRole: {
             'Fn::GetAtt': [
               'testcomputeenvResourceServiceInstanceRole105069A5',
@@ -288,7 +308,7 @@ describe('Batch Compute Evironment', () => {
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
           ...defaultServiceRole,
-          ...expectedUnmanagedDefaultComputeProps({
+          ...expectedManagedDefaultComputeProps({
             MinvCpus: 0,
           }),
         }, ResourcePart.Properties));
@@ -307,7 +327,7 @@ describe('Batch Compute Evironment', () => {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-          ...expectedUnmanagedDefaultComputeProps({
+          ...expectedManagedDefaultComputeProps({
             MaxvCpus: 256,
           }),
         }, ResourcePart.Properties));
@@ -342,7 +362,7 @@ describe('Batch Compute Evironment', () => {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-          ...expectedUnmanagedDefaultComputeProps({
+          ...expectedManagedDefaultComputeProps({
             InstanceTypes: [ 'optimal' ],
           }),
         }, ResourcePart.Properties));
@@ -361,7 +381,7 @@ describe('Batch Compute Evironment', () => {
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
-          ...expectedUnmanagedDefaultComputeProps({
+          ...expectedManagedDefaultComputeProps({
             Type: batch.ComputeResourceType.ON_DEMAND,
           }),
         }, ResourcePart.Properties));
