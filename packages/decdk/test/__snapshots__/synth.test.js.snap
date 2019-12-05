@@ -801,6 +801,12 @@ Object {
     "VPCPublicSubnet1EIP6AD938E8": Object {
       "Properties": Object {
         "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "ecs/VPC/PublicSubnet1",
+          },
+        ],
       },
       "Type": "AWS::EC2::EIP",
     },
@@ -3091,6 +3097,12 @@ Object {
     "VPCPublicSubnet1EIP6AD938E8": Object {
       "Properties": Object {
         "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet1",
+          },
+        ],
       },
       "Type": "AWS::EC2::EIP",
     },
@@ -3189,6 +3201,12 @@ Object {
     "VPCPublicSubnet2EIP4947BC00": Object {
       "Properties": Object {
         "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet2",
+          },
+        ],
       },
       "Type": "AWS::EC2::EIP",
     },
