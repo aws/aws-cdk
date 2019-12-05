@@ -167,15 +167,15 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   /**
    * Validate that the provisionedConcurrentExecutions makes sense
    *
-   * We validate that they are positive values
+   * Member must have value greater than or equal to 1
    */
   private determineProvisionedConcurrentExecutions(props: VersionProps) {
     if (!props.provisionedConcurrencyConfig) {
       return undefined;
     }
 
-    if (props.provisionedConcurrencyConfig.provisionedConcurrentExecutions < 0) {
-      throw new Error('provisionedConcurrentExecutions cannot be less tha 0');
+    if (props.provisionedConcurrencyConfig.provisionedConcurrentExecutions <= 0) {
+      throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
     return props.provisionedConcurrencyConfig;
