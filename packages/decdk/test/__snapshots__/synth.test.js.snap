@@ -1090,6 +1090,24 @@ Object {
         "PolicyDocument": Object {
           "Statement": Array [
             Object {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "TableCD117FA1",
+                        "Arn",
+                      ],
+                    },
+                    "/stream/*",
+                  ],
+                ],
+              },
+            },
+            Object {
               "Action": Array [
                 "dynamodb:DescribeStream",
                 "dynamodb:GetRecords",
@@ -1102,11 +1120,6 @@ Object {
                   "StreamArn",
                 ],
               },
-            },
-            Object {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
