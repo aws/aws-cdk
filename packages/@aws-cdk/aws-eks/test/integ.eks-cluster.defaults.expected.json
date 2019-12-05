@@ -84,7 +84,13 @@
     "ClusterDefaultVpcPublicSubnet1EIP498E2BD2": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E": {
@@ -175,7 +181,13 @@
     "ClusterDefaultVpcPublicSubnet2EIP265F4810": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728": {
@@ -266,7 +278,13 @@
     "ClusterDefaultVpcPublicSubnet3EIP0CBF6D05": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
+          }
+        ]
       }
     },
     "ClusterDefaultVpcPublicSubnet3NATGatewayEF4BA49A": {
