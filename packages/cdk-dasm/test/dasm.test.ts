@@ -42,6 +42,27 @@ test('multiple of same type', async () => {
   })).toMatchSnapshot();
 });
 
+test('parameter with default', async () => {
+  expect(await dasm({
+    Parameters: {
+      MyParam: {
+        Description: 'Example Parameter',
+        Default: 'Default Value'
+      }
+    }
+  })).toMatchSnapshot();
+});
+
+test('parameter without default', async () => {
+  expect(await dasm({
+    Parameters: {
+      MyParam: {
+        Description: 'Example Parameter'
+      }
+    }
+  })).toMatchSnapshot();
+});
+
 test('bucket-and-key', async () => {
   expect(await dasm(require('./bucket-key.json'))).toMatchSnapshot();
 });

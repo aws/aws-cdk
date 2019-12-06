@@ -14,6 +14,11 @@ interface ConstructDefinition {
   props: { [key: string]: any };
 }
 
+interface ParameterDefinition {
+  id: string;
+  props: { [key: string]: any };
+}
+
 export interface DisassemblerOptions {
   /**
    * Include a timestamp in the generated output.
@@ -24,6 +29,9 @@ export interface DisassemblerOptions {
 }
 
 export async function dasmTypeScript(template: Template, options: DisassemblerOptions = {}) {
+  
+  // Collect Resources 
+
   const definitions = new Array<ConstructDefinition>();
 
   for (const [ id, resource ] of Object.entries(template.Resources || {})) {
@@ -34,6 +42,17 @@ export async function dasmTypeScript(template: Template, options: DisassemblerOp
       id,
       ...toCfnClassName(type),
       props: capitalizeKeys(props)
+    });
+  }
+
+  // Collect parameters
+
+  const parameters = new Array<ParameterDefinition>();
+
+  for (const [ id, parameter, ] of Object.entries(template.Parameters || {})) {
+    parameters.push({
+      id,
+      props: capitalizeKeys(parameter)
     });
   }
 
@@ -53,7 +72,7 @@ export async function dasmTypeScript(template: Template, options: DisassemblerOp
   // imports
   //
 
-  code.line(`import { Stack, StackProps, Construct, Fn } from '@aws-cdk/core';`);
+  code.line(`import { Stack, StackProps, Construct, Fn, CfnParameter } from '@aws-cdk/core';`);
 
   for (const ns of getUniqueNamespaces(definitions)) {
     const importName = `@aws-cdk/aws-${ns}`;
@@ -70,6 +89,25 @@ export async function dasmTypeScript(template: Template, options: DisassemblerOp
   code.openBlock(`constructor(scope: Construct, id: string, props: StackProps = {})`);
   code.line(`super(scope, id, props);`);
 
+  // Parameter definitions
+
+  for (const param of parameters) {
+
+    code.indent(`const ${param.id} = new CfnParameter(this, '${param.id}', {`);
+
+    // Default is needed, so if not supplied in CFN, then we'll
+    // allow it to be passed in context during `cdk synth`
+    if (!('default' in param.props)) {
+      code.line(`default: this.node.tryGetContext('${param.id}'),`); // single line
+    }
+
+    printProps(param.props, code);
+
+    code.unindent('});');
+  }
+
+  // Resource definitions
+
   for (const def of definitions) {
 
     // no props
@@ -80,19 +118,7 @@ export async function dasmTypeScript(template: Template, options: DisassemblerOp
 
     code.indent(`new ${def.className}(this, '${def.id}', {`);
 
-    for (const [key, value] of Object.entries(def.props)) {
-      const json = JSON.stringify(value, undefined, 2);
-      const [ first, ...rest ] = json.split('\n');
-
-      if (rest.length === 0) {
-        code.line(`${key}: ${first},`); // single line
-      } else {
-        code.line(`${key}: ${first}`);
-        rest.forEach((r, i) => {
-          code.line(r + ((i === rest.length - 1) ? ',' : ''));
-        });
-      }
-    }
+    printProps(def.props, code);
 
     code.unindent('});');
   }
@@ -107,6 +133,22 @@ export async function dasmTypeScript(template: Template, options: DisassemblerOp
   await code.save(workdir);
 
   return (await readFile(path.join(workdir, outFile))).toString();
+}
+
+function printProps(props: { [key: string]: any }, code: CodeMaker) {
+  for (const [key, value] of Object.entries(props)) {
+    const json = JSON.stringify(value, undefined, 2);
+    const [ first, ...rest ] = json.split('\n');
+
+    if (rest.length === 0) {
+      code.line(`${key}: ${first},`); // single line
+    } else {
+      code.line(`${key}: ${first}`);
+      rest.forEach((r, i) => {
+        code.line(r + ((i === rest.length - 1) ? ',' : ''));
+      });
+    }
+  }
 }
 
 function capitalizeKeys(x: any): any {
@@ -149,9 +191,14 @@ function getUniqueNamespaces(definitions: Array<ConstructDefinition>): String[] 
 
 interface Template {
   Resources: { [id: string]: Resource };
+  Parameters: { [id: string]: Parameter};
 }
 
 interface Resource {
   Type: string;
   Properties?: { [prop: string]: any }
+}
+
+interface Parameter {
+  [prop: string]: any
 }
