@@ -26,6 +26,7 @@ export class FullActionDescriptor {
   public readonly region?: string;
   public readonly role?: iam.IRole;
   public readonly configuration: any;
+  public readonly namespace?: string;
 
   constructor(props: FullActionDescriptorProps) {
     this.action = props.action;
@@ -41,6 +42,7 @@ export class FullActionDescriptor {
     this.outputs = deduplicateArtifacts(actionProperties.outputs);
     this.region = props.actionRegion || actionProperties.region;
     this.role = actionProperties.role !== undefined ? actionProperties.role : props.actionRole;
+    this.namespace = actionProperties.namespace;
 
     this.configuration = props.actionConfig.configuration;
   }

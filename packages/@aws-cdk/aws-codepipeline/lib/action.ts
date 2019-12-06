@@ -84,6 +84,14 @@ export interface ActionProperties {
   readonly artifactBounds: ActionArtifactBounds;
   readonly inputs?: Artifact[];
   readonly outputs?: Artifact[];
+
+  /**
+   * The namespace for output variables from this Action
+   *
+   * @default Namespace will be excluded
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html
+   */
+  readonly namespace?: string;
 }
 
 export interface ActionBindOptions {
@@ -181,6 +189,14 @@ export interface CommonActionProps {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
    */
   readonly runOrder?: number;
+
+  /**
+   * The namespace for output variables from this Action
+   *
+   * @default Namespace will be excluded
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html
+   */
+  readonly namespace?: string;
 }
 
 /**

@@ -403,6 +403,72 @@ export = {
 
     test.done();
   },
+
+  'adds a namespace'(test: Test) {
+    const stack = new cdk.Stack();
+    const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
+
+    const sourceOutput = new codepipeline.Artifact();
+    const sourceAction = new FakeSourceAction({
+      actionName: 'CodeCommit',
+      namespace: 'CodeCommitNamespace',
+      output: sourceOutput,
+    });
+    pipeline.addStage({
+      stageName: 'Source',
+      actions: [sourceAction],
+    });
+
+    pipeline.addStage({
+      stageName: 'Build',
+      actions: [
+        new FakeBuildAction({
+          actionName: 'CodeBuild',
+          input: sourceOutput,
+          output: new codepipeline.Artifact(),
+        }),
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+        {
+          "Name": "Source",
+          "Actions": [
+            {
+              "Name": "CodeCommit",
+              "Namespace": "CodeCommitNamespace",
+              "OutputArtifacts": [
+                {
+                  "Name": "Artifact_Source_CodeCommit",
+                },
+              ],
+            }
+          ],
+        },
+        {
+          "Name": "Build",
+          "Actions": [
+            {
+              "Name": "CodeBuild",
+              "InputArtifacts": [
+                {
+                  "Name": "Artifact_Source_CodeCommit",
+                }
+              ],
+              "OutputArtifacts": [
+                {
+                  "Name": "Artifact_Build_CodeBuild",
+                },
+              ],
+            }
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {

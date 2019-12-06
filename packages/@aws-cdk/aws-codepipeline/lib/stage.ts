@@ -145,6 +145,7 @@ export class Stage implements IStage {
     const inputArtifacts = cdk.Lazy.anyValue({ produce: () =>  this.renderArtifacts(action.inputs)}, { omitEmptyArray: true});
     return {
       name: action.actionName,
+      namespace: action.namespace,
       inputArtifacts,
       outputArtifacts,
       actionTypeId: {
