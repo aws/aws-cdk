@@ -3,8 +3,6 @@ import os
 import json
 import logging
 import sys
-
-sys.path.insert(0, '/opt/awscli')
 import botocore.session
 from botocore.vendored import requests
 
@@ -13,12 +11,6 @@ logger.setLevel(logging.INFO)
 
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
-
-# these are coming from the kubectl layer
-os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
-
-outdir = os.environ.get('TEST_OUTDIR', '/tmp')
-kubeconfig = os.path.join(outdir, 'kubeconfig')
 
 def handler(event, context):
 

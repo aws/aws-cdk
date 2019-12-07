@@ -5,7 +5,6 @@ import lambda = require('@aws-cdk/aws-lambda');
 import { Construct, Duration, Token } from '@aws-cdk/core';
 import path = require('path');
 import { CfnClusterProps } from './eks.generated';
-import { KubectlLayer } from './kubectl-layer';
 
 /**
  * A low-level CFN resource Amazon EKS cluster implemented through a custom
@@ -46,7 +45,6 @@ export class ClusterResource extends Construct {
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       memorySize: 512,
-      layers: [ KubectlLayer.getOrCreate(this) ],
     });
 
     if (!props.roleArn) {
