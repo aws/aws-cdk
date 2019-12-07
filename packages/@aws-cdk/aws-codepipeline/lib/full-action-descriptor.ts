@@ -13,6 +13,7 @@ export interface FullActionDescriptorProps {
  * This class is private to the aws-codepipeline package.
  */
 export class FullActionDescriptor {
+  public readonly action: IAction;
   public readonly actionName: string;
   public readonly category: ActionCategory;
   public readonly owner: string;
@@ -27,6 +28,7 @@ export class FullActionDescriptor {
   public readonly configuration: any;
 
   constructor(props: FullActionDescriptorProps) {
+    this.action = props.action;
     const actionProperties = props.action.actionProperties;
     this.actionName = actionProperties.actionName;
     this.category = actionProperties.category;

@@ -16,7 +16,7 @@ export = {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
-    stack.templateOptions.transform = 'SAMy';
+    stack.templateOptions.transforms = ['SAMy'];
     test.deepEqual(toCloudFormation(stack), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
@@ -54,9 +54,35 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Description: 'StackDescription',
-      Transform: ['DeprecatedField', 'Transform'],
+      Transform: ['Transform', 'DeprecatedField'],
       AWSTemplateFormatVersion: 'TemplateVersion',
       Metadata: { MetadataKey: 'MetadataValue' }
+    });
+
+    test.done();
+  },
+
+  'stack.templateOptions.transforms removes duplicate values'(test: Test) {
+    const stack = new Stack();
+
+    stack.templateOptions.transforms = ['A', 'B', 'C', 'A'];
+
+    test.deepEqual(toCloudFormation(stack), {
+      Transform: ['A', 'B', 'C']
+    });
+
+    test.done();
+  },
+
+  'stack.addTransform() adds a transform'(test: Test) {
+    const stack = new Stack();
+
+    stack.addTransform('A');
+    stack.addTransform('B');
+    stack.addTransform('C');
+
+    test.deepEqual(toCloudFormation(stack), {
+      Transform: ['A', 'B', 'C']
     });
 
     test.done();
@@ -307,6 +333,59 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'cross stack references and dependencies work within child stacks (non-nested)'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const child2 = new Stack(parent, 'Child2');
+    const resourceA = new CfnResource(child1, 'ResourceA', { type: 'RA' });
+    const resourceB = new CfnResource(child1, 'ResourceB', { type: 'RB' });
+
+    // WHEN
+    const resource2 = new CfnResource(child2, 'Resource1', {
+      type: 'R2',
+      properties: {
+        RefToResource1: resourceA.ref
+      }
+    });
+    resource2.addDependsOn(resourceB);
+
+    // THEN
+    const assembly = app.synth();
+    const parentTemplate = assembly.getStackArtifact(parent.artifactId).template;
+    const child1Template = assembly.getStackArtifact(child1.artifactId).template;
+    const child2Template = assembly.getStackArtifact(child2.artifactId).template;
+
+    test.deepEqual(parentTemplate, {});
+    test.deepEqual(child1Template, {
+      Resources: {
+        ResourceA: { Type: 'RA' } ,
+        ResourceB: { Type: 'RB' }
+      },
+      Outputs: {
+        ExportsOutputRefResourceA461B4EF9: {
+          Value: { Ref: 'ResourceA' },
+          Export: { Name: 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' }
+        }
+      }
+    });
+    test.deepEqual(child2Template, {
+      Resources: {
+        Resource1: {
+          Type: 'R2',
+          Properties: {
+            RefToResource1: { 'Fn::ImportValue': 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' }
+          }
+        }
+      }
+    });
+
+    test.deepEqual(assembly.getStackArtifact(child1.artifactId).dependencies.map(x => x.id), []);
+    test.deepEqual(assembly.getStackArtifact(child2.artifactId).dependencies.map(x => x.id), [ 'ParentChild18FAEF419' ]);
     test.done();
   },
 
