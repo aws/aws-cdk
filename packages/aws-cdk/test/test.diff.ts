@@ -97,7 +97,7 @@ export = {
     test.done();
   },
 
-  async 'exits with 1 with diffs on stack with error metadata'(test: Test) {
+  async 'throws an error during diffs on stack with error metadata'(test: Test) {
     // GIVEN
     const provisioner: IDeploymentTarget = {
       async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
