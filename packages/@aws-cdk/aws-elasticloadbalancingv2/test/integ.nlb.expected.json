@@ -83,7 +83,13 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -174,7 +180,13 @@
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -385,15 +397,15 @@
       "Properties": {
         "Port": 443,
         "Protocol": "TCP",
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4"
-        },
         "Targets": [
           {
             "Id": "10.0.1.1"
           }
         ],
-        "TargetType": "ip"
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
       },
       "DependsOn": [
         "VPCIGWB7E252D3"
