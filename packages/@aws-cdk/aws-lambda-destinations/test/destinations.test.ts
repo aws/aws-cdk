@@ -55,6 +55,55 @@ test('event bus as destination', () => {
   });
 });
 
+test('event bus as destination defaults to default event bus', () => {
+  // WHEN
+  new lambda.Function(stack, 'Function', {
+    ...lambdaProps,
+    onSuccess: new destinations.EventBridgeBus()
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    DestinationConfig: {
+      OnSuccess: {
+        Destination: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition'
+              },
+              ':events:',
+              {
+                Ref: 'AWS::Region'
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId'
+              },
+              ':event-bus/default'
+            ]
+          ]
+        }
+      }
+    }
+  });
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'events:PutEvents',
+          Effect: 'Allow',
+          Resource: '*'
+        }
+      ],
+      Version: '2012-10-17'
+    }
+  });
+});
+
 test('lambda as destination', () => {
   // GIVEN
   const successLambda = new lambda.Function(stack, 'SuccessFunction', {
