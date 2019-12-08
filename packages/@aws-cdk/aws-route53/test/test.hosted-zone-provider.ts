@@ -1,14 +1,16 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
-import { HostedZone, HostedZoneAttributes } from '../lib';
+import { HostedZone } from '../lib';
 
 export = {
   'Hosted Zone Provider': {
-    'HostedZoneProvider will return context values if availble'(test: Test) {
+    'HostedZoneProvider will return context values if available'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
-      const filter = {domainName: 'test.com'};
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '12345', region: 'us-east-1' }
+      });
+      const filter = { domainName: 'test.com' };
 
       HostedZone.fromLookup(stack, 'Ref', filter);
 
@@ -18,36 +20,35 @@ export = {
       const fakeZoneId = '11111111111111';
       const fakeZone = {
         Id: `/hostedzone/${fakeZoneId}`,
-        Name: "example.com.",
-        CallerReference: "TestLates-PublicZo-OESZPDFV7G6A",
+        Name: 'example.com.',
+        CallerReference: 'TestLates-PublicZo-OESZPDFV7G6A',
         Config: {
-          Comment: "CDK created",
+          Comment: 'CDK created',
           PrivateZone: false
         },
         ResourceRecordSetCount: 3
       };
 
-      const stack2 = new cdk.Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+      const stack2 = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '12345', region: 'us-east-1' }
+      });
       stack2.node.setContext(missing[0].key, fakeZone);
-
-      const cdkZoneProps: HostedZoneAttributes = {
-        hostedZoneId: fakeZone.Id,
-        zoneName: 'example.com',
-      };
-
-      const cdkZone = HostedZone.fromHostedZoneAttributes(stack2, 'MyZone', cdkZoneProps);
 
       // WHEN
       const zoneRef = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
 
       // THEN
-      test.deepEqual(zoneRef.hostedZoneId, cdkZone.hostedZoneId);
+      test.deepEqual(zoneRef.hostedZoneId, fakeZoneId);
       test.done();
     },
-    'HostedZoneProvider will return context values if availble when using plain hosted zone id'(test: Test) {
+    'HostedZoneProvider will return context values if available when using plain hosted zone id'(
+      test: Test
+    ) {
       // GIVEN
-      const stack = new cdk.Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
-      const filter = {domainName: 'test.com'};
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '12345', region: 'us-east-1' }
+      });
+      const filter = { domainName: 'test.com' };
 
       HostedZone.fromLookup(stack, 'Ref', filter);
 
@@ -56,32 +57,29 @@ export = {
 
       const fakeZoneId = '11111111111111';
       const fakeZone = {
-        Id: fakeZoneId,
-        Name: "example.com.",
-        CallerReference: "TestLates-PublicZo-OESZPDFV7G6A",
+        Id: `/hostedzone/${fakeZoneId}`,
+        Name: 'example.com.',
+        CallerReference: 'TestLates-PublicZo-OESZPDFV7G6A',
         Config: {
-          Comment: "CDK created",
+          Comment: 'CDK created',
           PrivateZone: false
         },
         ResourceRecordSetCount: 3
       };
 
-      const stack2 = new cdk.Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+      const stack2 = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '12345', region: 'us-east-1' }
+      });
       stack2.node.setContext(missing[0].key, fakeZone);
 
-      const cdkZoneProps: HostedZoneAttributes = {
-        hostedZoneId: fakeZone.Id,
-        zoneName: 'example.com',
-      };
-
-      const cdkZone = HostedZone.fromHostedZoneAttributes(stack2, 'MyZone', cdkZoneProps);
+      const zone = HostedZone.fromLookup(stack2, 'MyZoneProvider', filter);
 
       // WHEN
-      const zoneId = cdkZone.hostedZoneId;
+      const zoneId = zone.hostedZoneId;
 
       // THEN
       test.deepEqual(fakeZoneId, zoneId);
       test.done();
-    },
+    }
   }
 };
