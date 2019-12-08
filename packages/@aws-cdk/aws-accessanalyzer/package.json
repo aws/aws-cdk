@@ -66,7 +66,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.18.0",
     "cdk-build-tools": "1.18.0",
-    "cfn2ts": "^1.18.0",
+    "cfn2ts": "1.18.0",
     "pkglint": "1.18.0"
   },
   "dependencies": {
