@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Stack } from '@aws-cdk/core';
+import { Construct, Stack } from '@aws-cdk/core';
 
 /**
  * Use an Event Bridge event bus as a Lambda destination.
@@ -14,7 +14,7 @@ export class EventBridgeBus implements lambda.IDestination {
   /**
    * Returns a destination configuration
    */
-  public bind(fn: lambda.IFunction): lambda.DestinationConfig {
+  public bind(_scope: Construct, fn: lambda.IFunction): lambda.DestinationConfig {
     // deduplicated automatically
     events.EventBus.grantPutEvents(fn); // Cannot restrict to a specific resource
 

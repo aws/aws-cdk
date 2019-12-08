@@ -1,5 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sqs = require('@aws-cdk/aws-sqs');
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Use a SQS queue as a Lambda destination
@@ -11,7 +12,7 @@ export class SqsQueue implements lambda.IDestination {
   /**
    * Returns a destination configuration
    */
-  public bind(fn: lambda.IFunction): lambda.DestinationConfig {
+  public bind(_scope: Construct, fn: lambda.IFunction): lambda.DestinationConfig {
     // deduplicated automatically
     this.queue.grantSendMessages(fn);
 

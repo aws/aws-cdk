@@ -83,8 +83,8 @@ export class EventInvokeConfig extends Resource {
     new CfnEventInvokeConfig(this, 'Resource', {
       destinationConfig: props.onFailure || props.onSuccess
         ? {
-          ...props.onFailure ? { onFailure: props.onFailure.bind(props.function) } : {},
-          ...props.onSuccess ? { onSuccess: props.onSuccess.bind(props.function) } : {},
+          ...props.onFailure ? { onFailure: props.onFailure.bind(this, props.function) } : {},
+          ...props.onSuccess ? { onSuccess: props.onSuccess.bind(this, props.function) } : {},
         }
         : undefined,
       functionName: props.function.functionName,

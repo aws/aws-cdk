@@ -1,5 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Use a SNS topic as a Lambda destination
@@ -11,7 +12,7 @@ export class SnsTopic implements lambda.IDestination {
   /**
    * Returns a destination configuration
    */
-  public bind(fn: lambda.IFunction): lambda.DestinationConfig {
+  public bind(_scope: Construct, fn: lambda.IFunction): lambda.DestinationConfig {
     // deduplicated automatically
     this.topic.grantPublish(fn);
 

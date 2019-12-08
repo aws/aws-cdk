@@ -1,4 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Use a Lambda function as a Lambda destination
@@ -10,7 +11,7 @@ export class LambdaFunction implements lambda.IDestination {
   /**
    * Returns a destination configuration
    */
-  public bind(fn: lambda.IFunction): lambda.DestinationConfig {
+  public bind(_scope: Construct, fn: lambda.IFunction): lambda.DestinationConfig {
     // deduplicated automatically
     this.fn.grantInvoke(fn);
 

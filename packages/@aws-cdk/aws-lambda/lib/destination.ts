@@ -1,3 +1,4 @@
+import { Construct } from '@aws-cdk/core';
 import { IFunction } from './function-base';
 
 /**
@@ -17,5 +18,5 @@ export interface IDestination {
   /**
    * Binds this destination to the Lambda function
    */
-  bind(fn: IFunction): DestinationConfig;
+  bind(scope: Construct, fn: IFunction): DestinationConfig;
 }
