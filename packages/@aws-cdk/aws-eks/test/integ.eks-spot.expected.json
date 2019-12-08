@@ -84,7 +84,13 @@
     "vpcPublicSubnet1EIPDA49DCBE": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "vpcPublicSubnet1NATGateway9C16659E": {
@@ -175,7 +181,13 @@
     "vpcPublicSubnet2EIP9B3743B1": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "vpcPublicSubnet2NATGateway9B8AE11A": {

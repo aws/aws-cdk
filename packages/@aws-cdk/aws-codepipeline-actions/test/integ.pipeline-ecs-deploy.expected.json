@@ -83,7 +83,13 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-codepipeline-ecs-deploy/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -243,9 +249,6 @@
     "FargateServiceAC2B3B85": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "TaskDef54694570"
-        },
         "Cluster": {
           "Ref": "EcsCluster97242B84"
         },
@@ -254,6 +257,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
@@ -273,7 +277,9 @@
             ]
           }
         },
-        "EnableECSManagedTags": false
+        "TaskDefinition": {
+          "Ref": "TaskDef54694570"
+        }
       }
     },
     "FargateServiceSecurityGroup0A0E79CB": {

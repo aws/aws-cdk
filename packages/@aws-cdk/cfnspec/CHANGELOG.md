@@ -1,3 +1,152 @@
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Cors.PrimitiveType (__deleted__)
+* AWS::Serverless::Api Cors.PrimitiveTypes (__added__)
+* AWS::Serverless::Api Cors.Types (__added__)
+* AWS::Serverless::Api MethodSettings.PrimitiveType (__deleted__)
+* AWS::Serverless::Api MethodSettings.PrimitiveItemType (__added__)
+* AWS::Serverless::Api MethodSettings.Type (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.CorsConfiguration (__added__)
+* AWS::Serverless::Function.S3KeyFilter (__added__)
+* AWS::Serverless::Function.S3KeyFilterRule (__added__)
+* AWS::Serverless::Function.S3NotificationFilter S3Key.PrimitiveType (__deleted__)
+* AWS::Serverless::Function.S3NotificationFilter S3Key.Type (__added__)
+
+# CloudFormation Resource Specification v9.1.1
+
+## New Resource Types
+
+* AWS::AppSync::ApiCache
+* AWS::CloudWatch::InsightRule
+* AWS::ECS::PrimaryTaskSet
+* AWS::ECS::TaskSet
+* AWS::EKS::Nodegroup
+* AWS::GameLift::GameSessionQueue
+* AWS::GameLift::MatchmakingConfiguration
+* AWS::GameLift::MatchmakingRuleSet
+* AWS::GameLift::Script
+* AWS::Lambda::EventInvokeConfig
+* AWS::WAFv2::IPSet
+* AWS::WAFv2::RegexPatternSet
+* AWS::WAFv2::RuleGroup
+* AWS::WAFv2::WebACL
+
+## Attribute Changes
+
+* AWS::EKS::Cluster ClusterSecurityGroupId (__added__)
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker StorageType (__added__)
+* AWS::AppSync::Resolver CachingConfig (__added__)
+* AWS::AppSync::Resolver SyncConfig (__added__)
+* AWS::Cognito::IdentityPool AllowClassicFlow (__added__)
+* AWS::Cognito::UserPoolClient PreventUserExistenceErrors (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlowsUserPoolClient.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Cognito::UserPoolUser ClientMetadata (__added__)
+* AWS::DocDB::DBCluster MasterUserPassword.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DocDB::DBCluster MasterUsername.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::EIP Tags (__added__)
+* AWS::EC2::NetworkAclEntry CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Cluster ClusterSettings (__added__)
+* AWS::ECS::Service DeploymentController (__added__)
+* AWS::ECS::Service TaskDefinition.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElastiCache::ReplicationGroup AuthToken.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain CognitoOptions (__added__)
+* AWS::Elasticsearch::Domain ElasticsearchVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::GameLift::Build OperatingSystem (__added__)
+* AWS::GameLift::Fleet CertificateConfiguration (__added__)
+* AWS::GameLift::Fleet FleetType (__added__)
+* AWS::GameLift::Fleet InstanceRoleARN (__added__)
+* AWS::GameLift::Fleet MetricGroups (__added__)
+* AWS::GameLift::Fleet NewGameSessionProtectionPolicy (__added__)
+* AWS::GameLift::Fleet PeerVpcAwsAccountId (__added__)
+* AWS::GameLift::Fleet PeerVpcId (__added__)
+* AWS::GameLift::Fleet ResourceCreationLimitPolicy (__added__)
+* AWS::GameLift::Fleet RuntimeConfiguration (__added__)
+* AWS::GameLift::Fleet ScriptId (__added__)
+* AWS::GameLift::Fleet BuildId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GameLift::Fleet DesiredEC2Instances.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GameLift::Fleet ServerLaunchPath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Glue::MLTransform GlueVersion (__added__)
+* AWS::IAM::User Tags (__added__)
+* AWS::Lambda::EventSourceMapping BisectBatchOnFunctionError (__added__)
+* AWS::Lambda::EventSourceMapping DestinationConfig (__added__)
+* AWS::Lambda::EventSourceMapping MaximumRecordAgeInSeconds (__added__)
+* AWS::Lambda::EventSourceMapping MaximumRetryAttempts (__added__)
+* AWS::Lambda::EventSourceMapping ParallelizationFactor (__added__)
+* AWS::OpsWorksCM::Server CustomCertificate (__added__)
+* AWS::OpsWorksCM::Server CustomDomain (__added__)
+* AWS::OpsWorksCM::Server CustomPrivateKey (__added__)
+* AWS::RDS::DBCluster EnableHttpEndpoint (__added__)
+* AWS::SNS::Subscription RedrivePolicy (__added__)
+* AWS::SageMaker::Endpoint ExcludeRetainedVariantProperties (__added__)
+* AWS::SageMaker::Endpoint RetainAllVariantProperties (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.DeltaSyncConfig (__added__)
+* AWS::AppSync::Resolver.CachingConfig (__added__)
+* AWS::AppSync::Resolver.LambdaConflictHandlerConfig (__added__)
+* AWS::AppSync::Resolver.SyncConfig (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule (__added__)
+* AWS::ECS::Cluster.ClusterSetting (__added__)
+* AWS::ECS::Service.DeploymentController (__added__)
+* AWS::ECS::TaskDefinition.FirelensConfiguration (__added__)
+* AWS::Elasticsearch::Domain.CognitoOptions (__added__)
+* AWS::GameLift::Fleet.CertificateConfiguration (__added__)
+* AWS::GameLift::Fleet.ResourceCreationLimitPolicy (__added__)
+* AWS::GameLift::Fleet.RuntimeConfiguration (__added__)
+* AWS::GameLift::Fleet.ServerProcess (__added__)
+* AWS::Lambda::EventSourceMapping.DestinationConfig (__added__)
+* AWS::Lambda::EventSourceMapping.OnFailure (__added__)
+* AWS::SageMaker::Endpoint.VariantProperty (__added__)
+* AWS::ApiGateway::RestApi.EndpointConfiguration VpcEndpointIds (__added__)
+* AWS::AppSync::DataSource.DynamoDBConfig DeltaSyncConfig (__added__)
+* AWS::AppSync::DataSource.DynamoDBConfig Versioned (__added__)
+* AWS::CodePipeline::Pipeline.ActionDeclaration Namespace (__added__)
+* AWS::Cognito::UserPool.EmailConfiguration ConfigurationSet (__added__)
+* AWS::Cognito::UserPool.EmailConfiguration From (__added__)
+* AWS::DLM::LifecyclePolicy.Schedule FastRestoreRule (__added__)
+* AWS::EC2::Instance.ElasticInferenceAccelerator Count (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition FirelensConfiguration (__added__)
+* AWS::ECS::TaskDefinition.InferenceAccelerator DevicePolicy (__added__)
+* AWS::ECS::TaskDefinition.LinuxParameters MaxSwap (__added__)
+* AWS::ECS::TaskDefinition.LinuxParameters Swappiness (__added__)
+* AWS::GameLift::Build.S3Location ObjectVersion (__added__)
+
+
 # CloudFormation Resource Specification v8.0.0
 
 ## New Resource Types

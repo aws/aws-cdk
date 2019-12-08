@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import schema = require('../lib/schema');
-import { isPropertyBag, Specification } from '../lib/schema';
+import { isRecordType, Specification } from '../lib/schema';
 
 export function validateSpecification(test: Test, specification: Specification) {
   validateResourceTypes(test, specification);
@@ -24,7 +24,7 @@ function validatePropertyTypes(test: Test, specification: Specification) {
   for (const typeName of Object.keys(specification.PropertyTypes)) {
     test.ok(typeName, 'Property type name is not empty');
     const type = specification.PropertyTypes[typeName];
-    if (isPropertyBag(type)) {
+    if (isRecordType(type)) {
       validateProperties(typeName, test, type.Properties, specification);
     } else {
       validateProperties(typeName, test, { '<this>': type }, specification);
