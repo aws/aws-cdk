@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject, 
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType,
-  NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+  NatProvider, NetworkAcl, NetworkAclEntry, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -680,6 +680,22 @@ export = {
 
       test.done();
     },
+    'when creating an IPV4 route, the destinationCidrBlock should be used rather than destinationIPv6CidrBlock '(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Vpc(stack, 'VPC');
+
+      // THEN
+
+      expect(stack).notTo(haveResourceLike("AWS::EC2::Route", {
+        DestinationIPv6CidrBlock: { },
+        NatGatewayId: { },
+      }));
+
+      test.done();
+    },
   },
 
   'Network ACL association': {
@@ -945,29 +961,6 @@ export = {
       test.done();
     },
 
-    'select explicitly defined subnets'(test: Test) {
-      // GIVEN
-      const stack = getTestStack();
-      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
-        vpcId: 'vpc-1234',
-        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
-        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
-        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
-      });
-      const subnet = new PrivateSubnet(stack, 'Subnet', {
-        availabilityZone: vpc.availabilityZones[0],
-        cidrBlock: '10.0.0.0/28',
-        vpcId: vpc.vpcId
-      });
-
-      // WHEN
-      const { subnetIds } = vpc.selectSubnets({ subnets: [subnet] });
-
-      // THEN
-      test.deepEqual(subnetIds.length, 1);
-      test.deepEqual(subnetIds[0], subnet.subnetId);
-      test.done();
-    }
   },
 };
 
