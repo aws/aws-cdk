@@ -140,7 +140,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
     if (props.onFailure || props.onSuccess || props.maximumEventAge || props.maximumRetryAttemps) {
       new EventInvokeConfig(this, 'EventInvokeConfig', {
-        function: this.version.lambda,
+        function: this.lambda,
         qualifier: this.aliasName,
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,

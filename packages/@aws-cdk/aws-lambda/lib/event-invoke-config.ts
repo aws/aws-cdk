@@ -25,8 +25,8 @@ export interface EventInvokeConfigOptions {
    * The maximum age of a request that Lambda sends to a function for
    * processing.
    *
-   * Minimum: 60
-   * Maximum: 21600
+   * Minimum: 60 seconds
+   * Maximum: 6 hours
    *
    * @default Duration.hours(6)
    */
