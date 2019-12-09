@@ -82,6 +82,26 @@ export class Stage implements IStage {
     // validate the name
     validation.validateName('Action', actionName);
 
+    // validate the namespace, if there is one
+    const actionNamespace = action.actionProperties.namespace;
+    if (actionNamespace !== undefined) {
+      validation.validateName('Action', actionNamespace);
+
+      // Check for collisions between namespace and artifact names
+      // Check this action's output artifacts
+      if (action.actionProperties.outputs && action.actionProperties.outputs.find(a => a.artifactName === actionNamespace)) {
+        throw new Error(`Invalid Action '${actionName}'. Namespace matches the name of an output artifact in the action`);
+      }
+      // Check all other action's output artifacts
+      for (const stage of this._pipeline.stages) {
+        for (const otherAction of stage.actions) {
+          if (otherAction.actionProperties.outputs && otherAction.actionProperties.outputs.find(a => a.artifactName === actionNamespace)) {
+            throw new Error(`Invalid Action '${actionName}'. Namespace matches the name of an output artifact in the pipeline`);
+          }
+        }
+      }
+    }
+
     // check for duplicate Actions and names
     if (this._actions.find(a => a.actionName === actionName)) {
       throw new Error(`Stage ${this.stageName} already contains an action with name '${actionName}'`);

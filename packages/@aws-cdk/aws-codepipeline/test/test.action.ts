@@ -80,6 +80,75 @@ export = {
     },
   },
 
+  'namespace validation': {
+    'throws an exception when adding an Action with an empty namespace to the Pipeline'(test: Test) {
+      const stack = new cdk.Stack();
+      const action = new FakeSourceAction({
+        actionName: 'Source',
+        namespace: '',
+        output: new codepipeline.Artifact(),
+      });
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+      const stage = pipeline.addStage({ stageName: 'Source' });
+      test.throws(() => {
+        stage.addAction(action);
+      }, /Action name must match regular expression:/);
+
+      test.done();
+    },
+
+    'throws an exception when adding an Action whose namespace matches one of the actions output artifacts'(test: Test) {
+      const stack = new cdk.Stack();
+      const action = new FakeSourceAction({
+        actionName: 'SourceAction',
+        namespace: 'Source',
+        output: new codepipeline.Artifact('Source'),
+      });
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+      const stage = pipeline.addStage({ stageName: 'SourceStage' });
+      test.throws(() => {
+        stage.addAction(action);
+      }, /Namespace matches the name of an output artifact in the action/);
+
+      test.done();
+    },
+
+    'throws an exception when adding an Action whose namespace matches the name of an output artifact in another action'(test: Test) {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+      const sourceOutput = new codepipeline.Artifact('Source');
+
+      pipeline.addStage({
+        stageName: 'SourceStage',
+        actions: [
+          new FakeSourceAction({
+            actionName: 'SourceAction',
+            output: sourceOutput,
+          })
+        ]
+       });
+
+      const buildStage = pipeline.addStage({
+        stageName: 'BuildStage'
+      });
+
+      const buildAction = new FakeBuildAction({
+        actionName: 'CodeBuild',
+        namespace: 'Source',
+        input: sourceOutput,
+        output: new codepipeline.Artifact(),
+      });
+
+      test.throws(() => {
+        buildStage.addAction(buildAction);
+      }, /Namespace matches the name of an output artifact in the pipeline/);
+
+      test.done();
+    },
+  },
+
   'action Artifacts validation': {
     'validates that input Artifacts are within bounds'(test: Test) {
       const stack = new cdk.Stack();
