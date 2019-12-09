@@ -8,7 +8,6 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "EvaluationPeriods": 3,
-        "Threshold": 100,
         "DatapointsToAlarm": 2,
         "Dimensions": [
           {
@@ -24,7 +23,8 @@
         "MetricName": "ApproximateNumberOfMessagesVisible",
         "Namespace": "AWS/SQS",
         "Period": 300,
-        "Statistic": "Average"
+        "Statistic": "Average",
+        "Threshold": 100
       }
     },
     "DashCCD7F836": {
