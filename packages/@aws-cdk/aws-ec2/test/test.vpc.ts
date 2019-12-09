@@ -961,28 +961,28 @@ export = {
       test.done();
     },
 
-    'select explicitly defined subnets'(test: Test) {	
-      // GIVEN	
-      const stack = getTestStack();	
-      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {	
-        vpcId: 'vpc-1234',	
-        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],	
-        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],	
-        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],	
-      });	
-      const subnet = new PrivateSubnet(stack, 'Subnet', {	
-        availabilityZone: vpc.availabilityZones[0],	
-        cidrBlock: '10.0.0.0/28',	
-        vpcId: vpc.vpcId	
-      });	
+    'select explicitly defined subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetRouteTableIds: ['rt-1', 'rt-2', 'rt-3'],
+      });
+      const subnet = new PrivateSubnet(stack, 'Subnet', {
+        availabilityZone: vpc.availabilityZones[0],
+        cidrBlock: '10.0.0.0/28',
+        vpcId: vpc.vpcId
+      });
 
-      // WHEN	
-      const { subnetIds } = vpc.selectSubnets({ subnets: [subnet] });	
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ subnets: [subnet] });
 
-      // THEN	
-      test.deepEqual(subnetIds.length, 1);	
-      test.deepEqual(subnetIds[0], subnet.subnetId);	
-      test.done();	
+      // THEN
+      test.deepEqual(subnetIds.length, 1);
+      test.deepEqual(subnetIds[0], subnet.subnetId);
+      test.done();
     }
 
   },
