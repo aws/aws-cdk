@@ -12,7 +12,6 @@ def get_template():
 
 
 def test_sqs_queue_created():
-    template_json = get_template()
     assert("AWS::SQS::Queue" in get_template())
 
 
