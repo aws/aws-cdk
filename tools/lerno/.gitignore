@@ -1,0 +1,10 @@
+*.js
+*.js.map
+*.d.ts
+dist
+
+*.snk
+.LAST_BUILD
+.nyc_output
+coverage
+.nycrc

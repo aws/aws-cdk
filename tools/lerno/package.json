@@ -1,0 +1,64 @@
+{
+  "name": "lerno",
+  "private": true,
+  "version": "1.18.0",
+  "description": "Opinionated monorepo tool for NodeJS, wrapped around Lerna",
+  "main": "lib/index.js",
+  "types": "lib/index.ts",
+  "bin": {
+    "lerno": "bin/lerno"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "tools/lerno"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/yargs": "^13.0.3",
+    "@types/minimatch": "^3.0.3",
+    "jest": "^24.9.0",
+    "@types/colors": "^1.2.1",
+    "cdk-build-tools": "1.18.0",
+    "pkglint": "1.18.0"
+  },
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "yargs": "^13.3.0",
+    "colors": "^1.4.0",
+    "minimatch": "^3.0.4"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 30,
+        "statements": 80
+      }
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 10.3.0"
+  }
+}
