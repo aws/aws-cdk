@@ -14,3 +14,4 @@ export * from './start-execution';
 export * from './evaluate-expression';
 export * from './emr-create-cluster';
 export * from './emr-set-cluster-termination-protection';
+export * from './emr-terminate-cluster';

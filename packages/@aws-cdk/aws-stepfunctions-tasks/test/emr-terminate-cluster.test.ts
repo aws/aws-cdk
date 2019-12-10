@@ -9,12 +9,11 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test('Set termination protection with static ClusterId and TerminationProtected', () => {
+test('Terminate cluster with static ClusterId', () => {
   // WHEN
   const task = new sfn.Task(stack, 'CreateCluster', {
-      task: new tasks.EmrSetClusterTerminationProtection({
-        clusterId: 'ClusterId',
-        terminationProtected: false
+      task: new tasks.EmrTerminateCluster({
+        clusterId: 'ClusterId'
       })
     });
 
@@ -29,24 +28,22 @@ test('Set termination protection with static ClusterId and TerminationProtected'
           {
             Ref: "AWS::Partition",
           },
-          ":states:::elasticmapreduce:setClusterTerminationProtection",
+          ":states:::elasticmapreduce:terminateCluster",
         ],
       ],
     },
     End: true,
     Parameters: {
-      ClusterId: 'ClusterId',
-      TerminationProtected: false
+      ClusterId: 'ClusterId'
     },
   });
 });
 
-test('Set termination protection with static ClusterId and TerminationProtected from payload', () => {
+test('Terminate cluster with ClusterId from payload', () => {
   // WHEN
   const task = new sfn.Task(stack, 'CreateCluster', {
-      task: new tasks.EmrSetClusterTerminationProtection({
-        clusterId: 'ClusterId',
-        terminationProtected: sfn.TaskInput.fromDataAt('$.TerminationProtected').value
+      task: new tasks.EmrTerminateCluster({
+        clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value
       })
     });
 
@@ -61,24 +58,23 @@ test('Set termination protection with static ClusterId and TerminationProtected 
           {
             Ref: "AWS::Partition",
           },
-          ":states:::elasticmapreduce:setClusterTerminationProtection",
+          ":states:::elasticmapreduce:terminateCluster",
         ],
       ],
     },
     End: true,
     Parameters: {
-      'ClusterId': 'ClusterId',
-      'TerminationProtected.$': '$.TerminationProtected'
+      'ClusterId.$': '$.ClusterId'
     },
   });
 });
 
-test('Set termination protection with ClusterId from payload and static TerminationProtected', () => {
+test('Terminate cluster with static ClusterId and SYNC integrationPattern', () => {
   // WHEN
   const task = new sfn.Task(stack, 'CreateCluster', {
-      task: new tasks.EmrSetClusterTerminationProtection({
-        clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
-        terminationProtected: false
+      task: new tasks.EmrTerminateCluster({
+        clusterId: 'ClusterId',
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
 
@@ -93,14 +89,24 @@ test('Set termination protection with ClusterId from payload and static Terminat
           {
             Ref: "AWS::Partition",
           },
-          ":states:::elasticmapreduce:setClusterTerminationProtection",
+          ":states:::elasticmapreduce:terminateCluster.sync",
         ],
       ],
     },
     End: true,
     Parameters: {
-      'ClusterId.$': '$.ClusterId',
-      'TerminationProtected': false
+      ClusterId: 'ClusterId'
     },
   });
+});
+
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+  expect(() => {
+    new sfn.Task(stack, 'Task', {
+      task: new tasks.EmrTerminateCluster({
+        clusterId: 'ClusterId',
+        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      })
+    });
+  }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call TerminateCluster./i);
 });

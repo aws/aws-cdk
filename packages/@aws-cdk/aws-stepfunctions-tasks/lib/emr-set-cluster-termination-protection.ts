@@ -3,7 +3,7 @@ import sfn = require('@aws-cdk/aws-stepfunctions');
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
- * Properties for EmrCreateCluster
+ * Properties for EmrSetClusterTerminationProtection
  */
 export interface EmrSetClusterTerminationProtectionProps {
   /**
@@ -19,8 +19,6 @@ export interface EmrSetClusterTerminationProtectionProps {
 
 /**
  * A Step Functions Task to to set Termination Protection on an EMR Cluster.
- *
- * The Cluster Configuration is defined as Parameters in the state machine definition.
  */
 export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTask {
 

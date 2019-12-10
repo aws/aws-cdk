@@ -16,7 +16,7 @@ beforeEach(() => {
 
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   // WHEN
-  const cc = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
+  const task = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
       clusterConfiguration: sfn.TaskInput.fromObject({
         Name: 'Cluster'
       }),
@@ -25,7 +25,7 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   }) });
 
   // THEN
-  expect(stack.resolve(cc.toStateJson())).toEqual({
+  expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
       "Fn::Join": [
@@ -48,7 +48,7 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
 
 test('Create Cluster with SYNC integrationPattern', () => {
   // WHEN
-  const cc = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
+  const task = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
       clusterConfiguration: sfn.TaskInput.fromObject({
         Name: 'Cluster'
       }),
@@ -57,7 +57,7 @@ test('Create Cluster with SYNC integrationPattern', () => {
   }) });
 
   // THEN
-  expect(stack.resolve(cc.toStateJson())).toEqual({
+  expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
       "Fn::Join": [
@@ -80,7 +80,7 @@ test('Create Cluster with SYNC integrationPattern', () => {
 
 test('Create Cluster with clusterConfiguration Name from payload', () => {
   // WHEN
-  const cc = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
+  const task = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
       clusterConfiguration: sfn.TaskInput.fromObject({
         Name: sfn.TaskInput.fromDataAt('$.ClusterName').value
       }),
@@ -89,7 +89,7 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
   }) });
 
   // THEN
-  expect(stack.resolve(cc.toStateJson())).toEqual({
+  expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
       "Fn::Join": [
