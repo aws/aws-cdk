@@ -1,4 +1,4 @@
-import { ENABLE_STACK_NAME_DUPLICATES_CONTEXT } from "./features";
+import { ENABLE_DIFF_NO_FAIL, ENABLE_STACK_NAME_DUPLICATES_CONTEXT } from "./features";
 
 /**
  * This map includes context keys and values for feature flags that enable
@@ -14,5 +14,6 @@ import { ENABLE_STACK_NAME_DUPLICATES_CONTEXT } from "./features";
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
 export const FUTURE_FLAGS = {
-  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true'
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
+  [ENABLE_DIFF_NO_FAIL]: 'true',
 };
