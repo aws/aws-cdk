@@ -59,7 +59,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("emr", "createCluster", this.integrationPattern),
+      resourceArn: getResourceArn("elasticmapreduce", "createCluster", this.integrationPattern),
       policyStatements: this.createPolicyStatements(_task),
       parameters: this.props.clusterConfiguration.value
     };
