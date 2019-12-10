@@ -114,7 +114,8 @@ async function main() {
             namespace: dotnetPackage,
             packageId: dotnetPackage,
             signAssembly: true,
-            assemblyOriginatorKeyFile: "../../key.snk"
+            assemblyOriginatorKeyFile: "../../key.snk",
+            iconUrl: "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
           },
           java: {
             package: `${javaGroupId}.${javaPackage}`,
@@ -131,19 +132,23 @@ async function main() {
       },
       repository: {
         type: "git",
-        url: "https://github.com/aws/aws-cdk.git"
+        url: "https://github.com/aws/aws-cdk.git",
+        directory: `packages/@aws-cdk/${packageName}`,
       },
       homepage: "https://github.com/aws/aws-cdk",
       scripts: {
         build: "cdk-build",
-        integ: "cdk-integ",
+        watch: "cdk-watch",
         lint: "cdk-lint",
+        test: "cdk-test",
+        integ: "cdk-integ",
+        pkglint: "pkglint -f",
         package: "cdk-package",
         awslint: "cdk-awslint",
-        pkglint: "pkglint -f",
-        test: "cdk-test",
-        watch: "cdk-watch",
-        cfn2ts: "cfn2ts"
+        cfn2ts: "cfn2ts",
+        'build+test+package': "npm run build+test && npm run package",
+        'build+test': "npm run build && npm test",
+        compat: "cdk-compat"
       },
       'cdk-build': {
         cloudformation: namespace
@@ -160,59 +165,76 @@ async function main() {
         url: "https://aws.amazon.com",
         organization: true
       },
+      jest: {
+        moduleFileExtensions: [
+          "js"
+        ],
+        coverageThreshold: {
+          global: {
+            branches: 60,
+            statements: 80
+          }
+        }
+      },
       license: "Apache-2.0",
       devDependencies: {
-        "@aws-cdk/assert": `^${version}`,
-        "cdk-build-tools": `^${version}`,
-        "cfn2ts": `^${version}`,
-        "pkglint": `^${version}`,
+        "@aws-cdk/assert": version,
+        "cdk-build-tools": version,
+        "cfn2ts": version,
+        "pkglint": version,
       },
       dependencies: {
-        "@aws-cdk/core": `^${version}`,
+        "@aws-cdk/core": version,
       },
       peerDependencies: {
-        "@aws-cdk/core": `^${version}`,
+        "@aws-cdk/core": version,
       },
       engines: {
         node: '>= 10.3.0'
-      }
+      },
+      stability: "experimental"
     });
 
     await write('.gitignore', [
-      '*.d.ts',
-      '*.generated.ts',
       '*.js',
       '*.js.map',
-      '*.snk',
-      '.jsii',
-      '.LAST_BUILD',
-      '.LAST_PACKAGE',
-      '.nycrc',
-      '.nyc_output',
-      'coverage',
-      'dist',
+      '*.d.ts',
       'tsconfig.json',
       'tslint.json',
+      'node_modules',
+      '*.generated.ts',
+      'dist',
+      '.jsii',
+      '',
+      '.LAST_BUILD',
+      '.nyc_output',
+      'coverage',
+      '.nycrc',
+      '.LAST_PACKAGE',
+      '*.snk',
     ]);
 
     await write('.npmignore', [
-      '# The basics',
+      '# Don\'t include original .ts files when doing `npm pack`',
       '*.ts',
-      '*.tgz',
-      '*.snk',
       '!*.d.ts',
-      '!*.js',
-      '',
-      '# Coverage',
       'coverage',
       '.nyc_output',
-      '.nycrc',
+      '*.tgz',
       '',
-      '# Build gear',
       'dist',
-      '.LAST_BUILD',
       '.LAST_PACKAGE',
-      '.jsii',
+      '.LAST_BUILD',
+      '!*.js',
+      '',
+      '# Include .jsii',
+      '!.jsii',
+      '',
+      '*.snk',
+      '',
+      '*.tsbuildinfo',
+      '',
+      'tsconfig.json',
     ]);
 
     await write('lib/index.ts', [
@@ -220,20 +242,32 @@ async function main() {
       `export * from './${lowcaseModuleName}.generated';`
     ]);
 
-    await write(`test/test.${lowcaseModuleName}.ts`, [
-      "import { Test, testCase } from 'nodeunit';",
+    await write(`test/${lowcaseModuleName}.test.ts`, [
+      "import '@aws-cdk/assert/jest';",
       "import {} from '../lib';",
       "",
-      "export = testCase({",
-      "    notTested(test: Test) {",
-      "        test.ok(true, 'No tests are specified for this package.');",
-      "        test.done();",
-      "    }",
+      "test('No tests are specified for this package', () => {",
+      "  expect(true).toBe(true);",
       "});",
     ]);
 
     await write('README.md', [
       `## ${namespace} Construct Library`,
+      '<!--BEGIN STABILITY BANNER-->',
+      '',
+      '---',
+      '',
+      '![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)',
+      '',
+      '> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
+      '> future breaking changes.**',
+      '>',
+      '> This API is still under active development and subject to non-backward',
+      '> compatible changes or removal in any future version. Use of the API is not recommended in production',
+      '> environments. Experimental APIs are not subject to the Semantic Versioning model.',
+      '',
+      '---',
+      '<!--END STABILITY BANNER-->',
       '',
       'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
       '',
@@ -247,11 +281,22 @@ async function main() {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
-    // bootstrap and build the package and all deps to ensure integrity
+    // build the package
     const lerna = path.join(path.dirname(require.resolve('lerna/package.json')), 'cli.js');
-    await exec(`${lerna} bootstrap`);
-    await exec(`${lerna} run --include-dependencies --progress pkglint --scope ${packageName}`);
-    await exec(`${lerna} run --include-dependencies --progress build --scope ${packageName}`);
+    await exec(`${lerna} run --progress build --scope ${packageName}`);
+
+    // update decdk
+    const decdkPkgJsonPath = path.join(require.resolve('decdk'), '..', '..', 'package.json');
+    const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
+    const unorderedDeps = {
+      ...decdkPkg.dependencies,
+      [packageName]: version
+    };
+    decdkPkg.dependencies = {};
+    Object.keys(unorderedDeps).sort().forEach(k => {
+      decdkPkg.dependencies[k] = unorderedDeps[k];
+    });
+    await fs.writeFile(decdkPkgJsonPath, JSON.stringify(decdkPkg, null, 2) + '\n');
   }
 }
 
