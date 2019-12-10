@@ -2,8 +2,6 @@ import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
-import { setFlagsFromString } from 'v8';
-
 
 /**
  * Properties for EmrCreateCluster
@@ -14,13 +12,12 @@ export interface EmrCreateClusterProps {
    *
    * This uses the same syntax as the runJobFlow API: https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html
    */
-  readonly clusterConfiguration?: { [key: string]: any };
+  readonly clusterConfiguration: sfn.TaskInput;
 
   /**
    * The Service, Instance, and AutoScaling Roles used by your cluster. The StepFunction will be ALLOWED iam:PassRole to these.
-   *
    */
-  readonly clusterRoles?: iam.IRole[];
+  readonly clusterRoles: iam.IRole[];
 
   /**
    * The service integration pattern indicates different ways to call Create Cluster.
@@ -43,7 +40,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
 
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly props: EmrCreateClusterProps = {}) {
+  constructor(private readonly props: EmrCreateClusterProps) {
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
@@ -55,44 +52,38 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
       throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call CreateCluster.`);
     }
 
-    if (!props.clusterConfiguration) {
-      throw new Error(`The property clusterConfiguration is required to call CreateCluster.`);
-    }
-
-    if (!props.clusterRoles || props.clusterRoles.length == 0) {
-      throw new Error(`The property clusterRoles is required and must have length greater than 0.`);
+    if (props.clusterRoles.length === 0) {
+      throw new Error(`The property clusterRoles must have length greater than 0.`);
     }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("states", "createCluster", this.integrationPattern),
+      resourceArn: getResourceArn("emr", "createCluster", this.integrationPattern),
       policyStatements: this.createPolicyStatements(_task),
-      parameters: this.props.clusterConfiguration
+      parameters: this.props.clusterConfiguration.value
     };
   }
 
   /**
-  * This generates the PolicyStatements required by the Task to call CreateCluster.
-  */
+   * This generates the PolicyStatements required by the Task to call CreateCluster.
+   */
   private createPolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
     const stack = Stack.of(task);
 
     const policyStatements = [
       new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
         actions: [
-          'elasticmapreduce:RunJobFlow', 
-          'elasticmapreduce:DescribeCluster', 
+          'elasticmapreduce:RunJobFlow',
+          'elasticmapreduce:DescribeCluster',
           'elasticmapreduce:TerminateJobFlows'
         ],
         resources: ['*']
       })
     ];
 
-    if (this.props.clusterRoles && this.props.clusterRoles.length > 0) {
+    if (this.props.clusterRoles.length > 0) {
       policyStatements.push(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
         actions: ['iam:PassRole'],
         resources: this.props.clusterRoles.map(role => role.roleArn)
       }));
@@ -111,5 +102,4 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
 
     return policyStatements;
   }
-
 }
