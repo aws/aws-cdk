@@ -60,7 +60,7 @@ export interface IBucket extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
@@ -303,7 +303,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
