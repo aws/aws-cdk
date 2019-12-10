@@ -24,9 +24,6 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
       integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
   }) });
 
-  // tslint:disable-next-line:no-console
-  console.log(cc.toStateJson());
-
   // THEN
   expect(stack.resolve(cc.toStateJson())).toEqual({
     Type: 'Task',
@@ -59,9 +56,6 @@ test('Create Cluster with SYNC integrationPattern', () => {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC
   }) });
 
-  // tslint:disable-next-line:no-console
-  console.log(cc.toStateJson());
-
   // THEN
   expect(stack.resolve(cc.toStateJson())).toEqual({
     Type: 'Task',
@@ -93,9 +87,6 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
       clusterRoles: [role],
       integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
   }) });
-
-  // tslint:disable-next-line:no-console
-  console.log(cc.toStateJson());
 
   // THEN
   expect(stack.resolve(cc.toStateJson())).toEqual({

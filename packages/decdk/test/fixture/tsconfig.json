@@ -12,7 +12,7 @@
     "module": "CommonJS",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
