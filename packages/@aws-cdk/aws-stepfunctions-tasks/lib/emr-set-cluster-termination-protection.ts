@@ -1,6 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -25,35 +24,22 @@ export interface EmrSetClusterTerminationProtectionProps {
  */
 export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTask {
 
-  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
-
   constructor(private readonly props: EmrSetClusterTerminationProtectionProps) {}
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("elasticmapreduce", "setClusterTerminationProtection", 
+      resourceArn: getResourceArn("elasticmapreduce", "setClusterTerminationProtection",
         sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
-      policyStatements: this.createPolicyStatements(_task),
+      policyStatements: [
+        new iam.PolicyStatement({
+          actions: ['elasticmapreduce:SetTerminationProtection'],
+          resources: ['arn:aws:elasticmapreduce:*:*:cluster/*']
+        })
+      ],
       parameters: {
           ClusterId: this.props.clusterId,
           TerminationProtected: this.props.terminationProtected
       }
     };
-  }
-
-  /**
-   * This generates the PolicyStatements required by the Task to call CreateCluster.
-   */
-  private createPolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = Stack.of(task);
-
-    const policyStatements = [
-      new iam.PolicyStatement({
-        actions: ['elasticmapreduce:SetTerminationProtection'],
-        resources: ['arn:aws:elasticmapreduce:*:*:cluster/*']
-      })
-    ];
-
-    return policyStatements;
   }
 }

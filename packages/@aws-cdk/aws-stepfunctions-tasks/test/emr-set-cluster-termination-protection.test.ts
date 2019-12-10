@@ -29,7 +29,7 @@ test('Set termination protection with static ClusterId and TerminationProtected'
           {
             Ref: "AWS::Partition",
           },
-          ":states:::emr:setClusterTerminationProtection",
+          ":states:::elasticmapreduce:setClusterTerminationProtection",
         ],
       ],
     },
@@ -61,13 +61,13 @@ test('Set termination protection with static ClusterId and TerminationProtected 
           {
             Ref: "AWS::Partition",
           },
-          ":states:::emr:setClusterTerminationProtection",
+          ":states:::elasticmapreduce:setClusterTerminationProtection",
         ],
       ],
     },
     End: true,
     Parameters: {
-      ClusterId: 'ClusterId',
+      'ClusterId': 'ClusterId',
       'TerminationProtected.$': '$.TerminationProtected'
     },
   });
@@ -93,14 +93,14 @@ test('Set termination protection with ClusterId from payload and static Terminat
           {
             Ref: "AWS::Partition",
           },
-          ":states:::emr:setClusterTerminationProtection",
+          ":states:::elasticmapreduce:setClusterTerminationProtection",
         ],
       ],
     },
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      TerminationProtected: false
+      'TerminationProtected': false
     },
   });
 });

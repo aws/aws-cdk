@@ -35,7 +35,7 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
           {
             Ref: "AWS::Partition",
           },
-          ":states:::emr:createCluster",
+          ":states:::elasticmapreduce:createCluster",
         ],
       ],
     },
@@ -67,7 +67,7 @@ test('Create Cluster with SYNC integrationPattern', () => {
           {
             Ref: "AWS::Partition",
           },
-          ":states:::emr:createCluster.sync",
+          ":states:::elasticmapreduce:createCluster.sync",
         ],
       ],
     },
@@ -99,7 +99,7 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
           {
             Ref: "AWS::Partition",
           },
-          ":states:::emr:createCluster",
+          ":states:::elasticmapreduce:createCluster",
         ],
       ],
     },
