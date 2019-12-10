@@ -10,7 +10,9 @@ export interface EmrCreateClusterProps {
   /**
    * The JSON that you want to provide to your CreateCluster call as input.
    *
-   * This uses the same syntax as the runJobFlow API: https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html
+   * This uses the same syntax as the RunJobFlow API.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html
    */
   readonly clusterConfiguration: sfn.TaskInput;
 
@@ -20,7 +22,7 @@ export interface EmrCreateClusterProps {
   readonly clusterRoles: iam.IRole[];
 
   /**
-   * The service integration pattern indicates different ways to call Create Cluster.
+   * The service integration pattern indicates different ways to call CreateCluster.
    *
    * The valid value is either FIRE_AND_FORGET or SYNC.
    *
@@ -32,7 +34,7 @@ export interface EmrCreateClusterProps {
 /**
  * A Step Functions Task to create an EMR Cluster.
  *
- * The Cluster Configuration is defined as Parameters in the state machine definition.
+ * The ClusterConfiguration is defined as Parameters in the state machine definition.
  *
  * OUTPUT: the ClusterId.
  */

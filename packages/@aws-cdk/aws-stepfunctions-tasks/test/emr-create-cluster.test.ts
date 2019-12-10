@@ -16,7 +16,7 @@ beforeEach(() => {
 
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
       clusterConfiguration: sfn.TaskInput.fromObject({
         Name: 'Cluster'
       }),
@@ -48,7 +48,7 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
 
 test('Create Cluster with SYNC integrationPattern', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
       clusterConfiguration: sfn.TaskInput.fromObject({
         Name: 'Cluster'
       }),
@@ -80,7 +80,7 @@ test('Create Cluster with SYNC integrationPattern', () => {
 
 test('Create Cluster with clusterConfiguration Name from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'CreateCluster', { task: new tasks.EmrCreateCluster({
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
       clusterConfiguration: sfn.TaskInput.fromObject({
         Name: sfn.TaskInput.fromDataAt('$.ClusterName').value
       }),

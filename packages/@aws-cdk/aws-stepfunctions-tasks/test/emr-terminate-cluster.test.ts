@@ -11,7 +11,7 @@ beforeEach(() => {
 
 test('Terminate cluster with static ClusterId', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'CreateCluster', {
+  const task = new sfn.Task(stack, 'Task', {
       task: new tasks.EmrTerminateCluster({
         clusterId: 'ClusterId'
       })
@@ -41,7 +41,7 @@ test('Terminate cluster with static ClusterId', () => {
 
 test('Terminate cluster with ClusterId from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'CreateCluster', {
+  const task = new sfn.Task(stack, 'Task', {
       task: new tasks.EmrTerminateCluster({
         clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value
       })
@@ -71,7 +71,7 @@ test('Terminate cluster with ClusterId from payload', () => {
 
 test('Terminate cluster with static ClusterId and SYNC integrationPattern', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'CreateCluster', {
+  const task = new sfn.Task(stack, 'Task', {
       task: new tasks.EmrTerminateCluster({
         clusterId: 'ClusterId',
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
