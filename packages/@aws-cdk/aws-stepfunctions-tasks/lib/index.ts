@@ -18,3 +18,4 @@ export * from './emr-terminate-cluster';
 export * from './emr-add-step';
 export * from './emr-cancel-step';
 export * from './emr-modify-instance-fleet-by-name';
+export * from './emr-modify-instance-group-by-name';
