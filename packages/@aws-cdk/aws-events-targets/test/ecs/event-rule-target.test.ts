@@ -258,3 +258,68 @@ test("Isolated subnet does not have AssignPublicIp=true", () => {
     ],
   });
 });
+
+test("Can pass multiple security groups to fargate triggered task", () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'ScheduleRule', {
+    schedule: events.Schedule.expression('rate(1 min)')
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    securityGroups: [
+      new ec2.SecurityGroup(stack, 'SecurityGroup1', { vpc }),
+      new ec2.SecurityGroup(stack, 'SecurityGroup2', { vpc }),
+    ],
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: "TaskDef54694570" },
+          LaunchType: "FARGATE",
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: "VpcPrivateSubnet1Subnet536B997A"
+                }
+              ],
+              SecurityGroups: [
+                {
+                  "Fn::GetAtt": [
+                    "SecurityGroup1F554B36F",
+                    "GroupId"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "SecurityGroup23BE86BB7",
+                    "GroupId"
+                  ]
+                }
+              ]
+            }
+          },
+        },
+        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
+        Id: "Target0"
+      }
+    ],
+  });
+});

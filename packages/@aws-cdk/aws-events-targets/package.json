@@ -131,6 +131,7 @@
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-events-targets.EcsTask.securityGroup",
+      "docs-public-apis:@aws-cdk/aws-events-targets.EcsTask.securityGroups",
       "docs-public-apis:@aws-cdk/aws-events-targets.SfnStateMachine.machine",
       "docs-public-apis:@aws-cdk/aws-events-targets.SnsTopic.topic",
       "docs-public-apis:@aws-cdk/aws-events-targets.SqsQueue.queue",
