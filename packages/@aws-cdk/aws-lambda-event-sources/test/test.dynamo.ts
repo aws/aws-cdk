@@ -31,6 +31,11 @@ export = {
       "PolicyDocument": {
         "Statement": [
           {
+            "Action": "dynamodb:ListStreams",
+            "Effect": "Allow",
+            "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "TD925BC7E", "Arn" ] }, "/stream/*" ] ] }
+          },
+          {
             "Action": [
               "dynamodb:DescribeStream",
               "dynamodb:GetRecords",
@@ -43,11 +48,6 @@ export = {
                 "StreamArn"
               ]
             }
-          },
-          {
-            "Action": "dynamodb:ListStreams",
-            "Effect": "Allow",
-            "Resource": "*"
           }
         ],
         "Version": "2012-10-17"

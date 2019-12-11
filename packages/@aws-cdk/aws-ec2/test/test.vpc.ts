@@ -618,6 +618,16 @@ export = {
 
       test.done();
     },
+
+    'Default NAT gateway provider'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway();
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      test.ok(natGatewayProvider.configuredGateways.length > 0);
+
+      test.done();
+    }
   },
 
   'NAT instances': {
@@ -626,14 +636,13 @@ export = {
       const stack = getTestStack();
 
       // WHEN
-      new Vpc(stack, 'TheVPC', {
-        natGatewayProvider: NatProvider.instance({
-          instanceType: new InstanceType('q86.mega'),
-          machineImage: new GenericLinuxImage({
-            'us-east-1': 'ami-1'
-          })
+      const natGatewayProvider = NatProvider.instance({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1'
         })
       });
+      new Vpc(stack, 'TheVPC', { natGatewayProvider });
 
       // THEN
       expect(stack).to(countResources('AWS::EC2::Instance', 3));

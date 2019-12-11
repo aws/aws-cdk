@@ -19,6 +19,19 @@ const FIXED_RESULT = testAssembly({
     stackName: 'B',
     depends: ['A'],
     template: { resource: 'B' },
+  },
+  {
+    stackName: 'C',
+    depends: ['A'],
+    template: { resource: 'C'},
+    metadata: {
+      '/resource': [
+        {
+          type: cxapi.ERROR_METADATA_KEY,
+          data: 'this is an error'
+        }
+      ]
+    }
   }]
 });
 
@@ -53,7 +66,62 @@ export = {
     test.ok(plainTextOutput.indexOf('Stack A') > -1, `Did not contain "Stack A": ${plainTextOutput}`);
     test.ok(plainTextOutput.indexOf('Stack B') > -1, `Did not contain "Stack B": ${plainTextOutput}`);
 
+    test.equals(0, exitCode);
+
+    test.done();
+  },
+
+  async 'exits with 1 with diffs and fail set to true'(test: Test) {
+    // GIVEN
+    const provisioner: IDeploymentTarget = {
+      async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
+        return {};
+      },
+      async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {
+        return { noOp: true, outputs: {}, stackArn: ''};
+      }
+    };
+    const toolkit = new CdkToolkit({ appStacks, provisioner });
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      fail: true
+    });
+
+    // THEN
     test.equals(1, exitCode);
+
+    test.done();
+  },
+
+  async 'throws an error during diffs on stack with error metadata'(test: Test) {
+    // GIVEN
+    const provisioner: IDeploymentTarget = {
+      async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
+        return {};
+      },
+      async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {
+        return { noOp: true, outputs: {}, stackArn: ''};
+      }
+    };
+    const toolkit = new CdkToolkit({ appStacks, provisioner });
+    const buffer = new StringWritable();
+
+    // WHEN
+    try {
+      const exitCode = await toolkit.diff({
+        stackNames: ['C'],
+        stream: buffer
+      });
+
+      // THEN
+      test.equals(1, exitCode);
+    } catch (e) {
+      test.ok(/Found errors/.test(e.toString()), 'Wrong error');
+    }
 
     test.done();
   },

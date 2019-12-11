@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -49,9 +49,10 @@ export interface FunctionProps {
   readonly description?: string;
 
   /**
-   * The name of the function (within your source code) that Lambda calls to
-   * start running your code. For more information, see the Handler property
-   * in the AWS Lambda Developer Guide.
+   * The name of the method within your code that Lambda calls to execute
+   * your function. The format includes the file name. It can also include
+   * namespaces and other qualifiers, depending on the runtime.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
    *
    * NOTE: If you specify your source code as inline text by specifying the
    * ZipFile property within the Code property, specify index.function_name as
@@ -145,14 +146,31 @@ export interface FunctionProps {
 
   /**
    * What security group to associate with the Lambda's network interfaces.
+   * This property is being deprecated, consider using securityGroups instead.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * Use securityGroups property instead.
+   * Function constructor will throw an error if both are specified.
+   *
+   * @default - If the function is placed within a VPC and a security group is
+   * not specified, either by this or securityGroups prop, a dedicated security
+   * group will be created for this function.
+   *
+   * @deprecated - This property is deprecated, use securityGroups instead
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The list of security groups to associate with the Lambda's network interfaces.
    *
    * Only used if 'vpc' is supplied.
    *
    * @default - If the function is placed within a VPC and a security group is
-   * not specified, a dedicated security group will be created for this
-   * function.
+   * not specified, either by this or securityGroup prop, a dedicated security
+   * group will be created for this function.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * Whether to allow the Lambda to send all network traffic
@@ -271,7 +289,7 @@ export class Function extends FunctionBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
+        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
 
         if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
@@ -399,7 +417,7 @@ export class Function extends FunctionBase {
       physicalName: props.functionName,
     });
 
-    this.environment = props.environment || { };
+    this.environment = props.environment || {};
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
@@ -419,13 +437,6 @@ export class Function extends FunctionBase {
 
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
-    }
-
-    const region = Stack.of(this).region;
-    const isChina = !Token.isUnresolved(region) && region.startsWith('cn-');
-    if (isChina && props.environment && Object.keys(props.environment).length > 0) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
     }
 
     const code = props.code.bind(this);
@@ -567,13 +578,24 @@ export class Function extends FunctionBase {
       throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
     }
 
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-      description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
-      allowAllOutbound: props.allowAllOutbound
-    });
+    let securityGroups: ec2.ISecurityGroup[];
 
-    this._connections = new ec2.Connections({ securityGroups: [securityGroup] });
+    if (props.securityGroup && props.securityGroups) {
+      throw new Error('Only one of the function props, securityGroup or securityGroups, is allowed');
+    }
+
+    if (props.securityGroups) {
+      securityGroups = props.securityGroups;
+    } else {
+      const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
+        allowAllOutbound: props.allowAllOutbound
+      });
+      securityGroups = [securityGroup];
+    }
+
+    this._connections = new ec2.Connections({ securityGroups });
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.
@@ -593,7 +615,7 @@ export class Function extends FunctionBase {
 
     return {
       subnetIds,
-      securityGroupIds: [securityGroup.securityGroupId]
+      securityGroupIds: securityGroups.map(sg => sg.securityGroupId)
     };
   }
 

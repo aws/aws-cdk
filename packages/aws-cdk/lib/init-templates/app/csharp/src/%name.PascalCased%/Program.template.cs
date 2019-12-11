@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace %name.PascalCased%
 {
-    class Program
+    sealed class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var app = new App();
-            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack", new StackProps());
+            new %name.PascalCased%Stack(app, "%name.PascalCased%Stack");
             app.Synth();
         }
     }

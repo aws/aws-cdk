@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda",
-  "version": "1.17.1",
+  "version": "1.18.0",
   "description": "CDK Constructs for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.lambda",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "lambda"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Lambda",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -68,44 +66,44 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.17.1",
-    "@types/aws-lambda": "^8.10.36",
+    "@aws-cdk/assert": "1.18.0",
+    "@types/aws-lambda": "^8.10.37",
     "@types/lodash": "^4.14.149",
     "@types/sinon": "^7.5.0",
-    "aws-sdk": "^2.575.0",
+    "aws-sdk": "^2.585.0",
     "aws-sdk-mock": "^4.5.0",
-    "cdk-build-tools": "1.17.1",
-    "cdk-integ-tools": "1.17.1",
-    "cfn2ts": "1.17.1",
+    "cdk-build-tools": "1.18.0",
+    "cdk-integ-tools": "1.18.0",
+    "cfn2ts": "1.18.0",
     "lodash": "^4.17.15",
     "nock": "^11.7.0",
-    "pkglint": "1.17.1",
+    "pkglint": "1.18.0",
     "sinon": "^7.5.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.17.1",
-    "@aws-cdk/aws-ec2": "1.17.1",
-    "@aws-cdk/aws-events": "1.17.1",
-    "@aws-cdk/aws-iam": "1.17.1",
-    "@aws-cdk/aws-logs": "1.17.1",
-    "@aws-cdk/aws-s3": "1.17.1",
-    "@aws-cdk/aws-s3-assets": "1.17.1",
-    "@aws-cdk/aws-sqs": "1.17.1",
-    "@aws-cdk/core": "1.17.1",
-    "@aws-cdk/cx-api": "1.17.1"
+    "@aws-cdk/aws-cloudwatch": "1.18.0",
+    "@aws-cdk/aws-ec2": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-logs": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/aws-s3-assets": "1.18.0",
+    "@aws-cdk/aws-sqs": "1.18.0",
+    "@aws-cdk/core": "1.18.0",
+    "@aws-cdk/cx-api": "1.18.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "1.17.1",
-    "@aws-cdk/aws-ec2": "1.17.1",
-    "@aws-cdk/aws-events": "1.17.1",
-    "@aws-cdk/aws-iam": "1.17.1",
-    "@aws-cdk/aws-logs": "1.17.1",
-    "@aws-cdk/aws-s3": "1.17.1",
-    "@aws-cdk/aws-s3-assets": "1.17.1",
-    "@aws-cdk/aws-sqs": "1.17.1",
-    "@aws-cdk/core": "1.17.1",
-    "@aws-cdk/cx-api": "1.17.1"
+    "@aws-cdk/aws-cloudwatch": "1.18.0",
+    "@aws-cdk/aws-ec2": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0",
+    "@aws-cdk/aws-iam": "1.18.0",
+    "@aws-cdk/aws-logs": "1.18.0",
+    "@aws-cdk/aws-s3": "1.18.0",
+    "@aws-cdk/aws-s3-assets": "1.18.0",
+    "@aws-cdk/aws-sqs": "1.18.0",
+    "@aws-cdk/core": "1.18.0",
+    "@aws-cdk/cx-api": "1.18.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -141,8 +139,10 @@
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.DOTNET_CORE_2_1",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.GO_1_X",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.JAVA_8",
+      "docs-public-apis:@aws-cdk/aws-lambda.Runtime.JAVA_11",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.NODEJS",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.NODEJS_10_X",
+      "docs-public-apis:@aws-cdk/aws-lambda.Runtime.NODEJS_12_X",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.NODEJS_4_3",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.NODEJS_6_10",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.NODEJS_8_10",
@@ -150,6 +150,7 @@
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_2_7",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_3_6",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_3_7",
+      "docs-public-apis:@aws-cdk/aws-lambda.Runtime.PYTHON_3_8",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.RUBY_2_5",
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.toString",
