@@ -22,14 +22,14 @@ test('Cancel a Step with static ClusterId and StepId', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:cancelStep",
+          ':states:::elasticmapreduce:cancelStep',
         ],
       ],
     },
@@ -54,14 +54,14 @@ test('Cancel a Step with static ClusterId and StepId from payload', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:cancelStep",
+          ':states:::elasticmapreduce:cancelStep',
         ],
       ],
     },
@@ -86,14 +86,14 @@ test('Cancel a Step with ClusterId from payload and static StepId', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:cancelStep",
+          ':states:::elasticmapreduce:cancelStep',
         ],
       ],
     },

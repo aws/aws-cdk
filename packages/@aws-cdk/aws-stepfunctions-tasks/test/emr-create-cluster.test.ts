@@ -28,14 +28,14 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:createCluster",
+          ':states:::elasticmapreduce:createCluster',
         ],
       ],
     },
@@ -60,14 +60,14 @@ test('Create Cluster with SYNC integrationPattern', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:createCluster.sync",
+          ':states:::elasticmapreduce:createCluster.sync',
         ],
       ],
     },
@@ -92,14 +92,14 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:createCluster",
+          ':states:::elasticmapreduce:createCluster',
         ],
       ],
     },

@@ -24,14 +24,14 @@ test('Add Step with static ClusterId and StepConfiguration', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:addStep",
+          ':states:::elasticmapreduce:addStep',
         ],
       ],
     },
@@ -60,14 +60,14 @@ test('Terminate cluster with ClusterId from payload and static StepConfiguration
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:addStep",
+          ':states:::elasticmapreduce:addStep',
         ],
       ],
     },
@@ -94,14 +94,14 @@ test('Add Step with static ClusterId and StepConfiguration from payload', () => 
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:addStep",
+          ':states:::elasticmapreduce:addStep',
         ],
       ],
     },
@@ -129,14 +129,14 @@ test('Add Step with static ClusterId and StepConfiguration and SYNC integrationP
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:addStep.sync",
+          ':states:::elasticmapreduce:addStep.sync',
         ],
       ],
     },

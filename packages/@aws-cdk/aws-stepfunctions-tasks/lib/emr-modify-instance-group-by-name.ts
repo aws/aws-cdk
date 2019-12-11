@@ -35,7 +35,7 @@ export class EmrModifyInstanceGroupByName implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("elasticmapreduce", "modifyInstanceGroupByName",
+      resourceArn: getResourceArn('elasticmapreduce', 'modifyInstanceGroupByName',
         sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
       policyStatements: [
         new iam.PolicyStatement({

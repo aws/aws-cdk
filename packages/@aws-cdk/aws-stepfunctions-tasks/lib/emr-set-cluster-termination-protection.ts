@@ -26,7 +26,7 @@ export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTas
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("elasticmapreduce", "setClusterTerminationProtection",
+      resourceArn: getResourceArn('elasticmapreduce', 'setClusterTerminationProtection',
         sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
       policyStatements: [
         new iam.PolicyStatement({

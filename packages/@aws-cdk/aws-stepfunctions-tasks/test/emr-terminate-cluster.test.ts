@@ -21,14 +21,14 @@ test('Terminate cluster with static ClusterId', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:terminateCluster",
+          ':states:::elasticmapreduce:terminateCluster',
         ],
       ],
     },
@@ -51,14 +51,14 @@ test('Terminate cluster with ClusterId from payload', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:terminateCluster",
+          ':states:::elasticmapreduce:terminateCluster',
         ],
       ],
     },
@@ -82,14 +82,14 @@ test('Terminate cluster with static ClusterId and SYNC integrationPattern', () =
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:terminateCluster.sync",
+          ':states:::elasticmapreduce:terminateCluster.sync',
         ],
       ],
     },

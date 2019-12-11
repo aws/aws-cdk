@@ -35,7 +35,7 @@ export class EmrModifyInstanceFleetByName implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("elasticmapreduce", "modifyInstanceFleetByName",
+      resourceArn: getResourceArn('elasticmapreduce', 'modifyInstanceFleetByName',
         sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
       policyStatements: [
         new iam.PolicyStatement({

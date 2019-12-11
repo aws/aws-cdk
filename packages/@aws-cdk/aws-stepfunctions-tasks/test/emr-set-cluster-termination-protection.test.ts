@@ -22,14 +22,14 @@ test('Set termination protection with static ClusterId and TerminationProtected'
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:setClusterTerminationProtection",
+          ':states:::elasticmapreduce:setClusterTerminationProtection',
         ],
       ],
     },
@@ -54,14 +54,14 @@ test('Set termination protection with static ClusterId and TerminationProtected 
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:setClusterTerminationProtection",
+          ':states:::elasticmapreduce:setClusterTerminationProtection',
         ],
       ],
     },
@@ -86,14 +86,14 @@ test('Set termination protection with ClusterId from payload and static Terminat
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:setClusterTerminationProtection",
+          ':states:::elasticmapreduce:setClusterTerminationProtection',
         ],
       ],
     },

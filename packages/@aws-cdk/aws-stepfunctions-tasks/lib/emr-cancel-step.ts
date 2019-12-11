@@ -26,7 +26,7 @@ export class EmrCancelStep implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("elasticmapreduce", "cancelStep",
+      resourceArn: getResourceArn('elasticmapreduce', 'cancelStep',
         sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
       policyStatements: [
         new iam.PolicyStatement({

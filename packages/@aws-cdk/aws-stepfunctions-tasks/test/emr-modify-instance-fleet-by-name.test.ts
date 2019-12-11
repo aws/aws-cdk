@@ -25,14 +25,14 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:modifyInstanceFleetByName",
+          ':states:::elasticmapreduce:modifyInstanceFleetByName',
         ],
       ],
     },
@@ -63,14 +63,14 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:modifyInstanceFleetByName",
+          ':states:::elasticmapreduce:modifyInstanceFleetByName',
         ],
       ],
     },
@@ -101,14 +101,14 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:modifyInstanceFleetByName",
+          ':states:::elasticmapreduce:modifyInstanceFleetByName',
         ],
       ],
     },
@@ -137,14 +137,14 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and In
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            Ref: "AWS::Partition",
+            Ref: 'AWS::Partition',
           },
-          ":states:::elasticmapreduce:modifyInstanceFleetByName",
+          ':states:::elasticmapreduce:modifyInstanceFleetByName',
         ],
       ],
     },

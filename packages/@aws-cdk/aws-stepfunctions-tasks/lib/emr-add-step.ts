@@ -57,7 +57,7 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("elasticmapreduce", "addStep", this.integrationPattern),
+      resourceArn: getResourceArn('elasticmapreduce', 'addStep', this.integrationPattern),
       policyStatements: this.createPolicyStatements(_task),
       parameters: {
         ClusterId: this.props.clusterId,

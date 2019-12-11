@@ -44,7 +44,7 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("elasticmapreduce", "terminateCluster", this.integrationPattern),
+      resourceArn: getResourceArn('elasticmapreduce', 'terminateCluster', this.integrationPattern),
       policyStatements: this.createPolicyStatements(_task),
       parameters: {
         ClusterId: this.props.clusterId
