@@ -17,7 +17,7 @@ export interface EmrTerminateClusterProps {
    *
    * The valid value is either FIRE_AND_FORGET or SYNC.
    *
-   * @default FIRE_AND_FORGET
+   * @default SYNC
    */
   readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
@@ -30,7 +30,7 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EmrTerminateClusterProps) {
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
