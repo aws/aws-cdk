@@ -47,6 +47,8 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.AllStacks
     });
 
+    this.appStacks.processMetadata(stacks);
+
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
     const stream = options.stream || process.stderr;
