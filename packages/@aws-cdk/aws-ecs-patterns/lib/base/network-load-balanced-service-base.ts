@@ -1,6 +1,6 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -102,7 +102,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
    *
    * @default - a new load balancer will be created.
    */
-  readonly loadBalancer?: NetworkLoadBalancer;
+  readonly loadBalancer?: INetworkLoadBalancer;
 
   /**
    * Listener port of the network load balancer that will serve traffic to the service.
@@ -268,7 +268,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
+    this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer as NetworkLoadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
 
     const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
 
@@ -291,7 +291,9 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       });
     }
 
-    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    if (props.loadBalancer === undefined) {
+      new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+    }
   }
 
   /**

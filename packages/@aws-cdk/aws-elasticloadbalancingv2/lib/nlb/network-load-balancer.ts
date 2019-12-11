@@ -38,6 +38,14 @@ export interface NetworkLoadBalancerAttributes {
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
   readonly loadBalancerDnsName?: string;
+
+  /**
+   * The optional VPC to associate with the imported load balancer.
+   *
+   * @default - When not provided, imported load balancers cannot be used
+   * in ecs-patterns.
+   */
+  readonly loadBalancerVpc?: ec2.IVpc;
 }
 
 /**
@@ -49,7 +57,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public static fromNetworkLoadBalancerAttributes(scope: Construct, id: string, attrs: NetworkLoadBalancerAttributes): INetworkLoadBalancer {
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
-      public readonly vpc?: ec2.IVpc = undefined;
+      public readonly vpc?: ec2.IVpc = attrs.loadBalancerVpc;
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,

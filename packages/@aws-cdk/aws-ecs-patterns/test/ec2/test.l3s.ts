@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -785,7 +785,6 @@ export = {
 
     test.done();
   },
-
   'ALBFargate - having *HealthyPercent properties'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -901,4 +900,147 @@ export = {
 
     test.done();
   },
+
+  'NetworkLoadbalancedEC2Service accepts previously created load balancer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+    cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+    const nlb = new NetworkLoadBalancer(stack, 'NLB', { vpc });
+    const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const container = taskDef.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 1024,
+    });
+    container.addPortMappings({ containerPort: 80 });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      loadBalancer: nlb,
+      taskDefinition: taskDef,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'EC2'
+    }));
+    test.done();
+  },
+
+  'NetworkLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
+     // GIVEN
+     const stack = new cdk.Stack();
+     const nlbArn = "arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer";
+     const vpc = new ec2.Vpc(stack, "Vpc");
+     const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+     cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+     const nlb  = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, "NLB", {
+       loadBalancerArn: nlbArn,
+       loadBalancerVpc: vpc,
+     });
+     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+     const container = taskDef.addContainer('Container', {
+       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+       memoryLimitMiB: 1024,
+     });
+     container.addPortMappings({
+       containerPort: 80,
+     });
+
+     // WHEN
+     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, "Service", {
+       cluster,
+       loadBalancer: nlb,
+       desiredCount: 1,
+       taskDefinition: taskDef
+     });
+
+     // THEN
+     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+       LaunchType: 'EC2',
+       LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
+     }));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+       LoadBalancerArn: nlb.loadBalancerArn,
+       Port: 80,
+     }));
+     test.done();
+   },
+
+   'ApplicationLoadBalancedEC2Service accepts previously created load balancer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+    cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+    const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+    const alb = new ApplicationLoadBalancer(stack, 'NLB', {
+      vpc,
+      securityGroup: sg,
+    });
+    const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const container = taskDef.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 1024,
+    });
+    container.addPortMappings({ containerPort: 80 });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      loadBalancer: alb,
+      taskDefinition: taskDef,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'EC2'
+    }));
+    test.done();
+   },
+
+   'ApplicationLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
+     // GIVEN
+     const stack = new cdk.Stack();
+     const albArn = "arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer";
+     const vpc = new ec2.Vpc(stack, "Vpc");
+     const cluster = new ecs.Cluster(stack, "Cluster", {vpc, clusterName: "MyCluster" });
+     cluster.addCapacity("Capacity", {instanceType: new ec2.InstanceType('t2.micro')});
+     const sg = new ec2.SecurityGroup(stack, "SG", { vpc, });
+     const alb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+       loadBalancerArn: albArn,
+       vpc,
+       securityGroupId: sg.securityGroupId,
+       loadBalancerDnsName: "MyName"
+     });
+     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+     const container = taskDef.addContainer('Container', {
+       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+       memoryLimitMiB: 1024,
+     });
+     container.addPortMappings({
+       containerPort: 80,
+     });
+     // WHEN
+     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, "Service", {
+       cluster,
+       loadBalancer: alb,
+       taskDefinition: taskDef,
+     });
+     // THEN
+     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+       LaunchType: 'EC2',
+       LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
+     }));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+       LoadBalancerArn: alb.loadBalancerArn,
+       Port: 80,
+     }));
+
+     test.done();
+   },
 };

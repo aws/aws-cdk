@@ -109,12 +109,9 @@ export abstract class BaseLoadBalancer extends Resource {
   public readonly loadBalancerSecurityGroups: string[];
 
   /**
-   * The VPC this load balancer has been created in, if available
-   *
-   * If the Load Balancer was imported, the VPC is not available.
+   * the vpc to create the load balancer inside
    */
-  public readonly vpc?: ec2.IVpc;
-
+  public readonly vpc: ec2.IVpc;
   /**
    * Attributes set on this load balancer
    */

@@ -268,4 +268,47 @@ export = {
     }));
     test.done();
   },
+
+  'imported load balancer with no vpc throws error when calling addTargets'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const albArn = 'myArn';
+    const sg = new ec2.SecurityGroup(stack, "sg", {
+      vpc,
+      securityGroupName: 'mySg',
+    });
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: sg.securityGroupId,
+    });
+
+    // WHEN
+    const listener = alb.addListener('Listener', { port: 80 });
+    test.throws(() => listener.addTargets('Targets', {port: 8080}));
+
+    test.done();
+  },
+
+  'imported load balancer with vpc does not throw error when calling addTargets'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const albArn = 'MyArn';
+    const sg = new ec2.SecurityGroup(stack, 'sg', {
+      vpc,
+      securityGroupName: 'mySg',
+    });
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: sg.securityGroupId,
+      vpc,
+    });
+
+    // WHEN
+    const listener = alb.addListener('Listener', { port: 80 });
+    test.doesNotThrow(() => listener.addTargets('Targets', {port: 8080}));
+
+    test.done();
+  },
 };

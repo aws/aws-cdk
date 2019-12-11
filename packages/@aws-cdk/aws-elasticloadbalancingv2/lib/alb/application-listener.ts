@@ -234,7 +234,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
       // tslint:disable-next-line:max-line-length
-      throw new Error('Can only call addTargets() when using a constructed Load Balancer; construct a new TargetGroup and use addTargetGroup');
+      throw new Error('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup');
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
