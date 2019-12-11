@@ -1,4 +1,5 @@
 export * from './restapi';
+export * from './httpapi';
 export * from './resource';
 export * from './method';
 export * from './integration';
