@@ -13,66 +13,6 @@ test('Terminate cluster with static ClusterId', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
       task: new tasks.EmrTerminateCluster({
-        clusterId: 'ClusterId'
-      })
-    });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::elasticmapreduce:terminateCluster',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      ClusterId: 'ClusterId'
-    },
-  });
-});
-
-test('Terminate cluster with ClusterId from payload', () => {
-  // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrTerminateCluster({
-        clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value
-      })
-    });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::elasticmapreduce:terminateCluster',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      'ClusterId.$': '$.ClusterId'
-    },
-  });
-});
-
-test('Terminate cluster with static ClusterId and SYNC integrationPattern', () => {
-  // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrTerminateCluster({
         clusterId: 'ClusterId',
         integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
@@ -90,6 +30,68 @@ test('Terminate cluster with static ClusterId and SYNC integrationPattern', () =
             Ref: 'AWS::Partition',
           },
           ':states:::elasticmapreduce:terminateCluster.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      ClusterId: 'ClusterId'
+    },
+  });
+});
+
+test('Terminate cluster with ClusterId from payload', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', {
+      task: new tasks.EmrTerminateCluster({
+        clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+      })
+    });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:terminateCluster.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'ClusterId.$': '$.ClusterId'
+    },
+  });
+});
+
+test('Terminate cluster with static ClusterId and SYNC integrationPattern', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', {
+      task: new tasks.EmrTerminateCluster({
+        clusterId: 'ClusterId',
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+      })
+    });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:terminateCluster',
         ],
       ],
     },

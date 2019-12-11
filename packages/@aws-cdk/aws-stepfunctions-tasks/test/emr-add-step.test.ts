@@ -16,7 +16,8 @@ test('Add Step with static ClusterId and StepConfiguration', () => {
         clusterId: 'ClusterId',
         stepConfiguration: sfn.TaskInput.fromObject({
           Name: 'StepName'
-        })
+        }),
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
 
@@ -31,7 +32,7 @@ test('Add Step with static ClusterId and StepConfiguration', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::elasticmapreduce:addStep',
+          ':states:::elasticmapreduce:addStep.sync',
         ],
       ],
     },
@@ -52,7 +53,8 @@ test('Terminate cluster with ClusterId from payload and static StepConfiguration
         clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
         stepConfiguration: sfn.TaskInput.fromObject({
           Name: 'StepName'
-        })
+        }),
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
 
@@ -67,7 +69,7 @@ test('Terminate cluster with ClusterId from payload and static StepConfiguration
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::elasticmapreduce:addStep',
+          ':states:::elasticmapreduce:addStep.sync',
         ],
       ],
     },
@@ -86,7 +88,8 @@ test('Add Step with static ClusterId and StepConfiguration from payload', () => 
   const task = new sfn.Task(stack, 'Task', {
       task: new tasks.EmrAddStep({
         clusterId: 'ClusterId',
-        stepConfiguration: sfn.TaskInput.fromDataAt('$.StepConfiguration')
+        stepConfiguration: sfn.TaskInput.fromDataAt('$.StepConfiguration'),
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
       })
     });
 
@@ -101,7 +104,7 @@ test('Add Step with static ClusterId and StepConfiguration from payload', () => 
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::elasticmapreduce:addStep',
+          ':states:::elasticmapreduce:addStep.sync',
         ],
       ],
     },
@@ -121,7 +124,7 @@ test('Add Step with static ClusterId and StepConfiguration and SYNC integrationP
         stepConfiguration: sfn.TaskInput.fromObject({
           Name: 'StepName'
         }),
-        integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
       })
     });
 
@@ -136,7 +139,7 @@ test('Add Step with static ClusterId and StepConfiguration and SYNC integrationP
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::elasticmapreduce:addStep.sync',
+          ':states:::elasticmapreduce:addStep',
         ],
       ],
     },
