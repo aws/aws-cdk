@@ -30,7 +30,7 @@ export interface EventInvokeConfigOptions {
    *
    * @default Duration.hours(6)
    */
-  readonly maximumEventAge?: Duration;
+  readonly maxEventAge?: Duration;
 
   /**
    * The maximum number of times to retry when the function returns an error.
@@ -40,7 +40,7 @@ export interface EventInvokeConfigOptions {
    *
    * @default 2
    */
-  readonly maximumRetryAttemps?: number;
+  readonly retryAttempts?: number;
 }
 
 /**
@@ -72,12 +72,12 @@ export class EventInvokeConfig extends Resource {
   constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
 
-    if (props.maximumEventAge && (props.maximumEventAge.toSeconds() < 60 || props.maximumEventAge.toSeconds() > 21600)) {
+    if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
       throw new Error('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.');
     }
 
-    if (props.maximumRetryAttemps && (props.maximumRetryAttemps < 0 || props.maximumRetryAttemps > 2)) {
-      throw new Error('`maximumRetryAttemps` must be between 0 and 2.');
+    if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 2)) {
+      throw new Error('`retryAttempts` must be between 0 and 2.');
     }
 
     new CfnEventInvokeConfig(this, 'Resource', {
@@ -88,8 +88,8 @@ export class EventInvokeConfig extends Resource {
         }
         : undefined,
       functionName: props.function.functionName,
-      maximumEventAgeInSeconds: props.maximumEventAge && props.maximumEventAge.toSeconds(),
-      maximumRetryAttempts: props.maximumRetryAttemps !== undefined ? props.maximumRetryAttemps : undefined,
+      maximumEventAgeInSeconds: props.maxEventAge && props.maxEventAge.toSeconds(),
+      maximumRetryAttempts: props.retryAttempts !== undefined ? props.retryAttempts : undefined,
       qualifier: props.qualifier || '$LATEST',
     });
   }

@@ -1481,8 +1481,8 @@ export = {
       onSuccess: {
         bind: () => ({ destination: 'on-success-arn' }),
       },
-      maximumEventAge: cdk.Duration.hours(1),
-      maximumRetryAttemps: 0
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0
     });
 
     // THEN

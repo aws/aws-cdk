@@ -497,13 +497,13 @@ export class Function extends FunctionBase {
     props.code.bindToResource(resource);
 
     // Event Invoke Config
-    if (props.onFailure || props.onSuccess || props.maximumEventAge || props.maximumRetryAttemps) {
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts) {
       new EventInvokeConfig(this, 'EventInvokeConfig', {
         function: this,
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,
-        maximumEventAge: props.maximumEventAge,
-        maximumRetryAttemps: props.maximumRetryAttemps,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
       });
     }
   }

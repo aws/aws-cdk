@@ -24,8 +24,8 @@ class TestStack extends Stack {
       };`),
       onFailure: new destinations.SnsTopic(topic),
       onSuccess: new destinations.SqsQueue(queue),
-      maximumEventAge: Duration.hours(3),
-      maximumRetryAttemps: 1
+      maxEventAge: Duration.hours(3),
+      retryAttempts: 1
     });
   }
 }
