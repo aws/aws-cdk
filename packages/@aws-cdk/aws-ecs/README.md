@@ -53,9 +53,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 
 For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
-## AWS Fargate vs Amazon ECS
+## AWS Fargate vs Amazon EC2
 
-There are two sets of constructs in this library; one to run tasks on Amazon ECS and
+There are two sets of constructs in this library; one to run tasks on Amazon EC2 and
 one to run tasks on AWS Fargate.
 
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
