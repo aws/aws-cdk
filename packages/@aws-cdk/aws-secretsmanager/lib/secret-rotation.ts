@@ -13,7 +13,7 @@ export interface SecretRotationApplicationOptions {
    *
    * @default false
    */
-  isMultiUser?: boolean;
+  readonly isMultiUser?: boolean;
 }
 /**
  * A secret rotation serverless application.
