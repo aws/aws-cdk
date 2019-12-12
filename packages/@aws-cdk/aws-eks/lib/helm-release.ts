@@ -2,9 +2,9 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 import { Construct, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
-// const REPOSITORY_STABLE = "https://kubernetes-charts.storage.googleapis.com";
-// const REPOSITORY_INCUBATOR = "https://kubernetes-charts-incubator.storage.googleapis.com";
-
+/**
+ * Helm Release Properties.
+ */
 export interface HelmReleaseProps {
   /**
    * The EKS cluster to apply this configuration to.
@@ -15,33 +15,32 @@ export interface HelmReleaseProps {
 
   /**
    * The name of the release.
-   * @attribute
    */
   readonly name: string;
 
   /**
-   * The chart name.
-   * @attribute
+   * The name of the chart.
    */
-  readonly chart?: string;
+  readonly chart: string;
 
   /**
    * The repository.
-   * @attribute
+   * 
+   * @default No repository will be used, which means that the chart needs to be an absolute URL.
    */
   readonly repository?: string;
 
   /**
-   * The namespace.
-   * @attribute
+   * The Kubernetes namespace scope of the requests.
+   * @default default
    */
   readonly namespace?: string;
 
   /**
    * The values.
-   * @attribute
+   * @default No values are provided to the chart.
    */
-  readonly values?: any;
+  readonly values?: {[key: string]: any};
 }
 
 /**
