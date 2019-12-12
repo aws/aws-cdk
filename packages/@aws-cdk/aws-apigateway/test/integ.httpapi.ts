@@ -38,26 +38,34 @@ def lambda_handler(event, context):
       handler: greetingFunc
     });
 
+    // HTTP API on root route with Lambda integration
     const httpApi = new apigw.HttpApi(this, 'MyHttpApi', {
       handler: echoFunc
     });
 
-    // HTTP ANY /demo
+    // HTTP ANY /demo with Lambda integration
     const demoRoute = httpApi.root.addRoute('demo', {
       integrationType: HttpApiIntegrationType.LAMBDA,
       target: greetingFunc
     });
 
+    // same as above with the addLambdaRoute() shorthand
     // HTTP ANY /demo/demo2
-    demoRoute.addRoute('demo2', {
-      integrationType: HttpApiIntegrationType.LAMBDA,
+    demoRoute.addLambdaRoute('demo2', {
       target: greetingFunc,
     });
 
-    // HTTP ANY /pahud
+    // HTTP ANY /checkip
+    // HTTP ANY /checkip will proxy to HTTP GET https://checkip.amazonaws.com/
     httpApi.root.addRoute('checkip', {
       integrationType: HttpApiIntegrationType.HTTP,
       integrationMethod: HttpMethod.GET,
+      targetUrl: 'https://checkip.amazonaws.com/'
+    });
+
+    // same as above with the addHttpRoute() shorthand
+    // HTTP ANY /checkip2 will proxy to HTTP ANY https://checkip.amazonaws.com/
+    httpApi.root.addHttpRoute('checkip2', {
       targetUrl: 'https://checkip.amazonaws.com/'
     });
 

@@ -33,6 +33,10 @@ export interface IRoute extends IRouteBase {
    */
   addRoute(pathPart: string, options?: RouteOptions): Route;
 
+  addHttpRoute(pathPart: string, options?: HttpRouteOptions): Route;
+
+  addLambdaRoute(pathPart: string, options?: LambdaRouteOptions): Route;
+
 }
 
 export abstract class RouteBase extends ResourceConstruct implements IRoute {
@@ -50,6 +54,27 @@ export abstract class RouteBase extends ResourceConstruct implements IRoute {
   public addRoute(pathPart: string, options: RouteOptions): Route {
     return new Route(this, pathPart, { method: options.method, integrationType: options.integrationType,  parent: this, pathPart, ...options });
   }
+
+  /**
+   * Defines a new child route where this route is the parent.
+   * @param pathPart The path part for the child route
+   * @param options Route options
+   * @returns A Route object
+   */
+  public addHttpRoute(pathPart: string, options: HttpRouteOptions): Route {
+    return new Route(this, pathPart, { method: options.method, integrationType: HttpApiIntegrationType.HTTP, parent: this, pathPart, ...options });
+  }
+
+  /**
+   * Defines a new child route where this route is the parent.
+   * @param pathPart The path part for the child route
+   * @param options Route options
+   * @returns A Route object
+   */
+  public addLambdaRoute(pathPart: string, options: LambdaRouteOptions): Route {
+    return new Route(this, pathPart, { method: options.method, integrationType: HttpApiIntegrationType.LAMBDA, parent: this, pathPart, ...options });
+  }
+
 }
 
 export enum HttpMethod {
@@ -137,21 +162,34 @@ export enum IntegrationV2Type {
   HTTP_PROXY = 'HTTP_PROXY'
 }
 
-export interface RouteOptions {
-  // /**
-  //  * An integration to use as a default for all methods created within this
-  //  * API unless an integration is specified.
-  //  *
-  //  * @default - Inherited from parent.
-  //  */
-  // readonly defaultIntegration?: Integration;
-    readonly integrationType: HttpApiIntegrationType
+export interface RouteOptionsBase {
 
-    readonly target?: lambda.IFunction
+}
 
-    readonly targetUrl?: string
+export interface RouteOptions extends RouteOptionsBase {
+  readonly integrationType: HttpApiIntegrationType
 
-    readonly method?: HttpMethod
+  readonly target?: lambda.IFunction
 
-    readonly integrationMethod?: HttpMethod;
+  readonly targetUrl?: string
+
+  readonly method?: HttpMethod
+
+  readonly integrationMethod?: HttpMethod;
+}
+
+export interface HttpRouteOptions extends RouteOptionsBase {
+  readonly targetUrl?: string
+
+  readonly method?: HttpMethod
+
+  readonly integrationMethod?: HttpMethod;
+}
+
+export interface LambdaRouteOptions extends RouteOptionsBase {
+  readonly target?: lambda.IFunction
+
+  readonly method?: HttpMethod
+
+  readonly integrationMethod?: HttpMethod;
 }
