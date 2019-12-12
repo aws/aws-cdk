@@ -7,7 +7,7 @@ import { Construct, Stack } from '@aws-cdk/core';
  *
  * If no event bus is specified, the default event bus is used.
  */
-export class EventBridgeBus implements lambda.IDestination {
+export class EventBridgeDestination implements lambda.IDestination {
   /**
    * @default - use the default event bus
    */

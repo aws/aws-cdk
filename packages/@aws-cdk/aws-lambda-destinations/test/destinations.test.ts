@@ -24,7 +24,7 @@ test('event bus as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.EventBridgeBus(eventBus)
+    onSuccess: new destinations.EventBridgeDestination(eventBus)
   });
 
   // THEN
@@ -59,7 +59,7 @@ test('event bus as destination defaults to default event bus', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.EventBridgeBus()
+    onSuccess: new destinations.EventBridgeDestination()
   });
 
   // THEN
@@ -113,7 +113,7 @@ test('lambda as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.LambdaFunction(successLambda)
+    onSuccess: new destinations.LambdaDestination(successLambda)
   });
 
   // THEN
@@ -156,7 +156,7 @@ test('sns as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.SnsTopic(topic)
+    onSuccess: new destinations.SnsDestination(topic)
   });
 
   // THEN
@@ -193,7 +193,7 @@ test('sqs as destination', () => {
   // WHEN
   new lambda.Function(stack, 'Function', {
     ...lambdaProps,
-    onSuccess: new destinations.SqsQueue(queue)
+    onSuccess: new destinations.SqsDestination(queue)
   });
 
   // THEN

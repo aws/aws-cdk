@@ -4,7 +4,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Use a Lambda function as a Lambda destination
  */
-export class LambdaFunction implements lambda.IDestination {
+export class LambdaDestination implements lambda.IDestination {
   constructor(private readonly fn: lambda.IFunction) {
   }
 

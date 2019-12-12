@@ -22,8 +22,8 @@ class TestStack extends Stack {
         if (event === 'OK') return 'success';
         throw new Error('failure');
       };`),
-      onFailure: new destinations.SnsTopic(topic),
-      onSuccess: new destinations.SqsQueue(queue),
+      onFailure: new destinations.SnsDestination(topic),
+      onSuccess: new destinations.SqsDestination(queue),
       maxEventAge: Duration.hours(3),
       retryAttempts: 1
     });
@@ -43,8 +43,8 @@ class TestStack extends Stack {
         if (event === 'OK') return 'success';
         throw new Error('failure');
       };`),
-      onFailure: new destinations.EventBridgeBus(),
-      onSuccess: new destinations.LambdaFunction(onSucessLambda),
+      onFailure: new destinations.EventBridgeDestination(),
+      onSuccess: new destinations.LambdaDestination(onSucessLambda),
     });
   }
 }

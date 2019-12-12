@@ -5,7 +5,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Use a SQS queue as a Lambda destination
  */
-export class SqsQueue implements lambda.IDestination {
+export class SqsDestination implements lambda.IDestination {
   constructor(private readonly queue: sqs.IQueue) {
   }
 

@@ -5,7 +5,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Use a SNS topic as a Lambda destination
  */
-export class SnsTopic implements lambda.IDestination {
+export class SnsDestination implements lambda.IDestination {
   constructor(private readonly topic: sns.ITopic) {
   }
 
