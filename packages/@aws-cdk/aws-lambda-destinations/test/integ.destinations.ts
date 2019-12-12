@@ -15,7 +15,7 @@ class TestStack extends Stack {
     const topic = new sns.Topic(this, 'Topic');
     const queue = new sqs.Queue(this, 'Queue');
 
-    new lambda.Function(this, 'Function', {
+    new lambda.Function(this, 'SnsSqs', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
@@ -26,6 +26,25 @@ class TestStack extends Stack {
       onSuccess: new destinations.SqsQueue(queue),
       maxEventAge: Duration.hours(3),
       retryAttempts: 1
+    });
+
+    const onSucessLambda = new lambda.Function(this, 'OnSucces', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(`exports.handler = async (event) => {
+        console.log(event);
+      };`),
+    });
+
+    new lambda.Function(this, 'EventBusLambda', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(`exports.handler = async (event) => {
+        if (event === 'OK') return 'success';
+        throw new Error('failure');
+      };`),
+      onFailure: new destinations.EventBridgeBus(),
+      onSuccess: new destinations.LambdaFunction(onSucessLambda),
     });
   }
 }
