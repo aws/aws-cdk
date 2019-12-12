@@ -136,6 +136,7 @@ export interface Login {
 export interface RotationMultiUserOptions {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
+   * ```
    * {
    *   "engine": <required: database engine>,
    *   "host": <required: instance host name>,
@@ -145,6 +146,7 @@ export interface RotationMultiUserOptions {
    *   "port": <optional: if not specified, default port will be used>,
    *   "masterarn": <required: the arn of the master secret which will be used to create users/change passwords>
    * }
+   * ```
    */
   readonly secret: secretsmanager.ISecret;
 

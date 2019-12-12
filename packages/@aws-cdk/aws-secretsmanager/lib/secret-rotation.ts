@@ -106,6 +106,7 @@ export class SecretRotationApplication {
 export interface SecretRotationProps {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
+   * ```
    * {
    *   "engine": <required: database engine>,
    *   "host": <required: instance host name>,
@@ -115,6 +116,7 @@ export interface SecretRotationProps {
    *   "port": <optional: if not specified, default port will be used>,
    *   "masterarn": <required for multi user rotation: the arn of the master secret which will be used to create users/change passwords>
    * }
+   * ```
    *
    * This is typically the case for a secret referenced from an
    * AWS::SecretsManager::SecretTargetAttachment or an `ISecret` returned by the `attach()` method of `Secret`.
