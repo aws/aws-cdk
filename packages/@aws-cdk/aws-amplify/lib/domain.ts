@@ -23,7 +23,7 @@ export interface DomainOptions {
 }
 
 /**
- * Properties for a Branch
+ * Properties for a Domain
  */
 export interface DomainProps extends DomainOptions {
   /**

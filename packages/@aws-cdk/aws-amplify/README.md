@@ -71,8 +71,8 @@ amplifyApp.addCustomRule({
 Add a domain and map sub domains to branches:
 ```ts
 const domain = amplifyApp.addDomain('example.com');
-domain.addSubDomain(master, 'www');
-domain.addSubDomain(dev); // sub domain prefix defaults to branch name
+domain.mapSubDomain(master, 'www');
+domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```
 
 ### Restricting access
