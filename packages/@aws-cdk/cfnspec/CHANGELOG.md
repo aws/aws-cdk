@@ -1,3 +1,281 @@
+# CloudFormation Resource Specification v10.0.0
+
+## New Resource Types
+
+* AWS::AccessAnalyzer::Analyzer
+* AWS::EventSchemas::Discoverer
+* AWS::EventSchemas::Registry
+* AWS::EventSchemas::Schema
+* AWS::S3::AccessPoint
+
+## Attribute Changes
+
+* AWS::WAFv2::IPSet Arn (__added__)
+* AWS::WAFv2::IPSet Id (__added__)
+* AWS::WAFv2::RegexPatternSet Arn (__added__)
+* AWS::WAFv2::RegexPatternSet Id (__added__)
+* AWS::WAFv2::RuleGroup Arn (__added__)
+* AWS::WAFv2::RuleGroup Id (__added__)
+* AWS::WAFv2::WebACL Arn (__added__)
+* AWS::WAFv2::WebACL Capacity (__added__)
+* AWS::WAFv2::WebACL Id (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Api BasePath (__added__)
+* AWS::ApiGatewayV2::Api Body (__added__)
+* AWS::ApiGatewayV2::Api BodyS3Location (__added__)
+* AWS::ApiGatewayV2::Api CorsConfiguration (__added__)
+* AWS::ApiGatewayV2::Api CredentialsArn (__added__)
+* AWS::ApiGatewayV2::Api FailOnWarnings (__added__)
+* AWS::ApiGatewayV2::Api RouteKey (__added__)
+* AWS::ApiGatewayV2::Api Target (__added__)
+* AWS::ApiGatewayV2::Api Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Api ProtocolType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Api RouteSelectionExpression.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Authorizer JwtConfiguration (__added__)
+* AWS::ApiGatewayV2::Authorizer AuthorizerUri.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Integration PayloadFormatVersion (__added__)
+* AWS::ApiGatewayV2::Stage AutoDeploy (__added__)
+* AWS::ApiGatewayV2::Stage DeploymentId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GuardDuty::Filter Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Alias ProvisionedConcurrencyConfig (__added__)
+* AWS::Lambda::Version ProvisionedConcurrencyConfig (__added__)
+* AWS::StepFunctions::StateMachine LoggingConfiguration (__added__)
+* AWS::StepFunctions::StateMachine StateMachineType (__added__)
+* AWS::WAFv2::IPSet IPSet (__deleted__)
+* AWS::WAFv2::IPSet IPSetSummary (__deleted__)
+* AWS::WAFv2::IPSet IPSets (__deleted__)
+* AWS::WAFv2::IPSet Id (__deleted__)
+* AWS::WAFv2::IPSet Limit (__deleted__)
+* AWS::WAFv2::IPSet LockToken (__deleted__)
+* AWS::WAFv2::IPSet NextLockToken (__deleted__)
+* AWS::WAFv2::IPSet NextMarker (__deleted__)
+* AWS::WAFv2::IPSet Summary (__deleted__)
+* AWS::WAFv2::RegexPatternSet Id (__deleted__)
+* AWS::WAFv2::RegexPatternSet Limit (__deleted__)
+* AWS::WAFv2::RegexPatternSet LockToken (__deleted__)
+* AWS::WAFv2::RegexPatternSet NextLockToken (__deleted__)
+* AWS::WAFv2::RegexPatternSet NextMarker (__deleted__)
+* AWS::WAFv2::RegexPatternSet RegexPatternSet (__deleted__)
+* AWS::WAFv2::RegexPatternSet RegexPatternSets (__deleted__)
+* AWS::WAFv2::RegexPatternSet Summary (__deleted__)
+* AWS::WAFv2::RuleGroup Id (__deleted__)
+* AWS::WAFv2::RuleGroup Limit (__deleted__)
+* AWS::WAFv2::RuleGroup LockToken (__deleted__)
+* AWS::WAFv2::RuleGroup NextLockToken (__deleted__)
+* AWS::WAFv2::RuleGroup NextMarker (__deleted__)
+* AWS::WAFv2::RuleGroup RuleGroup (__deleted__)
+* AWS::WAFv2::RuleGroup RuleGroupSummary (__deleted__)
+* AWS::WAFv2::RuleGroup RuleGroups (__deleted__)
+* AWS::WAFv2::RuleGroup Statement (__deleted__)
+* AWS::WAFv2::RuleGroup Summary (__deleted__)
+* AWS::WAFv2::WebACL Id (__deleted__)
+* AWS::WAFv2::WebACL Limit (__deleted__)
+* AWS::WAFv2::WebACL LockToken (__deleted__)
+* AWS::WAFv2::WebACL NextLockToken (__deleted__)
+* AWS::WAFv2::WebACL NextMarker (__deleted__)
+* AWS::WAFv2::WebACL Summary (__deleted__)
+* AWS::WAFv2::WebACL WebACL (__deleted__)
+* AWS::WAFv2::WebACL WebACLs (__deleted__)
+
+## Property Type Changes
+
+* AWS::WAFv2::IPSet.IPSet (__removed__)
+* AWS::WAFv2::IPSet.IPSetSummary (__removed__)
+* AWS::WAFv2::IPSet.IPSets (__removed__)
+* AWS::WAFv2::RegexPatternSet.RegexPatternSet (__removed__)
+* AWS::WAFv2::RegexPatternSet.RegexPatternSetSummary (__removed__)
+* AWS::WAFv2::RegexPatternSet.RegexPatternSets (__removed__)
+* AWS::WAFv2::RuleGroup.RuleGroup (__removed__)
+* AWS::WAFv2::RuleGroup.RuleGroupSummary (__removed__)
+* AWS::WAFv2::RuleGroup.RuleGroups (__removed__)
+* AWS::WAFv2::WebACL.WebACL (__removed__)
+* AWS::WAFv2::WebACL.WebACLSummary (__removed__)
+* AWS::WAFv2::WebACL.WebACLs (__removed__)
+* AWS::ApiGatewayV2::Api.BodyS3Location (__added__)
+* AWS::ApiGatewayV2::Api.Cors (__added__)
+* AWS::ApiGatewayV2::Authorizer.JWTConfiguration (__added__)
+* AWS::Lambda::Alias.ProvisionedConcurrencyConfiguration (__added__)
+* AWS::Lambda::Version.ProvisionedConcurrencyConfiguration (__added__)
+* AWS::StepFunctions::StateMachine.CloudWatchLogsLogGroup (__added__)
+* AWS::StepFunctions::StateMachine.LogDestination (__added__)
+* AWS::StepFunctions::StateMachine.LoggingConfiguration (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration DeploymentType (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration PreferredSubnetId (__added__)
+* AWS::WAFv2::RuleGroup.IPSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::RuleGroup.IPSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::WebACL.IPSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::WebACL.IPSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement Arn (__added__)
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Cors.PrimitiveType (__deleted__)
+* AWS::Serverless::Api Cors.PrimitiveTypes (__added__)
+* AWS::Serverless::Api Cors.Types (__added__)
+* AWS::Serverless::Api MethodSettings.PrimitiveType (__deleted__)
+* AWS::Serverless::Api MethodSettings.PrimitiveItemType (__added__)
+* AWS::Serverless::Api MethodSettings.Type (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.CorsConfiguration (__added__)
+* AWS::Serverless::Function.S3KeyFilter (__added__)
+* AWS::Serverless::Function.S3KeyFilterRule (__added__)
+* AWS::Serverless::Function.S3NotificationFilter S3Key.PrimitiveType (__deleted__)
+* AWS::Serverless::Function.S3NotificationFilter S3Key.Type (__added__)
+
+# CloudFormation Resource Specification v9.1.1
+
+## New Resource Types
+
+* AWS::AppSync::ApiCache
+* AWS::CloudWatch::InsightRule
+* AWS::ECS::PrimaryTaskSet
+* AWS::ECS::TaskSet
+* AWS::EKS::Nodegroup
+* AWS::GameLift::GameSessionQueue
+* AWS::GameLift::MatchmakingConfiguration
+* AWS::GameLift::MatchmakingRuleSet
+* AWS::GameLift::Script
+* AWS::Lambda::EventInvokeConfig
+* AWS::WAFv2::IPSet
+* AWS::WAFv2::RegexPatternSet
+* AWS::WAFv2::RuleGroup
+* AWS::WAFv2::WebACL
+
+## Attribute Changes
+
+* AWS::EKS::Cluster ClusterSecurityGroupId (__added__)
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker StorageType (__added__)
+* AWS::AppSync::Resolver CachingConfig (__added__)
+* AWS::AppSync::Resolver SyncConfig (__added__)
+* AWS::Cognito::IdentityPool AllowClassicFlow (__added__)
+* AWS::Cognito::UserPoolClient PreventUserExistenceErrors (__added__)
+* AWS::Cognito::UserPoolClient AllowedOAuthFlowsUserPoolClient.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Cognito::UserPoolUser ClientMetadata (__added__)
+* AWS::DocDB::DBCluster MasterUserPassword.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DocDB::DBCluster MasterUsername.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::EIP Tags (__added__)
+* AWS::EC2::NetworkAclEntry CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Cluster ClusterSettings (__added__)
+* AWS::ECS::Service DeploymentController (__added__)
+* AWS::ECS::Service TaskDefinition.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElastiCache::ReplicationGroup AuthToken.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::Elasticsearch::Domain CognitoOptions (__added__)
+* AWS::Elasticsearch::Domain ElasticsearchVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::GameLift::Build OperatingSystem (__added__)
+* AWS::GameLift::Fleet CertificateConfiguration (__added__)
+* AWS::GameLift::Fleet FleetType (__added__)
+* AWS::GameLift::Fleet InstanceRoleARN (__added__)
+* AWS::GameLift::Fleet MetricGroups (__added__)
+* AWS::GameLift::Fleet NewGameSessionProtectionPolicy (__added__)
+* AWS::GameLift::Fleet PeerVpcAwsAccountId (__added__)
+* AWS::GameLift::Fleet PeerVpcId (__added__)
+* AWS::GameLift::Fleet ResourceCreationLimitPolicy (__added__)
+* AWS::GameLift::Fleet RuntimeConfiguration (__added__)
+* AWS::GameLift::Fleet ScriptId (__added__)
+* AWS::GameLift::Fleet BuildId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GameLift::Fleet DesiredEC2Instances.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GameLift::Fleet ServerLaunchPath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Glue::MLTransform GlueVersion (__added__)
+* AWS::IAM::User Tags (__added__)
+* AWS::Lambda::EventSourceMapping BisectBatchOnFunctionError (__added__)
+* AWS::Lambda::EventSourceMapping DestinationConfig (__added__)
+* AWS::Lambda::EventSourceMapping MaximumRecordAgeInSeconds (__added__)
+* AWS::Lambda::EventSourceMapping MaximumRetryAttempts (__added__)
+* AWS::Lambda::EventSourceMapping ParallelizationFactor (__added__)
+* AWS::OpsWorksCM::Server CustomCertificate (__added__)
+* AWS::OpsWorksCM::Server CustomDomain (__added__)
+* AWS::OpsWorksCM::Server CustomPrivateKey (__added__)
+* AWS::RDS::DBCluster EnableHttpEndpoint (__added__)
+* AWS::SNS::Subscription RedrivePolicy (__added__)
+* AWS::SageMaker::Endpoint ExcludeRetainedVariantProperties (__added__)
+* AWS::SageMaker::Endpoint RetainAllVariantProperties (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.DeltaSyncConfig (__added__)
+* AWS::AppSync::Resolver.CachingConfig (__added__)
+* AWS::AppSync::Resolver.LambdaConflictHandlerConfig (__added__)
+* AWS::AppSync::Resolver.SyncConfig (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule (__added__)
+* AWS::ECS::Cluster.ClusterSetting (__added__)
+* AWS::ECS::Service.DeploymentController (__added__)
+* AWS::ECS::TaskDefinition.FirelensConfiguration (__added__)
+* AWS::Elasticsearch::Domain.CognitoOptions (__added__)
+* AWS::GameLift::Fleet.CertificateConfiguration (__added__)
+* AWS::GameLift::Fleet.ResourceCreationLimitPolicy (__added__)
+* AWS::GameLift::Fleet.RuntimeConfiguration (__added__)
+* AWS::GameLift::Fleet.ServerProcess (__added__)
+* AWS::Lambda::EventSourceMapping.DestinationConfig (__added__)
+* AWS::Lambda::EventSourceMapping.OnFailure (__added__)
+* AWS::SageMaker::Endpoint.VariantProperty (__added__)
+* AWS::ApiGateway::RestApi.EndpointConfiguration VpcEndpointIds (__added__)
+* AWS::AppSync::DataSource.DynamoDBConfig DeltaSyncConfig (__added__)
+* AWS::AppSync::DataSource.DynamoDBConfig Versioned (__added__)
+* AWS::CodePipeline::Pipeline.ActionDeclaration Namespace (__added__)
+* AWS::Cognito::UserPool.EmailConfiguration ConfigurationSet (__added__)
+* AWS::Cognito::UserPool.EmailConfiguration From (__added__)
+* AWS::DLM::LifecyclePolicy.Schedule FastRestoreRule (__added__)
+* AWS::EC2::Instance.ElasticInferenceAccelerator Count (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition FirelensConfiguration (__added__)
+* AWS::ECS::TaskDefinition.InferenceAccelerator DevicePolicy (__added__)
+* AWS::ECS::TaskDefinition.LinuxParameters MaxSwap (__added__)
+* AWS::ECS::TaskDefinition.LinuxParameters Swappiness (__added__)
+* AWS::GameLift::Build.S3Location ObjectVersion (__added__)
+
+
 # CloudFormation Resource Specification v8.0.0
 
 ## New Resource Types
