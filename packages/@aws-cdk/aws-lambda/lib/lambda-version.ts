@@ -1,5 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct, Fn } from '@aws-cdk/core';
+import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
@@ -20,7 +21,7 @@ export interface IVersion extends IFunction {
 /**
  * Properties for a new Lambda version
  */
-export interface VersionProps {
+export interface VersionProps extends EventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -132,6 +133,17 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.version = version.attrVersion;
     this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
+
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts) {
+      new EventInvokeConfig(this, 'EventInvokeConfig', {
+        function: this.lambda,
+        qualifier: this.version,
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts
+      });
+    }
   }
 
   public get grantPrincipal() {
