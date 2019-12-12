@@ -9,7 +9,7 @@ import { ISecret } from './secret';
  */
 export interface SecretRotationApplicationOptions {
   /**
-   * Whether this applications uses the multi user rotation scheme
+   * Whether the rotation application uses the mutli user scheme
    *
    * @default false
    */
@@ -114,7 +114,7 @@ export class SecretRotationApplication {
   public readonly semanticVersion: string;
 
   /**
-   * Wether the rotation application uses the mutli user scheme
+   * Whether the rotation application uses the mutli user scheme
    */
   public readonly isMultiUser?: boolean;
 
