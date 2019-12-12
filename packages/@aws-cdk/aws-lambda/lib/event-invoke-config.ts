@@ -4,7 +4,7 @@ import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
 
 /**
- * Options to add an EventInvokeConfig to a function.
+ * Base options to add an EventInvokeConfig to a function.
  */
 export interface BaseEventInvokeConfigOptions {
   /**
@@ -43,6 +43,9 @@ export interface BaseEventInvokeConfigOptions {
   readonly retryAttempts?: number;
 }
 
+/**
+ * Options to add an EventInvokeConfig to a function.
+ */
 export interface EventInvokeConfigOptions extends BaseEventInvokeConfigOptions {
   /**
    * The qualifier
