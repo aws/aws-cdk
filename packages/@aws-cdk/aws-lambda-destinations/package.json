@@ -50,8 +50,7 @@
     "aws",
     "cdk",
     "constructs",
-    "lambda",
-    "destinations"
+    "lambda"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -80,7 +79,6 @@
   },
   "dependencies": {
     "@aws-cdk/aws-events": "1.18.0",
-    "@aws-cdk/aws-iam": "1.18.0",
     "@aws-cdk/aws-lambda": "1.18.0",
     "@aws-cdk/aws-sns": "1.18.0",
     "@aws-cdk/aws-sqs": "1.18.0",
@@ -89,7 +87,6 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-events": "1.18.0",
-    "@aws-cdk/aws-iam": "1.18.0",
     "@aws-cdk/aws-lambda": "1.18.0",
     "@aws-cdk/aws-sns": "1.18.0",
     "@aws-cdk/aws-sqs": "1.18.0",
