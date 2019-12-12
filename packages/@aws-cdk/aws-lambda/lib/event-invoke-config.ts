@@ -6,7 +6,7 @@ import { CfnEventInvokeConfig } from './lambda.generated';
 /**
  * Options to add an EventInvokeConfig to a function.
  */
-export interface EventInvokeConfigOptions {
+export interface BaseEventInvokeConfigOptions {
   /**
    * The destination for failed invocations.
    *
@@ -43,6 +43,15 @@ export interface EventInvokeConfigOptions {
   readonly retryAttempts?: number;
 }
 
+export interface EventInvokeConfigOptions extends BaseEventInvokeConfigOptions {
+  /**
+   * The qualifier
+   *
+   * @default - latest version
+   */
+  readonly qualifier?: string;
+}
+
 /**
  * Properties for an EventInvokeConfig
  */
@@ -51,13 +60,6 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
    * The Lambda function
    */
   readonly function: IFunction;
-
-  /**
-   * The qualifier
-   *
-   * @default - latest version
-   */
-  readonly qualifier?: string;
 }
 
 /**

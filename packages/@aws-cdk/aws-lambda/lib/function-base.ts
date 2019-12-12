@@ -2,6 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
+import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
@@ -97,6 +98,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   addEventSource(source: IEventSource): void;
+
+  /**
+   * Configures options for asynchronous invocation on a version or an alias.
+   */
+  setAsyncInvokeConfig(id: string, options: EventInvokeConfigOptions): void
 }
 
 /**
@@ -288,6 +294,14 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   public addEventSource(source: IEventSource) {
     source.bind(this);
+  }
+
+  public setAsyncInvokeConfig(id: string, options: EventInvokeConfigOptions): void {
+    new EventInvokeConfig(this, id, {
+      function: this,
+      qualifier: options.qualifier || '$LATEST',
+      ...options
+    });
   }
 
   private parsePermissionPrincipal(principal?: iam.IPrincipal) {

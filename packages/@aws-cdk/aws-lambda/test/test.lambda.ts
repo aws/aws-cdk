@@ -1504,6 +1504,28 @@ export = {
     }));
 
     test.done();
+  },
+
+  'event invoke config on imported lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = lambda.Function.fromFunctionAttributes(stack, 'fn', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function'
+    });
+
+    // WHEN
+    fn.setAsyncInvokeConfig('Config', {
+      retryAttempts: 1
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: 'my-function',
+      Qualifier: '$LATEST',
+      MaximumRetryAttempts: 1
+    }));
+
+    test.done();
   }
 };
 

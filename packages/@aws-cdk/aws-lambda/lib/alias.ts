@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct } from '@aws-cdk/core';
-import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
+import { BaseEventInvokeConfigOptions, EventInvokeConfig } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
@@ -22,7 +22,7 @@ export interface IAlias extends IFunction {
 /**
  * Properties for a new Lambda alias
  */
-export interface AliasProps extends EventInvokeConfigOptions {
+export interface AliasProps extends BaseEventInvokeConfigOptions {
   /**
    * Description for the alias
    *

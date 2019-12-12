@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct, Fn } from '@aws-cdk/core';
-import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
+import { BaseEventInvokeConfigOptions, EventInvokeConfig } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
@@ -21,7 +21,7 @@ export interface IVersion extends IFunction {
 /**
  * Properties for a new Lambda version
  */
-export interface VersionProps extends EventInvokeConfigOptions {
+export interface VersionProps extends BaseEventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
    *

@@ -5,7 +5,7 @@ import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
-import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
+import { BaseEventInvokeConfigOptions, EventInvokeConfig } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -34,7 +34,7 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps extends EventInvokeConfigOptions {
+export interface FunctionProps extends BaseEventInvokeConfigOptions {
   /**
    * The source code of your Lambda function. You can point to a file in an
    * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
