@@ -32,6 +32,7 @@ def handler(event, context):
         physical_id = event.get('PhysicalResourceId', None)
         name = props['Name']
         chart = props['Chart']
+        version = props['Version']
         namespace = props.get('Namespace', None)
         repository = props.get('Repository', None)
         values_text = props.get('Values', None)        
@@ -55,9 +56,9 @@ def handler(event, context):
                 f.writelines(map(lambda obj: json.dumps(obj, indent=2), values))
 
         if request_type == 'Create':
-            helm('install', name, chart, repository, values_file, namespace)
+            helm('install', name, chart, repository, values_file, namespace, version)
         elif request_type == 'Update':
-            helm('upgrade', name, chart, repository, values_file, namespace)
+            helm('upgrade', name, chart, repository, values_file, namespace, version)
         elif request_type == "Delete":
             try:
                 helm('uninstall', name, namespace=namespace)
@@ -82,7 +83,7 @@ def handler(event, context):
         logger.exception(e)
         cfn_error(str(e))
 
-def helm(verb, name, chart = None, repo = None, file = None, namespace = None):
+def helm(verb, name, chart = None, repo = None, file = None, namespace = None, version = None):
     import subprocess
     try:
         cmnd = ['helm', verb, name]
@@ -92,6 +93,8 @@ def helm(verb, name, chart = None, repo = None, file = None, namespace = None):
             cmnd.extend(['--repo', repo])
         if not file is None:
             cmnd.extend(['--values', file])
+        if not version is None:
+            cmnd.extend(['--version', version])
         if not namespace is None:
             cmnd.extend(['--namespace', namespace])
         cmnd.extend(['--kubeconfig', kubeconfig])

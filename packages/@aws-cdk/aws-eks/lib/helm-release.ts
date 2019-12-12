@@ -24,6 +24,12 @@ export interface HelmReleaseProps {
   readonly chart: string;
 
   /**
+   * The chart version to install.
+   * @default If this is not specified, the latest version is installed
+   */
+  readonly version?: string;
+
+  /**
    * The repository.
    * @default No repository will be used, which means that the chart needs to be an absolute URL.
    */
@@ -70,6 +76,7 @@ export class HelmRelease extends Construct {
       properties: {
         Name: props.name,
         Chart: props.chart,
+        Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace,
         Repository: props.repository
