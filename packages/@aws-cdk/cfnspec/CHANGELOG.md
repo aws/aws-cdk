@@ -1,3 +1,132 @@
+# CloudFormation Resource Specification v10.0.0
+
+## New Resource Types
+
+* AWS::AccessAnalyzer::Analyzer
+* AWS::EventSchemas::Discoverer
+* AWS::EventSchemas::Registry
+* AWS::EventSchemas::Schema
+* AWS::S3::AccessPoint
+
+## Attribute Changes
+
+* AWS::WAFv2::IPSet Arn (__added__)
+* AWS::WAFv2::IPSet Id (__added__)
+* AWS::WAFv2::RegexPatternSet Arn (__added__)
+* AWS::WAFv2::RegexPatternSet Id (__added__)
+* AWS::WAFv2::RuleGroup Arn (__added__)
+* AWS::WAFv2::RuleGroup Id (__added__)
+* AWS::WAFv2::WebACL Arn (__added__)
+* AWS::WAFv2::WebACL Capacity (__added__)
+* AWS::WAFv2::WebACL Id (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Api BasePath (__added__)
+* AWS::ApiGatewayV2::Api Body (__added__)
+* AWS::ApiGatewayV2::Api BodyS3Location (__added__)
+* AWS::ApiGatewayV2::Api CorsConfiguration (__added__)
+* AWS::ApiGatewayV2::Api CredentialsArn (__added__)
+* AWS::ApiGatewayV2::Api FailOnWarnings (__added__)
+* AWS::ApiGatewayV2::Api RouteKey (__added__)
+* AWS::ApiGatewayV2::Api Target (__added__)
+* AWS::ApiGatewayV2::Api Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Api ProtocolType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Api RouteSelectionExpression.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Authorizer JwtConfiguration (__added__)
+* AWS::ApiGatewayV2::Authorizer AuthorizerUri.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ApiGatewayV2::Integration PayloadFormatVersion (__added__)
+* AWS::ApiGatewayV2::Stage AutoDeploy (__added__)
+* AWS::ApiGatewayV2::Stage DeploymentId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GuardDuty::Filter Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lambda::Alias ProvisionedConcurrencyConfig (__added__)
+* AWS::Lambda::Version ProvisionedConcurrencyConfig (__added__)
+* AWS::StepFunctions::StateMachine LoggingConfiguration (__added__)
+* AWS::StepFunctions::StateMachine StateMachineType (__added__)
+* AWS::WAFv2::IPSet IPSet (__deleted__)
+* AWS::WAFv2::IPSet IPSetSummary (__deleted__)
+* AWS::WAFv2::IPSet IPSets (__deleted__)
+* AWS::WAFv2::IPSet Id (__deleted__)
+* AWS::WAFv2::IPSet Limit (__deleted__)
+* AWS::WAFv2::IPSet LockToken (__deleted__)
+* AWS::WAFv2::IPSet NextLockToken (__deleted__)
+* AWS::WAFv2::IPSet NextMarker (__deleted__)
+* AWS::WAFv2::IPSet Summary (__deleted__)
+* AWS::WAFv2::RegexPatternSet Id (__deleted__)
+* AWS::WAFv2::RegexPatternSet Limit (__deleted__)
+* AWS::WAFv2::RegexPatternSet LockToken (__deleted__)
+* AWS::WAFv2::RegexPatternSet NextLockToken (__deleted__)
+* AWS::WAFv2::RegexPatternSet NextMarker (__deleted__)
+* AWS::WAFv2::RegexPatternSet RegexPatternSet (__deleted__)
+* AWS::WAFv2::RegexPatternSet RegexPatternSets (__deleted__)
+* AWS::WAFv2::RegexPatternSet Summary (__deleted__)
+* AWS::WAFv2::RuleGroup Id (__deleted__)
+* AWS::WAFv2::RuleGroup Limit (__deleted__)
+* AWS::WAFv2::RuleGroup LockToken (__deleted__)
+* AWS::WAFv2::RuleGroup NextLockToken (__deleted__)
+* AWS::WAFv2::RuleGroup NextMarker (__deleted__)
+* AWS::WAFv2::RuleGroup RuleGroup (__deleted__)
+* AWS::WAFv2::RuleGroup RuleGroupSummary (__deleted__)
+* AWS::WAFv2::RuleGroup RuleGroups (__deleted__)
+* AWS::WAFv2::RuleGroup Statement (__deleted__)
+* AWS::WAFv2::RuleGroup Summary (__deleted__)
+* AWS::WAFv2::WebACL Id (__deleted__)
+* AWS::WAFv2::WebACL Limit (__deleted__)
+* AWS::WAFv2::WebACL LockToken (__deleted__)
+* AWS::WAFv2::WebACL NextLockToken (__deleted__)
+* AWS::WAFv2::WebACL NextMarker (__deleted__)
+* AWS::WAFv2::WebACL Summary (__deleted__)
+* AWS::WAFv2::WebACL WebACL (__deleted__)
+* AWS::WAFv2::WebACL WebACLs (__deleted__)
+
+## Property Type Changes
+
+* AWS::WAFv2::IPSet.IPSet (__removed__)
+* AWS::WAFv2::IPSet.IPSetSummary (__removed__)
+* AWS::WAFv2::IPSet.IPSets (__removed__)
+* AWS::WAFv2::RegexPatternSet.RegexPatternSet (__removed__)
+* AWS::WAFv2::RegexPatternSet.RegexPatternSetSummary (__removed__)
+* AWS::WAFv2::RegexPatternSet.RegexPatternSets (__removed__)
+* AWS::WAFv2::RuleGroup.RuleGroup (__removed__)
+* AWS::WAFv2::RuleGroup.RuleGroupSummary (__removed__)
+* AWS::WAFv2::RuleGroup.RuleGroups (__removed__)
+* AWS::WAFv2::WebACL.WebACL (__removed__)
+* AWS::WAFv2::WebACL.WebACLSummary (__removed__)
+* AWS::WAFv2::WebACL.WebACLs (__removed__)
+* AWS::ApiGatewayV2::Api.BodyS3Location (__added__)
+* AWS::ApiGatewayV2::Api.Cors (__added__)
+* AWS::ApiGatewayV2::Authorizer.JWTConfiguration (__added__)
+* AWS::Lambda::Alias.ProvisionedConcurrencyConfiguration (__added__)
+* AWS::Lambda::Version.ProvisionedConcurrencyConfiguration (__added__)
+* AWS::StepFunctions::StateMachine.CloudWatchLogsLogGroup (__added__)
+* AWS::StepFunctions::StateMachine.LogDestination (__added__)
+* AWS::StepFunctions::StateMachine.LoggingConfiguration (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration DeploymentType (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration PreferredSubnetId (__added__)
+* AWS::WAFv2::RuleGroup.IPSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::RuleGroup.IPSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::RuleGroup.RegexPatternSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::WebACL.IPSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::WebACL.IPSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::WebACL.RegexPatternSetReferenceStatement Arn (__added__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement ARN (__deleted__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement Arn (__added__)
+
+
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 
 ## New Resource Types

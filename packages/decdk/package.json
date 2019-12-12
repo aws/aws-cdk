@@ -159,7 +159,9 @@
     "jsonschema": "^1.2.5",
     "yaml": "1.7.2",
     "yargs": "^15.0.1",
-    "@aws-cdk/aws-wafv2": "1.18.0"
+    "@aws-cdk/aws-wafv2": "1.18.0",
+    "@aws-cdk/aws-accessanalyzer": "1.18.0",
+    "@aws-cdk/aws-eventschemas": "1.18.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
