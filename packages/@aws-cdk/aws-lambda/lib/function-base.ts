@@ -299,7 +299,6 @@ export abstract class FunctionBase extends Resource implements IFunction {
   public setAsyncInvokeConfig(id: string, options: EventInvokeConfigOptions): void {
     new EventInvokeConfig(this, id, {
       function: this,
-      qualifier: options.qualifier || '$LATEST',
       ...options
     });
   }
