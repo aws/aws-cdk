@@ -14,24 +14,24 @@ export interface HttpApiProps {
   /**
    * The HTTP API name
    */
-  httpApiName?: string
+  readonly httpApiName?: string
   /**
    * The HTTP API description
    */
-  description?: string
+  readonly bdescription?: string
   /**
    * The HTTP API protocol.
    *
    * @default HTTP
    */
-  protocol?: httpApiProtocal.HTTP
+  readonly protocol?: HttpApiProtocal.HTTP
   /**
    * The Lambda function for HTTP API Lambda integration
    */
-  handler: lambda.Function
+  readonly handler: lambda.Function;
 }
 
-export enum httpApiProtocal {
+export enum HttpApiProtocal {
   HTTP = 'HTTP',
   WEBSOCKET = 'WEBSOCKET'
 }
@@ -41,6 +41,16 @@ export enum HttpApiIntegrationType {
   LAMBDA = 'LAMBDA'
 }
 
+/**
+ * Represents a HTTP API in Amazon API Gateway.
+ *
+ * Use `addRoute`, `addHttpRoute` or `addLambdaRoute` to configure the API model.
+ *
+ * By default, the API will automatically be deployed and accessible from a
+ * public endpoint.
+ *
+ * @resource AWS::ApiGatewayV2::Api
+ */
 export class HttpApi extends Resource implements IHttpApi {
   public static fromHttpApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
     class Import extends Resource implements IHttpApi {
@@ -53,7 +63,7 @@ export class HttpApi extends Resource implements IHttpApi {
    * The ID of this API Gateway HttpApi.
    */
   public readonly httpApiId: string;
-  public readonly restApi: undefined;
+  // public readonly restApi: string;
   /**
    * The resource ID of the root resource.
    *
@@ -85,7 +95,7 @@ export class HttpApi extends Resource implements IHttpApi {
 
     const resource = new CfnApiV2(this, 'Resource', {
       name: this.physicalName,
-      protocolType: props.protocol ? props.protocol : httpApiProtocal.HTTP,
+      protocolType: props.protocol ? props.protocol : HttpApiProtocal.HTTP,
       target: props.handler.functionArn
     });
     this.node.defaultChild = resource;
@@ -96,7 +106,7 @@ export class HttpApi extends Resource implements IHttpApi {
     const partition = this.region.startsWith('cn-') ? 'aws-cn' : 'aws';
     const account = Stack.of(this).account;
 
-    this.restApi = undefined;
+    // this.restApi = undefined;
 
     this.url = `https://${this.httpApiId}.execute-api.${this.region}.amazonaws.com`;
 

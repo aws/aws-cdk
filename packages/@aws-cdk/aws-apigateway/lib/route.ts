@@ -31,11 +31,11 @@ export interface IRoute extends IRouteBase {
    * @param options Route options
    * @returns A Route object
    */
-  addRoute(pathPart: string, options?: RouteOptions): Route;
+  addRoute(pathPart: string, options: RouteOptions): Route;
 
-  addHttpRoute(pathPart: string, options?: HttpRouteOptions): Route;
+  addHttpRoute(pathPart: string, options: HttpRouteOptions): Route;
 
-  addLambdaRoute(pathPart: string, options?: LambdaRouteOptions): Route;
+  addLambdaRoute(pathPart: string, options: LambdaRouteOptions): Route;
 
 }
 
@@ -52,7 +52,13 @@ export abstract class RouteBase extends ResourceConstruct implements IRoute {
    * @returns A Route object
    */
   public addRoute(pathPart: string, options: RouteOptions): Route {
-    return new Route(this, pathPart, { method: options.method, integrationType: options.integrationType,  parent: this, pathPart, ...options });
+    return new Route(this, pathPart, {
+      method: options.method,
+      integrationType: options.integrationType,
+      parent: this,
+      pathPart,
+      // ...options
+    });
   }
 
   /**
@@ -62,7 +68,13 @@ export abstract class RouteBase extends ResourceConstruct implements IRoute {
    * @returns A Route object
    */
   public addHttpRoute(pathPart: string, options: HttpRouteOptions): Route {
-    return new Route(this, pathPart, { method: options.method, integrationType: HttpApiIntegrationType.HTTP, parent: this, pathPart, ...options });
+    return new Route(this, pathPart, {
+      method: options.method,
+      integrationType: HttpApiIntegrationType.HTTP,
+      parent: this,
+      pathPart,
+      // ...options
+    });
   }
 
   /**
@@ -72,7 +84,12 @@ export abstract class RouteBase extends ResourceConstruct implements IRoute {
    * @returns A Route object
    */
   public addLambdaRoute(pathPart: string, options: LambdaRouteOptions): Route {
-    return new Route(this, pathPart, { method: options.method, integrationType: HttpApiIntegrationType.LAMBDA, parent: this, pathPart, ...options });
+    return new Route(this, pathPart, {
+      method: options.method,
+      integrationType: HttpApiIntegrationType.LAMBDA,
+      parent: this,
+      pathPart,
+    });
   }
 
 }
@@ -88,7 +105,7 @@ export enum HttpMethod {
 export interface RouteProps extends RouteOptions {
   readonly parent: IRoute;
   readonly pathPart: string;
-  readonly targetUrl?: string;
+  // readonly targetUrl?: string;
 }
 
 export class Route extends RouteBase {

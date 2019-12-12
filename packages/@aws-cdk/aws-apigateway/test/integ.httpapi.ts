@@ -34,9 +34,9 @@ def lambda_handler(event, context):
     runtime: lambda.Runtime.PYTHON_3_7
     });
 
-    new apigw.LambdaRestApi(this, 'MyRestApi', {
-      handler: greetingFunc
-    });
+    // new apigw.LambdaRestApi(this, 'MyRestApi', {
+    //   handler: greetingFunc
+    // });
 
     // HTTP API on root route with Lambda integration
     const httpApi = new apigw.HttpApi(this, 'MyHttpApi', {
