@@ -31,7 +31,7 @@ import sns = require('@aws-cdk/aws-sns');
 const myTopic = new sns.Topic(this, 'Topic');
 
 const myFn = new lambda.Function(this, 'Fn', {
-  ..., // other props
+  // other props
   onSuccess: new destinations.SnsTopic(myTopic)
 })
 ```
