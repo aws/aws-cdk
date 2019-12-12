@@ -25,7 +25,6 @@ export interface HelmReleaseProps {
 
   /**
    * The repository.
-   * 
    * @default No repository will be used, which means that the chart needs to be an absolute URL.
    */
   readonly repository?: string;
