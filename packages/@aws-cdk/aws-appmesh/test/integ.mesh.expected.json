@@ -83,7 +83,13 @@
     "vpcPublicSubnet1EIPDA49DCBE": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "mesh-stack/vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "vpcPublicSubnet1NATGateway9C16659E": {
@@ -457,8 +463,7 @@
       "Type": "AWS::AppMesh::Mesh",
       "Properties": {
         "MeshName": "meshstackmesh680D3CEB",
-        "Spec": {
-        }
+        "Spec": {}
       }
     },
     "meshrouter81B8087E": {
