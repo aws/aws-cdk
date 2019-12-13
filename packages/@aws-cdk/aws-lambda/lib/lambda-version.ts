@@ -134,7 +134,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
 
-    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts) {
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       new EventInvokeConfig(this, 'EventInvokeConfig', {
         function: this.lambda,
         qualifier: this.version,

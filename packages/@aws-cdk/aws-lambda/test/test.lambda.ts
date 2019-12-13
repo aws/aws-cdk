@@ -1526,6 +1526,37 @@ export = {
     }));
 
     test.done();
+  },
+
+  'add a version with event invoke config'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    fn.addVersion('1', 'sha256', 'desc', {
+      retryAttempts: 0
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3'
+      },
+      Qualifier: {
+        'Fn::GetAtt': [
+          'fnVersion197FA813F',
+          'Version'
+        ]
+      },
+      MaximumRetryAttempts: 0
+    }));
+
+    test.done();
   }
 };
 

@@ -138,7 +138,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       sep: ':',
     });
 
-    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts) {
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       new EventInvokeConfig(this, 'EventInvokeConfig', {
         function: this.lambda,
         qualifier: extractQualifierFromArn(alias.ref),

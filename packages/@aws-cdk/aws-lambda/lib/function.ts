@@ -497,7 +497,7 @@ export class Function extends FunctionBase {
     props.code.bindToResource(resource);
 
     // Event Invoke Config
-    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts) {
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       new EventInvokeConfig(this, 'EventInvokeConfig', {
         function: this,
         onFailure: props.onFailure,
@@ -555,11 +555,12 @@ export class Function extends FunctionBase {
    * @param description A description for this version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+  public addVersion(name: string, codeSha256?: string, description?: string, asyncInvokeConfig: BaseEventInvokeConfigOptions = {}): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
+      ...asyncInvokeConfig,
     });
   }
 
