@@ -4,6 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
+import { ListenerCertificate } from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -155,7 +156,7 @@ export = {
     lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.TLS,
-      certificates: [ { certificateArn: cert.certificateArn } ],
+      certificates: [ ListenerCertificate.fromCertificateManager(cert) ],
       sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });

@@ -5,6 +5,7 @@ import cdk = require('@aws-cdk/core');
 import { ConstructNode, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
+import { ListenerCertificate } from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -844,6 +845,31 @@ export = {
     lb.addListener('Listener', {
       port: 443,
       certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'HTTPS'
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    }));
+
+    test.done();
+  },
+
+  'Can use certificate wrapper class'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      certificates: [ListenerCertificate.fromArn('cert1'), ListenerCertificate.fromArn('cert2')],
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 

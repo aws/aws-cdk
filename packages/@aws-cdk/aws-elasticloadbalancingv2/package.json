@@ -92,6 +92,7 @@
   },
   "awslint": {
     "exclude": [
+      "no-unused-type:@aws-cdk/aws-elasticloadbalancingv2.INetworkListenerCertificateProps",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseListener.<initializer>.params[2]",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.<initializer>",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>",
