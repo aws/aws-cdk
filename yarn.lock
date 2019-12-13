@@ -375,6 +375,13 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
+"@jsii/spec@^0.20.10":
+  version "0.20.10"
+  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-0.20.10.tgz#a3c52ea6809fab9c8ae27556b33d0ec5ef55ffd2"
+  integrity sha512-Wl01ISJaRySAF2tDzV4+P8M8vf/TL/j+/T2pLh9QQ9ubIH9P62/jkQguQ9JOOwINDat8s0hNClyPZEojL7J8iw==
+  dependencies:
+    jsonschema "^1.2.5"
+
 "@lerna/add@3.19.0":
   version "3.19.0"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-3.19.0.tgz#33b6251c669895f842c14f05961432d464166249"
@@ -4880,16 +4887,16 @@ jsii-pacmak@^0.20.8:
     xmlbuilder "^13.0.2"
     yargs "^14.2.0"
 
-jsii-reflect@^0.20.8:
-  version "0.20.8"
-  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.8.tgz#1b9f6dbf68f7fdbc6c49c8cd2bcc6e15b4b18dfa"
-  integrity sha512-ZBh71LEsCtGapkX4usJq8+5yT+Cu0l9aF0tCXWgfHq8KrQWP1V0X8A1KMayWiE43caCbT1Uo83DpE58Hp5dxXA==
+jsii-reflect@^0.20.10, jsii-reflect@^0.20.8:
+  version "0.20.10"
+  resolved "https://registry.yarnpkg.com/jsii-reflect/-/jsii-reflect-0.20.10.tgz#206f4f169bf3658c7e3b2cbc7402498525f3071e"
+  integrity sha512-kzdR4IOV/zo993KPPjt22Rog4mT0dNrEVu74n7MKD64ShVuNFPhF9jvPZmXTcyg9yAtL2VNW3mNMhCbiu9B1ow==
   dependencies:
+    "@jsii/spec" "^0.20.10"
     colors "^1.4.0"
     fs-extra "^8.1.0"
-    jsii-spec "^0.20.8"
-    oo-ascii-tree "^0.20.8"
-    yargs "^14.2.0"
+    oo-ascii-tree "^0.20.10"
+    yargs "^15.0.2"
 
 jsii-rosetta@^0.20.8:
   version "0.20.8"
@@ -6024,10 +6031,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-oo-ascii-tree@^0.20.8:
-  version "0.20.8"
-  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.8.tgz#03ca3f62319a52924e60b17de81fdb268212e207"
-  integrity sha512-RC8NugrfgX6P3Gmgyr4PqoNXSNHrXEvjm2gt+SivKfD2kUcZBJQvQyOh3OIMFLKOXksgkHP4N1Ec954xETCKvg==
+oo-ascii-tree@^0.20.10:
+  version "0.20.10"
+  resolved "https://registry.yarnpkg.com/oo-ascii-tree/-/oo-ascii-tree-0.20.10.tgz#516a5f70a8a5a8ffd081c5a075683788d936449c"
+  integrity sha512-QXybj55h8QA8KvcxE7/xM08zjHNY6X28tmlmGOS6fBsKgtGviKT46+y2lGmmxdQNr4Tzdnp/GpVU5RRiUeb/bw==
 
 opener@^1.5.1:
   version "1.5.1"
@@ -8431,7 +8438,7 @@ yargs@^14.2.0, yargs@^14.2.2:
     y18n "^4.0.0"
     yargs-parser "^15.0.0"
 
-yargs@^15.0.1:
+yargs@^15.0.1, yargs@^15.0.2:
   version "15.0.2"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-15.0.2.tgz#4248bf218ef050385c4f7e14ebdf425653d13bd3"
   integrity sha512-GH/X/hYt+x5hOat4LMnCqMd8r5Cv78heOMIJn1hr7QPPBqfeC6p89Y78+WB9yGDvfpCvgasfmWLzNzEioOUD9Q==
