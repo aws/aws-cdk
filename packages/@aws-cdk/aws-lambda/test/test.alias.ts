@@ -282,7 +282,19 @@ export = {
       FunctionName: {
         Ref: 'fn5FF616E3'
       },
-      Qualifier: 'prod',
+      Qualifier: {
+        'Fn::Select': [
+          7,
+          {
+            'Fn::Split': [
+              ':',
+              {
+                Ref: 'Alias325C5727'
+              }
+            ]
+          }
+        ]
+      },
       DestinationConfig: {
         OnSuccess: {
           Destination: 'on-success-arn'

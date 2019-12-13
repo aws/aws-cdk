@@ -15,7 +15,7 @@ class TestStack extends Stack {
     const topic = new sns.Topic(this, 'Topic');
     const queue = new sqs.Queue(this, 'Queue');
 
-    new lambda.Function(this, 'SnsSqs', {
+    const fn = new lambda.Function(this, 'SnsSqs', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
@@ -28,7 +28,7 @@ class TestStack extends Stack {
       retryAttempts: 1
     });
 
-    const onSucessLambda = new lambda.Function(this, 'OnSucces', {
+    const onSuccessLambda = new lambda.Function(this, 'OnSucces', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
@@ -44,7 +44,18 @@ class TestStack extends Stack {
         throw new Error('failure');
       };`),
       onFailure: new destinations.EventBridgeDestination(),
-      onSuccess: new destinations.LambdaDestination(onSucessLambda),
+      onSuccess: new destinations.LambdaDestination(onSuccessLambda),
+    });
+
+    const version = fn.addVersion('MySpecialVersion');
+
+    new lambda.Alias(this, 'MySpecialAlias', {
+      aliasName: 'MySpecialAlias',
+      version,
+      onSuccess: new destinations.SqsDestination(queue),
+      onFailure: new destinations.SnsDestination(topic),
+      maxEventAge: Duration.hours(2),
+      retryAttempts: 0
     });
   }
 }

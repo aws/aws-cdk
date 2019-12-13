@@ -82,7 +82,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * @param versionArn The version ARN to create this version from
    */
   public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
-    const version = extractVersionFromArn(versionArn);
+    const version = extractQualifierFromArn(versionArn);
     const lambda = Function.fromFunctionArn(scope, `${id}Function`, versionArn);
 
     class Import extends QualifiedFunctionBase implements IVersion {
@@ -170,18 +170,18 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 }
 
 /**
- * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the version
- * name from the ARN.
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the
+ * qualifier (= version or alias) from the ARN.
  *
  * Version ARNs look like this:
  *
- *   arn:aws:lambda:region:account-id:function:function-name:version
+ *   arn:aws:lambda:region:account-id:function:function-name:qualifier
  *
- * ..which means that in order to extract the `version` component from the ARN, we can
+ * ..which means that in order to extract the `qualifier` component from the ARN, we can
  * split the ARN using ":" and select the component in index 7.
  *
  * @returns `FnSelect(7, FnSplit(':', arn))`
  */
-function extractVersionFromArn(arn: string) {
+export function extractQualifierFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
 }

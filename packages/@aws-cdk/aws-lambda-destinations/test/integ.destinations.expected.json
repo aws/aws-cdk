@@ -120,6 +120,14 @@
         "MaximumRetryAttempts": 1
       }
     },
+    "SnsSqsVersionMySpecialVersion08136BD6": {
+      "Type": "AWS::Lambda::Version",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SnsSqsC4810B27"
+        }
+      }
+    },
     "OnSuccesServiceRole75E399CF": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -291,6 +299,59 @@
             }
           }
         }
+      }
+    },
+    "MySpecialAliasC0F04207": {
+      "Type": "AWS::Lambda::Alias",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SnsSqsC4810B27"
+        },
+        "FunctionVersion": {
+          "Fn::GetAtt": [
+            "SnsSqsVersionMySpecialVersion08136BD6",
+            "Version"
+          ]
+        },
+        "Name": "MySpecialAlias"
+      }
+    },
+    "MySpecialAliasEventInvokeConfig05FF4E2F": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SnsSqsC4810B27"
+        },
+        "Qualifier": {
+          "Fn::Select": [
+            7,
+            {
+              "Fn::Split": [
+                ":",
+                {
+                  "Ref": "MySpecialAliasC0F04207"
+                }
+              ]
+            }
+          ]
+        },
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Ref": "TopicBFC7AF6E"
+            }
+          },
+          "OnSuccess": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "Queue4A7E3555",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "MaximumEventAgeInSeconds": 7200,
+        "MaximumRetryAttempts": 0
       }
     }
   }

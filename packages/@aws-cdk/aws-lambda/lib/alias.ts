@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct } from '@aws-cdk/core';
 import { BaseEventInvokeConfigOptions, EventInvokeConfig } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
-import { IVersion } from './lambda-version';
+import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 
 export interface IAlias extends IFunction {
@@ -141,7 +141,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts) {
       new EventInvokeConfig(this, 'EventInvokeConfig', {
         function: this.lambda,
-        qualifier: this.aliasName,
+        qualifier: extractQualifierFromArn(alias.ref),
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,
         maxEventAge: props.maxEventAge,
