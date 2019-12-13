@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct } from '@aws-cdk/core';
 import { IFunction, QualifiedFunctionBase } from './function-base';
-import {IProvisionedConcurrencyConfiguration, IVersion } from './lambda-version';
+import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 
 export interface IAlias extends IFunction {
@@ -63,9 +63,9 @@ export interface AliasProps {
   /**
    * Specifies a provisioned concurrency configuration for a function's version.
    *
-   * @default ProvisionedConcurrencyConfig execution number
+   * @default No execution number
    */
-  readonly provisionedConcurrencyConfig?: IProvisionedConcurrencyConfiguration;
+  readonly provisionedConcurrency?: number;
 }
 
 export interface AliasAttributes {
@@ -215,15 +215,15 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * Member must have value greater than or equal to 1
    */
   private determineProvisionedConcurrentExecutions(props: AliasProps) {
-    if (!props.provisionedConcurrencyConfig) {
+    if (!props.provisionedConcurrency) {
       return undefined;
     }
 
-    if (props.provisionedConcurrencyConfig.provisionedConcurrentExecutions <= 0) {
+    if (props.provisionedConcurrency <= 0) {
       throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
-    return props.provisionedConcurrencyConfig;
+    return {provisionedConcurrentExecutions: props.provisionedConcurrency};
   }
 }
 

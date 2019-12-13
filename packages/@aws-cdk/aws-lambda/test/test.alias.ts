@@ -130,13 +130,13 @@ export = {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const pce = {provisionedConcurrentExecutions: 5};
+    const pce = 5;
     const version = fn.addVersion('1', undefined, "testing", pce);
 
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
       version,
-      provisionedConcurrencyConfig: pce
+      provisionedConcurrency: pce
     });
 
     expect(stack).to(beASupersetOfTemplate({
@@ -235,7 +235,7 @@ export = {
 
   'sanity checks provisionedConcurrentExecutions'(test: Test) {
     const stack = new Stack();
-    const pce = {provisionedConcurrentExecutions: -1};
+    const pce = -1;
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -248,7 +248,7 @@ export = {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod',
         version: fn.addVersion('1'),
-        provisionedConcurrencyConfig: pce
+        provisionedConcurrency: pce
       });
     });
 
@@ -258,7 +258,7 @@ export = {
         lambda: fn,
         codeSha256: undefined,
         description: undefined,
-        provisionedConcurrencyConfig: pce
+        provisionedConcurrency: pce
       });
     });
 

@@ -7,7 +7,7 @@ import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
-import {IProvisionedConcurrencyConfiguration, Version } from './lambda-version';
+import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { LogRetention } from './log-retention';
@@ -544,12 +544,12 @@ export class Function extends FunctionBase {
    * @param provisionedConcurrencyConfiguration A provisioned concurrency configuration for a function's version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string, pce?: IProvisionedConcurrencyConfiguration): Version {
+  public addVersion(name: string, codeSha256?: string, description?: string, provisionedExecutions?: number): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
-      provisionedConcurrencyConfig: pce,
+      provisionedConcurrency: provisionedExecutions,
     });
   }
 

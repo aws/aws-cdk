@@ -47,7 +47,7 @@ export interface VersionProps {
    *
    * @default ProvisionedConcurrencyConfig execution number
    */
-  readonly provisionedConcurrencyConfig?: IProvisionedConcurrencyConfiguration;
+  readonly provisionedConcurrency?: number;
 }
 
 export interface VersionAttributes {
@@ -170,15 +170,15 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * Member must have value greater than or equal to 1
    */
   private determineProvisionedConcurrentExecutions(props: VersionProps) {
-    if (!props.provisionedConcurrencyConfig) {
+    if (!props.provisionedConcurrency) {
       return undefined;
     }
 
-    if (props.provisionedConcurrencyConfig.provisionedConcurrentExecutions <= 0) {
+    if (props.provisionedConcurrency <= 0) {
       throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
-    return props.provisionedConcurrencyConfig;
+    return {provisionedConcurrentExecutions: props.provisionedConcurrency};
   }
 }
 
@@ -197,15 +197,4 @@ export class Version extends QualifiedFunctionBase implements IVersion {
  */
 function extractVersionFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
-}
-
-/**
- * Specifies a provisioned concurrency configuration for a function's version.
- */
-export interface IProvisionedConcurrencyConfiguration {
-  /**
-   * The amount of provisioned concurrency to allocate for the version
-   */
-
-  readonly provisionedConcurrentExecutions: number;
 }
