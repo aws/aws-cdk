@@ -67,7 +67,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.18.0",
-    "@types/aws-lambda": "^8.10.37",
+    "@types/aws-lambda": "^8.10.38",
     "@types/lodash": "^4.14.149",
     "@types/sinon": "^7.5.0",
     "aws-sdk": "^2.588.0",

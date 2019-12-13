@@ -68,7 +68,7 @@
     "@aws-cdk/aws-sns-subscriptions": "1.18.0",
     "@aws-cdk/aws-sqs": "1.18.0",
     "@aws-cdk/aws-ssm": "1.18.0",
-    "@types/aws-lambda": "^8.10.37",
+    "@types/aws-lambda": "^8.10.38",
     "cdk-build-tools": "1.18.0",
     "cdk-integ-tools": "1.18.0",
     "cfn2ts": "1.18.0",
