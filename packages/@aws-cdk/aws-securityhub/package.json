@@ -81,13 +81,20 @@
     "pkglint": "1.18.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.18.0"
+    "@aws-cdk/core": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.18.0"
+    "@aws-cdk/core": "1.18.0",
+    "@aws-cdk/aws-events": "1.18.0"
   },
   "engines": {
     "node": ">= 10.3.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-securityhub.HubProps"
+    ]
   },
   "stability": "experimental"
 }
