@@ -24,6 +24,18 @@ export interface IService extends IResource {
   readonly serviceArn: string;
 }
 
+/**
+ * The deployment controller to use for the service.
+ */
+export interface DeploymentController {
+  /**
+   * The deployment controller type to use.
+   *
+   * @default DeploymentControllerType.ECS
+   */
+  readonly type?: DeploymentControllerType;
+}
+
 export interface EcsTarget {
   /**
    * The name of the container.
@@ -133,6 +145,14 @@ export interface BaseServiceOptions {
    * @default false
    */
   readonly enableECSManagedTags?: boolean;
+
+  /**
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
+  readonly deploymentController?: DeploymentController;
 }
 
 /**
@@ -308,6 +328,7 @@ export abstract class BaseService extends Resource
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
+      deploymentController: props.deploymentController,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -734,6 +755,27 @@ export enum LaunchType {
    * The service will be launched using the FARGATE launch type
    */
   FARGATE = 'FARGATE'
+}
+
+/**
+ * The deployment controller type to use for the service.
+ */
+export enum DeploymentControllerType {
+  /**
+   * The rolling update (ECS) deployment type involves replacing the current
+   * running version of the container with the latest version.
+   */
+  ECS = "ECS",
+
+  /**
+   * The blue/green (CODE_DEPLOY) deployment type uses the blue/green deployment model powered by AWS CodeDeploy
+   */
+  CODE_DEPLOY = "CODE_DEPLOY",
+
+  /**
+   * The external (EXTERNAL) deployment type enables you to use any third-party deployment controller
+   */
+  EXTERNAL = "EXTERNAL"
 }
 
 /**
