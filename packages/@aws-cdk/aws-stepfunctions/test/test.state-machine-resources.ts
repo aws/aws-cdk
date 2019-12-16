@@ -130,6 +130,48 @@ export = {
         test.done();
     },
 
+    'Task combines taskobject parameters with direct parameters'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const task = new stepfunctions.Task(stack, 'Task', {
+            inputPath: "$",
+            outputPath: "$.state",
+            task: {
+                bind: () => ({
+                    resourceArn: 'resource',
+                    parameters: {
+                        a: "aa",
+                    }
+                })
+            },
+            parameters: {
+                b: "bb"
+            }
+        });
+
+        // WHEN
+        const taskState = task.toStateJson();
+
+        // THEN
+        test.deepEqual(taskState, { End: true,
+            Retry: undefined,
+            Catch: undefined,
+            InputPath: '$',
+            Parameters:
+             { a: 'aa',
+               b: 'bb', },
+            OutputPath: '$.state',
+            Type: 'Task',
+            Comment: undefined,
+            Resource: 'resource',
+            ResultPath: undefined,
+            TimeoutSeconds: undefined,
+            HeartbeatSeconds: undefined
+        });
+
+        test.done();
+    },
+
     'Can grant start execution to a role'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
