@@ -23,6 +23,25 @@ test('no props', async () => {
   })).toMatchSnapshot();
 });
 
+test('multiple of same type', async () => {
+  expect(await dasm({
+    Resources: {
+      MyTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          DisplayName: 'hello hello'
+        }
+      },
+      MyTopicDos: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          DisplayName: 'hello again'
+        }
+      }
+    }
+  })).toMatchSnapshot();
+});
+
 test('bucket-and-key', async () => {
   expect(await dasm(require('./bucket-key.json'))).toMatchSnapshot();
 });

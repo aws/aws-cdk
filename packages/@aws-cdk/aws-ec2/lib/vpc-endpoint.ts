@@ -210,7 +210,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
-  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuil-fips');
+  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
   public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
@@ -244,6 +244,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
+  public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
+  public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
 
   /**
    * The name of the service.
