@@ -6,8 +6,8 @@ import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
+import { ContainerImage, DeploymentControllerType } from '../../lib';
 import ecs = require('../../lib');
-import { ContainerImage } from '../../lib';
 import { LaunchType } from '../../lib/base/base-service';
 
 export = {
@@ -181,6 +181,9 @@ export = {
         healthCheckGracePeriod: cdk.Duration.seconds(60),
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
+        deploymentController: {
+          type: DeploymentControllerType.CODE_DEPLOY
+        },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
@@ -204,6 +207,9 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 150,
           MinimumHealthyPercent: 55
+        },
+        DeploymentController: {
+          Type: DeploymentControllerType.CODE_DEPLOY
         },
         DesiredCount: 2,
         HealthCheckGracePeriodSeconds: 60,
