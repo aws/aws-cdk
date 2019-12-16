@@ -5,8 +5,8 @@ import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
+import { BinPackResource, BuiltInAttributes, ContainerImage, DeploymentControllerType, NetworkMode } from '../../lib';
 import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
 import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
@@ -155,6 +155,9 @@ export = {
         healthCheckGracePeriod: cdk.Duration.seconds(60),
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
+        deploymentController: {
+          type: DeploymentControllerType.CODE_DEPLOY
+        },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
@@ -179,6 +182,9 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 150,
           MinimumHealthyPercent: 55
+        },
+        DeploymentController: {
+          Type: DeploymentControllerType.CODE_DEPLOY
         },
         DesiredCount: 2,
         LaunchType: LaunchType.EC2,

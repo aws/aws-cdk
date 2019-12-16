@@ -1396,7 +1396,7 @@ export class Subnet extends Resource implements ISubnet {
     const route = new CfnRoute(this, id, {
       routeTableId: this.routeTable.routeTableId,
       destinationCidrBlock: options.destinationCidrBlock || (options.destinationIpv6CidrBlock === undefined ? '0.0.0.0/0' : undefined),
-      destinationIpv6CidrBlock: options.destinationCidrBlock,
+      destinationIpv6CidrBlock: options.destinationIpv6CidrBlock,
       [routerTypeToPropName(options.routerType)]: options.routerId,
     });
 

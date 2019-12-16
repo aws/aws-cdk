@@ -329,6 +329,7 @@ export = {
       domainZone: {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com',
+        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
         stack,
         node: stack.node,
       },

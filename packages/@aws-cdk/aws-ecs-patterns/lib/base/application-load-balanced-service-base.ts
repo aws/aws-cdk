@@ -1,7 +1,7 @@
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -98,6 +98,24 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
   readonly healthCheckGracePeriod?: cdk.Duration;
+
+  /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - 100 if daemon, otherwise 200
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
 
   /**
    * The application load balancer that will serve traffic to the service.
@@ -312,7 +330,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       }
     }
     if (this.certificate !== undefined) {
-      this.listener.addCertificateArns('Arns', [this.certificate.certificateArn]);
+      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
     }
 
     let domainName = this.loadBalancer.loadBalancerDnsName;
