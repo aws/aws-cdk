@@ -20,7 +20,7 @@ When we release a new major version of the AWS CDK, we will flip this behavior
 or completely remove the legacy behavior.
 
 In order for new projects to pick up this new behavior automatically, we will
-modify `cdk init` to inject the set of "future flags" into the generated
+modify `cdk init` to inject the set of feature flags into the generated
 `cdk.json` file. This means that the new project will have the latest behavior,
 but projects that were created prior to the introduction of this feature will
 have the same legacy behavior based on the set of capabilities that were
@@ -28,14 +28,14 @@ available at the time of the project's creation. This list will be cleaned up
 every time we release a major version of course.
 
 Using fine-grained flags will allow users of old projects to pick up specific
-new "future" behaviors by manually adding the specific keys to their `cdk.json`
+new behaviors by manually adding the specific keys to their `cdk.json`
 file, without risking breakage in other unexpected areas.
 
 ## Alternative Considered
  
 We considered an alternative of "bundling" new capabilities under a single flag
 that specifies the CDK version which created the project, but this means that
-users won't have the ability to pick and choose which future capabilities they
+users won't have the ability to pick and choose which capabilities they
 want to enable in case they need them but don't want to take the risk of
 unexpected changes.
  
@@ -72,7 +72,7 @@ flag, the CHANGELOG will include:
   `cdk init`. It will also indicate the context key this flag uses for users who
   wish to enable it manually in their project.
 
-## Future Development
+## Future Developments
 
 As a general rule, using a feature flag should be last resort in the case where
 it is impossible to implement backwards compatibility. A feature flag is likely
