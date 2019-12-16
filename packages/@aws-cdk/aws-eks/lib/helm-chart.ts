@@ -3,9 +3,9 @@ import { Construct, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
- * Helm Release Properties.
+ * Helm Chart Properties.
  */
-export interface HelmReleaseProps {
+export interface HelmChartProps {
   /**
    * The EKS cluster to apply this configuration to.
    *
@@ -25,13 +25,13 @@ export interface HelmReleaseProps {
 
   /**
    * The chart version to install.
-   * @default If this is not specified, the latest version is installed
+   * @default - If this is not specified, the latest version is installed
    */
   readonly version?: string;
 
   /**
-   * The repository.
-   * @default No repository will be used, which means that the chart needs to be an absolute URL.
+   * The repository which contains the chart. For example: https://kubernetes-charts.storage.googleapis.com/
+   * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
   readonly repository?: string;
 
@@ -43,7 +43,7 @@ export interface HelmReleaseProps {
 
   /**
    * The values.
-   * @default No values are provided to the chart.
+   * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};
 }
@@ -53,32 +53,32 @@ export interface HelmReleaseProps {
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.
  */
-export class HelmRelease extends Construct {
+export class HelmChart extends Construct {
   /**
    * The CloudFormation reosurce type.
    */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmRelease';
+  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
 
-  constructor(scope: Construct, id: string, props: HelmReleaseProps) {
+  constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
 
     const stack = Stack.of(this);
 
     // we maintain a single manifest custom resource handler for each cluster
-    const handler = props.cluster._helmReleaseHandler;
+    const handler = props.cluster._helmChartHandler;
     if (!handler) {
-      throw new Error(`Cannot define a Helm release on a cluster with kubectl disabled`);
+      throw new Error(`Cannot define a Helm chart on a cluster with kubectl disabled`);
     }
 
     new cfn.CustomResource(this, 'Resource', {
       provider: cfn.CustomResourceProvider.lambda(handler),
-      resourceType: HelmRelease.RESOURCE_TYPE,
+      resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         Name: props.name,
         Chart: props.chart,
         Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
-        Namespace: props.namespace,
+        Namespace: props.namespace || 'default',
         Repository: props.repository
       }
     });

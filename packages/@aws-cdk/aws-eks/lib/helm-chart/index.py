@@ -37,7 +37,7 @@ def handler(event, context):
         repository = props.get('Repository', None)
         values_text = props.get('Values', None)        
 
-        cluster_name = os.environ.get('CLUSTER_NAME', 'cdk')
+        cluster_name = os.environ.get('CLUSTER_NAME', None)
         if cluster_name is None:
             cfn_error("CLUSTER_NAME is missing in environment")
             return

@@ -305,7 +305,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @internal
    */
-  public readonly _helmReleaseHandler?: lambda.Function;
+  public readonly _helmChartHandler?: lambda.Function;
 
   /**
    * The auto scaling group that hosts the default capacity for this cluster.
@@ -410,7 +410,7 @@ export class Cluster extends Resource implements ICluster {
     // permissions and role are scoped. This will return `undefined` if kubectl
     // is not enabled for this cluster.
     this._k8sResourceHandler = this.createKubernetesResourceHandler();
-    this._helmReleaseHandler = this.createHelmReleaseHandler();
+    this._helmChartHandler = this.createHelmChartHandler();
 
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
@@ -612,13 +612,13 @@ export class Cluster extends Resource implements ICluster {
     });
   }
 
-  private createHelmReleaseHandler() {
+  private createHelmChartHandler() {
     if (!this.kubectlEnabled) {
       return undefined;
     }
 
-    return new lambda.Function(this, 'HelmReleaseHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'helm-release')),
+    return new lambda.Function(this, 'HelmChartHandler', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'helm-chart')),
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
