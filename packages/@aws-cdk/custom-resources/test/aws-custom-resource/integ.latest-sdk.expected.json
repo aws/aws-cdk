@@ -3,7 +3,7 @@
     "TopicBFC7AF6E": {
       "Type": "AWS::SNS::Topic"
     },
-    "Publish2E9BDF73": {
+    "Hello4A628BD4": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
@@ -21,9 +21,7 @@
               "Ref": "TopicBFC7AF6E"
             }
           },
-          "physicalResourceId": {
-            "Ref": "TopicBFC7AF6E"
-          }
+          "physicalResourceId": "hello"
         },
         "Update": {
           "service": "SNS",
@@ -34,9 +32,7 @@
               "Ref": "TopicBFC7AF6E"
             }
           },
-          "physicalResourceId": {
-            "Ref": "TopicBFC7AF6E"
-          }
+          "physicalResourceId": "hello"
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -80,16 +76,6 @@
           "Statement": [
             {
               "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "sns:ListTopics",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "ssm:GetParameter",
               "Effect": "Allow",
               "Resource": "*"
             }
@@ -153,14 +139,19 @@
           ]
         },
         "Runtime": "nodejs12.x",
-        "Timeout": 30
+        "Environment": {
+          "Variables": {
+            "USE_LATEST_SDK": "true"
+          }
+        },
+        "Timeout": 60
       },
       "DependsOn": [
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     },
-    "ListTopicsCE1E0341": {
+    "Bye6C95E5B3": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
@@ -171,60 +162,30 @@
         },
         "Create": {
           "service": "SNS",
-          "action": "listTopics",
-          "physicalResourceIdPath": "Topics.0.TopicArn"
+          "action": "publish",
+          "parameters": {
+            "Message": "bye",
+            "TopicArn": {
+              "Ref": "TopicBFC7AF6E"
+            }
+          },
+          "physicalResourceId": "bye"
         },
         "Update": {
           "service": "SNS",
-          "action": "listTopics",
-          "physicalResourceIdPath": "Topics.0.TopicArn"
+          "action": "publish",
+          "parameters": {
+            "Message": "bye",
+            "TopicArn": {
+              "Ref": "TopicBFC7AF6E"
+            }
+          },
+          "physicalResourceId": "bye"
         }
       },
       "DependsOn": [
-        "TopicBFC7AF6E"
+        "Hello4A628BD4"
       ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "DummyParameter53662B67": {
-      "Type": "AWS::SSM::Parameter",
-      "Properties": {
-        "Type": "String",
-        "Value": "1337"
-      }
-    },
-    "GetParameter42B0A00E": {
-      "Type": "Custom::AWS",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-            "Arn"
-          ]
-        },
-        "Create": {
-          "service": "SSM",
-          "action": "getParameter",
-          "parameters": {
-            "Name": {
-              "Ref": "DummyParameter53662B67"
-            },
-            "WithDecryption": "TRUE:BOOLEAN"
-          },
-          "physicalResourceIdPath": "Parameter.ARN"
-        },
-        "Update": {
-          "service": "SSM",
-          "action": "getParameter",
-          "parameters": {
-            "Name": {
-              "Ref": "DummyParameter53662B67"
-            },
-            "WithDecryption": "TRUE:BOOLEAN"
-          },
-          "physicalResourceIdPath": "Parameter.ARN"
-        }
-      },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     }
@@ -241,32 +202,6 @@
     "AssetParameterse4b42299f3453e4ae0692c275de0a1710497056be58f61f84f605652e8233c51ArtifactHash0BDF74C8": {
       "Type": "String",
       "Description": "Artifact hash for asset \"e4b42299f3453e4ae0692c275de0a1710497056be58f61f84f605652e8233c51\""
-    }
-  },
-  "Outputs": {
-    "MessageId": {
-      "Value": {
-        "Fn::GetAtt": [
-          "Publish2E9BDF73",
-          "MessageId"
-        ]
-      }
-    },
-    "TopicArn": {
-      "Value": {
-        "Fn::GetAtt": [
-          "ListTopicsCE1E0341",
-          "Topics.0.TopicArn"
-        ]
-      }
-    },
-    "ParameterValue": {
-      "Value": {
-        "Fn::GetAtt": [
-          "GetParameter42B0A00E",
-          "Parameter.Value"
-        ]
-      }
     }
   }
 }

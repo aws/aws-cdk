@@ -149,9 +149,26 @@ export interface AwsCustomResourceProps {
   /**
    * The timeout for the Lambda function implementing this custom resource.
    *
-   * @default Duration.seconds(30)
+   * @default Duration.seconds(30) when `useLatestSdk` is false,
+   * Duration.seconds(60) otherwise.
    */
   readonly timeout?: cdk.Duration
+
+  /**
+   * Install and use the latest version of AWS SDK JS.
+   *
+   * When set to `true`, the latest v2 of AWS SDK JS will be installed when a
+   * new container is initialized for the Lambda function implementing this
+   * custom resource. Subsequent executions reusing this container will skip
+   * installation.
+   *
+   * As this custom resource uses a singleton Lambda function, it's important
+   * to note that this will apply to **all** `AwsCustomResource`s in the stack
+   * even if only one instance sets this parameters to `true`.
+   *
+   * @default false
+   */
+  readonly useLatestSdk?: boolean;
 }
 
 export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
@@ -178,8 +195,13 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
-      timeout: props.timeout || cdk.Duration.seconds(30),
+      timeout: props.timeout || (props.useLatestSdk ? cdk.Duration.seconds(60) : cdk.Duration.seconds(30)),
       role: props.role,
+      environment: props.useLatestSdk
+        ? {
+          USE_LATEST_SDK: 'true'
+        }
+        : {}
     });
     this.grantPrincipal = provider.grantPrincipal;
 

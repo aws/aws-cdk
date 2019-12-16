@@ -307,3 +307,28 @@ test('can use existing role', () => {
 
   expect(stack).not.toHaveResource('AWS::IAM::Role');
 });
+
+test('useLatestSdk sets environment variable and increases default timeout', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: 'id'
+    },
+    useLatestSdk: true,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        USE_LATEST_SDK: 'true',
+      },
+    },
+    Timeout: 60,
+  });
+});
