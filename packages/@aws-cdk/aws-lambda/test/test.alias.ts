@@ -303,5 +303,26 @@ export = {
     }));
 
     test.done();
+  },
+
+  'event invoke config on imported alias'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = lambda.Version.fromVersionArn(stack, 'Fn', 'arn:aws:lambda:region:account-id:function:function-name:version');
+    const alias = lambda.Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias-name', aliasVersion: fn });
+
+    // WHEN
+    alias.configureAsyncInvoke({
+      retryAttempts: 1
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: 'function-name',
+      Qualifier: 'alias-name',
+      MaximumRetryAttempts: 1
+    }));
+
+    test.done();
   }
 };

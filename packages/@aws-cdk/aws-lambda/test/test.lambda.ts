@@ -1506,6 +1506,22 @@ export = {
     test.done();
   },
 
+  'throws when calling configureAsyncInvoke on already configured function'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      maxEventAge: cdk.Duration.hours(1),
+    });
+
+    // THEN
+    test.throws(() => fn.configureAsyncInvoke({ retryAttempts: 0 }), /There is already a Construct with name/);
+
+    test.done();
+  },
+
   'event invoke config on imported lambda'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1514,7 +1530,7 @@ export = {
     });
 
     // WHEN
-    fn.setAsyncInvokeConfig('Config', {
+    fn.configureAsyncInvoke({
       retryAttempts: 1
     });
 

@@ -5,7 +5,7 @@ import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
-import { BaseEventInvokeConfigOptions, EventInvokeConfig } from './event-invoke-config';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -34,7 +34,7 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps extends BaseEventInvokeConfigOptions {
+export interface FunctionProps extends EventInvokeConfigOptions {
   /**
    * The source code of your Lambda function. You can point to a file in an
    * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
@@ -498,8 +498,7 @@ export class Function extends FunctionBase {
 
     // Event Invoke Config
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
-      new EventInvokeConfig(this, 'EventInvokeConfig', {
-        function: this,
+      this.configureAsyncInvoke({
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,
         maxEventAge: props.maxEventAge,
@@ -555,7 +554,7 @@ export class Function extends FunctionBase {
    * @param description A description for this version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string, asyncInvokeConfig: BaseEventInvokeConfigOptions = {}): Version {
+  public addVersion(name: string, codeSha256?: string, description?: string, asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,

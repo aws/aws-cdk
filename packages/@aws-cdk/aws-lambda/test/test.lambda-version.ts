@@ -63,5 +63,34 @@ export = {
     }));
 
     test.done();
+  },
+
+  'event invoke config on imported versions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const version1 = lambda.Version.fromVersionArn(stack, 'Version1', 'arn:aws:lambda:region:account-id:function:function-name:version1');
+    const version2 = lambda.Version.fromVersionArn(stack, 'Version2', 'arn:aws:lambda:region:account-id:function:function-name:version2');
+
+    // WHEN
+    version1.configureAsyncInvoke({
+      retryAttempts: 1
+    });
+    version2.configureAsyncInvoke({
+      retryAttempts: 0
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: 'function-name',
+      Qualifier: 'version1',
+      MaximumRetryAttempts: 1
+    }));
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: 'function-name',
+      Qualifier: 'version2',
+      MaximumRetryAttempts: 0
+    }));
+
+    test.done();
   }
 };

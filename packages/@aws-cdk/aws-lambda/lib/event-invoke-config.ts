@@ -4,9 +4,9 @@ import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
 
 /**
- * Base options to add an EventInvokeConfig to a function.
+ * Options to add an EventInvokeConfig to a function.
  */
-export interface BaseEventInvokeConfigOptions {
+export interface EventInvokeConfigOptions {
   /**
    * The destination for failed invocations.
    *
@@ -44,18 +44,6 @@ export interface BaseEventInvokeConfigOptions {
 }
 
 /**
- * Options to add an EventInvokeConfig to a function.
- */
-export interface EventInvokeConfigOptions extends BaseEventInvokeConfigOptions {
-  /**
-   * The qualifier
-   *
-   * @default - latest version
-   */
-  readonly qualifier?: string;
-}
-
-/**
  * Properties for an EventInvokeConfig
  */
 export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
@@ -63,6 +51,13 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
    * The Lambda function
    */
   readonly function: IFunction;
+
+  /**
+   * The qualifier
+   *
+   * @default - latest version
+   */
+  readonly qualifier?: string;
 }
 
 /**

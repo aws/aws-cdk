@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { Construct, Fn } from '@aws-cdk/core';
-import { BaseEventInvokeConfigOptions, EventInvokeConfig } from './event-invoke-config';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
@@ -21,7 +21,7 @@ export interface IVersion extends IFunction {
 /**
  * Properties for a new Lambda version
  */
-export interface VersionProps extends BaseEventInvokeConfigOptions {
+export interface VersionProps extends EventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -87,6 +87,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = version;
+      public readonly qualifier = version;
       public readonly lambda = lambda;
       public readonly functionName = `${lambda.functionName}:${version}`;
       public readonly functionArn = versionArn;
@@ -101,6 +102,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = attrs.version;
+      public readonly qualifier = attrs.version;
       public readonly lambda = attrs.lambda;
       public readonly functionName = `${attrs.lambda.functionName}:${attrs.version}`;
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
@@ -116,6 +118,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly functionArn: string;
   public readonly functionName: string;
+  public readonly qualifier: string;
 
   protected readonly canCreatePermissions = true;
 
@@ -133,15 +136,14 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.version = version.attrVersion;
     this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
+    this.qualifier = version.attrVersion;
 
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
-      new EventInvokeConfig(this, 'EventInvokeConfig', {
-        function: this.lambda,
-        qualifier: this.version,
+      this.configureAsyncInvoke({
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,
         maxEventAge: props.maxEventAge,
-        retryAttempts: props.retryAttempts
+        retryAttempts: props.retryAttempts,
       });
     }
   }

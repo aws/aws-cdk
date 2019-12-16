@@ -100,9 +100,9 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   addEventSource(source: IEventSource): void;
 
   /**
-   * Configures options for asynchronous invocation on a version or an alias.
+   * Configures options for asynchronous invocation.
    */
-  setAsyncInvokeConfig(id: string, options: EventInvokeConfigOptions): void
+  configureAsyncInvoke(options: EventInvokeConfigOptions): void
 }
 
 /**
@@ -296,8 +296,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
     source.bind(this);
   }
 
-  public setAsyncInvokeConfig(id: string, options: EventInvokeConfigOptions): void {
-    new EventInvokeConfig(this, id, {
+  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this,
       ...options
     });
@@ -328,10 +328,23 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
 export abstract class QualifiedFunctionBase extends FunctionBase {
   public abstract readonly lambda: IFunction;
+
+  /**
+   * The version or alias of this function
+   */
+  public abstract readonly qualifier: string;
   public readonly permissionsNode = this.node;
 
   public get latestVersion() {
     return this.lambda.latestVersion;
+  }
+
+  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    new EventInvokeConfig(this, 'EventInvokeConfig', {
+      function: this.lambda,
+      qualifier: this.qualifier,
+      ...options
+    });
   }
 }
 
