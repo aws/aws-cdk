@@ -414,6 +414,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
   /**
    * Imports an external parameter of type string list.
+   * Returns a token and should not be parsed.
    */
   public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
     class Import extends ParameterBase {
