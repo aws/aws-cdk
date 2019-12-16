@@ -39,7 +39,7 @@
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "cdk-build-tools": "1.18.0",
-    "fast-check": "^1.20.0",
+    "fast-check": "^1.20.1",
     "pkglint": "1.18.0"
   },
   "repository": {
