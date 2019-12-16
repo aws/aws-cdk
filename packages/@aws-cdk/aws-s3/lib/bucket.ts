@@ -904,7 +904,7 @@ export interface BucketProps {
 
   /**
    * Destination bucket for the server access logs.
-   * @default - Access logs are not enable
+   * @default - Access logs are disabled
    */
   readonly serverAccessLogsBucket?: IBucket;
 
