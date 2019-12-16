@@ -8,6 +8,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-s3-access-logs');
 
 const accessLogBucket = new s3.Bucket(stack, 'MyAccessLogsBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
 });
 
 new s3.Bucket(stack, 'MyBucket', {
