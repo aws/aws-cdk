@@ -10,7 +10,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
-// One load balancer with one listener, and two target groups attaching to it.
+// One load balancer with one listener and two target groups.
 new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
   cluster,
   memoryLimitMiB: 256,

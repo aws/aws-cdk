@@ -9,7 +9,7 @@ import { NetworkMultipleTargetGroupsServiceBase,
  */
 export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMultipleTargetGroupsServiceBaseProps {
   /**
-   * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both.
+   * The task definition to use for tasks in the service. Only one of TaskDefinition or TaskImageOptions must be specified.
    *
    * [disable-awslint:ref-via-interface]
    *
@@ -32,7 +32,7 @@ export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMulti
    * If your container attempts to exceed the allocated memory, the container
    * is terminated.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   * At least one of memoryLimitMiB and memoryReservationMiB is required.
    *
    * @default - No memory limit.
    */
@@ -47,9 +47,9 @@ export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMulti
    * parameter (if applicable), or all of the available memory on the container
    * instance, whichever comes first.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   * At least one of memoryLimitMiB and memoryReservationMiB is required.
    *
-   * Note that this setting will be ignored if TaskImagesOptions is specified
+   * Note that this setting will be ignored if TaskImagesOptions is specified.
    *
    * @default - No memory reserved.
    */
@@ -81,7 +81,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new Error('You must specify either a taskDefinition or taskImageOptions, not both.');
+      throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -113,7 +113,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
     }
 
     if (!this.taskDefinition.defaultContainer) {
-      throw new Error('Need at least one essential container');
+      throw new Error('At least one essential container must be specified');
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({

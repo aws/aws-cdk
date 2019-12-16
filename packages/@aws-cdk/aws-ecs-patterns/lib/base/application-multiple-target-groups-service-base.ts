@@ -31,7 +31,7 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
   readonly vpc?: IVpc;
 
   /**
-   * The properties required to create a new task definition. TaskDefinition or TaskImageOptions must be specified, but not both.
+   * The properties required to create a new task definition. Only one of TaskDefinition or TaskImageOptions must be specified.
    *
    * @default none
    */
@@ -60,7 +60,7 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
   readonly serviceName?: string;
 
   /**
-   * The application load balancer that will serve traffic to the service. At least one load balancer should be specified.
+   * The application load balancer that will serve traffic to the service.
    *
    * @default - a new load balancer with a listener will be created.
    */
@@ -90,7 +90,7 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
   readonly cloudMapOptions?: CloudMapOptions;
 
   /**
-   * Properties to specify ECS target groups. At least one target group should be specified.
+   * Properties to specify ALB target groups.
    *
    * @default - default portMapping registered as target group and attached to the first defined listener
    */
@@ -116,7 +116,7 @@ export interface ApplicationLoadBalancedTaskImageProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * The secret to expose to the container as an environment variable.
+   * The secrets to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
@@ -254,11 +254,9 @@ export interface ApplicationLoadBalancerProps {
   readonly name: string;
 
   /**
-   * Listeners (at least one listener) that attached to this load balancer.
-   *
-   * @default - none
+   * Listeners (at least one listener) attached to this load balancer.
    */
-  readonly listeners?: ApplicationListenerProps[];
+  readonly listeners: ApplicationListenerProps[];
 
   /**
    * Determines whether the Load Balancer will be internet-facing.
@@ -321,7 +319,7 @@ export interface ApplicationListenerProps {
 }
 
 /**
- * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService services.
+ * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
 export abstract class ApplicationMultipleTargetGroupsServiceBase extends cdk.Construct {
 
@@ -370,23 +368,21 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends cdk.Con
         const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
         this.loadBalancers.push(lb);
         const protocolType = new Set<ApplicationProtocol>();
-        if (lbProps.listeners) {
-          for (const listenerProps of lbProps.listeners) {
-            const protocol = this.createListenerProtocol(listenerProps.protocol, listenerProps.certificate);
-            if (listenerProps.certificate !== undefined && protocol !== undefined && protocol !== ApplicationProtocol.HTTPS) {
-              throw new Error('The HTTPS protocol must be used when a certificate is given');
-            }
-            protocolType.add(protocol);
-            const listener = this.configListener(protocol, {
-              certificate: listenerProps.certificate,
-              domainName: lbProps.domainName,
-              domainZone: lbProps.domainZone,
-              listenerName: listenerProps.name,
-              loadBalancer: lb,
-              port: listenerProps.port
-            });
-            this.listeners.push(listener);
+        for (const listenerProps of lbProps.listeners) {
+          const protocol = this.createListenerProtocol(listenerProps.protocol, listenerProps.certificate);
+          if (listenerProps.certificate !== undefined && protocol !== undefined && protocol !== ApplicationProtocol.HTTPS) {
+            throw new Error('The HTTPS protocol must be used when a certificate is given');
           }
+          protocolType.add(protocol);
+          const listener = this.configListener(protocol, {
+            certificate: listenerProps.certificate,
+            domainName: lbProps.domainName,
+            domainZone: lbProps.domainZone,
+            listenerName: listenerProps.name,
+            loadBalancer: lb,
+            port: listenerProps.port
+          });
+          this.listeners.push(listener);
         }
         const domainName = this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
         new cdk.CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
@@ -394,13 +390,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends cdk.Con
           new cdk.CfnOutput(this, `ServiceURL${lb.node.id}${protocol.toLowerCase()}`, { value: protocol.toLowerCase() + '://' + domainName });
         }
       }
-      if (this.loadBalancers.length === 0) {
-        throw new Error('At least one load balancer should be specified');
-      }
+      // set up default load balancer and listener.
       this.loadBalancer = this.loadBalancers[0];
-      if (this.listeners.length === 0) {
-        throw new Error('At least one listener should be specified');
-      }
       this.listener = this.listeners[0];
     } else {
       this.loadBalancer = this.createLoadBalancer('LB');
@@ -509,6 +500,17 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends cdk.Con
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
+    }
+
+    if (props.loadBalancers) {
+      if (props.loadBalancers.length === 0) {
+        throw new Error('At least one load balancer must be specified');
+      }
+      for (const lbProps of props.loadBalancers) {
+        if (lbProps.listeners.length === 0) {
+          throw new Error('At least one listener must be specified');
+        }
+      }
     }
   }
 

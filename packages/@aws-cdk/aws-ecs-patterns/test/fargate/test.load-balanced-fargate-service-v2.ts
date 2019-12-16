@@ -261,7 +261,7 @@ export = {
           cluster,
           taskDefinition,
         });
-      }, /Need at least one essential container/);
+      }, /At least one essential container must be specified/);
 
       test.done();
     },
@@ -282,7 +282,7 @@ export = {
           },
           taskDefinition
         });
-      }, /You must specify either a taskDefinition or taskImageOptions, not both./);
+      }, /You must specify only one of TaskDefinition or TaskImageOptions./);
 
       test.done();
     },
@@ -555,7 +555,7 @@ export = {
           cluster,
           taskDefinition,
         });
-      }, /Need at least one essential container/);
+      }, /At least one essential container must be specified/);
 
       test.done();
     },
@@ -576,7 +576,7 @@ export = {
           },
           taskDefinition
         });
-      }, /You must specify either a taskDefinition or taskImageOptions, not both./);
+      }, /You must specify only one of TaskDefinition or TaskImageOptions./);
 
       test.done();
     },

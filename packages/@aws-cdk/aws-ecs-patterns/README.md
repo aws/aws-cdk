@@ -61,7 +61,7 @@ Additionally, if more than one application target group are needed, instantiate 
 * `ApplicationMultipleTargetGroupsEc2Service`
 
 ```ts
-// One application load balancer with one listener, and two target groups attaching to it.
+// One application load balancer with one listener and two target groups.
 const loadBalancedEc2Service = new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 256,
@@ -84,7 +84,7 @@ const loadBalancedEc2Service = new ApplicationMultipleTargetGroupsEc2Service(sta
 * `ApplicationMultipleTargetGroupsFargateService`
 
 ```ts
-// One application load balancer with one listener, and two target groups attaching to it.
+// One application load balancer with one listener and two target groups.
 const loadBalancedFargateService = new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
@@ -143,12 +143,12 @@ The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `clus
 
 If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
 
-Additionally, if more than one network target group are needed, instantiate one of the following:
+Additionally, if more than one network target group is needed, instantiate one of the following:
 
 * NetworkMultipleTargetGroupsEc2Service
 
 ```ts
-// Two network load balancers with two listeners individually, and two target groups attaching to them respectively.
+// Two network load balancers, each with their own listener and target group.
 const loadBalancedEc2Service = new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 256,
@@ -189,7 +189,7 @@ const loadBalancedEc2Service = new NetworkMultipleTargetGroupsEc2Service(stack, 
 * NetworkMultipleTargetGroupsFargateService
 
 ```ts
-// Two network load balancers with two listeners individually, and two target groups attaching to them respectively.
+// Two network load balancers, each with their own listener and target group.
 const loadBalancedFargateService = new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
   cluster,
   memoryLimitMiB: 512,

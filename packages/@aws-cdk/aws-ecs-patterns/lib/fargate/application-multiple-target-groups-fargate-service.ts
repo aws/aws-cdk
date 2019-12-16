@@ -10,7 +10,7 @@ import { ApplicationMultipleTargetGroupsServiceBase,
 export interface ApplicationMultipleTargetGroupsFargateServiceProps extends ApplicationMultipleTargetGroupsServiceBaseProps {
 
   /**
-   * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both.
+   * The task definition to use for tasks in the service. Only one of TaskDefinition or TaskImageOptions must be specified.
    *
    * [disable-awslint:ref-via-interface]
    *
@@ -103,7 +103,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new Error('You must specify either a taskDefinition or taskImageOptions, not both.');
+      throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -134,7 +134,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       throw new Error('You must specify one of: taskDefinition or image');
     }
     if (!this.taskDefinition.defaultContainer) {
-      throw new Error('Need at least one essential container');
+      throw new Error('At least one essential container must be specified');
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({

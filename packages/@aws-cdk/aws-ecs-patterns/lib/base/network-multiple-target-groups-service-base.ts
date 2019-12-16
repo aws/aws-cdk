@@ -28,7 +28,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
   readonly vpc?: IVpc;
 
   /**
-   * The properties required to create a new task definition. One of taskImageOptions or taskDefinition must be specified.
+   * The properties required to create a new task definition. Only one of TaskDefinition or TaskImageOptions must be specified.
    *
    * @default - none
    */
@@ -58,7 +58,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
   readonly healthCheckGracePeriod?: cdk.Duration;
 
   /**
-   * The network load balancer that will serve traffic to the service. At least one load balancer should be specified.
+   * The network load balancer that will serve traffic to the service.
    *
    * @default - a new load balancer with a listener will be created.
    */
@@ -88,7 +88,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
   readonly cloudMapOptions?: CloudMapOptions;
 
   /**
-   * Properties to specify ECS target groups. At least one target group should be specified.
+   * Properties to specify NLB target groups.
    *
    * @default - default portMapping registered as target group and attached to the first defined listener
    */
@@ -114,7 +114,7 @@ export interface NetworkLoadBalancedTaskImageProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * The secret to expose to the container as an environment variable.
+   * The secrets to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
@@ -189,11 +189,11 @@ export interface NetworkLoadBalancerProps {
   readonly name: string;
 
   /**
-   * Listeners (at least one listener) that attached to this load balancer
+   * Listeners (at least one listener) attached to this load balancer.
    *
    * @default - none
    */
-  readonly listeners?: NetworkListenerProps[];
+  readonly listeners: NetworkListenerProps[];
 
   /**
    * Determines whether the Load Balancer will be internet-facing.
@@ -252,7 +252,7 @@ export interface NetworkTargetProps {
 }
 
 /**
- * The base class for NetworkMultipleTargetGroupsEc2Service and NetworkMultipleTargetGroupsFargateService services.
+ * The base class for NetworkMultipleTargetGroupsEc2Service and NetworkMultipleTargetGroupsFargateService classes.
  */
 export abstract class NetworkMultipleTargetGroupsServiceBase extends cdk.Construct {
   /**
@@ -299,22 +299,15 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends cdk.Constru
       for (const lbProps of props.loadBalancers) {
         const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
         this.loadBalancers.push(lb);
-        if (lbProps.listeners) {
-          for (const listenerProps of lbProps.listeners) {
-            const listener = this.createListener(listenerProps.name, lb, listenerProps.port || 80);
-            this.listeners.push(listener);
-          }
+        for (const listenerProps of lbProps.listeners) {
+          const listener = this.createListener(listenerProps.name, lb, listenerProps.port || 80);
+          this.listeners.push(listener);
         }
         this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
         new cdk.CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
       }
-      if (this.loadBalancers.length === 0) {
-        throw new Error('At least one load balancer should be specified');
-      }
+      // set up default load balancer and listener.
       this.loadBalancer = this.loadBalancers[0];
-      if (this.listeners.length === 0) {
-        throw new Error('At least one listener should be specified');
-      }
       this.listener = this.listeners[0];
     } else {
       this.loadBalancer = this.createLoadBalancer('LB');
@@ -398,6 +391,17 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends cdk.Constru
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
+    }
+
+    if (props.loadBalancers) {
+      if (props.loadBalancers.length === 0) {
+        throw new Error('At least one load balancer must be specified');
+      }
+      for (const lbProps of props.loadBalancers) {
+        if (lbProps.listeners.length === 0) {
+          throw new Error('At least one listener must be specified');
+        }
+      }
     }
   }
 

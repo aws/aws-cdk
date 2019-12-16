@@ -28,7 +28,7 @@ export = {
         }
       });
 
-      // THEN - stack contains a load balancer and a service
+      // THEN - stack contains a load balancer, a service, and a target group.
       expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
 
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -448,7 +448,7 @@ export = {
           cluster,
           taskDefinition,
         });
-      }, /Need at least one essential container/);
+      }, /At least one essential container must be specified/);
 
       test.done();
     },
@@ -620,7 +620,7 @@ export = {
           },
           taskDefinition
         });
-      }, /You must specify either a taskDefinition or taskImageOptions, not both./);
+      }, /You must specify only one of TaskDefinition or TaskImageOptions./);
 
       test.done();
     },
@@ -659,7 +659,12 @@ export = {
           loadBalancers: [
             {
               name: "lb1",
-              domainName: 'api.example.com'
+              domainName: 'api.example.com',
+              listeners: [
+                {
+                  name: 'listener1'
+                }
+              ]
             }
           ]
         });
@@ -683,7 +688,7 @@ export = {
           },
           loadBalancers: []
         });
-      }, /At least one load balancer should be specified/);
+      }, /At least one load balancer must be specified/);
 
       test.done();
     },
@@ -723,11 +728,12 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb"
+              name: "lb",
+              listeners: []
             }
           ]
         });
-      }, /At least one listener should be specified/);
+      }, /At least one listener must be specified/);
 
       test.done();
     },
@@ -1183,7 +1189,7 @@ export = {
           cluster,
           taskDefinition,
         });
-      }, /Need at least one essential container/);
+      }, /At least one essential container must be specified/);
 
       test.done();
     },
@@ -1353,7 +1359,7 @@ export = {
           },
           taskDefinition
         });
-      }, /You must specify either a taskDefinition or taskImageOptions, not both./);
+      }, /You must specify only one of TaskDefinition or TaskImageOptions./);
 
       test.done();
     },
@@ -1392,7 +1398,10 @@ export = {
           loadBalancers: [
             {
               name: "lb1",
-              domainName: 'api.example.com'
+              domainName: 'api.example.com',
+              listeners: [{
+                name: "listener1"
+              }]
             }
           ]
         });
@@ -1416,7 +1425,7 @@ export = {
           },
           loadBalancers: []
         });
-      }, /At least one load balancer should be specified/);
+      }, /At least one load balancer must be specified/);
 
       test.done();
     },
@@ -1456,11 +1465,12 @@ export = {
           },
           loadBalancers: [
             {
-              name: "lb"
+              name: "lb",
+              listeners: []
             }
           ]
         });
-      }, /At least one listener should be specified/);
+      }, /At least one listener must be specified/);
 
       test.done();
     },

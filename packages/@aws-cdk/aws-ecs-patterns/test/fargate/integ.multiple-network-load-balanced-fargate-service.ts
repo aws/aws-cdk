@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-// Two load balancers with two listeners individually, and two target groups attaching to them respectively.
+// Two load balancers with two listeners and two target groups.
 new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
   cluster,
   memoryLimitMiB: 512,
