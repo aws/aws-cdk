@@ -324,13 +324,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [
           {
-            CidrIp: "0.0.0.0/0",
-            FromPort: 443,
-            IpProtocol: "tcp",
-            ToPort: 443
-          },
-          {
-            CidrIpv6: "::0/0",
+            CidrIp: { "Fn::GetAtt": [ "VpcNetworkB258E83A", "CidrBlock" ] },
             FromPort: 443,
             IpProtocol: "tcp",
             ToPort: 443

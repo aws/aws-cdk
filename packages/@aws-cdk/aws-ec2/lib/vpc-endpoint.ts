@@ -295,13 +295,12 @@ export interface InterfaceVpcEndpointOptions {
   readonly securityGroups?: ISecurityGroup[];
 
   /**
-   * Whether to automatically allow traffic to the endpoint
+   * Whether to automatically allow VPC traffic to the endpoint
    *
-   * If enabled, all traffic to the endpoint will be automatically allowed. By
-   * default, explicit connections will need to be explicitly allowed using the
-   * `connections` object.
+   * If enabled, all traffic to the endpoint from within the VPC will be
+   * automatically allowed. This is done based on the VPC's CIDR range.
    *
-   * @default false
+   * @default true
    */
   readonly open?: boolean;
 }
@@ -399,9 +398,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       securityGroups
     });
 
-    if (props.open) {
-      this.connections.allowDefaultPortFromAnyIpv4();
-      this.connections.allowDefaultPortFrom(Peer.anyIpv6());
+    if (props.open !== false) {
+      this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
     }
 
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
