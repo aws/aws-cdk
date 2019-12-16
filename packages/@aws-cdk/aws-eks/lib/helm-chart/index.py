@@ -98,7 +98,7 @@ def helm(verb, name, chart = None, repo = None, file = None, namespace = None, v
         if not namespace is None:
             cmnd.extend(['--namespace', namespace])
         cmnd.extend(['--kubeconfig', kubeconfig])
-        output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT)
+        output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, shell=True)
     except subprocess.CalledProcessError as exc:
         raise Exception(exc.output)
 
