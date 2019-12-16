@@ -782,4 +782,120 @@ export = {
 
     test.done();
   },
+
+  'ALBFargate - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "ALB123Service", {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLBFargate - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
+
+  'ALB - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLB - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
 };
