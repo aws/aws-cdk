@@ -1,0 +1,20 @@
+{
+  "Resources": {
+    "MyBucketF68F3FF0": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
+      "LoggingConfiguration": {
+        "DestinationBucketName": {
+          "Ref": "MyAccessLogsBucketF7FE6635"
+        },
+        "LogFilePrefix": "example"
+      }
+    },
+    "MyAccessLogsBucketF7FE6635": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
+    }
+  }
+}

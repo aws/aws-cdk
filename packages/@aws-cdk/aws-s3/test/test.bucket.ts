@@ -1770,4 +1770,16 @@ export = {
 
     test.done();
   },
+
+ 'Acess log prefix given without bucket'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => new Bucket(stack, 'MyBucket', {
+      serverAccessLogsPrefix: 'hello'
+    }), /"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set/);
+
+    test.done();
+ },
 };
