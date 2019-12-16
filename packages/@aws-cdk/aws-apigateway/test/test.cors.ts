@@ -668,14 +668,39 @@ export = {
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::ApiGateway::Method', 2)); // on both resources
+    expect(stack).to(countResources('AWS::ApiGateway::Method', 4)); // two ANY and two OPTIONS resources
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
-      ResourceId: { Ref: 'apiMyResourceD5CDB490' }
+      ResourceId: {
+        "Fn::GetAtt": [
+          "lambdarestapiAAD10924",
+          "RootResourceId"
+        ]
+      },
     }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
-      ResourceId: { Ref: 'apiMyResourceMyChildResource2DC010C5' }
+      ResourceId: {
+        Ref: "lambdarestapiproxyE3AE07E3"
+      }
+    }));
+    test.done();
+  },
+
+  'CORS and proxy resources'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'API', {
+      defaultCorsPreflightOptions: { allowOrigins: [ '*' ] }
+    });
+
+    api.root.addProxy();
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'OPTIONS',
     }));
     test.done();
   }

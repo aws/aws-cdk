@@ -214,8 +214,8 @@ export = {
     new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
       defaultCorsPreflightOptions: {
-        allowOrigins: ['https://amazon.com'],
-        allowMethods: ['GET']
+        allowOrigins: ['https://aws.amazon.com'],
+        allowMethods: ['GET', 'PUT']
       }
     });
 
