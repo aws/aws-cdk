@@ -61,11 +61,11 @@ export interface AliasProps {
   readonly additionalVersions?: VersionWeight[];
 
   /**
-   * Specifies a provisioned concurrency configuration for a function's version.
+   * Specifies a provisioned concurrency configuration for a function's alias.
    *
-   * @default No execution number
+   * @default No provisioned concurrency
    */
-  readonly provisionedConcurrency?: number;
+  readonly provisionedConcurrentExecutions?: number;
 }
 
 export interface AliasAttributes {
@@ -135,7 +135,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       functionName: this.version.lambda.functionName,
       functionVersion: props.version.version,
       routingConfig: this.determineRoutingConfig(props),
-      provisionedConcurrencyConfig: this.determineProvisionedConcurrentExecutions(props)
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
     });
 
     this.functionArn = this.getResourceArnAttribute(alias.ref, {
@@ -214,16 +214,16 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    *
    * Member must have value greater than or equal to 1
    */
-  private determineProvisionedConcurrentExecutions(props: AliasProps) {
-    if (!props.provisionedConcurrency) {
+  private determineProvisionedConcurrency(props: AliasProps): CfnAlias.ProvisionedConcurrencyConfigurationProperty | undefined {
+    if (!props.provisionedConcurrentExecutions) {
       return undefined;
     }
 
-    if (props.provisionedConcurrency <= 0) {
+    if (props.provisionedConcurrentExecutions <= 0) {
       throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
-    return {provisionedConcurrentExecutions: props.provisionedConcurrency};
+    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
   }
 }
 

@@ -136,14 +136,19 @@ export = {
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
       version,
-      provisionedConcurrency: pce
+      provisionedConcurrentExecutions: pce
     });
 
     expect(stack).to(beASupersetOfTemplate({
       MyLambdaVersion16CDE3C40: {
         Type: "AWS::Lambda::Version",
         Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" }
+          FunctionName: {
+            Ref: "MyLambdaCCE802FB"
+          },
+          ProvisionedConcurrencyConfig: {
+            ProvisionedConcurrentExecutions: 5
+          }
         }
         },
         Alias325C5727: {
@@ -151,7 +156,10 @@ export = {
         Properties: {
           FunctionName: { Ref: "MyLambdaCCE802FB" },
           FunctionVersion: stack.resolve(version.version),
-          Name: "prod"
+          Name: "prod",
+          ProvisionedConcurrencyConfig: {
+            ProvisionedConcurrentExecutions: 5
+          }
         }
         }
     }));
@@ -248,7 +256,7 @@ export = {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod',
         version: fn.addVersion('1'),
-        provisionedConcurrency: pce
+        provisionedConcurrentExecutions: pce
       });
     });
 
@@ -258,7 +266,7 @@ export = {
         lambda: fn,
         codeSha256: undefined,
         description: undefined,
-        provisionedConcurrency: pce
+        provisionedConcurrentExecutions: pce
       });
     });
 
