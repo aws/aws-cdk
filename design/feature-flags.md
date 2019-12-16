@@ -72,6 +72,12 @@ flag, the CHANGELOG will include:
   `cdk init`. It will also indicate the context key this flag uses for users who
   wish to enable it manually in their project.
 
+Since feature flags can have implications on framework behavior, we need to
+ask users to include the list of enabled features in bug reports. At a minimum,
+we can request that they paste a copy of their `cdk.json` and `cdk.context.json`,
+but a better experience would be to include this information in the output of
+`cdk doctor` and request users to include this output in bug reports.
+
 ## Future Developments
 
 As a general rule, using a feature flag should be last resort in the case where
