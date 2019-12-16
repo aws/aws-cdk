@@ -168,6 +168,15 @@ export interface InstanceProps {
    * @default true
    */
   readonly sourceDestCheck?: boolean;
+
+  /**
+   * Defines a private IP address to associate with an instance.
+   *
+   * Private IP should be available within the VPC that the instance is build within.
+   *
+   * @default - no association
+   */
+  readonly privateIpAddress?: string
 }
 
 /**
@@ -285,6 +294,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
+      privateIpAddress: props.privateIpAddress
     });
     this.instance.node.addDependency(this.role);
 
