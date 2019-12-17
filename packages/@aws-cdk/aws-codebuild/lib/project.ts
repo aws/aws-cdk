@@ -998,7 +998,8 @@ export class Project extends ProjectBase {
 export enum ComputeType {
   SMALL = 'BUILD_GENERAL1_SMALL',
   MEDIUM = 'BUILD_GENERAL1_MEDIUM',
-  LARGE = 'BUILD_GENERAL1_LARGE'
+  LARGE = 'BUILD_GENERAL1_LARGE',
+  X2_LARGE = 'BUILD_GENERAL1_2XLARGE'
 }
 
 /**
