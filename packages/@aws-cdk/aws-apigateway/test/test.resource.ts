@@ -178,6 +178,20 @@ export = {
     test.done();
   },
 
+  'if proxy is added to root, proxy methods are only added if they are not defined already on the root resource'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('POST');
+    const proxy = api.root.addProxy({ anyMethod: false });
+
+    // WHEN
+    proxy.addMethod('POST');
+
+    // THEN
+    test.done();
+  },
+
   'url for a resource'(test: Test) {
     // GIVEN
     const stack = new Stack();
