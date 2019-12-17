@@ -1,4 +1,4 @@
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 /**
  * An IP address that is a target for load balancing.

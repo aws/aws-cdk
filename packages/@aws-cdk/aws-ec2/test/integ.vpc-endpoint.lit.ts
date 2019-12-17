@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import ec2 = require('../lib');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '../lib';
 
 const app = new cdk.App();
 

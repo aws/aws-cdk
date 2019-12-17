@@ -1,7 +1,6 @@
-import cfnSpec = require('@aws-cdk/cfnspec');
-import { schema } from '@aws-cdk/cfnspec';
+import { resourceAugmentation, schema } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
-import genspec = require('./genspec');
+import * as genspec from './genspec';
 import { SpecName } from './spec-utils';
 
 export class AugmentationGenerator {
@@ -20,10 +19,10 @@ export class AugmentationGenerator {
   public emitCode(): boolean {
     let hadAugmentations = false;
     for (const resourceTypeName of Object.keys(this.spec.ResourceTypes).sort()) {
-      const aug = cfnSpec.resourceAugmentation(resourceTypeName);
+      const aug = resourceAugmentation(resourceTypeName);
 
       if (aug.metrics) {
-        this.code.line('import cloudwatch = require("@aws-cdk/aws-cloudwatch");');
+        this.code.line("import * as cloudwatch from '@aws-cdk/aws-cloudwatch';");
         this.emitMetricAugmentations(resourceTypeName, aug.metrics, aug.options);
         hadAugmentations = true;
       }

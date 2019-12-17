@@ -1,7 +1,7 @@
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
-import subs = require('../lib');
+import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
+import * as subs from '../lib';
 
 class SnsToSqs extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

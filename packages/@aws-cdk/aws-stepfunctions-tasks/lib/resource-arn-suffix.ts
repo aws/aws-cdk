@@ -1,4 +1,4 @@
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Aws } from '@aws-cdk/core';
 
 /**

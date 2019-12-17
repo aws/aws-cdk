@@ -1,6 +1,6 @@
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import tasks = require('../lib');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');

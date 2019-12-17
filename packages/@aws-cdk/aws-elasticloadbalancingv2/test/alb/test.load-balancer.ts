@@ -1,11 +1,10 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
-import ec2 = require('@aws-cdk/aws-ec2');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 
 export = {
   'Trivial construction: internet facing'(test: Test) {
@@ -254,7 +253,7 @@ export = {
 
   'loadBalancerName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN

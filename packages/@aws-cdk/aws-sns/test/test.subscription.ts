@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sns = require('../lib');
+import * as sns from '../lib';
 
 export = {
   'create a subscription'(test: Test) {

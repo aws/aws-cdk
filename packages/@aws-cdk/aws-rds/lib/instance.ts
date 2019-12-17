@@ -1,10 +1,10 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import lambda = require('@aws-cdk/aws-lambda');
-import logs = require('@aws-cdk/aws-logs');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';

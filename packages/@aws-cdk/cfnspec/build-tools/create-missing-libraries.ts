@@ -5,10 +5,10 @@
  * have an AWS construct library.
  */
 
-import child_process = require('child_process');
-import fs = require('fs-extra');
-import path = require('path');
-import cfnspec = require('../lib');
+import * as child_process from 'child_process';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as cfnspec from '../lib';
 
 // don't be a prude:
 // tslint:disable:no-console
@@ -20,6 +20,7 @@ async function main() {
     throw new Error(`Something went wrong. We expected ${root} to be the "packages/@aws-cdk" directory. Did you move me?`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const version = require('../package.json').version;
 
   // iterate over all cloudformation namespaces
@@ -35,6 +36,7 @@ async function main() {
     // we already have a module for this namesapce, move on.
     if (await fs.pathExists(packagePath)) {
       const packageJsonPath = path.join(packagePath, 'package.json');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const packageJson = require(packageJsonPath);
       let scopes: string | string[] = packageJson['cdk-build'].cloudformation;
       if (typeof scopes === 'string') { scopes = [scopes]; }

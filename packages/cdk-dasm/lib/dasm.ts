@@ -1,7 +1,7 @@
 import { CodeMaker, toCamelCase } from 'codemaker';
-import fs = require('fs');
-import os = require('os');
-import path = require('path');
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { promisify } from 'util';
 
 const mkdtemp = promisify(fs.mkdtemp);

@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import stepfunctions = require('../lib');
+import * as stepfunctions from '../lib';
 
 export = {
     'Tasks can add permissions to the execution role'(test: Test) {

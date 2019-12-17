@@ -1,4 +1,4 @@
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Construct, Stack } from '@aws-cdk/core';
 
 export function testFixture() {

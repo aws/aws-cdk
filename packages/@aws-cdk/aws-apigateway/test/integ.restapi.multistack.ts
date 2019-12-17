@@ -1,8 +1,8 @@
 /// !cdk-integ *
 
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import apig = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as apig from '../lib';
 
 class FirstStack extends cdk.Stack {
     public readonly firstLambda: lambda.Function;

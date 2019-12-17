@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 
 /**
  * Customize the SNS Topic Event Target

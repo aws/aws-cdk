@@ -1,9 +1,8 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigw = require('../lib');
-import { Cors } from '../lib';
+import * as apigw from '../lib';
 
 export = {
   'adds an OPTIONS method to a resource'(test: Test) {
@@ -556,7 +555,7 @@ export = {
     // WHEN
     api.root.addResource('AllowAll', {
       defaultCorsPreflightOptions: {
-        allowOrigins: Cors.ALL_ORIGINS
+        allowOrigins: apigw.Cors.ALL_ORIGINS
       }
     });
 

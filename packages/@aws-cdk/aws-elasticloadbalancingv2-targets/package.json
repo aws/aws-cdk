@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "@aws-cdk/assets": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
     "@aws-cdk/aws-iam": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
@@ -88,6 +89,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/assets": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
     "@aws-cdk/aws-iam": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",

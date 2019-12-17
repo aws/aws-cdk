@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { App, CfnParameter, CfnResource, Construct, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {

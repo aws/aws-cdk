@@ -5,7 +5,7 @@ import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, Appl
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.

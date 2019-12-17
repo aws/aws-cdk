@@ -1,4 +1,4 @@
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 
 /**
  * Arbitrary (valid) array of intervals

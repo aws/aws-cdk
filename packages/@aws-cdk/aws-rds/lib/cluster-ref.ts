@@ -1,5 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { IResource } from '@aws-cdk/core';
 import { Endpoint } from './endpoint';
 

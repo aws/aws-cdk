@@ -1,27 +1,26 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigateway = require('../lib');
-import { JsonSchemaType, JsonSchemaVersion } from '../lib';
+import * as apigw from '../lib';
 
 export = {
   'default setup'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
-    new apigateway.Method(stack, 'my-method', {
+    const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
+    new apigw.Method(stack, 'my-method', {
       httpMethod: 'POST',
       resource: api.root,
     });
 
     // WHEN
-    new apigateway.Model(stack, 'my-model', {
+    new apigw.Model(stack, 'my-model', {
       restApi: api,
       schema: {
-        schema: JsonSchemaVersion.DRAFT4,
+        schema: apigw.JsonSchemaVersion.DRAFT4,
         title: "test",
-        type: JsonSchemaType.OBJECT,
-        properties: { message: { type: JsonSchemaType.STRING } }
+        type: apigw.JsonSchemaType.OBJECT,
+        properties: { message: { type: apigw.JsonSchemaType.STRING } }
       }
     });
 
@@ -42,20 +41,20 @@ export = {
   'no deployment'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
-    new apigateway.Method(stack, 'my-method', {
+    const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
+    new apigw.Method(stack, 'my-method', {
       httpMethod: 'POST',
       resource: api.root,
     });
 
     // WHEN
-    new apigateway.Model(stack, 'my-model', {
+    new apigw.Model(stack, 'my-model', {
       restApi: api,
       schema: {
-        schema: JsonSchemaVersion.DRAFT4,
+        schema: apigw.JsonSchemaVersion.DRAFT4,
         title: "test",
-        type: JsonSchemaType.OBJECT,
-        properties: { message: { type: JsonSchemaType.STRING } }
+        type: apigw.JsonSchemaType.OBJECT,
+        properties: { message: { type: apigw.JsonSchemaType.STRING } }
       }
     });
 

@@ -1,6 +1,6 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
     IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';

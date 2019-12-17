@@ -1,4 +1,4 @@
-import events = require('@aws-cdk/aws-events');
+import * as events from '@aws-cdk/aws-events';
 
 /**
  * Fields of CloudWatch Events that change references

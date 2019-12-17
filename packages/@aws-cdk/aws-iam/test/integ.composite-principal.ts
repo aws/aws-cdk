@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import iam = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as iam from '../lib';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

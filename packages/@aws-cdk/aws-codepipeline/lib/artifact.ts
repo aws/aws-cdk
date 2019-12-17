@@ -1,6 +1,6 @@
-import s3 = require("@aws-cdk/aws-s3");
+import * as s3 from '@aws-cdk/aws-s3';
 import { Lazy, Token } from "@aws-cdk/core";
-import validation = require('./validation');
+import * as validation from './validation';
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.

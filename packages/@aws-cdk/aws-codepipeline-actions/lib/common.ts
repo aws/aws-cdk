@@ -1,4 +1,4 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
  * The ArtifactBounds that make sense for source Actions -

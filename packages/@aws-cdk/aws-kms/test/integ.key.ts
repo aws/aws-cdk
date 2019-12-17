@@ -1,5 +1,4 @@
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Key } from '../lib';
 
@@ -9,7 +8,7 @@ const stack = new Stack(app, `aws-cdk-kms-1`);
 
 const key = new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
-key.addToResourcePolicy(new PolicyStatement({
+key.addToResourcePolicy(new iam.PolicyStatement({
   resources: ['*'],
   actions: ['kms:encrypt'],
   principals: [new iam.ArnPrincipal(stack.account)]

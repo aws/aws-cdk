@@ -3,7 +3,7 @@
 // tests in the @aws-cdk/core module
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import iam = require('../lib');
+import * as iam from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 

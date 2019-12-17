@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/core');
-import targets = require('../lib');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');

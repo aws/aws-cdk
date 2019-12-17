@@ -1,5 +1,5 @@
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 

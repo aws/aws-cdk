@@ -1,7 +1,7 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import events = require ('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 

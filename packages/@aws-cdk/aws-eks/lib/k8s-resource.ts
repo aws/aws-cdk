@@ -1,4 +1,4 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
+import * as cfn from '@aws-cdk/aws-cloudformation';
 import { Construct, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 

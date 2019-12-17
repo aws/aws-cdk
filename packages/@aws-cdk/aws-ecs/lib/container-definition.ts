@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';

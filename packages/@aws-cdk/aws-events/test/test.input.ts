@@ -1,7 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import { User } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/core');
-import { Duration, Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventField, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
@@ -10,9 +9,9 @@ export = {
   'json template': {
     'can just be a JSON object'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(Duration.minutes(1)),
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -31,9 +30,9 @@ export = {
 
     'can use joined JSON containing refs in JSON object'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(Duration.minutes(1)),
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -70,9 +69,9 @@ export = {
 
     'can use token'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(Duration.minutes(1)),
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
       const user = new User(stack, 'User');
 
@@ -108,9 +107,9 @@ export = {
   'text templates': {
     'strings with newlines are serialized to a newline-delimited list of JSON strings'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(Duration.minutes(1)),
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -130,9 +129,9 @@ export = {
 
     'escaped newlines are not interpreted as newlines'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(Duration.minutes(1)),
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -152,9 +151,9 @@ export = {
 
     'can use Tokens in text templates'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(Duration.minutes(1)),
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       const world = cdk.Lazy.stringValue({ produce: () => 'world' });

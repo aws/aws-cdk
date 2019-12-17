@@ -1,6 +1,6 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import notifs = require('@aws-cdk/aws-s3-notifications');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as notifs from '@aws-cdk/aws-s3-notifications';
 
 export interface S3EventSourceProps {
   /**

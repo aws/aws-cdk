@@ -1,6 +1,6 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import iam = require('@aws-cdk/aws-iam');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {

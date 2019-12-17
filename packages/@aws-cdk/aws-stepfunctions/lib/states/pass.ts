@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import {Chain} from '../chain';
 import {IChainable, INextable} from '../types';
 import { StateType } from './private/state-type';

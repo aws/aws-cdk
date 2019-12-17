@@ -1,12 +1,11 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { ConstructNode, Stack } from '@aws-cdk/core';
-import _ = require('lodash');
-import nodeunit = require('nodeunit');
-import cpactions = require('../../lib');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as _ from 'lodash';
+import * as nodeunit from 'nodeunit';
+import * as cpactions from '../../lib';
 
 export = nodeunit.testCase({
   'CreateReplaceChangeSet': {
@@ -27,7 +26,7 @@ export = nodeunit.testCase({
         actions: [action],
       });
 
-      ConstructNode.prepare(stack.node);
+      cdk.ConstructNode.prepare(stack.node);
 
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
@@ -310,7 +309,7 @@ function _isOrContains(stack: cdk.Stack, entity: string | string[], value: strin
 }
 
 function _stackArn(stackName: string, scope: cdk.IConstruct): string {
-  return Stack.of(scope).formatArn({
+  return cdk.Stack.of(scope).formatArn({
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${stackName}/*`,
@@ -326,7 +325,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
-    this.pipelineArn = Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
+    this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
     this.role = role;
     this.artifactBucket = new BucketDouble(scope, 'BucketDouble');
   }

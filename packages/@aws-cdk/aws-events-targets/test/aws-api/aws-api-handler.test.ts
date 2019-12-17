@@ -1,6 +1,6 @@
 // tslint:disable:no-console
-import SDK = require('aws-sdk');
-import AWS = require('aws-sdk-mock');
+import * as SDK from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
 import { AwsApiProps } from '../../lib';
 import { handler } from '../../lib/aws-api-handler';
 

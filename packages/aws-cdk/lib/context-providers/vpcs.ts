@@ -1,5 +1,5 @@
-import cxapi = require('@aws-cdk/cx-api');
-import AWS = require('aws-sdk');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as AWS from 'aws-sdk';
 import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';

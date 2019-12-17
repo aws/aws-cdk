@@ -1,12 +1,12 @@
 import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import path = require('path');
-import lambda = require('../lib');
+import * as path from 'path';
+import * as lambda from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 

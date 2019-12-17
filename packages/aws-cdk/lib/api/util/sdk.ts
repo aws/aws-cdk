@@ -1,10 +1,10 @@
-import cxapi = require('@aws-cdk/cx-api');
-import AWS = require('aws-sdk');
-import child_process = require('child_process');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
-import util = require('util');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as AWS from 'aws-sdk';
+import * as child_process from 'child_process';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
+import * as util from 'util';
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
@@ -101,6 +101,7 @@ export class SDK implements ISDK {
     if (options.proxyAddress) { // Ignore empty string on purpose
       debug('Using proxy server: %s', options.proxyAddress);
       AWS.config.update({
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         httpOptions: { agent: require('proxy-agent')(options.proxyAddress) }
       });
     }

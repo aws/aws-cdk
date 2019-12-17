@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import tasks = require('../lib');
+import * as tasks from '../lib';
 
 let stack: Stack;
 let fn: lambda.Function;

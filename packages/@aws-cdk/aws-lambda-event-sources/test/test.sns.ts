@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sources = require('../lib');
+import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
 // tslint:disable:object-literal-key-quotes

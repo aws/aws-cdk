@@ -1,5 +1,5 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { renderUserData } from '../lib/user-data';

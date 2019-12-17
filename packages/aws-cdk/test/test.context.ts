@@ -1,7 +1,7 @@
-import fs = require('fs-extra');
+import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
+import * as os from 'os';
+import * as path from 'path';
 import { Configuration, TRANSIENT_CONTEXT_KEY } from '../lib/settings';
 
 const state: {

@@ -1,9 +1,9 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import lb = require('@aws-cdk/aws-elasticloadbalancing');
-import cdk = require('@aws-cdk/core');
-import codedeploy = require('../../lib');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as lb from '@aws-cdk/aws-elasticloadbalancing';
+import * as cdk from '@aws-cdk/core';
+import * as codedeploy from '../../lib';
 
 const app = new cdk.App();
 

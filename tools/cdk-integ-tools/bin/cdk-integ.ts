@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Exercise all integ stacks and if they deploy, update the expected synth files
-import yargs = require('yargs');
+import * as yargs from 'yargs';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 // tslint:disable:no-console

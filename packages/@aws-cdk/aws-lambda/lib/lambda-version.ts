@@ -1,4 +1,4 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Construct, Fn } from '@aws-cdk/core';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';

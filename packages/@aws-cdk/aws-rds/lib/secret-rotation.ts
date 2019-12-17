@@ -1,7 +1,7 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import lambda = require('@aws-cdk/aws-lambda');
-import serverless = require('@aws-cdk/aws-sam');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as serverless from '@aws-cdk/aws-sam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
 
 /**
