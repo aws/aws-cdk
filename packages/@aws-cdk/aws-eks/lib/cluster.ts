@@ -613,17 +613,18 @@ export class Cluster extends Resource implements ICluster {
   private tagSubnets() {
     const tagAllSubnets = (subnets: ec2.ISubnet[], tag: string) => {
       for (const subnet of subnets) {
+        // if this is not a concrete subnet, attach a construct warning
         if (!Subnet.isVpcSubnet(subnet)) {
-          // Just give up, all of them will be the same.
           const subnetId = Token.isUnresolved(subnet.subnetId) ? '' : subnet.subnetId;
           this.node.addWarning(`Could not auto-tag subnet ${subnetId} with "${tag}=1", please remember to do this manually`);
-          return;
+          continue;
         }
 
         subnet.node.applyAspect(new Tag(tag, "1"));
       }
     };
 
+    // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
     tagAllSubnets(this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
     tagAllSubnets(this.vpc.publicSubnets, "kubernetes.io/role/elb");
   }
