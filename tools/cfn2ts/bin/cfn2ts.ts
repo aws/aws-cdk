@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import fs = require('fs-extra');
-import yargs = require('yargs');
+import * as fs from 'fs-extra';
+import * as yargs from 'yargs';
 import generate from '../lib';
 
 // tslint:disable:no-console

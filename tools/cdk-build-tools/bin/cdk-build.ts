@@ -1,4 +1,4 @@
-import yargs = require('yargs');
+import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { shell } from '../lib/os';
 import { cdkBuildOptions } from '../lib/package-info';
@@ -45,7 +45,7 @@ async function main() {
     await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
   }
 
-  await compileCurrentPackage(timers, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
+  await compileCurrentPackage(timers, options, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
 }
 
 const timers = new Timers();

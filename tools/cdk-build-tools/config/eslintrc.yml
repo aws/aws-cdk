@@ -32,7 +32,9 @@ rules:
   # Require all imported dependencies are actually declared in package.json
   'import/no-extraneous-dependencies':
     - error
-    - devDependencies: ['**/test/**'] # Only allow importing devDependencies from tests
+    - devDependencies:                # Only allow importing devDependencies from:
+        - '**/build-tools/**'         # --> Build tools
+        - '**/test/**'                # --> Unit tests
       optionalDependencies: false     # Disallow importing optional dependencies (those shouldn't be in use in the project)
       peerDependencies: false         # Disallow importing peer dependencies (that aren't also direct dependencies)
 

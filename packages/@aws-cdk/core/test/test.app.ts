@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { App, AppProps } from '../lib/app';
@@ -258,6 +258,7 @@ export = {
 
   const libs = (response.runtime && response.runtime.libraries) || {};
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const version = require('../package.json').version;
   test.deepEqual(libs['@aws-cdk/core'], version);
   test.deepEqual(libs['@aws-cdk/cx-api'], version);
@@ -288,6 +289,7 @@ export = {
 
   const libs = (response.runtime && response.runtime.libraries) || {};
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const version = require('../package.json').version;
   test.deepEqual(libs, {
     '@aws-cdk/core': version,

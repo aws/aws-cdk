@@ -1,6 +1,6 @@
-import fs = require('fs');
-import path = require('path');
-import util = require('util');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as util from 'util';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -85,7 +85,7 @@ export function packageCompiler(compilers: CompilerOverrides): string[] {
     if (isJsii()) {
         return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references'];
     } else {
-        return [compilers.tsc || require.resolve('typescript/bin/tsc')];
+        return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
     }
 }
 
@@ -94,6 +94,16 @@ export interface CDKBuildOptions {
    * What CloudFormation scope to generate resources for, if any
    */
   cloudformation?: string | string[];
+
+  /**
+   * Options passed to `eslint` invocations.
+   */
+  eslint?: {
+    /**
+     * Patterns to be ignored.
+     */
+    "ignore-pattern"?: string[];
+  };
 
   /**
    * An optional command (formatted as a list of strings) to run before building

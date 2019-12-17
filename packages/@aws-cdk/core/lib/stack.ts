@@ -1,8 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import { EnvironmentUtils } from '@aws-cdk/cx-api';
-import crypto = require('crypto');
-import fs = require('fs');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation , FileAssetPackaging, FileAssetSource } from './assets';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
@@ -941,7 +940,7 @@ export class Stack extends Construct implements ITaggable {
 
     return {
       account, region,
-      environment: EnvironmentUtils.format(envAccount, envRegion)
+      environment: cxapi.EnvironmentUtils.format(envAccount, envRegion)
     };
   }
 

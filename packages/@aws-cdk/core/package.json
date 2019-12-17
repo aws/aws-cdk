@@ -148,10 +148,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/lodash": "^4.14.149",
+    "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.19.0",
     "cfn2ts": "1.19.0",
     "fast-check": "^1.20.1",
     "lodash": "^4.17.15",
+    "nodeunit": "^0.11.3",
     "pkglint": "1.19.0"
   },
   "dependencies": {

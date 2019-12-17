@@ -1,5 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { AddressRecordTarget, ARecord, CaaAmazonRecord, CnameRecord, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
 const app = new cdk.App();

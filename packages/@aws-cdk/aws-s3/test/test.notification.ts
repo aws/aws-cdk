@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import s3 = require('../lib');
+import * as s3 from '../lib';
 
 export = {
   'when notification are added, a custom resource is provisioned + a lambda handler for it'(test: Test) {
