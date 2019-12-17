@@ -54,6 +54,12 @@ export interface CommonMetricOptions {
    * Color for this metric when added to a Graph in a Dashboard
    */
   readonly color?: string;
+
+  /**
+   * Region for this metric when added to a Graph in a Dashboard
+   * @default - No region.
+   */
+  readonly region?: string;
 }
 
 /**
@@ -113,6 +119,11 @@ export class Metric implements IMetric {
   public readonly unit?: Unit;
   public readonly label?: string;
   public readonly color?: string;
+  /**
+   * Region for this metric when added to a Graph in a Dashboard
+   * @default - No region.
+   */
+  public readonly region?: string;
 
   constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
@@ -129,6 +140,7 @@ export class Metric implements IMetric {
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
+    this.region = props.region;
   }
 
   /**
@@ -200,6 +212,7 @@ export class Metric implements IMetric {
         stat: this.statistic,
         color: this.color,
         label: this.label,
+        region: this.region
       },
       // deprecated properties for backwards compatibility
       period: this.period.toSeconds(),

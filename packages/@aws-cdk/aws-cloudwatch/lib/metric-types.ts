@@ -196,4 +196,10 @@ export interface MetricRenderingProperties {
    * Aggregation function to use (can be either simple or a percentile)
    */
   readonly stat?: string;
+
+  /**
+   * Region of the metric
+   * @default - No region.
+   */
+  readonly region?: string;
 }
