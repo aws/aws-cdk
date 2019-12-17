@@ -541,13 +541,15 @@ export class Function extends FunctionBase {
    * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda source code, or
    *  omit to skip validation.
    * @param description A description for this version.
+   * @param provisionedExecutions A provisioned concurrency configuration for a function's version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+  public addVersion(name: string, codeSha256?: string, description?: string, provisionedExecutions?: number): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
+      provisionedConcurrentExecutions: provisionedExecutions,
     });
   }
 
