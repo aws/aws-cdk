@@ -4,6 +4,11 @@ import { App, Stack } from '@aws-cdk/core';
 import path = require('path');
 import { AuthorizationType, Authorizer, MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
 
+// Against the RestApi endpoint from the stack output, run
+// `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
+// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: deny' <url>` should return 403
+// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>` should return 200
+
 const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
 

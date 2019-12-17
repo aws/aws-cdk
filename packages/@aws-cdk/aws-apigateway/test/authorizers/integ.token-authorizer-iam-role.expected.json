@@ -134,8 +134,7 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.Authorizer",
-        "Name": "TokenAuthorizerIAMRoleIntegMyAuthorizer1DFDE3B5"
+        "IdentitySource": "method.request.header.Authorization"
       }
     },
     "MyAuthorizerauthorizerInvokePolicy0F88B8E1": {

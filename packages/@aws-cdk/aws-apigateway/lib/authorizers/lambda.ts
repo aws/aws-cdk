@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { AuthorizationType, Method } from '../method';
 import { AuthorizerBase, AuthorizerConfig } from './authorizer-base';
@@ -12,7 +12,7 @@ export interface TokenAuthorizerProps {
 
   /**
    * An optional name for the authorizer. When provided, this will also be used for the physical id of the
-   * CloudFormation resource of type `AWS::ApiGateway::Authorizer`.
+   * CloudFormation resource of type `AWS::ApiGateway::Authorization`.
    *
    * @default - CDK will use the uniqueId assigned to this construct.
    */
@@ -78,31 +78,28 @@ export class TokenAuthorizer extends AuthorizerBase {
 
   /**
    * The ARN of the authorizer to be used in permission policies, such as IAM and resource-based grants.
-   * @attribute
    */
   public readonly authorizerArn: string;
 
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
-    super(scope, id, {
-      physicalName: props.authorizerName || Lazy.stringValue({ produce: () => this.node.uniqueId })
-    });
+    super(scope, id);
 
     if (props.resultsCacheTtl && props.resultsCacheTtl.toSeconds() > 3600) {
       throw new Error(`Lambda authorizer property 'cacheTtl' must not be greater than 3600 seconds (1 hour)`);
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: this.physicalName,
+      name: props.authorizerName,
       restApiId: this.restApiId,
       type: 'TOKEN',
       authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
       authorizerCredentials: props.assumeRole ? props.assumeRole.roleArn : undefined,
       authorizerResultTtlInSeconds: props.resultsCacheTtl && props.resultsCacheTtl.toSeconds(),
-      identitySource: props.identitySource || 'method.request.header.Authorizer',
+      identitySource: props.identitySource || 'method.request.header.Authorization',
       identityValidationExpression: props.validationRegex,
     });
 
-    this.authorizerId = super.getResourceNameAttribute(resource.ref);
+    this.authorizerId = resource.ref;
 
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',

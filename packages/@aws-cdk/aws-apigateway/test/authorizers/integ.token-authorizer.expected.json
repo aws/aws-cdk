@@ -222,8 +222,7 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.Authorizer",
-        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F"
+        "IdentitySource": "method.request.header.Authorization"
       }
     },
     "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26": {
