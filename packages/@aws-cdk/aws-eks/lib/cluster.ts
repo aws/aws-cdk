@@ -611,12 +611,14 @@ export class Cluster extends Resource implements ICluster {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
    */
   private tagSubnets() {
-    const tagAllSubnets = (subnets: ec2.ISubnet[], tag: string) => {
+    const tagAllSubnets = (type: string, subnets: ec2.ISubnet[], tag: string) => {
       for (const subnet of subnets) {
         // if this is not a concrete subnet, attach a construct warning
         if (!Subnet.isVpcSubnet(subnet)) {
-          const subnetId = Token.isUnresolved(subnet.subnetId) ? '' : subnet.subnetId;
-          this.node.addWarning(`Could not auto-tag subnet ${subnetId} with "${tag}=1", please remember to do this manually`);
+          // message (if token): "could not auto-tag public/private subnet with tag..."
+          // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
+          const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
+          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
@@ -625,8 +627,8 @@ export class Cluster extends Resource implements ICluster {
     };
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
-    tagAllSubnets(this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
-    tagAllSubnets(this.vpc.publicSubnets, "kubernetes.io/role/elb");
+    tagAllSubnets('private', this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
+    tagAllSubnets('public', this.vpc.publicSubnets, "kubernetes.io/role/elb");
   }
 }
 
