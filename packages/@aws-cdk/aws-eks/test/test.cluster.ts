@@ -112,6 +112,27 @@ export = {
     test.done();
   },
 
+  'creating a cluster tags the public VPC subnets'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::Subnet', {
+      MapPublicIpOnLaunch: true,
+      Tags: [
+        { Key: "Name", Value: "Stack/VPC/PublicSubnet1" },
+        { Key: "aws-cdk:subnet-name", Value: "Public" },
+        { Key: "aws-cdk:subnet-type", Value: "Public" },
+        { Key: "kubernetes.io/role/elb", Value: "1" }
+      ]
+    }));
+
+    test.done();
+  },
+
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();

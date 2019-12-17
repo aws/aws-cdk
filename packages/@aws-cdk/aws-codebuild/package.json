@@ -117,6 +117,7 @@
       "duration-prop-type:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds",
       "duration-prop-name:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds",
       "docs-public-apis:@aws-cdk/aws-codebuild.Project.metric",
+      "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.X2_LARGE",
       "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.LARGE",
       "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.MEDIUM",
       "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.SMALL",
