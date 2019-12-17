@@ -37,7 +37,11 @@
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Public"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -51,7 +55,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet1"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -89,7 +97,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet1"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -109,7 +121,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet1"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -134,7 +150,11 @@
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Public"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -148,7 +168,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet2"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -186,7 +210,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet2"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
@@ -206,7 +234,11 @@
             {
               "Key": "Name",
               "Value": "k8s-vpc/vpc/PublicSubnet2"
-            }
+            },
+            {
+              "Key": "kubernetes.io/role/elb",
+              "Value": "1"
+            }  
           ]
         }
       },
