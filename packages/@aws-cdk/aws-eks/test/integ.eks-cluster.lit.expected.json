@@ -856,6 +856,78 @@
         "EKSClusterResourceHandlerServiceRoleFD631254"
       ]
     },
+    "EKSClusterHelmChartHandler4CAD874B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3Bucket78C5F766"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3VersionKey3A1BF439"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3VersionKey3A1BF439"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "EKSClusterResourceHandlerServiceRoleFD631254",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7",
+        "Environment": {
+          "Variables": {
+            "CLUSTER_NAME": {
+              "Ref": "EKSClusterE11008B6"
+            }
+          }
+        },
+        "Layers": [
+          {
+            "Fn::GetAtt": [
+              "kubectllayer200beta1B9303363",
+              "Outputs.LayerVersionArn"
+            ]
+          }
+        ],
+        "MemorySize": 256,
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "EKSClusterResourceHandlerServiceRoleDefaultPolicy4D087A98",
+        "EKSClusterResourceHandlerServiceRoleFD631254"
+      ]
+    },
     "EKSClusterNodesInstanceSecurityGroup460A275E": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -1184,6 +1256,18 @@
           "LayerName": "kubectl-de6ff3f9a59243920be5aeee7fc888a7"
         }
       }
+    },
+    "kubectllayer200beta1B9303363": {
+      "Type": "AWS::Serverless::Application",
+      "Properties": {
+        "Location": {
+          "ApplicationId": "arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl",
+          "SemanticVersion": "2.0.0-beta1"
+        },
+        "Parameters": {
+          "LayerName": "kubectl-728a0860be78f81fad08ae2382fba1af"
+        }
+      }
     }
   },
   "Outputs": {
@@ -1240,6 +1324,18 @@
     "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
       "Type": "String",
       "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3Bucket78C5F766": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"dc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cb\""
+    },
+    "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3VersionKey3A1BF439": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"dc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cb\""
+    },
+    "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbArtifactHashFE09383B": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"dc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cb\""
     },
     "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
