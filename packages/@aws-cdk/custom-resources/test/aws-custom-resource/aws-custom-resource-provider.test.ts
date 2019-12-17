@@ -6,6 +6,8 @@ import sinon = require('sinon');
 import { AwsSdkCall } from '../../lib';
 import { flatten, handler } from '../../lib/aws-custom-resource/runtime';
 
+AWS.setSDK(require.resolve('aws-sdk'));
+
 console.log = jest.fn(); // tslint:disable-line no-console
 
 const eventCommon = {
@@ -24,13 +26,13 @@ function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResou
 }
 
 beforeEach(() => {
-  AWS.setSDK(require.resolve('aws-sdk'));
+  process.env.USE_NORMAL_SDK = 'true';
 });
 
 afterEach(() => {
   AWS.restore();
   nock.cleanAll();
-  delete process.env.USE_LATEST_SDK;
+  delete process.env.USE_NORMAL_SDK;
 });
 
 test('create event with physical resource id path', async () => {
@@ -343,12 +345,10 @@ test('flatten correctly flattens a nested object', () => {
   });
 });
 
-test('installs latest sdk when needed', async () => {
-  AWS.setSDK('/tmp/node_modules/aws-sdk');
+test('installs the latest SDK', async () => {
+  const tmpPath = '/tmp/node_modules/aws-sdk';
 
-  fs.removeSync('/tmp/node_modules/aws-sdk');
-
-  process.env.USE_LATEST_SDK = 'true';
+  fs.remove(tmpPath);
 
   const publishFake = sinon.fake.resolves({});
 
@@ -379,5 +379,5 @@ test('installs latest sdk when needed', async () => {
 
   expect(request.isDone()).toBeTruthy();
 
-  expect(fs.existsSync('/tmp/node_modules/aws-sdk')).toBe(true);
+  expect(() => require.resolve(tmpPath)).not.toThrow();
 });

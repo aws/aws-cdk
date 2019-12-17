@@ -53,21 +53,37 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
 
 let latestSdkInstalled = false;
 
+/**
+ * Installs latest AWS SDK v2
+ */
 function installLatestSdk(): void {
   console.log('Installing latest AWS SDK v2');
-  execSync('HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --prefix /tmp');
+  // Both HOME and --prefix are needed here because /tmp is the only writable location
+  execSync('HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --no-save --prefix /tmp');
   latestSdkInstalled = true;
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
-    if (process.env.USE_LATEST_SDK === 'true' && !latestSdkInstalled) {
-      installLatestSdk();
+    let AWS: any;
+    if (!latestSdkInstalled) {
+      try {
+        installLatestSdk();
+        AWS = require('/tmp/node_modules/aws-sdk');
+      } catch (e) {
+        console.log(`Failed to install latest AWS SDK v2: ${e}`);
+        AWS = require('aws-sdk'); // Fallback to pre-installed version
+      }
+    } else {
+      AWS = require('/tmp/node_modules/aws-sdk');
     }
 
-    const AWS = process.env.USE_LATEST_SDK ? require('/tmp/node_modules/aws-sdk') : require('aws-sdk');
+    if (process.env.USE_NORMAL_SDK) { // For tests only
+      AWS = require('aws-sdk');
+    }
+
     console.log(JSON.stringify(event));
-    console.log('AWS SDK VERSION: ' + (AWS as any).VERSION);
+    console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
     let physicalResourceId = (event as any).PhysicalResourceId;
     let flatData: { [key: string]: string } = {};
