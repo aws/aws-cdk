@@ -1,9 +1,7 @@
-import cloudformation = require('@aws-cdk/aws-cloudformation');
-import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as cloudformation from '@aws-cdk/aws-cloudformation';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
 
 /**
@@ -268,8 +266,8 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     if (this.props2.deploymentRole) {
       this._deploymentRole = this.props2.deploymentRole;
     } else {
-      const roleStack = Stack.of(options.role);
-      const pipelineStack = Stack.of(scope);
+      const roleStack = cdk.Stack.of(options.role);
+      const pipelineStack = cdk.Stack.of(scope);
       if (roleStack.account !== pipelineStack.account) {
         // pass role is not allowed for cross-account access - so,
         // create the deployment Role in the other account!
@@ -313,7 +311,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
         // None evaluates to empty string which is falsey and results in undefined
         Capabilities: parseCapabilities(capabilities),
         RoleArn: this.deploymentRole.roleArn,
-        ParameterOverrides: Stack.of(scope).toJsonString(this.props2.parameterOverrides),
+        ParameterOverrides: cdk.Stack.of(scope).toJsonString(this.props2.parameterOverrides),
         TemplateConfiguration: this.props2.templateConfiguration
           ? this.props2.templateConfiguration.location
           : undefined,
@@ -605,7 +603,7 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
   }
 
   private stackArnFromProps(props: { stackName: string, region?: string }): string {
-    return Stack.of(this).formatArn({
+    return cdk.Stack.of(this).formatArn({
       region: props.region,
       service: 'cloudformation',
       resource: 'stack',
@@ -621,7 +619,7 @@ interface StatementTemplate {
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
 
-function parseCapabilities(capabilities: CloudFormationCapabilities[] | undefined): string | undefined {
+function parseCapabilities(capabilities: cloudformation.CloudFormationCapabilities[] | undefined): string | undefined {
   if (capabilities === undefined) {
     return undefined;
   } else if (capabilities.length === 1) {

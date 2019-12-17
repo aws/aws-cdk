@@ -22,11 +22,6 @@
     "build+test+package": "npm run build+test",
     "build+test": "npm run build && npm test"
   },
-  "nyc": {
-    "statements": 0,
-    "lines": 0,
-    "branches": 0
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -42,9 +37,18 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^24.0.23",
     "@types/yargs": "^13.0.3",
     "cdk-build-tools": "1.19.0",
+    "jest": "^24.9.0",
     "pkglint": "1.19.0"
+  },
+  "cdk-build": {
+    "eslint": {
+      "ignore-pattern": [
+        "test/enrichments/*.ts"
+      ]
+    }
   },
   "keywords": [
     "aws",
