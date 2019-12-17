@@ -53,7 +53,7 @@ def handler(event, context):
             values = json.loads(values_text)
             values_file = os.path.join(outdir, 'values.yaml')
             with open(values_file, "w") as f:
-                f.writelines(map(lambda obj: json.dumps(obj, indent=2), values))
+                f.write(json.dumps(values, indent=2))
 
         if request_type == 'Create':
             helm('install', name, chart, repository, values_file, namespace, version)
