@@ -32,10 +32,10 @@ def handler(event, context):
         physical_id = event.get('PhysicalResourceId', None)
         name = props['Name']
         chart = props['Chart']
-        version = props['Version']
+        version = props.get('Version', None)
         namespace = props.get('Namespace', None)
         repository = props.get('Repository', None)
-        values_text = props.get('Values', None)        
+        values_text = props.get('Values', None)
 
         cluster_name = os.environ.get('CLUSTER_NAME', None)
         if cluster_name is None:
@@ -98,7 +98,7 @@ def helm(verb, name, chart = None, repo = None, file = None, namespace = None, v
         if not namespace is None:
             cmnd.extend(['--namespace', namespace])
         cmnd.extend(['--kubeconfig', kubeconfig])
-        output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, shell=True)
+        output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
     except subprocess.CalledProcessError as exc:
         raise Exception(exc.output)
 
