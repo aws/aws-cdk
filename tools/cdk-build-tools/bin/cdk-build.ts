@@ -23,6 +23,11 @@ async function main() {
       desc: 'Specify a different tslint executable',
       defaultDescription: 'tslint provided by node dependencies'
     })
+    .option('eslint', {
+      type: 'string',
+      desc: 'Specify a different eslint executable',
+      defaultDescription: 'eslint provided by node dependencies'
+    })
     .argv;
 
   const options = cdkBuildOptions();
@@ -40,7 +45,7 @@ async function main() {
     await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
   }
 
-  await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
+  await compileCurrentPackage(timers, { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
 }
 
 const timers = new Timers();

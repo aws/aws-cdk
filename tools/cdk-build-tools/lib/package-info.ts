@@ -72,6 +72,7 @@ export async function hasIntegTests(): Promise<boolean> {
 }
 
 export interface CompilerOverrides {
+  eslint?: string;
   jsii?: string;
   tsc?: string;
   tslint?: string;

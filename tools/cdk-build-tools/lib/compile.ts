@@ -1,7 +1,7 @@
 import path = require('path');
-import { makeExecutable, shell } from "./os";
-import { CompilerOverrides, currentPackageJson, packageCompiler } from "./package-info";
-import { Timers } from "./timer";
+import { makeExecutable, shell } from './os';
+import { CompilerOverrides, currentPackageJson, packageCompiler } from './package-info';
+import { Timers } from './timer';
 
 /**
  * Run the compiler on the current package
@@ -16,6 +16,13 @@ export async function compileCurrentPackage(timers: Timers, compilers: CompilerO
   }
 
   // Always call linters
+  await shell([
+    compilers.eslint || require.resolve('eslint/bin/eslint'),
+    `--config=${path.resolve(__dirname, '..', 'config', 'eslintrc.yml')}`,
+    '.',
+    '--ext=.js,.ts',
+    '--ignore-path=.gitignore'
+  ], { timers });
   await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.'], { timers });
   await shell(['pkglint'], { timers });
   await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ], { timers });
