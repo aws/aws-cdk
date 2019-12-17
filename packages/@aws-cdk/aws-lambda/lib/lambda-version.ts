@@ -42,6 +42,13 @@ export interface VersionProps extends EventInvokeConfigOptions {
    * Function to get the value of
    */
   readonly lambda: IFunction;
+
+  /**
+   * Specifies a provisioned concurrency configuration for a function's version.
+   *
+   * @default No provisioned concurrency
+   */
+  readonly provisionedConcurrentExecutions?: number;
 }
 
 export interface VersionAttributes {
@@ -130,7 +137,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
-      functionName: props.lambda.functionName
+      functionName: props.lambda.functionName,
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props)
     });
 
     this.version = version.attrVersion;
@@ -168,6 +176,23 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       },
       ...props
     });
+  }
+
+  /**
+   * Validate that the provisionedConcurrentExecutions makes sense
+   *
+   * Member must have value greater than or equal to 1
+   */
+  private determineProvisionedConcurrency(props: VersionProps): CfnVersion.ProvisionedConcurrencyConfigurationProperty | undefined {
+    if (!props.provisionedConcurrentExecutions) {
+      return undefined;
+    }
+
+    if (props.provisionedConcurrentExecutions <= 0) {
+      throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
+    }
+
+    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
   }
 }
 
