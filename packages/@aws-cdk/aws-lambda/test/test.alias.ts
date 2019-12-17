@@ -150,8 +150,8 @@ export = {
             ProvisionedConcurrentExecutions: 5
           }
         }
-        },
-        Alias325C5727: {
+      },
+      Alias325C5727: {
         Type: "AWS::Lambda::Alias",
         Properties: {
           FunctionName: { Ref: "MyLambdaCCE802FB" },
@@ -161,7 +161,7 @@ export = {
             ProvisionedConcurrentExecutions: 5
           }
         }
-        }
+      }
     }));
 
     test.done();
