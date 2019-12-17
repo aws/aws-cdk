@@ -1554,7 +1554,7 @@ export = {
     });
 
     // WHEN
-    fn.addVersion('1', 'sha256', 'desc', {
+    fn.addVersion('1', 'sha256', 'desc', undefined, {
       retryAttempts: 0
     });
 
