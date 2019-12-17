@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lakeformation",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "description": "The CDK Construct Library for AWS::LakeFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -75,16 +75,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.18.0",
-    "cdk-build-tools": "1.18.0",
-    "cfn2ts": "1.18.0",
-    "pkglint": "1.18.0"
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.18.0"
+    "@aws-cdk/core": "1.19.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.18.0"
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
