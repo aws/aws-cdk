@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **region-info:** throw exception when no fact found ([#5166](https://github.com/aws/aws-cdk/issues/5166)) ([88df1eb](https://github.com/aws/aws-cdk/commit/88df1ebdbe9faf3717ed32a7daf96e3668bb483e)), closes [#3194](https://github.com/aws/aws-cdk/issues/3194)
 * **sns:** support KMS masterKey on SNS ([#5052](https://github.com/aws/aws-cdk/issues/5052)) ([edd5395](https://github.com/aws/aws-cdk/commit/edd53959af38969339205a5c33aaab11acc72fa6)), closes [#1729](https://github.com/aws/aws-cdk/issues/1729)
 * Make activating Python virtualenv easier on Windows ([#5014](https://github.com/aws/aws-cdk/issues/5014)) ([fc73747](https://github.com/aws/aws-cdk/commit/fc73747cc7c56ba7e2911745c3dc92e2d25b001b))
+* **lambda:** provisioned concurrency ([#5308](https://github.com/aws/aws-cdk/issues/5308)) ([d50344a](https://github.com/aws/aws-cdk/commit/d50344abb643f6f2c200bba15cfce4d469485dd9)), closes [#5298](https://github.com/aws/aws-cdk/issues/5298)
 
 
 ### Bug Fixes
