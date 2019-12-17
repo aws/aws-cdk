@@ -4,7 +4,7 @@ import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import ssm = require('@aws-cdk/aws-ssm');
-import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
+import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import path = require('path');
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
@@ -611,15 +611,21 @@ export class Cluster extends Resource implements ICluster {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
    */
   private tagSubnets() {
-    for (const subnet of this.vpc.privateSubnets) {
-      if (!Subnet.isVpcSubnet(subnet)) {
-        // Just give up, all of them will be the same.
-        this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
-        return;
-      }
+    const tagAllSubnets = (subnets: ec2.ISubnet[], tag: string) => {
+      for (const subnet of subnets) {
+        if (!Subnet.isVpcSubnet(subnet)) {
+          // Just give up, all of them will be the same.
+          const subnetId = Token.isUnresolved(subnet.subnetId) ? '' : subnet.subnetId;
+          this.node.addWarning(`Could not auto-tag subnet ${subnetId} with "${tag}=1", please remember to do this manually`);
+          return;
+        }
 
-      subnet.node.applyAspect(new Tag("kubernetes.io/role/internal-elb", "1"));
-    }
+        subnet.node.applyAspect(new Tag(tag, "1"));
+      }
+    };
+
+    tagAllSubnets(this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
+    tagAllSubnets(this.vpc.publicSubnets, "kubernetes.io/role/elb");
   }
 }
 
