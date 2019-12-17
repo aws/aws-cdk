@@ -1,13 +1,12 @@
 import { Test } from 'nodeunit';
-import schema = require('../lib/schema');
-import { isRecordType, Specification } from '../lib/schema';
+import * as schema from '../lib/schema';
 
-export function validateSpecification(test: Test, specification: Specification) {
+export function validateSpecification(test: Test, specification: schema.Specification) {
   validateResourceTypes(test, specification);
   validatePropertyTypes(test, specification);
 }
 
-function validateResourceTypes(test: Test, specification: Specification) {
+function validateResourceTypes(test: Test, specification: schema.Specification) {
   for (const typeName of Object.keys(specification.ResourceTypes)) {
     test.ok(typeName, 'Resource type name is not empty');
     const type = specification.ResourceTypes[typeName];
@@ -20,11 +19,11 @@ function validateResourceTypes(test: Test, specification: Specification) {
   }
 }
 
-function validatePropertyTypes(test: Test, specification: Specification) {
+function validatePropertyTypes(test: Test, specification: schema.Specification) {
   for (const typeName of Object.keys(specification.PropertyTypes)) {
     test.ok(typeName, 'Property type name is not empty');
     const type = specification.PropertyTypes[typeName];
-    if (isRecordType(type)) {
+    if (schema.isRecordType(type)) {
       validateProperties(typeName, test, type.Properties, specification);
     } else {
       validateProperties(typeName, test, { '<this>': type }, specification);
@@ -35,7 +34,7 @@ function validatePropertyTypes(test: Test, specification: Specification) {
 function validateProperties(typeName: string,
                             test: Test,
                             properties: { [name: string]: schema.Property },
-                            specification: Specification) {
+                            specification: schema.Specification) {
   const expectedKeys = ['Documentation', 'Required', 'UpdateType', 'ScrutinyType'];
   for (const name of Object.keys(properties)) {
 
@@ -118,7 +117,7 @@ function validateProperties(typeName: string,
 function validateAttributes(typeName: string,
                             test: Test,
                             attributes: { [name: string]: schema.Attribute },
-                            specification: Specification) {
+                            specification: schema.Specification) {
   for (const name of Object.keys(attributes)) {
     const attribute = attributes[name];
     test.ok(('Type' in attribute) !== ('PrimitiveType' in attribute));

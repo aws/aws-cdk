@@ -1,4 +1,3 @@
-import { Test } from 'nodeunit';
 // import generate from '../lib'
 // import { TargetLibrary } from '../lib/codegen'
 // import * as fs from 'fs'
@@ -7,11 +6,7 @@ import { Test } from 'nodeunit';
 // export const cfnobjects = codeGenTest(TargetLibrary.CfnObjects, 'expected.cfnobjects.output');
 // export const cdk = codeGenTest(TargetLibrary.CDK, 'expected.cdk.output', path.join(__dirname, 'enrichments'));
 
-export = {
-  'test me'(test: Test) {
-    test.done();
-  }
-};
+test('test me', () => expect(true).toBe(true));
 
 // function codeGenTest(target: TargetLibrary, expectedFileName: string, enrichmentsDir?: string) {
 //   return async function(test: Test) {

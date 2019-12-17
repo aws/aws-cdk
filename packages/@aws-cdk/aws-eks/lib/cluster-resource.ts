@@ -1,9 +1,8 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Token } from '@aws-cdk/core';
-import path = require('path');
+import * as path from 'path';
 import { CfnClusterProps } from './eks.generated';
 import { KubectlLayer } from './kubectl-layer';
 
@@ -54,14 +53,14 @@ export class ClusterResource extends Construct {
     }
 
     // since we don't know the cluster name at this point, we must give this role star resource permissions
-    handler.addToRolePolicy(new PolicyStatement({
+    handler.addToRolePolicy(new iam.PolicyStatement({
       actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion' ],
       resources: [ '*' ]
     }));
 
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
-    handler.addToRolePolicy(new PolicyStatement({
+    handler.addToRolePolicy(new iam.PolicyStatement({
       actions: [ 'iam:PassRole' ],
       resources: [ props.roleArn ]
     }));

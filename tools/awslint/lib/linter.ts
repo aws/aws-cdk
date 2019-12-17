@@ -1,6 +1,6 @@
-import reflect = require('jsii-reflect');
+import * as reflect from 'jsii-reflect';
 import { PrimitiveType } from '@jsii/spec';
-import util = require('util');
+import * as util from 'util';
 
 export interface LinterOptions {
   /**

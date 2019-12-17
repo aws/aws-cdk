@@ -4,9 +4,8 @@
 // to the very lowest level to create CloudFormation resources by hand, without even generated
 // library support.
 
-import cdk = require('@aws-cdk/core');
-import cloudwatch = require('../lib');
-import { PeriodOverride } from '../lib';
+import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from '../lib';
 
 const app = new cdk.App();
 
@@ -30,7 +29,7 @@ const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
   dashboardName: 'MyCustomDashboardName',
   start: '-9H',
   end: '2018-12-17T06:00:00.000Z',
-  periodOverride: PeriodOverride.INHERIT
+  periodOverride: cloudwatch.PeriodOverride.INHERIT
 });
 dashboard.addWidgets(
   new cloudwatch.TextWidget({ markdown: '# This is my dashboard' }),

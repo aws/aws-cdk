@@ -1,6 +1,6 @@
-import cdk = require('@aws-cdk/core');
-import path = require('path');
-import codebuild = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
+import * as codebuild from '../lib';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
