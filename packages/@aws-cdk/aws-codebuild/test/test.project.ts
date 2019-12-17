@@ -1,11 +1,10 @@
 import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import { Bucket } from '@aws-cdk/aws-s3';
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codebuild = require('../lib');
+import * as codebuild from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -17,7 +16,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'Bucket'),
+        bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
       }),
       buildSpec: codebuild.BuildSpec.fromSourceFilename('hello.yml'),
@@ -174,10 +173,10 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'SourceBucket'),
+        bucket: new s3.Bucket(stack, 'SourceBucket'),
         path: 'path',
       }),
-      cache: codebuild.Cache.bucket(new Bucket(stack, 'Bucket'), {
+      cache: codebuild.Cache.bucket(new s3.Bucket(stack, 'Bucket'), {
         prefix: "cache-prefix"
       })
     });
@@ -210,7 +209,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'Bucket'),
+        bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
       }),
       cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
@@ -239,7 +238,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.s3({
-        bucket: new Bucket(stack, 'Bucket'),
+        bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
       }),
     });

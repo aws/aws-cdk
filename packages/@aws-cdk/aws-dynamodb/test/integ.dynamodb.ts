@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
 

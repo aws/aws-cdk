@@ -52,9 +52,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.19.0",
     "@aws-cdk/aws-s3": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
     "fast-check": "^1.20.1",
+    "nodeunit": "^0.11.3",
     "pkglint": "1.19.0"
   },
   "repository": {

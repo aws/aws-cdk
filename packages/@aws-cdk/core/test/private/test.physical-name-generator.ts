@@ -1,4 +1,4 @@
-import nodeunit = require('nodeunit');
+import * as nodeunit from 'nodeunit';
 import { App, Aws, Lazy, Resource, Stack, Token } from '../../lib';
 import { GeneratedWhenNeededMarker, generatePhysicalName, isGeneratedWhenNeededMarker } from '../../lib/private/physical-name-generator';
 

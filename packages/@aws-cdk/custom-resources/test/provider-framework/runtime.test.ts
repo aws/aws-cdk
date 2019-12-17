@@ -1,9 +1,11 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
+/* eslint-disable @typescript-eslint/no-require-imports */
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 import mocks = require('./mocks');
+/* eslint-enable */
 
 console.log = jest.fn();
 

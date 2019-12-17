@@ -64,9 +64,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
     "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
     "pkglint": "1.19.0"
   },
   "dependencies": {

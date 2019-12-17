@@ -5,10 +5,10 @@
  * document at `spec/specification.json`.
  */
 
-import fastJsonPatch = require('fast-json-patch');
-import fs = require('fs-extra');
-import md5 = require('md5');
-import path = require('path');
+import * as fastJsonPatch from 'fast-json-patch';
+import * as fs from 'fs-extra';
+import * as md5 from 'md5';
+import * as path from 'path';
 import { schema } from '../lib';
 import { detectScrutinyTypes } from './scrutiny';
 

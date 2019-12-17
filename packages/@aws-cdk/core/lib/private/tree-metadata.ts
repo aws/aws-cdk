@@ -1,5 +1,5 @@
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cx-api';
 import { Construct, IConstruct, ISynthesisSession } from '../construct';
