@@ -65,6 +65,26 @@ export = {
     test.done();
   },
 
+  'throws when calling configureAsyncInvoke on already configured version'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+    });
+    const version = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0
+    });
+
+    // THEN
+    test.throws(() => version.configureAsyncInvoke({ retryAttempts: 1 }), /An EventInvokeConfig has already been configured/);
+
+    test.done();
+  },
+
   'event invoke config on imported versions'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

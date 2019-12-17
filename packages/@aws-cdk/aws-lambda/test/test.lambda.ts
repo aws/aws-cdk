@@ -1517,7 +1517,7 @@ export = {
     });
 
     // THEN
-    test.throws(() => fn.configureAsyncInvoke({ retryAttempts: 0 }), /There is already a Construct with name/);
+    test.throws(() => fn.configureAsyncInvoke({ retryAttempts: 0 }), /An EventInvokeConfig has already been configured/);
 
     test.done();
   },

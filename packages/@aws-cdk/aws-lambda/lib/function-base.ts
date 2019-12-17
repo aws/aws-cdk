@@ -297,6 +297,10 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for this function`);
+    }
+
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this,
       ...options
@@ -340,6 +344,10 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for this qualified function`);
+    }
+
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this.lambda,
       qualifier: this.qualifier,

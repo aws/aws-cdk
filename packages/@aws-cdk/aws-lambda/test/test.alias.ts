@@ -305,6 +305,31 @@ export = {
     test.done();
   },
 
+  'throws when calling configureAsyncInvoke on already configured alias'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const version = fn.addVersion('1');
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      onSuccess: {
+        bind: () => ({
+          destination: 'on-success-arn'
+        })
+      }
+    });
+
+    // THEN
+    test.throws(() => alias.configureAsyncInvoke({ retryAttempts: 0 }), /An EventInvokeConfig has already been configured/);
+
+    test.done();
+  },
+
   'event invoke config on imported alias'(test: Test) {
     // GIVEN
     const stack = new Stack();
