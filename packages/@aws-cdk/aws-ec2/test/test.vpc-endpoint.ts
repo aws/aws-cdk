@@ -309,7 +309,7 @@ export = {
 
       test.done();
     },
-    'security group has ingress when configured with "open"'(test: Test) {
+    'security group has ingress by default'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VpcNetwork');
@@ -317,7 +317,6 @@ export = {
       // WHEN
       vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
         service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
-        open: true
       });
 
       // THEN

@@ -35,9 +35,9 @@ class VpcEndpointStack extends cdk.Stack {
     vpc.addInterfaceEndpoint('EcrDockerEndpoint', {
       service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER,
 
-      // Allow all traffic to flow to the endpoint. Use the '.connections'
-      // object for more fine-grained control.
-      open: true
+      // Uncomment the following to allow more fine-grained control over
+      // who can access the endpoint via the '.connections' object.
+      // open: false
     });
     /// !hide
   }
