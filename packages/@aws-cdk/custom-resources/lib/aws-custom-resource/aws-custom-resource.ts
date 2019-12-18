@@ -149,7 +149,7 @@ export interface AwsCustomResourceProps {
   /**
    * The timeout for the Lambda function implementing this custom resource.
    *
-   * @default Duration.seconds(30)
+   * @default Duration.seconds(60)
    */
   readonly timeout?: cdk.Duration
 }
@@ -178,7 +178,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
-      timeout: props.timeout || cdk.Duration.seconds(30),
+      timeout: props.timeout || cdk.Duration.seconds(60),
       role: props.role,
     });
     this.grantPrincipal = provider.grantPrincipal;

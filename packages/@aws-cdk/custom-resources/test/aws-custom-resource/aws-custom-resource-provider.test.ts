@@ -1,5 +1,6 @@
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
+import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { AwsSdkCall } from '../../lib';
@@ -24,9 +25,14 @@ function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResou
     .reply(200);
 }
 
+beforeEach(() => {
+  process.env.USE_NORMAL_SDK = 'true';
+});
+
 afterEach(() => {
   AWS.restore();
   nock.cleanAll();
+  delete process.env.USE_NORMAL_SDK;
 });
 
 test('create event with physical resource id path', async () => {
@@ -337,4 +343,41 @@ test('flatten correctly flattens a nested object', () => {
     'd.1.j': null,
     'd.1.k.l': false
   });
+});
+
+test('installs the latest SDK', async () => {
+  const tmpPath = '/tmp/node_modules/aws-sdk';
+
+  fs.remove(tmpPath);
+
+  const publishFake = sinon.fake.resolves({});
+
+  AWS.mock('SNS', 'publish', publishFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: {
+        service: 'SNS',
+        action: 'publish',
+        parameters: {
+          Message: 'message',
+          TopicArn: 'topic'
+        },
+        physicalResourceId: 'id',
+      } as AwsSdkCall
+    }
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS'
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+
+  expect(() => require.resolve(tmpPath)).not.toThrow();
 });
