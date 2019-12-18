@@ -168,6 +168,15 @@ export = nodeunit.testCase({
       });
     }),
   },
+  'Ref': {
+    'returns a reference given a logical name'(test: nodeunit.Test) {
+      const stack = new Stack();
+      test.deepEqual(stack.resolve(Fn.ref('hello')), {
+        Ref: 'hello'
+      });
+      test.done();
+    }
+  }
 });
 
 function stringListToken(o: any): string[] {
