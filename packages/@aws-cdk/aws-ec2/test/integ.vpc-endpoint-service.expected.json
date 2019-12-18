@@ -1,0 +1,42 @@
+{
+  "Resources": {
+    "MyVpcEndpointServiceWithNoPrincipals": {
+      "Type": "AWS::EC2::VPCEndpointService",
+      "Properties": {
+        "NetworkLoadBalancerArns": [
+          "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"
+        ],
+        "AcceptanceRequired": false
+      }
+    },
+    "MyVpcEndpointServiceWithNoPrincipalsPermissions": {
+      "Type": "AWS::EC2::VPCEndpointServicePermissions",
+      "Properties": {
+        "ServiceId": {
+          "Ref": "MyVpcEndpointServiceWithNoPrincipals"
+        },
+        "AllowedPrincipals": []
+      }
+    },
+    "MyVpcEndpointServiceWithPrincipals": {
+      "Type": "AWS::EC2::VPCEndpointService",
+      "Properties": {
+        "NetworkLoadBalancerArns": [
+          "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"
+        ],
+        "AcceptanceRequired": false
+      }
+    },
+    "MyVpcEndpointServiceWithPrincipalsPermissions": {
+      "Type": "AWS::EC2::VPCEndpointServicePermissions",
+      "Properties": {
+        "ServiceId": {
+          "Ref": "MyVpcEndpointServiceWithNoPrincipals"
+        },
+        "AllowedPrincipals": [
+          "arn:aws:iam::123456789012:root"
+        ]
+      }
+    }
+  }
+}
