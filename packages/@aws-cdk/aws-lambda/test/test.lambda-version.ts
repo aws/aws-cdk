@@ -30,7 +30,6 @@ export = {
 
     test.done();
   },
-<<<<<<< HEAD
 
   'create a version with event invoke config'(test: Test) {
     // GIVEN
@@ -114,6 +113,4 @@ export = {
 
     test.done();
   }
-=======
->>>>>>> master
 };
