@@ -133,4 +133,4 @@ in the future (as well as any other idea of course):
 - [x] Implement the first feature flag (https://github.com/aws/aws-cdk/pull/4895)
 - [x] Update CONTRIBUTING guide with instructions on how to implement feature flags.
 - [ ] Add feature flags to `cdk doctor` and update bug report template accordingly to request users to run `cdk doctor`.
-
+- [ ] Document what feature flags are in the CDK Developer Guide, reference cx-api/features.ts, and describe what "BREAKING CHANGE under feature flag" means.
