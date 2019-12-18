@@ -1,6 +1,6 @@
-import codecommit = require('@aws-cdk/aws-codecommit');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';

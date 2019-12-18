@@ -1,8 +1,8 @@
-import certificatemanager = require('@aws-cdk/aws-certificatemanager');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 import { IDistribution } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';

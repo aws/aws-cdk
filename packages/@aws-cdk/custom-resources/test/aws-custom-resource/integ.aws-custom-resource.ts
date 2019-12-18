@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-import sns = require('@aws-cdk/aws-sns');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
-import { Token } from '@aws-cdk/core';
+import * as sns from '@aws-cdk/aws-sns';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { AwsCustomResource } from '../../lib';
 
 const app = new cdk.App();
@@ -49,8 +48,8 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
   }
 });
 
-new cdk.CfnOutput(stack, 'MessageId', { value: Token.asString(snsPublish.getData('MessageId')) });
-new cdk.CfnOutput(stack, 'TopicArn', { value: Token.asString(listTopics.getData('Topics.0.TopicArn')) });
-new cdk.CfnOutput(stack, 'ParameterValue', { value: Token.asString(getParameter.getData('Parameter.Value')) });
+new cdk.CfnOutput(stack, 'MessageId', { value: cdk.Token.asString(snsPublish.getData('MessageId')) });
+new cdk.CfnOutput(stack, 'TopicArn', { value: cdk.Token.asString(listTopics.getData('Topics.0.TopicArn')) });
+new cdk.CfnOutput(stack, 'ParameterValue', { value: cdk.Token.asString(getParameter.getData('Parameter.Value')) });
 
 app.synth();

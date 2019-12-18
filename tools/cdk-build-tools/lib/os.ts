@@ -1,7 +1,7 @@
-import child_process = require("child_process");
-import colors = require('colors/safe');
-import fs = require('fs');
-import util = require('util');
+import * as child_process from 'child_process';
+import * as colors from 'colors/safe';
+import * as fs from 'fs';
+import * as util from 'util';
 import { Timers } from "./timer";
 
 interface ShellOptions {

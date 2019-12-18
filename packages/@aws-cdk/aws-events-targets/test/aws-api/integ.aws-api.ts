@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
-import targets = require('../../lib');
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../../lib';
 
 const app = new cdk.App();
 

@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { AwsCustomResource } from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -223,7 +223,7 @@ test('timeout defaults to 30 seconds', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Timeout: 30
+    Timeout: 60
   });
 });
 

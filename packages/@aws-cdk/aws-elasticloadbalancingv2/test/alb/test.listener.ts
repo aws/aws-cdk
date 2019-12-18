@@ -1,11 +1,9 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
-import { ConstructNode, Duration } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
-import { ListenerCertificate } from '../../lib';
+import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -91,7 +89,7 @@ export = {
     });
 
     // THEN
-    const errors = ConstructNode.validate(stack.node);
+    const errors = cdk.ConstructNode.validate(stack.node);
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
 
     test.done();
@@ -650,7 +648,7 @@ export = {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
       port: 80,
-      deregistrationDelay: Duration.seconds(30)
+      deregistrationDelay: cdk.Duration.seconds(30)
     });
 
     // THEN
@@ -869,7 +867,7 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 443,
-      certificates: [ListenerCertificate.fromArn('cert1'), ListenerCertificate.fromArn('cert2')],
+      certificates: [elbv2.ListenerCertificate.fromArn('cert1'), elbv2.ListenerCertificate.fromArn('cert2')],
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 

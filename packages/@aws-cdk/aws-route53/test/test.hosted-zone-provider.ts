@@ -1,5 +1,5 @@
 import { SynthUtils } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { HostedZone } from '../lib';
 

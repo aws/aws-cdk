@@ -1,5 +1,5 @@
-import nodeunit = require('nodeunit');
-import core = require('../lib');
+import * as nodeunit from 'nodeunit';
+import * as core from '../lib';
 
 export = nodeunit.testCase({
   '._toCloudFormation': {

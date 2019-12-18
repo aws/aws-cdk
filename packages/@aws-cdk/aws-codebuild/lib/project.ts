@@ -1,12 +1,12 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -998,7 +998,8 @@ export class Project extends ProjectBase {
 export enum ComputeType {
   SMALL = 'BUILD_GENERAL1_SMALL',
   MEDIUM = 'BUILD_GENERAL1_MEDIUM',
-  LARGE = 'BUILD_GENERAL1_LARGE'
+  LARGE = 'BUILD_GENERAL1_LARGE',
+  X2_LARGE = 'BUILD_GENERAL1_2XLARGE'
 }
 
 /**
@@ -1460,5 +1461,10 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  PARAMETER_STORE = 'PARAMETER_STORE'
+  PARAMETER_STORE = 'PARAMETER_STORE',
+
+  /**
+   * An environment variable stored in AWS Secrets Manager.
+   */
+  SECRETS_MANAGER = 'SECRETS_MANAGER'
 }
