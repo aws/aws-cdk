@@ -1,9 +1,9 @@
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cpactions = require('../lib');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cpactions from '../lib';
 
 const app = new cdk.App();
 

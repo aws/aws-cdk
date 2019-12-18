@@ -1,12 +1,12 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
-import perms = require('./perms');
+import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
@@ -60,7 +60,7 @@ export interface IBucket extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
@@ -303,7 +303,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
-   * The resource policy assoicated with this bucket.
+   * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).

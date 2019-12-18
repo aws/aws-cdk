@@ -1,11 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/core');
-import { SecretValue } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import rds = require('../lib');
-import { SecretRotationApplication } from '../lib';
+import * as rds from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -165,7 +163,7 @@ export = {
       engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort')
+        password: cdk.SecretValue.plainText('tooshort')
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -196,7 +194,7 @@ export = {
     // THEN
     test.throws(() => new rds.SecretRotation(stack, 'Rotation', {
       secret,
-      application: SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+      application: rds.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
       vpc,
       target
     }), /`target`.+default port range/);
@@ -355,7 +353,7 @@ export = {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
-      masterUserPassword: SecretValue.plainText('tooshort'),
+      masterUserPassword: cdk.SecretValue.plainText('tooshort'),
       vpc
     });
 

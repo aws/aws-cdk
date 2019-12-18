@@ -40,6 +40,8 @@ event when the pipeline changes it's state.
   or it can receive events from applications and services created by AWS SaaS partners.
   See [Creating an Event Bus](https://docs.aws.amazon.com/eventbridge/latest/userguide/create-event-bus.html).
 
+## Rule
+
 The `Rule` construct defines a CloudWatch events rule which monitors an
 event based on an [event
 pattern](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html)
@@ -75,6 +77,27 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
   )
 }));
 ```
+
+## Scheduling
+
+You can configure a Rule to run on a schedule (cron or rate). 
+
+The following example runs a task every day at 4am:
+
+```ts
+import { Rule, Schedule } from '@aws-cdk/aws-events';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
+...
+
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition });
+
+new Rule(this, 'ScheduleRule', {
+ schedule: Schedule.cron({ minute: '0', hour: '4' }),
+ targets: [ecsTaskTarget],
+});
+```
+
+More details in [ScheduledEvents](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) documentation page.
 
 ## Event Targets
 

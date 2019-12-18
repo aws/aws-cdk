@@ -1,6 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -69,7 +68,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     super(scope, id, {
       physicalName: props.destinationName ||
         // In the underlying model, the name is not optional, but we make it so anyway.
-        Lazy.stringValue({ produce: () => this.generateUniqueName() }),
+        cdk.Lazy.stringValue({ produce: () => this.generateUniqueName() }),
     });
 
     this.resource = new CfnDestination(this, 'Resource', {
@@ -93,7 +92,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     this.policyDocument.addStatements(statement);
   }
 
-  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
+  public bind(_scope: cdk.Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
     return { arn: this.destinationArn };
   }
 
@@ -102,15 +101,15 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
    */
   private generateUniqueName(): string {
     // Combination of stack name and LogicalID, which are guaranteed to be unique.
-    return Stack.of(this).stackName + '-' + this.resource.logicalId;
+    return cdk.Stack.of(this).stackName + '-' + this.resource.logicalId;
   }
 
   /**
    * Return a stringified JSON version of the PolicyDocument
    */
   private lazyStringifiedPolicyDocument(): string {
-    return Lazy.stringValue({ produce: () =>
-      this.policyDocument.isEmpty ? '' : Stack.of(this).toJsonString(this.policyDocument)
+    return cdk.Lazy.stringValue({ produce: () =>
+      this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument)
     });
   }
 }

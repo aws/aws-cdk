@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
 import { IMachineImage, LookupMachineImage } from "./machine-image";

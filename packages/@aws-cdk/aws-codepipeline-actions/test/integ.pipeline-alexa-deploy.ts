@@ -1,7 +1,7 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, RemovalPolicy, SecretValue, Stack } from '@aws-cdk/core';
-import cpactions = require('../lib');
+import * as cpactions from '../lib';
 
 const app = new App();
 

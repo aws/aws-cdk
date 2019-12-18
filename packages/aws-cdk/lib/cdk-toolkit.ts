@@ -1,5 +1,6 @@
-import colors = require('colors/safe');
-import fs = require('fs-extra');
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
 import { format } from 'util';
 import { Mode } from './api/aws-auth/credentials';
 import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
@@ -10,9 +11,6 @@ import { ISDK } from './api/util/sdk';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
-
-// tslint:disable-next-line:no-var-requires
-const promptly = require('promptly');
 
 export interface CdkToolkitProps {
   /**
@@ -46,6 +44,8 @@ export class CdkToolkit {
       extend: options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.AllStacks
     });
+
+    this.appStacks.processMetadata(stacks);
 
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;

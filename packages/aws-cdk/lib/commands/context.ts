@@ -1,6 +1,6 @@
-import colors = require('colors/safe');
-import yargs = require('yargs');
-import version = require('../../lib/version');
+import * as colors from 'colors/safe';
+import * as yargs from 'yargs';
+import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
 import { print } from '../logging';
 import { Context, PROJECT_CONFIG } from '../settings';

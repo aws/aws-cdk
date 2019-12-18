@@ -1,7 +1,7 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import subs = require('@aws-cdk/aws-sns-subscriptions');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import { Construct } from '@aws-cdk/core';
 import { TopicHook } from './topic-hook';
 
