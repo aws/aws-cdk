@@ -104,6 +104,8 @@ export class StateMachine extends StateMachineBase {
             definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
         });
 
+        resource.node.addDependency(this.role);
+
         for (const statement of graph.policyStatements) {
             this.addToRolePolicy(statement);
         }
