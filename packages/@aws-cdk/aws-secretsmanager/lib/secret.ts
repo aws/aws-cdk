@@ -1,9 +1,9 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Construct, IResource, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
-import secretsmanager = require('./secretsmanager.generated');
+import * as secretsmanager from './secretsmanager.generated';
 
 /**
  * A secret in AWS Secrets Manager.

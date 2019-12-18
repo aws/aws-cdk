@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import ec2 = require('../lib');
+import * as ec2 from '../lib';
 
 export = {
   'can create Windows user data'(test: Test) {

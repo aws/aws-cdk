@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import cxapi = require('@aws-cdk/cx-api');
-import colors = require('colors/safe');
-import path = require('path');
-import yargs = require('yargs');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as colors from 'colors/safe';
+import * as path from 'path';
+import * as yargs from 'yargs';
 
 import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
@@ -18,7 +18,7 @@ import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import version = require('../lib/version');
+import * as version from '../lib/version';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {

@@ -1,11 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import { SecretValue, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import secretsmanager = require('../lib');
+import * as secretsmanager from '../lib';
 
 export = {
   'default secret'(test: Test) {
@@ -312,7 +311,7 @@ export = {
 
   'can attach a secret with attach()'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
     // WHEN
@@ -337,7 +336,7 @@ export = {
 
   'throws when trying to attach a target multiple times to a secret'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const target = {
       asSecretAttachmentTarget: () => ({
@@ -414,11 +413,11 @@ export = {
 
   'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretValueFromJson('password');
-    const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
+    const value = cdk.SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
 
     // THEN
     test.deepEqual(stack.resolve(imported), stack.resolve(value));
@@ -427,7 +426,7 @@ export = {
 
   'can add to the resource policy of a secret'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
     // WHEN
