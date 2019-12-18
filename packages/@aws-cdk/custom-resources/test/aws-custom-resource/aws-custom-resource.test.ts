@@ -220,7 +220,7 @@ test('timeout defaults to 30 seconds', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Timeout: 30
+    Timeout: 60
   });
 });
 
