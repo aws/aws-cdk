@@ -11,6 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-sdk-js');
 const topic = new sns.Topic(stack, 'Topic');
 
 const snsPublish = new AwsCustomResource(stack, 'Publish', {
+  resourceType: 'Custom::SNSPublisher',
   onUpdate: {
     service: 'SNS',
     action: 'publish',
@@ -35,6 +36,7 @@ const ssmParameter = new ssm.StringParameter(stack, 'DummyParameter', {
   stringValue: '1337',
 });
 const getParameter = new AwsCustomResource(stack, 'GetParameter', {
+  resourceType: 'Custom::SSMParameter',
   onUpdate: {
     service: 'SSM',
     action: 'getParameter',

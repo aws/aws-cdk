@@ -4,7 +4,7 @@
       "Type": "AWS::SNS::Topic"
     },
     "Publish2E9BDF73": {
-      "Type": "Custom::AWS",
+      "Type": "Custom::SNSPublisher",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -194,7 +194,7 @@
       }
     },
     "GetParameter42B0A00E": {
-      "Type": "Custom::AWS",
+      "Type": "Custom::SSMParameter",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [

@@ -11,6 +11,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
       onCreate: {
         service: 'CloudWatchLogs',
         action: 'putRetentionPolicy',
@@ -30,7 +31,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWS', {
+    expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
       "Create": {
         "service": "CloudWatchLogs",
         "action": "putRetentionPolicy",
@@ -74,6 +75,7 @@ test('onCreate defaults to onUpdate', () => {
 
   // WHEN
   new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::S3PutObject',
     onUpdate: {
       service: 's3',
       action: 'putObject',
@@ -87,7 +89,7 @@ test('onCreate defaults to onUpdate', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
+  expect(stack).toHaveResource('Custom::S3PutObject', {
     "Create": {
       "service": "s3",
       "action": "putObject",
@@ -176,6 +178,7 @@ test('encodes booleans', () => {
 
   // WHEN
   new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::ServiceAction',
     onCreate: {
       service: 'service',
       action: 'action',
@@ -190,7 +193,7 @@ test('encodes booleans', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
+  expect(stack).toHaveResource('Custom::ServiceAction', {
     "Create": {
       "service": "service",
       "action": "action",
