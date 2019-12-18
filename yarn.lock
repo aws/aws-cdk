@@ -1157,10 +1157,10 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.37":
-  version "8.10.37"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.37.tgz#f68d2fa5bddde5b09c20c8f4f235003e24681291"
-  integrity sha512-sdOuz+VMgISw1+a3LtqMdhLBgvv54Q+QmLIGsJimZVBKD6iDzsw1QoinZ7c95pVNU6XsyYsGn8j8w/qWyAS+nQ==
+"@types/aws-lambda@^8.10.39":
+  version "8.10.39"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.39.tgz#da83cf7a82695a8904e383d705829fecf96b7db2"
+  integrity sha512-6qxQ4wS636AapVvDbzltI/Xn69QWxjcvohvxd/+MTWzdE9Vqz1xgERr38jEbBGEkyyG8y819nAhjGsiY6KNh1A==
 
 "@types/babel__core@^7.1.0":
   version "7.1.3"
