@@ -53,7 +53,7 @@
     "@types/node": "^10.17.11",
     "@types/nodeunit": "^0.0.30",
     "@types/promptly": "^3.0.0",
-    "@types/request": "^2.48.3",
+    "@types/request": "^2.48.4",
     "@types/semver": "^6.2.0",
     "@types/sinon": "^7.5.0",
     "@types/table": "^4.0.7",
