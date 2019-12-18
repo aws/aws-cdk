@@ -415,7 +415,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "awscdkcodebuildprojectvpcMyProject5C59172BCodeBuildEC2Policy",
+        "PolicyName": "MyProjectPolicyDocument646EE0F2",
         "Roles": [
           {
             "Ref": "MyProjectRole9BBE5233"
