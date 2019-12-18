@@ -63,6 +63,7 @@ function installLatestSdk(): void {
   latestSdkInstalled = true;
 }
 
+/* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     let AWS: any;
