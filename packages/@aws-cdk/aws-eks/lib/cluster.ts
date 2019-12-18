@@ -816,7 +816,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
-      + ( this.nodeType === NodeType.GPU ? " amazon-linux2-gpu/" : "" )
+      + ( this.nodeType === NodeType.GPU ? "amazon-linux2-gpu/" : "" )
       + "recommended/image_id";
   }
 
@@ -850,6 +850,8 @@ export enum NodeType {
   GPU = 'GPU',
 }
 
+const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+
 export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.STANDARD;
+  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
 }
