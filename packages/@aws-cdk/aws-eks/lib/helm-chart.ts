@@ -1,4 +1,4 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
+import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import { Construct, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
@@ -42,7 +42,7 @@ export interface HelmChartProps {
   readonly namespace?: string;
 
   /**
-   * The values.
+   * The values used to generate the release.
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};
@@ -70,8 +70,8 @@ export class HelmChart extends Construct {
       throw new Error(`Cannot define a Helm chart on a cluster with kubectl disabled`);
     }
 
-    new cfn.CustomResource(this, 'Resource', {
-      provider: cfn.CustomResourceProvider.lambda(handler),
+    new CustomResource(this, 'Resource', {
+      provider: CustomResourceProvider.lambda(handler),
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         Name: props.name,
