@@ -1,30 +1,30 @@
 import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
+import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
+import { AwsLogDriver, Cluster, ContainerImage, Ec2TaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
-import iam = require('@aws-cdk/aws-iam');
+import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import { NamespaceType } from '@aws-cdk/aws-servicediscovery';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../../lib');
+import { ApplicationMultipleTargetGroupsEc2Service, NetworkMultipleTargetGroupsEc2Service } from '../../lib';
 
 export = {
   'When Application Load Balancer': {
     'test ECS ALB construct with default settings'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
-      new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test')
+          image: ContainerImage.fromRegistry('test')
         }
       });
 
@@ -74,18 +74,18 @@ export = {
 
     'test ECS ALB construct with all settings'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
       // WHEN
-      new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test'),
+          image: ContainerImage.fromRegistry('test'),
           containerName: 'myContainer',
           containerPorts: [80, 90],
           enableLogging: false,
@@ -93,25 +93,25 @@ export = {
             TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
             TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
           },
-          logDriver: new ecs.AwsLogDriver({
+          logDriver: new AwsLogDriver({
             streamPrefix: "TestStream"
           }),
           family: "Ec2TaskDef",
-          executionRole: new iam.Role(stack, 'ExecutionRole', {
+          executionRole: new Role(stack, 'ExecutionRole', {
             path: '/',
-            assumedBy: new iam.CompositePrincipal(
-              new iam.ServicePrincipal("ecs.amazonaws.com"),
-              new iam.ServicePrincipal("ecs-tasks.amazonaws.com")
+            assumedBy: new CompositePrincipal(
+              new ServicePrincipal("ecs.amazonaws.com"),
+              new ServicePrincipal("ecs-tasks.amazonaws.com")
             )
           }),
-          taskRole: new iam.Role(stack, 'TaskRole', {
-            assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+          taskRole: new Role(stack, 'TaskRole', {
+            assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
           })
         },
         cpu: 256,
         desiredCount: 3,
         enableECSManagedTags: true,
-        healthCheckGracePeriod: cdk.Duration.millis(2000),
+        healthCheckGracePeriod: Duration.millis(2000),
         loadBalancers: [
           {
             name: "lb",
@@ -127,7 +127,7 @@ export = {
             ]
           }
         ],
-        propagateTags: ecs.PropagatedTagSource.SERVICE,
+        propagateTags: PropagatedTagSource.SERVICE,
         memoryReservationMiB: 1024,
         serviceName: "myService",
         targetGroups: [
@@ -140,7 +140,7 @@ export = {
             listener: "listener",
             pathPattern: "a/b/c",
             priority: 10,
-            protocol: ecs.Protocol.TCP
+            protocol: Protocol.TCP
           }
         ]
       });
@@ -240,15 +240,15 @@ export = {
 
     'set vpc instead of cluster'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
 
       // WHEN
-      new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         vpc,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test')
+          image: ContainerImage.fromRegistry('test')
         }
       });
 
@@ -262,14 +262,14 @@ export = {
 
     'able to pass pre-defined task definition'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
       container.addPortMappings({
@@ -277,7 +277,7 @@ export = {
       });
 
       // WHEN
-      new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         taskDefinition,
       });
@@ -311,18 +311,18 @@ export = {
 
     'able to output correct load balancer DNS and URLs for each protocol type'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
       // WHEN
-      new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test')
+          image: ContainerImage.fromRegistry('test')
         },
         loadBalancers: [
           {
@@ -435,16 +435,16 @@ export = {
 
     'errors if no essential container in pre-defined task definition'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskDefinition,
         });
@@ -455,16 +455,16 @@ export = {
 
     'set default load balancer, listener, target group correctly'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
       // WHEN
-      const ecsService = new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      const ecsService = new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         vpc,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test')
+          image: ContainerImage.fromRegistry('test')
         },
         loadBalancers: [
           {
@@ -511,16 +511,16 @@ export = {
 
     'setting vpc and cluster throws error'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
-      test.throws(() => new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      test.throws(() => new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         vpc,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+          image: ContainerImage.fromRegistry("/aws/aws-example-app")
         }
       }), /You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
 
@@ -529,21 +529,21 @@ export = {
 
     'creates AWS Cloud Map service for Private DNS namespace'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'MyVpc', {});
+      const cluster = new Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE
+        type: NamespaceType.DNS_PRIVATE
       });
 
-      new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('hello'),
+          image: ContainerImage.fromRegistry('hello'),
         },
         cloudMapOptions: {
           name: 'myApp',
@@ -600,23 +600,23 @@ export = {
 
     "errors when setting both taskDefinition and taskImageOptions"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer("test", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           taskDefinition
         });
@@ -627,14 +627,14 @@ export = {
 
     "errors when setting neither taskDefinition nor taskImageOptions"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster
         });
       }, /You must specify one of: taskDefinition or image/);
@@ -644,17 +644,17 @@ export = {
 
     "errors when setting domainName but not domainZone"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -675,16 +675,16 @@ export = {
 
     "errors when loadBalancers is empty"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: []
         });
@@ -695,16 +695,16 @@ export = {
 
     "errors when targetGroups is empty"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           targetGroups: []
         });
@@ -715,16 +715,16 @@ export = {
 
     "errors when no listener specified"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -740,16 +740,16 @@ export = {
 
     'errors when setting both HTTP protocol and certificate'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -771,16 +771,16 @@ export = {
 
     'errors when setting HTTPS protocol but not domain name'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -801,16 +801,16 @@ export = {
 
     'errors when listener is not defined but used in creating target groups'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -836,18 +836,18 @@ export = {
 
     'errors if desiredTaskCount is 0'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
       test.throws(() =>
-        new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           memoryLimitMiB: 1024,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           desiredCount: 0,
         })
@@ -860,17 +860,17 @@ export = {
   'When Network Load Balancer': {
     'test ECS NLB construct with default settings'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
-      new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         memoryLimitMiB: 256,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test')
+          image: ContainerImage.fromRegistry('test')
         }
       });
 
@@ -934,18 +934,18 @@ export = {
 
     'test ECS NLB construct with all settings'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
       // WHEN
-      new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         memoryLimitMiB: 256,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test'),
+          image: ContainerImage.fromRegistry('test'),
           containerName: 'myContainer',
           containerPorts: [80, 90],
           enableLogging: false,
@@ -953,25 +953,25 @@ export = {
             TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
             TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
           },
-          logDriver: new ecs.AwsLogDriver({
+          logDriver: new AwsLogDriver({
             streamPrefix: "TestStream"
           }),
           family: "Ec2TaskDef",
-          executionRole: new iam.Role(stack, 'ExecutionRole', {
+          executionRole: new Role(stack, 'ExecutionRole', {
             path: '/',
-            assumedBy: new iam.CompositePrincipal(
-              new iam.ServicePrincipal("ecs.amazonaws.com"),
-              new iam.ServicePrincipal("ecs-tasks.amazonaws.com")
+            assumedBy: new CompositePrincipal(
+              new ServicePrincipal("ecs.amazonaws.com"),
+              new ServicePrincipal("ecs-tasks.amazonaws.com")
             )
           }),
-          taskRole: new iam.Role(stack, 'TaskRole', {
-            assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+          taskRole: new Role(stack, 'TaskRole', {
+            assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
           })
         },
         cpu: 256,
         desiredCount: 3,
         enableECSManagedTags: true,
-        healthCheckGracePeriod: cdk.Duration.millis(2000),
+        healthCheckGracePeriod: Duration.millis(2000),
         loadBalancers: [
           {
             name: "lb1",
@@ -994,7 +994,7 @@ export = {
             ]
           }
         ],
-        propagateTags: ecs.PropagatedTagSource.SERVICE,
+        propagateTags: PropagatedTagSource.SERVICE,
         memoryReservationMiB: 256,
         serviceName: "myService",
         targetGroups: [
@@ -1105,15 +1105,15 @@ export = {
 
     'set vpc instead of cluster'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
 
       // WHEN
-      new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         vpc,
         memoryLimitMiB: 256,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test')
+          image: ContainerImage.fromRegistry('test')
         }
       });
 
@@ -1127,14 +1127,14 @@ export = {
 
     'able to pass pre-defined task definition'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
       container.addPortMappings({
@@ -1142,7 +1142,7 @@ export = {
       });
 
       // WHEN
-      new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         taskDefinition,
       });
@@ -1176,16 +1176,16 @@ export = {
 
     'errors if no essential container in pre-defined task definition'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskDefinition,
         });
@@ -1196,16 +1196,16 @@ export = {
 
     'set default load balancer, listener, target group correctly'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
       // WHEN
-      const ecsService = new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      const ecsService = new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         vpc,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test')
+          image: ContainerImage.fromRegistry('test')
         },
         loadBalancers: [
           {
@@ -1250,16 +1250,16 @@ export = {
 
     'setting vpc and cluster throws error'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
-      test.throws(() => new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      test.throws(() => new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         vpc,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+          image: ContainerImage.fromRegistry("/aws/aws-example-app")
         }
       }), /You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
 
@@ -1268,21 +1268,21 @@ export = {
 
     'creates AWS Cloud Map service for Private DNS namespace'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'MyVpc', {});
+      const cluster = new Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE
+        type: NamespaceType.DNS_PRIVATE
       });
 
-      new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('hello'),
+          image: ContainerImage.fromRegistry('hello'),
         },
         cloudMapOptions: {
           name: 'myApp',
@@ -1339,23 +1339,23 @@ export = {
 
     "errors when setting both taskDefinition and taskImageOptions"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer("test", {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           taskDefinition
         });
@@ -1366,14 +1366,14 @@ export = {
 
     "errors when setting neither taskDefinition nor taskImageOptions"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster
         });
       }, /You must specify one of: taskDefinition or image/);
@@ -1383,17 +1383,17 @@ export = {
 
     "errors when setting domainName but not domainZone"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -1412,16 +1412,16 @@ export = {
 
     "errors when loadBalancers is empty"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: []
         });
@@ -1432,16 +1432,16 @@ export = {
 
     "errors when targetGroups is empty"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           targetGroups: []
         });
@@ -1452,16 +1452,16 @@ export = {
 
     "errors when no listener specified"(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -1477,16 +1477,16 @@ export = {
 
     'errors when listener is not defined but used in creating target groups'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
-          cluster,
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        cluster,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -1512,18 +1512,18 @@ export = {
 
     'errors if desiredTaskCount is 0'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
       test.throws(() =>
-        new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           memoryLimitMiB: 1024,
           taskImageOptions: {
-            image: ecs.ContainerImage.fromRegistry('test'),
+            image: ContainerImage.fromRegistry('test'),
           },
           desiredCount: 0,
         })

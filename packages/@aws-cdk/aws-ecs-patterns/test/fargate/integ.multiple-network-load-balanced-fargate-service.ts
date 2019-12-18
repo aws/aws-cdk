@@ -1,20 +1,20 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import { Vpc } from '@aws-cdk/aws-ec2';
+import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
+import { App, Stack } from '@aws-cdk/core';
 
 import { NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ');
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
-const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+const app = new App();
+const stack = new Stack(app, 'aws-ecs-integ');
+const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+const cluster = new Cluster(stack, 'Cluster', { vpc });
 
 // Two load balancers with two listeners and two target groups.
 new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
   cluster,
   memoryLimitMiB: 512,
   taskImageOptions: {
-    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    image: ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
   loadBalancers: [
     {

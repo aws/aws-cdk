@@ -5,7 +5,7 @@ import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-c
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
 
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.
@@ -55,7 +55,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    *
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
-  readonly healthCheckGracePeriod?: cdk.Duration;
+  readonly healthCheckGracePeriod?: Duration;
 
   /**
    * The network load balancer that will serve traffic to the service.
@@ -254,7 +254,7 @@ export interface NetworkTargetProps {
 /**
  * The base class for NetworkMultipleTargetGroupsEc2Service and NetworkMultipleTargetGroupsFargateService classes.
  */
-export abstract class NetworkMultipleTargetGroupsServiceBase extends cdk.Construct {
+export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
@@ -284,7 +284,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends cdk.Constru
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsServiceBase class.
    */
-  constructor(scope: cdk.Construct, id: string, props: NetworkMultipleTargetGroupsServiceBaseProps = {}) {
+  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsServiceBaseProps = {}) {
     super(scope, id);
 
     this.validateInput(props);
@@ -304,7 +304,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends cdk.Constru
           this.listeners.push(listener);
         }
         this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
-        new cdk.CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
+        new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
       }
       // set up default load balancer and listener.
       this.loadBalancer = this.loadBalancers[0];
@@ -314,17 +314,17 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends cdk.Constru
       this.listener = this.createListener('PublicListener', this.loadBalancer, 80);
       this.createDomainName(this.loadBalancer);
 
-      new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+      new CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
     }
   }
 
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs.
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
-    const stack = cdk.Stack.of(scope);
+    const stack = Stack.of(scope);
     return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
