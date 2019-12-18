@@ -384,7 +384,8 @@ export = {
 
     test.done();
   },
-  'test Fargateloadbalanced construct with TLS'(test: Test) {
+
+  'test Fargate loadbalanced construct with TLS'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -619,6 +620,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with logging enabled'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -667,6 +669,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with both image and taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -696,6 +699,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate application loadbalanced construct with taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
