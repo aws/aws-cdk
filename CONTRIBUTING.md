@@ -518,16 +518,23 @@ can be used in these cases.
 ### Feature Flags
 
 Sometimes we want to introduce new breaking behavior because we believe this is
-the correct default behavior for the CDK. The problem of course is that breaking
-changes are only allowed in major versions and those are rare.
+the correct default behavior for the CDK. However, breaking changes are only allowed 
+in major versions and those are rare.
 
 To address this need, we have a feature flags pattern/mechanism. It allows us to
 introduce new breaking behavior which is disabled by default (so existing
 projects will not be affected) but enabled automatically for new projects
 created through `cdk init`.
 
+**DISCLAIMER**: feature flags are a "last resort" mechanism and should only be used
+when it is impossible to figure out a way to introduce a feature without breaking
+existing users. If you think your feature should be implemented behind a feature
+flag, you will need to get an approval from at least two core team members. We do that
+in order to avoid the abuse of this powerful capability.
+
 The pattern is simple:
 
+1. Seek the approval of a core team member that a feature flag can be used.
 1. Define a new const under
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
    with the name of the context key that **enables** this new feature (for
@@ -544,13 +551,13 @@ The pattern is simple:
     ```
     fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
     ```
-5. Under `BREAKING CHANGES` in your commit message describe this new behavior:
+5. Under `BREAKING CHANGES`, add a prefix `(under feature flag)` and the name of the flag in the postfix. 
+   For example:
 
     ```
-    BREAKING CHANGE: template file names for new projects created through "cdk init" 
-    will use the template artifact ID instead of the physical stack name to enable 
-    multiple stacks to use the same name. This is enabled through the flag 
-    `@aws-cdk/core:enableStackNameDuplicates` in newly generated `cdk.json` files.
+    BREAKING CHANGE: (under feature flag) template file names for new projects created 
+    through "cdk init" will use the template artifact ID instead of the physical stack 
+    name to enable  multiple stacks to use the same name (feature flag: @aws-cdk/core:enableStackNameDuplicates)
     ```
 
 In the [next major version of the
