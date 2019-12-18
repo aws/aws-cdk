@@ -1,15 +1,17 @@
-import cxapi = require('@aws-cdk/cx-api');
-import childProcess = require('child_process');
-import colors = require('colors/safe');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as childProcess from 'child_process';
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import { error, print, warning } from './logging';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
@@ -142,6 +144,7 @@ export class InitTemplate {
 
     for (const file of files) {
       if (file.match(/^.*\.hook\.js$/)) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
         await invoke(targetDirectory);
       }
@@ -155,6 +158,7 @@ export class InitTemplate {
 
   private expand(template: string, project: ProjectInfo) {
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
              .replace(/%name\.camelCased%/g, camelCase(project.name))

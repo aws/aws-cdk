@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
@@ -19,6 +19,19 @@ const FIXED_RESULT = testAssembly({
     stackName: 'B',
     depends: ['A'],
     template: { resource: 'B' },
+  },
+  {
+    stackName: 'C',
+    depends: ['A'],
+    template: { resource: 'C'},
+    metadata: {
+      '/resource': [
+        {
+          type: cxapi.ERROR_METADATA_KEY,
+          data: 'this is an error'
+        }
+      ]
+    }
   }]
 });
 
@@ -80,6 +93,35 @@ export = {
 
     // THEN
     test.equals(1, exitCode);
+
+    test.done();
+  },
+
+  async 'throws an error during diffs on stack with error metadata'(test: Test) {
+    // GIVEN
+    const provisioner: IDeploymentTarget = {
+      async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
+        return {};
+      },
+      async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {
+        return { noOp: true, outputs: {}, stackArn: ''};
+      }
+    };
+    const toolkit = new CdkToolkit({ appStacks, provisioner });
+    const buffer = new StringWritable();
+
+    // WHEN
+    try {
+      const exitCode = await toolkit.diff({
+        stackNames: ['C'],
+        stream: buffer
+      });
+
+      // THEN
+      test.equals(1, exitCode);
+    } catch (e) {
+      test.ok(/Found errors/.test(e.toString()), 'Wrong error');
+    }
 
     test.done();
   },

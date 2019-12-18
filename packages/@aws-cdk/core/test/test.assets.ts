@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { FileAssetPackaging, Stack } from '../lib';
 import { toCloudFormation } from './util';

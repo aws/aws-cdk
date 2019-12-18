@@ -1,4 +1,4 @@
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration } from '@aws-cdk/core';
 
 const DEFAULT_TIMEOUT = Duration.minutes(30);

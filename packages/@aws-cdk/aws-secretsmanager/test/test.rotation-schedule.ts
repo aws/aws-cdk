@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import secretsmanager = require('../lib');
+import * as secretsmanager from '../lib';
 
 export = {
   'create a rotation schedule'(test: Test) {

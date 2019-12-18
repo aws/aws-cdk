@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import sqs = require('@aws-cdk/aws-sqs');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as iam from '@aws-cdk/aws-iam';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 

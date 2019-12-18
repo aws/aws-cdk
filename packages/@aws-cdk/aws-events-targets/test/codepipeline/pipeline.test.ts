@@ -1,9 +1,9 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnElement, Construct, Stack } from '@aws-cdk/core';
-import targets = require('../../lib');
+import * as targets from '../../lib';
 
 describe('CodePipeline event target', () => {
   let stack: Stack;
