@@ -1,7 +1,6 @@
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 
-import { Lazy } from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
@@ -254,8 +253,8 @@ export class VirtualNode extends VirtualNodeBase {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        backends: Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
+        backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
+        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

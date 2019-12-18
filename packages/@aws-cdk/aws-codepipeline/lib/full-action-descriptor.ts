@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { ActionArtifactBounds, ActionCategory, ActionConfig, IAction } from './action';
 import { Artifact } from './artifact';
 

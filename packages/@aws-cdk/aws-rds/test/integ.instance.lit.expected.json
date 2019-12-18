@@ -84,7 +84,13 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -175,7 +181,13 @@
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -947,7 +959,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4"
+            "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3Bucket26B8E770"
           },
           "S3Key": {
             "Fn::Join": [
@@ -960,7 +972,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4"
+                          "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE"
                         }
                       ]
                     }
@@ -973,7 +985,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4"
+                          "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE"
                         }
                       ]
                     }
@@ -1002,7 +1014,6 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "EvaluationPeriods": 1,
-        "Threshold": 90,
         "Dimensions": [
           {
             "Name": "DBInstanceIdentifier",
@@ -1014,7 +1025,8 @@
         "MetricName": "CPUUtilization",
         "Namespace": "AWS/RDS",
         "Period": 300,
-        "Statistic": "Average"
+        "Statistic": "Average",
+        "Threshold": 90
       }
     },
     "FunctionServiceRole675BB04A": {
@@ -1088,8 +1100,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3Bucket773E39E4": {"Type":"String","Description":"S3 bucket for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""},
-    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42S3VersionKey96D611D4": {"Type":"String","Description":"S3 key for asset version \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""},
-    "AssetParametersb23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42ArtifactHashD6C3B3DD": {"Type":"String","Description":"Artifact hash for asset \"b23e818e172b6771c5f4fde08381b8d0904b5760fcfcceee68523a83fff99c42\""}
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3Bucket26B8E770": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
+    },
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
+    },
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbArtifactHash1C8D5106": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
+    }
   }
 }

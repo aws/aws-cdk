@@ -1,8 +1,9 @@
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
+import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
 import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
@@ -31,8 +32,16 @@ export interface BaseApplicationListenerProps {
    * The certificates to use on this listener
    *
    * @default - No certificates.
+   * @deprecated Use the `certificates` property instead
    */
   readonly certificateArns?: string[];
+
+  /**
+   * Certificate list of ACM cert ARNs
+   *
+   * @default - No certificates.
+   */
+  readonly certificates?: IListenerCertificate[];
 
   /**
    * The security policy that defines which ciphers and protocols are supported.
@@ -115,7 +124,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true}),
+      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
       sslPolicy: props.sslPolicy,
@@ -128,6 +137,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     // Attach certificates
     if (props.certificateArns && props.certificateArns.length > 0) {
       this.addCertificateArns("ListenerCertificate", props.certificateArns);
+    }
+    if (props.certificates && props.certificates.length > 0) {
+      this.addCertificates("DefaultCertificates", props.certificates);
     }
 
     // This listener edits the securitygroup of the load balancer,
@@ -150,19 +162,32 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * After the first certificate, this creates ApplicationListenerCertificates
    * resources since cloudformation requires the certificates array on the
    * listener resource to have a length of 1.
+   *
+   * @deprecated Use `addCertificates` instead.
    */
   public addCertificateArns(id: string, arns: string[]): void {
-    const additionalCertArns = [...arns];
+    this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
+  }
 
-    if (this.certificateArns.length === 0 && additionalCertArns.length > 0) {
-      const first = additionalCertArns.splice(0, 1)[0];
-      this.certificateArns.push(first);
+  /**
+   * Add one or more certificates to this listener.
+   *
+   * After the first certificate, this creates ApplicationListenerCertificates
+   * resources since cloudformation requires the certificates array on the
+   * listener resource to have a length of 1.
+   */
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
+    const additionalCerts = [...certificates];
+
+    if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
+      const first = additionalCerts.splice(0, 1)[0];
+      this.certificateArns.push(first.certificateArn);
     }
 
-    if (additionalCertArns.length > 0) {
+    if (additionalCerts.length > 0) {
       new ApplicationListenerCertificate(this, id, {
         listener: this,
-        certificateArns: additionalCertArns
+        certificates: additionalCerts
       });
     }
   }
