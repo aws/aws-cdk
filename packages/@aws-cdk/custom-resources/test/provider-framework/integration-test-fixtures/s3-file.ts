@@ -1,11 +1,11 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, Stack } from '@aws-cdk/core';
-import path = require('path');
-import cr = require('../../../lib');
-import api = require('./s3-file-handler/api');
+import * as path from 'path';
+import * as cr from '../../../lib';
+import * as api from './s3-file-handler/api';
 
 interface S3FileProps {
   /**

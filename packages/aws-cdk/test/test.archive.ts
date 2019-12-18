@@ -1,9 +1,9 @@
 import { exec as _exec } from 'child_process';
-import fs = require('fs-extra');
-import jszip = require('jszip');
+import * as fs from 'fs-extra';
+import * as jszip from 'jszip';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
+import * as os from 'os';
+import * as path from 'path';
 import { promisify } from 'util';
 import { contentHash, zipDirectory } from '../lib/archive';
 const exec = promisify(_exec);

@@ -1,8 +1,8 @@
-import SDK = require('aws-sdk');
-import AWS = require('aws-sdk-mock');
-import fs = require('fs-extra');
-import nock = require('nock');
-import sinon = require('sinon');
+import * as SDK from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
+import * as fs from 'fs-extra';
+import * as nock from 'nock';
+import * as sinon from 'sinon';
 import { AwsSdkCall } from '../../lib';
 import { flatten, handler } from '../../lib/aws-custom-resource/runtime';
 

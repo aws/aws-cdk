@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
@@ -13,20 +13,11 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
-    "@types/node": "^10.17.6",
-    "@types/nodeunit": "^0.0.30",
     "conventional-changelog-cli": "^2.0.28",
     "fs-extra": "^8.1.0",
-    "jest": "^24.9.0",
     "jsii-diff": "^0.20.11",
     "jsii-pacmak": "^0.20.11",
     "lerna": "^3.18.4",
-    "nodeunit": "^0.11.3",
-    "nyc": "^14.1.1",
-    "standard-version": "^7.0.1",
-    "ts-jest": "^24.1.0",
-    "tslint": "^5.20.1",
     "typescript": "~3.7.3"
   },
   "repository": {

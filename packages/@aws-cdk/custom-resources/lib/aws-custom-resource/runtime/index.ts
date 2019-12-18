@@ -137,6 +137,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     console.log('Responding', responseBody);
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const parsedUrl = require('url').parse(event.ResponseURL);
     const requestOptions = {
       hostname: parsedUrl.hostname,
@@ -147,6 +148,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     return new Promise((resolve, reject) => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const request = require('https').request(requestOptions, resolve);
         request.on('error', reject);
         request.write(responseBody);

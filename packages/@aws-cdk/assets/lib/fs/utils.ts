@@ -1,6 +1,6 @@
-import fs = require('fs');
-import minimatch = require('minimatch');
-import path = require('path');
+import * as fs from 'fs';
+import * as minimatch from 'minimatch';
+import * as path from 'path';
 import { FollowMode } from './follow-mode';
 
 /**

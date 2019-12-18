@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { ISDK, Mode } from '../api';
 import { debug, print } from '../logging';
 import { ContextProviderPlugin } from './provider';
