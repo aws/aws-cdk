@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import route53 = require('../lib');
+import * as route53 from '../lib';
 
 export = {
   'with default ttl'(test: Test) {

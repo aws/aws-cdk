@@ -1,6 +1,6 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface TestStackArtifact {
   stackName: string;

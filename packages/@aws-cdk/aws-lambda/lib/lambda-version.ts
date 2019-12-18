@@ -1,4 +1,4 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Construct, Fn } from '@aws-cdk/core';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';

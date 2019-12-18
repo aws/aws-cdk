@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
 import { makeUniqueId } from './private/uniqueid';

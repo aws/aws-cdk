@@ -1,6 +1,6 @@
-import cxapi = require('@aws-cdk/cx-api');
-import aws = require('aws-sdk');
-import colors = require('colors/safe');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as aws from 'aws-sdk';
+import * as colors from 'colors/safe';
 import { contentHash } from '../archive';
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';

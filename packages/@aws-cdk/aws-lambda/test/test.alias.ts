@@ -1,8 +1,8 @@
 import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import lambda = require('../lib');
+import * as lambda from '../lib';
 
 export = {
   'version and aliases'(test: Test): void {

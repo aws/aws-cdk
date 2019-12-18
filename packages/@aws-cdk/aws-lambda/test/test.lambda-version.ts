@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import lambda = require('../lib');
+import * as lambda from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -30,6 +30,7 @@ export = {
 
     test.done();
   },
+<<<<<<< HEAD
 
   'create a version with event invoke config'(test: Test) {
     // GIVEN
@@ -113,4 +114,6 @@ export = {
 
     test.done();
   }
+=======
+>>>>>>> master
 };

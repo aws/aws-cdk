@@ -1,9 +1,9 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,

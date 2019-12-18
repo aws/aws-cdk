@@ -1,8 +1,8 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';

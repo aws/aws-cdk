@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import apig = require('@aws-cdk/aws-apigateway');
-import acm = require('@aws-cdk/aws-certificatemanager');
-import lambda = require('@aws-cdk/aws-lambda');
-import route53 = require('@aws-cdk/aws-route53');
+import * as apig from '@aws-cdk/aws-apigateway';
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as route53 from '@aws-cdk/aws-route53';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {

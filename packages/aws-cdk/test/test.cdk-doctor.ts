@@ -1,4 +1,4 @@
-import mockery = require('mockery');
+import * as mockery from 'mockery';
 import { ICallbackFunction, Test, testCase } from 'nodeunit';
 import { CommandHandler } from '../lib/command-api';
 
@@ -19,6 +19,7 @@ module.exports = testCase({
     async 'exits with 0 when everything is OK'(test: Test) {
       const argv: any = {};
       try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('../lib/commands/doctor').handler(argv);
         const result = await (argv.commandHandler as CommandHandler)({
           args: argv

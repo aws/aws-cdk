@@ -1,4 +1,4 @@
-import nodeunit = require('nodeunit');
+import * as nodeunit from 'nodeunit';
 import { toYAML } from '../lib/serialize';
 
 export = nodeunit.testCase({
