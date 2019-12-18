@@ -221,7 +221,7 @@ export class Input extends InputBase {
   ): IInput {
     const stack = Stack.of(scope);
     const inputName =
-      attrs.inputName || stack.parseArn(attrs.inputArn).resource;
+      attrs.inputName ?? stack.parseArn(attrs.inputArn).resource;
 
     class Import extends InputBase {
       public readonly inputArn = attrs.inputArn;

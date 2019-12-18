@@ -110,8 +110,7 @@ export interface DetectorModelAttributes {
  * @extends {Resource}
  * @implements {IDetectorModel}
  */
-abstract class DetectorModelBase extends Resource
-  implements IDetectorModel {
+abstract class DetectorModelBase extends Resource implements IDetectorModel {
   public abstract readonly detectorModelArn: string;
 
   public abstract readonly detectorModelName?: string;
@@ -187,7 +186,7 @@ export class DetectorModel extends DetectorModelBase {
   public constructor(scope: Construct, id: string, props?: DetectorModelProps) {
     super(scope, id);
     this.role =
-      (props && props.role) ||
+      props?.role ??
       new Role(this, "Role", {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
         assumedBy: new ServicePrincipal("iotevents.amazonaws.com"),
@@ -198,12 +197,11 @@ export class DetectorModel extends DetectorModelBase {
       this.initialState = props.entryPoint;
     }
     const resource = new CfnDetectorModel(this, "Resource", {
-      detectorModelDescription: props && props.description,
-      detectorModelName: props && props.detectorModelName,
+      detectorModelDescription: props?.description,
+      detectorModelName: props?.detectorModelName,
       detectorModelDefinition: {
         initialStateName: Lazy.stringValue({
-          produce: () =>
-            this.initialState ? this.initialState.name : undefined,
+          produce: () => this.initialState?.name,
         }),
         states: Lazy.anyValue({
           produce: () => {
@@ -226,10 +224,10 @@ export class DetectorModel extends DetectorModelBase {
           },
         }),
       },
-      key: (props && props.key) || "id",
-      roleArn: this.role ? this.role.roleArn : undefined,
+      key: props?.key ?? "id",
+      roleArn: this.role?.roleArn,
     });
-    this.detectorModelName = resource.detectorModelName || resource.ref;
+    this.detectorModelName = resource.detectorModelName ?? resource.ref;
     this.detectorModelArn = Arn.format(
       {
         service: "iotevents",
@@ -282,7 +280,7 @@ export class DetectorModel extends DetectorModelBase {
   ): IDetectorModel {
     const stack = Stack.of(scope);
     const detectorModelName =
-      attrs.detectorModelName ||
+      attrs.detectorModelName ??
       stack.parseArn(attrs.detectorModelArn).resource;
 
     const role = attrs.roleArn
