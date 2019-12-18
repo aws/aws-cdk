@@ -1,9 +1,9 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import ecr = require('@aws-cdk/aws-ecr');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 
 interface AdoptedRepositoryProps {
   /**

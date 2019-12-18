@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigw = require('../lib');
+import * as apigw from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 

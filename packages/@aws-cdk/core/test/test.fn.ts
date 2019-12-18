@@ -1,6 +1,6 @@
-import fc = require('fast-check');
-import _ = require('lodash');
-import nodeunit = require('nodeunit');
+import * as fc from 'fast-check';
+import * as _ from 'lodash';
+import * as nodeunit from 'nodeunit';
 import { App, CfnOutput, Fn, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 

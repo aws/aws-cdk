@@ -1,9 +1,9 @@
 // import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import s3n = require('../../lib');
+import * as s3n from '../../lib';
 
 test('lambda as notification target', () => {
   // GIVEN

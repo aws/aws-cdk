@@ -1,10 +1,10 @@
 // tslint:disable:max-line-length
-import child_process = require('child_process');
-import colors = require('colors');
-import fs = require('fs-extra');
-import reflect = require('jsii-reflect');
-import path = require('path');
-import yargs = require('yargs');
+import * as child_process from 'child_process';
+import * as colors from 'colors';
+import * as fs from 'fs-extra';
+import * as reflect from 'jsii-reflect';
+import * as path from 'path';
+import * as yargs from 'yargs';
 import { ALL_RULES_LINTER, DiagnosticLevel } from '../lib';
 
 let stackTrace = false;

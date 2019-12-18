@@ -1,7 +1,7 @@
-import childProcess = require('child_process');
-import colors = require('colors/safe');
-import process = require('process');
-import yargs = require('yargs');
+import * as childProcess from 'child_process';
+import * as colors from 'colors/safe';
+import * as process from 'process';
+import * as yargs from 'yargs';
 import { debug,  print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
 
