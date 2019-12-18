@@ -352,7 +352,7 @@ configured using the `stack.templateOptions` property:
 const stack = new Stack(app, 'StackName');
 
 stack.templateOptions.description = 'This will appear in the AWS console';
-stack.templateOptions.transform = 'AWS::Serverless';
+stack.templateOptions.transforms = ['AWS::Serverless-2016-10-31'];
 stack.templateOptions.metadata = {
   metadataKey: 'MetadataValue',
 };

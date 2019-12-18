@@ -1,5 +1,5 @@
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import iam = require('@aws-cdk/aws-iam');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
@@ -188,6 +188,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 export class Table extends Resource {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
+   * @deprecated Use {@link #grantTableListStreams} for more granular permission
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
@@ -451,7 +452,7 @@ export class Table extends Resource {
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
-  public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
@@ -474,12 +475,31 @@ export class Table extends Resource {
   }
 
   /**
-   * Permis an IAM principal all stream data read operations for this
+   * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: [
+        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*`})
+      ],
+    });
+  }
+
+  /**
+   * Permits an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
    * @param grantee The principal to grant access to
    */
-  public grantStreamRead(grantee: iam.IGrantable) {
+  public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
+    this.grantTableListStreams(grantee);
     return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
   }
 

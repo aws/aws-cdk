@@ -1,6 +1,6 @@
-import https = require('https');
+import * as https from 'https';
 import { parse as urlparse } from 'url';
-import consts = require('../../lib/provider-framework/runtime/consts');
+import * as consts from '../../lib/provider-framework/runtime/consts';
 
 export const MOCK_REQUEST = {
   ResponseURL: "http://pre-signed-S3-url-for-response/path/in/bucket",

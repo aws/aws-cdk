@@ -1,9 +1,9 @@
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import fs = require('fs');
-import path = require('path');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // don't use "require" since the typescript compiler emits errors since this
 // file is not listed in tsconfig.json.
@@ -149,7 +149,7 @@ export interface AwsCustomResourceProps {
   /**
    * The timeout for the Lambda function implementing this custom resource.
    *
-   * @default Duration.seconds(30)
+   * @default Duration.seconds(60)
    */
   readonly timeout?: cdk.Duration
 }
@@ -174,11 +174,11 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
-      timeout: props.timeout || cdk.Duration.seconds(30),
+      timeout: props.timeout || cdk.Duration.seconds(60),
       role: props.role,
     });
     this.grantPrincipal = provider.grantPrincipal;

@@ -1,5 +1,5 @@
-import cxapi = require('@aws-cdk/cx-api');
-import nodeunit = require('nodeunit');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as nodeunit from 'nodeunit';
 import { AppStacks, Tag } from '../lib/api/cxapp/stacks';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { DeployStackOptions, IDeploymentTarget, Template } from '../lib/api/deployment-target';

@@ -1,6 +1,6 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,

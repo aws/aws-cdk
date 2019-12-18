@@ -1,5 +1,6 @@
-import colors = require('colors/safe');
-import fs = require('fs-extra');
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
 import { format } from 'util';
 import { Mode } from './api/aws-auth/credentials';
 import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
@@ -10,9 +11,6 @@ import { ISDK } from './api/util/sdk';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
-
-// tslint:disable-next-line:no-var-requires
-const promptly = require('promptly');
 
 export interface CdkToolkitProps {
   /**
@@ -47,11 +45,13 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.AllStacks
     });
 
+    this.appStacks.processMetadata(stacks);
+
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
     const stream = options.stream || process.stderr;
 
-    let ret = 0;
+    let diffs = 0;
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.length !== 1) {
@@ -62,19 +62,17 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      ret = printStackDiff(template, stacks[0], strict, contextLines, options.stream);
+      diffs = printStackDiff(template, stacks[0], strict, contextLines, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
-        if (printStackDiff(currentTemplate, stack, !!options.strict, options.contextLines || 3, stream) !== 0) {
-          ret = 1;
-        }
+        diffs = printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
     }
 
-    return ret;
+    return diffs && options.fail ? 1 : 0;
   }
 
   public async deploy(options: DeployOptions) {
@@ -244,6 +242,13 @@ export interface DiffOptions {
    * @default stderr
    */
   stream?: NodeJS.WritableStream;
+
+  /**
+   * Whether to fail with exit code 1 in case of diff
+   *
+   * @default false
+   */
+  fail?: boolean;
 }
 
 export interface DeployOptions {

@@ -44,23 +44,26 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 ## Getting Started
 
-For day-to-day development and normal contributions, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
-with [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install) should be sufficient.
+For day-to-day development and normal contributions, the following SDKs and tools are required:
+ - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
+ - [Java OpenJDK 8](http://openjdk.java.net/install/)
+ - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
+ - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
+ - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+ 
+The basic commands to get the repository cloned and built locally follow:
 
 ```console
 $ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
+$ yarn install
 $ yarn build
 ```
 
-If you wish to produce language bindings through `pack.sh`, you will need the following toolchains
-installed, or use the Docker workflow.
-
- - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
- - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core 2.0](https://www.microsoft.com/net/download)
- - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
- - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+Alternatively, the [Full Docker build](#full-docker-build) workflow can be used so
+that you don't have to worry about installing all those tools on your local machine
+and instead only depend on having a working Docker install.
 
 ## Pull Requests
 
@@ -367,7 +370,7 @@ $ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
 In many cases, you don't really need to build the entire project. Say you want to work on the `@aws-cdk/aws-ec2` module:
 
 ```console
-$ ./install.sh
+$ yarn install
 $ cd packages/@aws-cdk/aws-ec2
 $ ../../../scripts/buildup
 ```
@@ -448,7 +451,7 @@ Guidelines:
  * Make sure dependencies are defined using [caret
    ranges](https://docs.npmjs.com/misc/semver#caret-ranges-123-025-004) (e.g. `^1.2.3`). This enables non-breaking
    updates to automatically be picked up.
- * Make sure `package-lock.json` files are included in your commit.
+ * Make sure `yarn.lock` is included in your commit.
 
 ### Finding dependency cycles between packages
 
@@ -471,7 +474,7 @@ Cycle: @aws-cdk/aws-sns => @aws-cdk/aws-lambda => @aws-cdk/aws-codecommit => @aw
 To update all dependencies (without bumping major versions):
 
 1. Obtain a fresh clone from "master".
-2. Run `./install.sh`
+2. Run `yarn install`
 3. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
 4. Submit a Pull Request.
 
