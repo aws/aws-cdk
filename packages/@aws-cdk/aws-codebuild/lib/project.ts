@@ -1461,5 +1461,10 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  PARAMETER_STORE = 'PARAMETER_STORE'
+  PARAMETER_STORE = 'PARAMETER_STORE',
+
+  /**
+   * An environment variable stored in AWS Secrets Manager.
+   */
+  SECRETS_MANAGER = 'SECRETS_MANAGER'
 }
