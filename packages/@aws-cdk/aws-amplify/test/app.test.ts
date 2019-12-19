@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
-import codebuild = require('@aws-cdk/aws-codebuild');
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import { SecretValue, Stack } from '@aws-cdk/core';
-import amplify = require('../lib');
+import * as amplify from '../lib';
 
 let stack: Stack;
 beforeEach(() => {

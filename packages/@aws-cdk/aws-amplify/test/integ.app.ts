@@ -1,5 +1,5 @@
 import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
-import amplify = require('../lib');
+import * as amplify from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

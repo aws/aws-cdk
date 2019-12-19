@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import amplify = require('../lib');
+import * as amplify from '../lib';
 
 test('create a domain', () => {
   // GIVEN

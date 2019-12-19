@@ -1,4 +1,4 @@
-import codebuild = require('@aws-cdk/aws-codebuild');
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnBranch } from './amplify.generated';
 import { IApp } from './app';
