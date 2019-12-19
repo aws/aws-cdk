@@ -94,13 +94,13 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = version;
-      public readonly qualifier = version;
       public readonly lambda = lambda;
       public readonly functionName = `${lambda.functionName}:${version}`;
       public readonly functionArn = versionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
 
+      protected readonly qualifier = version;
       protected readonly canCreatePermissions = false;
     }
     return new Import(scope, id);
@@ -109,13 +109,13 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = attrs.version;
-      public readonly qualifier = attrs.version;
       public readonly lambda = attrs.lambda;
       public readonly functionName = `${attrs.lambda.functionName}:${attrs.version}`;
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
 
+      protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = false;
     }
     return new Import(scope, id);
