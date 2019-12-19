@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
@@ -14,7 +15,7 @@ export = {
       new VpcEndpointService(stack, "EndpointService", {
         networkLoadBalancerArns: ["arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"],
         acceptanceRequired: false,
-        whitelistedPrincipalIds: []
+        whitelistedPrincipals: []
       });
 
       // THEN
@@ -41,7 +42,7 @@ export = {
       new VpcEndpointService(stack, "EndpointService", {
         networkLoadBalancerArns: ["arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"],
         acceptanceRequired: false,
-        whitelistedPrincipalIds: ["arn:aws:iam::123456789012:root"]
+        whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
       });
 
       // THEN
@@ -68,7 +69,7 @@ export = {
       new VpcEndpointService(stack, "EndpointService", {
         networkLoadBalancerArns: ["arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a"],
         acceptanceRequired: true,
-        whitelistedPrincipalIds: ["arn:aws:iam::123456789012:root"]
+        whitelistedPrincipals: [new ArnPrincipal("arn:aws:iam::123456789012:root")]
       });
 
       // THEN

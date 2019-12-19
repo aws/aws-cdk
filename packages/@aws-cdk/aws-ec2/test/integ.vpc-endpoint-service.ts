@@ -1,3 +1,4 @@
+import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
@@ -12,16 +13,16 @@ class VpcEndpointServiceStack extends cdk.Stack {
     new ec2.VpcEndpointService(this, "MyVpcEndpointServiceWithNoPrincipals", {
       networkLoadBalancerArns: [nlbArnNoPrincipals],
       acceptanceRequired: false,
-      whitelistedPrincipalIds: []
+      whitelistedPrincipals: []
     });
 
     const nlbArnWithPrincipals = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/1jd81k39sa421ffs";
-    const principalArn = "arn:aws:iam::123456789012:root";
+    const principalArn = new ArnPrincipal("arn:aws:iam::123456789012:root");
 
     new ec2.VpcEndpointService(this, "MyVpcEndpointServiceWithPrincipals", {
       networkLoadBalancerArns: [nlbArnWithPrincipals],
       acceptanceRequired: false,
-      whitelistedPrincipalIds: [principalArn]
+      whitelistedPrincipals: [principalArn]
     });
   }
 }
