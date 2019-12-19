@@ -299,14 +299,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly _k8sResourceHandler?: lambda.Function;
 
   /**
-   * The CloudFormation custom resource handler that can install Helm
-   * charts to this cluster.
-   *
-   * @internal
-   */
-  public readonly _helmChartHandler?: lambda.Function;
-
-  /**
    * The auto scaling group that hosts the default capacity for this cluster.
    * This will be `undefined` if the default capacity is set to 0.
    */
@@ -317,8 +309,10 @@ export class Cluster extends Resource implements ICluster {
    * automatically added by Amazon EKS to the `system:masters` RBAC group of the
    * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
    * IAM roles as administrators.
+   *
+   * @internal
    */
-  private readonly _defaultMastersRole?: iam.IRole;
+  public readonly _defaultMastersRole?: iam.IRole;
 
   /**
    * Manages the aws-auth config map.
@@ -409,7 +403,6 @@ export class Cluster extends Resource implements ICluster {
     // permissions and role are scoped. This will return `undefined` if kubectl
     // is not enabled for this cluster.
     this._k8sResourceHandler = this.createKubernetesResourceHandler();
-    this._helmChartHandler = this.createHelmChartHandler();
 
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
@@ -599,29 +592,6 @@ export class Cluster extends Resource implements ICluster {
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       layers: [ KubectlLayer.getOrCreate(this) ],
-      memorySize: 256,
-      environment: {
-        CLUSTER_NAME: this.clusterName,
-      },
-
-      // NOTE: we must use the default IAM role that's mapped to "system:masters"
-      // as the execution role of this custom resource handler. This is the only
-      // way to be able to interact with the cluster after it's been created.
-      role: this._defaultMastersRole,
-    });
-  }
-
-  private createHelmChartHandler() {
-    if (!this.kubectlEnabled) {
-      return undefined;
-    }
-
-    return new lambda.Function(this, 'HelmChartHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'helm-chart')),
-      runtime: lambda.Runtime.PYTHON_3_7,
-      handler: 'index.handler',
-      timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this, { version: "2.0.0-beta1" }) ],
       memorySize: 256,
       environment: {
         CLUSTER_NAME: this.clusterName,

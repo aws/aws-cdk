@@ -1,6 +1,9 @@
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Construct, Duration, Stack } from '@aws-cdk/core';
+import * as path from 'path';
 import { Cluster } from './cluster';
+import { KubectlLayer } from './kubectl-layer';
 
 /**
  * Helm Chart Properties.
@@ -65,7 +68,7 @@ export class HelmChart extends Construct {
     const stack = Stack.of(this);
 
     // we maintain a single manifest custom resource handler for each cluster
-    const handler = props.cluster._helmChartHandler;
+    const handler = this.getOrCreateHelmChartHandler(props.cluster);
     if (!handler) {
       throw new Error(`Cannot define a Helm chart on a cluster with kubectl disabled`);
     }
@@ -82,5 +85,32 @@ export class HelmChart extends Construct {
         Repository: props.repository
       }
     });
+  }
+
+  private getOrCreateHelmChartHandler(cluster: Cluster): lambda.IFunction | undefined {
+    if (!cluster.kubectlEnabled) {
+      return undefined;
+    }
+
+    let handler = cluster.node.tryFindChild('HelmChartHandler') as lambda.IFunction;
+    if (!handler) {
+      handler = new lambda.Function(cluster, 'HelmChartHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'helm-chart')),
+        runtime: lambda.Runtime.PYTHON_3_7,
+        handler: 'index.handler',
+        timeout: Duration.minutes(15),
+        layers: [ KubectlLayer.getOrCreate(this, { version: "2.0.0-beta1" }) ],
+        memorySize: 256,
+        environment: {
+          CLUSTER_NAME: cluster.clusterName,
+        },
+
+        // NOTE: we must use the default IAM role that's mapped to "system:masters"
+        // as the execution role of this custom resource handler. This is the only
+        // way to be able to interact with the cluster after it's been created.
+        role: cluster._defaultMastersRole,
+      });
+    }
+    return handler;
   }
 }

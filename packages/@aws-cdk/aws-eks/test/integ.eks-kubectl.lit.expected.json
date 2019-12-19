@@ -780,78 +780,6 @@
           "cluster22ResourceHandlerServiceRoleC2E4F327"
         ]
       },
-      "cluster22HelmChartHandler0BAF302E": {
-        "Type": "AWS::Lambda::Function",
-        "Properties": {
-          "Code": {
-            "S3Bucket": {
-              "Ref": "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3Bucket78C5F766"
-            },
-            "S3Key": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::Select": [
-                      0,
-                      {
-                        "Fn::Split": [
-                          "||",
-                          {
-                            "Ref": "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3VersionKey3A1BF439"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "Fn::Select": [
-                      1,
-                      {
-                        "Fn::Split": [
-                          "||",
-                          {
-                            "Ref": "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3VersionKey3A1BF439"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              ]
-            }
-          },
-          "Handler": "index.handler",
-          "Role": {
-            "Fn::GetAtt": [
-              "cluster22ResourceHandlerServiceRoleC2E4F327",
-              "Arn"
-            ]
-          },
-          "Runtime": "python3.7",
-          "Environment": {
-            "Variables": {
-              "CLUSTER_NAME": {
-                "Ref": "cluster227BD1CB20"
-              }
-            }
-          },
-          "Layers": [
-            {
-              "Fn::GetAtt": [
-                "kubectllayer200beta1B9303363",
-                "Outputs.LayerVersionArn"
-              ]
-            }
-          ],
-          "MemorySize": 256,
-          "Timeout": 900
-        },
-        "DependsOn": [
-          "cluster22ResourceHandlerServiceRoleDefaultPolicy1D33C3AC",
-          "cluster22ResourceHandlerServiceRoleC2E4F327"
-        ]
-      },
       "cluster22AwsAuthmanifest4685C84D": {
         "Type": "Custom::AWSCDK-EKS-KubernetesResource",
         "Properties": {
@@ -1199,18 +1127,6 @@
           }
         }
       },
-      "kubectllayer200beta1B9303363": {
-        "Type": "AWS::Serverless::Application",
-        "Properties": {
-          "Location": {
-            "ApplicationId": "arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl",
-            "SemanticVersion": "2.0.0-beta1"
-          },
-          "Parameters": {
-            "LayerName": "kubectl-aa3d1881d348da39094e6b1ce165f580"
-          }
-        }
-      },
       "AdminRole38563C57": {
         "Type": "AWS::IAM::Role",
         "Properties": {
@@ -1294,18 +1210,6 @@
       "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
         "Type": "String",
         "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
-      },
-      "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3Bucket78C5F766": {
-        "Type": "String",
-        "Description": "S3 bucket for asset \"dc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cb\""
-      },
-      "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbS3VersionKey3A1BF439": {
-        "Type": "String",
-        "Description": "S3 key for asset version \"dc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cb\""
-      },
-      "AssetParametersdc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cbArtifactHashFE09383B": {
-        "Type": "String",
-        "Description": "Artifact hash for asset \"dc097e4223cacdf713f4c3937f56aadec1c3005616f19831a22dcea77515d6cb\""
       },
       "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
         "Type": "AWS::SSM::Parameter::Value<String>",

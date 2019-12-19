@@ -55,9 +55,7 @@ def handler(event, context):
             with open(values_file, "w") as f:
                 f.write(json.dumps(values, indent=2))
 
-        if request_type == 'Create':
-            helm('install', name, chart, repository, values_file, namespace, version)
-        elif request_type == 'Update':
+        if request_type == 'Create' or request_type == 'Update':
             helm('upgrade', name, chart, repository, values_file, namespace, version)
         elif request_type == "Delete":
             try:
@@ -89,6 +87,8 @@ def helm(verb, name, chart = None, repo = None, file = None, namespace = None, v
         cmnd = ['helm', verb, name]
         if not chart is None:
             cmnd.append(chart)
+        if verb == 'upgrade':
+            cmnd.append('--install')
         if not repo is None:
             cmnd.extend(['--repo', repo])
         if not file is None:
@@ -99,6 +99,7 @@ def helm(verb, name, chart = None, repo = None, file = None, namespace = None, v
             cmnd.extend(['--namespace', namespace])
         cmnd.extend(['--kubeconfig', kubeconfig])
         output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
+        logger.info(output)
     except subprocess.CalledProcessError as exc:
         raise Exception(exc.output)
 
