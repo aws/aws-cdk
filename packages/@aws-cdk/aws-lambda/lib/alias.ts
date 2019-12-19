@@ -81,7 +81,6 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
     class Imported extends QualifiedFunctionBase implements IAlias {
       public readonly aliasName = attrs.aliasName;
-      public readonly qualifier = attrs.aliasName;
       public readonly version = attrs.aliasVersion;
       public readonly lambda = attrs.aliasVersion.lambda;
       public readonly functionArn = `${attrs.aliasVersion.lambda.functionArn}:${attrs.aliasName}`;
@@ -90,6 +89,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly role = attrs.aliasVersion.role;
 
       protected readonly canCreatePermissions = false;
+      protected readonly qualifier = attrs.aliasName;
     }
     return new Imported(scope, id);
   }
@@ -120,7 +120,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    */
   public readonly functionArn: string;
 
-  public readonly qualifier: string;
+  protected readonly qualifier: string;
 
   protected readonly canCreatePermissions: boolean = true;
 

@@ -333,11 +333,14 @@ export abstract class FunctionBase extends Resource implements IFunction {
 export abstract class QualifiedFunctionBase extends FunctionBase {
   public abstract readonly lambda: IFunction;
 
-  /**
-   * The version or alias of this function
-   */
-  public abstract readonly qualifier: string;
   public readonly permissionsNode = this.node;
+
+  /**
+   * The qualifier of the version or alias of this function.
+   * A qualifier is the identifier that's appended to a version or alias ARN.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunctionConfiguration.html#API_GetFunctionConfiguration_RequestParameters
+   */
+  protected abstract readonly qualifier: string;
 
   public get latestVersion() {
     return this.lambda.latestVersion;
