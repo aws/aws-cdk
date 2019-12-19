@@ -1,11 +1,11 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/core');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as lbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codedeploy = require('../../lib');
+import * as codedeploy from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 

@@ -1,4 +1,4 @@
-import ses = require('@aws-cdk/aws-ses');
+import * as ses from '@aws-cdk/aws-ses';
 
 /**
  * Construction properties for a add header action.

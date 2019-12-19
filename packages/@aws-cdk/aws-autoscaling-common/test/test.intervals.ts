@@ -1,6 +1,6 @@
-import fc = require('fast-check');
+import * as fc from 'fast-check';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { findAlarmThresholds, normalizeIntervals } from '../lib/interval-utils';
 import { arbitrary_complete_intervals } from './util';
 

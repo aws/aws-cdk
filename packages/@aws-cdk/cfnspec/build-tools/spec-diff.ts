@@ -1,8 +1,10 @@
-import fs = require('fs-extra');
-import util = require('util');
+import * as fs from 'fs-extra';
+import * as util from 'util';
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 // tslint:disable-next-line:no-var-requires
 const jsonDiff = require('json-diff').diff;
+/* eslint-enable */
 
 function line(fmt: string = '', ...param: any[]) {
   process.stdout.write(util.format(fmt, ...param));

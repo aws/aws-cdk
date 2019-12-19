@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { IAlarm } from "./alarm";
 import { IMetric } from "./metric-types";
 import { ConcreteWidget } from "./widget";

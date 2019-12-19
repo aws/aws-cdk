@@ -1,12 +1,11 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
+import * as ecs from '../../lib';
 import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
@@ -126,7 +125,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AWS_VPC
+        networkMode: ecs.NetworkMode.AWS_VPC
       });
 
       cluster.addDefaultCloudMapNamespace({
@@ -155,6 +154,9 @@ export = {
         healthCheckGracePeriod: cdk.Duration.seconds(60),
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY
+        },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
@@ -166,7 +168,7 @@ export = {
       });
 
       service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
-      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -179,6 +181,9 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 150,
           MinimumHealthyPercent: 55
+        },
+        DeploymentController: {
+          Type: ecs.DeploymentControllerType.CODE_DEPLOY
         },
         DesiredCount: 2,
         LaunchType: LaunchType.EC2,
@@ -416,7 +421,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.BRIDGE
+          networkMode: ecs.NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -446,7 +451,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.BRIDGE
+          networkMode: ecs.NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -476,7 +481,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AWS_VPC
+          networkMode: ecs.NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -524,7 +529,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AWS_VPC
+          networkMode: ecs.NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -655,7 +660,7 @@ export = {
         taskDefinition,
       });
 
-      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -670,7 +675,7 @@ export = {
 
     "can turn PlacementStrategy into json format"(test: Test) {
       // THEN
-      test.deepEqual(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE).toJson(), [{
+      test.deepEqual(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE).toJson(), [{
         type: 'spread',
         field: 'attribute:ecs.availability-zone'
       }]);
@@ -734,7 +739,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
       });
 
       test.done();
@@ -953,7 +958,7 @@ export = {
         taskDefinition,
       });
 
-      service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
+      service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -987,7 +992,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
+        service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
       });
 
       test.done();
@@ -1104,7 +1109,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -1132,7 +1137,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -1157,7 +1162,7 @@ export = {
 
     'correctly setting ingress and egress port': {
       'with bridge/NAT network mode and 0 host port'(test: Test) {
-        [NetworkMode.BRIDGE, NetworkMode.NAT].forEach((networkMode: NetworkMode) => {
+        [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1165,7 +1170,7 @@ export = {
           cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
           const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode });
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
             memoryLimitMiB: 512,
           });
           container.addPortMappings({ containerPort: 8000 });
@@ -1205,7 +1210,7 @@ export = {
       },
 
       'with bridge/NAT network mode and host port other than 0'(test: Test) {
-        [NetworkMode.BRIDGE, NetworkMode.NAT].forEach((networkMode: NetworkMode) => {
+        [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1213,7 +1218,7 @@ export = {
           cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
           const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode });
           const container = taskDefinition.addContainer('MainContainer', {
-            image: ContainerImage.fromRegistry('hello'),
+            image: ecs.ContainerImage.fromRegistry('hello'),
             memoryLimitMiB: 512,
           });
           container.addPortMappings({ containerPort: 8000 });
@@ -1260,7 +1265,7 @@ export = {
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.HOST });
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
           memoryLimitMiB: 512,
         });
         container.addPortMappings({ containerPort: 8000 });
@@ -1306,7 +1311,7 @@ export = {
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
         const container = taskDefinition.addContainer('MainContainer', {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
           memoryLimitMiB: 512,
         });
         container.addPortMappings({ containerPort: 8000 });
@@ -1354,7 +1359,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -1382,7 +1387,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', { networkMode: ecs.NetworkMode.NONE });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -1499,7 +1504,7 @@ export = {
       // default network mode is bridge
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1525,10 +1530,10 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.NONE
+        networkMode: ecs.NetworkMode.NONE
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1559,7 +1564,7 @@ export = {
       // default network mode is bridge
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1633,10 +1638,10 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.HOST
+        networkMode: ecs.NetworkMode.HOST
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1712,7 +1717,7 @@ export = {
       // default network mode is bridge
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1744,10 +1749,10 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AWS_VPC
+        networkMode: ecs.NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
@@ -1819,10 +1824,10 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AWS_VPC
+        networkMode: ecs.NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromRegistry('hello'),
+        image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
