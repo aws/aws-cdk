@@ -1,7 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Construct } from '@aws-cdk/core';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
-import { IVersion } from './lambda-version';
+import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 
 export interface IAlias extends IFunction {
@@ -21,7 +22,7 @@ export interface IAlias extends IFunction {
 /**
  * Properties for a new Lambda alias
  */
-export interface AliasProps {
+export interface AliasProps extends EventInvokeConfigOptions {
   /**
    * Description for the alias
    *
@@ -88,6 +89,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly role = attrs.aliasVersion.role;
 
       protected readonly canCreatePermissions = false;
+      protected readonly qualifier = attrs.aliasName;
     }
     return new Imported(scope, id);
   }
@@ -118,6 +120,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    */
   public readonly functionArn: string;
 
+  protected readonly qualifier: string;
+
   protected readonly canCreatePermissions: boolean = true;
 
   constructor(scope: Construct, id: string, props: AliasProps) {
@@ -144,6 +148,17 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       resourceName: `${this.lambda.functionName}:${this.physicalName}`,
       sep: ':',
     });
+
+    this.qualifier = extractQualifierFromArn(alias.ref);
+
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+      this.configureAsyncInvoke({
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
+      });
+    }
 
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur

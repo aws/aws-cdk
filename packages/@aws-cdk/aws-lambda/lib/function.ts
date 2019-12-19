@@ -5,6 +5,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -33,7 +34,7 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps {
+export interface FunctionProps extends EventInvokeConfigOptions {
   /**
    * The source code of your Lambda function. You can point to a file in an
    * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
@@ -494,6 +495,16 @@ export class Function extends FunctionBase {
     }
 
     props.code.bindToResource(resource);
+
+    // Event Invoke Config
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+      this.configureAsyncInvoke({
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
+      });
+    }
   }
 
   /**
@@ -542,14 +553,21 @@ export class Function extends FunctionBase {
    *  omit to skip validation.
    * @param description A description for this version.
    * @param provisionedExecutions A provisioned concurrency configuration for a function's version.
+   * @param asyncInvokeConfig configuration for this version when it is invoked asynchronously.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string, provisionedExecutions?: number): Version {
+  public addVersion(
+    name: string,
+    codeSha256?: string,
+    description?: string,
+    provisionedExecutions?: number,
+    asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
       provisionedConcurrentExecutions: provisionedExecutions,
+      ...asyncInvokeConfig,
     });
   }
 

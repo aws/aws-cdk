@@ -105,6 +105,7 @@
     "@aws-cdk/aws-kms": "1.19.0",
     "@aws-cdk/aws-lakeformation": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-lambda-destinations": "1.19.0",
     "@aws-cdk/aws-lambda-event-sources": "1.19.0",
     "@aws-cdk/aws-logs": "1.19.0",
     "@aws-cdk/aws-logs-destinations": "1.19.0",
