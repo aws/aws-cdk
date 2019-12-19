@@ -235,7 +235,7 @@ stack.partition;
 
 CloudFormation resources can also specify [resource
 attributes][cfn-resource-attributes]. The `CfnResource` class allows
-accessing those though the `cfnOptions` property:
+accessing those through the `cfnOptions` property:
 
 ```ts
 const rawBucket = new s3.CfnBucket(this, 'Bucket', { /* ... */ });
@@ -243,7 +243,7 @@ const rawBucket = new s3.CfnBucket(this, 'Bucket', { /* ... */ });
 const rawBucket = bucket.node.defaultChild as s3.CfnBucket;
 
 // then
-rawBucket.condition = new CfnCondition(this, 'EnableBucket', { /* ... */ });
+rawBucket.cfnOptions.condition = new CfnCondition(this, 'EnableBucket', { /* ... */ });
 rawBucket.cfnOptions.metadata = {
   metadataKey: 'MetadataValue',
 };
