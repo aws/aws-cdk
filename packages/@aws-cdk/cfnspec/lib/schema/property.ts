@@ -134,7 +134,7 @@ export function isUpdateType(str: string): str is UpdateType {
   }
 }
 
-export function isScalarPropery(prop: Property): prop is ScalarProperty {
+export function isScalarProperty(prop: Property): prop is ScalarProperty {
   return isPrimitiveProperty(prop)
     || isComplexProperty(prop)
     // A UnionProperty is only Scalar if it defines Types or PrimitiveTypes

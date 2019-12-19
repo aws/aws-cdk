@@ -1,8 +1,8 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs-extra');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
+import * as os from 'os';
+import * as path from 'path';
 import { availableInitTemplates, cliInit } from '../lib/init';
 
 const state: {
@@ -54,6 +54,18 @@ export = {
     // Check that package.json and bin/ got created in the current directory
     test.equal(true, await fs.pathExists('package.json'));
     test.equal(true, await fs.pathExists('bin'));
+    test.equal(true, await fs.pathExists('.git'));
+
+    test.done();
+  },
+
+  async '--generate-only should skip git init'(test: Test) {
+    await cliInit('app', 'javascript', false, true);
+
+    // Check that package.json and bin/ got created in the current directory
+    test.equal(true, await fs.pathExists('package.json'));
+    test.equal(true, await fs.pathExists('bin'));
+    test.equal(false, await fs.pathExists('.git'));
 
     test.done();
   },

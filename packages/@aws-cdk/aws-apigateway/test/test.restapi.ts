@@ -1,8 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigateway = require('../lib');
-import { CfnRestApi, JsonSchemaType, JsonSchemaVersion } from '../lib';
+import * as apigw from '../lib';
 
 // tslint:disable:max-line-length
 
@@ -12,7 +11,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'my-api');
+    const api = new apigw.RestApi(stack, 'my-api');
     api.root.addMethod('GET'); // must have at least one method
 
     // THEN
@@ -102,8 +101,8 @@ export = {
 
   'defaultChild is set correctly'(test: Test) {
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'my-api');
-    test.ok(api.node.defaultChild instanceof CfnRestApi);
+    const api = new apigw.RestApi(stack, 'my-api');
+    test.ok(api.node.defaultChild instanceof apigw.CfnRestApi);
     test.done();
   },
 
@@ -112,7 +111,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'restapi', {
+    const api = new apigw.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
     });
@@ -131,7 +130,7 @@ export = {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'my-stack');
-    const api = new apigateway.RestApi(stack, 'API');
+    const api = new apigw.RestApi(stack, 'API');
 
     // WHEN
     api.root.addResource('foo');
@@ -145,7 +144,7 @@ export = {
   '"addResource" can be used on "IRestApiResource" to form a tree'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'restapi', {
+    const api = new apigw.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
       restApiName: 'my-rest-api',
@@ -180,7 +179,7 @@ export = {
   '"addResource" allows configuration of proxy paths'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'restapi', {
+    const api = new apigw.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
       restApiName: 'my-rest-api',
@@ -202,7 +201,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    const api = new apigateway.RestApi(stack, 'restapi', { deploy: false, cloudWatchRole: false });
+    const api = new apigw.RestApi(stack, 'restapi', { deploy: false, cloudWatchRole: false });
     const r1 = api.root.addResource('r1');
 
     // WHEN
@@ -277,7 +276,7 @@ export = {
   'resourcePath returns the full path of the resource within the API'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'restapi');
+    const api = new apigw.RestApi(stack, 'restapi');
 
     // WHEN
     const r1 = api.root.addResource('r1');
@@ -299,7 +298,7 @@ export = {
   'resource path part validation'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'restapi');
+    const api = new apigw.RestApi(stack, 'restapi');
 
     // THEN
     test.throws(() => api.root.addResource('foo/'));
@@ -315,7 +314,7 @@ export = {
     const stack = new Stack();
 
     // THEN
-    test.throws(() => new apigateway.RestApi(stack, 'myapi', {
+    test.throws(() => new apigw.RestApi(stack, 'myapi', {
       deploy: false,
       deployOptions: { cachingEnabled: true }
     }), /Cannot set 'deployOptions' if 'deploy' is disabled/);
@@ -326,7 +325,7 @@ export = {
   'CloudWatch role is created for API Gateway'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'myapi');
+    const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
     // THEN
@@ -340,7 +339,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
+    const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
 
     // THEN
     test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
@@ -350,7 +349,7 @@ export = {
   '"url" and "urlForPath" return the URL endpoints of the deployed API'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'api');
+    const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
     // THEN
@@ -382,7 +381,7 @@ export = {
   '"urlForPath" would not work if there is no deployment'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'api', { deploy: false });
+    const api = new apigw.RestApi(stack, 'api', { deploy: false });
     api.root.addMethod('GET');
 
     // THEN
@@ -394,7 +393,7 @@ export = {
   '"urlForPath" requires that path will begin with "/"'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'api');
+    const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
     // THEN
@@ -405,7 +404,7 @@ export = {
   '"executeApiArn" returns the execute-api ARN for a resource/method'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'api');
+    const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
     // WHEN
@@ -429,7 +428,7 @@ export = {
   '"executeApiArn" path must begin with "/"'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'api');
+    const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
     // THEN
@@ -441,7 +440,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    const api = new apigateway.RestApi(stack, 'api');
+    const api = new apigw.RestApi(stack, 'api');
     const method = api.root.addMethod('ANY');
 
     // THEN
@@ -466,8 +465,8 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'api', {
-      endpointTypes: [ apigateway.EndpointType.EDGE, apigateway.EndpointType.PRIVATE ]
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ]
     });
 
     api.root.addMethod('GET');
@@ -487,10 +486,10 @@ export = {
   '"cloneFrom" can be used to clone an existing API'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cloneFrom = apigateway.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
+    const cloneFrom = apigw.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'api', {
+    const api = new apigw.RestApi(stack, 'api', {
       cloneFrom
     });
 
@@ -507,7 +506,7 @@ export = {
   'allow taking a dependency on the rest api (includes deployment and stage)'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'myapi');
+    const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
     const resource = new CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
@@ -532,16 +531,16 @@ export = {
   'defaultIntegration and defaultMethodOptions can be used at any level'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const rootInteg = new apigateway.AwsIntegration({
+    const rootInteg = new apigw.AwsIntegration({
       service: 's3',
       action: 'GetObject'
     });
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'myapi', {
+    const api = new apigw.RestApi(stack, 'myapi', {
       defaultIntegration: rootInteg,
       defaultMethodOptions: {
-        authorizationType: apigateway.AuthorizationType.IAM,
+        authorizationType: apigw.AuthorizationType.IAM,
       }
     });
 
@@ -554,14 +553,14 @@ export = {
     // "authorizationType" will be overridden to "None" instead of "IAM"
     child.addMethod('POST', undefined, {
       authorizer: { authorizerId: 'AUTHID' },
-      authorizationType: apigateway.AuthorizationType.CUSTOM
+      authorizationType: apigw.AuthorizationType.CUSTOM
     });
 
     const child2 = api.root.addResource('child2', {
-      defaultIntegration: new apigateway.MockIntegration(),
+      defaultIntegration: new apigw.MockIntegration(),
       defaultMethodOptions: {
         authorizer: { authorizerId: 'AUTHID2' },
-        authorizationType: apigateway.AuthorizationType.CUSTOM
+        authorizationType: apigw.AuthorizationType.CUSTOM
       }
     });
 
@@ -569,7 +568,7 @@ export = {
     child2.addMethod('DELETE');
 
     // CASE #4: same as case #3, but integration is customized
-    child2.addMethod('PUT', new apigateway.AwsIntegration({ action: 'foo', service: 'bar' }));
+    child2.addMethod('PUT', new apigw.AwsIntegration({ action: 'foo', service: 'bar' }));
 
     // THEN
 
@@ -612,16 +611,16 @@ export = {
   'addModel is supported'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'myapi');
+    const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('OPTIONS');
 
     // WHEN
     api.addModel('model', {
       schema: {
-        schema: JsonSchemaVersion.DRAFT4,
+        schema: apigw.JsonSchemaVersion.DRAFT4,
         title: "test",
-        type: JsonSchemaType.OBJECT,
-        properties: { message: { type: JsonSchemaType.STRING } }
+        type: apigw.JsonSchemaType.OBJECT,
+        properties: { message: { type: apigw.JsonSchemaType.STRING } }
       }
     });
 
@@ -642,7 +641,7 @@ export = {
   'addRequestValidator is supported'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const api = new apigateway.RestApi(stack, 'myapi');
+    const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('OPTIONS');
 
     // WHEN
@@ -679,7 +678,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'myapi', { endpointExportName: 'my-given-export-name' });
+    const api = new apigw.RestApi(stack, 'myapi', { endpointExportName: 'my-given-export-name' });
     api.root.addMethod('GET');
 
     // THEN
@@ -713,7 +712,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'myapi');
+    const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
     // THEN

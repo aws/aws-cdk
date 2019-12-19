@@ -1,5 +1,5 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/core');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as cdk from '@aws-cdk/core';
 import { CustomActionRegistration } from "../custom-action-registration";
 
 /**

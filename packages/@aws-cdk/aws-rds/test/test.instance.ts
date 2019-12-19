@@ -1,12 +1,12 @@
 import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import targets = require('@aws-cdk/aws-events-targets');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import lambda = require('@aws-cdk/aws-lambda');
-import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import rds = require('../lib');
+import * as rds from '../lib';
 
 export = {
   'create a DB instance'(test: Test) {

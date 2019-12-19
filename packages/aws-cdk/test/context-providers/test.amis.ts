@@ -1,6 +1,6 @@
-import aws = require('aws-sdk');
-import AWS = require('aws-sdk-mock');
-import nodeunit = require('nodeunit');
+import * as aws from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
+import * as nodeunit from 'nodeunit';
 import { ISDK } from '../../lib/api';
 import { AmiContextProviderPlugin } from '../../lib/context-providers/ami';
 

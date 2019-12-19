@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import { Code } from './code';
 import { Runtime } from './runtime';
 import { SingletonFunction } from './singleton-lambda';

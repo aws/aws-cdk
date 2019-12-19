@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -40,22 +40,24 @@
     "compat": "cdk-compat"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.18.0",
-    "@aws-cdk/aws-codebuild": "1.18.0",
-    "@aws-cdk/aws-codepipeline": "1.18.0",
-    "@aws-cdk/aws-codepipeline-actions": "1.18.0",
-    "@aws-cdk/aws-events": "1.18.0",
-    "@aws-cdk/aws-iam": "1.18.0",
-    "@aws-cdk/core": "1.18.0",
-    "@aws-cdk/cx-api": "1.18.0"
+    "@aws-cdk/aws-cloudformation": "1.19.0",
+    "@aws-cdk/aws-codebuild": "1.19.0",
+    "@aws-cdk/aws-codepipeline": "1.19.0",
+    "@aws-cdk/aws-codepipeline-actions": "1.19.0",
+    "@aws-cdk/aws-events": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/core": "1.19.0",
+    "@aws-cdk/cx-api": "1.19.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.18.0",
-    "@aws-cdk/aws-s3": "1.18.0",
-    "cdk-build-tools": "1.18.0",
-    "cdk-integ-tools": "1.18.0",
-    "fast-check": "^1.18.1",
-    "pkglint": "1.18.0"
+    "@aws-cdk/assert": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "fast-check": "^1.20.1",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "repository": {
     "type": "git",
@@ -74,14 +76,14 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.18.0",
-    "@aws-cdk/aws-codebuild": "1.18.0",
-    "@aws-cdk/aws-codepipeline": "1.18.0",
-    "@aws-cdk/aws-codepipeline-actions": "1.18.0",
-    "@aws-cdk/aws-events": "1.18.0",
-    "@aws-cdk/aws-iam": "1.18.0",
-    "@aws-cdk/core": "1.18.0",
-    "@aws-cdk/cx-api": "1.18.0"
+    "@aws-cdk/aws-cloudformation": "1.19.0",
+    "@aws-cdk/aws-codebuild": "1.19.0",
+    "@aws-cdk/aws-codepipeline": "1.19.0",
+    "@aws-cdk/aws-codepipeline-actions": "1.19.0",
+    "@aws-cdk/aws-events": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/core": "1.19.0",
+    "@aws-cdk/cx-api": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"

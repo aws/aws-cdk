@@ -1,6 +1,6 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import iam = require('@aws-cdk/aws-iam');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
@@ -1184,6 +1184,55 @@ export = {
       test.done();
     },
 
+    '"grantTableListStreams" should fail if streaming is not enabled on table"'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        }
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      test.throws(() => table.grantTableListStreams(user), /DynamoDB Streams must be enabled on the table my-table/);
+
+      test.done();
+    },
+
+    '"grantTableListStreams" allows principal to list all streams for this table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING
+        },
+        stream: StreamViewType.NEW_IMAGE
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      table.grantTableListStreams(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
+    },
+
     '"grantStreamRead" should fail if streaming is not enabled on table"'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -1220,6 +1269,11 @@ export = {
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/stream/*" ] ] }
+            },
             {
               "Action": [
                 "dynamodb:DescribeStream",
