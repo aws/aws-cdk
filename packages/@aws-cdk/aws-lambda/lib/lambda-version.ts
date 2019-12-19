@@ -125,8 +125,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly functionArn: string;
   public readonly functionName: string;
-  public readonly qualifier: string;
 
+  protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
 
   constructor(scope: Construct, id: string, props: VersionProps) {
