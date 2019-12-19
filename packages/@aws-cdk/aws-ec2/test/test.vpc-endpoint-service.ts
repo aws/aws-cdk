@@ -25,7 +25,7 @@ export = {
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: "EndpointService"
+          Ref: "EndpointServiceED36BE1F"
         },
         AllowedPrincipals: []
       }));
@@ -52,7 +52,7 @@ export = {
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: "EndpointService"
+          Ref: "EndpointServiceED36BE1F"
         },
         AllowedPrincipals: ["arn:aws:iam::123456789012:root"]
       }));
@@ -79,7 +79,7 @@ export = {
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: "EndpointService"
+          Ref: "EndpointServiceED36BE1F"
         },
         AllowedPrincipals: ["arn:aws:iam::123456789012:root"]
       }));
