@@ -553,6 +553,7 @@ export class Function extends FunctionBase {
    *  omit to skip validation.
    * @param description A description for this version.
    * @param provisionedExecutions A provisioned concurrency configuration for a function's version.
+   * @param asyncInvokeConfig configuration for this version when it is invoked asynchronously.
    * @returns A new Version object.
    */
   public addVersion(
