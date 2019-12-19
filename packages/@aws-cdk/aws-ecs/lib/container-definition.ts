@@ -42,7 +42,7 @@ export abstract class Secret {
  * Firelens log router type
  * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html
  */
-export enum FireLensRouterType {
+export enum FirelensLogRouterType {
   /**
    * fluentbit
    */
@@ -86,7 +86,7 @@ export interface FirelensConfig {
    * The log router to use
    * @default - fluentbit
    */
-  readonly type: FireLensRouterType;
+  readonly type: FirelensLogRouterType;
 
   /**
    * Firelens options

@@ -1,8 +1,8 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import ecs = require('../../lib');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as ecs from '../../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
@@ -41,7 +41,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
 taskDefinition.addContainer('log-router', {
   image: ecs.ContainerImage.fromRegistry('amazon/aws-for-fluent-bit'),
   firelensConfig: {
-    type: ecs.FireLensRouterType.FLUENTBIT,
+    type: ecs.FirelensLogRouterType.FLUENTBIT,
   },
   logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
   memoryReservationMiB: 50,

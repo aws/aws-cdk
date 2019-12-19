@@ -1304,7 +1304,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry("amazon/aws-for-fluent-bit"),
         taskDefinition,
         firelensConfig: {
-          type: ecs.FireLensRouterType.FLUENTBIT,
+          type: ecs.FirelensLogRouterType.FLUENTBIT,
         },
         memoryReservationMiB: 50,
       });
@@ -1335,7 +1335,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry("amazon/aws-for-fluent-bit"),
         taskDefinition,
         firelensConfig: {
-          type: ecs.FireLensRouterType.FLUENTBIT,
+          type: ecs.FirelensLogRouterType.FLUENTBIT,
           options: {
             enableECSLogMetadata: false,
             configFileType: 's3',
