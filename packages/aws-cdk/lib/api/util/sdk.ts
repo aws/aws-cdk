@@ -2,6 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
+import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
@@ -204,7 +205,6 @@ export class SDK implements ISDK {
     }
     if (options.caBundlePath) {
       debug('Using ca bundle path: %s', options.caBundlePath);
-      const https = require('https');
       httpOptions.agent = new https.Agent({ca: await readIfPossible(options.caBundlePath)});
     }
     config.httpOptions = httpOptions;
