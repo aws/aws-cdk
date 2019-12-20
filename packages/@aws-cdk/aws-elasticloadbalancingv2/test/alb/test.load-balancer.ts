@@ -271,7 +271,7 @@ export = {
 
   'imported load balancer with no vpc throws error when calling addTargets'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const albArn = 'myArn';
     const sg = new ec2.SecurityGroup(stack, "sg", {
@@ -292,7 +292,7 @@ export = {
 
   'imported load balancer with vpc does not throw error when calling addTargets'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const albArn = 'MyArn';
     const sg = new ec2.SecurityGroup(stack, 'sg', {
