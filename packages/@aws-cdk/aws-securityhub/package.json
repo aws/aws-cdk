@@ -62,6 +62,17 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.18.0",
@@ -71,7 +82,7 @@
   },
   "dependencies": {
     "@aws-cdk/core": "1.18.0",
-    "@aws-cdk/aws-events": "1.19.0"
+    "@aws-cdk/aws-events": "1.18.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "1.18.0",
