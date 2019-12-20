@@ -66,7 +66,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.19.0",
-    "@aws-cdk/aws-ec2": "1.19.0",
     "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
@@ -79,6 +78,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
     "@aws-cdk/aws-iam": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
     "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -87,6 +87,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "1.19.0",
     "@aws-cdk/aws-iam": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
     "@aws-cdk/core": "1.19.0"
   },
   "engines": {

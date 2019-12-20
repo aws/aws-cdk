@@ -1,3 +1,4 @@
+import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
@@ -117,6 +118,14 @@ export interface RestApiProps extends ResourceOptions {
   readonly endpointTypes?: EndpointType[];
 
   /**
+   * A list of the VPC Endpoints asscociated with the API. Use this property when creating
+   * a private API to generate Route53 alias DNS record which can be used to invoke the API.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/associate-private-api-with-vpc-endpoint.html
+   * @default - No VPC Endpoint.
+   */
+  readonly vpcEndpoints?: IVpcEndpoint[];
+
+  /**
    * Indicates whether to roll back the resource if a warning occurs while API
    * Gateway is creating the RestApi resource.
    *
@@ -226,6 +235,11 @@ export class RestApi extends Resource implements IRestApi {
       physicalName: props.restApiName || id,
     });
 
+    let vpcEndpointIds: string[] | undefined;
+    if (props.vpcEndpoints && props.vpcEndpoints.length > 0) {
+      vpcEndpointIds = props.vpcEndpoints.map(endpoint => endpoint.vpcEndpointId);
+    }
+
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
@@ -233,7 +247,7 @@ export class RestApi extends Resource implements IRestApi {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: props.endpointTypes ? { types: props.endpointTypes } : undefined,
+      endpointConfiguration: props.endpointTypes ? { types: props.endpointTypes, vpcEndpointIds } : undefined,
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters

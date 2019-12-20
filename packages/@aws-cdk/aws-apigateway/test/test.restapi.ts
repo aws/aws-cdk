@@ -1,4 +1,5 @@
 import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { InterfaceVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
@@ -466,7 +467,7 @@ export = {
 
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
-      endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ]
+      endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
     });
 
     api.root.addMethod('GET');
@@ -477,6 +478,36 @@ export = {
       Types: [
         "EDGE",
         "PRIVATE"
+      ]}
+    }));
+    test.done();
+  },
+
+  '"vpcEndpoints" can be used to specify endpoint configuration for the api'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpcEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack, "vpc-endpoint", {
+      vpcEndpointId: "vpce-1234",
+      port: 443,
+    });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {
+      endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+      vpcEndpoints: [ vpcEndpoint ],
+    });
+
+    api.root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+      EndpointConfiguration: {
+      Types: [
+        "EDGE",
+        "PRIVATE"
+      ],
+      VpcEndpointIds: [
+        "vpce-1234"
       ]
       }
     }));
