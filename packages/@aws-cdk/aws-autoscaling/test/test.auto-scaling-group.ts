@@ -1,11 +1,10 @@
 import {expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart} from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { Lazy } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import autoscaling = require('../lib');
+import * as autoscaling from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -23,7 +22,7 @@ export = {
     expect(stack).toMatch({
       "Parameters": {
         "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
-          "Type": "AWS::SSM::Parameter::Value<String>",
+          "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
           "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
         }
       },
@@ -170,9 +169,9 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minCapacity: Lazy.numberValue({ produce: () => 5 }),
-      maxCapacity: Lazy.numberValue({ produce: () => 1 }),
-      desiredCapacity: Lazy.numberValue({ produce: () => 20 }),
+      minCapacity: cdk.Lazy.numberValue({ produce: () => 5 }),
+      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
+      desiredCapacity: cdk.Lazy.numberValue({ produce: () => 20 }),
     });
 
     // THEN: no exception
@@ -693,7 +692,7 @@ export = {
     });
 
     // THEN
-    test.notEqual(asg.node.defaultChild, undefined);
+    test.ok(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup);
 
     test.done();
   },

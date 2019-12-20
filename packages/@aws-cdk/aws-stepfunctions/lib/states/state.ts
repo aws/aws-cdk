@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Condition } from '../condition';
 import { StateGraph } from '../state-graph';
 import { CatchProps, DISCARD, Errors, IChainable, INextable, RetryProps } from '../types';
@@ -126,6 +126,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     protected readonly outputPath?: string;
     protected readonly resultPath?: string;
     protected readonly branches: StateGraph[] = [];
+    protected iteration?: StateGraph;
     protected defaultChoice?: State;
 
     /**
@@ -210,6 +211,9 @@ export abstract class State extends cdk.Construct implements IChainable {
         for (const branch of this.branches) {
             branch.registerSuperGraph(this.containingGraph);
         }
+        if (!!this.iteration) {
+            this.iteration.registerSuperGraph(this.containingGraph);
+        }
     }
 
     /**
@@ -283,6 +287,16 @@ export abstract class State extends cdk.Construct implements IChainable {
     }
 
     /**
+     * Add a map iterator to this state
+     */
+    protected addIterator(iteration: StateGraph) {
+        this.iteration = iteration;
+        if (this.containingGraph) {
+            iteration.registerSuperGraph(this.containingGraph);
+        }
+    }
+
+    /**
      * Make the indicated state the default choice transition of this state
      */
     protected makeDefault(def: State) {
@@ -331,6 +345,18 @@ export abstract class State extends cdk.Construct implements IChainable {
     protected renderBranches(): any {
         return {
             Branches: this.branches.map(b => b.toGraphJson())
+        };
+    }
+
+    /**
+     * Render map iterator in ASL JSON format
+     */
+    protected renderIterator(): any {
+        if (!this.iteration) {
+            throw new Error(`Iterator must not be undefined !`);
+        }
+        return {
+            Iterator: this.iteration.toGraphJson()
         };
     }
 

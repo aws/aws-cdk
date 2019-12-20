@@ -1,8 +1,8 @@
 import { App, Stack } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { Staging } from '../lib';
 
 export = {
@@ -53,7 +53,8 @@ export = {
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
       'cdk.out',
       'manifest.json',
-      'stack.template.json'
+      'stack.template.json',
+      'tree.json',
     ]);
     test.done();
   }

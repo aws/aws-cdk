@@ -1,13 +1,14 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct';
+import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
+import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
-import { IResolvable } from './resolvable';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
@@ -131,7 +132,7 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string): IResolvable {
+  public getAtt(attributeName: string): Reference {
     return CfnReference.for(this, attributeName);
   }
 
@@ -140,10 +141,38 @@ export class CfnResource extends CfnRefElement {
    * property override, either use `addPropertyOverride` or prefix `path` with
    * "Properties." (i.e. `Properties.TopicName`).
    *
-   * @param path  The path of the property, you can use dot notation to
+   * If the override is nested, separate each nested level using a dot (.) in the path parameter.
+   * If there is an array as part of the nesting, specify the index in the path.
+   *
+   * For example,
+   * ```typescript
+   * addOverride('Properties.GlobalSecondaryIndexes.0.Projection.NonKeyAttributes', ['myattribute'])
+   * addOverride('Properties.GlobalSecondaryIndexes.1.ProjectionType', 'INCLUDE')
+   * ```
+   * would add the overrides
+   * ```json
+   * "Properties": {
+   *   "GlobalSecondaryIndexes": [
+   *     {
+   *       "Projection": {
+   *         "NonKeyAttributes": [ "myattribute" ]
+   *         ...
+   *       }
+   *       ...
+   *     },
+   *     {
+   *       "ProjectionType": "INCLUDE"
+   *       ...
+   *     },
+   *   ]
+   *   ...
+   * }
+   * ```
+   *
+   * @param path - The path of the property, you can use dot notation to
    *        override values in complex types. Any intermdediate keys
    *        will be created as needed.
-   * @param value The value. Could be primitive or complex.
+   * @param value - The value. Could be primitive or complex.
    */
   public addOverride(path: string, value: any) {
     const parts = path.split('.');
@@ -195,11 +224,14 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
-   * Indicates that this resource depends on another resource and cannot be provisioned
-   * unless the other resource has been successfully provisioned.
+   * Indicates that this resource depends on another resource and cannot be
+   * provisioned unless the other resource has been successfully provisioned.
+   *
+   * This can be used for resources across stacks (or nested stack) boundaries
+   * and the dependency will automatically be transferred to the relevant scope.
    */
-  public addDependsOn(resource: CfnResource) {
-    this.dependsOn.add(resource);
+  public addDependsOn(target: CfnResource) {
+    addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
   }
 
   /**
@@ -207,6 +239,20 @@ export class CfnResource extends CfnRefElement {
    */
   public toString() {
     return `${super.toString()} [${this.cfnResourceType}]`;
+  }
+
+  /**
+   * Called by the `addDependency` helper function in order to realize a direct
+   * dependency between two resources that are directly defined in the same
+   * stacks.
+   *
+   * Use `resource.addDependsOn` to define the dependency between two resources,
+   * which also takes stack boundaries into account.
+   *
+   * @internal
+   */
+  public _addResourceDependency(target: CfnResource) {
+    this.dependsOn.add(target);
   }
 
   /**

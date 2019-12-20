@@ -1,5 +1,4 @@
 import { CloudAssembly } from './cloud-assembly';
-import { Environment, EnvironmentUtils } from './environment';
 import {
   ERROR_METADATA_KEY,
   INFO_METADATA_KEY,
@@ -19,6 +18,11 @@ export enum ArtifactType {
    * The artifact is an AWS CloudFormation stack.
    */
   AWS_CLOUDFORMATION_STACK = 'aws:cloudformation:stack',
+
+  /**
+   * The artifact contains metadata generated out of the CDK application.
+   */
+  CDK_TREE = 'cdk:tree',
 }
 
 /**
@@ -33,7 +37,7 @@ export interface ArtifactManifest {
   /**
    * The environment into which this artifact is deployed.
    */
-  readonly environment: string; // format: aws://account/region
+  readonly environment?: string; // format: aws://account/region
 
   /**
    * Associated metadata.
@@ -64,6 +68,12 @@ export interface AwsCloudFormationStackProperties {
    * Values for CloudFormation stack parameters that should be passed when the stack is deployed.
    */
   readonly parameters?: { [id: string]: string };
+
+  /**
+   * The name to use for the CloudFormation stack.
+   * @default - name derived from artifact ID
+   */
+  readonly stackName?: string;
 }
 
 /**
@@ -75,14 +85,16 @@ export class CloudArtifact {
    * @param assembly The cloud assembly from which to load the artifact
    * @param id The artifact ID
    * @param artifact The artifact manifest
+   * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
    */
-  public static fromManifest(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact {
+  public static fromManifest(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact | undefined {
     switch (artifact.type) {
       case ArtifactType.AWS_CLOUDFORMATION_STACK:
         return new CloudFormationStackArtifact(assembly, id, artifact);
-
+      case ArtifactType.CDK_TREE:
+        return new TreeCloudArtifact(assembly, id, artifact);
       default:
-        throw new Error(`unsupported artifact type: ${artifact.type}`);
+        return undefined;
     }
   }
 
@@ -97,11 +109,6 @@ export class CloudArtifact {
   public readonly messages: SynthesisMessage[];
 
   /**
-   * The environment into which to deploy this artifact.
-   */
-  public readonly environment: Environment;
-
-  /**
    * IDs of all dependencies. Used when topologically sorting the artifacts within the cloud assembly.
    * @internal
    */
@@ -114,7 +121,6 @@ export class CloudArtifact {
 
   protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: ArtifactManifest) {
     this.manifest = manifest;
-    this.environment = EnvironmentUtils.parse(manifest.environment);
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
   }
@@ -182,3 +188,4 @@ export class CloudArtifact {
 
 // needs to be defined at the end to avoid a cyclic dependency
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
+import { TreeCloudArtifact } from './tree-cloud-artifact';

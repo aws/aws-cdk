@@ -83,7 +83,13 @@
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -174,7 +180,13 @@
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "VpcPublicSubnet2NATGateway9182C01D": {
@@ -507,6 +519,11 @@
         }
       }
     },
+    "L3TaskDefwebLogGroupC6E4A38A": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "L3TaskDefExecutionRole49AF0996": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -553,17 +570,9 @@
         ]
       }
     },
-    "L3TaskDefwebLogGroupC6E4A38A": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
-    },
     "L3Service616D5A93": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "L3TaskDef48D8ACB8"
-        },
         "Cluster": {
           "Ref": "FargateCluster7CCD5F93"
         },
@@ -572,8 +581,9 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
-        "LaunchType": "FARGATE",
+        "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
         "LoadBalancers": [
           {
             "ContainerName": "web",
@@ -583,7 +593,6 @@
             }
           }
         ],
-        "EnableECSManagedTags": false,
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "DISABLED",
@@ -604,6 +613,9 @@
               }
             ]
           }
+        },
+        "TaskDefinition": {
+          "Ref": "L3TaskDef48D8ACB8"
         }
       },
       "DependsOn": [
@@ -655,6 +667,22 @@
         "Fn::GetAtt": [
           "L3LB212FC0E0",
           "DNSName"
+        ]
+      }
+    },
+    "L3ServiceURL0F065F2D": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "L3LB212FC0E0",
+                "DNSName"
+              ]
+            }
+          ]
         ]
       }
     }

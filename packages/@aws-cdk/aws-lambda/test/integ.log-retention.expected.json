@@ -44,7 +44,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "OneWeekServiceRole05A6F9F8"
@@ -133,7 +133,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3BucketB81211B5"
+            "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3Bucket26B8E770"
           },
           "S3Key": {
             "Fn::Join": [
@@ -146,7 +146,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354"
+                          "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE"
                         }
                       ]
                     }
@@ -159,7 +159,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354"
+                          "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE"
                         }
                       ]
                     }
@@ -227,7 +227,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "OneMonthServiceRoleFBD1064F"
@@ -300,7 +300,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "OneYearServiceRole24D47762"
@@ -331,17 +331,17 @@
     }
   },
   "Parameters": {
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3BucketB81211B5": {
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3Bucket26B8E770": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-lambda-log-retention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+      "Description": "S3 bucket for asset \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
     },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354": {
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-lambda-log-retention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+      "Description": "S3 key for asset version \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
     },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeArtifactHash327647CC": {
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbArtifactHash1C8D5106": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"aws-cdk-lambda-log-retention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+      "Description": "Artifact hash for asset \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
     }
   }
 }

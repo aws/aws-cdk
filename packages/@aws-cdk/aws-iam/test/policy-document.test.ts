@@ -1,7 +1,9 @@
 import '@aws-cdk/assert/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
-import { Anyone, AnyPrincipal, CanonicalUserPrincipal, Effect, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
+import {
+  Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect, FederatedPrincipal,
+  IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal
+} from '../lib';
 
 describe('IAM polocy document', () => {
   test('the Permission class is a programming model for iam', () => {
@@ -71,10 +73,26 @@ describe('IAM polocy document', () => {
   test('Cannot combine Actions and NotActions', () => {
     expect(() => {
       new PolicyStatement({
-        actions: ['abc'],
-        notActions: ['def'],
+        actions: ['abc:def'],
+        notActions: ['abc:def'],
       });
     }).toThrow(/Cannot add 'NotActions' to policy statement if 'Actions' have been added/);
+  });
+
+  test('Throws with invalid actions', () => {
+    expect(() => {
+      new PolicyStatement({
+        actions: ['service:action', '*', 'service:acti*', 'in:val:id']
+      });
+    }).toThrow(/Action 'in:val:id' is invalid/);
+  });
+
+  test('Throws with invalid not actions', () => {
+    expect(() => {
+      new PolicyStatement({
+        notActions: ['service:action', '*', 'service:acti*', 'in:val:id']
+      });
+    }).toThrow(/Action 'in:val:id' is invalid/);
   });
 
   test('Cannot combine Resources and NotResources', () => {
@@ -229,9 +247,9 @@ describe('IAM polocy document', () => {
   test('statementCount returns the number of statement in the policy document', () => {
     const p = new PolicyDocument();
     expect(p.statementCount).toEqual(0);
-    p.addStatements(new PolicyStatement({ actions: ['action1'] }));
+    p.addStatements(new PolicyStatement({ actions: ['service:action1'] }));
     expect(p.statementCount).toEqual(1);
-    p.addStatements(new PolicyStatement({ actions: ['action2'] }));
+    p.addStatements(new PolicyStatement({ actions: ['service:action2'] }));
     expect(p.statementCount).toEqual(2);
   });
 
@@ -513,19 +531,19 @@ describe('IAM polocy document', () => {
     });
 
     // WHEN
-    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
-    doc.addStatements(new PolicyStatement({ actions: ['action2'], resources: ['resource2']}));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['service:action2'], resources: ['resource2']}));
 
     // THEN
     const stack = new Stack();
     expect(stack.resolve(doc)).toEqual({
       Version: '2012-10-17',
       Statement: [
-        { Action: 'action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },
-        { Action: 'action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' }
+        { Action: 'service:action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },
+        { Action: 'service:action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' }
       ],
     });
   });
@@ -534,7 +552,7 @@ describe('IAM polocy document', () => {
     const stack = new Stack();
 
     const s = new PolicyStatement();
-    s.addActions('action1', 'action2');
+    s.addActions('service:action1', 'service:action2');
     s.addAllResources();
     s.addArnPrincipal('arn');
     s.addCondition('key', { equals: 'value' });
@@ -544,7 +562,7 @@ describe('IAM polocy document', () => {
 
     const doc2 = new PolicyDocument();
     doc2.addStatements(new PolicyStatement({
-      actions: ['action1', 'action2'],
+      actions: ['service:action1', 'service:action2'],
       resources: ['*'],
       principals: [new ArnPrincipal('arn')],
       conditions: {

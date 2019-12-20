@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
     CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
@@ -668,7 +668,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const templateB = assembly.getStack(stackB.stackName).template;
+    const templateB = assembly.getStackByName(stackB.stackName).template;
 
     test.deepEqual(templateB, {
       Resources: {

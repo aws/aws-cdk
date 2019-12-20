@@ -1,7 +1,7 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import ecr = require('@aws-cdk/aws-ecr');
-import targets = require('@aws-cdk/aws-events-targets');
-import iam = require('@aws-cdk/aws-iam');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
@@ -41,6 +41,7 @@ export class EcrSourceAction extends Action {
   constructor(props: EcrSourceActionProps) {
     super({
       ...props,
+      resource: props.repository,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'ECR',
       artifactBounds: sourceArtifactBounds(),

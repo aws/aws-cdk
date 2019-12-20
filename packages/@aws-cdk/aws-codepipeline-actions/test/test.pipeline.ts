@@ -1,15 +1,15 @@
 import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import targets = require('@aws-cdk/aws-events-targets');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import sns = require('@aws-cdk/aws-sns');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cpactions = require('../lib');
+import * as cpactions from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -429,7 +429,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -789,7 +789,18 @@ export = {
               "Type": "S3",
               "Location": "replicationstackeplicationbucket2464cd5c33b386483b66",
               "EncryptionKey": {
-                "Id": "alias/replicationstacktencryptionalias043cb2f8ceac9da9c07c",
+                "Id": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":kms:us-west-1:123456789012:alias/ionstacktencryptionalias043cb2f8ceac9da9c07c",
+                    ],
+                  ],
+                },
                 "Type": "KMS"
               },
             },
@@ -873,7 +884,6 @@ export = {
                 actionName: 'CodeBuild',
                 project,
                 input: sourceOutput,
-                outputs: [new codepipeline.Artifact()],
               }),
             ],
           },
@@ -922,9 +932,6 @@ export = {
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*",
               ],
               "Effect": "Allow",
               "Resource": [
@@ -958,9 +965,6 @@ export = {
               "Action": [
                 "kms:Decrypt",
                 "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
               ],
               "Effect": "Allow",
               "Resource": "*",

@@ -12,5 +12,12 @@ dist
 *.snk
 
 !lib/init-templates/*/*/tsconfig.json
+!test/integ/cli/**/*.js
+!test/integ/run-wrappers/dist
 
 *.tsbuildinfo
+
+tsconfig.json
+
+# init templates include default tsconfig.json files which we need
+!lib/init-templates/**/tsconfig.json

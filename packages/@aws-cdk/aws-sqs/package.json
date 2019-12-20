@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-sqs",
-  "version": "1.8.0",
+  "version": "1.19.0",
   "description": "CDK Constructs for AWS SQS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.sqs",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sqs",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "sqs"
         }
       },
       "dotnet": {
@@ -20,8 +19,7 @@
         "packageId": "Amazon.CDK.AWS.SQS",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-sqs",
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::SQS"
@@ -63,27 +62,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/aws-s3": "^1.8.0",
-    "aws-sdk": "^2.531.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "aws-sdk": "^2.590.0",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -91,7 +91,12 @@
   "awslint": {
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-sqs.QueueBase",
-      "props-physical-name:@aws-cdk/aws-sqs.QueuePolicyProps"
+      "props-physical-name:@aws-cdk/aws-sqs.QueuePolicyProps",
+      "docs-public-apis:@aws-cdk/aws-sqs.Queue.fromQueueArn",
+      "docs-public-apis:@aws-cdk/aws-sqs.IQueue",
+      "props-default-doc:@aws-cdk/aws-sqs.QueueAttributes.keyArn",
+      "props-default-doc:@aws-cdk/aws-sqs.QueueAttributes.queueUrl",
+      "docs-public-apis:@aws-cdk/aws-sqs.QueuePolicyProps"
     ]
   },
   "stability": "stable"

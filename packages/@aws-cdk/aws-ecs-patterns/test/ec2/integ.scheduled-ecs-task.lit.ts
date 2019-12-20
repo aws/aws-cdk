@@ -1,7 +1,7 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
 
 import { ScheduledEc2Task } from '../../lib';
 
@@ -22,11 +22,13 @@ class EventStack extends cdk.Stack {
     // Create the scheduled task
     new ScheduledEc2Task(this, 'ScheduledEc2Task', {
       cluster,
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        cpu: 1,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
       desiredTaskCount: 2,
-      memoryLimitMiB: 512,
-      cpu: 1,
-      environment: { TRIGGER: 'CloudWatch Events' },
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
     /// !hide

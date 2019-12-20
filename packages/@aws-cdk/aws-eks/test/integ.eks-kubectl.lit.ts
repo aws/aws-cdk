@@ -1,7 +1,7 @@
 /// !cdk-integ *
 
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct } from '@aws-cdk/core';
 import { Cluster } from '../lib';
 import { TestStack } from './util';
@@ -17,7 +17,6 @@ class VpcStack extends TestStack {
 
 class ClusterStack extends TestStack {
   public readonly cluster: Cluster;
-  public readonly instanceRoleExportName: string;
 
   constructor(scope: Construct, id: string, props: { vpc: ec2.Vpc }) {
     super(scope, id);

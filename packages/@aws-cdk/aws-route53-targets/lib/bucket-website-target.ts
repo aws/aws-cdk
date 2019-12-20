@@ -1,5 +1,5 @@
-import route53 = require('@aws-cdk/aws-route53');
-import s3 = require('@aws-cdk/aws-s3');
+import * as route53 from '@aws-cdk/aws-route53';
+import * as s3 from '@aws-cdk/aws-s3';
 import {Stack, Token} from '@aws-cdk/core';
 import {RegionInfo} from '@aws-cdk/region-info';
 
@@ -21,15 +21,12 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
       ].join(' '));
     }
 
-    const hostedZoneId = RegionInfo.get(region).s3StaticWebsiteHostedZoneId;
+    const {s3StaticWebsiteHostedZoneId: hostedZoneId, s3StaticWebsiteEndpoint: dnsName} = RegionInfo.get(region);
 
-    if (!hostedZoneId) {
+    if (!hostedZoneId || !dnsName) {
       throw new Error(`Bucket website target is not supported for the "${region}" region`);
     }
 
-    return {
-      hostedZoneId,
-      dnsName: this.bucket.bucketWebsiteDomainName,
-    };
+    return {hostedZoneId, dnsName};
   }
 }

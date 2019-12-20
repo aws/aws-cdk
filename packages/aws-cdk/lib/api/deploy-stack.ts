@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import aws = require('aws-sdk');
-import colors = require('colors/safe');
-import uuid = require('uuid');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as aws from 'aws-sdk';
+import * as colors from 'colors/safe';
+import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
@@ -31,11 +31,18 @@ export interface DeployStackOptions {
   sdk: ISDK;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
+  notificationArns?: string[];
   deployName?: string;
   quiet?: boolean;
   ci?: boolean;
   reuseAssets?: string[];
   tags?: Tag[];
+
+  /**
+   * Whether to execute the changeset or leave it in review.
+   * @default true
+   */
+  execute?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -43,12 +50,12 @@ const LARGE_TEMPLATE_SIZE_KB = 50;
 /** @experimental */
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
   if (!options.stack.environment) {
-    throw new Error(`The stack ${options.stack.name} does not have an environment`);
+    throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
   }
 
   const params = await prepareAssets(options.stack, options.toolkitInfo, options.ci, options.reuseAssets);
 
-  const deployName = options.deployName || options.stack.name;
+  const deployName = options.deployName || options.stack.stackName;
 
   const executionId = uuid.v4();
 
@@ -78,6 +85,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     TemplateURL: bodyParameter.TemplateURL,
     Parameters: params,
     RoleARN: options.roleArn,
+    NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
     Tags: options.tags
   }).promise();
@@ -90,14 +98,21 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
   }
 
-  debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
-  await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-  // tslint:disable-next-line:max-line-length
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
-  debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
-  await waitForStack(cfn, deployName);
-  if (monitor) { await monitor.stop(); }
-  debug('Stack %s has completed updating', deployName);
+  const execute = options.execute === undefined ? true : options.execute;
+  if (execute) {
+    debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
+    await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
+    // tslint:disable-next-line:max-line-length
+    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
+    debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
+    await waitForStack(cfn, deployName);
+    if (monitor) {
+      await monitor.stop();
+    }
+    debug('Stack %s has completed updating', deployName);
+  } else {
+    print(`Changeset %s created and waiting in review for manual execution (--no-execute)`, changeSetName);
+  }
   return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
 
@@ -125,7 +140,7 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
 async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
   const templateJson = toYAML(stack.template);
   if (toolkitInfo) {
-    const s3KeyPrefix = `cdk/${stack.name}/`;
+    const s3KeyPrefix = `cdk/${stack.id}/`;
     const s3KeySuffix = '.yml';
     const { key } = await toolkitInfo.uploadIfChanged(templateJson, {
       s3KeyPrefix, s3KeySuffix, contentType: 'application/x-yaml'
@@ -135,7 +150,7 @@ async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolk
     return { TemplateURL: templateURL };
   } else if (templateJson.length > LARGE_TEMPLATE_SIZE_KB * 1024) {
     error(
-      `The template for stack "${stack.name}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
+      `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
       'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
       colors.blue(`\t$ cdk bootstrap ${stack.environment!.name}\n`));
@@ -158,10 +173,10 @@ export interface DestroyStackOptions {
 /** @experimental */
 export async function destroyStack(options: DestroyStackOptions) {
   if (!options.stack.environment) {
-    throw new Error(`The stack ${options.stack.name} does not have an environment`);
+    throw new Error(`The stack ${options.stack.displayName} does not have an environment`);
   }
 
-  const deployName = options.deployName || options.stack.name;
+  const deployName = options.deployName || options.stack.stackName;
   const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
   if (!await stackExists(cfn, deployName)) {
     return;

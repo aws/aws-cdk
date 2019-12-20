@@ -4,17 +4,23 @@
 #------------------------------------------------------------------
 set -e
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/../common/util.bash
+source ${scriptdir}/common.bash
 
-prepare_toolkit
-preload_npm_packages
+header Javascript
 
 #------------------------------------------------------------------
 
-for template in app sample-app; do
-    echo "Trying template $template"
-    cd $(mktemp -d)
+if [[ "${1:-}" == "" ]]; then
+    templates="app sample-app"
+else
+    templates="$@"
+fi
+
+for template in $templates; do
+    echo "Trying Javascript template $template"
+
+    setup
+
     cdk init -l javascript -t $template
-    npm ls # this will fail if we have unmet peer dependencies
     cdk synth
 done

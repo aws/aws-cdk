@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-s3",
-  "version": "1.8.0",
+  "version": "1.19.0",
   "description": "CDK Constructs for AWS S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.s3",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "s3"
         }
       },
       "dotnet": {
@@ -20,8 +19,7 @@
         "packageId": "Amazon.CDK.AWS.S3",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-s3",
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::S3"
@@ -63,24 +62,26 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-events": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "^1.8.0",
-    "@aws-cdk/aws-iam": "^1.8.0",
-    "@aws-cdk/aws-kms": "^1.8.0",
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/aws-events": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-kms": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
@@ -88,7 +89,50 @@
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-s3.BucketPolicyProps",
-      "no-unused-type:@aws-cdk/aws-s3.Location"
+      "no-unused-type:@aws-cdk/aws-s3.Location",
+      "props-default-doc:@aws-cdk/aws-s3.BucketAttributes.bucketDualStackDomainName",
+      "docs-public-apis:@aws-cdk/aws-s3.RedirectProtocol.HTTPS",
+      "docs-public-apis:@aws-cdk/aws-s3.RedirectProtocol.HTTP",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccess",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccess.BLOCK_ACLS",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccess.BLOCK_ALL",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccess.blockPublicAcls",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccess.blockPublicPolicy",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccess.ignorePublicAcls",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccess.restrictPublicBuckets",
+      "docs-public-apis:@aws-cdk/aws-s3.Bucket.fromBucketArn",
+      "docs-public-apis:@aws-cdk/aws-s3.Bucket.fromBucketName",
+      "docs-public-apis:@aws-cdk/aws-s3.ReplaceKey",
+      "docs-public-apis:@aws-cdk/aws-s3.ReplaceKey.prefixWithKey",
+      "docs-public-apis:@aws-cdk/aws-s3.ReplaceKey.withKey",
+      "docs-public-apis:@aws-cdk/aws-s3.StorageClass.value",
+      "docs-public-apis:@aws-cdk/aws-s3.StorageClass.toString",
+      "docs-public-apis:@aws-cdk/aws-s3.BlockPublicAccessOptions",
+      "props-default-doc:@aws-cdk/aws-s3.BlockPublicAccessOptions.blockPublicAcls",
+      "props-default-doc:@aws-cdk/aws-s3.BlockPublicAccessOptions.blockPublicPolicy",
+      "props-default-doc:@aws-cdk/aws-s3.BlockPublicAccessOptions.ignorePublicAcls",
+      "props-default-doc:@aws-cdk/aws-s3.BlockPublicAccessOptions.restrictPublicBuckets",
+      "props-default-doc:@aws-cdk/aws-s3.BucketAttributes.bucketArn",
+      "docs-public-apis:@aws-cdk/aws-s3.BucketNotificationDestinationType.TOPIC",
+      "props-default-doc:@aws-cdk/aws-s3.BucketAttributes.bucketName",
+      "props-default-doc:@aws-cdk/aws-s3.BucketAttributes.bucketRegionalDomainName",
+      "docs-public-apis:@aws-cdk/aws-s3.BucketAttributes.encryptionKey",
+      "props-default-doc:@aws-cdk/aws-s3.BucketAttributes.encryptionKey",
+      "props-default-doc:@aws-cdk/aws-s3.BucketMetrics.prefix",
+      "props-default-doc:@aws-cdk/aws-s3.BucketMetrics.tagFilters",
+      "props-default-doc:@aws-cdk/aws-s3.BucketNotificationDestinationConfig.dependencies",
+      "docs-public-apis:@aws-cdk/aws-s3.BucketPolicyProps",
+      "docs-public-apis:@aws-cdk/aws-s3.BucketProps",
+      "docs-public-apis:@aws-cdk/aws-s3.IBucket",
+      "props-default-doc:@aws-cdk/aws-s3.LifecycleRule.id",
+      "props-default-doc:@aws-cdk/aws-s3.LifecycleRule.noncurrentVersionTransitions",
+      "props-default-doc:@aws-cdk/aws-s3.Location.objectVersion",
+      "docs-public-apis:@aws-cdk/aws-s3.NotificationKeyFilter",
+      "props-default-doc:@aws-cdk/aws-s3.NotificationKeyFilter.prefix",
+      "props-default-doc:@aws-cdk/aws-s3.NotificationKeyFilter.suffix",
+      "docs-public-apis:@aws-cdk/aws-s3.RoutingRuleCondition",
+      "docs-public-apis:@aws-cdk/aws-s3.BucketNotificationDestinationType.LAMBDA",
+      "docs-public-apis:@aws-cdk/aws-s3.BucketNotificationDestinationType.QUEUE"
     ]
   },
   "stability": "stable"

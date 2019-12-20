@@ -1,7 +1,7 @@
-import sns = require('@aws-cdk/aws-sns');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import tasks = require('../lib');
+import * as sns from '@aws-cdk/aws-sns';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 test('Publish literal message to SNS topic', () => {
   // GIVEN
@@ -16,7 +16,18 @@ test('Publish literal message to SNS topic', () => {
   // THEN
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sns:publish',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sns:publish",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       TopicArn: { Ref: 'TopicBFC7AF6E' },
@@ -42,7 +53,18 @@ test('Publish JSON to SNS topic with task token', () => {
   // THEN
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sns:publish.waitForTaskToken',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sns:publish.waitForTaskToken",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       TopicArn: { Ref: 'TopicBFC7AF6E' },
@@ -81,7 +103,18 @@ test('Publish to topic with ARN from payload', () => {
   // THEN
   expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
-    Resource: 'arn:aws:states:::sns:publish',
+    Resource: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            Ref: "AWS::Partition",
+          },
+          ":states:::sns:publish",
+        ],
+      ],
+    },
     End: true,
     Parameters: {
       'TopicArn.$': '$.topicArn',

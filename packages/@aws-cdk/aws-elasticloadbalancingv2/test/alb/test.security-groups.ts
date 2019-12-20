@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -281,7 +281,7 @@ class TestFixture {
   public readonly stack: cdk.Stack;
   public readonly vpc: ec2.Vpc;
   public readonly lb: elbv2.ApplicationLoadBalancer;
-  public readonly listener: elbv2.ApplicationListener;
+  public readonly _listener: elbv2.ApplicationListener | undefined;
 
   constructor(createListener?: boolean) {
     this.app = new cdk.App();
@@ -293,7 +293,12 @@ class TestFixture {
 
     createListener = createListener === undefined ? true : createListener;
     if (createListener) {
-      this.listener = this.lb.addListener('Listener', { port: 80, open: false });
+      this._listener = this.lb.addListener('Listener', { port: 80, open: false });
     }
+  }
+
+  public get listener(): elbv2.ApplicationListener {
+    if (this._listener === undefined) { throw new Error('Did not create a listener'); }
+    return this._listener;
   }
 }

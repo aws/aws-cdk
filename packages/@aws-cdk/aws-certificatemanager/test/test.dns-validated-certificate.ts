@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -32,7 +32,7 @@ export = {
     }));
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       Handler: 'index.certificateRequestHandler',
-      Runtime: 'nodejs8.10',
+      Runtime: 'nodejs10.x',
       Timeout: 900,
     }));
     expect(stack).to(haveResource('AWS::IAM::Policy', {

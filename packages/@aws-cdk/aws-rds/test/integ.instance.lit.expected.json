@@ -84,7 +84,13 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -175,7 +181,13 @@
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -947,7 +959,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3BucketB81211B5"
+            "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3Bucket26B8E770"
           },
           "S3Key": {
             "Fn::Join": [
@@ -960,7 +972,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354"
+                          "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE"
                         }
                       ]
                     }
@@ -973,7 +985,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354"
+                          "Ref": "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE"
                         }
                       ]
                     }
@@ -1002,7 +1014,6 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "EvaluationPeriods": 1,
-        "Threshold": 90,
         "Dimensions": [
           {
             "Name": "DBInstanceIdentifier",
@@ -1014,7 +1025,8 @@
         "MetricName": "CPUUtilization",
         "Namespace": "AWS/RDS",
         "Period": 300,
-        "Statistic": "Average"
+        "Statistic": "Average",
+        "Threshold": 90
       }
     },
     "FunctionServiceRole675BB04A": {
@@ -1061,7 +1073,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "FunctionServiceRole675BB04A"
@@ -1088,17 +1100,17 @@
     }
   },
   "Parameters": {
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3BucketB81211B5": {
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3Bucket26B8E770": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+      "Description": "S3 bucket for asset \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
     },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354": {
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbS3VersionKey8B860BBE": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+      "Description": "S3 key for asset version \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
     },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeArtifactHash327647CC": {
+    "AssetParameters66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfbArtifactHash1C8D5106": {
       "Type": "String",
-      "Description":"Artifact hash for asset \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+      "Description": "Artifact hash for asset \"66b36b09a60a9569c7e68ece07c423f900fda09bfebf230559a4dc2b24562cfb\""
     }
   }
 }

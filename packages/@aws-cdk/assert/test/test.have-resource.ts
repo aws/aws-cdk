@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { writeFileSync } from 'fs';
 import { Test } from 'nodeunit';
 import { join } from 'path';
@@ -103,5 +103,5 @@ function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   });
 
   writeFileSync(join(assembly.outdir, 'template.json'), JSON.stringify(template));
-  return assembly.buildAssembly().getStack('test');
+  return assembly.buildAssembly().getStackByName('test');
 }

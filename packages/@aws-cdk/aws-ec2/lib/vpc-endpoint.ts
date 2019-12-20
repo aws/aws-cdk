@@ -1,9 +1,10 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
+import { Peer } from './peer';
 import { Port } from './port';
-import { SecurityGroup } from './security-group';
+import { ISecurityGroup, SecurityGroup } from './security-group';
 import { allRouteTableIds } from './util';
 import { IVpc, SubnetSelection, SubnetType } from './vpc';
 
@@ -210,7 +211,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
-  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuil-fips');
+  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
   public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
@@ -243,6 +244,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
+  public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
+  public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
+  public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
 
   /**
    * The name of the service.
@@ -281,9 +285,26 @@ export interface InterfaceVpcEndpointOptions {
    * The subnets in which to create an endpoint network interface. At most one
    * per availability zone.
    *
-   * @default private subnets
+   * @default - private subnets
    */
   readonly subnets?: SubnetSelection;
+
+  /**
+   * The security groups to associate with this interface VPC endpoint.
+   *
+   * @default - a new security group is created
+   */
+  readonly securityGroups?: ISecurityGroup[];
+
+  /**
+   * Whether to automatically allow VPC traffic to the endpoint
+   *
+   * If enabled, all traffic to the endpoint from within the VPC will be
+   * automatically allowed. This is done based on the VPC's CIDR range.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 }
 
 /**
@@ -311,12 +332,19 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    * Imports an existing interface VPC endpoint.
    */
   public static fromInterfaceVpcEndpointAttributes(scope: Construct, id: string, attrs: InterfaceVpcEndpointAttributes): IInterfaceVpcEndpoint {
+    if (!attrs.securityGroups && !attrs.securityGroupId) {
+      throw new Error('Either `securityGroups` or `securityGroupId` must be specified.');
+    }
+
+    const securityGroups = attrs.securityGroupId
+      ? [SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
+      : attrs.securityGroups;
+
     class Import extends Resource implements IInterfaceVpcEndpoint {
       public readonly vpcEndpointId = attrs.vpcEndpointId;
-      public readonly securityGroupId = attrs.securityGroupId;
       public readonly connections = new Connections({
         defaultPort: Port.tcp(attrs.port),
-        securityGroups: [SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+        securityGroups,
       });
     }
 
@@ -347,8 +375,10 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   public readonly vpcEndpointNetworkInterfaceIds: string[];
 
   /**
-   * The identifier of the security group associated with this interface VPC
-   * endpoint.
+   * The identifier of the first security group associated with this interface
+   * VPC endpoint.
+   *
+   * @deprecated use the `connections` object
    */
   public readonly securityGroupId: string;
 
@@ -360,14 +390,19 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   constructor(scope: Construct, id: string, props: InterfaceVpcEndpointProps) {
     super(scope, id);
 
-    const securityGroup = new SecurityGroup(this, 'SecurityGroup', {
+    const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc
-    });
-    this.securityGroupId = securityGroup.securityGroupId;
+    })];
+
+    this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),
-      securityGroups: [securityGroup]
+      securityGroups
     });
+
+    if (props.open !== false) {
+      this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
+    }
 
     const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     const subnetIds = subnets.subnetIds;
@@ -375,7 +410,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : true,
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
-      securityGroupIds: [this.securityGroupId],
+      securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
@@ -400,8 +435,16 @@ export interface InterfaceVpcEndpointAttributes {
 
   /**
    * The identifier of the security group associated with the interface VPC endpoint.
+   *
+   * @deprecated use `securityGroups` instead
    */
-  readonly securityGroupId: string;
+  readonly securityGroupId?: string;
+
+  /**
+   * The security groups associated with the interface VPC endpoint.
+   *
+   */
+  readonly securityGroups?: ISecurityGroup[];
 
   /**
    * The port of the service of the interface VPC endpoint.

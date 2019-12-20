@@ -1,9 +1,8 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { RemovalPolicy, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecr = require('../lib');
+import * as ecr from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -160,16 +159,18 @@ export = {
     const uri = repo.repositoryUri;
 
     // THEN
-    const arnSplit = { 'Fn::Split': [ ':', { 'Fn::GetAtt': [ 'Repo02AC86CF', 'Arn' ] } ] };
-    test.deepEqual(stack.resolve(uri), { 'Fn::Join': [ '', [
-      { 'Fn::Select': [ 4, arnSplit ] },
-      '.dkr.ecr.',
-      { 'Fn::Select': [ 3, arnSplit ] },
-      '.',
-      { Ref: 'AWS::URLSuffix' },
-      '/',
-      { Ref: 'Repo02AC86CF' }
-    ]]});
+    const arnSplit = { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] };
+    test.deepEqual(stack.resolve(uri), {
+      'Fn::Join': ['', [
+        { 'Fn::Select': [4, arnSplit] },
+        '.dkr.ecr.',
+        { 'Fn::Select': [3, arnSplit] },
+        '.',
+        { Ref: 'AWS::URLSuffix' },
+        '/',
+        { Ref: 'Repo02AC86CF' }
+      ]]
+    });
 
     test.done();
   },
@@ -210,8 +211,8 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
-    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(stack.resolve(repo.repositoryArn), { 'Fn::GetAtt': ['Boom', 'Arn'] });
+    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': ['Boom', 'Name'] });
     test.done();
   },
 
@@ -224,14 +225,14 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(repo.repositoryArn), {
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':ecr:',
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':repository/my-repo' ]
+        ':repository/my-repo']
       ]
     });
     test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
@@ -250,17 +251,17 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': ['Boom', 'Name'] });
     test.deepEqual(stack.resolve(repo.repositoryArn), {
-    'Fn::Join': [ '', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ecr:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':repository/',
-      { 'Fn::GetAtt': [ 'Boom', 'Name' ] } ] ]
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ecr:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':repository/',
+        { 'Fn::GetAtt': ['Boom', 'Name'] }]]
     });
     test.done();
   },
@@ -322,67 +323,173 @@ export = {
       }));
 
       test.done();
-    }
-  },
+    },
+    'onImageScanCompleted without imageTags creates the correct event'(test: Test) {
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
 
-  'removal policy is "Retain" by default'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
+      repo.onImageScanCompleted('EventRule', {
+        target: {
+          bind: () => ({ arn: 'ARN', id: '' })
+        }
+      });
 
-    // WHEN
-    new ecr.Repository(stack, 'Repo');
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
-      "Type": "AWS::ECR::Repository",
-      "DeletionPolicy": "Retain"
-    }, ResourcePart.CompleteDefinition));
-    test.done();
-  },
-
-  '"Delete" removal policy can be set explicitly'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new ecr.Repository(stack, 'Repo', {
-      removalPolicy: RemovalPolicy.DESTROY
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
-      "Type": "AWS::ECR::Repository",
-      "DeletionPolicy": "Delete"
-    }, ResourcePart.CompleteDefinition));
-    test.done();
-  },
-
-  'grant adds appropriate resource-*'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const repo = new ecr.Repository(stack, 'TestHarnessRepo');
-
-    // WHEN
-    repo.grantPull(new iam.AnyPrincipal());
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
-      "RepositoryPolicyText": {
-        "Statement": [
-          {
-            "Action": [
-              "ecr:BatchCheckLayerAvailability",
-              "ecr:GetDownloadUrlForLayer",
-              "ecr:BatchGetImage"
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.ecr",
+          ],
+          "detail": {
+            "repository-name": [
+              {
+                "Ref": "Repo02AC86CF"
+              }
             ],
-            "Effect": "Allow",
-            "Principal": "*",
+            "scan-status": [
+              "COMPLETE"
+            ]
           }
-        ],
-        "Version": "2012-10-17"
-      }
-    }));
+        },
+        "State": "ENABLED",
+      }));
 
-    test.done();
+      test.done();
+
+    },
+    'onImageScanCompleted with one imageTag creates the correct event'(test: Test) {
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      repo.onImageScanCompleted('EventRule', {
+        imageTags: ['some-tag'],
+        target: {
+          bind: () => ({ arn: 'ARN', id: '' })
+        }
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.ecr",
+          ],
+          "detail": {
+            "repository-name": [
+              {
+                "Ref": "Repo02AC86CF"
+              }
+            ],
+            "image-tags": [
+              "some-tag"
+            ],
+            "scan-status": [
+              "COMPLETE"
+            ]
+          }
+        },
+        "State": "ENABLED",
+      }));
+
+      test.done();
+
+    },
+    'onImageScanCompleted with multiple imageTags creates the correct event'(test: Test) {
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      repo.onImageScanCompleted('EventRule', {
+        imageTags: ['tag1', 'tag2', 'tag3'],
+        target: {
+          bind: () => ({ arn: 'ARN', id: '' })
+        }
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.ecr",
+          ],
+          "detail": {
+            "repository-name": [
+              {
+                "Ref": "Repo02AC86CF"
+              }
+            ],
+            "image-tags": [
+              "tag1",
+              "tag2",
+              "tag3"
+            ],
+            "scan-status": [
+              "COMPLETE"
+            ]
+          }
+        },
+        "State": "ENABLED",
+      }));
+
+      test.done();
+
+    },
+
+    'removal policy is "Retain" by default'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecr.Repository(stack, 'Repo');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECR::Repository', {
+        "Type": "AWS::ECR::Repository",
+        "DeletionPolicy": "Retain"
+      }, ResourcePart.CompleteDefinition));
+      test.done();
+    },
+
+    '"Delete" removal policy can be set explicitly'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecr.Repository(stack, 'Repo', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECR::Repository', {
+        "Type": "AWS::ECR::Repository",
+        "DeletionPolicy": "Delete"
+      }, ResourcePart.CompleteDefinition));
+      test.done();
+    },
+
+    'grant adds appropriate resource-*'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      repo.grantPull(new iam.AnyPrincipal());
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECR::Repository', {
+        "RepositoryPolicyText": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Principal": "*",
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }));
+
+      test.done();
+    },
   },
 };

@@ -1,0 +1,96 @@
+{
+  "Resources": {
+    "nestedstackwithimageNestedStacknestedstackwithimageNestedStackResourceDF784FD5": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "AssetParametersce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddcS3Bucket9C1F8CF3"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParametersce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddcS3VersionKeyD34A6061"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "||",
+                      {
+                        "Ref": "AssetParametersce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddcS3VersionKeyD34A6061"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        "Parameters": {
+          "referencetonestedstacksdockerAssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName6A10D714Ref": {
+            "Ref": "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3"
+          },
+          "referencetonestedstacksdockerAssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketDC016D33Ref": {
+            "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB"
+          },
+          "referencetonestedstacksdockerAssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey3A8B3E45Ref": {
+            "Ref": "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7"
+          }
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "AssetParameters1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439cImageName1ADCADB3": {
+      "Type": "String",
+      "Description": "ECR repository name and tag for asset \"1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c\""
+    },
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3BucketE797C7BB": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
+    },
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1S3VersionKey56C3F6D7": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
+    },
+    "AssetParametersea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1ArtifactHash7E5AE478": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"ea7034d81c091be1158bcd85b4958dc86ec6672c345be27607d68fdfcf26b1c1\""
+    },
+    "AssetParametersce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddcS3Bucket9C1F8CF3": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"ce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddc\""
+    },
+    "AssetParametersce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddcS3VersionKeyD34A6061": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"ce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddc\""
+    },
+    "AssetParametersce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddcArtifactHash3F66D1AC": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"ce471cbd591a9b42ec50b0bb34562bf37cf4e3c95f4ba7d4cf79a4a6b7d11ddc\""
+    }
+  }
+}

@@ -4,16 +4,23 @@
 #------------------------------------------------------------------
 set -e
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/../common/util.bash
+source ${scriptdir}/common.bash
+
 header C#
-prepare_toolkit
-prepare_nuget_packages
+
 #------------------------------------------------------------------
 
-# Run the test
-appdir=$(mktemp -d)
-cd ${appdir}
+if [[ "${1:-}" == "" ]]; then
+    templates="app sample-app"
+else
+    templates="$@"
+fi
 
-cdk init -l csharp -t app
-dotnet build src
-cdk synth hello-cdk-1
+for template in $templates; do
+    echo "Trying C# template $template"
+
+    setup
+
+    cdk init -l csharp -t $template
+    cdk synth
+done

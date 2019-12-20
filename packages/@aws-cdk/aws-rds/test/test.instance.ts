@@ -1,11 +1,12 @@
 import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import targets = require('@aws-cdk/aws-events-targets');
-import lambda = require('@aws-cdk/aws-lambda');
-import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as targets from '@aws-cdk/aws-events-targets';
+import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import rds = require('../lib');
+import * as rds from '../lib';
 
 export = {
   'create a DB instance'(test: Test) {
@@ -260,7 +261,42 @@ export = {
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       generateMasterUserPassword: true,
-    }), /`masterUsername`.*`generateMasterUserPassword`/);
+    }), '`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
+
+    test.done();
+  },
+
+  'throws when specifying user name without asking to generate a new password'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      masterUsername: 'superadmin'
+    }), 'Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
+
+    test.done();
+  },
+
+  'throws when password and generate password ar both specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      masterUserPassword: cdk.SecretValue.plainText('supersecret'),
+      generateMasterUserPassword: true,
+    }), 'Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
 
     test.done();
   },
@@ -307,7 +343,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X
     });
 
     // WHEN
@@ -498,9 +534,9 @@ export = {
       instanceEndpointAddress: 'address',
       instanceIdentifier: 'identifier',
       port: 3306,
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
         allowAllOutbound: false
-      }),
+      })],
     });
 
     // WHEN
@@ -509,6 +545,81 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
+    }));
+
+    test.done();
+  },
+
+  'create an instance with imported monitoring role'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const monitoringRole = new Role(stack, "MonitoringRole", {
+      assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
+      ]
+    });
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      monitoringInterval: cdk.Duration.minutes(1),
+      monitoringRole
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        "Fn::GetAtt": ["MonitoringRole90457BF9", "Arn"]
+      }
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'create an instance with an existing security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      allowAllOutbound: false
+    });
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      securityGroups: [securityGroup],
+    });
+    instance.connections.allowDefaultPortFromAnyIpv4();
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      VPCSecurityGroups: ['sg-123456789']
+    }));
+
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      FromPort: {
+        'Fn::GetAtt': [
+          'InstanceC1063A87',
+          'Endpoint.Port'
+        ]
+      },
+      GroupId: 'sg-123456789',
+      ToPort: {
+        'Fn::GetAtt': [
+          'InstanceC1063A87',
+          'Endpoint.Port'
+        ]
+      }
     }));
 
     test.done();

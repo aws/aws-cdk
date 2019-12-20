@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iotanalytics",
-  "version": "1.8.0",
+  "version": "1.19.0",
   "description": "The CDK Construct Library for AWS::IoTAnalytics",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,15 +12,13 @@
         "packageId": "Amazon.CDK.AWS.IoTAnalytics",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.iotanalytics",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iotanalytics",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "iotanalytics"
         }
       },
       "python": {
@@ -46,7 +44,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::IoTAnalytics"
@@ -63,18 +62,29 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.8.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/core": "1.19.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.8.0"
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"

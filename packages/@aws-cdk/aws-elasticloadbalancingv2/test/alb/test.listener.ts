@@ -1,9 +1,9 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
-import { ConstructNode, Duration } from '@aws-cdk/core';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -89,7 +89,7 @@ export = {
     });
 
     // THEN
-    const errors = ConstructNode.validate(stack.node);
+    const errors = cdk.ConstructNode.validate(stack.node);
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
 
     test.done();
@@ -369,6 +369,34 @@ export = {
     test.done();
   },
 
+  'validation error if invalid health check protocol'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    const group = listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
+    });
+
+    group.configureHealthCheck({
+      unhealthyThresholdCount: 3,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
+      path: '/test',
+      protocol: elbv2.Protocol.TCP
+    });
+
+    // THEN
+    const validationErrors: string[] = (group as any).validate();
+    test.deepEqual(validationErrors, ["Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"]);
+
+    test.done();
+  },
+
   'Can call addTargetGroups on imported listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -441,7 +469,7 @@ export = {
     });
 
     // WHEN
-    const metrics = [];
+    const metrics = new Array<Metric>();
     metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
     metrics.push(group.metricIpv6RequestCount());
     metrics.push(group.metricUnhealthyHostCount());
@@ -558,6 +586,59 @@ export = {
     test.done();
   },
 
+  'Can add redirect responses'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80
+    });
+
+    // WHEN
+    listener.addRedirectResponse('Default', {
+      statusCode: 'HTTP_301',
+      port: '443',
+      protocol: 'HTTPS'
+    });
+    listener.addRedirectResponse('Hello', {
+      priority: 10,
+      pathPattern: '/hello',
+      path: '/new/#{path}',
+      statusCode: 'HTTP_302'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          RedirectConfig: {
+            Port: '443',
+            Protocol: 'HTTPS',
+            StatusCode: 'HTTP_301'
+          },
+          Type: 'redirect'
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          RedirectConfig: {
+            Path: '/new/#{path}',
+            StatusCode: 'HTTP_302'
+          },
+          Type: 'redirect'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'Can configure deregistration_delay for targets'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -567,7 +648,7 @@ export = {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
       port: 80,
-      deregistrationDelay: Duration.seconds(30)
+      deregistrationDelay: cdk.Duration.seconds(30)
     });
 
     // THEN
@@ -625,6 +706,48 @@ export = {
     }
   },
 
+  'Throws with bad redirect responses': {
+
+    'status code'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80
+      });
+
+      // THEN
+      test.throws(() => listener.addRedirectResponse('Default', {
+        statusCode: '301'
+      }), /`statusCode`/);
+
+      test.done();
+    },
+
+    'protocol'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80
+      });
+
+      // THEN
+      test.throws(() => listener.addRedirectResponse('Default', {
+        protocol: 'tcp',
+        statusCode: 'HTTP_301'
+      }), /`protocol`/);
+
+      test.done();
+    }
+  },
+
   'Throws when specifying both target groups and fixed reponse'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -645,7 +768,45 @@ export = {
       fixedResponse: {
         statusCode: '500'
       }
-    }), /`targetGroups`.*`fixedResponse`/);
+    }), /'targetGroups,fixedResponse'.*/);
+
+    test.done();
+  },
+
+  'Throws when specifying both target groups and redirect reponse'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80
+    });
+
+    // THEN
+    test.throws(() => new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: 10,
+      pathPattern: '/hello',
+      targetGroups: [new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 })],
+      redirectResponse: {
+        statusCode: 'HTTP_301'
+      }
+    }), /'targetGroups,redirectResponse'.*/);
+
+    test.throws(() => new elbv2.ApplicationListenerRule(stack, 'Rule2', {
+      listener,
+      priority: 10,
+      pathPattern: '/hello',
+      targetGroups: [new elbv2.ApplicationTargetGroup(stack, 'TargetGroup2', { vpc, port: 80 })],
+      fixedResponse: {
+        statusCode: '500'
+      },
+      redirectResponse: {
+        statusCode: 'HTTP_301'
+      }
+    }), /'targetGroups,fixedResponse,redirectResponse'.*/);
 
     test.done();
   },
@@ -682,6 +843,31 @@ export = {
     lb.addListener('Listener', {
       port: 443,
       certificateArns: ['cert1', 'cert2'],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'HTTPS'
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    }));
+
+    test.done();
+  },
+
+  'Can use certificate wrapper class'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      certificates: [elbv2.ListenerCertificate.fromArn('cert1'), elbv2.ListenerCertificate.fromArn('cert2')],
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 

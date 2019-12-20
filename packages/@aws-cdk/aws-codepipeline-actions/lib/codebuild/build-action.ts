@@ -1,7 +1,7 @@
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
 
 /**
@@ -60,6 +60,15 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default CodeBuildActionType.BUILD
    */
   readonly type?: CodeBuildActionType;
+
+  /**
+   * The environment variables to pass to the CodeBuild project when this action executes.
+   * If a variable with the same name was set both on the project level, and here,
+   * this value will take precedence.
+   *
+   * @default - No additional environment variables are specified.
+   */
+  readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable };
 }
 
 /**
@@ -83,8 +92,19 @@ export class CodeBuildAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
+    // check for a cross-account action if there are any outputs
+    if ((this.actionProperties.outputs || []).length > 0) {
+      const pipelineStack = cdk.Stack.of(scope);
+      const projectStack = cdk.Stack.of(this.props.project);
+      if (pipelineStack.account !== projectStack.account) {
+        throw new Error('A cross-account CodeBuild action cannot have outputs. ' +
+          'This is a known CodeBuild limitation. ' +
+          'See https://github.com/aws/aws-cdk/issues/4169 for details');
+      }
+    }
+
     // grant the Pipeline role the required permissions to this Project
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
@@ -96,14 +116,26 @@ export class CodeBuildAction extends Action {
     }));
 
     // allow the Project access to the Pipeline's artifact Bucket
-    if ((this.actionProperties.outputs || []).length > 0) {
-      options.bucket.grantReadWrite(this.props.project);
-    } else {
-      options.bucket.grantRead(this.props.project);
+    // but only if the project is not imported
+    // (ie., has a role) - otherwise, the IAM library throws an error
+    if (this.props.project.role) {
+      if ((this.actionProperties.outputs || []).length > 0) {
+        options.bucket.grantReadWrite(this.props.project);
+      } else {
+        options.bucket.grantRead(this.props.project);
+      }
+    }
+
+    if (this.props.project instanceof codebuild.Project) {
+      this.props.project.bindToCodePipeline(scope, {
+        artifactBucket: options.bucket,
+      });
     }
 
     const configuration: any = {
       ProjectName: this.props.project.projectName,
+      EnvironmentVariables: this.props.environmentVariables &&
+        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily

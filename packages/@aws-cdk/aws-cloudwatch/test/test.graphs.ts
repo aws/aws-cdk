@@ -288,4 +288,59 @@ export = {
 
     test.done();
   },
+
+  'add setPeriodToTimeRange to singleValueWidget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [ metric ],
+      setPeriodToTimeRange: true
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+        ],
+        setPeriodToTimeRange: true
+      }
+    }]);
+
+    test.done();
+  },
+
+  'allows overriding custom values of dashboard widgets'(test: Test) {
+    class HiddenMetric extends Metric {
+      public toGraphConfig(): any {
+        const ret = super.toGraphConfig();
+        // @ts-ignore
+        ret.renderingProperties.visible = false;
+        return ret;
+      }
+    }
+
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [
+        new HiddenMetric({ namespace: 'CDK', metricName: 'Test' })
+      ]
+    });
+
+    // test.ok(widget.toJson()[0].properties.metrics[0].visible === false);
+    test.deepEqual(
+      stack.resolve(widget.toJson())[0].properties.metrics[0],
+      ["CDK", "Test", { yAxis: 'left', period: 300, stat: 'Average', visible: false }]
+    );
+
+    test.done();
+  },
 };

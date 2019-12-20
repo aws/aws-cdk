@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 
 import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
@@ -14,7 +14,7 @@ import { IVpc, SubnetSelection } from './vpc';
  */
 const NAME_TAG: string = 'Name';
 
-export interface IInstance extends IResource, IConnectable {
+export interface IInstance extends IResource, IConnectable, iam.IGrantable {
   /**
    * The instance's ID
    *
@@ -157,6 +157,25 @@ export interface InstanceProps {
    * @default - CDK generated name
    */
   readonly instanceName?: string;
+
+  /**
+   * Specifies whether to enable an instance launched in a VPC to perform NAT.
+   * This controls whether source/destination checking is enabled on the instance.
+   * A value of true means that checking is enabled, and false means that checking is disabled.
+   * The value must be false for the instance to perform NAT.
+   *
+   * @default true
+   */
+  readonly sourceDestCheck?: boolean;
+
+  /**
+   * Defines a private IP address to associate with an instance.
+   *
+   * Private IP should be available within the VPC that the instance is build within.
+   *
+   * @default - no association
+   */
+  readonly privateIpAddress?: string
 }
 
 /**
@@ -178,6 +197,11 @@ export class Instance extends Resource implements IInstance {
    * The IAM role assumed by the instance.
    */
   public readonly role: iam.IRole;
+
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * UserData for the instance
@@ -234,6 +258,7 @@ export class Instance extends Resource implements IInstance {
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
+    this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [this.role.roleName]
@@ -267,6 +292,8 @@ export class Instance extends Resource implements IInstance {
       userData: userDataToken,
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
+      sourceDestCheck: props.sourceDestCheck,
+      privateIpAddress: props.privateIpAddress
     });
     this.instance.node.addDependency(this.role);
 

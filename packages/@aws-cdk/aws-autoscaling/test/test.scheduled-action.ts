@@ -1,8 +1,8 @@
 import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import autoscaling = require('../lib');
+import * as autoscaling from '../lib';
 
 export = {
   'can schedule an action'(test: Test) {
@@ -98,7 +98,7 @@ export = {
       },
       Parameters: {
         SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-          Type: "AWS::SSM::Parameter::Value<String>",
+          Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
           Default: "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
         }
       }

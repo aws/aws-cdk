@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import { resourceArnSuffix } from './resource-arn-suffix';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for PublishTask
@@ -70,7 +70,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sns:publish' + resourceArnSuffix.get(this.integrationPattern),
+      resourceArn: getResourceArn("sns", "publish", this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [this.topic.topicArn]

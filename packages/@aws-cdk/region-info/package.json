@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "1.8.0",
+  "version": "1.19.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.regioninfo",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-region-info",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "cdk-region-info"
         }
       },
       "dotnet": {
@@ -20,8 +19,7 @@
         "packageId": "Amazon.CDK.RegionInfo",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/png/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.region-info",
@@ -41,9 +39,11 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
+    "awslint": "cdk-awslint",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -52,10 +52,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
+    "@types/fs-extra": "^8.0.1",
+    "cdk-build-tools": "1.19.0",
     "fs-extra": "^8.1.0",
-    "pkglint": "file:../../../tools/pkglint"
+    "pkglint": "1.19.0"
   },
   "jest": {
     "coverageReporters": [
@@ -88,5 +88,12 @@
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/region-info.Fact.regions",
+      "docs-public-apis:@aws-cdk/region-info.RegionInfo.regions",
+      "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
+    ]
+  }
 }

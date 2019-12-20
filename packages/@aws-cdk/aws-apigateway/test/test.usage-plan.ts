@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from "nodeunit";
-import apigateway = require('../lib');
+import * as apigateway from '../lib';
 
 const RESOURCE_TYPE = 'AWS::ApiGateway::UsagePlan';
 export = {
@@ -129,5 +129,41 @@ export = {
     }, ResourcePart.Properties));
 
     test.done();
-  }
+  },
+
+  'UsagePlan can have multiple keys'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const usagePlan = new apigateway.UsagePlan(stack, 'my-usage-plan');
+    const apiKey1 = new apigateway.ApiKey(stack, 'my-api-key-1', {
+      apiKeyName: 'my-api-key-1'
+    });
+    const apiKey2 = new apigateway.ApiKey(stack, 'my-api-key-2', {
+      apiKeyName: 'my-api-key-2'
+    });
+
+    // WHEN
+    usagePlan.addApiKey(apiKey1);
+    usagePlan.addApiKey(apiKey2);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      Name: 'my-api-key-1'
+    }, ResourcePart.Properties));
+    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      Name: 'my-api-key-2'
+    }, ResourcePart.Properties));
+    expect(stack).to(haveResource('AWS::ApiGateway::UsagePlanKey', {
+      KeyId: {
+        Ref: 'myapikey11F723FC7'
+      }
+    }, ResourcePart.Properties));
+    expect(stack).to(haveResource('AWS::ApiGateway::UsagePlanKey', {
+      KeyId: {
+        Ref: 'myapikey2ABDEF012'
+      }
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
 };

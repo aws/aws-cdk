@@ -1,10 +1,10 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../../lib');
+import * as ecsPatterns from '../../lib';
 
 export = {
   'test fargate queue worker service construct - with only required props'(test: Test) {
@@ -57,7 +57,8 @@ export = {
           },
           Image: "test",
         }
-      ]
+      ],
+      Family: "ServiceQueueProcessingTaskDef83DB34F1"
     }));
 
     test.done();
@@ -86,13 +87,16 @@ export = {
         TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
       },
       queue,
-      maxScalingCapacity: 5
+      maxScalingCapacity: 5,
+      serviceName: "fargate-test-service",
+      family: "fargate-task-family"
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 2,
-      LaunchType: "FARGATE"
+      LaunchType: "FARGATE",
+      ServiceName: "fargate-test-service"
     }));
 
     expect(stack).to(haveResource("AWS::SQS::Queue", { QueueName: 'fargate-test-sqs-queue' }));
@@ -126,7 +130,8 @@ export = {
           ],
           Image: "test",
         }
-      ]
+      ],
+      Family: "fargate-task-family"
     }));
 
     test.done();

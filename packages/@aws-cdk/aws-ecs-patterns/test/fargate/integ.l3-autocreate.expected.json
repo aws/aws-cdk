@@ -163,8 +163,8 @@
     },
     "L3TaskDefwebLogGroupC6E4A38A": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "L3TaskDefExecutionRole49AF0996": {
       "Type": "AWS::IAM::Role",
@@ -215,9 +215,6 @@
     "L3Service616D5A93": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "L3TaskDef48D8ACB8"
-        },
         "Cluster": {
           "Ref": "EcsDefaultClusterMnL3mNNYN926A5246"
         },
@@ -226,6 +223,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
@@ -258,7 +256,9 @@
             ]
           }
         },
-        "EnableECSManagedTags": false
+        "TaskDefinition": {
+          "Ref": "L3TaskDef48D8ACB8"
+        }
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",
@@ -388,7 +388,13 @@
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1EIP8704DB2F": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1NATGateway5E3732C1": {
@@ -479,7 +485,13 @@
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2EIPF0764873": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2NATGateway4C855E00": {
@@ -811,8 +823,8 @@
     },
     "L3bTaskDefwebLogGroup8E5F1183": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "L3bTaskDefExecutionRole9A3E2688": {
       "Type": "AWS::IAM::Role",
@@ -863,9 +875,6 @@
     "L3bServiceF9D33D5A": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "L3bTaskDef5506864D"
-        },
         "Cluster": {
           "Ref": "EcsDefaultClusterMnL3mNNYN926A5246"
         },
@@ -874,6 +883,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
@@ -906,7 +916,9 @@
             ]
           }
         },
-        "EnableECSManagedTags": false
+        "TaskDefinition": {
+          "Ref": "L3bTaskDef5506864D"
+        }
       },
       "DependsOn": [
         "L3bLBPublicListenerECSGroup0070C5CA",
@@ -960,11 +972,43 @@
         ]
       }
     },
+    "L3ServiceURL0F065F2D": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "L3LB212FC0E0",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
     "L3bLoadBalancerDNSED096132": {
       "Value": {
         "Fn::GetAtt": [
           "L3bLBB8FADA4E",
           "DNSName"
+        ]
+      }
+    },
+    "L3bServiceURL0EDED888": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "L3bLBB8FADA4E",
+                "DNSName"
+              ]
+            }
+          ]
         ]
       }
     }

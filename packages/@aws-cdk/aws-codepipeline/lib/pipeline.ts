@@ -1,9 +1,9 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { IAction, IPipeline, IStage } from "./action";
+import { ActionCategory, IAction, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
 import { FullActionDescriptor } from './full-action-descriptor';
@@ -203,9 +203,10 @@ export class Pipeline extends PipelineBase {
    */
   public readonly artifactBucket: s3.IBucket;
 
-  private readonly stages = new Array<Stage>();
+  private readonly _stages = new Array<Stage>();
   private readonly crossRegionBucketsPassed: boolean;
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
+  private readonly _crossAccountSupport: { [account: string]: Stack } = {};
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -222,7 +223,11 @@ export class Pipeline extends PipelineBase {
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
     if (!propsBucket) {
-      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
+      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey', {
+        // remove the key - there is a grace period of a few days before it's gone for good,
+        // that should be enough for any emergency access to the bucket artifacts
+        removalPolicy: RemovalPolicy.DESTROY,
+      });
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
@@ -233,7 +238,7 @@ export class Pipeline extends PipelineBase {
       new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
         aliasName: this.generateNameForDefaultBucketKeyAlias(),
         targetKey: encryptionKey,
-        removalPolicy: RemovalPolicy.RETAIN, // alias should be retained, like the key
+        removalPolicy: RemovalPolicy.DESTROY, // destroy the alias along with the key
       });
     }
     this.artifactBucket = propsBucket;
@@ -286,7 +291,7 @@ export class Pipeline extends PipelineBase {
    */
   public addStage(props: StageOptions): IStage {
     // check for duplicate Stages and names
-    if (this.stages.find(s => s.stageName === props.stageName)) {
+    if (this._stages.find(s => s.stageName === props.stageName)) {
       throw new Error(`Stage with duplicate name '${props.stageName}' added to the Pipeline`);
     }
 
@@ -296,7 +301,7 @@ export class Pipeline extends PipelineBase {
         ? this.calculateInsertIndexFromPlacement(props.placement)
         : this.stageCount;
 
-    this.stages.splice(index, 0, stage);
+    this._stages.splice(index, 0, stage);
 
     return stage;
   }
@@ -312,7 +317,19 @@ export class Pipeline extends PipelineBase {
    * Get the number of Stages in this Pipeline.
    */
   public get stageCount(): number {
-    return this.stages.length;
+    return this._stages.length;
+  }
+
+  /**
+   * Returns the stages that comprise the pipeline.
+   *
+   * **Note**: the returned array is a defensive copy,
+   * so adding elements to it has no effect.
+   * Instead, use the {@link addStage} method if you want to add more stages
+   * to the pipeline.
+   */
+  public get stages(): IStage[] {
+    return this._stages.slice();
   }
 
   /**
@@ -379,7 +396,11 @@ export class Pipeline extends PipelineBase {
       const actionResourceStack = Stack.of(actionResource);
       if (pipelineStack.region !== actionResourceStack.region) {
         actionRegion = actionResourceStack.region;
-        otherStack = actionResourceStack;
+        // if the resource is from a different stack in another region but the same account,
+        // use that stack as home for the cross-region support resources
+        if (pipelineStack.account === actionResourceStack.account) {
+          otherStack = actionResourceStack;
+        }
       }
     } else {
       actionRegion = action.actionProperties.region;
@@ -400,6 +421,11 @@ export class Pipeline extends PipelineBase {
       return {
         artifactBucket: this.artifactBucket,
       };
+    }
+
+    // source actions have to be in the same region as the pipeline
+    if (action.actionProperties.category === ActionCategory.SOURCE) {
+      throw new Error(`Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`);
     }
 
     // check whether we already have a bucket in that region,
@@ -565,9 +591,12 @@ export class Pipeline extends PipelineBase {
     if (action.actionProperties.resource) {
       const resourceStack = Stack.of(action.actionProperties.resource);
       // check if resource is from a different account
-      return pipelineStack.account === resourceStack.account
-        ? undefined
-        : resourceStack;
+      if (pipelineStack.account === resourceStack.account) {
+        return undefined;
+      } else {
+        this._crossAccountSupport[resourceStack.account] = resourceStack;
+        return resourceStack;
+      }
     }
 
     if (!action.actionProperties.account) {
@@ -588,17 +617,21 @@ export class Pipeline extends PipelineBase {
       return undefined;
     }
 
-    const stackId = `cross-account-support-stack-${targetAccount}`;
-    const app = this.requireApp();
-    let targetAccountStack = app.node.tryFindChild(stackId) as Stack;
+    let targetAccountStack: Stack | undefined = this._crossAccountSupport[targetAccount];
     if (!targetAccountStack) {
-      targetAccountStack = new Stack(app, stackId, {
-        stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
-        env: {
-          account: targetAccount,
-          region: action.actionProperties.region ? action.actionProperties.region : pipelineStack.region,
-        },
-      });
+      const stackId = `cross-account-support-stack-${targetAccount}`;
+      const app = this.requireApp();
+      targetAccountStack = app.node.tryFindChild(stackId) as Stack;
+      if (!targetAccountStack) {
+        targetAccountStack = new Stack(app, stackId, {
+          stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
+          env: {
+            account: targetAccount,
+            region: action.actionProperties.region ? action.actionProperties.region : pipelineStack.region,
+          },
+        });
+      }
+      this._crossAccountSupport[targetAccount] = targetAccountStack;
     }
     return targetAccountStack;
   }
@@ -651,15 +684,15 @@ export class Pipeline extends PipelineBase {
   }
 
   private findStageIndex(targetStage: IStage) {
-    return this.stages.findIndex(stage => stage === targetStage);
+    return this._stages.findIndex(stage => stage === targetStage);
   }
 
   private validateSourceActionLocations(): string[] {
     const errors = new Array<string>();
     let firstStage = true;
-    for (const stage of this.stages) {
+    for (const stage of this._stages) {
       const onlySourceActionsPermitted = firstStage;
-      for (const action of stage.actions) {
+      for (const action of stage.actionDescriptors) {
         errors.push(...validateSourceAction(onlySourceActionsPermitted, action.category, action.actionName, stage.stageName));
       }
       firstStage = false;
@@ -676,7 +709,7 @@ export class Pipeline extends PipelineBase {
 
   private validateStages(): string[] {
     const ret = new Array<string>();
-    for (const stage of this.stages) {
+    for (const stage of this._stages) {
       ret.push(...stage.validate());
     }
     return ret;
@@ -686,8 +719,8 @@ export class Pipeline extends PipelineBase {
     const ret = new Array<string>();
 
     const outputArtifactNames = new Set<string>();
-    for (const stage of this.stages) {
-      const sortedActions = stage.actions.sort((a1, a2) => a1.runOrder - a2.runOrder);
+    for (const stage of this._stages) {
+      const sortedActions = stage.actionDescriptors.sort((a1, a2) => a1.runOrder - a2.runOrder);
 
       for (const action of sortedActions) {
         // start with inputs
@@ -747,7 +780,7 @@ export class Pipeline extends PipelineBase {
     if (bucketKey) {
       encryptionKey = {
         type: 'KMS',
-        id: bucketKey.keyId,
+        id: bucketKey.keyArn,
       };
     }
 
@@ -760,11 +793,11 @@ export class Pipeline extends PipelineBase {
 
   private get crossRegion(): boolean {
     if (this.crossRegionBucketsPassed) { return true; }
-    return this.stages.some(stage => stage.actions.some(action => action.region !== undefined));
+    return this._stages.some(stage => stage.actionDescriptors.some(action => action.region !== undefined));
   }
 
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
-    return this.stages.map(stage => stage.render());
+    return this._stages.map(stage => stage.render());
   }
 
   private requireRegion(): string {

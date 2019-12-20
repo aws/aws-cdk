@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/core');
-import { SecretValue } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
@@ -17,7 +17,7 @@ export = {
       engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -56,7 +56,7 @@ export = {
       instances: 1,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -90,7 +90,7 @@ export = {
       instances: 1,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -128,7 +128,7 @@ export = {
       engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -370,6 +370,103 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     }));
+
+    test.done();
+  },
+
+  "cluster with enabled monitoring"(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      monitoringInterval: cdk.Duration.minutes(1),
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        "Fn::GetAtt": ["DatabaseMonitoringRole576991DA", "Arn"]
+      }
+    }, ResourcePart.Properties));
+
+    expect(stack).to(haveResource("AWS::IAM::Role", {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Principal: {
+              Service: "monitoring.rds.amazonaws.com"
+            }
+          }
+        ],
+        Version: "2012-10-17"
+      },
+      ManagedPolicyArns: [
+        {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                Ref: "AWS::Partition"
+              },
+              ":iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+            ]
+          ]
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'create a cluster with imported monitoring role'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, "VPC");
+
+    const monitoringRole = new Role(stack, "MonitoringRole", {
+      assumedBy: new ServicePrincipal("monitoring.rds.amazonaws.com"),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
+      ]
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, "Database", {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: "admin"
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      },
+      monitoringInterval: cdk.Duration.minutes(1),
+      monitoringRole
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::RDS::DBInstance", {
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        "Fn::GetAtt": ["MonitoringRole90457BF9", "Arn"]
+      }
+    }, ResourcePart.Properties));
 
     test.done();
   }
