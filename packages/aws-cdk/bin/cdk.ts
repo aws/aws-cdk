@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import colors = require('colors/safe');
-import path = require('path');
-import yargs = require('yargs');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as colors from 'colors/safe';
+import * as path from 'path';
+import * as yargs from 'yargs';
 
 import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
@@ -17,7 +18,7 @@ import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import version = require('../lib/version');
+import * as version from '../lib/version';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -35,6 +36,7 @@ async function parseCommandLineArguments() {
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
+    .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified.', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
@@ -72,6 +74,7 @@ async function parseCommandLineArguments() {
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
+      .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
@@ -105,6 +108,7 @@ async function initCommandLine() {
   const aws = new SDK({
     profile: argv.profile,
     proxyAddress: argv.proxy,
+    caBundlePath: argv['ca-bundle-path'],
     ec2creds: argv.ec2creds,
   });
 
@@ -191,7 +195,8 @@ async function initCommandLine() {
           exclusively: args.exclusively,
           templatePath: args.template,
           strict: args.strict,
-          contextLines: args.contextLines
+          contextLines: args.contextLines,
+          fail: args.fail || !configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL),
         });
 
       case 'bootstrap':
@@ -235,11 +240,10 @@ async function initCommandLine() {
 
       case 'init':
         const language = configuration.settings.get(['language']);
-        const generateOnly = configuration.settings.get(['generate-only']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE, language, undefined, generateOnly);
+          return await cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
         }
       case 'version':
         return data(version.DISPLAY_VERSION);

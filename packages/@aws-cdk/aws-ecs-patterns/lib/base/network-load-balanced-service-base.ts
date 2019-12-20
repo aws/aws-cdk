@@ -4,7 +4,7 @@ import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-c
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The properties for the base NetworkLoadBalancedEc2Service or NetworkLoadBalancedFargateService service.
@@ -76,6 +76,24 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
   readonly healthCheckGracePeriod?: cdk.Duration;
+
+  /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - 100 if daemon, otherwise 200
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
 
   /**
    * The network load balancer that will serve traffic to the service.

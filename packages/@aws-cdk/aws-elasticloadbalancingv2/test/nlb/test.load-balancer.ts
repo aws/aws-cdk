@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 
 export = {
   'Trivial construction: internet facing'(test: Test) {

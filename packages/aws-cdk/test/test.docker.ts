@@ -1,9 +1,9 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import sinon = require('sinon');
+import * as sinon from 'sinon';
 import { DEFAULT_REPO_LIFECYCLE, ToolkitInfo } from '../lib';
 import { prepareContainerAsset } from '../lib/docker';
-import os = require('../lib/os');
+import * as os from '../lib/os';
 import { MockSDK } from './util/mock-sdk';
 
 export = {

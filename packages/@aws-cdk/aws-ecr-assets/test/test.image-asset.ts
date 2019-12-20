@@ -1,10 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { ASSET_METADATA } from '@aws-cdk/cx-api';
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { DockerImageAsset } from '../lib';
 
 // tslint:disable:object-literal-key-quotes

@@ -1,18 +1,17 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import lambda = require('@aws-cdk/aws-lambda');
-import logs = require('@aws-cdk/aws-logs');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { DatabaseClusterEngine } from './props';
+import { DatabaseClusterEngine, RotationMultiUserOptions } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
-import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 /**
  * A database instance
@@ -144,7 +143,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.instanceIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.INSTANCE
+      targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE
     };
   }
 }
@@ -154,17 +153,19 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
  * secret rotation.
  */
 export class DatabaseInstanceEngine extends DatabaseClusterEngine {
-  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER);
-  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
-  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
-  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
+  /* tslint:disable max-line-length */
+  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER);
+  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER);
+  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER);
+  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER);
+  /* tslint:enable max-line-length */
 }
 
 /**
@@ -665,12 +666,14 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
   protected readonly sourceCfnProps: CfnDBInstanceProps;
 
-  private readonly secretRotationApplication: SecretRotationApplication;
+  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceSourceProps) {
     super(scope, id, props);
 
-    this.secretRotationApplication = props.engine.secretRotationApplication;
+    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
+    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
     this.sourceCfnProps = {
       ...this.newCfnProps,
@@ -687,18 +690,46 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
   /**
    * Adds the single user rotation of the master password to this instance.
+   *
+   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
    */
-  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
+  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without secret.');
     }
-    return new SecretRotation(this, id, {
+
+    const id = 'RotationSingleUser';
+    const existing = this.node.tryFindChild(id);
+    if (existing) {
+      throw new Error('A single user rotation was already added to this instance.');
+    }
+
+    return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      application: this.secretRotationApplication,
+      automaticallyAfter,
+      application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
       target: this,
-      ...options
+    });
+  }
+
+  /**
+   * Adds the multi user rotation to this instance.
+   */
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (!this.secret) {
+      throw new Error('Cannot add multi user rotation for an instance without secret.');
+    }
+    return new secretsmanager.SecretRotation(this, id, {
+      secret: options.secret,
+      masterSecret: this.secret,
+      automaticallyAfter: options.automaticallyAfter,
+      application: this.multiUserRotationApplication,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcPlacement,
+      target: this,
     });
   }
 }
@@ -750,7 +781,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let secret;
+    let secret: DatabaseSecret | undefined;
     if (!props.masterUserPassword) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUsername,
@@ -782,9 +813,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     });
 
     if (secret) {
-      this.secret = secret.addTargetAttachment('AttachedSecret', {
-        target: this
-      });
+      this.secret = secret.attach(this);
     }
 
     this.setLogRetention();
@@ -805,14 +834,20 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
   /**
    * The master user name.
    *
-   * @default inherited from the snapshot
+   * Specify this prop with the **current** master user name of the snapshot
+   * only when generating a new master user password with `generateMasterUserPassword`.
+   * The value will be set in the generated secret attached to the instance.
+   *
+   * It is not possible to change the master user name of a RDS instance.
+   *
+   * @default - inherited from the snapshot
    */
   readonly masterUsername?: string;
 
   /**
    * Whether to generate a new master user password and store it in
-   * Secrets Manager. `masterUsername` must be specified when this property
-   * is set to true.
+   * Secrets Manager. `masterUsername` must be specified with the **current**
+   * master user name of the snapshot when this property is set to true.
    *
    * @default false
    */
@@ -834,27 +869,33 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
-    if (props.generateMasterUserPassword && !props.masterUsername) {
-      throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
-    }
+    let secret: DatabaseSecret | undefined;
 
-    let secret;
-    if (!props.masterUserPassword && props.generateMasterUserPassword && props.masterUsername) {
+    if (props.generateMasterUserPassword) {
+      if (!props.masterUsername) { // We need the master username to include it in the generated secret
+        throw new Error('`masterUsername` must be specified when `generateMasterUserPassword` is set to true.');
+      }
+
+      if (props.masterUserPassword) {
+        throw new Error('Cannot specify `masterUserPassword` when `generateMasterUserPassword` is set to true.');
+      }
+
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUsername,
         encryptionKey: props.secretKmsKey,
       });
+    } else {
+      if (props.masterUsername) { // It's not possible to change the master username of a RDS instance
+        throw new Error('Cannot specify `masterUsername` when `generateMasterUserPassword` is set to false.');
+      }
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUsername,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').toString()
-        : (props.masterUserPassword
-          ? props.masterUserPassword.toString()
-          : undefined),
+        : props.masterUserPassword && props.masterUserPassword.toString(),
     });
 
     this.instanceIdentifier = instance.ref;
@@ -870,9 +911,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     });
 
     if (secret) {
-      this.secret = secret.addTargetAttachment('AttachedSecret', {
-        target: this
-      });
+      this.secret = secret.attach(this);
     }
 
     this.setLogRetention();

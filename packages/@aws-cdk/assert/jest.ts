@@ -1,5 +1,5 @@
 import { Stack } from "@aws-cdk/core";
-import cxapi = require("@aws-cdk/cx-api");
+import * as cxapi from '@aws-cdk/cx-api';
 import { HaveResourceAssertion, ResourcePart } from "./lib/assertions/have-resource";
 import { MatchStyle, matchTemplate } from "./lib/assertions/match-template";
 import { expect as ourExpect } from './lib/expect';

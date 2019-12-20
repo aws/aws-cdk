@@ -1,10 +1,11 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -33,7 +34,7 @@ export enum Tracing {
   DISABLED = "Disabled"
 }
 
-export interface FunctionProps {
+export interface FunctionProps extends EventInvokeConfigOptions {
   /**
    * The source code of your Lambda function. You can point to a file in an
    * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
@@ -49,9 +50,10 @@ export interface FunctionProps {
   readonly description?: string;
 
   /**
-   * The name of the function (within your source code) that Lambda calls to
-   * start running your code. For more information, see the Handler property
-   * in the AWS Lambda Developer Guide.
+   * The name of the method within your code that Lambda calls to execute
+   * your function. The format includes the file name. It can also include
+   * namespaces and other qualifiers, depending on the runtime.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
    *
    * NOTE: If you specify your source code as inline text by specifying the
    * ZipFile property within the Code property, specify index.function_name as
@@ -493,6 +495,16 @@ export class Function extends FunctionBase {
     }
 
     props.code.bindToResource(resource);
+
+    // Event Invoke Config
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+      this.configureAsyncInvoke({
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
+      });
+    }
   }
 
   /**
@@ -540,13 +552,22 @@ export class Function extends FunctionBase {
    * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda source code, or
    *  omit to skip validation.
    * @param description A description for this version.
+   * @param provisionedExecutions A provisioned concurrency configuration for a function's version.
+   * @param asyncInvokeConfig configuration for this version when it is invoked asynchronously.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+  public addVersion(
+    name: string,
+    codeSha256?: string,
+    description?: string,
+    provisionedExecutions?: number,
+    asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
+      provisionedConcurrentExecutions: provisionedExecutions,
+      ...asyncInvokeConfig,
     });
   }
 

@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-var-requires
-import crypto = require('crypto');
+import * as crypto from 'crypto';
 import { unresolved } from './encoding';
 
 /**
