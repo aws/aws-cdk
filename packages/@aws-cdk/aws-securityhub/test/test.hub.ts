@@ -1,23 +1,17 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import { Test } from 'nodeunit';
-import securityhub = require('../lib');
+import '@aws-cdk/assert/jest';
+import { App, Stack } from '@aws-cdk/core';
+import { Hub } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+test('create Hub', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'test');
 
-export = {
-    'creates a basic hub'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
+    // WHEN
+    new Hub(stack, 'Hub', {});
 
-        // WHEN
-        new securityhub.Hub(stack, 'Hub', {});
+    // THEN
+    expect(stack).toHaveResource('AWS::SecurityHub::Hub', {
 
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::SecurityHub::Hub', {
-
-        }));
-
-        test.done();
-    }
-};
+    });
+});
