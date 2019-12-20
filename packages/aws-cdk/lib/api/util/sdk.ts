@@ -67,6 +67,7 @@ export interface SDKOptions {
    * cdk deploy --endpoints 'cloudformation=http://localhost:4581,s3=http://localhost:4572'
    * cdk deploy --endpoints '{"cloudformation":"http://localhost:4581","s3":"http://localhost:4572"}'
    *
+   * @link https://docs.aws.amazon.com/general/latest/gr/rande.html#view-service-endpoints
    * @default Standard AWS cloud endpoints
    */
 
@@ -128,7 +129,9 @@ export class SDK implements ISDK {
     if (options.endpoints) {
       try {
         this.endpoints = JSON.parse(options.endpoints);
-      } catch (_e) {}
+      } catch (e) {
+        debug('Cannot JSON parse `--endpoints` argument: %s. Failed with error: %s', options.endpoints, e);
+      }
 
       try {
           this.endpoints = this.endpoints ||
@@ -139,7 +142,9 @@ export class SDK implements ISDK {
               }
               return acc;
           }, {});
-      } catch (_e) {}
+      } catch (e) {
+        debug('Cannot parse `--endpoints` shorthand notation: %s. Failed with error: %s', options.endpoints, e);
+      }
 
       this.endpoints = this.endpoints || {};
     }
