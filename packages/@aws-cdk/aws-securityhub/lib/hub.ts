@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
-import securityhub = require('./securityhub.generated');
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
+import * as securityhub from './securityhub.generated';
 
 /**
  * Properties for SecurityHub Hub.
