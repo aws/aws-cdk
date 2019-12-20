@@ -926,6 +926,9 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'EC2'
     }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'network',
+    }));
     test.done();
   },
 
@@ -998,6 +1001,9 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'EC2'
+    }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'application'
     }));
     test.done();
    },

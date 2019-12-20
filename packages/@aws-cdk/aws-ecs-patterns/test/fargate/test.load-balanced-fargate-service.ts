@@ -432,6 +432,9 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: "FARGATE",
     }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'network'
+    }));
     test.done();
   },
 
@@ -507,6 +510,9 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
+    }));
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'application'
     }));
     test.done();
   },
