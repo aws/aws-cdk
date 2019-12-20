@@ -1,5 +1,5 @@
-import cloudfront = require('@aws-cdk/aws-cloudfront');
-import route53 = require('@aws-cdk/aws-route53');
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as route53 from '@aws-cdk/aws-route53';
 
 /**
  * The hosted zone Id if using an alias record in Route53.

@@ -1,8 +1,8 @@
 import { schema } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
-import fs = require('fs-extra');
-import path = require('path');
-import genspec = require('./genspec');
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 
 const CORE = genspec.CORE_NAMESPACE;
@@ -47,7 +47,7 @@ export default class CodeGenerator {
     this.code.line();
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
     this.code.line();
-    this.code.line(`import ${CORE} = require('@aws-cdk/core');`);
+    this.code.line(`import * as ${CORE} from '@aws-cdk/core';`);
   }
 
   public async upToDate(outPath: string): Promise<boolean> {

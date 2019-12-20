@@ -1,6 +1,6 @@
-import s3 = require('@aws-cdk/aws-s3');
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import cdk = require('@aws-cdk/core');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as cdk from '@aws-cdk/core';
 
 export interface SourceConfig {
   /**
