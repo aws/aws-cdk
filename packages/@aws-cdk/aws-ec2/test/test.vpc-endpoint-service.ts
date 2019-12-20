@@ -24,7 +24,7 @@ export = {
           AcceptanceRequired: false
       }));
 
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
+      expect(stack).notTo(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
           Ref: "EndpointServiceED36BE1F"
         },

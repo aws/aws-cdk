@@ -6,6 +6,11 @@ import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.g
  * A VPC endpoint service.
  */
 export interface IVpcEndpointService extends IResource {
+  /**
+   * Name of the Vpc Endpoint Service
+   *
+   */
+  readonly vpcEndpointServiceName?: string;
 }
 
 /**
@@ -46,14 +51,16 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.whitelistedPrincipals = props.whitelistedPrincipals !== undefined ? props.whitelistedPrincipals : [];
 
     this.endpointService = new CfnVPCEndpointService(this, id, {
-      networkLoadBalancerArns: props.networkLoadBalancerArns,
+      networkLoadBalancerArns: this.networkLoadBalancerArns,
       acceptanceRequired: this.acceptanceRequired
     });
 
-    new CfnVPCEndpointServicePermissions(this, id + "Permissions", {
-      serviceId: this.endpointService.ref,
-      allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn)
-    });
+    if (this.whitelistedPrincipals.length > 0) {
+      new CfnVPCEndpointServicePermissions(this, id + "Permissions", {
+        serviceId: this.endpointService.ref,
+        allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn)
+      });
+    }
   }
 }
 
