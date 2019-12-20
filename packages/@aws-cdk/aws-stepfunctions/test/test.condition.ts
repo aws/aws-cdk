@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import stepfunctions = require('../lib');
+import * as stepfunctions from '../lib';
 
 export = {
     'Condition variables must start with $. or $['(test: Test) {

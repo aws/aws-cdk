@@ -1,8 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import { Duration, Lazy } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { createScalableTarget } from './util';
 
 export = {
@@ -40,8 +39,8 @@ export = {
       serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       scalableDimension: 'test:TestCount',
       resourceId: 'test:this/test',
-      minCapacity: Lazy.numberValue({ produce: () => 10 }),
-      maxCapacity: Lazy.numberValue({ produce: () => 1 }),
+      minCapacity: cdk.Lazy.numberValue({ produce: () => 10 }),
+      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
     });
 
     // THEN: no exception
@@ -63,7 +62,7 @@ export = {
 
     // WHEN
     target.scaleOnSchedule('ScaleUp', {
-      schedule: appscaling.Schedule.rate(Duration.minutes(1)),
+      schedule: appscaling.Schedule.rate(cdk.Duration.minutes(1)),
       maxCapacity: 50,
       minCapacity: 1,
     });

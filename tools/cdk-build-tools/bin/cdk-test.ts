@@ -1,5 +1,5 @@
-import fs = require('fs-extra');
-import yargs = require('yargs');
+import * as fs from 'fs-extra';
+import * as yargs from 'yargs';
 import { shell } from '../lib/os';
 import { cdkBuildOptions, configFilePath, currentPackageJson, hasIntegTests, unitTestFiles } from '../lib/package-info';
 import { Timers } from '../lib/timer';

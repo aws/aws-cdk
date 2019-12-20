@@ -1,7 +1,7 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
+import * as cfn from '@aws-cdk/aws-cloudformation';
 import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
-import path = require('path');
-import ecr_assets = require('../lib');
+import * as path from 'path';
+import * as ecr_assets from '../lib';
 
 class TheNestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {

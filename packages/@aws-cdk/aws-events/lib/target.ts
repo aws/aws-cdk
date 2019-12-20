@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { IConstruct } from '@aws-cdk/core';
 import { CfnRule } from './events.generated';
 import { RuleTargetInput } from './input';

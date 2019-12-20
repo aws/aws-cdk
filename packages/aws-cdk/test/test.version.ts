@@ -1,8 +1,8 @@
-import fs = require('fs-extra');
+import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
-import sinon = require('sinon');
+import * as os from 'os';
+import * as path from 'path';
+import * as sinon from 'sinon';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
 import { latestVersionIfHigher, VersionCheckTTL } from '../lib/version';

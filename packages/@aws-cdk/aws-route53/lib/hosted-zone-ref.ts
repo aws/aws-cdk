@@ -17,6 +17,13 @@ export interface IHostedZone extends IResource {
   readonly zoneName: string;
 
   /**
+   * ARN of this hosted zone, such as arn:${Partition}:route53:::hostedzone/${Id}
+   *
+   * @attribute
+   */
+  readonly hostedZoneArn: string;
+
+  /**
    * Returns the set of name servers for the specific hosted zone. For example:
    * ns1.example.com.
    *

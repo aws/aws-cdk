@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import cxapi = require('@aws-cdk/cx-api');
-import colors = require('colors/safe');
-import path = require('path');
-import yargs = require('yargs');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as colors from 'colors/safe';
+import * as path from 'path';
+import * as yargs from 'yargs';
 
 import { bootstrapEnvironment, BootstrapEnvironmentProps, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
@@ -18,7 +18,7 @@ import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import version = require('../lib/version');
+import * as version from '../lib/version';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -36,6 +36,7 @@ async function parseCommandLineArguments() {
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
+    .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified.', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
@@ -107,6 +108,7 @@ async function initCommandLine() {
   const aws = new SDK({
     profile: argv.profile,
     proxyAddress: argv.proxy,
+    caBundlePath: argv['ca-bundle-path'],
     ec2creds: argv.ec2creds,
   });
 

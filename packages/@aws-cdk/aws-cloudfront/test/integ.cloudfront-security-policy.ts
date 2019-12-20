@@ -1,6 +1,6 @@
 
-import cdk = require('@aws-cdk/core');
-import cloudfront = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as cloudfront from '../lib';
 
 const app = new cdk.App();
 

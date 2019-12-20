@@ -1,4 +1,4 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
 import { BootstrapOptions } from './cluster';
 import { LifecycleLabel } from './spot-interrupt-handler';

@@ -73,6 +73,13 @@ export interface VpcSubnet {
 
   /** The identifier of the route table for this subnet. */
   readonly routeTableId: string;
+
+  /**
+   * CIDR range of the subnet
+   *
+   * @default - CIDR information not available
+   */
+  readonly cidr?: string;
 }
 
 /**
@@ -107,6 +114,13 @@ export interface VpcContextResponse {
    * VPC id
    */
   readonly vpcId: string;
+
+  /**
+   * VPC cidr
+   *
+   * @default - CIDR information not available
+   */
+  readonly vpcCidrBlock?: string;
 
   /**
    * AZs

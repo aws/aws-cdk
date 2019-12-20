@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
-import path = require('path');
-import proxyquire = require('proxyquire');
+import * as path from 'path';
+import * as proxyquire from 'proxyquire';
 
 let ecrMock: any;
 

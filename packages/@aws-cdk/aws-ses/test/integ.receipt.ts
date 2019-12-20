@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import ses = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as ses from '../lib';
 
 const app = new cdk.App();
 

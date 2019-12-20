@@ -1,8 +1,8 @@
-import archiver = require('archiver');
-import crypto = require('crypto');
-import fs = require('fs-extra');
-import glob = require('glob');
-import path = require('path');
+import * as archiver from 'archiver';
+import * as crypto from 'crypto';
+import * as fs from 'fs-extra';
+import * as glob from 'glob';
+import * as path from 'path';
 
 export function zipDirectory(directory: string, outputFile: string): Promise<void> {
   return new Promise(async (ok, fail) => {

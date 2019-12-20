@@ -1,6 +1,6 @@
 // tslint:disable: max-line-length
 // tslint:disable: no-console
-import url = require('url');
+import * as url from 'url';
 import { httpRequest } from './outbound';
 import { log } from './util';
 

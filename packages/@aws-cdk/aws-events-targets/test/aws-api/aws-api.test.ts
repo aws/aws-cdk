@@ -1,8 +1,8 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import targets = require('../../lib');
+import * as targets from '../../lib';
 
 test('use AwsApi as an event rule target', () => {
   // GIVEN

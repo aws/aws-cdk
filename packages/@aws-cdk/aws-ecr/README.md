@@ -30,5 +30,5 @@ is important here):
 
 ```ts
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
-repository.addLifecycleRule({ maxImageAgeDays: cdk.Duration.days(30) });
+repository.addLifecycleRule({ maxImageAge: cdk.Duration.days(30) });
 ```

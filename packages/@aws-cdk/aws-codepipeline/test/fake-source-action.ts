@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
+import * as events from '@aws-cdk/aws-events';
 import { Construct } from '@aws-cdk/core';
-import codepipeline = require('../lib');
+import * as codepipeline from '../lib';
 
 export interface FakeSourceActionProps extends codepipeline.CommonActionProps {
   output: codepipeline.Artifact;

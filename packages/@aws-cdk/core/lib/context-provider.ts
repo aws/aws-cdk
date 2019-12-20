@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from './construct';
 import { Stack } from './stack';
 import { Token } from './token';

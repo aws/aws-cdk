@@ -1,11 +1,11 @@
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
-import { validateZoneName } from './util';
+import { makeHostedZoneArn, validateZoneName } from './util';
 
 export interface CommonHostedZoneProps {
   /**
@@ -45,12 +45,18 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
 }
 
 export class HostedZone extends Resource implements IHostedZone {
+  public get hostedZoneArn(): string {
+    return makeHostedZoneArn(this, this.hostedZoneId);
+  }
 
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
         throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
+      }
+      public get hostedZoneArn(): string {
+        return makeHostedZoneArn(this, this.hostedZoneId);
       }
     }
 
@@ -64,6 +70,9 @@ export class HostedZone extends Resource implements IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
+      public get hostedZoneArn(): string {
+        return makeHostedZoneArn(this, this.hostedZoneId);
+      }
     }
 
     return new Import(scope, id);
@@ -74,7 +83,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
-      Id: '/hostedzone/DUMMY',
+      Id: 'DUMMY',
       Name: query.domainName,
     };
 
@@ -93,6 +102,8 @@ export class HostedZone extends Resource implements IHostedZone {
     if (response.Name.endsWith('.')) {
       response.Name = response.Name.substring(0, response.Name.length - 1);
     }
+
+    response.Id = response.Id.replace('/hostedzone/', '');
 
     return HostedZone.fromHostedZoneAttributes(scope, id, {
       hostedZoneId: response.Id,
@@ -166,6 +177,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
       public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public get hostedZoneArn(): string {
+        return makeHostedZoneArn(this, this.hostedZoneId);
+      }
     }
     return new Import(scope, id);
   }
@@ -246,6 +260,9 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
       public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public get hostedZoneArn(): string {
+        return makeHostedZoneArn(this, this.hostedZoneId);
+      }
     }
     return new Import(scope, id);
   }

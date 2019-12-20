@@ -1,8 +1,8 @@
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import _ = require('lodash');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as _ from 'lodash';
 import {Test, testCase} from 'nodeunit';
-import lambda = require('../lib');
+import * as lambda from '../lib';
 
 export = testCase({
   'add incompatible layer'(test: Test) {

@@ -1,8 +1,8 @@
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
-import libfs = require('../../lib/fs');
+import * as os from 'os';
+import * as path from 'path';
+import * as libfs from '../../lib/fs';
 
 export = {
   files: {

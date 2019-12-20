@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import route53 = require('@aws-cdk/aws-route53');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+import * as route53 from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 test('use classic ELB as record target', () => {
   // GIVEN

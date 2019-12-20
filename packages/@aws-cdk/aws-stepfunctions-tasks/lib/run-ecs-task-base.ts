@@ -1,9 +1,8 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import iam = require('@aws-cdk/aws-iam');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
@@ -139,7 +138,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   }
 
   private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = Stack.of(task);
+    const stack = cdk.Stack.of(task);
 
     // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
     const policyStatements = [

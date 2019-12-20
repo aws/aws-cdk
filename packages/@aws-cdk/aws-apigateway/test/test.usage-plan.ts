@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from "nodeunit";
-import apigateway = require('../lib');
+import * as apigateway from '../lib';
 
 const RESOURCE_TYPE = 'AWS::ApiGateway::UsagePlan';
 export = {

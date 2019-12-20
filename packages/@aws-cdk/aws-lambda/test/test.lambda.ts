@@ -1,12 +1,12 @@
 import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import path = require('path');
-import lambda = require('../lib');
+import * as path from 'path';
+import * as lambda from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -1461,6 +1461,115 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
+    }));
+
+    test.done();
+  },
+
+  'with event invoke config'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      onFailure: {
+        bind: () => ({ destination: 'on-failure-arn' }),
+      },
+      onSuccess: {
+        bind: () => ({ destination: 'on-success-arn' }),
+      },
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3'
+      },
+      Qualifier: '$LATEST',
+      DestinationConfig: {
+        OnFailure: {
+          Destination: 'on-failure-arn'
+        },
+        OnSuccess: {
+          Destination: 'on-success-arn'
+        },
+      },
+      MaximumEventAgeInSeconds: 3600,
+      MaximumRetryAttempts: 0
+    }));
+
+    test.done();
+  },
+
+  'throws when calling configureAsyncInvoke on already configured function'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      maxEventAge: cdk.Duration.hours(1),
+    });
+
+    // THEN
+    test.throws(() => fn.configureAsyncInvoke({ retryAttempts: 0 }), /An EventInvokeConfig has already been configured/);
+
+    test.done();
+  },
+
+  'event invoke config on imported lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = lambda.Function.fromFunctionAttributes(stack, 'fn', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function'
+    });
+
+    // WHEN
+    fn.configureAsyncInvoke({
+      retryAttempts: 1
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: 'my-function',
+      Qualifier: '$LATEST',
+      MaximumRetryAttempts: 1
+    }));
+
+    test.done();
+  },
+
+  'add a version with event invoke config'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    fn.addVersion('1', 'sha256', 'desc', undefined, {
+      retryAttempts: 0
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3'
+      },
+      Qualifier: {
+        'Fn::GetAtt': [
+          'fnVersion197FA813F',
+          'Version'
+        ]
+      },
+      MaximumRetryAttempts: 0
     }));
 
     test.done();

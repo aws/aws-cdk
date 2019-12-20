@@ -1,6 +1,6 @@
 import { Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 
 export = {
   'test utc cron, hour only'(test: Test) {

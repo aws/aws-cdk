@@ -1,6 +1,6 @@
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require( '@aws-cdk/core');
-import tasks = require('../lib');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 class JobPollerStack extends cdk.Stack {
     constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {

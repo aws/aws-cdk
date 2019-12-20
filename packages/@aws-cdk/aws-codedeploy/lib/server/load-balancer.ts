@@ -1,5 +1,5 @@
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 /**
  * The generations of AWS load balancing solutions.

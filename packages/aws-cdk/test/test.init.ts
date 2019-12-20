@@ -1,8 +1,8 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs-extra');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
+import * as os from 'os';
+import * as path from 'path';
 import { availableInitTemplates, cliInit } from '../lib/init';
 
 const state: {

@@ -1,6 +1,6 @@
-import aws = require('aws-sdk');
-import AWS = require('aws-sdk-mock');
-import nodeunit = require('nodeunit');
+import * as aws from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
+import * as nodeunit from 'nodeunit';
 import { ISDK } from '../../lib/api';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
 
@@ -44,6 +44,7 @@ export = nodeunit.testCase({
     // THEN
     test.deepEqual(result, {
       vpcId: 'vpc-1234567',
+      vpcCidrBlock: '1.1.1.1/16',
       availabilityZones: ['bermuda-triangle-1337'],
       isolatedSubnetIds: undefined,
       isolatedSubnetNames: undefined,
@@ -129,6 +130,7 @@ export = nodeunit.testCase({
     // THEN
     test.deepEqual(result, {
       vpcId: 'vpc-1234567',
+      vpcCidrBlock: '1.1.1.1/16',
       availabilityZones: ['bermuda-triangle-1337'],
       isolatedSubnetIds: undefined,
       isolatedSubnetNames: undefined,
@@ -190,6 +192,7 @@ export = nodeunit.testCase({
     // THEN
     test.deepEqual(result, {
       vpcId: 'vpc-1234567',
+      vpcCidrBlock: '1.1.1.1/16',
       availabilityZones: ['bermuda-triangle-1337'],
       isolatedSubnetIds: undefined,
       isolatedSubnetNames: undefined,
@@ -220,7 +223,7 @@ function mockVpcLookup(test: nodeunit.Test, options: VpcLookupOptions) {
 
   AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
     test.deepEqual(params.Filters, [{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId }] });
+    return cb(null, { Vpcs: [{ VpcId, CidrBlock: '1.1.1.1/16' }] });
   });
 
   AWS.mock('EC2', 'describeSubnets', (params: aws.EC2.DescribeSubnetsRequest, cb: AwsCallback<aws.EC2.DescribeSubnetsResult>) => {

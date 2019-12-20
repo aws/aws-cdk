@@ -1,6 +1,7 @@
 /* istanbul ignore file */
-import AWS = require('aws-sdk');
-import https = require('https');
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as AWS from 'aws-sdk';
+import * as https from 'https';
 
 async function defaultHttpRequest(options: https.RequestOptions, responseBody: string) {
   return new Promise((resolve, reject) => {

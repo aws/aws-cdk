@@ -1,5 +1,5 @@
-import colors = require('colors/safe');
-import util = require('util');
+import * as colors from 'colors/safe';
+import * as util from 'util';
 
 // tslint:disable:no-console the whole point of those methods is precisely to output to the console...
 

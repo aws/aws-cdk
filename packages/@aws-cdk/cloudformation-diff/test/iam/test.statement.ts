@@ -1,4 +1,4 @@
-import fc = require('fast-check');
+import * as fc from 'fast-check';
 import { Test } from 'nodeunit';
 import { parseLambdaPermission, renderCondition, Statement } from '../../lib/iam/statement';
 

@@ -1,6 +1,6 @@
-import ssm = require('@aws-cdk/aws-ssm');
+import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
 

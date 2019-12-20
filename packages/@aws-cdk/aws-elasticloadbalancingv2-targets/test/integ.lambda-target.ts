@@ -1,8 +1,8 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {

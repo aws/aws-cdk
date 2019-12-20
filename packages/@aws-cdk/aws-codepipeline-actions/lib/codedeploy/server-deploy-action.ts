@@ -1,6 +1,6 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import iam = require('@aws-cdk/aws-iam');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';

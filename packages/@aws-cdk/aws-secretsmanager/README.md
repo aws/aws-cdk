@@ -39,8 +39,8 @@ const secret = secretsmanager.Secret.fromSecretAttributes(scope, 'ImportedSecret
 SecretsManager secret values can only be used in select set of properties. For the
 list of properties, see [the CloudFormation Dynamic References documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.htm).
 
-### Rotating a Secret
-A rotation schedule can be added to a Secret:
+### Rotating a Secret with a custom Lambda function
+A rotation schedule can be added to a Secret using a custom Lambda function:
 ```ts
 const fn = new lambda.Function(...);
 const secret = new secretsmanager.Secret(this, 'Secret');
@@ -52,4 +52,40 @@ secret.addRotationSchedule('RotationSchedule', {
 ```
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
 
-For RDS credentials rotation, see [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md).
+### Rotating database credentials
+Define a `SecretRotation` to rotate database credentials:
+```ts
+new SecretRotation(this, 'SecretRotation', {
+  application: SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, // MySQL single user scheme
+  secret: mySecret,
+  target: myDatabase, // a Connectable
+  vpc: myVpc, // The VPC where the secret rotation application will be deployed
+});
+```
+
+The secret must be a JSON string with the following format:
+```json
+{
+  "engine": "<required: database engine>",
+  "host": "<required: instance host name>",
+  "username": "<required: username>",
+  "password": "<required: password>",
+  "dbname": "<optional: database name>",
+  "port": "<optional: if not specified, default port will be used>",
+  "masterarn": "<required for multi user rotation: the arn of the master secret which will be used to create users/change passwords>"
+}
+```
+
+For the multi user scheme, a `masterSecret` must be specified:
+```ts
+new SecretRotation(stack, 'SecretRotation', {
+  application: SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+  secret: myUserSecret, // The secret that will be rotated
+  masterSecret: myMasterSecret, // The secret used for the rotation
+  target: myDatabase,
+  vpc: myVpc,
+});
+```
+
+See also [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md) where
+credentials generation and rotation is integrated.

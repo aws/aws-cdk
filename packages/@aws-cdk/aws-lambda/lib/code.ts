@@ -1,7 +1,6 @@
-import s3 = require('@aws-cdk/aws-s3');
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import cdk = require('@aws-cdk/core');
-import { CfnResource } from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as cdk from '@aws-cdk/core';
 
 export abstract class Code {
   /**
@@ -90,7 +89,7 @@ export abstract class Code {
    * class to bind to it. Specifically it's required to allow assets to add
    * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bindToResource(_resource: CfnResource, _options?: ResourceBindOptions) {
+  public bindToResource(_resource: cdk.CfnResource, _options?: ResourceBindOptions) {
     return;
   }
 }
@@ -195,7 +194,7 @@ export class AssetCode extends Code {
     };
   }
 
-  public bindToResource(resource: CfnResource, options: ResourceBindOptions = { }) {
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
       throw new Error(`bindToResource() must be called after bind()`);
     }

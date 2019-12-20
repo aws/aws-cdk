@@ -1,11 +1,11 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   Construct, ContextProvider, Fn, IResource, Resource, Stack, Token
 } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
-import ssm = require('./ssm.generated');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
 /**
@@ -414,6 +414,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
   /**
    * Imports an external parameter of type string list.
+   * Returns a token and should not be parsed.
    */
   public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
     class Import extends ParameterBase {

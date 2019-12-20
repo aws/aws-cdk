@@ -1,11 +1,11 @@
 // tslint:disable: max-line-length
-import cfn = require('@aws-cdk/aws-cloudformation');
-import lambda = require('@aws-cdk/aws-lambda');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import { Construct, Duration } from '@aws-cdk/core';
-import path = require('path');
-import consts = require('./runtime/consts');
+import * as path from 'path';
+import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');

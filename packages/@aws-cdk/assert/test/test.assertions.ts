@@ -1,10 +1,9 @@
 import 'source-map-support/register';
 
-import cdk = require('@aws-cdk/core');
-import cx = require('@aws-cdk/cx-api');
+import * as cdk from '@aws-cdk/core';
+import * as cx from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 
-import { Stack } from '@aws-cdk/core';
 import { countResources, exist, expect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
 passingExample('expect <synthStack> at <some path> to have <some type>', () => {
@@ -72,7 +71,7 @@ passingExample('expect <synthStack> to be a superset of <template>', () => {
   expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });
 passingExample('sugar for matching stack to a template', () => {
-  const stack = new Stack();
+  const stack = new cdk.Stack();
   new TestResource(stack, 'TestResource', { type: 'Test::Resource' });
   expect(stack).toMatch({
     Resources: {
@@ -217,7 +216,7 @@ passingExample('expect <synthStack> to count resources - as expected', () => {
 
 passingExample('expect <stack> to count resources - expected no resources', () => {
   const resourceType = 'Test::Resource';
-  const stack = new Stack();
+  const stack = new cdk.Stack();
   expect(stack).to(countResources(resourceType, 0));
 });
 

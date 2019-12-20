@@ -1,8 +1,8 @@
 // tslint:disable: no-console
 // tslint:disable: max-line-length
 import { IsCompleteResponse, OnEventResponse } from '../types';
-import cfnResponse = require('./cfn-response');
-import consts = require('./consts');
+import * as cfnResponse from './cfn-response';
+import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';
 import { getEnv, log } from './util';
 

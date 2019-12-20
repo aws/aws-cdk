@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -22,7 +22,15 @@
   "cdk-build": {
     "pre": [
       "./generate.sh"
-    ]
+    ],
+    "eslint": {
+      "ignore-pattern": [
+        "lib/init-templates/*/typescript/**/*.ts",
+        "lib/init-templates/*/javascript/**/*.js",
+        "test/integ/cli/app/**/*.js",
+        "test/integ/cli/cloud-assemblies/**/*.json.js"
+      ]
+    }
   },
   "nyc": {
     "statements": 8,
@@ -42,8 +50,10 @@
     "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^10.17.6",
-    "@types/request": "^2.48.3",
+    "@types/node": "^10.17.11",
+    "@types/nodeunit": "^0.0.30",
+    "@types/promptly": "^3.0.0",
+    "@types/request": "^2.48.4",
     "@types/semver": "^6.2.0",
     "@types/sinon": "^7.5.0",
     "@types/table": "^4.0.7",
@@ -51,18 +61,19 @@
     "@types/yaml": "^1.2.0",
     "@types/yargs": "^13.0.3",
     "aws-sdk-mock": "^4.5.0",
-    "cdk-build-tools": "1.18.0",
+    "cdk-build-tools": "1.19.0",
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
-    "pkglint": "1.18.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0",
     "sinon": "^7.5.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "1.18.0",
-    "@aws-cdk/cx-api": "1.18.0",
-    "@aws-cdk/region-info": "1.18.0",
+    "@aws-cdk/cloudformation-diff": "1.19.0",
+    "@aws-cdk/cx-api": "1.19.0",
+    "@aws-cdk/region-info": "1.19.0",
     "archiver": "^3.1.1",
-    "aws-sdk": "^2.585.0",
+    "aws-sdk": "^2.590.0",
     "camelcase": "^5.3.1",
     "colors": "^1.4.0",
     "decamelize": "^3.2.0",
@@ -71,11 +82,11 @@
     "json-diff": "^0.5.4",
     "minimatch": ">=3.0",
     "promptly": "^3.0.3",
-    "proxy-agent": "^3.1.1",
     "request": "^2.88.0",
-    "semver": "^6.3.0",
+    "semver": "^7.1.1",
     "source-map-support": "^0.5.16",
     "table": "^5.4.6",
+    "uuid": "^3.3.3",
     "yaml": "^1.7.2",
     "yargs": "^15.0.1"
   },

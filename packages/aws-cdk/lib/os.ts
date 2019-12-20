@@ -1,6 +1,6 @@
-import child_process = require("child_process");
-import colors = require('colors/safe');
-import { debug } from "./logging";
+import * as child_process from 'child_process';
+import * as colors from 'colors/safe';
+import { debug } from './logging';
 
 export interface ShellOptions extends child_process.SpawnOptions {
   quiet?: boolean;

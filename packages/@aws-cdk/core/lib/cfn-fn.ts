@@ -14,6 +14,15 @@ import { Token } from './token';
  */
 export class Fn {
   /**
+   * The ``Ref`` intrinsic function returns the value of the specified parameter or resource.
+   * Note that it doesn't validate the logicalName, it mainly serves paremeter/resource reference defined in a ``CfnInclude`` template.
+   * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
+   */
+  public static ref(logicalName: string): string {
+    return new FnRef(logicalName).toString();
+  }
+
+  /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
    * @param logicalNameOfResource The logical name (also called logical ID) of
@@ -308,6 +317,21 @@ export class Fn {
 class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
+  }
+}
+
+/**
+ * The intrinsic function ``Ref`` returns the value of the specified parameter or resource.
+ * When you specify a parameter's logical name, it returns the value of the parameter.
+ * When you specify a resource's logical name, it returns a value that you can typically use to refer to that resource, such as a physical ID.
+ */
+class FnRef extends FnBase {
+  /**
+   * Creates an ``Ref`` function.
+   * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
+   */
+  constructor(logicalName: string) {
+    super('Ref', logicalName);
   }
 }
 

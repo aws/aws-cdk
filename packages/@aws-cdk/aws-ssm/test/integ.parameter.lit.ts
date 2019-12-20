@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import ssm = require('../lib');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as ssm from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'SSM-Parameter');

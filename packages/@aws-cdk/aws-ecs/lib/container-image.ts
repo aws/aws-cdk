@@ -1,5 +1,5 @@
-import ecr = require('@aws-cdk/aws-ecr');
-import cdk = require('@aws-cdk/core');
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as cdk from '@aws-cdk/core';
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
 

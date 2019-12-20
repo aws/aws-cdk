@@ -108,32 +108,36 @@ For an instance database:
 const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
-### Rotating master password
+### Rotating credentials
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
+```ts
+instance.addRotationSingleUser(); // Will rotate automatically after 30 days
+```
 
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
 
-Rotation of the master password is also supported for an existing cluster:
+The multi user rotation scheme is also available:
 ```ts
-new SecretRotation(stack, 'Rotation', {
-    secret: importedSecret,
-    application: SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER
-    target: importedCluster, // or importedInstance
-    vpc: importedVpc,
-})
+instance.addRotationMultiUser('MyUser', {
+  secret: myImportedSecret
+});
 ```
 
-The `importedSecret` must be a JSON string with the following format:
-```json
-{
-  "engine": "<required: database engine>",
-  "host": "<required: instance host name>",
-  "username": "<required: username>",
-  "password": "<required: password>",
-  "dbname": "<optional: database name>",
-  "port": "<optional: if not specified, default port will be used>"
-}
+It's also possible to create user credentials together with the instance/cluster and add rotation:
+```ts
+const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
+  username: 'myuser'
+});
+const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
+
+instance.addRotationMultiUser('MyUser', { // Add rotation using the multi user scheme
+  secret: myUserSecretAttached
+});
 ```
+**Note**: This user must be created manually in the database using the master credentials.
+The rotation will start as soon as this user exists.
+
+See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
 ### Metrics
 Database instances expose metrics (`cloudwatch.Metric`):

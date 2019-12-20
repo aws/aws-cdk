@@ -1,7 +1,6 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import stepfunctions = require('../lib');
-import { IStepFunctionsTask } from '../lib';
+import * as stepfunctions from '../lib';
 
 export = {
     'Basic composition': {
@@ -727,7 +726,7 @@ function render(sm: stepfunctions.IChainable) {
     return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
 }
 
-class FakeTask implements IStepFunctionsTask {
+class FakeTask implements stepfunctions.IStepFunctionsTask {
     public bind(_task: stepfunctions.Task): stepfunctions.StepFunctionsTaskConfig {
         return {
             resourceArn: 'resource'

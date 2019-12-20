@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import s3 = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as s3 from '../lib';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

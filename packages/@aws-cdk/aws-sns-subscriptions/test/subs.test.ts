@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
-import subs = require('../lib');
+import * as subs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
