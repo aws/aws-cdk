@@ -79,6 +79,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-events": "1.19.0",
+    "@aws-cdk/aws-events-targets": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
     "@aws-cdk/aws-sns": "1.19.0",
     "@aws-cdk/aws-sqs": "1.19.0",
@@ -87,6 +88,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-events": "1.19.0",
+    "@aws-cdk/aws-events-targets": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
     "@aws-cdk/aws-sns": "1.19.0",
     "@aws-cdk/aws-sqs": "1.19.0",
