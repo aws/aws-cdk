@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import aws = require('aws-sdk');
-import colors = require('colors/safe');
-import uuid = require('uuid');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as aws from 'aws-sdk';
+import * as colors from 'colors/safe';
+import * as uuid from 'uuid';
 import { Tag } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';

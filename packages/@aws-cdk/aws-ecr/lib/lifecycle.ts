@@ -47,7 +47,7 @@ export interface LifecycleRule {
   /**
    * The maximum number of images to retain
    *
-   * Specify exactly one of maxImageCount and maxImageAgeDays.
+   * Specify exactly one of maxImageCount and maxImageAge.
    */
   readonly maxImageCount?: number;
 
