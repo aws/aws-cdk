@@ -6,12 +6,7 @@ import securityhub = require('./securityhub.generated');
  * Properties for SecurityHub Hub.
  */
 export interface HubProps {
-    /**
-     * A key-value map of resource tags of this Hub.
-     *
-     * @default - Empty tags
-     */
-    readonly tags?: { [key: string]: string };
+
 }
 
 /**
@@ -140,12 +135,14 @@ export class Hub extends HubBase {
 
     private readonly hub: securityhub.CfnHub;
 
+    // @ts-ignore
+    private readonly props: HubProps;
+
     constructor(scope: cdk.Construct, id: string, props: HubProps = {}) {
         super(scope, id);
 
-        this.hub = new securityhub.CfnHub(scope, 'Resource', {
-            tags: props.tags
-        });
+
+        this.hub = new securityhub.CfnHub(scope, 'Resource', {});
 
         this.hubArn = this.hub.ref;
     }
