@@ -45,7 +45,7 @@ export interface HelmChartProps {
   readonly namespace?: string;
 
   /**
-   * The values used to generate the release.
+   * The values to be used by the chart.
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};

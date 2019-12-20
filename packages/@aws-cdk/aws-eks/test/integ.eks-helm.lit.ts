@@ -42,8 +42,8 @@ class ClusterStack extends TestStack {
     });
 
     // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
-    new HelmChart(this, 'Dashboard', { cluster: this.cluster, name: 'kubernetes-dashboard', chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
-    new HelmChart(this, 'NginxIngress', { cluster: this.cluster, name: 'nginx-ingress', chart: 'nginx-ingress', repository: "https://helm.nginx.com/stable", namespace: 'kube-system' });
+    this.cluster.addChart('Dashboard', 'kubernetes-dashboard', 'https://kubernetes-charts.storage.googleapis.com');
+    this.cluster.addChart('NginxIngress', 'nginx-ingress', 'https://helm.nginx.com/stable', 'kube-system');
     /// !hide
   }
 }
