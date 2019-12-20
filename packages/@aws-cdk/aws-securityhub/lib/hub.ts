@@ -141,6 +141,7 @@ export class Hub extends HubBase {
     constructor(scope: cdk.Construct, id: string, props: HubProps = {}) {
         super(scope, id);
 
+        this.props = props;
 
         this.hub = new securityhub.CfnHub(scope, 'Resource', {});
 
