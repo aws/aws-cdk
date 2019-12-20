@@ -1,5 +1,4 @@
-import cdk = require('@aws-cdk/core');
-import { captureStackTrace, IPostProcessor } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { PolicyStatement } from './policy-statement';
 
 /**
@@ -30,7 +29,7 @@ export class PolicyDocument implements cdk.IResolvable {
   private readonly autoAssignSids: boolean;
 
   constructor(props: PolicyDocumentProps = {}) {
-    this.creationStack = captureStackTrace();
+    this.creationStack = cdk.captureStackTrace();
     this.autoAssignSids = !!props.assignSids;
 
     this.addStatements(...props.statements || []);
@@ -97,7 +96,7 @@ export class PolicyDocument implements cdk.IResolvable {
 /**
  * Removes duplicate statements and assign Sids if necessary
  */
-class RemoveDuplicateStatements implements IPostProcessor {
+class RemoveDuplicateStatements implements cdk.IPostProcessor {
   constructor(private readonly autoAssignSids: boolean) {
   }
 

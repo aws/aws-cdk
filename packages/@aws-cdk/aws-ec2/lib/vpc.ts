@@ -1,6 +1,6 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
     IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
@@ -60,6 +60,13 @@ export interface IVpc extends IResource {
    * @attribute
    */
   readonly vpcId: string;
+
+  /**
+   * CIDR range for this VPC
+   *
+   * @attribute
+   */
+  readonly vpcCidrBlock: string;
 
   /**
    * List of public subnets in this VPC
@@ -261,6 +268,11 @@ abstract class VpcBase extends Resource implements IVpc {
   public abstract readonly vpcId: string;
 
   /**
+   * CIDR range for this VPC
+   */
+  public abstract readonly vpcCidrBlock: string;
+
+  /**
    * List of public subnets in this VPC
    */
   public abstract readonly publicSubnets: ISubnet[];
@@ -442,6 +454,13 @@ export interface VpcAttributes {
    * VPC's identifier
    */
   readonly vpcId: string;
+
+  /**
+   * VPC's CIDR range
+   *
+   * @default - Retrieving the CIDR from the VPC will fail
+   */
+  readonly vpcCidrBlock?: string;
 
   /**
    * List of availability zones for the subnets in this VPC.
@@ -1578,11 +1597,13 @@ class ImportedVpc extends VpcBase {
   public readonly availabilityZones: string[];
   public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
+    this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
     this.vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
@@ -1597,6 +1618,13 @@ class ImportedVpc extends VpcBase {
     this.privateSubnets = priv.import(this);
     this.isolatedSubnets = iso.import(this);
   }
+
+  public get vpcCidrBlock(): string {
+    if (this.cidr === undefined) {
+      throw new Error(`Cannot perform this operation: 'vpcCidrBlock' was not supplied when creating this VPC`);
+    }
+    return this.cidr;
+  }
 }
 
 class LookedUpVpc extends VpcBase {
@@ -1607,11 +1635,13 @@ class LookedUpVpc extends VpcBase {
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
+  private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
+    this.cidr = props.vpcCidrBlock;
     this.vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
@@ -1625,6 +1655,15 @@ class LookedUpVpc extends VpcBase {
     this.publicSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PUBLIC);
     this.privateSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PRIVATE);
     this.isolatedSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.ISOLATED);
+  }
+
+  public get vpcCidrBlock(): string {
+    if (this.cidr === undefined) {
+      // Value might be cached from an old CLI version, so bumping the CX API protocol to
+      // force the value to exist would not have helped.
+      throw new Error(`Cannot perform this operation: 'vpcCidrBlock' was not found when looking up this VPC. Use a newer version of the CDK CLI and clear the old context value.`);
+    }
+    return this.cidr;
   }
 
   private extractSubnetsOfType(subnetGroups: cxapi.VpcSubnetGroup[], subnetGroupType: cxapi.VpcSubnetGroupType): ISubnet[] {
@@ -1758,6 +1797,7 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
  */
 const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
   availabilityZones: [],
+  vpcCidrBlock: '1.2.3.4/5',
   isolatedSubnetIds: undefined,
   isolatedSubnetNames: undefined,
   isolatedSubnetRouteTableIds: undefined,
@@ -1776,11 +1816,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
           availabilityZone: 'dummy-1a',
           subnetId: 's-12345',
           routeTableId: 'rtb-12345s',
+          cidr: '1.2.3.4/5',
         },
         {
           availabilityZone: 'dummy-1b',
           subnetId: 's-67890',
           routeTableId: 'rtb-67890s',
+          cidr: '1.2.3.4/5',
         },
       ],
     },
@@ -1792,11 +1834,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
           availabilityZone: 'dummy-1a',
           subnetId: 'p-12345',
           routeTableId: 'rtb-12345p',
+          cidr: '1.2.3.4/5',
         },
         {
           availabilityZone: 'dummy-1b',
           subnetId: 'p-67890',
           routeTableId: 'rtb-57890p',
+          cidr: '1.2.3.4/5',
         },
       ],
     },
