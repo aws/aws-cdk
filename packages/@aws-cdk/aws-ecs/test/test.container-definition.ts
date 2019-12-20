@@ -1,9 +1,9 @@
 import { expect, haveResource, haveResourceLike, InspectionFailure } from '@aws-cdk/assert';
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 export = {
   "When creating a Task Definition": {

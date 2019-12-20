@@ -1,5 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
-import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
@@ -35,7 +34,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: PolicyStatement, allowNoOp?: boolean): void;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -72,7 +71,7 @@ abstract class KeyBase extends Resource implements IKey {
    * If specified, addToResourcePolicy can be used to edit this policy.
    * Otherwise this method will no-op.
    */
-  protected abstract readonly policy?: PolicyDocument;
+  protected abstract readonly policy?: iam.PolicyDocument;
 
   /**
    * Collection of aliases added to the key
@@ -100,7 +99,7 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true) {
     const stack = Stack.of(this);
 
     if (!this.policy) {
@@ -260,7 +259,7 @@ export interface KeyProps {
    * @default - A policy document with permissions for the account root to
    * administer the key will be created.
    */
-  readonly policy?: PolicyDocument;
+  readonly policy?: iam.PolicyDocument;
 
   /**
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
@@ -307,7 +306,7 @@ export class Key extends KeyBase {
 
   public readonly keyArn: string;
   public readonly keyId: string;
-  protected readonly policy?: PolicyDocument;
+  protected readonly policy?: iam.PolicyDocument;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
@@ -315,7 +314,7 @@ export class Key extends KeyBase {
     if (props.policy) {
       this.policy = props.policy;
     } else {
-      this.policy = new PolicyDocument();
+      this.policy = new iam.PolicyDocument();
       this.allowAccountToAdmin();
     }
 
@@ -356,7 +355,7 @@ export class Key extends KeyBase {
       "kms:GenerateDataKey"
     ];
 
-    this.addToResourcePolicy(new PolicyStatement({
+    this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions,
       principals: [new iam.AccountRootPrincipal()]

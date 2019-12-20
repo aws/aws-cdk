@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { CodePipelineSource } from './codepipeline-source';
 import { CommonProjectProps, Project } from './project';

@@ -1,4 +1,4 @@
-import semver = require('semver');
+import * as semver from 'semver';
 import { AssemblyManifest } from './cloud-assembly';
 
 // ----------------------------------------------------------------------

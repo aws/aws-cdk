@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import eks = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as eks from '../lib';
 import { TestStack } from './util';
 
 class EksClusterStack extends TestStack {

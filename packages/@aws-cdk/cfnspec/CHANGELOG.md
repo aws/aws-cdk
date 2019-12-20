@@ -1,3 +1,24 @@
+# CloudFormation Resource Specification v10.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Pinpoint::EmailTemplate DefaultSubstitutions (__added__)
+* AWS::Pinpoint::EmailTemplate TemplateDescription (__added__)
+* AWS::Pinpoint::PushTemplate DefaultSubstitutions (__added__)
+* AWS::Pinpoint::PushTemplate TemplateDescription (__added__)
+* AWS::Pinpoint::SmsTemplate DefaultSubstitutions (__added__)
+* AWS::Pinpoint::SmsTemplate TemplateDescription (__added__)
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v10.0.0
 
 ## New Resource Types

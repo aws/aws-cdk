@@ -1,5 +1,5 @@
-import kinesis = require('@aws-cdk/aws-kinesis');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as kinesis from '@aws-cdk/aws-kinesis';
+import * as lambda from '@aws-cdk/aws-lambda';
 import {StreamEventSource, StreamEventSourceProps} from './stream';
 
 export interface KinesisEventSourceProps extends StreamEventSourceProps {

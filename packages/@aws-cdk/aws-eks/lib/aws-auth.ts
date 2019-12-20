@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Lazy, Stack } from '@aws-cdk/core';
 import { Mapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';

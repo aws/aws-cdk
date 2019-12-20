@@ -1,7 +1,7 @@
 import { Construct, ISynthesisSession } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 import { copyDirectory, CopyOptions, fingerprint } from './fs';
 
 export interface StagingProps extends CopyOptions {

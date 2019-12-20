@@ -1,6 +1,6 @@
-import cdk = require('@aws-cdk/core');
-import path = require('path');
-import assets = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
+import * as assets from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-assets-docker');
