@@ -1101,6 +1101,23 @@
           }
         }
       },
+      "cluster22chartdashboard616811AB": {
+        "Type": "Custom::AWSCDK-EKS-HelmChart",
+        "Properties": {
+          "ServiceToken": {
+            "Fn::GetAtt": [
+              "cluster22HelmChartHandler0BAF302E",
+              "Arn"
+            ]
+          },
+          "Name": "dashboard",
+          "Chart": "kubernetes-dashboard",
+          "Namespace": "default",
+          "Repository": "https://kubernetes-charts.storage.googleapis.com"
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
       "cluster22HelmChartHandler0BAF302E": {
         "Type": "AWS::Lambda::Function",
         "Properties": {
@@ -1173,6 +1190,23 @@
           "cluster22ResourceHandlerServiceRoleC2E4F327"
         ]
       },
+      "cluster22chartnginxingress90C2D506": {
+        "Type": "Custom::AWSCDK-EKS-HelmChart",
+        "Properties": {
+          "ServiceToken": {
+            "Fn::GetAtt": [
+              "cluster22HelmChartHandler0BAF302E",
+              "Arn"
+            ]
+          },
+          "Name": "nginx-ingress",
+          "Chart": "nginx-ingress",
+          "Namespace": "kube-system",
+          "Repository": "https://helm.nginx.com/stable"
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
       "kubectllayer8C2542BCBF2B4DFEB765E181FD30A9A0617C4ADA": {
         "Type": "AWS::Serverless::Application",
         "Properties": {
@@ -1213,23 +1247,6 @@
           }
         }
       },
-      "Dashboard9E4231ED": {
-        "Type": "Custom::AWSCDK-EKS-HelmChart",
-        "Properties": {
-          "ServiceToken": {
-            "Fn::GetAtt": [
-              "cluster22HelmChartHandler0BAF302E",
-              "Arn"
-            ]
-          },
-          "Name": "kubernetes-dashboard",
-          "Chart": "kubernetes-dashboard",
-          "Namespace": "default",
-          "Repository": "https://kubernetes-charts.storage.googleapis.com"
-        },
-        "UpdateReplacePolicy": "Delete",
-        "DeletionPolicy": "Delete"
-      },
       "kubectllayer200beta1B9303363": {
         "Type": "AWS::Serverless::Application",
         "Properties": {
@@ -1241,23 +1258,6 @@
             "LayerName": "kubectl-aa3d1881d348da39094e6b1ce165f580"
           }
         }
-      },
-      "NginxIngress2CC84930": {
-        "Type": "Custom::AWSCDK-EKS-HelmChart",
-        "Properties": {
-          "ServiceToken": {
-            "Fn::GetAtt": [
-              "cluster22HelmChartHandler0BAF302E",
-              "Arn"
-            ]
-          },
-          "Name": "nginx-ingress",
-          "Chart": "nginx-ingress",
-          "Namespace": "kube-system",
-          "Repository": "https://helm.nginx.com/stable"
-        },
-        "UpdateReplacePolicy": "Delete",
-        "DeletionPolicy": "Delete"
       }
     },
     "Outputs": {

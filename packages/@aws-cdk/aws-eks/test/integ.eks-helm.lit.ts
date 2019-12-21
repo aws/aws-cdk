@@ -3,7 +3,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct } from '@aws-cdk/core';
-import { Cluster, HelmChart } from '../lib';
+import { Cluster } from '../lib';
 import { TestStack } from './util';
 
 class VpcStack extends TestStack {
@@ -42,8 +42,8 @@ class ClusterStack extends TestStack {
     });
 
     // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
-    this.cluster.addChart('Dashboard', 'kubernetes-dashboard', 'https://kubernetes-charts.storage.googleapis.com');
-    this.cluster.addChart('NginxIngress', 'nginx-ingress', 'https://helm.nginx.com/stable', 'kube-system');
+    this.cluster.addChart('dashboard', 'kubernetes-dashboard', 'https://kubernetes-charts.storage.googleapis.com');
+    this.cluster.addChart('nginx-ingress', 'nginx-ingress', 'https://helm.nginx.com/stable', 'kube-system');
     /// !hide
   }
 }

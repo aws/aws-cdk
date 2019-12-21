@@ -588,14 +588,13 @@ export class Cluster extends Resource implements ICluster {
    * @param id logical id of this manifest.
    * @param name name of the chart.
    * @param repository repository which contains the chart.
-   * @param version chart version to install.
    * @param namespace Kubernetes namespace scope of the requests.
    * @param values values to be used by the chart.
    * @returns a `HelmChart` object
    * @throws If `kubectlEnabled` is `false`
    */
-  public addChart(id: string, name: string, repository?: string, namespace?: string, version?: string, values?: {[key: string]: any}) {
-    return new HelmChart(this, `chart-${id}`, { cluster: this, name: id, chart: name, repository, version, namespace, values });
+  public addChart(id: string, name: string, repository?: string, namespace?: string, values?: {[key: string]: any}) {
+    return new HelmChart(this, `chart-${id}`, { cluster: this, name: id, chart: name, repository, namespace, values });
   }
 
   private createKubernetesResourceHandler() {
