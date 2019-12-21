@@ -1,7 +1,7 @@
-import cxapi = require('@aws-cdk/cx-api');
-import childProcess = require('child_process');
-import fs = require('fs-extra');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as childProcess from 'child_process';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';

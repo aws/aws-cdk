@@ -1,11 +1,10 @@
 import '@aws-cdk/assert/jest';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import tasks = require('../lib');
-import { BatchStrategy, S3DataType } from '../lib';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as tasks from '../lib';
 
 let stack: cdk.Stack;
 let role: iam.Role;
@@ -108,7 +107,7 @@ test('create complex transform job', () => {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
-                    s3DataType: S3DataType.S3_PREFIX,
+                    s3DataType: tasks.S3DataType.S3_PREFIX,
                 }
             }
         },
@@ -124,7 +123,7 @@ test('create complex transform job', () => {
         tags: {
             Project: 'MyProject',
         },
-        batchStrategy: BatchStrategy.MULTI_RECORD,
+        batchStrategy: tasks.BatchStrategy.MULTI_RECORD,
         environment: {
             SOMEVAR: 'myvalue'
         },
@@ -191,7 +190,7 @@ test('pass param to transform job', () => {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
-                    s3DataType: S3DataType.S3_PREFIX,
+                    s3DataType: tasks.S3DataType.S3_PREFIX,
                 }
             }
         },

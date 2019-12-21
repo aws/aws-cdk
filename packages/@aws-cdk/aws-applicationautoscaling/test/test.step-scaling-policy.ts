@@ -1,9 +1,9 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
-import fc = require('fast-check');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
+import * as fc from 'fast-check';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { arbitrary_input_intervals, createScalableTarget } from './util';
 
 export = {

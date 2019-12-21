@@ -1,5 +1,4 @@
-import cdk = require('@aws-cdk/core');
-import { Aws, captureStackTrace, Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
@@ -314,11 +313,11 @@ export class CompositePrincipal extends PrincipalBase {
 class StackDependentToken implements cdk.IResolvable {
   public readonly creationStack: string[];
   constructor(private readonly fn: (stack: cdk.Stack) => any) {
-    this.creationStack = captureStackTrace();
+    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(context: cdk.IResolveContext) {
-    return this.fn(Stack.of(context.scope));
+    return this.fn(cdk.Stack.of(context.scope));
   }
 
   public toString() {
@@ -334,13 +333,13 @@ class ServicePrincipalToken implements cdk.IResolvable {
   public readonly creationStack: string[];
   constructor(private readonly service: string,
               private readonly opts: ServicePrincipalOpts) {
-    this.creationStack = captureStackTrace();
+    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(ctx: cdk.IResolveContext) {
-    const region = this.opts.region || Stack.of(ctx.scope).region;
+    const region = this.opts.region || cdk.Stack.of(ctx.scope).region;
     const fact = RegionInfo.get(region).servicePrincipal(this.service);
-    return fact || Default.servicePrincipal(this.service, region, Aws.URL_SUFFIX);
+    return fact || Default.servicePrincipal(this.service, region, cdk.Aws.URL_SUFFIX);
   }
 
   public toString() {

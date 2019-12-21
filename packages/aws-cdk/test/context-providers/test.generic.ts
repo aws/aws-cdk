@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import { ISDK } from '../../lib/api/util/sdk';
-import contextproviders = require('../../lib/context-providers');
+import * as contextproviders from '../../lib/context-providers';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/settings';
 
 const mockSDK: ISDK = {
