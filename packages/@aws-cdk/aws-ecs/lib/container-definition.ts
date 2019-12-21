@@ -463,10 +463,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   /**
    * Returns the host port for the requested container port if it exists
-   *
-   * @internal
    */
-  public _findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
+  public findPortMapping(containerPort: number, protocol: Protocol): PortMapping | undefined {
     for (const portMapping of this.portMappings) {
       const p = portMapping.protocol || Protocol.TCP;
       const c = portMapping.containerPort;

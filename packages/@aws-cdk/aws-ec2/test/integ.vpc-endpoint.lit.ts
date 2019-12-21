@@ -32,13 +32,13 @@ class VpcEndpointStack extends cdk.Stack {
     }));
 
     // Add an interface endpoint
-    const ecrDockerEndpoint = vpc.addInterfaceEndpoint('EcrDockerEndpoint', {
-      service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER
-    });
+    vpc.addInterfaceEndpoint('EcrDockerEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER,
 
-    // When working with an interface endpoint, use the connections object to
-    // allow traffic to flow to the endpoint.
-    ecrDockerEndpoint.connections.allowDefaultPortFromAnyIpv4();
+      // Uncomment the following to allow more fine-grained control over
+      // who can access the endpoint via the '.connections' object.
+      // open: false
+    });
     /// !hide
   }
 }
