@@ -2,60 +2,67 @@ import {Assertion} from "../assertion";
 import {StackInspector} from "../inspector";
 
 class HaveOutputAssertion extends Assertion<StackInspector> {
-  constructor(private readonly outputName?: string, private readonly exportName?: string, private outputValue?: any) {
+  constructor(private readonly outputName?: string, private readonly exportName?: any, private outputValue?: any) {
     super();
-  }
-
-  public get description(): string {
-    return `output\
-${this.outputName ? ' with name ' + this.outputName : ''}\
-${this.exportName ? ' with export name ' + this.exportName : ''}\
-${this.outputValue ? ' with value ' + JSON.stringify(this.outputValue) : ''}\
-`;
-  }
-
-  public assertUsing(inspector: StackInspector): boolean {
     if (!this.outputName && !this.exportName) {
       throw new Error('At least one of [outputName, exportName] should be provided');
     }
+  }
+
+  public get description(): string {
+    const descriptionPartsArray = [
+      'output',
+      `${this.outputName ? ' with name ' + this.outputName : ''}`,
+      `${this.exportName ? ' with export name ' + JSON.stringify(this.exportName) : ''}`,
+      `${this.outputValue ? ' with value ' + JSON.stringify(this.outputValue) : ''}`
+    ];
+    return descriptionPartsArray.join();
+  }
+
+  public assertUsing(inspector: StackInspector): boolean {
     if (!('Outputs' in inspector.value)) {
       return false;
     }
-    return (!this.outputName || this.checkOutputName(inspector)) &&
-        (!this.exportName || this.checkExportName(inspector)) &&
-        (!this.outputValue || this.checkOutputValue(inspector));
+    return (this.checkOutputName(inspector)) &&
+        (this.checkExportName(inspector)) &&
+        (this.checkOutputValue(inspector));
   }
 
   private checkOutputName(inspector: StackInspector): boolean {
-    return !!this.outputName && (this.outputName in inspector.value.Outputs);
+    if (!this.outputName) {
+      return true;
+    }
+    return this.outputName in inspector.value.Outputs;
   }
 
   private checkExportName(inspector: StackInspector): boolean {
-    let outputs;
-    if (this.outputName) {
-      outputs = [inspector.value.Outputs[this.outputName]];
-    } else {
-      outputs = Object.values(inspector.value.Outputs);
+    if (!this.exportName) {
+      return true;
     }
-    const outputWithExport = outputs.find((output: any) => {
-      return output && output.Export && (output.Export.Name === this.exportName);
-    });
+    const outputs = Object.entries(inspector.value.Outputs)
+        .filter(([name, ]) => !this.outputName || this.outputName === name)
+        .map(([, value]) => value);
+    const outputWithExport = this.findOutput(outputs);
     return !!outputWithExport;
   }
 
   private checkOutputValue(inspector: StackInspector): boolean {
-    let output;
-    if (this.outputName) {
-      output = inspector.value.Outputs[this.outputName];
-    } else {
-      output = Object.values(inspector.value.Outputs).find((out: any) => {
-        return out && out.Export && (out.Export.Name === this.exportName);
-      });
+    if (!this.outputValue) {
+      return true;
     }
+    const output = this.outputName ?
+      inspector.value.Outputs[this.outputName] :
+      this.findOutput(Object.values(inspector.value.Outputs));
     return output ?
         JSON.stringify(output.Value) === JSON.stringify(this.outputValue) :
         false;
+  }
 
+  private findOutput(outputs: any): any {
+    const thisExportNameString = JSON.stringify(this.exportName);
+    return outputs.find((out: any) => {
+      return JSON.stringify(out.Export?.Name) === thisExportNameString;
+    });
   }
 }
 
@@ -73,10 +80,10 @@ export interface HaveOutputProperties {
    */
   outputName?: string;
   /**
-   * Export name of the output, when it's exported for cross-stack referencing 
+   * Export name of the output, when it's exported for cross-stack referencing
    * @default - the export name is not required and will not be checked
    */
-  exportName?: string;
+  exportName?: any;
   /**
    * Value of the output;
    * @default - the value will not be checked

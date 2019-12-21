@@ -1,9 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
-import {writeFileSync} from 'fs';
-import {Test} from 'nodeunit';
-import {join} from 'path';
-import {expect, haveOutput} from '../lib/index';
+import { unlink, writeFileSync } from 'fs';
+import { Test } from 'nodeunit';
+import { join } from 'path';
+import { expect, haveOutput } from '../lib';
 
+let templateFilePath: string;
 let synthStack: cxapi.CloudFormationStackArtifact;
 let noOutputStack: cxapi.CloudFormationStackArtifact;
 module.exports = {
@@ -14,6 +15,12 @@ module.exports = {
           Type: 'Some::Resource',
           Properties: {
             PropA: 'somevalue'
+          }
+        },
+        AnotherResource: {
+          Type: 'Some::AnotherResource',
+          Properties: {
+            PropA: 'anothervalue'
           }
         }
       },
@@ -27,6 +34,19 @@ module.exports = {
           },
           Export: {
             Name: 'TestOutputExportName'
+          }
+        },
+        ComplexExportNameOutput: {
+          Value: {
+            'Fn::GetAtt': [
+              'ComplexOutputResource',
+              'Arn'
+            ]
+          },
+          Export: {
+            Name: {
+              "Fn::Sub": "${AWS::StackName}-ComplexExportNameOutput"
+            }
           }
         }
       }
@@ -144,6 +164,25 @@ module.exports = {
     });
     test.done();
   },
+  'haveOutput should be able to handle complex exportName values'(test: Test) {
+    expect(synthStack).to(haveOutput({
+      exportName: {'Fn::Sub': '${AWS::StackName}-ComplexExportNameOutput'},
+      outputValue: {
+        'Fn::GetAtt': [
+          'ComplexOutputResource',
+          'Arn'
+        ]
+      }
+    }));
+    test.done();
+  },
+  'tearDown'(cb: () => void) {
+    if (templateFilePath) {
+      unlink(templateFilePath, cb);
+    } else {
+      cb();
+    }
+  }
 };
 
 function mkStack(template: any): cxapi.CloudFormationStackArtifact {
@@ -152,12 +191,12 @@ function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   const assembly = new cxapi.CloudAssemblyBuilder();
   assembly.addArtifact(stackName, {
     type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
-    environment: cxapi.EnvironmentUtils.format('123456789', 'ap-southeast-2'),
+    environment: cxapi.EnvironmentUtils.format('123456789012', 'bermuda-triangle-1'),
     properties: {
       templateFile: templateFileName
     }
   });
-
-  writeFileSync(join(assembly.outdir, templateFileName), JSON.stringify(template));
+  templateFilePath = join(assembly.outdir, templateFileName);
+  writeFileSync(templateFilePath, JSON.stringify(template));
   return assembly.buildAssembly().getStackByName(stackName);
 }
