@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { unlink, writeFileSync } from 'fs';
 import { Test } from 'nodeunit';
 import { join } from 'path';
