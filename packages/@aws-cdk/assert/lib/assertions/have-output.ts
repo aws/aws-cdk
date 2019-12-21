@@ -16,7 +16,7 @@ ${this.outputValue ? ' with value ' + JSON.stringify(this.outputValue) : ''}\
 
   public assertUsing(inspector: StackInspector): boolean {
     if (!this.outputName && !this.exportName) {
-      throw new Error('At least one of [outputName, exportName] should be defined');
+      throw new Error('At least one of [outputName, exportName] should be provided');
     }
     if (!('Outputs' in inspector.value)) {
       return false;
@@ -67,9 +67,21 @@ ${this.outputValue ? ' with value ' + JSON.stringify(this.outputValue) : ''}\
  * @property outputValue  value of the output
  */
 export interface HaveOutputProperties {
-  outputName?: string,
-  exportName?: string,
-  outputValue?: any
+  /**
+   * Logical ID of the output
+   * @default - the logical ID of the output will not be checked
+   */
+  outputName?: string;
+  /**
+   * Export name of the output, when it's exported for cross-stack referencing 
+   * @default - the export name is not required and will not be checked
+   */
+  exportName?: string;
+  /**
+   * Value of the output;
+   * @default - the value will not be checked
+   */
+  outputValue?: any;
 }
 
 /**
