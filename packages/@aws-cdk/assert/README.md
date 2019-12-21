@@ -82,11 +82,11 @@ expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
 ### Check existence of an output
 `haveOutput` assertion can be used to check that a stack contains specific output. 
 Parameters to check against can be:
-- output name
-- output value
-- export name
+- `outputName`
+- `outputValue`
+- `exportName`
 
-If output value is provided, at least one of \[output name, export name\] should be proviled as well
+If `outputValue` is provided, at least one of `outputName`, `exportName` should be provided as well
 
 Example
 ```ts
