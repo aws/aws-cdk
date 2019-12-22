@@ -82,6 +82,25 @@ export = {
     sg.allowIntraSecurityGroupTraffic(Port.tcp(443));
     // THEN
 
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: "tcp",
+      Description: "from SG1:443",
+      FromPort: 443,
+      GroupId: {
+        "Fn::GetAtt": [
+          "SG1BA065B6E",
+          "GroupId"
+        ]
+      },
+      SourceSecurityGroupId: {
+        "Fn::GetAtt": [
+          "SG1BA065B6E",
+          "GroupId"
+        ]
+      },
+      ToPort: 443
+    }));
+
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
@@ -115,6 +134,25 @@ export = {
         ]
       },
       SourceSecurityGroupId: {
+        "Fn::GetAtt": [
+          "SG1BA065B6E",
+          "GroupId"
+        ]
+      },
+      ToPort: 443
+    }));
+
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      IpProtocol: "tcp",
+      Description: "to SG1:443",
+      FromPort: 443,
+      GroupId: {
+        "Fn::GetAtt": [
+          "SG1BA065B6E",
+          "GroupId"
+        ]
+      },
+      DestinationSecurityGroupId: {
         "Fn::GetAtt": [
           "SG1BA065B6E",
           "GroupId"
