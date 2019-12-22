@@ -60,6 +60,13 @@ export interface IBucket extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
+   * Optional bucket Access Control.
+   *
+   * @default BucketAccessControl.PRIVATE
+   */
+  accessControl?: BucketAccessControl;
+
+  /**
    * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
@@ -91,6 +98,11 @@ export interface IBucket extends IResource {
    * the key pattern specified. To represent all keys, specify ``"*"``.
    */
   arnForObjects(keyPattern: string): string;
+
+  /**
+   * Grants write permissions for the LogDelivery group to the bucket.
+   */
+  allowLogDelivery(): void;
 
   /**
    * Grant read permissions for this bucket and it's contents to an IAM
@@ -303,6 +315,11 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
+   * Optional Bucket access control.
+   */
+  public abstract accessControl?: BucketAccessControl;
+
+  /**
    * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
@@ -453,6 +470,13 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public arnForObjects(keyPattern: string): string {
     return `${this.bucketArn}/${keyPattern}`;
+  }
+
+  /**
+   * Adds write permissions to the LogDelivery group via the Bucket ACL.
+   */
+  public allowLogDelivery() {
+    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 
   /**
@@ -968,6 +992,7 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
       public readonly encryptionKey = attrs.encryptionKey;
       public policy?: BucketPolicy = undefined;
+      public accessControl?: BucketAccessControl = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
 
@@ -992,6 +1017,7 @@ export class Bucket extends BucketBase {
 
   public readonly encryptionKey?: kms.IKey;
   public policy?: BucketPolicy;
+  public accessControl?: BucketAccessControl;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
@@ -1018,7 +1044,7 @@ export class Bucket extends BucketBase {
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
-      accessControl: props.accessControl,
+      accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
     });
 
@@ -1042,6 +1068,11 @@ export class Bucket extends BucketBase {
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+    this.accessControl = props.accessControl;
+
+    if (props.serverAccessLogsBucket) {
+      props.serverAccessLogsBucket.allowLogDelivery();
+    }
 
     // Add all bucket metric configurations rules
     (props.metrics || []).forEach(this.addMetric.bind(this));
