@@ -95,7 +95,7 @@ export = {
 
     test.done();
   },
-  'intra security group rule without `allowAllOutbound'(test: Test) {
+  'intra security group rule without `allowAllOutbound`'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -104,8 +104,7 @@ export = {
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
     sg.allowIntraSecurityGroupTraffic(Port.tcp(443));
     // THEN
-    
-    
+
     expect(stack).notTo(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
