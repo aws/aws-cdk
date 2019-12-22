@@ -67,8 +67,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.19.0",
-    "@types/aws-lambda": "^8.10.37",
+    "@types/aws-lambda": "^8.10.39",
     "@types/lodash": "^4.14.149",
+    "@types/nodeunit": "^0.0.30",
     "@types/sinon": "^7.5.0",
     "aws-sdk": "^2.590.0",
     "aws-sdk-mock": "^4.5.0",
@@ -77,6 +78,7 @@
     "cfn2ts": "1.19.0",
     "lodash": "^4.17.15",
     "nock": "^11.7.0",
+    "nodeunit": "^0.11.3",
     "pkglint": "1.19.0",
     "sinon": "^7.5.0"
   },
@@ -179,7 +181,8 @@
       "props-default-doc:@aws-cdk/aws-lambda.Permission.sourceAccount",
       "props-default-doc:@aws-cdk/aws-lambda.Permission.sourceArn",
       "docs-public-apis:@aws-cdk/aws-lambda.ResourceBindOptions",
-      "docs-public-apis:@aws-cdk/aws-lambda.VersionAttributes"
+      "docs-public-apis:@aws-cdk/aws-lambda.VersionAttributes",
+      "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps"
     ]
   },
   "stability": "stable"

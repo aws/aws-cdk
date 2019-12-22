@@ -1,5 +1,5 @@
-import AWS = require('aws-sdk');
-import sinon = require('sinon');
+import * as AWS from 'aws-sdk';
+import * as sinon from 'sinon';
 import { SDK } from "../../lib/api/util/sdk";
 
 /**

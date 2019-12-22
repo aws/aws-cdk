@@ -69,10 +69,12 @@
     "@aws-cdk/assert": "1.19.0",
     "@aws-cdk/aws-sns": "1.19.0",
     "@aws-cdk/aws-sqs": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
     "aws-sdk": "^2.590.0",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
     "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
     "pkglint": "1.19.0"
   },
   "dependencies": {
@@ -115,6 +117,7 @@
       "duration-prop-type:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds",
       "duration-prop-name:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds",
       "docs-public-apis:@aws-cdk/aws-codebuild.Project.metric",
+      "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.X2_LARGE",
       "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.LARGE",
       "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.MEDIUM",
       "docs-public-apis:@aws-cdk/aws-codebuild.ComputeType.SMALL",

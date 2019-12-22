@@ -64,9 +64,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
     "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
     "pkglint": "1.19.0"
   },
   "dependencies": {
@@ -74,6 +76,7 @@
     "@aws-cdk/aws-iam": "1.19.0",
     "@aws-cdk/aws-kms": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-sam": "1.19.0",
     "@aws-cdk/core": "1.19.0"
   },
   "peerDependencies": {
@@ -81,6 +84,7 @@
     "@aws-cdk/aws-iam": "1.19.0",
     "@aws-cdk/aws-kms": "1.19.0",
     "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-sam": "1.19.0",
     "@aws-cdk/core": "1.19.0"
   },
   "engines": {
@@ -97,7 +101,8 @@
       "props-default-doc:@aws-cdk/aws-secretsmanager.SecretStringGenerator.generateStringKey",
       "props-default-doc:@aws-cdk/aws-secretsmanager.SecretAttributes.encryptionKey",
       "docs-public-apis:@aws-cdk/aws-secretsmanager.ISecretTargetAttachment",
-      "docs-public-apis:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn"
+      "docs-public-apis:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
+      "props-physical-name:@aws-cdk/aws-secretsmanager.ResourcePolicyProps"
     ]
   },
   "stability": "stable"

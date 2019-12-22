@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, ResourceProps, Stack } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
@@ -170,8 +170,12 @@ function determineRuleScope(
     return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`];
   } else {
     // Regular (do old ID escaping to in order to not disturb existing deployments)
-    return [group, `${fromTo} ${peer.uniqueId}:${connection}`.replace('/', '_')];
+    return [group, `${fromTo} ${renderPeer(peer)}:${connection}`.replace('/', '_')];
   }
+}
+
+function renderPeer(peer: IPeer) {
+  return Token.isUnresolved(peer.uniqueId) ? `{IndirectPeer}` : peer.uniqueId;
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {

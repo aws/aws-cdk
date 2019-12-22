@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import kinesis = require('@aws-cdk/aws-kinesis');
-import logs = require('@aws-cdk/aws-logs');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
+import * as logs from '@aws-cdk/aws-logs';
 import { Construct } from '@aws-cdk/core';
 
 /**

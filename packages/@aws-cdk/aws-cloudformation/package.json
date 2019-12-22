@@ -68,10 +68,12 @@
     "@aws-cdk/aws-sns-subscriptions": "1.19.0",
     "@aws-cdk/aws-sqs": "1.19.0",
     "@aws-cdk/aws-ssm": "1.19.0",
-    "@types/aws-lambda": "^8.10.37",
+    "@types/aws-lambda": "^8.10.39",
+    "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
     "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
     "pkglint": "1.19.0"
   },
   "dependencies": {
