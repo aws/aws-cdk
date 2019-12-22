@@ -72,7 +72,27 @@ export = {
 
     test.done();
   },
+  'intra security group rule doesnt affect allowAllOutbounnd'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
 
+    // WHEN
+    const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
+    sg.allowIntraSecurityGroupTraffic(Port.tcp(443));
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow all outbound traffic by default",
+          IpProtocol: "-1"
+        }
+      ],
+    }));
+
+    test.done();
+  },
   'bogus outbound rule disappears if another rule is added'(test: Test) {
     // GIVEN
     const stack = new Stack();

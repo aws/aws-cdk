@@ -352,6 +352,17 @@ export class SecurityGroup extends SecurityGroupBase {
     });
   }
 
+  /**
+   * Creates a rule which allows members of the security group
+   * to connect with each other over the specified port.
+   */
+  public allowIntraSecurityGroupTraffic(port: Port, description?: string) {
+    const conn = new Connections({
+      securityGroups: [this]
+    });
+    this.connections.allowTo(conn, port, description);
+  }
+
   public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (this.allowAllOutbound) {
       // In the case of "allowAllOutbound", we don't add any more rules. There
