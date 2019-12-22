@@ -72,7 +72,7 @@ export = {
 
     test.done();
   },
-  'intra security group rule doesnt affect allowAllOutbounnd'(test: Test) {
+  'security group - test that an intra security group rule doesnt override `allowAllOutbound` egress'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -113,7 +113,7 @@ export = {
 
     test.done();
   },
-  'intra security group rule without `allowAllOutbound`'(test: Test) {
+  'security group - test that a security group with intra rule and not `allowAllOutbound` has ingress and egress rules'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -173,6 +173,7 @@ export = {
 
     test.done();
   },
+
   'bogus outbound rule disappears if another rule is added'(test: Test) {
     // GIVEN
     const stack = new Stack();
