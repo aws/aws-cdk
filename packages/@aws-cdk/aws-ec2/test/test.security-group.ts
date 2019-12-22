@@ -81,7 +81,32 @@ export = {
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
     sg.allowIntraSecurityGroupTraffic(Port.tcp(443));
     // THEN
+    
+    
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow all outbound traffic by default",
+          IpProtocol: "-1"
+        }
+      ],
+    }));
+
+    test.done();
+  },
+  'intra security group rule without `allowAllOutbound'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
+    sg.allowIntraSecurityGroupTraffic(Port.tcp(443));
+    // THEN
+    
+    
+    expect(stack).notTo(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
           CidrIp: "0.0.0.0/0",
