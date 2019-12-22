@@ -82,7 +82,6 @@ export = {
     sg.allowIntraSecurityGroupTraffic(Port.tcp(443));
     // THEN
     
-    
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
@@ -104,7 +103,24 @@ export = {
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
     sg.allowIntraSecurityGroupTraffic(Port.tcp(443));
     // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: "tcp",
+      FromPort: 443,
+      GroupId: {
+        "Fn::GetAtt": [
+          "SG1",
+          "GroupId"
+        ]
+      },
+      "SourceSecurityGroupId": {
+        "Fn::GetAtt": [
+          "SG1",
+          "GroupId"
+        ]
+      },
+      ToPort: 443
 
+    }));
     expect(stack).notTo(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {

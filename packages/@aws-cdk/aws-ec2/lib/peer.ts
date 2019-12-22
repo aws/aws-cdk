@@ -1,5 +1,6 @@
 import { Token } from "@aws-cdk/core";
 import { Connections, IConnectable } from "./connections";
+import { ISecurityGroup } from "./security-group";
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule
@@ -65,6 +66,12 @@ export class Peer {
     return new PrefixList(prefixListId);
   }
 
+  /**
+   * A security group
+   */
+  public static securityGroup(securityGroup: ISecurityGroup): IPeer {
+    return new SecurityGroup(securityGroup);
+  }
   protected constructor() {
   }
 }
@@ -187,5 +194,33 @@ class PrefixList implements IPeer {
 
   public toEgressRuleConfig(): any {
     return { destinationPrefixListId: this.prefixListId };
+  }
+}
+
+/**
+ * A prefix list
+ *
+ * Prefix lists are used to allow traffic to VPC-local service endpoints.
+ *
+ * For more information, see this page:
+ *
+ * https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-endpoints.html
+ */
+class SecurityGroup implements IPeer {
+  public readonly canInlineRule = false;
+  public readonly connections: Connections;
+  public readonly uniqueId: string;
+
+  constructor(private readonly securityGroup: ISecurityGroup) {
+    this.uniqueId = securityGroup.securityGroupId;
+    this.connections = new Connections({ peer : securityGroup});
+  }
+
+  public toIngressRuleConfig(): any {
+    return { sourcePrefixListId: this.securityGroup.securityGroupId };
+  }
+
+  public toEgressRuleConfig(): any {
+    return { destinationPrefixListId: this.securityGroup.securityGroupId };
   }
 }
