@@ -546,16 +546,16 @@ The pattern is simple:
    [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
-4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+4. In your PR title (which goes into CHANGELOG), add a `(behind feature flag)` suffix. e.g:
 
     ```
-    fix(core): impossible to use the same physical stack name for two stacks (under feature flag)
+    fix(core): impossible to use the same physical stack name for two stacks (behind feature flag)
     ```
-5. Under `BREAKING CHANGES`, add a prefix `(under feature flag)` and the name of the flag in the postfix. 
+5. Under `BREAKING CHANGES`, add a prefix `(behind feature flag)` and the name of the flag in the postfix. 
    For example:
 
     ```
-    BREAKING CHANGE: (under feature flag) template file names for new projects created 
+    BREAKING CHANGE: (behind feature flag) template file names for new projects created 
     through "cdk init" will use the template artifact ID instead of the physical stack 
     name to enable  multiple stacks to use the same name (feature flag: @aws-cdk/core:enableStackNameDuplicates)
     ```
