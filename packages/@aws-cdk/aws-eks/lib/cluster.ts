@@ -8,7 +8,7 @@ import * as path from 'path';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
-import { HelmChart } from './helm-chart';
+import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
@@ -585,16 +585,13 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Defines a Helm chart in this cluster.
    *
-   * @param id logical id of this manifest.
-   * @param name name of the chart.
-   * @param repository repository which contains the chart.
-   * @param namespace Kubernetes namespace scope of the requests.
-   * @param values values to be used by the chart.
+   * @param id logical id of this chart.
+   * @param options options of this chart.
    * @returns a `HelmChart` object
    * @throws If `kubectlEnabled` is `false`
    */
-  public addChart(id: string, name: string, repository?: string, namespace?: string, values?: {[key: string]: any}) {
-    return new HelmChart(this, `chart-${id}`, { cluster: this, name: id, chart: name, repository, namespace, values });
+  public addChart(id: string, options: HelmChartOptions) {
+    return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
   }
 
   private createKubernetesResourceHandler() {

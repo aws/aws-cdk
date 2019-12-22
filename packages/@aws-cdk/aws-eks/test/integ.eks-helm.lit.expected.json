@@ -1110,7 +1110,7 @@
               "Arn"
             ]
           },
-          "Name": "dashboard",
+          "Release": "k8sclustercluster22chartdashboard3844c297",
           "Chart": "kubernetes-dashboard",
           "Namespace": "default",
           "Repository": "https://kubernetes-charts.storage.googleapis.com"
@@ -1123,7 +1123,7 @@
         "Properties": {
           "Code": {
             "S3Bucket": {
-              "Ref": "AssetParameters7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7acS3Bucket5658D771"
+              "Ref": "AssetParameters8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653S3BucketD01BFA78"
             },
             "S3Key": {
               "Fn::Join": [
@@ -1136,7 +1136,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7acS3VersionKey05FA3E0F"
+                            "Ref": "AssetParameters8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653S3VersionKeyD67E9179"
                           }
                         ]
                       }
@@ -1149,7 +1149,7 @@
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7acS3VersionKey05FA3E0F"
+                            "Ref": "AssetParameters8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653S3VersionKeyD67E9179"
                           }
                         ]
                       }
@@ -1199,7 +1199,7 @@
               "Arn"
             ]
           },
-          "Name": "nginx-ingress",
+          "Release": "k8sclustercluster22chartnginxingress8b03389e",
           "Chart": "nginx-ingress",
           "Namespace": "kube-system",
           "Repository": "https://helm.nginx.com/stable"
@@ -1315,17 +1315,17 @@
         "Type": "String",
         "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
       },
-      "AssetParameters7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7acS3Bucket5658D771": {
+      "AssetParameters8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653S3BucketD01BFA78": {
         "Type": "String",
-        "Description": "S3 bucket for asset \"7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7ac\""
+        "Description": "S3 bucket for asset \"8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653\""
       },
-      "AssetParameters7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7acS3VersionKey05FA3E0F": {
+      "AssetParameters8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653S3VersionKeyD67E9179": {
         "Type": "String",
-        "Description": "S3 key for asset version \"7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7ac\""
+        "Description": "S3 key for asset version \"8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653\""
       },
-      "AssetParameters7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7acArtifactHash6D56210D": {
+      "AssetParameters8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653ArtifactHash77099D9F": {
         "Type": "String",
-        "Description": "Artifact hash for asset \"7f5d88cf5039f5be79197935a2558677f2ce303017103853ca0ec367cea8b7ac\""
+        "Description": "Artifact hash for asset \"8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653\""
       },
       "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
         "Type": "AWS::SSM::Parameter::Value<String>",

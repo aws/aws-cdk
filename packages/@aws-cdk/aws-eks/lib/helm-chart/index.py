@@ -30,7 +30,7 @@ def handler(event, context):
         request_type = event['RequestType']
         props = event['ResourceProperties']
         physical_id = event.get('PhysicalResourceId', None)
-        name = props['Name']
+        release = props['Release']
         chart = props['Chart']
         version = props.get('Version', None)
         namespace = props.get('Namespace', None)
@@ -56,10 +56,10 @@ def handler(event, context):
                 f.write(json.dumps(values, indent=2))
 
         if request_type == 'Create' or request_type == 'Update':
-            helm('upgrade', name, chart, repository, values_file, namespace, version)
+            helm('upgrade', release, chart, repository, values_file, namespace, version)
         elif request_type == "Delete":
             try:
-                helm('uninstall', name, namespace=namespace)
+                helm('uninstall', release, namespace=namespace)
             except Exception as e:
                 logger.info("delete error: %s" % e)
 
@@ -81,10 +81,10 @@ def handler(event, context):
         logger.exception(e)
         cfn_error(str(e))
 
-def helm(verb, name, chart = None, repo = None, file = None, namespace = None, version = None):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None):
     import subprocess
     try:
-        cmnd = ['helm', verb, name]
+        cmnd = ['helm', verb, release]
         if not chart is None:
             cmnd.append(chart)
         if verb == 'upgrade':

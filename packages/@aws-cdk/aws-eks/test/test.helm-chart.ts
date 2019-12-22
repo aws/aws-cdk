@@ -12,10 +12,21 @@ export = {
       const { stack, cluster } = testFixtureCluster();
 
       // WHEN
-      new eks.HelmChart(stack, 'MyChart', { cluster, name: 'mychart', chart: 'chart' });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
       // THEN
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Namespace: 'default' }));
+      test.done();
+    },
+    'should have a lowercase default release name'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
+
+      // THEN
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Release: 'stackmychartff398361' }));
       test.done();
     },
     'with values'(test: Test) {
@@ -23,7 +34,7 @@ export = {
       const { stack, cluster } = testFixtureCluster();
 
       // WHEN
-      new eks.HelmChart(stack, 'MyChart', { cluster, name: 'mychart', chart: 'chart', values: { foo: 123 } });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', values: { foo: 123 } });
 
       // THEN
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' }));

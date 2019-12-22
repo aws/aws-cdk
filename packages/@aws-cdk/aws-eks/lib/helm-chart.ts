@@ -6,20 +6,14 @@ import { Cluster } from './cluster';
 import { KubectlLayer } from './kubectl-layer';
 
 /**
- * Helm Chart Properties.
+ * Helm Chart options.
  */
-export interface HelmChartProps {
-  /**
-   * The EKS cluster to apply this configuration to.
-   *
-   * [disable-awslint:ref-via-interface]
-   */
-  readonly cluster: Cluster;
 
+export interface HelmChartOptions {
   /**
    * The name of the release.
    */
-  readonly name: string;
+  readonly release?: string;
 
   /**
    * The name of the chart.
@@ -52,6 +46,18 @@ export interface HelmChartProps {
 }
 
 /**
+ * Helm Chart properties.
+ */
+export interface HelmChartProps extends HelmChartOptions {
+  /**
+   * The EKS cluster to apply this configuration to.
+   *
+   * [disable-awslint:ref-via-interface]
+   */
+  readonly cluster: Cluster;
+}
+
+/**
  * Represents a helm chart within the Kubernetes system.
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.
@@ -77,7 +83,7 @@ export class HelmChart extends Construct {
       provider: CustomResourceProvider.lambda(handler),
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
-        Name: props.name,
+        Release: props.release || this.node.uniqueId.toLowerCase(),
         Chart: props.chart,
         Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),

@@ -203,7 +203,7 @@ export = {
     test.throws(() => cluster.addResource('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
     test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
       /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
-    test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, name: 'mychart', chart: 'chart' }), /Cannot define a Helm chart on a cluster with kubectl disabled/);
+    test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Cannot define a Helm chart on a cluster with kubectl disabled/);
     test.done();
   },
 
