@@ -27,7 +27,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
     Reason: options.reason || status,
     StackId: event.StackId,
     RequestId: event.RequestId,
-    PhysicalResourceId: event.PhysicalResourceId as any,
+    PhysicalResourceId: event.PhysicalResourceId || MISSING_PHYSICAL_ID_MARKER,
     LogicalResourceId: event.LogicalResourceId,
     NoEcho: options.noEcho,
     Data: event.Data
@@ -85,7 +85,6 @@ export function safeHandler(block: (event: any) => Promise<void>) {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
           log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`);
-          event.PhysicalResourceId = MISSING_PHYSICAL_ID_MARKER;
         }
       }
 
