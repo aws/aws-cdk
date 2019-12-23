@@ -1727,11 +1727,11 @@ export = {
 
   'Bucket with Server Access Logs'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
-    const accessLogBucket = new Bucket(stack, 'AccessLogs');
-    new Bucket(stack, 'MyBucket', {
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
       serverAccessLogsBucket: accessLogBucket,
     });
 
@@ -1749,11 +1749,11 @@ export = {
 
   'Bucket with Server Access Logs with Prefix'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
-    const accessLogBucket = new Bucket(stack, 'AccessLogs');
-    new Bucket(stack, 'MyBucket', {
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: 'hello',
     });
@@ -1773,10 +1773,10 @@ export = {
 
  'Acess log prefix given without bucket'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // THEN
-    test.throws(() => new Bucket(stack, 'MyBucket', {
+    test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       serverAccessLogsPrefix: 'hello'
     }), /"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set/);
 

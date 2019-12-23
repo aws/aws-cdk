@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import cdk = require('@aws-cdk/core');
-import s3 = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as s3 from '../lib';
 
 const app = new cdk.App();
 
