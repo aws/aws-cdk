@@ -39,7 +39,7 @@ export interface AssetOptions extends assets.CopyOptions {
    *
    * @default - do not use a bundler
    */
-  readonly bundler?: cxapi.Bundler;
+  readonly bundler?: cxapi.IBundler;
 }
 
 export interface AssetProps extends AssetOptions {

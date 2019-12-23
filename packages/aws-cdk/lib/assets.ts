@@ -75,7 +75,7 @@ async function prepareBundleAsset(
   }
 
   debug(`Bundling asset ${asset.id} with ${asset.bundlerClassName}`);
-  const bundler = new ((cxapi as any)[asset.bundlerClassName])(asset.bundlerOptions) as cxapi.Bundler;
+  const bundler = new (cxapi as any)[asset.bundlerClassName](asset.bundlerOptions) as cxapi.IBundler;
   const bundledAsset = await bundler.bundle(asset, assemblyDir);
 
   return await prepareZipAsset(assemblyDir, bundledAsset, toolkitInfo, reuse);
