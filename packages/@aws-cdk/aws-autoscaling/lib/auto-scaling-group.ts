@@ -44,7 +44,11 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Initial amount of instances in the fleet
    *
-   * @default 1
+   * If this is set to a number, every deployment will reset the amount of
+   * instances to this number. It is recommended to leave this value blank.
+   *
+   * @default minCapacity, and leave unchanged during deployment
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html#cfn-as-group-desiredcapacity
    */
   readonly desiredCapacity?: number;
 
@@ -475,30 +479,40 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     launchConfig.node.addDependency(this.role);
 
-    const desiredCapacity =
-        (props.desiredCapacity !== undefined ? props.desiredCapacity :
-        (props.minCapacity !== undefined ? props.minCapacity :
-        (props.maxCapacity !== undefined ? props.maxCapacity : 1)));
+    // desiredCapacity just reflects what the user has supplied.
+    const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
-    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
+    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity :
+                        desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
 
+    withResolved(minCapacity, maxCapacity, (min, max) => {
+      if (min > max) {
+        throw new Error(`minCapacity (${min}) should be <= maxCapacity (${max})`);
+      }
+    });
     withResolved(desiredCapacity, minCapacity, (desired, min) => {
+      if (desired === undefined) { return; }
       if (desired < min) {
         throw new Error(`Should have minCapacity (${min}) <= desiredCapacity (${desired})`);
       }
     });
     withResolved(desiredCapacity, maxCapacity, (desired, max) => {
+      if (desired === undefined) { return; }
       if (max < desired) {
         throw new Error(`Should have desiredCapacity (${desired}) <= maxCapacity (${max})`);
       }
     });
+
+    if (desiredCapacity !== undefined) {
+      this.node.addWarning(`desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215`);
+    }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
-      desiredCapacity: Tokenization.stringifyNumber(desiredCapacity),
+      desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),

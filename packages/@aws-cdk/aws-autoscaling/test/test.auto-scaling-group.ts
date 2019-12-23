@@ -113,7 +113,6 @@ export = {
             }
           },
           "Properties": {
-            "DesiredCapacity": "1",
             "LaunchConfigurationName": {
               "Ref": "MyFleetLaunchConfig5D7F9801"
             },
@@ -252,7 +251,6 @@ export = {
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MinSize: "10",
       MaxSize: "10",
-      DesiredCapacity: "10",
     }
     ));
 
@@ -275,8 +273,7 @@ export = {
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MinSize: "1",
-      MaxSize: "10",
-      DesiredCapacity: "10",
+      MaxSize: "10"
     }
     ));
 
