@@ -11,14 +11,15 @@ import { KubectlLayer } from './kubectl-layer';
 
 export interface HelmChartOptions {
   /**
-   * The name of the release.
-   */
-  readonly release?: string;
-
-  /**
    * The name of the chart.
    */
   readonly chart: string;
+
+  /**
+   * The name of the release.
+   * @default - If no release name is given, it will use the last 63 characters of the node's unique id.
+   */
+  readonly release?: string;
 
   /**
    * The chart version to install.
@@ -83,7 +84,7 @@ export class HelmChart extends Construct {
       provider: CustomResourceProvider.lambda(handler),
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
-        Release: props.release || this.node.uniqueId.toLowerCase(),
+        Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
