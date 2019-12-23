@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Construct, Stack } from '@aws-cdk/core';
+import { Cluster } from '../lib';
 
 export function testFixture() {
   const { stack, app } = testFixtureNoVpc();
@@ -12,6 +13,13 @@ export function testFixtureNoVpc() {
   const app = new App();
   const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' }});
   return { stack, app };
+}
+
+export function testFixtureCluster() {
+  const { stack, app } = testFixtureNoVpc();
+  const cluster = new Cluster(stack, 'Cluster');
+
+  return { stack, app, cluster };
 }
 
 // we must specify an explicit environment because we have an AMI map that is

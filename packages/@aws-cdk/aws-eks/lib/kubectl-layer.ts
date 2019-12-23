@@ -26,7 +26,7 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
    */
   public static getOrCreate(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
     const stack = Stack.of(scope);
-    const id = 'kubectl-layer-8C2542BC-BF2B-4DFE-B765-E181FD30A9A0';
+    const id = 'kubectl-layer-' + (props.version ? props.version : "8C2542BC-BF2B-4DFE-B765-E181FD30A9A0");
     const exists = stack.node.tryFindChild(id) as KubectlLayer;
     if (exists) {
       return exists;
