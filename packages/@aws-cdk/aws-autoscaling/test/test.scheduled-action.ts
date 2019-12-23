@@ -64,7 +64,6 @@ export = {
           Properties: {
             MaxSize: "1",
             MinSize: "1",
-            DesiredCapacity: "1",
             LaunchConfigurationName: { Ref: "ASGLaunchConfigC00AF12B" },
             Tags: [
               {

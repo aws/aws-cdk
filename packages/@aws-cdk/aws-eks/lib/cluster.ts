@@ -8,6 +8,7 @@ import * as path from 'path';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
+import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
@@ -309,8 +310,10 @@ export class Cluster extends Resource implements ICluster {
    * automatically added by Amazon EKS to the `system:masters` RBAC group of the
    * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
    * IAM roles as administrators.
+   *
+   * @internal
    */
-  private readonly _defaultMastersRole?: iam.IRole;
+  public readonly _defaultMastersRole?: iam.IRole;
 
   /**
    * Manages the aws-auth config map.
@@ -577,6 +580,18 @@ export class Cluster extends Resource implements ICluster {
    */
   public addResource(id: string, ...manifest: any[]) {
     return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
+  }
+
+  /**
+   * Defines a Helm chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param options options of this chart.
+   * @returns a `HelmChart` object
+   * @throws If `kubectlEnabled` is `false`
+   */
+  public addChart(id: string, options: HelmChartOptions) {
+    return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
   }
 
   private createKubernetesResourceHandler() {
