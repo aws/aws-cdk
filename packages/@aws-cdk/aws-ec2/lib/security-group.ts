@@ -294,8 +294,11 @@ export class SecurityGroup extends SecurityGroupBase {
    * in the `to` security group. This does not override `allowAllOutbound` if
    * it is set.
    */
-  public static allowTrafficBetweenSecurityGroups(from: ISecurityGroup, to: ISecurityGroup, port: Port, description?: string) {
-    from.connections.allowTo(to.connections, port, description);
+  public static allowTrafficBetweenSecurityGroups(fromSecurityGroup: ISecurityGroup,
+                                                  toSecurityGroup: ISecurityGroup,
+                                                  port: Port,
+                                                  description?: string) {
+    fromSecurityGroup.connections.allowTo(toSecurityGroup, port, description);
   }
 
   /**
@@ -372,6 +375,14 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   public allowIntraSecurityGroupTraffic(port: Port, description?: string) {
     this.connections.allowInternally(port, description);
+  }
+
+  /**
+   * Creates a rule which allows members of the security group
+   * to connect with each other over the specified port.
+   */
+  public allowTrafficFromSecurityGroup(fromSecurityGroup: ISecurityGroup, port: Port, description?: string) {
+    SecurityGroup.allowTrafficBetweenSecurityGroups(fromSecurityGroup, this, port, description);
   }
 
   public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {

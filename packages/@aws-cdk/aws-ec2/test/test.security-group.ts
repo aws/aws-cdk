@@ -174,6 +174,69 @@ export = {
     test.done();
   },
 
+  'security group - test inter-security group rules'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    const sg1 = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
+    const sg2 = new SecurityGroup(stack, 'SG2', { vpc, allowAllOutbound: false });
+    sg1.allowTrafficFromSecurityGroup(sg2, Port.tcp(443));
+
+    // THEN
+
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: "tcp",
+      Description: "from SG2:443",
+      FromPort: 443,
+      GroupId: {
+        "Fn::GetAtt": [
+          "SG1BA065B6E",
+          "GroupId"
+        ]
+      },
+      SourceSecurityGroupId: {
+        "Fn::GetAtt": [
+          "SG20CE3219C",
+          "GroupId"
+        ]
+      },
+      ToPort: 443
+    }));
+
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      IpProtocol: "tcp",
+      Description: "to SG1:443",
+      FromPort: 443,
+      GroupId: {
+        "Fn::GetAtt": [
+          "SG20CE3219C",
+          "GroupId"
+        ]
+      },
+      DestinationSecurityGroupId: {
+        "Fn::GetAtt": [
+          "SG1BA065B6E",
+          "GroupId"
+        ]
+      },
+      ToPort: 443
+    }));
+
+    expect(stack).notTo(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow all outbound traffic by default",
+          IpProtocol: "-1"
+        }
+      ],
+    }));
+
+    test.done();
+  },
+
   'bogus outbound rule disappears if another rule is added'(test: Test) {
     // GIVEN
     const stack = new Stack();
