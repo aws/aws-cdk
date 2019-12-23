@@ -50,7 +50,7 @@ test('Terminate cluster with ClusterId from payload and static StepConfiguration
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
       task: new tasks.EmrAddStep({
-        clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+        clusterId: sfn.Data.stringAt('$.ClusterId'),
         stepConfiguration: sfn.TaskInput.fromObject({
           Name: 'StepName'
         }),
