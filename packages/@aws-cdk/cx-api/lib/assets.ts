@@ -53,7 +53,7 @@ export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
    * Requested packaging style
    */
-  readonly packaging: 'zip' | 'file';
+  readonly packaging: 'zip' | 'file' | 'bundle';
 
   /**
    * Name of parameter where S3 bucket should be passed in
@@ -69,6 +69,20 @@ export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
    * The name of the parameter where the hash of the bundled asset should be passed in.
    */
   readonly artifactHashParameter: string;
+
+  /**
+   * Class name of the bundler
+   *
+   * @default - no bundler
+   */
+  readonly bundlerClassName?: string;
+
+  /**
+   * Options for the bunlder
+   *
+   * @default - no bundler
+   */
+  readonly bundlerOptions?: string;
 }
 
 export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {

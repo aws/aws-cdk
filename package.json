@@ -49,7 +49,9 @@
       "@aws-cdk/assets/minimatch",
       "@aws-cdk/assets/minimatch/**",
       "@aws-cdk/cx-api/semver",
-      "@aws-cdk/cx-api/semver/**"
+      "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/cx-api/parcel-bundler",
+      "@aws-cdk/cx-api/parcel-bundler/**"
     ]
   }
 }

@@ -33,6 +33,13 @@ export interface AssetOptions extends assets.CopyOptions {
    * @experimental
    */
   readonly sourceHash?: string;
+
+  /**
+   * The bundler to use for the asset
+   *
+   * @default - do not use a bundler
+   */
+  readonly bundler?: cxapi.Bundler;
 }
 
 export interface AssetProps extends AssetOptions {
@@ -101,10 +108,10 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
     this.assetPath = staging.stagedPath;
 
-    const packaging = determinePackaging(staging.sourcePath);
+    const packaging = props.bundler ? cdk.FileAssetPackaging.BUNDLE : determinePackaging(staging.sourcePath);
 
     // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
+    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY || packaging === cdk.FileAssetPackaging.BUNDLE
       ? true
       : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
@@ -113,7 +120,8 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     const location = stack.addFileAsset({
       packaging,
       sourceHash: this.sourceHash,
-      fileName: staging.stagedPath
+      fileName: staging.stagedPath,
+      bundler: props.bundler,
     });
 
     this.s3BucketName = location.bucketName;

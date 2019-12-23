@@ -54,12 +54,31 @@ async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry
       return await prepareZipAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'file':
       return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
+    case 'bundle':
+      return await prepareBundleAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'container-image':
       return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse, ci);
     default:
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
+}
+
+async function prepareBundleAsset(
+  assemblyDir: string,
+  asset: cxapi.FileAssetMetadataEntry,
+  toolkitInfo: ToolkitInfo,
+  reuse: boolean): Promise<CloudFormation.Parameter[]> {
+
+  if (!asset.bundlerClassName) {
+    throw new Error('Asset must use a bundler.');
+  }
+
+  debug(`Bundling asset ${asset.id} with ${asset.bundlerClassName}`);
+  const bundler = new ((cxapi as any)[asset.bundlerClassName])(asset.bundlerOptions) as cxapi.Bundler;
+  const bundledAsset = await bundler.bundle(asset, assemblyDir);
+
+  return await prepareZipAsset(assemblyDir, bundledAsset, toolkitInfo, reuse);
 }
 
 async function prepareZipAsset(

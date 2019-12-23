@@ -1,3 +1,5 @@
+import { Bundler } from '@aws-cdk/cx-api';
+
 /**
  * Represents the source for a file asset.
  */
@@ -20,6 +22,13 @@ export interface FileAssetSource {
    * Which type of packaging to perform.
    */
   readonly packaging: FileAssetPackaging;
+
+  /**
+   * The bundler to use for the asset.
+   *
+   * @default - do not use a bundler
+   */
+  readonly bundler?: Bundler;
 }
 
 export interface DockerImageAssetSource {
@@ -83,7 +92,12 @@ export enum FileAssetPackaging {
    * The asset source path points to a single file, which should be uploaded
    * to Amazon S3.
    */
-  FILE = 'file'
+  FILE = 'file',
+
+  /**
+   * The asset uses a bundler
+   */
+  BUNDLE = 'bundle',
 }
 
 /**

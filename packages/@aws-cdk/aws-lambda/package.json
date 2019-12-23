@@ -76,6 +76,7 @@
     "cdk-build-tools": "1.19.0",
     "cdk-integ-tools": "1.19.0",
     "cfn2ts": "1.19.0",
+    "got": "^10.1.0",
     "lodash": "^4.17.15",
     "nock": "^11.7.0",
     "nodeunit": "^0.11.3",

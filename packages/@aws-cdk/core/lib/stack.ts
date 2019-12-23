@@ -523,7 +523,8 @@ export class Stack extends Construct implements ITaggable {
         id: asset.sourceHash,
         packaging: asset.packaging,
         sourceHash: asset.sourceHash,
-
+        bundlerClassName: asset.bundler && asset.bundler.constructor.name,
+        bundlerOptions: asset.bundler && asset.bundler.options,
         s3BucketParameter: params.bucketNameParameter.logicalId,
         s3KeyParameter: params.objectKeyParameter.logicalId,
         artifactHashParameter: params.artifactHashParameter.logicalId,

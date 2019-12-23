@@ -1,6 +1,7 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 
 export abstract class Code {
   /**
@@ -41,6 +42,16 @@ export abstract class Code {
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
+  }
+
+  /**
+   * Loads the function code from an entry file that will be bundled with parcel
+   * @param path Path to an entry file
+   */
+  public static fromParcel(path: string, options?: cxapi.ParcelBundlerOptions): AssetCode {
+    return new AssetCode(path, {
+      bundler: new cxapi.ParcelBundler(options)
+    });
   }
 
   /**
