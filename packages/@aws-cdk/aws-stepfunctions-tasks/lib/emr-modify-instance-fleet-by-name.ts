@@ -1,5 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { Aws } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -47,7 +48,7 @@ export class EmrModifyInstanceFleetByName implements sfn.IStepFunctionsTask {
             'elasticmapreduce:ModifyInstanceFleet',
             'elasticmapreduce:ListInstanceFleets'
           ],
-          resources: ['arn:aws:elasticmapreduce:*:*:cluster/*']
+          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
         })
       ],
       parameters: {

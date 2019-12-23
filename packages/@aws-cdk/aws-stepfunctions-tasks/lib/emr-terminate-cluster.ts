@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Stack } from '@aws-cdk/core';
+import { Aws, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -68,7 +68,7 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
           'elasticmapreduce:DescribeCluster',
           'elasticmapreduce:TerminateJobFlows'
         ],
-        resources: ['arn:aws:elasticmapreduce:*:*:cluster/*']
+        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
       })
     ];
 

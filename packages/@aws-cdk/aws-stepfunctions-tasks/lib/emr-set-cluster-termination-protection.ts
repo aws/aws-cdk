@@ -1,5 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { Aws } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -35,7 +36,7 @@ export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTas
       policyStatements: [
         new iam.PolicyStatement({
           actions: ['elasticmapreduce:SetTerminationProtection'],
-          resources: ['arn:aws:elasticmapreduce:*:*:cluster/*']
+          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
         })
       ],
       parameters: {
