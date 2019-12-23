@@ -4,6 +4,8 @@ import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for EmrSetClusterTerminationProtection
+ * 
+ * @experimental
  */
 export interface EmrSetClusterTerminationProtectionProps {
   /**
@@ -19,6 +21,8 @@ export interface EmrSetClusterTerminationProtectionProps {
 
 /**
  * A Step Functions Task to to set Termination Protection on an EMR Cluster.
+ * 
+ * @experimental
  */
 export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTask {
 

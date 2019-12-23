@@ -5,6 +5,8 @@ import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for EmrAddStep
+ * 
+ * @experimental
  */
 export interface EmrAddStepProps {
   /**
@@ -37,6 +39,8 @@ export interface EmrAddStepProps {
  * The StepConfiguration is defined as Parameters in the state machine definition.
  *
  * OUTPUT: the StepId
+ * 
+ * @experimental
  */
 export class EmrAddStep implements sfn.IStepFunctionsTask {
 

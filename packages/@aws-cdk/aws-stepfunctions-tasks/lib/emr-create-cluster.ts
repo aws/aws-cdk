@@ -5,6 +5,8 @@ import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for EmrCreateCluster
+ * 
+ * @experimental
  */
 export interface EmrCreateClusterProps {
   /**
@@ -37,6 +39,8 @@ export interface EmrCreateClusterProps {
  * The ClusterConfiguration is defined as Parameters in the state machine definition.
  *
  * OUTPUT: the ClusterId.
+ * 
+ * @experimental
  */
 export class EmrCreateCluster implements sfn.IStepFunctionsTask {
 
