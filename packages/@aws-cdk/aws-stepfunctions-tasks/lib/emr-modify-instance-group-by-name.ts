@@ -5,7 +5,7 @@ import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for EmrModifyInstanceGroupByName
- * 
+ *
  * @experimental
  */
 export interface EmrModifyInstanceGroupByNameProps {
@@ -31,7 +31,7 @@ export interface EmrModifyInstanceGroupByNameProps {
 
 /**
  * A Step Functions Task to to modify an InstanceGroup on an EMR Cluster.
- * 
+ *
  * @experimental
  */
 export class EmrModifyInstanceGroupByName implements sfn.IStepFunctionsTask {

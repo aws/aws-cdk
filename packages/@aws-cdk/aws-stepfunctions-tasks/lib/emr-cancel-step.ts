@@ -5,7 +5,7 @@ import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for EmrCancelStep
- * 
+ *
  * @experimental
  */
 export interface EmrCancelStepProps {
@@ -22,7 +22,7 @@ export interface EmrCancelStepProps {
 
 /**
  * A Step Functions Task to to cancel a Step on an EMR Cluster.
- * 
+ *
  * @experimental
  */
 export class EmrCancelStep implements sfn.IStepFunctionsTask {

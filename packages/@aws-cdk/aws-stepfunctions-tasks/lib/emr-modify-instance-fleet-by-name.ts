@@ -5,7 +5,7 @@ import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for EmrModifyInstanceFleetByName
- * 
+ *
  * @experimental
  */
 export interface EmrModifyInstanceFleetByNameProps {
@@ -31,7 +31,7 @@ export interface EmrModifyInstanceFleetByNameProps {
 
 /**
  * A Step Functions Task to to modify an InstanceFleet on an EMR Cluster.
- * 
+ *
  * @experimental
  */
 export class EmrModifyInstanceFleetByName implements sfn.IStepFunctionsTask {
