@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, ResourceProps, Stack } from '@aws-cdk/core';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
@@ -170,12 +170,8 @@ function determineRuleScope(
     return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`];
   } else {
     // Regular (do old ID escaping to in order to not disturb existing deployments)
-    return [group, `${fromTo} ${renderPeer(peer)}:${connection}`.replace('/', '_')];
+    return [group, `${fromTo} ${peer.uniqueId}:${connection}`.replace('/', '_')];
   }
-}
-
-function renderPeer(peer: IPeer) {
-  return Token.isUnresolved(peer.uniqueId) ? `{IndirectPeer}` : peer.uniqueId;
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
@@ -286,6 +282,17 @@ export class SecurityGroup extends SecurityGroupBase {
     return options.mutable !== false
     ? new MutableImport(scope, id)
     : new ImmutableImport(scope, id);
+  }
+
+  /**
+   * Allows traffic in the `from` security group to the `to` security group,
+   * creating an egress rule in the `from` security group and an ingress rule
+   * in the `to` security group. This does not override `allowAllOutbound` if
+   * it is set.
+   */
+  public static allowTrafficBetweenSecurityGroups(from: ISecurityGroup, to: ISecurityGroup, port: Port) {
+    
+    from.connections.allowTo(to.connections, port);
   }
 
   /**
