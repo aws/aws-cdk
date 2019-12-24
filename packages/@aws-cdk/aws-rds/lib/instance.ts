@@ -675,10 +675,6 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   constructor(scope: Construct, id: string, props: DatabaseInstanceSourceProps) {
     super(scope, id, props);
 
-    if (/aurora/.test(props.engine.name)) {
-      throw new Error('Aurora instances can only be created inside a cluster. Please use `DatabaseCluster`.');
-    }
-
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
