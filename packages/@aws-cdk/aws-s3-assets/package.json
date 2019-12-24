@@ -67,7 +67,7 @@
     "cdk-integ-tools": "1.19.0",
     "nodeunit": "^0.11.3",
     "pkglint": "1.19.0",
-    "sinon": "^7.5.0",
+    "sinon": "^8.0.1",
     "ts-mock-imports": "^1.2.6"
   },
   "dependencies": {
