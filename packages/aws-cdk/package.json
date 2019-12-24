@@ -50,7 +50,7 @@
     "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^10.17.11",
+    "@types/node": "^13.1.0",
     "@types/nodeunit": "^0.0.30",
     "@types/promptly": "^3.0.0",
     "@types/request": "^2.48.4",
