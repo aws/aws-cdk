@@ -625,22 +625,6 @@ export = {
     test.done();
   },
 
-  'throws with aurora engines'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // THEN
-    test.throws(() => new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.AURORA_POSTGRESQL,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-      masterUsername: 'admin',
-      vpc,
-    }), /Aurora instances can only be created inside a cluster. Please use `DatabaseCluster`./);
-
-    test.done();
-  },
-
   'throws when trying to add rotation to an instance without secret'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
