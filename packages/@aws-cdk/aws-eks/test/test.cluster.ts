@@ -203,6 +203,7 @@ export = {
     test.throws(() => cluster.addResource('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
     test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
       /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
+    test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Cannot define a Helm chart on a cluster with kubectl disabled/);
     test.done();
   },
 
@@ -559,5 +560,24 @@ export = {
         bootstrapOptions: { awsApiRetryAttempts: 10 }
       }), /Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false/);
       test.done();
-  }
+  },
+
+  'EKS-Optimized AMI with GPU support'(test: Test) {
+    // GIVEN
+    const { app, stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'cluster', {
+      defaultCapacity: 2,
+      defaultCapacityInstance: new ec2.InstanceType('g4dn.xlarge'),
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+    test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu')
+      ), 'EKS AMI with GPU should be in ssm parameters');
+    test.done();
+  },
 };

@@ -8,6 +8,7 @@ import * as path from 'path';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
+import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
@@ -309,8 +310,10 @@ export class Cluster extends Resource implements ICluster {
    * automatically added by Amazon EKS to the `system:masters` RBAC group of the
    * cluster. Use `addMastersRole` or `props.mastersRole` to define additional
    * IAM roles as administrators.
+   *
+   * @internal
    */
-  private readonly _defaultMastersRole?: iam.IRole;
+  public readonly _defaultMastersRole?: iam.IRole;
 
   /**
    * Manages the aws-auth config map.
@@ -579,6 +582,18 @@ export class Cluster extends Resource implements ICluster {
     return new KubernetesResource(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
+  /**
+   * Defines a Helm chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param options options of this chart.
+   * @returns a `HelmChart` object
+   * @throws If `kubectlEnabled` is `false`
+   */
+  public addChart(id: string, options: HelmChartOptions) {
+    return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+
   private createKubernetesResourceHandler() {
     if (!this.kubectlEnabled) {
       return undefined;
@@ -816,7 +831,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
-      + ( this.nodeType === NodeType.GPU ? " amazon-linux2-gpu/" : "" )
+      + ( this.nodeType === NodeType.GPU ? "amazon-linux2-gpu/" : "" )
       + "recommended/image_id";
   }
 
@@ -850,6 +865,8 @@ export enum NodeType {
   GPU = 'GPU',
 }
 
+const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+
 export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.STANDARD;
+  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
 }
