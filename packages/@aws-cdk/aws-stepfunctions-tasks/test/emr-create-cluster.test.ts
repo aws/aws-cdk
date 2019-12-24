@@ -4,24 +4,29 @@ import cdk = require('@aws-cdk/core');
 import tasks = require('../lib');
 
 let stack: cdk.Stack;
-let role: iam.Role;
+let clusterRole: iam.Role;
+let serviceRole: iam.Role;
 
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  role = new iam.Role(stack, 'Role', {
+  clusterRole = new iam.Role(stack, 'ClusterRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com')
   });
+  serviceRole = new iam.Role(stack, 'ServiceRole', {
+    assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com')
+});
+
 });
 
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
-      clusterConfiguration: sfn.TaskInput.fromObject({
-        Name: 'Cluster'
-      }),
-      clusterRoles: [role],
-      integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
   }) });
 
   // THEN
@@ -41,7 +46,14 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
     },
     End: true,
     Parameters: {
-      Name: 'Cluster'
+      Name: 'Cluster',
+      Instances: {},
+      JobFlowRole: {
+        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+      },
+      ServiceRole: {
+        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+      }
     },
   });
 });
@@ -49,11 +61,11 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
 test('Create Cluster with SYNC integrationPattern', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
-      clusterConfiguration: sfn.TaskInput.fromObject({
-        Name: 'Cluster'
-      }),
-      clusterRoles: [role],
-      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC
   }) });
 
   // THEN
@@ -73,7 +85,14 @@ test('Create Cluster with SYNC integrationPattern', () => {
     },
     End: true,
     Parameters: {
-      Name: 'Cluster'
+      Name: 'Cluster',
+      Instances: {},
+      JobFlowRole: {
+        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+      },
+      ServiceRole: {
+        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+      }
     },
   });
 });
@@ -81,11 +100,11 @@ test('Create Cluster with SYNC integrationPattern', () => {
 test('Create Cluster with clusterConfiguration Name from payload', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
-      clusterConfiguration: sfn.TaskInput.fromObject({
-        Name: sfn.TaskInput.fromDataAt('$.ClusterName').value
-      }),
-      clusterRoles: [role],
-      integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+    instances: {},
+    clusterRole,
+    name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
+    serviceRole,
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
   }) });
 
   // THEN
@@ -105,7 +124,61 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
     },
     End: true,
     Parameters: {
-      'Name.$': '$.ClusterName'
+      'Name.$': '$.ClusterName',
+      'Instances': {},
+      'JobFlowRole': {
+        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+      },
+      'ServiceRole': {
+        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+      }
+    },
+  });
+});
+
+test('Create Cluster with Tags', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    tags: [{
+      key: 'Key',
+      value: 'Value'
+    }],
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {},
+      JobFlowRole: {
+        'Fn::GetAtt': ['ClusterRoleD9CA7471', 'Arn']
+      },
+      ServiceRole: {
+        'Fn::GetAtt': ['ServiceRole4288B192', 'Arn']
+      },
+      Tags: [{
+        Key: 'Key',
+        Value: 'Value'
+      }]
     },
   });
 });
@@ -114,21 +187,12 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.EmrCreateCluster({
-        clusterConfiguration: sfn.TaskInput.fromObject({}),
-        clusterRoles: [role],
+        instances: {},
+        clusterRole,
+        name: 'Cluster',
+        serviceRole,
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       })
     });
   }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call CreateCluster./i);
-});
-
-test('Task throws if clusterRoles has length 0', () => {
-  expect(() => {
-    new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrCreateCluster({
-        clusterConfiguration: sfn.TaskInput.fromObject({}),
-        clusterRoles: []
-      })
-    });
-  }).toThrow(/The property clusterRoles must have length greater than 0./i);
 });
