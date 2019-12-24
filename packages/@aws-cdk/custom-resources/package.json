@@ -81,7 +81,7 @@
     "fs-extra": "^8.1.0",
     "nock": "^11.7.0",
     "pkglint": "1.19.0",
-    "sinon": "^7.5.0"
+    "sinon": "^8.0.1"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "1.19.0",
