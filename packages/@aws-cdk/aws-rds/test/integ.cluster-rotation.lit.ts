@@ -14,12 +14,12 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
     username: 'admin'
   },
   instanceProps: {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
     vpc
   }
 });
 
-cluster.addRotationSingleUser('Rotation');
+cluster.addRotationSingleUser();
 /// !hide
 
 app.synth();
