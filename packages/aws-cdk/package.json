@@ -60,7 +60,7 @@
     "@types/uuid": "^3.4.6",
     "@types/yaml": "^1.2.0",
     "@types/yargs": "^13.0.4",
-    "aws-sdk-mock": "^4.5.0",
+    "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "1.19.0",
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
