@@ -38,81 +38,6 @@ export abstract class Secret {
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
-/**
- * Firelens log router type
- * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html
- */
-export enum FirelensLogRouterType {
-  /**
-   * fluentbit
-   */
-  FLUENTBIT = 'fluentbit',
-
-  /**
-   * fluentd
-   */
-  FLUENTD = 'fluentd',
-}
-
-/**
- * The options for firelens log router
- */
-export interface FirelensOptions {
-  /**
-   * By default, Amazon ECS adds additional fields in your log entries that help identify the source of the logs.
-   * You can disable this action by setting enable-ecs-log-metadata to false.
-   */
-  readonly enableECSLogMetadata: boolean;
-
-  /**
-   * Custom configuration file, s3 or file
-   * @default - s3
-   */
-  readonly configFileType?: string;
-
-  /**
-   * Custom configuration file, S3 ARN or a file path
-   * @default - S3 ARN
-   */
-  readonly configFileValue?: string;
-}
-
-/**
- * Firelens Configuration
- */
-export interface FirelensConfig {
-
-  /**
-   * The log router to use
-   * @default - fluentbit
-   */
-  readonly type: FirelensLogRouterType;
-
-  /**
-   * Firelens options
-   * @default - no addtional options
-   */
-  readonly options?: FirelensOptions;
-}
-
-/**
- * Render CfnTaskDefinition.FirelensConfigurationProperty from FirelensConfig
- */
-function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition.FirelensConfigurationProperty {
-  const cfnFirelensConfigProp = { type: firelensConfig.type };
-  if (firelensConfig.options) {
-    Object.assign(cfnFirelensConfigProp, {
-      options: {
-        'enable-ecs-log-metadata': firelensConfig.options.enableECSLogMetadata.toString(),
-        'config-file-type': firelensConfig.options.configFileType,
-        'config-file-value': firelensConfig.options.configFileValue
-      }
-    });
-  }
-
-  return cfnFirelensConfigProp;
-}
-
 /*
  * The options for creating a container definition.
  */
@@ -316,13 +241,6 @@ export interface ContainerDefinitionOptions {
   readonly logging?: LogDriver;
 
   /**
-   * The FireLens configuration for the container.
-   *
-   * @default -  used to specify and configure a log router for container log.
-   */
-  readonly firelensConfig?: FirelensConfig;
-
-  /**
    * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    * For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
    *
@@ -362,28 +280,28 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * The mount points for data volumes in your container.
    */
-  public readonly mountPoints = new Array<MountPoint>();
+   public readonly mountPoints = new Array<MountPoint>();
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-  public readonly portMappings = new Array<PortMapping>();
+   public readonly portMappings = new Array<PortMapping>();
 
-  /**
-   * The data volumes to mount from another container in the same task definition.
-   */
-  public readonly volumesFrom = new Array<VolumeFrom>();
+   /**
+    * The data volumes to mount from another container in the same task definition.
+    */
+   public readonly volumesFrom = new Array<VolumeFrom>();
 
-  /**
-   * An array of ulimits to set in the container.
-   */
-  public readonly ulimits = new Array<Ulimit>();
+   /**
+    * An array of ulimits to set in the container.
+    */
+   public readonly ulimits = new Array<Ulimit>();
 
-  /**
-   * An array dependencies defined for container startup and shutdown.
-   */
-  public readonly containerDependencies = new Array<ContainerDependency>();
+   /**
+    * An array dependencies defined for container startup and shutdown.
+    */
+   public readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Specifies whether the container will be marked essential.
@@ -397,9 +315,9 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public readonly essential: boolean;
 
-  /**
-   * The name of this container
-   */
+   /**
+    * The name of this container
+    */
   public readonly containerName: string;
 
   /**
@@ -413,15 +331,16 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
+   * The log configuration specification for the container.
+   */
+  public readonly logDriverConfig?: LogDriverConfig;
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
 
   private readonly imageConfig: ContainerImageConfig;
-
-  private readonly logDriverConfig?: LogDriverConfig;
-
-  private readonly firelensConfig?: FirelensConfig;
 
   /**
    * Constructs a new instance of the ContainerDefinition class.
@@ -442,9 +361,6 @@ export class ContainerDefinition extends cdk.Construct {
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
-    }
-    if (props.firelensConfig) {
-      this.firelensConfig = props.firelensConfig;
     }
     props.taskDefinition._linkContainer(this);
   }
@@ -611,7 +527,6 @@ export class ContainerDefinition extends cdk.Construct {
       dockerSecurityOptions: this.props.dockerSecurityOptions,
       entryPoint: this.props.entryPoint,
       essential: this.essential,
-      firelensConfiguration: this.firelensConfig && renderFirelensConfig(this.firelensConfig),
       hostname: this.props.hostname,
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,

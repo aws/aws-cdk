@@ -5,6 +5,7 @@ export * from './base/task-definition';
 export * from './container-definition';
 export * from './container-image';
 export * from './cluster';
+export * from './firlens-log-router';
 export * from './placement';
 
 export * from './ec2/ec2-service';

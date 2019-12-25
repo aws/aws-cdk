@@ -22,8 +22,9 @@ export interface FireLensLogDriverProps extends BaseLogDriverProps {
 export class FireLensLogDriver extends LogDriver {
   /**
    * The configuration options to send to the log driver.
+   * @default - the log driver options
    */
-  private options: { [key: string]: string };
+  private options?: { [key: string]: string };
 
   /**
    * Constructs a new instance of the FireLensLogDriver class.
@@ -32,7 +33,7 @@ export class FireLensLogDriver extends LogDriver {
   constructor(props: FireLensLogDriverProps) {
     super();
 
-    this.options = props.options || {};
+    this.options = props.options;
   }
 
   /**
@@ -41,7 +42,7 @@ export class FireLensLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'awsfirelens',
-      options: removeEmpty(this.options),
+      ...(this.options && {options: removeEmpty(this.options)}),
     };
   }
 }

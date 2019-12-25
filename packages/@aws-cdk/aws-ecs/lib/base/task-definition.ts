@@ -3,6 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
+import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firlens-log-router';
+import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 
@@ -276,7 +278,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: Lazy.anyValue({ produce: () => this.containers.map(x => x.renderContainerDefinition(this)) }, { omitEmptyArray: true }),
+      containerDefinitions: Lazy.anyValue({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
       volumes: Lazy.anyValue({ produce: () => this.volumes }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
@@ -365,6 +367,18 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
+   * Adds a firelens log router to the task definition.
+   */
+  public addFirelensLogRouter(id: string, props: FirelensLogRouterDefinitionOptions) {
+    // only one firelens log router is allowed in each task.
+    if (this.containers.find(x => x instanceof FirelensLogRouter)) {
+      throw new Error('Firelens log router is already added in this task.');
+    }
+
+    return new FirelensLogRouter(this, id, { taskDefinition: this, ...props });
+  }
+
+  /**
    * Links a container to this task definition.
    * @internal
    */
@@ -442,6 +456,28 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private renderNetworkMode(networkMode: NetworkMode): string | undefined {
     return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
+  }
+
+  private renderContainers() {
+    // add firelens log router container if any application container is using firelens log driver,
+    // also check if already created log router container
+    for (const container of this.containers) {
+      if (container.logDriverConfig && container.logDriverConfig.logDriver === 'awsfirelens'
+        && !this.containers.find(x => x instanceof FirelensLogRouter)) {
+        this.addFirelensLogRouter('log-router', {
+          image: obtainDefaultFluentBitECRImage(this, container.logDriverConfig),
+          firelensConfig: {
+            type: FirelensLogRouterType.FLUENTBIT,
+          },
+          logging: new AwsLogDriver({ streamPrefix: 'firelens' }),
+          memoryReservationMiB: 50,
+        });
+
+        break;
+      }
+    }
+
+    return this.containers.map(x => x.renderContainerDefinition(this));
   }
 }
 

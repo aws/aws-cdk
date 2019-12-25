@@ -15,11 +15,11 @@ export = {
     cb();
   },
 
-  'create a firelens log driver without options'(test: Test) {
+  'create a firelens log driver with default options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.FireLensLogDriver({}),
+      logging: ecs.LogDrivers.firelens({}),
       memoryLimitMiB: 128
     });
 
@@ -30,6 +30,20 @@ export = {
           LogConfiguration: {
             LogDriver: 'awsfirelens'
           }
+        },
+        {
+          Essential: true,
+          FirelensConfiguration: {
+            Type: 'fluentbit'
+          },
+          Image: {
+            'Fn::FindInMap': [
+              'FluentBitECRImageMapping', {
+                Ref: 'AWS::Region'
+              },
+              'image'
+            ]
+          },
         }
       ]
     }));
@@ -41,7 +55,7 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.FireLensLogDriver({
+      logging: ecs.LogDrivers.firelens({
         options: {
             Name: 'cloudwatch',
             region: 'us-west-2',
@@ -67,6 +81,12 @@ export = {
                 log_stream_prefix: 'from-fluent-bit'
             }
           }
+        },
+        {
+          Essential: true,
+          FirelensConfiguration: {
+            Type: "fluentbit"
+          }
         }
       ]
     }));
@@ -78,7 +98,7 @@ export = {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.FireLensLogDriver({
+      logging: ecs.LogDrivers.firelens({
         options: {
             Name: 'firehose',
             region: 'us-west-2',
@@ -100,10 +120,86 @@ export = {
                 delivery_stream: 'my-stream',
             }
           }
+        },
+        {
+          Essential: true,
+          FirelensConfiguration: {
+            Type: "fluentbit"
+          }
         }
       ]
     }));
 
     test.done();
+  },
+
+  "Firelens Configuration": {
+    "fluentd log router container"(test: Test) {
+      // GIVEN
+      td.addFirelensLogRouter("log_router", {
+        image: ecs.ContainerImage.fromRegistry('fluent/fluentd'),
+        firelensConfig: {
+          type: ecs.FirelensLogRouterType.FLUENTD,
+        },
+        memoryReservationMiB: 50,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Image: "fluent/fluentd",
+            MemoryReservation: 50,
+            Name: "log_router",
+            FirelensConfiguration: {
+              Type: 'fluentd',
+            },
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    "fluent-bit log router container with options"(test: Test) {
+      // GIVEN
+      const stack2 = new cdk.Stack(undefined, 'Stack2', { env: { region: 'us-east-1' }});
+      const td2 = new ecs.Ec2TaskDefinition(stack2, 'TaskDefinition');
+      td2.addFirelensLogRouter("log_router", {
+        image: ecs.obtainDefaultFluentBitECRImage(td2),
+        firelensConfig: {
+          type: ecs.FirelensLogRouterType.FLUENTBIT,
+          options: {
+            enableECSLogMetadata: false,
+            configFileType: ecs.FirelensConfigFileType.S3,
+            configFileValue: 'arn:aws:s3:::mybucket/fluent.conf'
+          }
+        },
+        logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
+        memoryReservationMiB: 50,
+      });
+
+      // THEN
+      expect(stack2).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Image: '906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:latest',
+            MemoryReservation: 50,
+            Name: 'log_router',
+            FirelensConfiguration: {
+              Type: 'fluentbit',
+              Options: {
+                'enable-ecs-log-metadata': 'false',
+                'config-file-type': 's3',
+                'config-file-value': 'arn:aws:s3:::mybucket/fluent.conf'
+              }
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    },
   },
 };

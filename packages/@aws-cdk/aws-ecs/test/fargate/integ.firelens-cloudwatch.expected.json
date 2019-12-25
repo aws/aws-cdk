@@ -355,7 +355,10 @@
         }
       }
     },
-    "firelenscloudwatchroleCDD1A443": {
+    "FargateCluster7CCD5F93": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -369,31 +372,34 @@
             }
           ],
           "Version": "2012-10-17"
-        },
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "logs:CreateLogStream",
-                    "logs:CreateLogGroup",
-                    "logs:DescribeLogStreams",
-                    "logs:PutLogEvents"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "*"
-                }
+        }
+      }
+    },
+    "TaskDefTaskRoleDefaultPolicyA592CB18": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
               ],
-              "Version": "2012-10-17"
-            },
-            "PolicyName": "firelens_cloudwatch_policy"
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TaskDefTaskRoleDefaultPolicyA592CB18",
+        "Roles": [
+          {
+            "Ref": "TaskDefTaskRole1EDB4A67"
           }
         ]
       }
-    },
-    "FargateCluster7CCD5F93": {
-      "Type": "AWS::ECS::Cluster"
     },
     "TaskDef54694570": {
       "Type": "AWS::ECS::TaskDefinition",
@@ -401,10 +407,41 @@
         "ContainerDefinitions": [
           {
             "Essential": true,
+            "Image": "nginx",
+            "LogConfiguration": {
+              "LogDriver": "awsfirelens",
+              "Options": {
+                "Name": "cloudwatch",
+                "region": {
+                  "Ref": "AWS::Region"
+                },
+                "log_group_name": "ecs-integ-test",
+                "auto_create_group": "true",
+                "log_stream_prefix": "nginx"
+              }
+            },
+            "Name": "nginx",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ]
+          },
+          {
+            "Essential": true,
             "FirelensConfiguration": {
               "Type": "fluentbit"
             },
-            "Image": "amazon/aws-for-fluent-bit",
+            "Image": {
+              "Fn::FindInMap": [
+                "FluentBitECRImageMapping",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "image"
+              ]
+            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -419,29 +456,6 @@
             },
             "MemoryReservation": 50,
             "Name": "log-router"
-          },
-          {
-            "Essential": true,
-            "Image": "nginx",
-            "LogConfiguration": {
-              "LogDriver": "awsfirelens",
-              "Options": {
-                "Name": "cloudwatch",
-                "region": {
-                  "Ref": "AWS::Region"
-                },
-                "log_group_name": "firelens-fluent-bit",
-                "auto_create_group": "true",
-                "log_stream_prefix": "from-fluent-bit"
-              }
-            },
-            "Name": "nginx",
-            "PortMappings": [
-              {
-                "ContainerPort": 80,
-                "Protocol": "tcp"
-              }
-            ]
           }
         ],
         "Cpu": "512",
@@ -459,16 +473,11 @@
         ],
         "TaskRoleArn": {
           "Fn::GetAtt": [
-            "firelenscloudwatchroleCDD1A443",
+            "TaskDefTaskRole1EDB4A67",
             "Arn"
           ]
         }
       }
-    },
-    "TaskDeflogrouterLogGroup5C22D15C": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -494,6 +503,16 @@
           "Statement": [
             {
               "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
@@ -515,6 +534,11 @@
           }
         ]
       }
+    },
+    "TaskDeflogrouterLogGroup5C22D15C": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "websvcsgA808F313": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -553,20 +577,10 @@
         },
         "DesiredCount": 1,
         "EnableECSManagedTags": false,
-        "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
-        "LoadBalancers": [
-          {
-            "ContainerName": "nginx",
-            "ContainerPort": 80,
-            "TargetGroupArn": {
-              "Ref": "LBPublicListenerECSGroupD6A32205"
-            }
-          }
-        ],
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
-            "AssignPublicIp": "DISABLED",
+            "AssignPublicIp": "ENABLED",
             "SecurityGroups": [
               {
                 "Fn::GetAtt": [
@@ -577,10 +591,10 @@
             ],
             "Subnets": [
               {
-                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
               },
               {
-                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                "Ref": "VpcPublicSubnet2Subnet691E08A3"
               }
             ]
           }
@@ -588,68 +602,76 @@
         "TaskDefinition": {
           "Ref": "TaskDef54694570"
         }
-      },
-      "DependsOn": [
-        "LBPublicListenerECSGroupD6A32205",
-        "LBPublicListener6E1F3D94"
-      ]
-    },
-    "LB8A12904C": {
-      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-      "Properties": {
-        "Scheme": "internet-facing",
-        "Subnets": [
-          {
-            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-          },
-          {
-            "Ref": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "Type": "network"
-      },
-      "DependsOn": [
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet2DefaultRoute97F91067"
-      ]
-    },
-    "LBPublicListener6E1F3D94": {
-      "Type": "AWS::ElasticLoadBalancingV2::Listener",
-      "Properties": {
-        "DefaultActions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "LBPublicListenerECSGroupD6A32205"
-            },
-            "Type": "forward"
-          }
-        ],
-        "LoadBalancerArn": {
-          "Ref": "LB8A12904C"
-        },
-        "Port": 80,
-        "Protocol": "TCP"
-      }
-    },
-    "LBPublicListenerECSGroupD6A32205": {
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-      "Properties": {
-        "Port": 80,
-        "Protocol": "TCP",
-        "TargetType": "ip",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
       }
     }
   },
-  "Outputs": {
-    "LoadBalancerDNS": {
-      "Value": {
-        "Fn::GetAtt": [
-          "LB8A12904C",
-          "DNSName"
-        ]
+  "Mappings": {
+    "FluentBitECRImageMapping": {
+      "us-east-1": {
+        "image": "906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "us-east-2": {
+        "image": "906394416424.dkr.ecr.us-east-2.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "us-west-1": {
+        "image": "906394416424.dkr.ecr.us-west-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "us-west-2": {
+        "image": "906394416424.dkr.ecr.us-west-2.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "ap-east-1": {
+        "image": "449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "ap-south-1": {
+        "image": "906394416424.dkr.ecr.ap-south-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "ap-northeast-2": {
+        "image": "906394416424.dkr.ecr.ap-northeast-2.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "ap-southeast-1": {
+        "image": "906394416424.dkr.ecr.ap-southeast-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "ap-southeast-2": {
+        "image": "906394416424.dkr.ecr.ap-southeast-2.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "ap-northeast-1": {
+        "image": "906394416424.dkr.ecr.ap-northeast-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "ca-central-1": {
+        "image": "906394416424.dkr.ecr.ca-central-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "eu-central-1": {
+        "image": "906394416424.dkr.ecr.eu-central-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "eu-west-1": {
+        "image": "906394416424.dkr.ecr.eu-west-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "eu-west-2": {
+        "image": "906394416424.dkr.ecr.eu-west-2.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "eu-west-3": {
+        "image": "906394416424.dkr.ecr.eu-west-3.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "eu-north-1": {
+        "image": "906394416424.dkr.ecr.eu-north-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "me-south-1": {
+        "image": "741863432321.dkr.ecr.me-south-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "sa-east-1": {
+        "image": "906394416424.dkr.ecr.sa-east-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "us-gov-east-1": {
+        "image": "161423150738.dkr.ecr.us-gov-east-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "us-gov-west-1": {
+        "image": "161423150738.dkr.ecr.us-gov-west-1.amazonaws.com/aws-for-fluent-bit:latest"
+      },
+      "cn-north-1": {
+        "image": "128054284489.dkr.ecr.cn-north-1.amazonaws.com.cn/aws-for-fluent-bit:latest"
+      },
+      "cn-northwest-1": {
+        "image": "128054284489.dkr.ecr.cn-northwest-1.amazonaws.com.cn/aws-for-fluent-bit:latest"
       }
     }
   }
