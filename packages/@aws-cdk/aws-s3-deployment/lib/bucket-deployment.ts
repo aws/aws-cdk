@@ -1,13 +1,12 @@
-import cloudformation = require("@aws-cdk/aws-cloudformation");
-import cloudfront = require("@aws-cdk/aws-cloudfront");
-import iam = require("@aws-cdk/aws-iam");
-import lambda = require("@aws-cdk/aws-lambda");
-import s3 = require("@aws-cdk/aws-s3");
-import cdk = require("@aws-cdk/core");
-import { Token } from "@aws-cdk/core";
-import crypto = require('crypto');
-import fs = require('fs');
-import path = require("path");
+import * as cloudformation from '@aws-cdk/aws-cloudformation';
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import { ISource, SourceConfig } from "./source";
 
 const now = Date.now();
@@ -213,7 +212,7 @@ export class BucketDeployment extends cdk.Construct {
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
     if (memoryLimit) {
-      if (Token.isUnresolved(memoryLimit)) {
+      if (cdk.Token.isUnresolved(memoryLimit)) {
         throw new Error(`Can't use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler`);
       }
 

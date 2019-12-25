@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dlm",
-  "version": "1.16.1",
+  "version": "1.19.0",
   "description": "The CDK Construct Library for AWS::DLM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,15 +12,13 @@
         "packageId": "Amazon.CDK.AWS.DLM",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.dlm",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "dlm",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "dlm"
         }
       },
       "python": {
@@ -63,18 +61,29 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/core": "1.19.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"

@@ -1,11 +1,9 @@
 import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { CfnOutput } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import eks = require('../lib');
-import { KubernetesResource } from '../lib';
+import * as eks from '../lib';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -114,6 +112,27 @@ export = {
     test.done();
   },
 
+  'creating a cluster tags the public VPC subnets'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::Subnet', {
+      MapPublicIpOnLaunch: true,
+      Tags: [
+        { Key: "Name", Value: "Stack/VPC/PublicSubnet1" },
+        { Key: "aws-cdk:subnet-name", Value: "Public" },
+        { Key: "aws-cdk:subnet-type", Value: "Public" },
+        { Key: "kubernetes.io/role/elb", Value: "1" }
+      ]
+    }));
+
+    test.done();
+  },
+
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -160,7 +179,7 @@ export = {
     });
 
     // this should cause an export/import
-    new CfnOutput(stack2, 'ClusterARN', { value: imported.clusterArn });
+    new cdk.CfnOutput(stack2, 'ClusterARN', { value: imported.clusterArn });
 
     // THEN
     expect(stack2).toMatch({
@@ -184,6 +203,7 @@ export = {
     test.throws(() => cluster.addResource('foo', {}), /Cannot define a KubernetesManifest resource on a cluster with kubectl disabled/);
     test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
       /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
+    test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Cannot define a Helm chart on a cluster with kubectl disabled/);
     test.done();
   },
 
@@ -196,7 +216,7 @@ export = {
     new eks.Cluster(stack, 'Cluster', { vpc, mastersRole: role, defaultCapacity: 0 });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         "Fn::Join": [
           "",
@@ -227,11 +247,11 @@ export = {
     cluster.addResource('manifest2', { bar: 123 }, { boor: [ 1, 2, 3 ] });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: "[{\"foo\":123}]"
     }));
 
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: "[{\"bar\":123},{\"boor\":[1,2,3]}]"
     }));
 
@@ -249,7 +269,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         "Fn::Join": [
           "",
@@ -282,7 +302,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
     test.done();
   },
 
@@ -297,7 +317,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
     test.done();
   },
 
@@ -504,7 +524,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, { Manifest: JSON.stringify(spotInterruptHandler()) }));
+        expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, { Manifest: JSON.stringify(spotInterruptHandler()) }));
         test.done();
       },
 
@@ -520,7 +540,7 @@ export = {
         });
 
         // THEN
-        expect(stack).notTo(haveResource(KubernetesResource.RESOURCE_TYPE));
+        expect(stack).notTo(haveResource(eks.KubernetesResource.RESOURCE_TYPE));
         test.done();
       }
 
@@ -540,5 +560,24 @@ export = {
         bootstrapOptions: { awsApiRetryAttempts: 10 }
       }), /Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false/);
       test.done();
-  }
+  },
+
+  'EKS-Optimized AMI with GPU support'(test: Test) {
+    // GIVEN
+    const { app, stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'cluster', {
+      defaultCapacity: 2,
+      defaultCapacityInstance: new ec2.InstanceType('g4dn.xlarge'),
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+    test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu')
+      ), 'EKS AMI with GPU should be in ssm parameters');
+    test.done();
+  },
 };

@@ -37,6 +37,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -51,6 +55,10 @@
           {
             "Key": "Name",
             "Value": "integ-eks-spot/vpc/PublicSubnet1"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -84,7 +92,17 @@
     "vpcPublicSubnet1EIPDA49DCBE": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet1"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          }
+        ]
       }
     },
     "vpcPublicSubnet1NATGateway9C16659E": {
@@ -103,6 +121,10 @@
           {
             "Key": "Name",
             "Value": "integ-eks-spot/vpc/PublicSubnet1"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -128,6 +150,10 @@
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -142,6 +168,10 @@
           {
             "Key": "Name",
             "Value": "integ-eks-spot/vpc/PublicSubnet2"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -175,7 +205,17 @@
     "vpcPublicSubnet2EIP9B3743B1": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet2"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          }
+        ]
       }
     },
     "vpcPublicSubnet2NATGateway9B8AE11A": {
@@ -194,6 +234,10 @@
           {
             "Key": "Name",
             "Value": "integ-eks-spot/vpc/PublicSubnet2"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
           }
         ]
       }
@@ -1266,7 +1310,6 @@
       "Properties": {
         "MaxSize": "10",
         "MinSize": "1",
-        "DesiredCapacity": "10",
         "LaunchConfigurationName": {
           "Ref": "myClusterspotLaunchConfig6681F311"
         },

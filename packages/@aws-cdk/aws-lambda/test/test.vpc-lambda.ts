@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { ICallbackFunction, Test } from 'nodeunit';
-import lambda = require('../lib');
+import * as lambda from '../lib';
 
 export = {
   'lambda in a VPC': classFixture(class Henk {
@@ -21,7 +21,7 @@ export = {
       this.lambda = new lambda.Function(this.stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         vpc: this.vpc,
         allowAllOutbound: false
       });
@@ -40,6 +40,79 @@ export = {
           ]
         }
       }));
+
+      test.done();
+    }
+
+    public 'has securitygroup that is passed in props'(test: Test) {
+      // WHEN
+      new lambda.Function(this.stack, 'LambdaWithCustomSG', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_8_10,
+        vpc: this.vpc,
+        securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupX', { vpc: this.vpc }),
+      });
+      // THEN
+      expect(this.stack).to(haveResource('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            {"Fn::GetAtt": [ "CustomSecurityGroupX6C7F3A78", "GroupId" ]}
+          ],
+          SubnetIds: [
+            {Ref: "VPCPrivateSubnet1Subnet8BCA10E0"},
+            {Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"},
+          ]
+        }
+      }));
+
+      test.done();
+    }
+
+    public 'has all the securitygroups that are passed as a list of SG in props'(test: Test) {
+      // WHEN
+      new lambda.Function(this.stack, 'LambdaWithCustomSGList', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_8_10,
+        vpc: this.vpc,
+        securityGroups: [
+          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupA', { vpc: this.vpc }),
+          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupB', { vpc: this.vpc }),
+        ],
+      });
+      // THEN
+      expect(this.stack).to(haveResource('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            {"Fn::GetAtt": [ "CustomSecurityGroupA267F62DE", "GroupId" ]},
+            {"Fn::GetAtt": [ "CustomSecurityGroupB1118D0D5", "GroupId" ]}
+          ],
+          SubnetIds: [
+            {Ref: "VPCPrivateSubnet1Subnet8BCA10E0"},
+            {Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"},
+          ]
+        }
+      }));
+
+      test.done();
+    }
+
+    public 'fails if both of securityGroup and securityGroups are passed in props at once'(test: Test) {
+      // THEN
+      test.throws(() => {
+        new lambda.Function(this.stack, 'LambdaWithWrongProps', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_8_10,
+        vpc: this.vpc,
+        securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupB', { vpc: this.vpc }),
+        securityGroups: [
+          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupC', { vpc: this.vpc }),
+          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupD', { vpc: this.vpc }),
+        ],
+        });
+      }, /Only one of the function props, securityGroup or securityGroups, is allowed/);
 
       test.done();
     }
@@ -128,7 +201,7 @@ export = {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
@@ -149,7 +222,7 @@ export = {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_8_10,
+        runtime: lambda.Runtime.NODEJS_10_X,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
       });

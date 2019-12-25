@@ -16,3 +16,4 @@ export * from './shared/base-load-balancer';
 export * from './shared/base-target-group';
 export * from './shared/enums';
 export * from './shared/load-balancer-targets';
+export * from './shared/listener-certificate';

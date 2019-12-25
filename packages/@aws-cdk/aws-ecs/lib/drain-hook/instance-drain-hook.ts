@@ -1,10 +1,10 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import hooks = require('@aws-cdk/aws-autoscaling-hooktargets');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import fs = require('fs');
-import path = require('path');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as hooks from '@aws-cdk/aws-autoscaling-hooktargets';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
 import { ICluster } from '../cluster';
 
 // Reference for the source in this package:

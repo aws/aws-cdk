@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-sns-subscriptions",
-  "version": "1.16.1",
+  "version": "1.19.0",
   "description": "CDK Subscription Constructs for AWS SNS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.sns.subscriptions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sns-subscriptions",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "sns-subscriptions"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.SNS.Subscriptions",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -72,27 +70,27 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
     "jest": "^24.9.0",
-    "pkglint": "1.16.1"
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-sns": "1.19.0",
+    "@aws-cdk/aws-sqs": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-sns": "1.19.0",
+    "@aws-cdk/aws-sqs": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"

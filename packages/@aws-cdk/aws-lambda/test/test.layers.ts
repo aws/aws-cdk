@@ -1,10 +1,10 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test, testCase } from 'nodeunit';
-import path = require('path');
-import lambda = require('../lib');
+import * as path from 'path';
+import * as lambda from '../lib';
 
 export = testCase({
   'creating a layer'(test: Test) {
@@ -38,7 +38,7 @@ export = testCase({
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X]
     });
 
     // WHEN

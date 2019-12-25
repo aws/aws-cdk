@@ -1,8 +1,8 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import path = require('path');
-import metadata = require('./sdk-api-metadata.json');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as path from 'path';
+import * as metadata from './sdk-api-metadata.json';
 import { addLambdaPermission } from './util';
 
 /**
@@ -83,7 +83,7 @@ export class AwsApi implements events.IRuleTarget {
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
     const handler = new lambda.SingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
       code: lambda.Code.fromAsset(path.join(__dirname, 'aws-api-handler')),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
       lambdaPurpose: 'AWS',
