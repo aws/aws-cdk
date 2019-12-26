@@ -59,14 +59,14 @@
     "@types/table": "^4.0.7",
     "@types/uuid": "^3.4.6",
     "@types/yaml": "^1.2.0",
-    "@types/yargs": "^13.0.3",
-    "aws-sdk-mock": "^4.5.0",
+    "@types/yargs": "^13.0.4",
+    "aws-sdk-mock": "^5.0.0",
     "cdk-build-tools": "1.19.0",
     "jszip": "^3.2.2",
     "mockery": "^2.1.0",
     "nodeunit": "^0.11.3",
     "pkglint": "1.19.0",
-    "sinon": "^7.5.0"
+    "sinon": "^8.0.1"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "1.19.0",

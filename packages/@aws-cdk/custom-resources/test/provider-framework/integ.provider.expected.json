@@ -1022,7 +1022,11 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39",
+        "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F"
+      ]
     }
   },
   "Parameters": {
