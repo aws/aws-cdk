@@ -151,7 +151,6 @@
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.ManualApprovalActionProps.additionalInformation",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.ManualApprovalActionProps.notificationTopic",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.ManualApprovalActionProps.notifyEmails",
-      "props-default-doc:@aws-cdk/aws-codepipeline-actions.ManualApprovalActionProps.externalEntityLink",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.S3DeployActionProps.objectKey",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.S3SourceActionProps.output",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubTrigger.NONE",

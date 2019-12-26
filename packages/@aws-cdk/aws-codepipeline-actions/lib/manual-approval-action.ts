@@ -27,6 +27,8 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
 
   /**
    * URL you want to provide to the reviewer as part of the approval request. The URL must begin with 'http://' or 'https://'.
+   *
+   * @default - the approval request will not have an external link
    */
   readonly externalEntityLink?: string;
 }
