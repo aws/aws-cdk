@@ -22,7 +22,7 @@ test('use ALB as record target', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.AddressRecordTarget.fromAlias(new targets.LoadBalancerTarget(lb))
+    target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(lb))
   });
 
   // THEN

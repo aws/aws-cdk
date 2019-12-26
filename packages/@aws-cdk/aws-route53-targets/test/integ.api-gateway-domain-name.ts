@@ -43,7 +43,7 @@ class TestStack extends Stack {
 
     new route53.ARecord(this, 'Alias', {
       zone,
-      target: route53.AddressRecordTarget.fromAlias(new targets.ApiGateway(api))
+      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
     });
   }
 }

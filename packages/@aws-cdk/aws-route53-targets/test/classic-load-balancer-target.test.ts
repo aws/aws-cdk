@@ -22,7 +22,7 @@ test('use classic ELB as record target', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.AddressRecordTarget.fromAlias(new targets.ClassicLoadBalancerTarget(lb))
+    target: route53.RecordTarget.fromAlias(new targets.ClassicLoadBalancerTarget(lb))
   });
 
   // THEN

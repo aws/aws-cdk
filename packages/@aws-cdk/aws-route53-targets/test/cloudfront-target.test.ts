@@ -27,7 +27,7 @@ test('use CloudFront as record target', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
+    target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
   });
 
   // THEN

@@ -3,7 +3,7 @@ import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinitio
   PropagatedTagSource, Protocol, Secret } from '@aws-cdk/aws-ecs';
 import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
 
@@ -430,7 +430,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
       new ARecord(this, `DNS${loadBalancer.node.id}`, {
         zone,
         recordName: name,
-        target: AddressRecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
       });
     }
   }
