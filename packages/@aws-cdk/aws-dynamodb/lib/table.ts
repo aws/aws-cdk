@@ -1,6 +1,6 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -183,9 +183,169 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 }
 
 /**
+ * An interface that represents a DynamoDB Table - either created with the CDK, or an existing one.
+ */
+export interface ITable extends IResource {
+  /**
+   * Arn of the dynamodb table.
+   *
+   * @attribute
+   */
+  readonly tableArn: string;
+
+  /**
+   * Table name of the dynamodb table.
+   *
+   * @attribute
+   */
+  readonly tableName: string;
+
+  /**
+   * Permits an IAM principal all data read operations from this table:
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * @param grantee The principal to grant access to
+   */
+  grantReadData(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  grantTableListStreams(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal all stream data read operations for this
+   * table's stream:
+   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * @param grantee The principal to grant access to
+   */
+  grantStreamRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal all data write operations to this table:
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * @param grantee The principal to grant access to
+   */
+  grantWriteData(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal to all data read/write operations to this table.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * @param grantee The principal to grant access to
+   */
+  grantReadWriteData(grantee: iam.IGrantable): iam.Grant;
+}
+
+/**
+ * Reference to a dynamodb table.
+ */
+export interface TableAttributes {
+  /**
+   * The ARN of the dynamodb table.
+   * One of this, or {@link tabeName}, is required.
+   *
+   * @default no table arn
+   */
+  readonly tableArn?: string;
+
+  /**
+   * The table name of the dynamodb table.
+   * One of this, or {@link tabeArn}, is required.
+   *
+   * @default no table name
+   */
+  readonly tableName?: string;
+}
+
+abstract class TableBase extends Resource implements ITable {
+  /**
+   * @attribute
+   */
+  public abstract readonly tableArn: string;
+
+  /**
+   * @attribute
+   */
+  public abstract readonly tableName: string;
+
+  /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [
+        this.tableArn,
+        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE })
+      ],
+      scope: this,
+    });
+  }
+
+  /**
+   * Permits an IAM principal all data read operations from this table:
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * @param grantee The principal to grant access to
+   */
+  public grantReadData(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...READ_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   * @param _grantee The principal (no-op if undefined)
+   */
+  public abstract grantTableListStreams(_grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal all stream data read operations for this
+   * table's stream:
+   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * @param grantee The principal to grant access to
+   */
+  public abstract grantStreamRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal all data write operations to this table:
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * @param grantee The principal to grant access to
+   */
+  public grantWriteData(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM principal to all data read/write operations to this table.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * @param grantee The principal to grant access to
+   */
+  public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * @param grantee The principal to grant access to
+   */
+  public grantFullAccess(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'dynamodb:*');
+  }
+
+  protected abstract get hasIndex(): boolean;
+}
+
+/**
  * Provides a DynamoDB table.
  */
-export class Table extends Resource {
+export class Table extends TableBase {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use {@link #grantTableListStreams} for more granular permission
@@ -197,11 +357,89 @@ export class Table extends Resource {
       actions: ['dynamodb:ListStreams'],
       resourceArns: ['*'],
     });
- }
+  }
 
- /**
-  * @attribute
-  */
+  /**
+   * Creates a Table construct that represents an external table via table name.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param tableName The table's name.
+   */
+  public static fromTableName(scope: Construct, id: string, tableName: string): ITable {
+    return Table.fromTableAttributes(scope, id, { tableName });
+  }
+
+  /**
+   * Creates a Table construct that represents an external table via table arn.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param tableArn The table's ARN.
+   */
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+    return Table.fromTableAttributes(scope, id, { tableArn });
+  }
+
+  /**
+   * Creates a Table construct that represents an external table.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param attrs A `TableAttributes` object.
+   */
+  public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
+
+    class Import extends TableBase {
+
+      public readonly tableName: string;
+      public readonly tableArn: string;
+
+      constructor(_scope: Construct, _id: string, _tableArn: string, _tableName: string) {
+        super(_scope, _id);
+        this.tableArn = _tableArn;
+        this.tableName = _tableName;
+      }
+
+      protected get hasIndex(): boolean {
+        return false;
+      }
+
+      public grantTableListStreams(_grantee: iam.IGrantable): iam.Grant {
+        throw new Error("Method not implemented.");
+      }
+
+      public grantStreamRead(_grantee: iam.IGrantable): iam.Grant {
+        throw new Error("Method not implemented.");
+      }
+    }
+
+    let tableName: string;
+    let tableArn: string;
+    const stack = Stack.of(scope);
+    if (!attrs.tableName) {
+      if (!attrs.tableArn) { throw new Error('One of tableName or tableArn is required!'); }
+
+      tableArn = attrs.tableArn;
+      const maybeTableName = stack.parseArn(attrs.tableArn).resourceName;
+      if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
+      tableName = maybeTableName;
+    } else {
+      if (attrs.tableArn) { throw new Error("Only one of tableArn or tableName can be provided"); }
+      tableName = attrs.tableName;
+      tableArn = stack.formatArn({
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: attrs.tableName,
+      });
+    }
+
+    return new Import(scope, id, tableArn, tableName);
+  }
+
+  /**
+   * @attribute
+   */
   public readonly tableArn: string;
 
   /**
@@ -278,6 +516,54 @@ export class Table extends Resource {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
       this.tableSortKey = props.sortKey;
     }
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   */
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
+
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.tableStreamArn],
+      scope: this,
+    });
+  }
+
+  /**
+   * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: [
+        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` })
+      ],
+    });
+  }
+
+  /**
+   * Permits an IAM principal all stream data read operations for this
+   * table's stream:
+   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * @param grantee The principal to grant access to
+   */
+  public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
+    this.grantTableListStreams(grantee);
+    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
   }
 
   /**
@@ -429,108 +715,6 @@ export class Table extends Resource {
   }
 
   /**
-   * Adds an IAM policy statement associated with this table to an IAM
-   * principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [
-        this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE })
-      ],
-      scope: this,
-    });
-  }
-
-  /**
-   * Adds an IAM policy statement associated with this table's stream to an
-   * IAM principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
-   */
-  public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
-    }
-
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.tableStreamArn],
-      scope: this,
-    });
-  }
-
-  /**
-   * Permits an IAM principal all data read operations from this table:
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
-   * @param grantee The principal to grant access to
-   */
-  public grantReadData(grantee: iam.IGrantable) {
-    return this.grant(grantee, ...READ_DATA_ACTIONS);
-  }
-
-  /**
-   * Permits an IAM Principal to list streams attached to current dynamodb table.
-   *
-   * @param grantee The principal (no-op if undefined)
-   */
-  public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
-    if (!this.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
-    }
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['dynamodb:ListStreams'],
-      resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*`})
-      ],
-    });
-  }
-
-  /**
-   * Permits an IAM principal all stream data read operations for this
-   * table's stream:
-   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
-   * @param grantee The principal to grant access to
-   */
-  public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
-    this.grantTableListStreams(grantee);
-    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
-  }
-
-  /**
-   * Permits an IAM principal all data write operations to this table:
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
-   * @param grantee The principal to grant access to
-   */
-  public grantWriteData(grantee: iam.IGrantable) {
-    return this.grant(grantee, ...WRITE_DATA_ACTIONS);
-  }
-
-  /**
-   * Permits an IAM principal to all data read/write operations to this table.
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
-   * @param grantee The principal to grant access to
-   */
-  public grantReadWriteData(grantee: iam.IGrantable) {
-    return this.grant(grantee, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
-  }
-
-  /**
-   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
-   * @param grantee The principal to grant access to
-   */
-  public grantFullAccess(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'dynamodb:*');
-  }
-
-  /**
    * Validate the table construct.
    *
    * @returns an array of validation error message
@@ -553,7 +737,7 @@ export class Table extends Resource {
    *
    * @param props read and write capacity properties
    */
-  private validateProvisioning(props: { readCapacity?: number, writeCapacity?: number}): void {
+  private validateProvisioning(props: { readCapacity?: number, writeCapacity?: number }): void {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       if (props.readCapacity !== undefined || props.writeCapacity !== undefined) {
         throw new Error('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode');
@@ -686,7 +870,7 @@ export class Table extends Resource {
   /**
    * Whether this table has indexes
    */
-  private get hasIndex(): boolean {
+  protected get hasIndex(): boolean {
     return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 }
