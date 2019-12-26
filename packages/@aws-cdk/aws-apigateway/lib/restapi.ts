@@ -214,9 +214,9 @@ export class RestApi extends Resource implements IRestApi {
 
   /**
    * The domain name mapped to this API, if defined through the `domainName`
-   * configuration prop.
+   * configuration prop, or added later via `addDomainName`
    */
-  public readonly domainName?: DomainName;
+  private _domainName?: DomainName;
 
   private readonly methods = new Array<Method>();
   private _latestDeployment: Deployment | undefined;
@@ -253,8 +253,16 @@ export class RestApi extends Resource implements IRestApi {
     this.restApiRootResourceId = resource.attrRootResourceId;
 
     if (props.domainName) {
-      this.domainName = this.addDomainName('CustomDomain', props.domainName);
+      this.addDomainName('CustomDomain', props.domainName);
     }
+  }
+
+  /**
+   * The first domain name mapped to this API, if defined through the `domainName`
+   * configuration prop, or added via `addDomainName`
+   */
+  public get domainName() {
+    return this._domainName;
   }
 
   /**
@@ -292,10 +300,14 @@ export class RestApi extends Resource implements IRestApi {
    * @param options custom domain options
    */
   public addDomainName(id: string, options: DomainNameOptions): DomainName {
-    return new DomainName(this, id, {
+    const domainName = new DomainName(this, id, {
       ...options,
       mapping: this
     });
+    if (!this._domainName) {
+      this._domainName = domainName;
+    }
+    return domainName;
   }
 
   /**
