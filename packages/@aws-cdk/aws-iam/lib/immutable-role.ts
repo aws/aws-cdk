@@ -1,6 +1,6 @@
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
-import { IPolicy } from './policy';
+import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { IPrincipal } from './principals';
 import { IRole } from './role';
@@ -30,7 +30,7 @@ export class ImmutableRole implements IRole {
   constructor(private readonly role: IRole) {
   }
 
-  public attachInlinePolicy(_policy: IPolicy): void {
+  public attachInlinePolicy(_policy: Policy): void {
     // do nothing
   }
 
