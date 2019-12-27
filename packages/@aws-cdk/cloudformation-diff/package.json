@@ -14,10 +14,25 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
-  "nyc": {
-    "statements": 45,
-    "lines": 45,
-    "branches": 44
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 60,
+        "lines": 60,
+        "branches": 55
+      }
+    },
+    "preset": "ts-jest",
+    "testMatch": [
+      "**/__tests__/**/*.ts?(x)",
+      "**/?(*.)+(spec|test).ts?(x)"
+    ]
   },
   "author": {
     "name": "Amazon Web Services",
@@ -31,18 +46,18 @@
     "colors": "^1.4.0",
     "diff": "^4.0.1",
     "fast-deep-equal": "^3.1.1",
-    "source-map-support": "^0.5.16",
     "string-width": "^4.2.0",
     "table": "^5.4.6"
   },
   "devDependencies": {
-    "@types/nodeunit": "^0.0.30",
+    "@types/jest": "^24.0.25",
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "cdk-build-tools": "1.19.0",
     "fast-check": "^1.21.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "1.19.0"
+    "jest": "^24.9.0",
+    "pkglint": "1.19.0",
+    "ts-jest": "^24.2.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

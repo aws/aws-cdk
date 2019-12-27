@@ -10,4 +10,4 @@ tsconfig.json
 
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
