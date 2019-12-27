@@ -14,6 +14,7 @@ import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import { BlockDevice, EbsDeviceVolumeType } from './volume';
 
 /**
  * Name tag constant
@@ -453,7 +454,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
       blockDeviceMappings: (props.blockDevices !== undefined ?
-        ec2.synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+        synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
           ({ deviceName, ebs, virtualName, noDevice }) => ({
             deviceName, ebs, virtualName, noDevice: noDevice ? true : false
           })
@@ -935,34 +936,31 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
   readonly targetValue: number;
 }
 
-export class BlockDeviceVolume extends ec2.BlockDeviceVolume {}
-export interface BlockDevice extends ec2.BlockDevice {}
-export interface EbsDeviceOptions extends ec2.EbsDeviceOptions {}
-export interface EbsDeviceOptionsBase extends ec2.EbsDeviceOptionsBase {}
-export interface EbsDeviceProps extends ec2.EbsDeviceProps {}
-export interface EbsDeviceSnapshotOptions extends ec2.EbsDeviceSnapshotOptions {}
 /**
- * Supported EBS volume types for blockDevices
+ * Synthesize an array of block device mappings from a list of block device
+ *
+ * @param construct the instance/asg construct, used to host any warning
+ * @param blockDevices list of block devices
  */
-export enum EbsDeviceVolumeType {
-  /**
-   * Magnetic
-   */
-  STANDARD = "standard",
-  /**
-   *  Provisioned IOPS SSD
-   */
-  IO1 = "io1",
-  /**
-   * General Purpose SSD
-   */
-  GP2 = "gp2",
-  /**
-   * Throughput Optimized HDD
-   */
-  ST1 = "st1",
-  /**
-   * Cold HDD
-   */
-  SC1 = "sc1"
+function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnLaunchConfiguration.BlockDeviceMappingProperty[] {
+  return blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
+    const { virtualName, ebsDevice: ebs } = volume;
+
+    if (ebs) {
+      const { iops, volumeType } = ebs;
+
+      if (!iops) {
+        if (volumeType === EbsDeviceVolumeType.IO1) {
+          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+        }
+      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      }
+    }
+
+    return {
+      deviceName, ebs, virtualName,
+      noDevice: mappingEnabled === false ? true : undefined,
+    };
+  });
 }
