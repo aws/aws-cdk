@@ -81,8 +81,8 @@
     "collectCoverage": true,
     "coverageReporters": [
       "lcov",
-      "text-summary",
-      "html"
+      "html",
+      "text-summary"
     ],
     "coverageThreshold": {
       "global": {

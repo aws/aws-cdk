@@ -945,6 +945,12 @@ export class JestCoverageTarget extends ValidationRule {
         branches: 80,
         statements: 80
       };
+
+      // Coverage collection must be enabled
+      expectJSON(this.name, pkg, 'jest.collectCoverage', true);
+      // The correct coverage reporters must be enabled
+      expectJSON(this.name, pkg, 'jest.coverageReporters', ['lcov', 'html', 'text-summary']);
+
       for (const key of Object.keys(defaults)) {
         const deepPath = ['coverageThreshold', 'global', key];
         const setting = deepGet(pkg.json.jest, deepPath);
