@@ -56,6 +56,22 @@ export interface PolicyProps {
    * @default - No statements.
    */
   readonly statements?: PolicyStatement[];
+
+  /**
+   * Whether an `AWS::IAM::Policy` must be created
+   *
+   * Unless set to `true`, this `Policy` construct will not materialize to an
+   * `AWS::IAM::Policy` CloudFormation resource in case it would have no effect
+   * (for example, if it remains unattached to an IAM identity or if it has no
+   * statements). This is generally desired behavior, since it prevents
+   * creating invalid--and hence undeployable--CloudFormation templates.
+   *
+   * In cases where you know the policy must be created and it is actually
+   * an error if no statements have been added to it, you can se this to `true`.
+   *
+   * @default false
+   */
+  readonly mustCreate?: boolean;
 }
 
 /**
@@ -79,16 +95,12 @@ export class Policy extends Resource implements IPolicy {
    */
   public readonly document = new PolicyDocument();
 
-  /**
-   * The name of this policy.
-   *
-   * @attribute
-   */
-  public readonly policyName: string;
-
+  private readonly _policyName: string;
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<IUser>();
   private readonly groups = new Array<IGroup>();
+  private readonly mustCreate: boolean;
+  private referenceTaken = false;
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
     super(scope, id, {
@@ -107,7 +119,8 @@ export class Policy extends Resource implements IPolicy {
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
     });
 
-    this.policyName = this.physicalName!;
+    this._policyName = this.physicalName!;
+    this.mustCreate = props.mustCreate !== undefined ? props.mustCreate : false;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
@@ -160,19 +173,60 @@ export class Policy extends Resource implements IPolicy {
     group.attachInlinePolicy(this);
   }
 
+  /**
+   * The name of this policy.
+   *
+   * @attribute
+   */
+  public get policyName(): string {
+    this.referenceTaken = true;
+    return this._policyName;
+  }
+
   protected validate(): string[] {
     const result = new Array<string>();
 
     // validate that the policy document is not empty
     if (this.document.isEmpty) {
-      result.push('Policy is empty. You must add statements to the policy');
+      if (this.mustCreate) {
+        result.push('Policy created with mustCreate=true is empty. You must add statements to the policy');
+      }
+      if (!this.mustCreate && this.referenceTaken) {
+        result.push('Policy name has been read of empty policy. You must add statements to the policy so it can exist.');
+      }
     }
 
     // validate that the policy is attached to at least one principal (role, user or group).
-    if (this.groups.length + this.users.length + this.roles.length === 0) {
-      result.push(`Policy must be attached to at least one principal: user, group or role`);
+    if (!this.isAttached) {
+      if (this.mustCreate) {
+        result.push(`Policy created with mustCreate=true must be attached to at least one principal: user, group or role`);
+      }
+      if (!this.mustCreate && this.referenceTaken) {
+        result.push('Policy name has been read of unattached policy. Attach to at least one principal: user, group or role.');
+      }
     }
 
     return result;
+  }
+
+  protected prepare() {
+    // Remove the resource if it shouldn't exist. This will prevent it from being rendered to the template.
+    if (!this.shouldExist) {
+      this.node.removeChild('Resource');
+    }
+  }
+
+  /**
+   * Whether the policy resource has been attached to any identity
+   */
+  private get isAttached() {
+    return this.groups.length + this.users.length + this.roles.length > 0;
+  }
+
+  /**
+   * Whether the policy resource should be created
+   */
+  private get shouldExist() {
+    return this.mustCreate || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
   }
 }
