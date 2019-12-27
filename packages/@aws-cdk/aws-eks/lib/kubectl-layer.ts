@@ -1,6 +1,6 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnResource, Construct, Stack, Token } from '@aws-cdk/core';
-import crypto = require('crypto');
+import * as crypto from 'crypto';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
 const KUBECTL_APP_VERSION = '1.13.7';
@@ -26,7 +26,7 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
    */
   public static getOrCreate(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
     const stack = Stack.of(scope);
-    const id = 'kubectl-layer-8C2542BC-BF2B-4DFE-B765-E181FD30A9A0';
+    const id = 'kubectl-layer-' + (props.version ? props.version : "8C2542BC-BF2B-4DFE-B765-E181FD30A9A0");
     const exists = stack.node.tryFindChild(id) as KubectlLayer;
     if (exists) {
       return exists;

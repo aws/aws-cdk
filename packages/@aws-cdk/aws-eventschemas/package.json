@@ -1,0 +1,93 @@
+{
+  "name": "@aws-cdk/aws-eventschemas",
+  "version": "1.19.0",
+  "description": "The CDK Construct Library for AWS::EventSchemas",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EventSchemas",
+        "packageId": "Amazon.CDK.AWS.EventSchemas",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.eventschemas",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "eventschemas"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-eventschemas",
+        "module": "aws_cdk.aws_eventschemas"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-eventschemas"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "cfn2ts": "cfn2ts",
+    "compat": "cdk-compat",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::EventSchemas"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::EventSchemas",
+    "aws-eventschemas"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "statements": 80
+      }
+    }
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "pkglint": "1.19.0"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "1.19.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "1.19.0"
+  },
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "stability": "experimental"
+}

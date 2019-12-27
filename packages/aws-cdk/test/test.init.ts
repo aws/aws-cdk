@@ -1,8 +1,9 @@
-import fs = require('fs-extra');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
-import { cliInit } from '../lib/init';
+import * as os from 'os';
+import * as path from 'path';
+import { availableInitTemplates, cliInit } from '../lib/init';
 
 const state: {
   previousWorkingDir?: string;
@@ -12,10 +13,9 @@ const state: {
 export = {
   async "setUp"(callback: () => void) {
     state.previousWorkingDir = process.cwd();
-    state.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
+    state.tempDir = await newTempWorkDir();
     // tslint:disable-next-line:no-console
     console.log('Temporary working directory:', state.tempDir);
-    process.chdir(state.tempDir);
     callback();
   },
 
@@ -54,6 +54,18 @@ export = {
     // Check that package.json and bin/ got created in the current directory
     test.equal(true, await fs.pathExists('package.json'));
     test.equal(true, await fs.pathExists('bin'));
+    test.equal(true, await fs.pathExists('.git'));
+
+    test.done();
+  },
+
+  async '--generate-only should skip git init'(test: Test) {
+    await cliInit('app', 'javascript', false, true);
+
+    // Check that package.json and bin/ got created in the current directory
+    test.equal(true, await fs.pathExists('package.json'));
+    test.equal(true, await fs.pathExists('bin'));
+    test.equal(false, await fs.pathExists('.git'));
 
     test.done();
   },
@@ -68,5 +80,44 @@ export = {
     test.equal(true, await fs.pathExists('bin'));
 
     test.done();
+  },
+
+  async 'verify "future flags" are added to cdk.json'(test: Test) {
+    for (const templ of await availableInitTemplates) {
+      for (const lang of templ.languages) {
+        const prevdir = process.cwd();
+        try {
+          await newTempWorkDir();
+
+          await cliInit(templ.name, lang,
+            /* canUseNetwork */ false,
+            /* generateOnly */ true);
+
+          // ok if template doesn't have a cdk.json file (e.g. the "lib" template)
+          if (!await fs.pathExists('cdk.json')) {
+            continue;
+          }
+
+          const config = await fs.readJson('cdk.json');
+          const context = config.context || {};
+          for (const [ key, expected ] of Object.entries(cxapi.FUTURE_FLAGS)) {
+            const actual = context[key];
+            test.equal(actual, expected,
+              `expected future flag "${key}=${expected}" in generated cdk.json for ${templ.name}/${lang} but got "${actual}"`);
+          }
+
+        } finally {
+          process.chdir(prevdir);
+        }
+      }
+    }
+
+    test.done();
   }
 };
+
+async function newTempWorkDir() {
+  const newDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
+  process.chdir(newDir);
+  return newDir;
+}

@@ -1,11 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import { FsUtils } from '@aws-cdk/assets/test/fs/fs-utils';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { ASSET_METADATA } from '@aws-cdk/cx-api';
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { DockerImageAsset } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -235,39 +234,20 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image', `
-      ├── Dockerfile
-      ├── .dockerignore
-      ├── foobar.txt
-      ├── index.py
-      └── subdirectory
-          └── baz.txt`);
-    fs.writeFileSync(path.join(directory, '.dockerignore'), 'foobar.txt');
-
-    const image = new DockerImageAsset(stack, 'MyAsset', { directory });
+    const image = new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'dockerignore-image')
+    });
 
     const session = app.synth();
 
-    const expectedFiles = [
-      // .dockerignore itself should be included in output to be processed during docker build
-      '.dockerignore',
-      'Dockerfile',
-      'index.py',
-      'subdirectory',
-      path.join('subdirectory', 'baz.txt'),
-    ];
-    const unexpectedFiles = [
-      'foobar.txt',
-    ];
+    // .dockerignore itself should be included in output to be processed during docker build
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
 
-    for (const expectedFile of expectedFiles) {
-      test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, expectedFile)), expectedFile);
-    }
-    for (const unexpectedFile of unexpectedFiles) {
-      test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
-    }
-
-    cleanup();
     test.done();
   },
 
@@ -275,185 +255,20 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
 
-    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image', `
-      ├── Dockerfile
-      ├── .dockerignore
-      ├── foobar.txt
-      ├── index.py
-      └── subdirectory
-          └── baz.txt`);
-    fs.writeFileSync(path.join(directory, '.dockerignore'), 'foobar.txt');
-
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory,
+      directory: path.join(__dirname, 'dockerignore-image'),
       exclude: ['subdirectory']
     });
 
     const session = app.synth();
 
-    const expectedFiles = [
-      '.dockerignore',
-      'Dockerfile',
-      'index.py',
-    ];
-    const unexpectedFiles = [
-      'foobar.txt',
-      'subdirectory',
-      path.join('subdirectory', 'baz.txt'),
-    ];
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
+    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
 
-    for (const expectedFile of expectedFiles) {
-      test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, expectedFile)), expectedFile);
-    }
-    for (const unexpectedFile of unexpectedFiles) {
-      test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
-    }
-
-    cleanup();
-    test.done();
-  },
-
-  'advanced .dockerignore test case'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-
-    // GIVEN
-    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image-advanced', `
-      ├── config
-      │   ├── config-prod.txt
-      │   ├── config-test.txt
-      │   └── config.txt
-      ├── deep
-      │   ├── dir
-      │   │   └── struct
-      │   │       └── qux.txt
-      │   └── include_me
-      │       └── sub
-      │           └── dir
-      │               └── quuz.txt
-      ├── foobar.txt
-      ├── foo.txt
-      ├── .dockerignore
-      ├── Dockerfile
-      ├── index.py
-      ├── .hidden-file
-      └── empty-directory (D)
-      └── subdirectory
-          ├── baz.txt
-          └── quux.txt`);
-
-    fs.writeFileSync(path.join(directory, '.dockerignore'), `
-      # This a comment, followed by an empty line
-
-      # The following line should be ignored
-      #index.py
-
-      # This shouldn't ignore foo.txt
-      foo.?
-      # This shoul ignore foobar.txt
-      foobar.???
-      # This should catch qux.txt
-      deep/**/*.txt
-      # but quuz should be added back
-      !deep/include_me/**
-
-      # baz and quux should be ignored
-      subdirectory/**
-      # but baz should be added back
-      !subdirectory/baz*
-
-      config/config*.txt
-      !config/config-*.txt
-      config/config-test.txt
-    `.split('\n').map(line => line.trim()).join('\n'));
-
-    const image = new DockerImageAsset(stack, 'MyAsset', { directory });
-    const session = app.synth();
-
-    const expectedFiles = [
-      '.dockerignore',
-      '.hidden-file',
-      'Dockerfile',
-      'index.py',
-      'foo.txt',
-      'empty-directory',
-      path.join('subdirectory', 'baz.txt'),
-      path.join('deep', 'include_me', 'sub', 'dir', 'quuz.txt'),
-      path.join('config', 'config-prod.txt'),
-    ];
-    const unexpectedFiles = [
-      'foobar.txt',
-      path.join('deep', 'dir', 'struct', 'qux.txt'),
-      path.join('subdirectory', 'quux.txt'),
-      path.join('config', 'config.txt'),
-      path.join('config', 'config-test.txt'),
-    ];
-
-    for (const expectedFile of expectedFiles) {
-      test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, expectedFile)), expectedFile);
-    }
-    for (const unexpectedFile of unexpectedFiles) {
-      test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
-    }
-
-    cleanup();
-    test.done();
-  },
-
-  'negative .dockerignore test case'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-
-    const {directory, cleanup} = FsUtils.fromTree('dockerignore-image-advanced', `
-      ├── deep
-      │   └── dir
-      │       └── struct
-      │           └── qux.txt
-      ├── Dockerfile
-      ├── .dockerignore
-      ├── foobar.txt
-      ├── index.py
-      └── subdirectory
-          ├── baz.txt
-          └── foo.txt`);
-
-    fs.writeFileSync(path.join(directory, '.dockerignore'), `
-      # Comment
-
-      *
-      !index.py
-      !subdirectory
-      subdirectory/foo.txt
-
-      # Dockerfile isn't explicitly included, but we'll add it anyway to build the image
-    `.split('\n').map(line => line.trim()).join('\n'));
-
-    const image = new DockerImageAsset(stack, 'MyAsset', { directory });
-
-    const session = app.synth();
-
-    const expectedFiles = [
-      'index.py',
-      // Dockerfile is always added
-      'Dockerfile',
-      path.join('subdirectory', 'baz.txt'),
-      // "*" doesn't match ".*" without "dot: true" in minimist
-      '.dockerignore',
-    ];
-    const unexpectedFiles = [
-      'foobar.txt',
-      path.join('deep', 'dir', 'struct', 'qux.txt'),
-      path.join('subdirectory', 'foo.txt'),
-    ];
-
-    for (const expectedFile of expectedFiles) {
-      test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, expectedFile)), expectedFile);
-    }
-    for (const unexpectedFile of unexpectedFiles) {
-      test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, unexpectedFile)), unexpectedFile);
-    }
-
-    cleanup();
     test.done();
   },
 

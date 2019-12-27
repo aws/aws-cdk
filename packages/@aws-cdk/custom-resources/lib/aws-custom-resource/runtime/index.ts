@@ -1,5 +1,5 @@
 // tslint:disable:no-console
-import AWS = require('aws-sdk');
+import { execSync } from 'child_process';
 import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
@@ -8,13 +8,13 @@ import { AwsSdkCall } from '../aws-custom-resource';
  * @param object the object to be flattened
  * @returns a flat object with path as keys
  */
-function flatten(object: object): { [key: string]: string } {
+export function flatten(object: object): { [key: string]: string } {
   return Object.assign(
     {},
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
         .map(key =>
-          typeof child[key] === 'object'
+          typeof child[key] === 'object' && child[key] !== null
             ? _flatten(child[key], path.concat([key]))
             : ({ [path.concat([key]).join('.')]: child[key] })
       ));
@@ -51,10 +51,40 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
     );
 }
 
+let latestSdkInstalled = false;
+
+/**
+ * Installs latest AWS SDK v2
+ */
+function installLatestSdk(): void {
+  console.log('Installing latest AWS SDK v2');
+  // Both HOME and --prefix are needed here because /tmp is the only writable location
+  execSync('HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --no-save --prefix /tmp');
+  latestSdkInstalled = true;
+}
+
+/* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
+    let AWS: any;
+    if (!latestSdkInstalled) {
+      try {
+        installLatestSdk();
+        AWS = require('/tmp/node_modules/aws-sdk');
+      } catch (e) {
+        console.log(`Failed to install latest AWS SDK v2: ${e}`);
+        AWS = require('aws-sdk'); // Fallback to pre-installed version
+      }
+    } else {
+      AWS = require('/tmp/node_modules/aws-sdk');
+    }
+
+    if (process.env.USE_NORMAL_SDK) { // For tests only
+      AWS = require('aws-sdk');
+    }
+
     console.log(JSON.stringify(event));
-    console.log('AWS SDK VERSION: ' + (AWS as any).VERSION);
+    console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
     let physicalResourceId = (event as any).PhysicalResourceId;
     let flatData: { [key: string]: string } = {};
@@ -108,6 +138,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     console.log('Responding', responseBody);
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const parsedUrl = require('url').parse(event.ResponseURL);
     const requestOptions = {
       hostname: parsedUrl.hostname,
@@ -118,6 +149,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     return new Promise((resolve, reject) => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const request = require('https').request(requestOptions, resolve);
         request.on('error', reject);
         request.write(responseBody);

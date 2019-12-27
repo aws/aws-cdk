@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 
-import util = require('../lib/util');
+import * as util from '../lib/util';
 
 export = {
   'throws when zone name ending with a \'.\''(test: Test) {

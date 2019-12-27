@@ -4,7 +4,7 @@ import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-c
 import { IRole } from '@aws-cdk/aws-iam';
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The properties for the base NetworkLoadBalancedEc2Service or NetworkLoadBalancedFargateService service.
@@ -78,6 +78,24 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly healthCheckGracePeriod?: cdk.Duration;
 
   /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - 100 if daemon, otherwise 200
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
+
+  /**
    * The network load balancer that will serve traffic to the service.
    *
    * [disable-awslint:ref-via-interface]
@@ -85,6 +103,13 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: NetworkLoadBalancer;
+
+  /**
+   * Listener port of the network load balancer that will serve traffic to the service.
+   *
+   * @default 80
+   */
+  readonly listenerPort?: number;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -245,11 +270,13 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
 
     this.loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer : new NetworkLoadBalancer(this, 'LB', lbProps);
 
+    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
+
     const targetProps = {
       port: 80
     };
 
-    this.listener = this.loadBalancer.addListener('PublicListener', { port: 80 });
+    this.listener = this.loadBalancer.addListener('PublicListener', { port: listenerPort });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {

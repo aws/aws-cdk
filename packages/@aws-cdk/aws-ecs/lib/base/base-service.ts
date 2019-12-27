@@ -1,10 +1,10 @@
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import iam = require('@aws-cdk/aws-iam');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -22,6 +22,18 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+}
+
+/**
+ * The deployment controller to use for the service.
+ */
+export interface DeploymentController {
+  /**
+   * The deployment controller type to use.
+   *
+   * @default DeploymentControllerType.ECS
+   */
+  readonly type?: DeploymentControllerType;
 }
 
 export interface EcsTarget {
@@ -133,6 +145,14 @@ export interface BaseServiceOptions {
    * @default false
    */
   readonly enableECSManagedTags?: boolean;
+
+  /**
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
+  readonly deploymentController?: DeploymentController;
 }
 
 /**
@@ -308,6 +328,7 @@ export abstract class BaseService extends Resource
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
+      deploymentController: props.deploymentController,
       launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -456,7 +477,7 @@ export abstract class BaseService extends Resource
    * @returns The created CloudMap service
    */
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.defaultCloudMapNamespace;
+    const sdNamespace = options.cloudMapNamespace !== undefined ? options.cloudMapNamespace : this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }
@@ -664,9 +685,16 @@ export interface CloudMapOptions {
   readonly name?: string,
 
   /**
+   * The service discovery namespace for the Cloud Map service to attach to the ECS service.
+   *
+   * @default - the defaultCloudMapNamespace associated to the cluster
+   */
+  readonly cloudMapNamespace?: cloudmap.INamespace;
+
+  /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
-   * @default: A
+   * @default DnsRecordType.A
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 
@@ -727,6 +755,27 @@ export enum LaunchType {
    * The service will be launched using the FARGATE launch type
    */
   FARGATE = 'FARGATE'
+}
+
+/**
+ * The deployment controller type to use for the service.
+ */
+export enum DeploymentControllerType {
+  /**
+   * The rolling update (ECS) deployment type involves replacing the current
+   * running version of the container with the latest version.
+   */
+  ECS = "ECS",
+
+  /**
+   * The blue/green (CODE_DEPLOY) deployment type uses the blue/green deployment model powered by AWS CodeDeploy
+   */
+  CODE_DEPLOY = "CODE_DEPLOY",
+
+  /**
+   * The external (EXTERNAL) deployment type enables you to use any third-party deployment controller
+   */
+  EXTERNAL = "EXTERNAL"
 }
 
 /**

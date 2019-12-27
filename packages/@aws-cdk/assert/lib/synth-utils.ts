@@ -1,7 +1,7 @@
 import { App, ConstructNode, Stack, SynthesisOptions } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class SynthUtils {
   public static synthesize(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
@@ -11,7 +11,7 @@ export class SynthUtils {
     // if the root is an app, invoke "synth" to avoid double synthesis
     const assembly = root instanceof App ? root.synth() : ConstructNode.synth(root.node, options);
 
-    return assembly.getStack(stack.stackName);
+    return assembly.getStackArtifact(stack.artifactId);
   }
 
   /**
@@ -57,11 +57,11 @@ export class SynthUtils {
     const assembly = root instanceof App ? root.synth() : ConstructNode.synth(root.node, options);
 
     // if this is a nested stack (it has a parent), then just read the template as a string
-    if (stack.parentStack) {
+    if (stack.nestedStackParent) {
       return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
     }
 
-    return assembly.getStack(stack.stackName);
+    return assembly.getStackArtifact(stack.artifactId);
   }
 }
 

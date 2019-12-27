@@ -1,13 +1,12 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import { Repository } from '@aws-cdk/aws-codecommit';
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import cpactions = require('../../lib');
+import * as cpactions from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -22,7 +21,7 @@ export = {
   });
 
   /** Source! */
-  const repo = new Repository(stack, 'MyVeryImportantRepo', {
+  const repo = new codecommit.Repository(stack, 'MyVeryImportantRepo', {
     repositoryName: 'my-very-important-repo',
   });
 
@@ -200,7 +199,7 @@ export = {
 
   },
 
-  'fullPermissions leads to admin role and full IAM capabilities'(test: Test) {
+  'fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions'(test: Test) {
   // GIVEN
   const stack = new TestFixture();
 
@@ -238,10 +237,25 @@ export = {
   }));
 
   // THEN: Role is created with full permissions
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
+  expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
+        {
+          "Action": [
+            "s3:GetObject*",
+            "s3:GetBucket*",
+            "s3:List*",
+          ],
+          "Effect": "Allow",
+        },
+        {
+          "Action": [
+            "kms:Decrypt",
+            "kms:DescribeKey",
+          ],
+          "Effect": "Allow",
+        },
         {
           Action: "*",
           Effect: 'Allow',
@@ -665,7 +679,7 @@ class TestFixture extends cdk.Stack {
   public readonly pipeline: codepipeline.Pipeline;
   public readonly sourceStage: codepipeline.IStage;
   public readonly deployStage: codepipeline.IStage;
-  public readonly repo: Repository;
+  public readonly repo: codecommit.Repository;
   public readonly sourceOutput: codepipeline.Artifact;
 
   constructor() {
@@ -674,7 +688,7 @@ class TestFixture extends cdk.Stack {
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
     this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
     this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
-    this.repo = new Repository(this, 'MyVeryImportantRepo', {
+    this.repo = new codecommit.Repository(this, 'MyVeryImportantRepo', {
       repositoryName: 'my-very-important-repo',
     });
     this.sourceOutput = new codepipeline.Artifact('SourceArtifact');

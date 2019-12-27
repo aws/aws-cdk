@@ -1,8 +1,7 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
-import { InstanceTarget } from '../../lib';
+import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -48,7 +47,7 @@ export = {
 
     // WHEN
     test.throws(() => {
-      tg.addTarget(new InstanceTarget('i-1234'));
+      tg.addTarget(new elbv2.InstanceTarget('i-1234'));
     }, /Cannot add a non-self registering target to an imported TargetGroup/);
 
     test.done();

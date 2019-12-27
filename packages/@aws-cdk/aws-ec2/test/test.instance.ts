@@ -103,6 +103,7 @@ export = {
 
     test.done();
   },
+
   "blockDeviceMappings": {
     'can set blockDeviceMappings'(test: Test) {
       // GIVEN
@@ -268,5 +269,27 @@ export = {
 
       test.done();
     },
+  },
+
+  'instance can be created with Private IP Address'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      privateIpAddress: "10.0.0.2"
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::Instance', {
+      InstanceType: 't3.large',
+      PrivateIpAddress: '10.0.0.2'
+    }));
+
+    test.done();
   },
 };

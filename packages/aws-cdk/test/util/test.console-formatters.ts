@@ -1,4 +1,4 @@
-import colors = require('colors/safe');
+import * as colors from 'colors/safe';
 import { Test } from 'nodeunit';
 import { formatAsBanner } from '../../lib/util/console-formatters';
 

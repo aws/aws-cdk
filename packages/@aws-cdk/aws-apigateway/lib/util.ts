@@ -1,5 +1,5 @@
 import { format as formatUrl } from 'url';
-import jsonSchema = require('./json-schema');
+import * as jsonSchema from './json-schema';
 
 export const ALL_METHODS = [ 'OPTIONS', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'HEAD' ];
 

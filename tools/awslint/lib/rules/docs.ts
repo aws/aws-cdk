@@ -1,4 +1,4 @@
-import reflect = require('jsii-reflect');
+import * as reflect from 'jsii-reflect';
 import { Linter } from '../linter';
 import { CoreTypes } from './core-types';
 
@@ -57,6 +57,18 @@ docsLinter.add({
 
     const property = e.ctx.documentable;
     e.assert(!property.optional || property.docs.docs.default !== undefined, e.ctx.errorKey);
+  }
+});
+
+docsLinter.add({
+  code: 'props-no-undefined-default',
+  message: `'@default undefined' is not helpful. Users will know the VALUE is literally 'undefined' if they don't specify it, but what is the BEHAVIOR if they do so?`,
+  eval: e => {
+    if (e.ctx.kind !== 'interface-property') { return; }
+    if (!e.ctx.containingType.isDataType()) { return; }
+
+    const property = e.ctx.documentable;
+    e.assert(property.docs.docs.default !== 'undefined', e.ctx.errorKey);
   }
 });
 

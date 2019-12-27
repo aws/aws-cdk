@@ -1,10 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import sns = require('@aws-cdk/aws-sns');
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, Construct, Stack } from '@aws-cdk/core';
-import fs = require('fs');
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import path = require('path');
+import * as path from 'path';
 import { NestedStack } from '../lib/nested-stack';
 
 // tslint:disable:max-line-length
@@ -84,7 +84,7 @@ export = {
     const assembly = app.synth();
 
     // THEN
-    test.deepEqual(assembly.getStack(parent.stackName).assets, [{
+    test.deepEqual(assembly.getStackByName(parent.stackName).assets, [{
       path: 'parentstacknestedstack844892C0.nested.template.json',
       id: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
       packaging: 'file',
@@ -418,8 +418,8 @@ export = {
     });
 
     // verify a depedency was established between the parents
-    const stack1Artifact = assembly.getStack(stack1.stackName);
-    const stack2Artifact = assembly.getStack(stack2.stackName);
+    const stack1Artifact = assembly.getStackByName(stack1.stackName);
+    const stack2Artifact = assembly.getStackByName(stack2.stackName);
     test.deepEqual(stack1Artifact.dependencies.length, 1);
     test.deepEqual(stack2Artifact.dependencies.length, 0);
     test.same(stack1Artifact.dependencies[0], stack2Artifact);
@@ -465,7 +465,7 @@ export = {
     });
 
     // parent stack (stack1) should export this value
-    test.deepEqual(assembly.getStack(stack1.stackName).template.Outputs, {
+    test.deepEqual(assembly.getStackByName(stack1.stackName).template.Outputs, {
       ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3: {
         Value: { 'Fn::GetAtt': ['NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B', 'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute'] },
         Export: { Name: 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3' }
@@ -487,8 +487,8 @@ export = {
     });
 
     test.deepEqual(assembly.stacks.length, 2);
-    const stack1Artifact = assembly.getStack(stack1.stackName);
-    const stack2Artifact = assembly.getStack(stack2.stackName);
+    const stack1Artifact = assembly.getStackByName(stack1.stackName);
+    const stack2Artifact = assembly.getStackByName(stack2.stackName);
     test.deepEqual(stack1Artifact.dependencies.length, 0);
     test.deepEqual(stack2Artifact.dependencies.length, 1);
     test.same(stack2Artifact.dependencies[0], stack1Artifact);
@@ -718,7 +718,7 @@ export = {
     }));
 
     // parent stack should have 2 assets
-    test.deepEqual(assembly.getStack(parent.stackName).assets.length, 2);
+    test.deepEqual(assembly.getStackByName(parent.stackName).assets.length, 2);
     test.done();
   },
 
@@ -764,7 +764,7 @@ export = {
     }));
 
     // parent stack should have 2 assets
-    test.deepEqual(assembly.getStack(parent.stackName).assets.length, 2);
+    test.deepEqual(assembly.getStackByName(parent.stackName).assets.length, 2);
     test.done();
   },
 
@@ -819,8 +819,8 @@ export = {
     // THEN: the first non-nested stack records the assembly metadata
     const asm = app.synth();
     test.deepEqual(asm.stacks.length, 2); // only one stack is defined as an artifact
-    test.deepEqual(asm.getStack(parent.stackName).findMetadataByType('foo'), []);
-    test.deepEqual(asm.getStack(child.stackName).findMetadataByType('foo'), [
+    test.deepEqual(asm.getStackByName(parent.stackName).findMetadataByType('foo'), []);
+    test.deepEqual(asm.getStackByName(child.stackName).findMetadataByType('foo'), [
       {
         path: '/parent/child/nested/resource',
         type: 'foo',
