@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.24",
+    "@types/jest": "^24.0.25",
     "@types/yargs": "^13.0.4",
     "cdk-build-tools": "1.19.0",
     "jest": "^24.9.0",

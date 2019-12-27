@@ -60,7 +60,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24.0.24",
+    "@types/jest": "^24.0.25",
     "@types/semver": "^6.2.0",
     "cdk-build-tools": "1.19.0",
     "jest": "^24.9.0",
