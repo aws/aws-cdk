@@ -86,6 +86,10 @@
   "engines": {
     "node": ">= 10.3.0"
   },
+  "nyc": {
+    "branches": 65,
+    "statements": 75
+  },
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-applicationautoscaling.ScalableTargetProps",
