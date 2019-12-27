@@ -82,6 +82,9 @@
   "engines": {
     "node": ">= 10.3.0"
   },
+  "nyc": {
+    "statements": 75
+  },
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-elasticloadbalancing.LoadBalancerProps",
