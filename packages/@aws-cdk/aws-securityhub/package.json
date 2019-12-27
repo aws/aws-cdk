@@ -86,7 +86,8 @@
     "@aws-cdk/aws-events": "1.19.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.19.0"
+    "@aws-cdk/core": "1.19.0",
+    "@aws-cdk/aws-events": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"

@@ -3,13 +3,6 @@ import * as cdk from '@aws-cdk/core';
 import * as securityhub from './securityhub.generated';
 
 /**
- * Properties for SecurityHub Hub.
- */
-export interface HubProps {
-
-}
-
-/**
  * Represents a SecurityHub Hub resource.
  */
 export interface IHub extends cdk.IResource {
@@ -135,13 +128,8 @@ export class Hub extends HubBase {
 
     private readonly hub: securityhub.CfnHub;
 
-    // @ts-ignore
-    private readonly props: HubProps;
-
-    constructor(scope: cdk.Construct, id: string, props: HubProps = {}) {
+    constructor(scope: cdk.Construct, id: string) {
         super(scope, id);
-
-        this.props = props;
 
         this.hub = new securityhub.CfnHub(scope, 'Resource', {});
 

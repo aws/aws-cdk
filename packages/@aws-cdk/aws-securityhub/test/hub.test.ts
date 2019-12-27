@@ -9,11 +9,9 @@ describe('SecurityHub', () => {
         const stack = new Stack(app, 'test');
 
         // WHEN
-        new Hub(stack, 'Hub', {});
+        new Hub(stack, 'Hub');
 
         // THEN
-        expect(stack).toHaveResource('AWS::SecurityHub::Hub', {
-
-        });
+        expect(stack).toHaveResource('AWS::SecurityHub::Hub');
     });
 });
