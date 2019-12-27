@@ -439,6 +439,15 @@ export class ConstructNode {
   }
 
   /**
+   * Remove the child with the given name, if present.
+   *
+   * It is not an error if a child with the given name does not exist.
+   */
+  public removeChild(childName: string) {
+    delete this._children[childName];
+  }
+
+  /**
    * Locks this construct from allowing more children to be added. After this
    * call, no more children can be added to this construct or to any children.
    * @internal
