@@ -100,5 +100,4 @@ expect(synthStack).to(haveOutput({
     ]
   }
 }));
-
 ```
