@@ -50,7 +50,7 @@
     "table": "^5.4.6"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.24",
+    "@types/jest": "^24.0.25",
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.7",
     "cdk-build-tools": "1.19.0",
