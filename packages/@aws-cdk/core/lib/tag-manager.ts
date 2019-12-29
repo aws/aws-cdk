@@ -203,6 +203,9 @@ export interface ITaggable {
   readonly tags: TagManager;
 }
 
+/**
+ * Options to configure TagManager behavior
+ */
 export interface TagManagerOptions {
   /**
    * The name of the property in CloudFormation for these tags
@@ -213,6 +216,7 @@ export interface TagManagerOptions {
    */
   readonly tagPropertyName?: string;
 }
+
 /**
  * TagManager facilitates a common implementation of tagging for Constructs.
  */
@@ -279,6 +283,24 @@ export class TagManager {
     return this.tagFormatter.formatTags(Array.from(this.tags.values()));
   }
 
+  /**
+   * Creates the Tags property object
+   *
+   * The object contains a single key for the tag property name with a value of
+   * the properly formatted tags
+   */
+  public asCfnProperty(): {[key: string]: any} {
+    const tagsProp: {[key: string]: any} = {};
+    tagsProp[this.tagPropertyName] = this.renderTags();
+    return tagsProp;
+  }
+
+  /**
+   * Determine if the aspect applies here
+   *
+   * Looks at the include and exclude resourceTypeName arrays to determine if
+   * the aspect applies here
+   */
   public applyTagAspectHere(include?: string[], exclude?: string[]) {
     if (exclude && exclude.length > 0 && exclude.indexOf(this.resourceTypeName) !== -1) {
       return false;
