@@ -268,6 +268,13 @@ export interface KeyProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether the key usage can be granted by IAM policies
+   *
+   * @default false
+   */
+  readonly enablePolicyControl?: boolean;
 }
 
 /**
@@ -315,7 +322,7 @@ export class Key extends KeyBase {
       this.policy = props.policy;
     } else {
       this.policy = new iam.PolicyDocument();
-      this.allowAccountToAdmin();
+      this.allowAccountToAdmin(props.enablePolicyControl || false);
     }
 
     const resource = new CfnKey(this, 'Resource', {
@@ -335,25 +342,28 @@ export class Key extends KeyBase {
   }
 
   /**
-   * Let users from this account admin this key.
+   * Let users or IAM policies from this account admin this key.
+   * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
    * @link https://aws.amazon.com/premiumsupport/knowledge-center/update-key-policy-future/
    */
-  private allowAccountToAdmin() {
-    const actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-      "kms:GenerateDataKey"
-    ];
+  private allowAccountToAdmin(enablePolicyControl: boolean) {
+    const actions = enablePolicyControl ?
+      ['kms:*'] :
+      [
+        "kms:Create*",
+        "kms:Describe*",
+        "kms:Enable*",
+        "kms:List*",
+        "kms:Put*",
+        "kms:Update*",
+        "kms:Revoke*",
+        "kms:Disable*",
+        "kms:Get*",
+        "kms:Delete*",
+        "kms:ScheduleKeyDeletion",
+        "kms:CancelKeyDeletion",
+        "kms:GenerateDataKey"
+      ];
 
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],

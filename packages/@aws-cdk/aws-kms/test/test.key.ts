@@ -552,6 +552,33 @@ export = {
 
     test.done();
   },
+  'enablePolicyControl changes key policy to allow IAM control'(test: Test) {
+    const stack = new Stack();
+    new Key(stack, 'MyKey', {enablePolicyControl: true});
+    expect(stack).to(haveResourceLike('AWS::KMS::Key', {
+      "KeyPolicy": {
+        "Statement": [
+          {
+            "Action": "kms:*",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": {
+                "Fn::Join": ["", [
+                  "arn:",
+                  { "Ref": "AWS::Partition" },
+                  ":iam::",
+                  { "Ref": "AWS::AccountId" },
+                  ":root",
+                ]],
+              },
+            },
+            "Resource": "*",
+          },
+        ],
+      },
+    }));
+    test.done();
+  },
 
   'imported keys': {
     'throw an error when providing something that is not a valid key ARN'(test: Test) {
