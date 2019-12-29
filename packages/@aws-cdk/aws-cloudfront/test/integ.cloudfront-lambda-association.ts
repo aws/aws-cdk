@@ -1,7 +1,7 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cloudfront = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cloudfront from '../lib';
 
 const app = new cdk.App();
 
@@ -14,7 +14,7 @@ const sourceBucket = new s3.Bucket(stack, 'Bucket', {
 const lambdaFunction = new lambda.Function(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10
+  runtime: lambda.Runtime.NODEJS_10_X
 });
 
 const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {

@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
@@ -171,7 +171,7 @@ export class DropSpamReceiptRule extends Construct {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${dropSpamCode}`),
       uuid: '224e77f9-a32e-4b4d-ac32-983477abba16'

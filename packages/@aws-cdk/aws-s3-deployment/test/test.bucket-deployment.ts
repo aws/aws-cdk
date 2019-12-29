@@ -1,10 +1,11 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import cloudfront = require('@aws-cdk/aws-cloudfront');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import path = require('path');
-import s3deploy = require('../lib');
+import * as path from 'path';
+import * as s3deploy from '../lib';
 
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
@@ -224,6 +225,42 @@ export = {
     test.done();
   },
 
+  'object metadata can be given'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+      destinationBucket: bucket,
+      metadata: { "A": "1", "b": "2" },
+      contentType: "text/html",
+      contentLanguage: "en",
+      storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
+      contentDisposition: "inline",
+      serverSideEncryption: s3deploy.ServerSideEncryption.AES_256,
+      cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
+      expires: s3deploy.Expires.after(cdk.Duration.hours(12))
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
+      UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
+      SystemMetadata: {
+        'content-type': 'text/html',
+        'content-language': 'en',
+        'content-disposition': 'inline',
+        'storage-class': 'INTELLIGENT_TIERING',
+        'server-side-encryption': 'AES256',
+        'cache-control': 'public, max-age=3600',
+        'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value
+      }
+    }));
+
+    test.done();
+  },
+
   'distribution can be used to provide a CloudFront distribution for invalidation'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -234,7 +271,7 @@ export = {
           s3OriginSource: {
             s3BucketSource: bucket
           },
-          behaviors : [ {isDefaultBehavior: true}]
+          behaviors: [{ isDefaultBehavior: true }]
         }
       ]
     });
@@ -267,7 +304,7 @@ export = {
           s3OriginSource: {
             s3BucketSource: bucket
           },
-          behaviors : [ {isDefaultBehavior: true}]
+          behaviors: [{ isDefaultBehavior: true }]
         }
       ]
     });
@@ -427,8 +464,38 @@ export = {
     // we expect to find only two handlers, one for each configuration
 
     expect(stack).to(countResources('AWS::Lambda::Function', 2));
-    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256  }));
+    expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 256 }));
     expect(stack).to(haveResource('AWS::Lambda::Function', { MemorySize: 1024 }));
+    test.done();
+  },
+
+  'deployment allows custom role to be supplied'(test: Test) {
+
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+    const existingRole = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazon.com')
+    });
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'DeployWithRole', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+      role: existingRole
+    });
+
+    // THEN
+    expect(stack).to(countResources('AWS::IAM::Role', 1));
+    expect(stack).to(countResources('AWS::Lambda::Function', 1));
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      "Role": {
+        "Fn::GetAtt": [
+          "Role1ABCC5F0",
+          "Arn"
+        ]
+      }
+    }));
     test.done();
   }
 };

@@ -3,14 +3,26 @@ scriptdir=$(cd $(dirname $0) && pwd)
 cd ${scriptdir}
 
 if [[ -z "${CREDS_SET:-}" ]]; then
-    # Check that credentials are configured
-    aws sts get-caller-identity > /dev/null
+    # Check that credentials are configured (will error & abort if not)
+    creds=$(aws sts get-caller-identity)
+
+    export TEST_ACCOUNT=$(node -p "($creds).Account")
+    export TEST_REGION=${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-1}}
     export CREDS_SET=1
 fi
 
 
 if [[ "${STACK_NAME_PREFIX:-}" == "" ]]; then
-  if ${IS_CANARY:-false}; then
+  # Make the stack names unique based on the codebuild project name
+  # (if it exists). This prevents multiple codebuild projects stomping
+  # on each other's stacks and failing them.
+  #
+  # The get codebuild project name from the ID: PROJECT_NAME:1238a83
+  CODEBUILD_PROJECT=$(echo ${CODEBUILD_BUILD_ID:-} | cut -d: -f 1)
+
+  if [[ "${CODEBUILD_PROJECT:-}" != "" ]]; then
+    export STACK_NAME_PREFIX="${CODEBUILD_PROJECT}"
+  elif ${IS_CANARY:-false}; then
     export STACK_NAME_PREFIX=cdk-toolkit-canary
   else
     export STACK_NAME_PREFIX=cdk-toolkit-integration
@@ -87,6 +99,10 @@ function fail() {
   exit 1
 }
 
+#
+# compares two files
+# usage: assert_diff TEST_NAME actual-file expected-file
+#
 function assert_diff() {
   local test=$1
   local actual=$2
@@ -108,6 +124,10 @@ function assert_diff() {
   }
 }
 
+#
+# compares the result of $1 with STDIN
+# usage: assert COMMAND < file
+#
 function assert() {
   local command="$1"
 

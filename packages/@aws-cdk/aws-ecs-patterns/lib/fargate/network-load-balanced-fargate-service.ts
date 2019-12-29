@@ -99,7 +99,8 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         memoryLimitMiB: props.memoryLimitMiB,
         cpu: props.cpu,
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
       });
 
       // Create log driver if logging is enabled
@@ -129,6 +130,8 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      minHealthyPercent: props.minHealthyPercent,
+      maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,

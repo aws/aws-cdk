@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticloadbalancingv2",
-  "version": "1.12.0",
+  "version": "1.19.0",
   "description": "The CDK Construct Library for AWS::ElasticLoadBalancingV2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.elasticloadbalancingv2",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "elasticloadbalancingv2",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "elasticloadbalancingv2"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::ElasticLoadBalancingV2"
@@ -63,41 +62,65 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.12.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "^1.12.0",
-    "@aws-cdk/aws-cloudwatch": "^1.12.0",
-    "@aws-cdk/aws-ec2": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/aws-s3": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-certificatemanager": "1.19.0",
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "^1.12.0",
-    "@aws-cdk/aws-cloudwatch": "^1.12.0",
-    "@aws-cdk/aws-ec2": "^1.12.0",
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/aws-s3": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-certificatemanager": "1.19.0",
+    "@aws-cdk/aws-cloudwatch": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-s3": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
   "awslint": {
     "exclude": [
+      "no-unused-type:@aws-cdk/aws-elasticloadbalancingv2.INetworkListenerCertificateProps",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseListener.<initializer>.params[2]",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.<initializer>",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>",
       "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerProps",
-      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.NetworkListenerProps"
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.NetworkListenerProps",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerAttributes.defaultPort",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.APPLICATION_JSON",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.APPLICATION_JAVASCRIPT",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.TEXT_HTML",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.TEXT_CSS",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.connections",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.BaseListener.listenerArn",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.loadBalancerSecurityGroups",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.healthCheck",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.AddApplicationTargetsProps.targets",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.AddNetworkTargetsProps.targets",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ContentType.TEXT_PLAIN",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerAttributes.securityGroup",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerAttributes.securityGroupId",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.HealthCheck.healthyHttpCodes",
+      "docs-public-apis:@aws-cdk/aws-elasticloadbalancingv2.ILoadBalancerV2",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.LoadBalancerTargetProps.targetJson",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupImportProps.loadBalancerArns",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupAttributes.defaultPort",
+      "props-default-doc:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupAttributes.loadBalancerArns"
     ]
   },
   "stability": "stable"

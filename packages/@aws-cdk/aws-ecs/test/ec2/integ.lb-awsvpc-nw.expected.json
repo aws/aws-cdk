@@ -83,7 +83,13 @@
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -174,7 +180,13 @@
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "VpcPublicSubnet2NATGateway9182C01D": {
@@ -486,7 +498,6 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
         },
@@ -757,7 +768,15 @@
       }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -833,9 +852,6 @@
     "ServiceD69D759B": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "TaskDef54694570"
-        },
         "Cluster": {
           "Ref": "EcsCluster97242B84"
         },
@@ -844,6 +860,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "EC2",
         "LoadBalancers": [
@@ -877,7 +894,9 @@
           }
         },
         "SchedulingStrategy": "REPLICA",
-        "EnableECSManagedTags": false
+        "TaskDefinition": {
+          "Ref": "TaskDef54694570"
+        }
       },
       "DependsOn": [
         "LBPublicListenerECSGroupD6A32205",

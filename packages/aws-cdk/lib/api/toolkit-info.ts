@@ -1,6 +1,6 @@
-import cxapi = require('@aws-cdk/cx-api');
-import aws = require('aws-sdk');
-import colors = require('colors/safe');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as aws from 'aws-sdk';
+import * as colors from 'colors/safe';
 import { contentHash } from '../archive';
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
@@ -108,7 +108,7 @@ export class ToolkitInfo {
   public async prepareEcrRepository(asset: cxapi.ContainerImageAssetMetadataEntry): Promise<EcrRepositoryInfo> {
     const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
     let repositoryName;
-    if ( asset.repositoryName ) {
+    if (asset.repositoryName) {
       // Repository name provided by user
       repositoryName = asset.repositoryName;
     } else {
@@ -141,6 +141,14 @@ export class ToolkitInfo {
     await ecr.putLifecyclePolicy({
       repositoryName,
       lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
+    }).promise();
+
+    // Configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
+    await ecr.putImageScanningConfiguration({
+      repositoryName,
+      imageScanningConfiguration: {
+        scanOnPush: true
+      }
     }).promise();
 
     return {
@@ -244,7 +252,7 @@ function getOutputValue(stack: aws.CloudFormation.Stack, output: string): string
   return result;
 }
 
-const DEFAULT_REPO_LIFECYCLE = {
+export const DEFAULT_REPO_LIFECYCLE = {
   rules: [
     {
       rulePriority: 100,

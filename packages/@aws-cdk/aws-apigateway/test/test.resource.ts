@@ -1,15 +1,14 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigw = require('../lib');
+import * as apigw from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
 export = {
   'ProxyResource defines a "{proxy+}" resource with ANY method'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
 
     // WHEN
@@ -50,7 +49,7 @@ export = {
 
   'if "anyMethod" is false, then an ANY method will not be defined'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
 
     // WHEN
@@ -71,7 +70,7 @@ export = {
 
   'addProxy can be used on any resource to attach a proxy from that route'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api', {
       deploy: false,
       cloudWatchRole: false,
@@ -168,7 +167,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
-      ResourceId: { "Fn::GetAtt": [ "apiC8550315", "RootResourceId" ] },
+      ResourceId: { "Fn::GetAtt": ["apiC8550315", "RootResourceId"] },
       Integration: {
         RequestParameters: { foo: "bar" },
         Type: 'MOCK'
@@ -176,6 +175,65 @@ export = {
       OperationName: 'DeleteMe'
     }));
 
+    test.done();
+  },
+
+  'if proxy is added to root, proxy methods are only added if they are not defined already on the root resource'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('POST');
+    const proxy = api.root.addProxy({ anyMethod: false });
+
+    // WHEN
+    proxy.addMethod('POST');
+
+    // THEN
+    test.done();
+  },
+
+  'url for a resource'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+
+    // WHEN
+    const aResource = api.root.addResource('a');
+    const cResource = aResource.addResource('b').addResource('c');
+
+    // THEN
+    test.deepEqual(stack.resolve(aResource.url), {
+      'Fn::Join': [
+        '',
+        [
+          'https://',
+          { Ref: 'apiC8550315' },
+          '.execute-api.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/a'
+        ]
+      ]
+    });
+    test.deepEqual(stack.resolve(cResource.url), {
+      'Fn::Join': [
+        '',
+        [
+          'https://',
+          { Ref: 'apiC8550315' },
+          '.execute-api.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/a/b/c'
+        ]
+      ]
+    });
     test.done();
   },
 
@@ -327,5 +385,6 @@ export = {
       }
 
     }
-  }
+  },
+
 };

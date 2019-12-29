@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ses",
-  "version": "1.12.0",
+  "version": "1.19.0",
   "description": "The CDK Construct Library for AWS::SES",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.ses",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ses",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "ses"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.SES",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -45,7 +43,8 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
     "cloudformation": "AWS::SES"
@@ -63,25 +62,41 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^1.12.0",
-    "cdk-build-tools": "file:../../../tools/cdk-build-tools",
-    "cdk-integ-tools": "file:../../../tools/cdk-integ-tools",
-    "cfn2ts": "file:../../../tools/cfn2ts",
-    "pkglint": "file:../../../tools/pkglint"
+    "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^1.12.0",
-    "@aws-cdk/aws-lambda": "^1.12.0",
-    "@aws-cdk/core": "^1.12.0"
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "awslint": {
+    "exclude": [
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.addHeaderAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.workmailAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.stopAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.snsAction",
+      "docs-public-apis:@aws-cdk/aws-ses.DropSpamReceiptRule.rule",
+      "docs-public-apis:@aws-cdk/aws-ses.ReceiptRule.fromReceiptRuleName",
+      "docs-public-apis:@aws-cdk/aws-ses.DropSpamReceiptRuleProps",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.s3Action",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.bounceAction",
+      "props-default-doc:@aws-cdk/aws-ses.ReceiptRuleActionConfig.lambdaAction"
+    ]
+  }
 }

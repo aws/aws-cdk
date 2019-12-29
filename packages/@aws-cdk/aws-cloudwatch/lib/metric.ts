@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricGraphConfig, Unit } from './metric-types';
 import { normalizeStatistic, parseStatistic } from './util.statistic';
@@ -195,6 +195,13 @@ export class Metric implements IMetric {
       dimensions: this.dimensionsAsList(),
       namespace: this.namespace,
       metricName: this.metricName,
+      renderingProperties: {
+        period: this.period.toSeconds(),
+        stat: this.statistic,
+        color: this.color,
+        label: this.label,
+      },
+      // deprecated properties for backwards compatibility
       period: this.period.toSeconds(),
       statistic: this.statistic,
       unit: this.unit,

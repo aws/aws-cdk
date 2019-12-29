@@ -342,7 +342,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs10.x",
         "Timeout": 300
       },
       "DependsOn": [
@@ -475,7 +475,11 @@
                   "GroupId"
                 ]
               },
-              "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::ecs:runTask.sync\"}}}"
+              "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::ecs:runTask.sync\"}}}"
             ]
           ]
         },
@@ -485,7 +489,11 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ]
     }
   },
   "Parameters": {

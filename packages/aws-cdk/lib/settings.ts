@@ -1,9 +1,9 @@
-import fs = require('fs-extra');
-import os = require('os');
-import fs_path = require('path');
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as fs_path from 'path';
 import { Tag } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
-import util = require('./util');
+import * as util from './util';
 
 export type SettingsMap = {[key: string]: any};
 
@@ -35,8 +35,8 @@ export class Configuration {
 
   private readonly commandLineArguments: Settings;
   private readonly commandLineContext: Settings;
-  private projectConfig: Settings;
-  private projectContext: Settings;
+  private _projectConfig?: Settings;
+  private _projectContext?: Settings;
   private loaded = false;
 
   constructor(commandLineArguments?: Arguments) {
@@ -46,13 +46,27 @@ export class Configuration {
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
+  private get projectConfig() {
+    if (!this._projectConfig) {
+      throw new Error(`#load has not been called yet!`);
+    }
+    return this._projectConfig;
+  }
+
+  private get projectContext() {
+    if (!this._projectContext) {
+      throw new Error(`#load has not been called yet!`);
+    }
+    return this._projectContext;
+  }
+
   /**
    * Load all config
    */
   public async load(): Promise<this> {
     const userConfig = await loadAndLog(USER_DEFAULTS);
-    this.projectConfig = await loadAndLog(PROJECT_CONFIG);
-    this.projectContext = await loadAndLog(PROJECT_CONTEXT);
+    this._projectConfig = await loadAndLog(PROJECT_CONFIG);
+    this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
     await this.migrateLegacyContext();
 

@@ -37,6 +37,24 @@
         "PolicyDocument": {
           "Statement": [
             {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "TD925BC7E",
+                        "Arn"
+                      ]
+                    },
+                    "/stream/*"
+                  ]
+                ]
+              }
+            },
+            {
               "Action": [
                 "dynamodb:DescribeStream",
                 "dynamodb:GetRecords",
@@ -49,11 +67,6 @@
                   "StreamArn"
                 ]
               }
-            },
-            {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -79,7 +92,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "FServiceRoleDefaultPolicy17A19BFA",

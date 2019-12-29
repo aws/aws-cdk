@@ -16,7 +16,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -28,7 +28,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
-                    <mainClass>com.myorg.HelloApp</mainClass>
+                    <mainClass>com.myorg.%name.PascalCased%App</mainClass>
                 </configuration>
             </plugin>
         </plugins>
@@ -39,34 +39,7 @@
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>core</artifactId>
-            <version>%cdk-version%.DEVPREVIEW</version>
-        </dependency>
-
-        <!-- Respective AWS Construct Libraries -->
-        <dependency>
-            <groupId>software.amazon.awscdk</groupId>
-            <artifactId>iam</artifactId>
-            <version>%cdk-version%.DEVPREVIEW</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awscdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>%cdk-version%.DEVPREVIEW</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awscdk</groupId>
-            <artifactId>sns</artifactId>
-            <version>%cdk-version%.DEVPREVIEW</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awscdk</groupId>
-            <artifactId>sns-subscriptions</artifactId>
-            <version>%cdk-version%.DEVPREVIEW</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awscdk</groupId>
-            <artifactId>sqs</artifactId>
-            <version>%cdk-version%.DEVPREVIEW</version>
+            <version>%cdk-version%</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->

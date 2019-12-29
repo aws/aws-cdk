@@ -1,9 +1,9 @@
 import { expect, haveResource, haveResourceLike, InspectionFailure } from '@aws-cdk/assert';
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 export = {
   "When creating a Task Definition": {
@@ -26,6 +26,152 @@ export = {
             Image: "/aws/aws-example-app",
             Memory: 2048,
             Name: "Container"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    "add a container using all props"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+      const secret = new secretsmanager.Secret(stack, 'Secret');
+      new ecs.ContainerDefinition(stack, "Container", {
+        image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+        taskDefinition,
+        memoryLimitMiB: 1024,
+        memoryReservationMiB: 512,
+        command: ["CMD-SHELL"],
+        cpu: 128,
+        disableNetworking: true,
+        dnsSearchDomains: ['example.com'],
+        dnsServers: ['host.com'],
+        dockerLabels: {
+          key: 'fooLabel',
+          value: 'barLabel'
+        },
+        dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
+        entryPoint: ["top", "-b"],
+        environment: {
+          key: "foo",
+          value: "bar"
+        },
+        essential: true,
+        extraHosts: {
+          name: 'dev-db.hostname.pvt'
+        },
+        gpuCount: 256,
+        hostname: "host.example.com",
+        privileged: true,
+        readonlyRootFilesystem: true,
+        startTimeout: cdk.Duration.millis(2000),
+        stopTimeout: cdk.Duration.millis(5000),
+        user: "rootUser",
+        workingDirectory: "a/b/c",
+        healthCheck: {
+          command: ["curl localhost:8000"]
+        },
+        linuxParameters: new ecs.LinuxParameters(stack, 'LinuxParameters'),
+        logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' }),
+        secrets: {
+          SECRET: ecs.Secret.fromSecretsManager(secret),
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Command: [
+              "CMD-SHELL"
+            ],
+            Cpu: 128,
+            DisableNetworking: true,
+            DnsSearchDomains: [
+              "example.com"
+            ],
+            DnsServers: [
+              "host.com"
+            ],
+            DockerLabels: {
+              key: "fooLabel",
+              value: "barLabel"
+            },
+            DockerSecurityOptions: [
+              "ECS_SELINUX_CAPABLE=true"
+            ],
+            EntryPoint: [
+              "top",
+              "-b"
+            ],
+            Environment: [
+              {
+                Name: "key",
+                Value: "foo"
+              },
+              {
+                Name: "value",
+                Value: "bar"
+              }
+            ],
+            Essential: true,
+            ExtraHosts: [
+              {
+                Hostname: "name",
+                IpAddress: "dev-db.hostname.pvt"
+              }
+            ],
+            HealthCheck: {
+              Command: [
+                "CMD-SHELL",
+                "curl localhost:8000"
+              ],
+              Interval: 30,
+              Retries: 3,
+              Timeout: 5
+            },
+            Hostname: "host.example.com",
+            Image: "/aws/aws-example-app",
+            LinuxParameters: {
+              Capabilities: {}
+            },
+            LogConfiguration: {
+              LogDriver: "awslogs",
+              Options: {
+                "awslogs-group": {
+                  Ref: "ContainerLogGroupE6FD74A4"
+                },
+                "awslogs-stream-prefix": "prefix",
+                "awslogs-region": {
+                  Ref: "AWS::Region"
+                }
+              }
+            },
+            Memory: 1024,
+            MemoryReservation: 512,
+            Name: "Container",
+            Privileged: true,
+            ReadonlyRootFilesystem: true,
+            ResourceRequirements: [
+              {
+                Type: "GPU",
+                Value: "256"
+              }
+            ],
+            Secrets: [
+              {
+                Name: "SECRET",
+                ValueFrom: {
+                  Ref: "SecretA720EF05"
+                }
+              }
+            ],
+            StartTimeout: 2,
+            StopTimeout: 5,
+            User: "rootUser",
+            WorkingDirectory: "a/b/c"
           }
         ]
       }));

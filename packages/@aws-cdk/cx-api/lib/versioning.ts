@@ -1,4 +1,4 @@
-import semver = require('semver');
+import * as semver from 'semver';
 import { AssemblyManifest } from './cloud-assembly';
 
 // ----------------------------------------------------------------------
@@ -31,7 +31,7 @@ import { AssemblyManifest } from './cloud-assembly';
  * Note that the versions are not compared in a semver way, they are used as
  * opaque ordered tokens.
  */
-export const CLOUD_ASSEMBLY_VERSION = '1.10.0';
+export const CLOUD_ASSEMBLY_VERSION = '1.16.0';
 
 /**
  * Look at the type of response we get and upgrade it to the latest expected version
@@ -62,6 +62,13 @@ export function upgradeAssemblyManifest(manifest: AssemblyManifest): AssemblyMan
   if (manifest.version === '0.36.0') {
     // Adding a new artifact type, old version will not have it so painless upgrade.
     manifest = justUpgradeVersion(manifest, '1.10.0');
+  }
+
+  if (manifest.version === '1.10.0') {
+    // Two changes:
+    // * Backwards-compatible changes to the VPC provider
+    // * Added AMI context provider: old assemblies won't reference it.
+    manifest = justUpgradeVersion(manifest, '1.16.0');
   }
 
   return manifest;

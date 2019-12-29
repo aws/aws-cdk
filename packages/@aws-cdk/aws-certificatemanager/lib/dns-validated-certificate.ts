@@ -1,9 +1,9 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 import { CertificateProps, ICertificate } from './certificate';
 
 /**
@@ -61,7 +61,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
             code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: lambda.Runtime.NODEJS_8_10,
+            runtime: lambda.Runtime.NODEJS_10_X,
             timeout: cdk.Duration.minutes(15),
             role: props.customResourceRole
         });

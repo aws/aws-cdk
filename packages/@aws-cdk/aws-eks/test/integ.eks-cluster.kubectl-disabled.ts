@@ -1,6 +1,6 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
-import eks = require('../lib');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
+import * as eks from '../lib';
 import { TestStack } from './util';
 
 class EksClusterStack extends TestStack {
@@ -28,6 +28,6 @@ const app = new cdk.App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-new EksClusterStack(app, 'eks-integ-test');
+new EksClusterStack(app, 'eks-integ-kubectl-disabled');
 
 app.synth();

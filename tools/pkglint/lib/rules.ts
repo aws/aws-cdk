@@ -1,15 +1,17 @@
-import caseUtils = require('case');
-import fs = require('fs');
-import path = require('path');
-import semver = require('semver');
+import * as caseUtils from 'case';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
 import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
   fileShouldBe, fileShouldContain,
+  fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
+  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -300,17 +302,6 @@ export class CDKKeywords extends ValidationRule {
   }
 }
 
-export class DeveloperPreviewVersionLabels extends ValidationRule {
-  public readonly name = 'jsii/developer-preview-version-label';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-
-    expectJSON(this.name, pkg, 'jsii.targets.java.maven.versionSuffix', '.DEVPREVIEW');
-    expectJSON(this.name, pkg, 'jsii.targets.dotnet.versionSuffix', '-devpreview');
-  }
-}
-
 /**
  * JSII Java package is required and must look sane
  */
@@ -380,7 +371,7 @@ export class CDKPackage extends ValidationRule {
 }
 
 export class NoTsBuildInfo extends ValidationRule {
-  public readonly name = 'no-tsc-build-info';
+  public readonly name = 'npmignore/tsbuildinfo';
 
   public validate(pkg: PackageJson): void {
     // skip private packages
@@ -391,6 +382,32 @@ export class NoTsBuildInfo extends ValidationRule {
     // We might at some point also want to strip tsconfig.json but for now,
     // the TypeScript DOCS BUILD needs to it to load the typescript source.
     fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
+  }
+}
+
+export class NoTsConfig extends ValidationRule {
+  public readonly name = 'npmignore/tsconfig';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    fileShouldContain(this.name, pkg, '.npmignore', 'tsconfig.json');
+  }
+}
+
+export class IncludeJsiiInNpmTarball extends ValidationRule {
+  public readonly name = 'npmignore/jsii-included';
+
+  public validate(pkg: PackageJson): void {
+    // only jsii modules
+    if (!isJSII(pkg)) { return; }
+
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    fileShouldNotContain(this.name, pkg, '.npmignore', '.jsii');
+    fileShouldContain(this.name, pkg, '.npmignore', '!.jsii'); // make sure .jsii is included
   }
 }
 
@@ -422,11 +439,11 @@ export class NodeCompatibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^8.')) {
+    if (atTypesNode && !atTypesNode.startsWith('^10.')) {
       pkg.report({
         ruleName: this.name,
-        message: `packages must support node version 8 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^8.10.38')
+        message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
+        fix: () => pkg.addDevDependency('@types/node', '^10.17.5')
       });
     }
   }
@@ -451,6 +468,10 @@ export class NoAtTypesInDependencies extends ValidationRule {
       });
     }
   }
+}
+
+function isCdkModuleName(name: string) {
+  return !!name.match(/^@aws-cdk\//);
 }
 
 /**
@@ -576,7 +597,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-build-tools',
-      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-build-tools'))}`);
+      `${require('../../cdk-build-tools/package.json').version}`);
   }
 }
 
@@ -634,6 +655,28 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
   }
 }
 
+/**
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ */
+export class MustDependonCdkByPointVersions extends ValidationRule {
+  public readonly name = 'dependencies/cdk-point-dependencies';
+
+  public validate(pkg: PackageJson): void {
+    const expectedVersion = monoRepoVersion();
+
+    for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
+      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
+          fix: () => pkg.addDependency(depName, expectedVersion)
+        });
+      }
+    }
+  }
+}
+
 export class MustIgnoreSNK extends ValidationRule {
   public readonly name = 'ignore/strong-name-key';
 
@@ -657,36 +700,6 @@ export class NpmIgnoreForJsiiModules extends ValidationRule {
       '.nyc_output',
       '*.tgz',
     );
-  }
-}
-
-/**
- * nodeunit and @types/nodeunit must appear in devDependencies if
- * the test script uses "nodeunit"
- */
-export class GlobalDevDependencies extends ValidationRule {
-  public readonly name = 'dependencies/global-dev';
-
-  public validate(pkg: PackageJson): void {
-
-    const deps = [
-      'typescript',
-      'tslint',
-      'nodeunit',
-      '@types/nodeunit',
-      // '@types/node', // we tend to get @types/node 12.x from transitive closures now, it breaks builds.
-      'nyc'
-    ];
-
-    for (const dep of deps) {
-      if (pkg.getDevDependency(dep)) {
-        pkg.report({
-          ruleName: this.name,
-          message: `devDependency ${dep} is defined at the repo level`,
-          fix: () => pkg.removeDevDependency(dep)
-        });
-      }
-    }
   }
 }
 
@@ -719,7 +732,7 @@ export class MustUseCDKTest extends ValidationRule {
     // files in .gitignore.
     fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
     fileShouldContain(this.name, pkg, '.gitignore', 'coverage');
-    fileShouldContain(this.name, pkg, '.gitignore', '.nycrc');
+    fileShouldContain(this.name, pkg, '.gitignore', 'nyc.config.js');
   }
 }
 
@@ -749,7 +762,20 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
-      `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../../cdk-integ-tools'))}`);
+      `${require('../../cdk-integ-tools/package.json').version}`);
+  }
+}
+
+/**
+ * Checks API backwards compatibility against the latest released version.
+ */
+export class CompatScript extends ValidationRule {
+  public readonly name = 'package-info/scripts/compat';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return ; }
+
+    expectJSON(this.name, pkg, 'scripts.compat', 'cdk-compat');
   }
 }
 
@@ -759,7 +785,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', `file:${path.relative(pkg.packageRoot, path.resolve(__dirname, '../'))}`);
+    expectDevDependency(this.name, pkg, 'pkglint', `${require('../package.json').version}`);
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({
@@ -817,7 +843,7 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
-    this.ourPackages[pkg.json.name] = "^" + pkg.json.version;
+    this.ourPackages[pkg.json.name] = `^${pkg.json.version}`;
     this.recordDeps(pkg.json.dependencies);
     this.recordDeps(pkg.json.devDependencies);
   }
@@ -919,6 +945,12 @@ export class JestCoverageTarget extends ValidationRule {
         branches: 80,
         statements: 80
       };
+
+      // Coverage collection must be enabled
+      expectJSON(this.name, pkg, 'jest.collectCoverage', true);
+      // The correct coverage reporters must be enabled
+      expectJSON(this.name, pkg, 'jest.coverageReporters', ['lcov', 'html', 'text-summary']);
+
       for (const key of Object.keys(defaults)) {
         const deepPath = ['coverageThreshold', 'global', key];
         const setting = deepGet(pkg.json.jest, deepPath);
@@ -984,6 +1016,39 @@ export class FastFailingBuildScripts extends ValidationRule {
 
     const cmdBuildTest = 'npm run build+test';
     expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
+  }
+}
+
+export class YarnNohoistBundledDependencies extends ValidationRule {
+  public readonly name = 'yarn/nohoist-bundled-dependencies';
+
+  public validate(pkg: PackageJson) {
+    const bundled: string[] = pkg.json.bundleDependencies || pkg.json.bundledDependencies || [];
+    if (bundled.length === 0) { return; }
+
+    const repoPackageJson = path.resolve(__dirname, '../../../package.json');
+
+    const nohoist: string[] = require(repoPackageJson).workspaces.nohoist;
+
+    const missing = new Array<string>();
+    for (const dep of bundled) {
+      for (const entry of [`${pkg.packageName}/${dep}`, `${pkg.packageName}/${dep}/**`]) {
+        if (nohoist.indexOf(entry) >= 0) { continue; }
+        missing.push(entry);
+      }
+    }
+
+    if (missing.length > 0) {
+      pkg.report({
+        ruleName: this.name,
+        message: `Repository-level 'workspaces.nohoist' directive is missing: ${missing.join(', ')}`,
+        fix: () => {
+          const packageJson = require(repoPackageJson);
+          packageJson.workspaces.nohoist = [...packageJson.workspaces.nohoist, ...missing].sort();
+          fs.writeFileSync(repoPackageJson, `${JSON.stringify(packageJson, null, 2)}\n`, { encoding: 'utf8' });
+        },
+      });
+    }
   }
 }
 

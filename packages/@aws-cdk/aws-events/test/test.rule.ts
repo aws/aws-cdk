@@ -1,10 +1,8 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import { ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/core');
-import { CfnResource, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
+import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -37,7 +35,7 @@ export = {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
-    new CfnResource(stack, 'Res', {
+    new cdk.CfnResource(stack, 'Res', {
       type: 'Test::Resource',
       properties: {
         RuleName: rule.ruleName
@@ -328,7 +326,7 @@ export = {
     });
 
     const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new ServicePrincipal('nobody')
+      assumedBy: new iam.ServicePrincipal('nobody')
     });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
@@ -383,7 +381,7 @@ export = {
 
   'fromEventRuleArn'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:aws:events:us-east-2:123456789012:rule/example');
@@ -487,6 +485,43 @@ export = {
         }
       ]
     }));
+    test.done();
+  },
+
+  'associate rule with event bus'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // WHEN
+    new Rule(stack, 'MyRule', {
+      eventPattern: {
+        detail: ['detail']
+      },
+      eventBus,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventBusName: {
+        Ref: 'EventBus7B8748AA'
+      }
+    }));
+
+    test.done();
+  },
+
+  'throws with eventBus and schedule'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // THEN
+    test.throws(() => new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      eventBus,
+    }), /Cannot associate rule with 'eventBus' when using 'schedule'/);
     test.done();
   },
 

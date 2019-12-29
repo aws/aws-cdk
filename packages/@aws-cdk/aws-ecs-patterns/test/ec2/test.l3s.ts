@@ -1,14 +1,13 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import { AwsLogDriver } from '@aws-cdk/aws-ecs';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../../lib');
+import * as ecsPatterns from '../../lib';
 
 export = {
   'test ECS loadbalanced construct'(test: Test) {
@@ -385,7 +384,8 @@ export = {
 
     test.done();
   },
-  'test Fargateloadbalanced construct with TLS'(test: Test) {
+
+  'test Fargate loadbalanced construct with TLS'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -412,6 +412,15 @@ export = {
       Certificates: [{
         CertificateArn: "helloworld"
       }]
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+      TargetType: "ip",
+      VpcId: {
+        Ref: "VPCB9E5F0B4"
+      }
     }));
 
     expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -576,7 +585,7 @@ export = {
           TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
           TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
         },
-        logDriver: new AwsLogDriver({
+        logDriver: new ecs.AwsLogDriver({
           streamPrefix: "TestStream"
         }),
       },
@@ -611,6 +620,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with logging enabled'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -659,6 +669,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate loadbalanced construct with both image and taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -688,6 +699,7 @@ export = {
 
     test.done();
   },
+
   'test Fargate application loadbalanced construct with taskDefinition provided'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -725,6 +737,166 @@ export = {
           ],
         }
       ]
+    }));
+
+    test.done();
+  },
+
+  'ALB - throws if desiredTaskCount is 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // THEN
+    test.throws(() =>
+      new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+        cluster,
+        memoryLimitMiB: 1024,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        desiredCount: 0,
+      })
+    , /You must specify a desiredCount greater than 0/);
+
+    test.done();
+  },
+
+  'NLB - throws if desiredTaskCount is 0'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // THEN
+    test.throws(() =>
+      new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+        cluster,
+        memoryLimitMiB: 1024,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        desiredCount: 0,
+      })
+    , /You must specify a desiredCount greater than 0/);
+
+    test.done();
+  },
+
+  'ALBFargate - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "ALB123Service", {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLBFargate - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
+
+  'ALB - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLB - having *HealthyPercent properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, "Service", {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
     }));
 
     test.done();

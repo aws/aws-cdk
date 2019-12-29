@@ -1,6 +1,6 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface TestStackArtifact {
   stackName: string;
@@ -52,5 +52,5 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
 export function testStack(stack: TestStackArtifact) {
   const assembly = testAssembly({ stacks: [stack] });
-  return assembly.getStack(stack.stackName);
+  return assembly.getStackByName(stack.stackName);
 }

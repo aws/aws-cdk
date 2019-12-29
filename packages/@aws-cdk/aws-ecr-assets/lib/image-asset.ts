@@ -1,8 +1,8 @@
-import assets = require('@aws-cdk/assets');
-import ecr = require('@aws-cdk/aws-ecr');
+import * as assets from '@aws-cdk/assets';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { Construct, Stack, Token } from '@aws-cdk/core';
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 import { AdoptedRepository } from './adopted-repository';
 
 export interface DockerImageAssetProps extends assets.CopyOptions {
@@ -96,7 +96,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       directoryName: staging.stagedPath,
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
-      repositoryName: props.repositoryName,
+      repositoryName: props.repositoryName || `cdk/${this.node.uniqueId.replace(/[:/]/g, '-').toLowerCase()}`,
       sourceHash: staging.sourceHash
     });
 

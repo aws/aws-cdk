@@ -1,5 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
@@ -258,7 +258,9 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
-
+    if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
+      throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
+    }
     if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
@@ -315,7 +317,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
     const targetProtocol = options.protocol || Protocol.TCP;
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
-    const portMapping = targetContainer._findPortMapping(targetContainerPort, targetProtocol);
+    const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
       // tslint:disable-next-line:max-line-length
       throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMapping()"?`);

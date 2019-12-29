@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import * as cxapi from '@aws-cdk/cx-api';
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
 import { makeUniqueId } from './private/uniqueid';
@@ -196,7 +196,7 @@ export class ConstructNode {
   /**
    * Returns the child construct that has the id `Default` or `Resource"`.
    * This is usually the construct that provides the bulk of the underlying functionality.
-   * Useful for modifications of the underlying construct that are not avialable at the higher levels.
+   * Useful for modifications of the underlying construct that are not available at the higher levels.
    *
    * @throws if there is more than one child
    * @returns a construct or undefined if there is no default child

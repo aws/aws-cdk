@@ -1,13 +1,13 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
-import iam = require('@aws-cdk/aws-iam');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import path = require('path');
-import ecs = require('../../lib');
+import * as path from 'path';
+import * as ecs from '../../lib';
 
 export = {
   "When creating an ECS TaskDefinition": {
@@ -974,5 +974,28 @@ export = {
 
       test.done();
     }
-  }
+  },
+
+  'throws when setting proxyConfiguration without networkMode AWS_VPC'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const proxyConfiguration = ecs.ProxyConfigurations.appMeshProxyConfiguration({
+      containerName: 'envoy',
+      properties: {
+        ignoredUID: 1337,
+        proxyIngressPort: 15000,
+        proxyEgressPort: 15001,
+        appPorts: [9080, 9081],
+        egressIgnoredIPs: ["169.254.170.2", "169.254.169.254"]
+      }
+    });
+
+    // THEN
+    test.throws(() => {
+      new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.BRIDGE, proxyConfiguration });
+    }, /ProxyConfiguration can only be used with AwsVpc network mode, got: bridge/);
+
+    test.done();
+  },
 };
