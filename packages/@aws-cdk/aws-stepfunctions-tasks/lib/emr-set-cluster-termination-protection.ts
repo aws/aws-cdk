@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Aws } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
