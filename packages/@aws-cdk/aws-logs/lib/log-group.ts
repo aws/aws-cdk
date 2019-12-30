@@ -320,9 +320,17 @@ export class LogGroup extends LogGroupBase {
    * Import an existing LogGroup given its name
    */
   public static fromLogGroupName(scope: Construct, id: string, logGroupName: string): ILogGroup {
-    return this.fromLogGroupArn(scope, id, Stack.of(scope).formatArn({
-      service: 'logs', resource: 'log-group', sep: ':', resourceName: logGroupName
-    }));
+    class Import extends LogGroupBase {
+      public readonly logGroupName = logGroupName;
+      public readonly logGroupArn = Stack.of(scope).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        sep: ':',
+        resourceName: logGroupName,
+      });
+    }
+
+    return new Import(scope, id);
   }
 
   /**
