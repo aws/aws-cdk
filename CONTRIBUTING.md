@@ -538,6 +538,9 @@ in order to avoid the abuse of this powerful capability.
 The pattern is simple:
 
 1. Seek the approval of a core team member that a feature flag can be used.
+   * If the feature in question is being planned via an RFC, and the feature flag is contained in the proposal, 
+     core team member approval should include the feature flag.
+   * If the feature is being tracked in a single issue without an RFC, approval should be indicated in this issue.
 2. Define a new const under
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
    with the name of the context key that **enables** this new feature (for
