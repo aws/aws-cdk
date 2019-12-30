@@ -1,9 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/core');
-import { SecretValue } from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
@@ -18,7 +17,7 @@ export = {
       engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -57,7 +56,7 @@ export = {
       instances: 1,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -91,7 +90,7 @@ export = {
       instances: 1,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -129,7 +128,7 @@ export = {
       engine: DatabaseClusterEngine.AURORA,
       masterUser: {
         username: 'admin',
-        password: SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -470,7 +469,53 @@ export = {
     }, ResourcePart.Properties));
 
     test.done();
-  }
+  },
+
+  'throws when trying to add rotation to a cluster without secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort')
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // THEN
+    test.throws(() => cluster.addRotationSingleUser(), /without secret/);
+
+    test.done();
+  },
+
+  'throws when trying to add single user rotation multiple timet'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      masterUser: { username: 'admin' },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    test.throws(() => cluster.addRotationSingleUser(), /A single user rotation was already added to this cluster/);
+
+    test.done();
+  },
 };
 
 function testStack() {

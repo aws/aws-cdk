@@ -1,4 +1,4 @@
-import AWS = require('aws-sdk');
+import * as AWS from 'aws-sdk';
 
 /**
  * A utility class to inspect CloudFormation stack statuses.

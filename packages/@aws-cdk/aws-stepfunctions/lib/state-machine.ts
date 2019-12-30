@@ -1,9 +1,28 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import iam = require('@aws-cdk/aws-iam');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
+
+/**
+ * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-standard-vs-express.html
+ *
+ * @default STANDARD
+ */
+export enum StateMachineType {
+    /**
+     * Express Workflows are ideal for high-volume, event processing workloads.
+     */
+    EXPRESS = 'EXPRESS',
+
+    /**
+     * Standard Workflows are ideal for long-running, durable, and auditable workflows.
+     */
+    STANDARD = 'STANDARD'
+}
 
 /**
  * Properties for defining a State Machine
@@ -34,6 +53,13 @@ export interface StateMachineProps {
      * @default No timeout
      */
     readonly timeout?: Duration;
+
+    /**
+     * Type of the state machine
+     *
+     * @default StateMachineType.STANDARD
+     */
+    readonly stateMachineType?: StateMachineType;
 }
 
 /**
@@ -86,6 +112,12 @@ export class StateMachine extends StateMachineBase {
      */
     public readonly stateMachineArn: string;
 
+    /**
+     * Type of the state machine
+     * @attribute
+     */
+    public readonly stateMachineType: StateMachineType;
+
     constructor(scope: Construct, id: string, props: StateMachineProps) {
         super(scope, id, {
             physicalName: props.stateMachineName,
@@ -98,11 +130,16 @@ export class StateMachine extends StateMachineBase {
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
         graph.timeout = props.timeout;
 
+        this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
+
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: this.physicalName,
+            stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
             roleArn: this.role.roleArn,
             definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
         });
+
+        resource.node.addDependency(this.role);
 
         for (const statement of graph.policyStatements) {
             this.addToRolePolicy(statement);

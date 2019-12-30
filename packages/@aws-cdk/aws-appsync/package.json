@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-appsync",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "description": "The CDK Construct Library for AWS::AppSync",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -69,30 +69,36 @@
         "branches": 60,
         "statements": 80
       }
-    }
+    },
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "html",
+      "text-summary"
+    ]
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.18.0",
-    "cdk-build-tools": "1.18.0",
-    "cdk-integ-tools": "1.18.0",
-    "cfn2ts": "1.18.0",
-    "pkglint": "1.18.0"
+    "@aws-cdk/assert": "1.19.0",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "pkglint": "1.19.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.18.0",
-    "@aws-cdk/aws-cognito": "1.18.0",
-    "@aws-cdk/aws-dynamodb": "1.18.0",
-    "@aws-cdk/aws-lambda": "1.18.0",
-    "@aws-cdk/aws-iam": "1.18.0"
+    "@aws-cdk/aws-cognito": "1.19.0",
+    "@aws-cdk/aws-dynamodb": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "1.18.0",
-    "@aws-cdk/aws-cognito": "1.18.0",
-    "@aws-cdk/aws-dynamodb": "1.18.0",
-    "@aws-cdk/aws-lambda": "1.18.0",
-    "@aws-cdk/aws-iam": "1.18.0"
+    "@aws-cdk/aws-cognito": "1.19.0",
+    "@aws-cdk/aws-dynamodb": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
   },
   "engines": {
     "node": ">= 10.3.0"
