@@ -1,7 +1,7 @@
 import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { RetentionDays } from '@aws-cdk/aws-logs';
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReadWriteType, Trail } from '../lib';

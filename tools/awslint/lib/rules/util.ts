@@ -1,4 +1,4 @@
-import reflect = require('jsii-reflect');
+import * as reflect from 'jsii-reflect';
 
 /**
  * Returns a documentation tag. Looks it up in inheritance hierarchy.

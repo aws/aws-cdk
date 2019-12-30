@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject, 
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType,
-  NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
+  NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, PublicSubnet, RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -627,7 +627,49 @@ export = {
       test.ok(natGatewayProvider.configuredGateways.length > 0);
 
       test.done();
-    }
+    },
+    'Can add an IPv6 route'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const vpc = new Vpc(stack, 'VPC');
+      (vpc.publicSubnets[0] as PublicSubnet).addRoute('SomeRoute', {
+        destinationIpv6CidrBlock: '2001:4860:4860::8888/32',
+        routerId: 'router-1',
+        routerType: RouterType.NETWORK_INTERFACE
+      });
+
+      // THEN
+
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationIpv6CidrBlock: '2001:4860:4860::8888/32',
+        NetworkInterfaceId: 'router-1'
+      }));
+
+      test.done();
+    },
+    'Can add an IPv4 route'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const vpc = new Vpc(stack, 'VPC');
+      (vpc.publicSubnets[0] as PublicSubnet).addRoute('SomeRoute', {
+        destinationCidrBlock: '0.0.0.0/0',
+        routerId: 'router-1',
+        routerType: RouterType.NETWORK_INTERFACE
+      });
+
+      // THEN
+
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationCidrBlock: '0.0.0.0/0',
+        NetworkInterfaceId: 'router-1'
+      }));
+
+      test.done();
+    },
   },
 
   'NAT instances': {
@@ -680,6 +722,7 @@ export = {
 
       test.done();
     },
+
   },
 
   'Network ACL association': {
@@ -968,6 +1011,7 @@ export = {
       test.deepEqual(subnetIds[0], subnet.subnetId);
       test.done();
     }
+
   },
 };
 

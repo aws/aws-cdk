@@ -1,6 +1,6 @@
-import ecr = require('@aws-cdk/aws-ecr');
-import cdk = require('@aws-cdk/core');
-import codebuild = require('../lib');
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as cdk from '@aws-cdk/core';
+import * as codebuild from '../lib';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

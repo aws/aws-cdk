@@ -1,4 +1,4 @@
-import cfnspec = require('@aws-cdk/cfnspec');
+import * as cfnspec from '@aws-cdk/cfnspec';
 import { AssertionError } from 'assert';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';

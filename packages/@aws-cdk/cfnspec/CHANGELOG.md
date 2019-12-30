@@ -1,3 +1,86 @@
+# CloudFormation Resource Specification v10.2.0
+
+## New Resource Types
+
+* AWS::CodeBuild::ReportGroup
+* AWS::EC2::GatewayRouteTableAssociation
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Cloud9::EnvironmentEC2 Tags (__added__)
+* AWS::Cloud9::EnvironmentEC2 Description.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Cloud9::EnvironmentEC2 Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::EIP InstanceId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::EC2::EIP PublicIpv4Pool.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::MSK::Cluster OpenMonitoring (__added__)
+* AWS::MSK::Cluster EnhancedMonitoring.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBInstance MaxAllocatedStorage (__added__)
+* AWS::SSM::Document Name (__added__)
+
+## Property Type Changes
+
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRetainRule (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule (__added__)
+* AWS::MSK::Cluster.JmxExporter (__added__)
+* AWS::MSK::Cluster.NodeExporter (__added__)
+* AWS::MSK::Cluster.OpenMonitoring (__added__)
+* AWS::MSK::Cluster.Prometheus (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule Interval (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule IntervalUnit (__added__)
+* AWS::DLM::LifecyclePolicy.FastRestoreRule Count.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails ResourceTypes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.PolicyDetails Schedules.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.PolicyDetails TargetTags.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.RetainRule Interval (__added__)
+* AWS::DLM::LifecyclePolicy.RetainRule IntervalUnit (__added__)
+* AWS::DLM::LifecyclePolicy.RetainRule Count.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.Schedule CrossRegionCopyRules (__added__)
+
+
+# CloudFormation Resource Specification v10.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Pinpoint::EmailTemplate DefaultSubstitutions (__added__)
+* AWS::Pinpoint::EmailTemplate TemplateDescription (__added__)
+* AWS::Pinpoint::PushTemplate DefaultSubstitutions (__added__)
+* AWS::Pinpoint::PushTemplate TemplateDescription (__added__)
+* AWS::Pinpoint::SmsTemplate DefaultSubstitutions (__added__)
+* AWS::Pinpoint::SmsTemplate TemplateDescription (__added__)
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v10.0.0
 
 ## New Resource Types

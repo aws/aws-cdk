@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
-import cdk = require('@aws-cdk/core');
-import iam = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as iam from '../lib';
 
 describe('IAM lazy role', () => {
   test('creates no resource when unused', () => {

@@ -1,0 +1,118 @@
+{
+  "name": "@aws-cdk/aws-eks-legacy",
+  "version": "1.19.0",
+  "description": "The CDK Construct Library for AWS::EKS (Legacy)",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.eks.legacy",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "eks-legacy"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EKS.Legacy",
+        "packageId": "Amazon.CDK.AWS.EKS.Legacy",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-eks-legacy",
+        "module": "aws_cdk.aws_eks_legacy"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-eks-legacy"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::EKS"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "eks"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "1.19.0",
+    "@types/nodeunit": "^0.0.30",
+    "cdk-build-tools": "1.19.0",
+    "cdk-integ-tools": "1.19.0",
+    "cfn2ts": "1.19.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "1.19.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-autoscaling": "1.19.0",
+    "@aws-cdk/aws-cloudformation": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-ssm": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-autoscaling": "1.19.0",
+    "@aws-cdk/aws-cloudformation": "1.19.0",
+    "@aws-cdk/aws-ec2": "1.19.0",
+    "@aws-cdk/aws-iam": "1.19.0",
+    "@aws-cdk/aws-lambda": "1.19.0",
+    "@aws-cdk/aws-ssm": "1.19.0",
+    "@aws-cdk/core": "1.19.0"
+  },
+  "engines": {
+    "node": ">= 10.3.0"
+  },
+  "awslint": {
+    "exclude": [
+      "awslint:module-name:@aws-cdk/aws-eks-legacy",
+      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
+      "props-default-doc:@aws-cdk/aws-eks.AutoScalingGroupOptions.bootstrapOptions",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
+      "docs-public-apis:@aws-cdk/aws-eks.AwsAuthProps",
+      "docs-public-apis:@aws-cdk/aws-eks.BootstrapOptions",
+      "docs-public-apis:@aws-cdk/aws-eks.ClusterAttributes",
+      "docs-public-apis:@aws-cdk/aws-eks.KubernetesResourceProps",
+      "docs-public-apis:@aws-cdk/aws-eks.Mapping",
+      "module-name:@aws-cdk/aws-eks-legacy",
+      "props-no-arn-refs:@aws-cdk/aws-eks-legacy.ClusterProps.outputMastersRoleArn",
+      "resource-attribute:@aws-cdk/aws-eks-legacy.Cluster.clusterSecurityGroupId",
+      "props-default-doc:@aws-cdk/aws-eks-legacy.AutoScalingGroupOptions.bootstrapOptions",
+      "docs-public-apis:@aws-cdk/aws-eks-legacy.AwsAuthProps",
+      "docs-public-apis:@aws-cdk/aws-eks-legacy.BootstrapOptions",
+      "docs-public-apis:@aws-cdk/aws-eks-legacy.ClusterAttributes",
+      "docs-public-apis:@aws-cdk/aws-eks-legacy.KubernetesResourceProps",
+      "docs-public-apis:@aws-cdk/aws-eks-legacy.Mapping"
+    ]
+  },
+  "stability": "deprecated"
+}

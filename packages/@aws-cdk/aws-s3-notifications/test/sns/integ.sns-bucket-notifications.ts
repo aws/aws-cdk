@@ -1,7 +1,7 @@
-import s3 = require('@aws-cdk/aws-s3');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import s3n = require('../../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as s3n from '../../lib';
 
 class MyStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
