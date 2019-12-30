@@ -46,6 +46,8 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       // Metric attributes that are rendered to graph options
       if (stat.account) { options.accountId = stat.account; }
       if (stat.region) { options.region = stat.region; }
+      if (stat.period && stat.period.toSeconds() !== 300) { options.period = stat.period.toSeconds(); }
+      if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },
 
     withExpression(expr) {
@@ -58,8 +60,10 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   if (yAxis !== 'left') { options.yAxis = yAxis; }
   if (id) { options.id = id; }
 
-  if (Object.keys(options).length !== 0) {
-    ret.push(options);
+  const renderedOpts = dropUndef(options);
+
+  if (Object.keys(renderedOpts).length !== 0) {
+    ret.push(renderedOpts);
   }
   return ret;
 }
@@ -245,4 +249,14 @@ export function dispatchMetric<A, B>(metric: IMetric, fns: { withStat: (x: Metri
   } else {
     throw new Error(`Metric object must have either 'metricStat' or 'mathExpression'`);
   }
+}
+
+export function dropUndef<T extends object>(x: T): T {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(x)) {
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return ret;
 }

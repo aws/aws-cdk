@@ -4,7 +4,7 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
-import { dispatchMetric, metricPeriod, MetricSet } from './metric-util';
+import { dispatchMetric, dropUndef, metricPeriod, MetricSet } from './metric-util';
 import { parseStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
@@ -293,16 +293,6 @@ function describePeriod(seconds: number) {
   if (seconds === 1) { return '1 second'; }
   if (seconds > 60) { return (seconds / 60) + ' minutes'; }
   return seconds + ' seconds';
-}
-
-function dropUndef<T extends object>(x: T): T {
-  const ret: any = {};
-  for (const [key, value] of Object.entries(x)) {
-    if (value !== undefined) {
-      ret[key] = value;
-    }
-  }
-  return ret;
 }
 
 function renderIfSimpleStatistic(statistic?: string): string | undefined {
