@@ -222,10 +222,24 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    *
    * Example for S3 / listBucket : 'Buckets.0.Name'
    *
+   * Use `Token.asXxx` to encode the returned `Reference` as a specific type or
+   * use the convenience `getDataString` for string attributes.
+   *
    * @param dataPath the path to the data
    */
   public getData(dataPath: string) {
     return this.customResource.getAtt(dataPath);
+  }
+
+  /**
+   * Returns response data for the AWS SDK call as string.
+   *
+   * Example for S3 / listBucket : 'Buckets.0.Name'
+   *
+   * @param dataPath the path to the data
+   */
+  public getDataString(dataPath: string): string {
+    return this.customResource.getAttString(dataPath);
   }
 }
 
