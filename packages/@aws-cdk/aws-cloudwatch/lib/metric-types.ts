@@ -3,12 +3,21 @@
  */
 export interface IMetric {
   /**
+   * Inspect the details of the metric object
+   */
+  toMetricConfig(): MetricConfig;
+
+  /**
    * Turn this metric object into an alarm configuration
+   *
+   * @deprecated Use `toMetricsConfig()` instead.
    */
   toAlarmConfig(): MetricAlarmConfig;
 
   /**
    * Turn this metric object into a graph configuration
+   *
+   * @deprecated Use `toMetricsConfig()` instead.
    */
   toGraphConfig(): MetricGraphConfig;
 }
@@ -74,7 +83,90 @@ export enum Unit {
 }
 
 /**
+ * Properties of a rendered metric
+ */
+export interface MetricConfig {
+  /**
+   * In case the metric represents a query, the details of the query
+   */
+  readonly metricStat?: MetricStatConfig;
+
+  /**
+   * In case the metric is a math expression, the details of the math expression
+   */
+  readonly mathExpression?: MetricExpressionConfig;
+
+  /**
+   * Additional properties which will be rendered if the metric is used in a dashboard
+   *
+   * Examples are 'label' and 'color', but any key in here will be
+   * added to dashboard graphs.
+   */
+  readonly renderingProperties?: Record<string, any>;
+}
+
+/**
+ * Properties for a concrete metric
+ *
+ * NOTE: `unit` is no longer on this object since it is only used for `Alarms`, and doesn't mean what one
+ * would expect it to mean there anyway. It is most likely to be misused.
+ */
+export interface MetricStatConfig {
+  /**
+   * The dimensions to apply to the alarm
+   */
+  readonly dimensions?: Dimension[];
+
+  /**
+   * Namespace of the metric
+   */
+  readonly namespace: string;
+
+  /**
+   * Name of the metric
+   */
+  readonly metricName: string;
+
+  /**
+   * How many seconds to aggregate over
+   */
+  readonly period?: number;
+
+  /**
+   * Aggregation function to use (can be either simple or a percentile)
+   */
+  readonly statistic?: string;
+
+  /**
+   * Region of the metric
+   */
+  readonly region?: string;
+
+  /**
+   * Account of the metric
+   */
+  readonly account?: string;
+}
+
+/**
+ * Properties for a concrete metric
+ */
+export interface MetricExpressionConfig {
+  /**
+   * Math expression for the metric.
+   */
+  readonly expression: string;
+
+  /**
+   * Metrics used in the math expression
+   */
+  readonly expressionMetrics: Record<string, IMetric>;
+}
+
+/**
  * Properties used to construct the Metric identifying part of an Alarm
+ *
+ * @deprecated Replaced by MetricConfig
  */
 export interface MetricAlarmConfig {
   /**
@@ -115,6 +207,8 @@ export interface MetricAlarmConfig {
 
 /**
  * Properties used to construct the Metric identifying part of a Graph
+ *  *
+ * @deprecated Replaced by MetricConfig
  */
 export interface MetricGraphConfig {
   /**
@@ -175,6 +269,8 @@ export interface MetricGraphConfig {
 
 /**
  * Custom rendering properties that override the default rendering properties specified in the yAxis parameter of the widget object.
+ *
+ * @deprecated Replaced by `MetricConfig`.
  */
 export interface MetricRenderingProperties {
   /**
