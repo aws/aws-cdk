@@ -59,7 +59,7 @@ At the minimum, users must define the `onEvent` handler, which is invoked by the
 framework for all resource lifecycle events (`Create`, `Update` and `Delete`)
 and returns a result which is then submitted to CloudFormation.
 
-The following example is a skelaton for a Python implementation of `onEvent`:
+The following example is a skeleton for a Python implementation of `onEvent`:
 
 ```py
 def on_event(event, context):
@@ -96,7 +96,7 @@ where the lifecycle operation cannot be completed immediately. The
 `isComplete` handler will be retried asynchronously after `onEvent` until it
 returns `IsComplete: true`, or until the total provider timeout has expired.
 
-The following example is a skelaton for a Python implementation of `isComplete`:
+The following example is a skeleton for a Python implementation of `isComplete`:
 
 ```py
 def is_complete(event, context):
@@ -219,11 +219,10 @@ When AWS CloudFormation receives a "FAILED" response, it will attempt to roll
 back the stack to it's last state. This has different meanings for different
 lifecycle events:
 
-- If a `Create` event fails, CloudFormation will issue a `Delete` event to allow
-  the provider to clean up any unfinished work related to the creation of the
-  resource. The implication of this is that it is recommended to implement
-  `Delete` in an idempotent way, in order to make sure that the rollback
-  `Delete` operation won't fail if a resource creation has failed.
+- If a `Create` event fails, the resource provider framework will automatically
+  ignore the subsequent `Delete` operation issued by AWS CloudFormation. The
+  framework currently does not support customizing this behavior (see
+  https://github.com/aws/aws-cdk/issues/5524).
 - If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
 - If a `Delete` event fails, CloudFormation will abandon this resource.

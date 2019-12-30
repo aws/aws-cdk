@@ -18,7 +18,7 @@
     "jsii-diff": "^0.20.11",
     "jsii-pacmak": "^0.20.11",
     "lerna": "^3.18.4",
-    "typescript": "~3.7.3"
+    "typescript": "~3.7.4"
   },
   "repository": {
     "type": "git",
