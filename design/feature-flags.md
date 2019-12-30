@@ -89,7 +89,6 @@ Here's the developer experience:
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
-This conversation was marked as resolved by eladb
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to
    [cx-api/lib/future.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/future.ts).
